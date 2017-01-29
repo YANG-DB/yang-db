@@ -1,1 +1,13 @@
-.idea/workspace.xml
+/.idea/
+
+fuse-dispatcher/target/
+fuse-model/target/
+fuse-service/target/
+fuse-unipop/target/
+target/
+
+/fuse-dispatcher/fuse-dispatcher.iml
+/fuse-model/fuse-model.iml
+/fuse-service/fuse-service.iml
+/fuse-unipop/fuse-unipop.iml
+/fuse.iml
