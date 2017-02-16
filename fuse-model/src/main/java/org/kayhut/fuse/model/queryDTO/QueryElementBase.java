@@ -20,7 +20,6 @@ public class QueryElementBase {
     public void setType(String type) {
         this.type = type;
     }
-
     //endregion
 
     //region Fields
