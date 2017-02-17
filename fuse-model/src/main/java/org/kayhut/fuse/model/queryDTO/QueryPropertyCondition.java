@@ -34,4 +34,6 @@ public class QueryPropertyCondition {
     private String op;
     private String r;
     private String l;
+    //endregion
+
 }
