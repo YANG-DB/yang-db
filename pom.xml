@@ -13,6 +13,7 @@
         <module>fuse-dispatcher</module>
         <module>fuse-service</module>
         <module>fuse-model</module>
+        <module>fuse-neo4j</module>
     </modules>
 
     <properties>
