@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fuse-ast</artifactId>
+    <artifactId>fuse-asg</artifactId>
 
     <properties>
         <top.dir>${project.basedir}/..</top.dir>
