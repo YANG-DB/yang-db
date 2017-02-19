@@ -23,18 +23,9 @@ public class QueryQuantifierBase extends  QueryElementBase {
         this.branches = branches;
     }
 
-    public List<Integer> getNext() {
-        return next;
-    }
-
-    public void setNext(List<Integer> next) {
-        this.next = next;
-    }
-
     //region Fields
     private String qType;
     private int branches;
-    private List<Integer> next;
     //endregion
 
 }
