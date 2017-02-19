@@ -1,4 +1,4 @@
-/.idea/
+.idea/
 
 fuse-dispatcher/target/
 fuse-model/target/
@@ -11,3 +11,6 @@ target/
 /fuse-service/fuse-service.iml
 /fuse-unipop/fuse-unipop.iml
 /fuse.iml
+fuse-asg/fuse-asg.iml
+fuse-epb/fuse-epb.iml
+fuse-gta/fuse-gta.iml
