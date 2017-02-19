@@ -1,4 +1,4 @@
-package todobackend;
+package com.kayhut.fuse.services;
 
 import com.kayhut.fuse.services.FuseApp;
 import org.jooby.test.JoobyRule;

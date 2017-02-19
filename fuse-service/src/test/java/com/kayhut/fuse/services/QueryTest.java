@@ -1,4 +1,4 @@
-package todobackend;
+package com.kayhut.fuse.services;
 
 import com.kayhut.fuse.services.FuseApp;
 import org.jooby.test.JoobyRule;
@@ -71,24 +71,5 @@ public class QueryTest {
                 .contentType("application/json;charset=UTF-8");
     }
 
-    @Test
-    /**
-     * execute query with expected plan result
-     */
-    public void plan() {
-        given()
-                .contentType("application/json")
-                .body("{\"id\":1," +
-                        "\"name\": \"hezi\"," +
-                        "\"type\": \"plan\"," +
-                        "\"query\": \"plan me a graph!\" " +
-                        "}")
-                .post("/fuse/plan")
-                .then()
-                .assertThat()
-                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"completed\":true,\"results\":11}}"))
-                .statusCode(201)
-                .contentType("application/json;charset=UTF-8");
-    }
 
 }
