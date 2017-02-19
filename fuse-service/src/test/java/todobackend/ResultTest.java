@@ -14,55 +14,33 @@ public class ResultTest {
     @ClassRule
     public static JoobyRule app = new JoobyRule(new FuseApp());
 
-    @Test
-    public void checkHealth() {
-        get("/fuse")
-                .then()
-                .assertThat()
-                .body(equalTo("Alive And Well..."))
-                .header("Access-Control-Allow-Origin", equalTo("*"))
-                .header("Access-Control-Allow-Methods", equalTo("POST, GET, OPTIONS, DELETE, PATCH"))
-                .header("Access-Control-Max-Age", equalTo("3600"))
-                .header("Access-Control-Allow-Headers", "accept")
-                .statusCode(200)
-                .contentType("application/json;charset=UTF-8");
-    }
-
      @Test
     public void getResultById() {
-        given()
-                .contentType("application/json")
-                .body("{" +
-                        "\"name\": \"hezi\"," +
-                        "\"type\": \"plan\"," +
-                        "\"query\": \"plan me a graph!\" " +
-                        "}")
-                .post("/fuse/plan")
-                .then()
-                .assertThat()
-                .body(equalTo(
-                        "{\"id\":1," +
-                                "\"name\":\"hezi\"," +
-                                "\"type\": \"plan\"," +
-                                "\"completed\":true," +
-                                "\"results\":0," +
-                                "\"url\":\"http://localhost:8080/fuse/result/1\"}"))
-                .statusCode(201)
-                .contentType("application/json;charset=UTF-8");
+         given()
+                 .contentType("application/json")
+                 .body("{\"id\":1," +
+                         "\"name\": \"hezi\"," +
+                         "\"type\": \"path\"," +
+                         "\"query\": \"build me a graph!\" " +
+                         "}")
+                 .post("/fuse/query/path")
+                 .then()
+                 .assertThat()
+                 .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{" +
+                         "\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\",\"data\":\"Simple Path Data\",\"results\":16}}"))
+                 .statusCode(201)
+                 .contentType("application/json;charset=UTF-8");
 
-        get("/fuse/result/1")
+         get("/fuse/result/1")
                 .then()
                 .assertThat()
-                .body(equalTo(
-                        "[{\"id\":1," +
-                                "\"name\":\"hezi\"," +
-                                "\"type\": \"plan\"," +
-                                "\"content\": \"{}\"}]"))
+                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{" +
+                        "\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\",\"data\":\"Simple Path Data\",\"results\":16}}"))
                 .header("Access-Control-Allow-Origin", equalTo("*"))
                 .header("Access-Control-Allow-Methods", equalTo("POST, GET, OPTIONS, DELETE, PATCH"))
                 .header("Access-Control-Max-Age", equalTo("3600"))
                 .header("Access-Control-Allow-Headers", "accept")
-                .statusCode(200)
+                .statusCode(302)
                 .contentType("application/json;charset=UTF-8");
 
     }

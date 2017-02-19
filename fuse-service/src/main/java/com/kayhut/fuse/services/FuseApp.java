@@ -1,10 +1,8 @@
 package com.kayhut.fuse.services;
 
 import com.kayhut.fuse.model.transport.Request;
-import com.kayhut.fuse.model.transport.Response;
 import org.jooby.Jooby;
 import org.jooby.Results;
-import org.jooby.Route;
 import org.jooby.Status;
 import org.jooby.json.Jackson;
 import org.jooby.scanner.Scanner;
@@ -40,20 +38,30 @@ public class FuseApp extends Jooby {
                 /** submit a plan */
                 .post(req -> Results.with(queryCtrl().plan(req.body(Request.class)), Status.CREATED));
 
+        use("/fuse/search")
+                /** submit a plan */
+                .post(req -> Results.with(searchCtrl().search(req.body(Request.class)), Status.CREATED));
+
         use("/fuse/query")
-                /** submit a query */
-                .post(req -> Results.with(queryCtrl().query(req.body(Request.class)), Status.CREATED));
+                /** submit a path query */
+                .post("/path",req -> Results.with(queryCtrl().pathQuery(req.body(Request.class)), Status.CREATED))
+                /** submit a graph query */
+                .post("/graph",req -> Results.with(queryCtrl().graphQuery(req.body(Request.class)), Status.CREATED));
 
         use("/fuse/result")
                 /** result by ID. */
-                .get("/:id", req -> Results.with(resultsCtrl().get(req.param("id").value()), Status.FOUND));
+                .get("/:getId", req -> Results.with(resultsCtrl().get(req.param("getId").value()), Status.FOUND));
     }
 
-    private Query queryCtrl() {
-        return require(Query.class);
+    private QueryController queryCtrl() {
+        return require(QueryController.class);
     }
 
-    private com.kayhut.fuse.services.Results resultsCtrl() {
+    private SearchController searchCtrl() {
+        return require(SearchController.class);
+    }
+
+    private ResultsController resultsCtrl() {
         return require(ResultsController.class);
     }
 
