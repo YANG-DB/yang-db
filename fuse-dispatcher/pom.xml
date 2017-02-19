@@ -15,10 +15,12 @@
         <top.dir>${project.basedir}/..</top.dir>
         <checkstyle.skip>true</checkstyle.skip>
         <build.timestamp>${maven.build.timestamp}</build.timestamp>
+
     </properties>
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
