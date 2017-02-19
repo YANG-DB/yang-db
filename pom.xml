@@ -10,6 +10,9 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>fuse-unipop</module>
+        <module>fuse-asg</module>
+        <module>fuse-epb</module>
+        <module>fuse-gta</module>
         <module>fuse-dispatcher</module>
         <module>fuse-service</module>
         <module>fuse-model</module>
