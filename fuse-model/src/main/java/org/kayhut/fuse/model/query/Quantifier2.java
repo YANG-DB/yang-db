@@ -1,18 +1,11 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 import java.util.List;
 
 /**
  * Created by benishue on 17/02/2017.
  */
-public class QueryQuantifier1 extends QueryQuantifierBase {
-    public int getBelow() {
-        return below;
-    }
-
-    public void setBelow(int below) {
-        this.below = below;
-    }
+public class Quantifier2 extends QuantifierBase {
 
     public List<Integer> getNext() {
         return next;
@@ -23,8 +16,8 @@ public class QueryQuantifier1 extends QueryQuantifierBase {
     }
 
     //region Fields
-    private int below;
     private List<Integer> next;
     //endregion
+
 
 }

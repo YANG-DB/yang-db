@@ -1,9 +1,9 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 /**
  * Created by benishue on 17/02/2017.
  */
-public class QueryCombinerBase extends QueryElementBase {
+public class CombinerBase extends ElementBase {
     public int getNext() {
         return next;
     }

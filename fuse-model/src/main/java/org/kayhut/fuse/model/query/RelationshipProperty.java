@@ -1,11 +1,11 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 import java.util.List;
 
 /**
  * Created by benishue on 17/02/2017.
  */
-public class QueryRelationshipProperty extends QueryElementBase {
+public class RelationshipProperty extends ElementBase {
 
 
     public int getpType() {
@@ -24,11 +24,11 @@ public class QueryRelationshipProperty extends QueryElementBase {
         this.pTag = pTag;
     }
 
-    public List<QueryPropertyCondition> getCond() {
+    public List<PropertyCondition> getCond() {
         return cond;
     }
 
-    public void setCond(List<QueryPropertyCondition> cond) {
+    public void setCond(List<PropertyCondition> cond) {
         this.cond = cond;
     }
 
@@ -43,7 +43,7 @@ public class QueryRelationshipProperty extends QueryElementBase {
     //region Fields
     private int	pType;
     private String pTag;
-    private List<QueryPropertyCondition> cond;
+    private List<PropertyCondition> cond;
     private int	below;
     //endregion
 

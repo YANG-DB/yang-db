@@ -1,11 +1,9 @@
-package org.kayhut.fuse.model.queryDTO;
-
-import java.util.List;
+package org.kayhut.fuse.model.query;
 
 /**
  * Created by user on 19-Feb-17.
  */
-public class QueryHorizontalQuantifier extends QueryQuantifierBase {
+public class HorizontalQuantifier extends QuantifierBase {
     public int getBelow() {
         return below;
     }

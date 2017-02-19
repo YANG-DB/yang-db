@@ -1,11 +1,11 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 import java.util.List;
 
 /**
  * Created by user on 16-Feb-17.
  */
-public class QueryUntypedEntity extends QueryElementBase {
+public class UntypedEntity extends ElementBase {
 
     public String geteTag() {
         return eTag;

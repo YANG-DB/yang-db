@@ -1,9 +1,9 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 /**
  * Created by user on 16-Feb-17.
  */
-public class QueryLogicalEntity extends QueryElementBase {
+public class AggregateEntity extends ElementBase {
 
     public String geteTag() {
         return eTag;
@@ -43,4 +43,5 @@ public class QueryLogicalEntity extends QueryElementBase {
     private	String eName;
     private	int	next;
     //endregion
+
 }

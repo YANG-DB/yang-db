@@ -1,9 +1,9 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 /**
  * Created by User on 16/02/2017.
  */
-public class QueryElementBase {
+public class ElementBase {
     //region Properties
     public int geteNum() {
         return eNum;

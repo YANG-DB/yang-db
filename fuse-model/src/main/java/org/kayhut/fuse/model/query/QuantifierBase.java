@@ -1,11 +1,9 @@
-package org.kayhut.fuse.model.queryDTO;
-
-import java.util.List;
+package org.kayhut.fuse.model.query;
 
 /**
  * Created by benishue on 17/02/2017.
  */
-public class QueryQuantifierBase extends  QueryElementBase {
+public class QuantifierBase extends ElementBase {
 
     public String getqType() {
         return qType;

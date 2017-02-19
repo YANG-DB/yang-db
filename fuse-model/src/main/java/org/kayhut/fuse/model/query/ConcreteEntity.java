@@ -1,9 +1,9 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 /**
  * Created by user on 16-Feb-17.
  */
-public class QueryAggregateEntity extends QueryElementBase {
+public class ConcreteEntity extends ElementBase {
 
     public String geteTag() {
         return eTag;
@@ -13,12 +13,20 @@ public class QueryAggregateEntity extends QueryElementBase {
         this.eTag = eTag;
     }
 
-    public String getfName() {
-        return fName;
+    public int geteId() {
+        return eId;
     }
 
-    public void setfName(String fName) {
-        this.fName = fName;
+    public void seteId(int eId) {
+        this.eId = eId;
+    }
+
+    public int geteType() {
+        return eType;
+    }
+
+    public void seteType(int eType) {
+        this.eType = eType;
     }
 
     public String geteName() {
@@ -38,10 +46,12 @@ public class QueryAggregateEntity extends QueryElementBase {
     }
 
     //region Fields
-    private	String eTag;
-    private	String fName;
-    private	String eName;
-    private	int	next;
+    private String eTag;
+    private int eId;
+    private int eType;
+    private String eName;
+    private int next;
     //endregion
+
 
 }

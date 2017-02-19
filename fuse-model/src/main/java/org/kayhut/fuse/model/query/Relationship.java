@@ -1,9 +1,9 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 /**
  * Created by user on 16-Feb-17.
  */
-public class QueryRelationship extends QueryElementBase {
+public class Relationship extends ElementBase {
 
     public int getrType() {
         return rType;

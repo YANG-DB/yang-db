@@ -1,11 +1,11 @@
-package org.kayhut.fuse.model.queryDTO;
+package org.kayhut.fuse.model.query;
 
 import java.util.List;
 
 /**
  * Created by benishue on 17/02/2017.
  */
-public class QueryEntityProperty extends QueryElementBase{
+public class EntityProperty extends ElementBase {
 
     public int getpType() {
         return pType;
@@ -23,18 +23,18 @@ public class QueryEntityProperty extends QueryElementBase{
         this.pTag = pTag;
     }
 
-    public List<QueryPropertyCondition> getCond() {
+    public List<PropertyCondition> getCond() {
         return cond;
     }
 
-    public void setCond(List<QueryPropertyCondition> cond) {
+    public void setCond(List<PropertyCondition> cond) {
         this.cond = cond;
     }
 
     //region Fields
     private int pType;
     private String pTag;
-    private List<QueryPropertyCondition> cond;
+    private List<PropertyCondition> cond;
     //endregion
 
 }
