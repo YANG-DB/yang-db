@@ -5,13 +5,13 @@ import java.util.List;
 /**
  * Created by benishue on 17/02/2017.
  */
-public class Quantifier1 extends QuantifierBase {
-    public int getBelow() {
-        return below;
+public class Quant1 extends QuantBase {
+    public int getB() {
+        return b;
     }
 
-    public void setBelow(int below) {
-        this.below = below;
+    public void setB(int b) {
+        this.b = b;
     }
 
     public List<Integer> getNext() {
@@ -23,7 +23,7 @@ public class Quantifier1 extends QuantifierBase {
     }
 
     //region Fields
-    private int below;
+    private int b;
     private List<Integer> next;
     //endregion
 

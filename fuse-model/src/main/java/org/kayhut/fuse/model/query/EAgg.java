@@ -3,7 +3,7 @@ package org.kayhut.fuse.model.query;
 /**
  * Created by user on 16-Feb-17.
  */
-public class ConcreteEntity extends ElementBase {
+public class EAgg extends EBase {
 
     public String geteTag() {
         return eTag;
@@ -13,20 +13,12 @@ public class ConcreteEntity extends ElementBase {
         this.eTag = eTag;
     }
 
-    public int geteId() {
-        return eId;
+    public String getfName() {
+        return fName;
     }
 
-    public void seteId(int eId) {
-        this.eId = eId;
-    }
-
-    public int geteType() {
-        return eType;
-    }
-
-    public void seteType(int eType) {
-        this.eType = eType;
+    public void setfName(String fName) {
+        this.fName = fName;
     }
 
     public String geteName() {
@@ -46,12 +38,10 @@ public class ConcreteEntity extends ElementBase {
     }
 
     //region Fields
-    private String eTag;
-    private int eId;
-    private int eType;
-    private String eName;
-    private int next;
+    private	String eTag;
+    private	String fName;
+    private	String eName;
+    private	int	next;
     //endregion
-
 
 }

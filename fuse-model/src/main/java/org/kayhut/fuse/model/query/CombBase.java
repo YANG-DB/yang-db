@@ -1,10 +1,9 @@
 package org.kayhut.fuse.model.query;
 
 /**
- * Created by User on 16/02/2017.
+ * Created by benishue on 17/02/2017.
  */
-public class Start extends EBase {
-
+public class CombBase extends EBase {
     public int getNext() {
         return next;
     }
@@ -16,4 +15,5 @@ public class Start extends EBase {
     //region Fields
     private int next;
     //endregion
+
 }

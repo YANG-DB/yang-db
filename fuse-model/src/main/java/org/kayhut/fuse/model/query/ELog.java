@@ -3,7 +3,7 @@ package org.kayhut.fuse.model.query;
 /**
  * Created by user on 16-Feb-17.
  */
-public class LogicalEntity extends ElementBase {
+public class ELog extends EBase {
 
     public String geteTag() {
         return eTag;

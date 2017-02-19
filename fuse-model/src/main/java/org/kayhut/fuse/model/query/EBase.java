@@ -3,7 +3,7 @@ package org.kayhut.fuse.model.query;
 /**
  * Created by User on 16/02/2017.
  */
-public class ElementBase {
+public class EBase {
     //region Properties
     public int geteNum() {
         return eNum;

@@ -3,7 +3,7 @@ package org.kayhut.fuse.model.query;
 /**
  * Created by user on 16-Feb-17.
  */
-public class Relationship extends ElementBase {
+public class Rel extends EBase {
 
     public int getrType() {
         return rType;
@@ -37,12 +37,12 @@ public class Relationship extends ElementBase {
         this.next = next;
     }
 
-    public int getBelow() {
-        return below;
+    public int getB() {
+        return b;
     }
 
-    public void setBelow(int below) {
-        this.below = below;
+    public void setB(int b) {
+        this.b = b;
     }
 
     //region Fields
@@ -50,7 +50,7 @@ public class Relationship extends ElementBase {
     private char dir;
     private char wrapper;
     private int next;
-    private int below;
+    private int b;
     //endregion
 
 }

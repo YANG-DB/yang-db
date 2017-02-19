@@ -1,19 +1,23 @@
 package org.kayhut.fuse.model.query;
 
+import java.util.List;
+
 /**
  * Created by benishue on 17/02/2017.
  */
-public class CombinerBase extends ElementBase {
-    public int getNext() {
+public class Quant2 extends QuantBase {
+
+    public List<Integer> getNext() {
         return next;
     }
 
-    public void setNext(int next) {
+    public void setNext(List<Integer> next) {
         this.next = next;
     }
 
     //region Fields
-    private int next;
+    private List<Integer> next;
     //endregion
+
 
 }

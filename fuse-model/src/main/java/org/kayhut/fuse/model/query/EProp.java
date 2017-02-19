@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by benishue on 17/02/2017.
  */
-public class EntityProperty extends ElementBase {
+public class EProp extends EBase {
 
     public int getpType() {
         return pType;
@@ -23,18 +23,27 @@ public class EntityProperty extends ElementBase {
         this.pTag = pTag;
     }
 
-    public List<PropertyCondition> getCond() {
+    public List<PropCondition> getCond() {
         return cond;
     }
 
-    public void setCond(List<PropertyCondition> cond) {
+    public void setCond(List<PropCondition> cond) {
         this.cond = cond;
+    }
+
+    public String getF() {
+        return f;
+    }
+
+    public void setF(String f) {
+        this.f = f;
     }
 
     //region Fields
     private int pType;
     private String pTag;
-    private List<PropertyCondition> cond;
+    private List<PropCondition> cond;
+    private String f;
     //endregion
 
 }

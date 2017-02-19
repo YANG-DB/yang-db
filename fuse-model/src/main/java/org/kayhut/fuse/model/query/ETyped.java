@@ -3,7 +3,7 @@ package org.kayhut.fuse.model.query;
 /**
  * Created by user on 16-Feb-17.
  */
-public class AggregateEntity extends ElementBase {
+public class ETyped extends EBase {
 
     public String geteTag() {
         return eTag;
@@ -13,20 +13,12 @@ public class AggregateEntity extends ElementBase {
         this.eTag = eTag;
     }
 
-    public String getfName() {
-        return fName;
+    public int geteType() {
+        return eType;
     }
 
-    public void setfName(String fName) {
-        this.fName = fName;
-    }
-
-    public String geteName() {
-        return eName;
-    }
-
-    public void seteName(String eName) {
-        this.eName = eName;
+    public void seteType(int eType) {
+        this.eType = eType;
     }
 
     public int getNext() {
@@ -37,11 +29,20 @@ public class AggregateEntity extends ElementBase {
         this.next = next;
     }
 
+    public int getB() {
+        return b;
+    }
+
+    public void setB(int b) {
+        this.b = b;
+    }
+
     //region Fields
     private	String eTag;
-    private	String fName;
-    private	String eName;
-    private	int	next;
+    private int	eType;
+    private	int next;
+    private	int b;
     //endregion
+
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by benishue on 17/02/2017.
  */
-public class RelationshipProperty extends ElementBase {
+public class RelProp extends EBase {
 
 
     public int getpType() {
@@ -24,27 +24,36 @@ public class RelationshipProperty extends ElementBase {
         this.pTag = pTag;
     }
 
-    public List<PropertyCondition> getCond() {
+    public List<PropCondition> getCond() {
         return cond;
     }
 
-    public void setCond(List<PropertyCondition> cond) {
+    public void setCond(List<PropCondition> cond) {
         this.cond = cond;
     }
 
-    public int getBelow() {
-        return below;
+    public int getB() {
+        return b;
     }
 
-    public void setBelow(int below) {
-        this.below = below;
+    public void setB(int b) {
+        this.b = b;
+    }
+
+    public String getF() {
+        return f;
+    }
+
+    public void setF(String f) {
+        this.f = f;
     }
 
     //region Fields
     private int	pType;
+    private String f;
     private String pTag;
-    private List<PropertyCondition> cond;
-    private int	below;
+    private List<PropCondition> cond;
+    private int b;
     //endregion
 
 

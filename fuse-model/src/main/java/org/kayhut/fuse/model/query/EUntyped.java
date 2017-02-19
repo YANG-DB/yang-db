@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by user on 16-Feb-17.
  */
-public class UntypedEntity extends ElementBase {
+public class EUntyped extends EBase {
 
     public String geteTag() {
         return eTag;
