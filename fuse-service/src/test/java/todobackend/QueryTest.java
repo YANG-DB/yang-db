@@ -35,21 +35,16 @@ public class QueryTest {
     public void queryWithPathResults() {
         given()
                 .contentType("application/json")
-                .body("{" +
+                .body("{\"id\":1," +
                         "\"name\": \"hezi\"," +
                         "\"type\": \"path\"," +
                         "\"query\": \"build me a graph!\" " +
                         "}")
-                .post("/fuse/query")
+                .post("/fuse/query/path")
                 .then()
                 .assertThat()
-                .body(equalTo(
-                        "{\"id\":1," +
-                                "\"name\":\"hezi\"," +
-                                "\"type\": \"path\"," +
-                                "\"completed\":true," +
-                                "\"results\":0," +
-                                "\"url\":\"http://localhost:8080/fuse/result/1\"}"))
+                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{" +
+                        "\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\",\"data\":\"Simple Path Data\",\"results\":16}}"))
                 .statusCode(201)
                 .contentType("application/json;charset=UTF-8");
 
@@ -62,21 +57,16 @@ public class QueryTest {
     public void queryWithGraphResults() {
         given()
                 .contentType("application/json")
-                .body("{" +
+                .body("{\"id\":1," +
                         "\"name\": \"hezi\"," +
                         "\"type\": \"graph\"," +
                         "\"query\": \"build me a graph!\" " +
                         "}")
-                .post("/fuse/query")
+                .post("/fuse/query/graph")
                 .then()
                 .assertThat()
-                .body(equalTo(
-                        "{\"id\":1," +
-                                "\"name\":\"hezi\"," +
-                                "\"type\": \"graph\"," +
-                                "\"completed\":true," +
-                                "\"results\":0," +
-                                "\"url\":\"http://localhost:8080/fuse/result/1\"}"))
+                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{" +
+                        "\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\",\"data\":\"Simple Graph Data\",\"results\":17}}"))
                 .statusCode(201)
                 .contentType("application/json;charset=UTF-8");
     }
@@ -88,7 +78,7 @@ public class QueryTest {
     public void plan() {
         given()
                 .contentType("application/json")
-                .body("{" +
+                .body("{\"id\":1," +
                         "\"name\": \"hezi\"," +
                         "\"type\": \"plan\"," +
                         "\"query\": \"plan me a graph!\" " +
@@ -96,13 +86,7 @@ public class QueryTest {
                 .post("/fuse/plan")
                 .then()
                 .assertThat()
-                .body(equalTo(
-                        "{\"id\":1," +
-                                "\"name\":\"hezi\"," +
-                                "\"type\": \"plan\"," +
-                                "\"completed\":true," +
-                                "\"results\":0," +
-                                "\"url\":\"http://localhost:8080/fuse/result/1\"}"))
+                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"completed\":true,\"results\":11}}"))
                 .statusCode(201)
                 .contentType("application/json;charset=UTF-8");
     }
