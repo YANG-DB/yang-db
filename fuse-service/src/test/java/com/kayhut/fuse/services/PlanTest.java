@@ -1,14 +1,15 @@
-package todobackend;
+package com.kayhut.fuse.services;
 
 import com.kayhut.fuse.services.FuseApp;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
-public class SearchTest {
+public class PlanTest {
 
     @ClassRule
     public static JoobyRule app = new JoobyRule(new FuseApp());
@@ -17,19 +18,18 @@ public class SearchTest {
     /**
      * execute query with expected plan result
      */
-    public void search() {
+    public void plan() {
         given()
                 .contentType("application/json")
                 .body("{\"id\":1," +
                         "\"name\": \"hezi\"," +
-                        "\"type\": \"search\"," +
+                        "\"type\": \"plan\"," +
                         "\"query\": \"plan me a graph!\" " +
                         "}")
-                .post("/fuse/search")
+                .post("/fuse/plan")
                 .then()
                 .assertThat()
-                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{" +
-                        "\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\",\"data\":\"Simple Graph Data\",\"results\":17}}"))
+                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"completed\":true,\"results\":11}}"))
                 .statusCode(201)
                 .contentType("application/json;charset=UTF-8");
     }
