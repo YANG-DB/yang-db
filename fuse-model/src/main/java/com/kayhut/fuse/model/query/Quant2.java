@@ -1,4 +1,4 @@
-package org.kayhut.fuse.model.query;
+package com.kayhut.fuse.model.query;
 
 import java.util.List;
 
