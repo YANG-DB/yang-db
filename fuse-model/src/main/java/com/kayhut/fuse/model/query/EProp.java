@@ -23,11 +23,11 @@ public class EProp extends EBase {
         this.pTag = pTag;
     }
 
-    public List<PropCondition> getCond() {
+    public List<Condition> getCond() {
         return cond;
     }
 
-    public void setCond(List<PropCondition> cond) {
+    public void setCond(List<Condition> cond) {
         this.cond = cond;
     }
 
@@ -42,7 +42,7 @@ public class EProp extends EBase {
     //region Fields
     private int pType;
     private String pTag;
-    private List<PropCondition> cond;
+    private List<Condition> cond;
     private String f;
     //endregion
 
