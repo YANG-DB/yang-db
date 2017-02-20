@@ -1,8 +1,11 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Created by user on 16-Feb-17.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EConcrete extends EBase {
 
     public String geteTag() {
@@ -13,11 +16,11 @@ public class EConcrete extends EBase {
         this.eTag = eTag;
     }
 
-    public int geteID() {
+    public String geteID() {
         return eID;
     }
 
-    public void seteID(int eID) {
+    public void seteID(String eID) {
         this.eID = eID;
     }
 
@@ -47,9 +50,10 @@ public class EConcrete extends EBase {
 
     //region Fields
     private String eTag;
-    private int eID;
+    private String eID;
     private int eType;
     private String eName;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int next;
     //endregion
 

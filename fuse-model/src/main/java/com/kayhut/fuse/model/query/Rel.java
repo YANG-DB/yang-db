@@ -1,8 +1,11 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Created by user on 16-Feb-17.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Rel extends EBase {
 
     public int getrType() {
@@ -13,19 +16,19 @@ public class Rel extends EBase {
         this.rType = rType;
     }
 
-    public char getDir() {
+    public String getDir() {
         return dir;
     }
 
-    public void setDir(char dir) {
+    public void setDir(String dir) {
         this.dir = dir;
     }
 
-    public char getWrapper() {
+    public String getWrapper() {
         return wrapper;
     }
 
-    public void setWrapper(char wrapper) {
+    public void setWrapper(String wrapper) {
         this.wrapper = wrapper;
     }
 
@@ -47,9 +50,12 @@ public class Rel extends EBase {
 
     //region Fields
     private int rType;
-    private char dir;
-    private char wrapper;
+    private String dir;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private String wrapper;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int next;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;
     //endregion
 

@@ -1,10 +1,13 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 /**
  * Created by benishue on 17/02/2017.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Quant1 extends QuantBase {
     public int getB() {
         return b;
@@ -23,6 +26,7 @@ public class Quant1 extends QuantBase {
     }
 
     //region Fields
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;
     private List<Integer> next;
     //endregion
