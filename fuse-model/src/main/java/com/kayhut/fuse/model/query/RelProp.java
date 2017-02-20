@@ -1,7 +1,5 @@
 package com.kayhut.fuse.model.query;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.List;
 
 /**
@@ -55,7 +53,6 @@ public class RelProp extends EBase {
     private String f;
     private String pTag;
     private List<Condition> cond;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;
     //endregion
 

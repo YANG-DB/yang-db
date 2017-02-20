@@ -4,7 +4,7 @@ package com.kayhut.fuse.model.query;
  * Created by benishue on 17/02/2017.
  */
 public class Condition {
-
+    //region Properties
     public String getOp() {
         return op;
     }
@@ -17,9 +17,10 @@ public class Condition {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setValue(Object r) {
+        this.value = r;
     }
+    //endregion
 
     //region Fields
     private String op;
