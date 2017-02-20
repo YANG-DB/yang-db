@@ -11,12 +11,12 @@
     <modules>
         <module>fuse-unipop</module>
         <module>data-gen</module>
+        <module>fuse-model</module>
         <module>fuse-asg</module>
         <module>fuse-epb</module>
         <module>fuse-gta</module>
         <module>fuse-dispatcher</module>
         <module>fuse-service</module>
-        <module>fuse-model</module>
     </modules>
 
     <properties>
