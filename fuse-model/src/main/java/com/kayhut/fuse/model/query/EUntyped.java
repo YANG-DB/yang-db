@@ -1,10 +1,14 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 /**
  * Created by user on 16-Feb-17.
  */
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EUntyped extends EBase {
 
     public String geteTag() {
@@ -42,6 +46,7 @@ public class EUntyped extends EBase {
     private	String eTag;
     private List<Integer> vTypes;
     private	List<Integer> nvTypes;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private	int	next;
 
 }

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kayhut.fuse.model.query.aggregation.*;
@@ -34,6 +35,7 @@ import com.kayhut.fuse.model.query.aggregation.*;
         @JsonSubTypes.Type(name = "AggM4", value = AggM4.class),
         @JsonSubTypes.Type(name = "AggM5", value = AggM5.class)
 })
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EBase {
     //region Properties
     public int geteNum() {
@@ -44,17 +46,17 @@ public class EBase {
         this.eNum = eNum;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
     //endregion
 
     //region Fields
     private int eNum;
-    private String type;
+    //private String type;
     //endregion
 }

@@ -1,10 +1,12 @@
 package com.kayhut.fuse.model.query;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Created by benishue on 17/02/2017.
  */
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EProp extends EBase {
 
     public int getpType() {
@@ -23,11 +25,11 @@ public class EProp extends EBase {
         this.pTag = pTag;
     }
 
-    public List<Condition> getCond() {
+    public Condition getCond() {
         return cond;
     }
 
-    public void setCond(List<Condition> cond) {
+    public void setCond(Condition cond) {
         this.cond = cond;
     }
 
@@ -42,7 +44,7 @@ public class EProp extends EBase {
     //region Fields
     private int pType;
     private String pTag;
-    private List<Condition> cond;
+    private Condition cond;
     private String f;
     //endregion
 

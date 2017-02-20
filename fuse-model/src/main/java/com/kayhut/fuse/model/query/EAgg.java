@@ -1,8 +1,12 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Created by user on 16-Feb-17.
  */
+
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EAgg extends EBase {
 
     public String geteTag() {
@@ -41,6 +45,7 @@ public class EAgg extends EBase {
     private	String eTag;
     private	String fName;
     private	String eName;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private	int	next;
     //endregion
 
