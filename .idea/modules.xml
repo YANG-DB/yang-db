@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/data-gen/data-gen.iml" filepath="$PROJECT_DIR$/data-gen/data-gen.iml" />
       <module fileurl="file://$PROJECT_DIR$/fuse.iml" filepath="$PROJECT_DIR$/fuse.iml" />
       <module fileurl="file://$PROJECT_DIR$/fuse-dispatcher/fuse-dispatcher.iml" filepath="$PROJECT_DIR$/fuse-dispatcher/fuse-dispatcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/fuse-model/fuse-model.iml" filepath="$PROJECT_DIR$/fuse-model/fuse-model.iml" />

@@ -1,12 +1,14 @@
 package com.kayhut.fuse.model.results;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.util.List;
 
 /**
  * Created by benishue on 21-Feb-17.
  */
+@JsonPropertyOrder({ "eTag", "eID", "eType", "properties", "attachedProperties" })
 public class Entity {
-
 
     public List<String> getETag ()
     {

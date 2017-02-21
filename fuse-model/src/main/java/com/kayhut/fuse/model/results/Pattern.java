@@ -1,10 +1,13 @@
 package com.kayhut.fuse.model.results;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 /**
  * Created by benishue on 21-Feb-17.
  */
+
 public class Pattern {
 
     public String getOnt() {
@@ -30,6 +33,13 @@ public class Pattern {
     public void setElements(List<Object> elements) {
         this.elements = elements;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Pattern [ont = "+ont+", name = "+name+", elements = "+elements+"]";
+    }
+
 
     //region Fields
     public String ont;
