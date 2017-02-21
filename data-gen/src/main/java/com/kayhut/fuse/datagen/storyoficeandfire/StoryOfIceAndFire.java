@@ -243,9 +243,9 @@ public class StoryOfIceAndFire {
     public static void printPeopleList( ListOfEntities<People> peopleList , String filePath) {
         
         try(FileWriter writer = new FileWriter(filePath,false)) {
-            
             Print2CSVFile.printPeople2File(writer, peopleList);
-            
+            System.out.println("Writing ["+filePath+"] ");
+
         }catch (IOException e){
                 System.out.println(e.getMessage());
         }
@@ -256,7 +256,8 @@ public class StoryOfIceAndFire {
         try(FileWriter writer = new FileWriter(filePath,false)) {
             
             Print2CSVFile.printDragons2File(writer, dragonList);
-            
+            System.out.println("Writing ["+filePath+"] ");
+
         }catch (IOException e){
                 System.out.println(e.getMessage());
         }
@@ -267,7 +268,8 @@ public class StoryOfIceAndFire {
         try(FileWriter writer = new FileWriter(filePath,false)) {
             
             Print2CSVFile.printHorses2File(writer, horseList);
-            
+            System.out.println("Writing ["+filePath+"] ");
+
         }catch (IOException e){
                 System.out.println(e.getMessage());
         }
@@ -278,7 +280,8 @@ public class StoryOfIceAndFire {
         try(FileWriter writer = new FileWriter(filePath,false)) {
             
             Print2CSVFile.printGuild2File(writer, guildList);
-            
+            System.out.println("Writing ["+filePath+"] ");
+
         }catch (IOException e){
                 System.out.println(e.getMessage());
         }
@@ -289,7 +292,8 @@ public class StoryOfIceAndFire {
         try(FileWriter writer = new FileWriter(filePath,false)) {
             
             Print2CSVFile.printKingdoms2File(writer, kingdomList);
-            
+            System.out.println("Writing ["+filePath+"] ");
+
         }catch (IOException e){
                 System.out.println(e.getMessage());
         }
