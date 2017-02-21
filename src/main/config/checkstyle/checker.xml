@@ -247,7 +247,7 @@
       <!-- No extra whitespace around types -->
     <module name="GenericWhitespace"/>
 
-    <!-- Required for SuppressionCommentFilter below -->
+    <!-- Required for SuppressionCommentFilter b -->
     <module name="FileContentsHolder"/>
   </module>
 
