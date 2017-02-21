@@ -10,12 +10,13 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>fuse-unipop</module>
+        <module>data-gen</module>
+        <module>fuse-model</module>
         <module>fuse-asg</module>
         <module>fuse-epb</module>
         <module>fuse-gta</module>
         <module>fuse-dispatcher</module>
         <module>fuse-service</module>
-        <module>fuse-model</module>
     </modules>
 
     <properties>
@@ -128,21 +129,6 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>analyze</id>
-                        <goals>
-                            <goal>analyze-only</goal>
-                        </goals>
-                        <configuration>
-                            <failOnWarning>true</failOnWarning>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

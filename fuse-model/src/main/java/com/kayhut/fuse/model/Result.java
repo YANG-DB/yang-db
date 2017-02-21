@@ -1,18 +1,20 @@
 package com.kayhut.fuse.model;
 
+import com.kayhut.fuse.model.process.QueryMetadata;
+
 /**
  * Created by lior on 19/02/2017.
  */
 public final class Result {
-    private Metadata metadata;
+    private QueryMetadata metadata;
     private Content content;
 
-    public Result(Metadata metadata, Content content) {
+    public Result(QueryMetadata metadata, Content content) {
         this.metadata = metadata;
         this.content = content;
     }
 
-    public Metadata getMetadata() {
+    public QueryMetadata getMetadata() {
         return metadata;
     }
 
