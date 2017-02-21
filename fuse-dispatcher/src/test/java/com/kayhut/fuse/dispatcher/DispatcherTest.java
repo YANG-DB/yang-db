@@ -24,7 +24,7 @@ public class DispatcherTest {
         @Override
         protected void configure() {
             bind(EventBus.class).toInstance(new EventBus());
-            bind(BaseDispatcherDriver.class);
+            bind(DispatcherDriver.class).to(BaseDispatcherDriver.class);
             bind(BaseAsgDriver.class).asEagerSingleton();
             bind(BaseEpbDriver.class).asEagerSingleton();
             bind(BaseGtaDriver.class).asEagerSingleton();
