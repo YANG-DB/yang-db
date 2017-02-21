@@ -8,6 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.GregorianCalendar;
 import java.util.List;
 import org.json.simple.JSONObject;
@@ -22,24 +25,27 @@ import com.kayhut.fuse.datagen.storyoficeandfire.entities.*;
  */
 public class StoryOfIceAndFire {
 
+    public static final String PARAMETERS_JSON = "parameters.json";
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException, IOException, ParseException {
         // parse json file 
         JSONObject jsonObject = null ;
         JSONParser parser = new JSONParser();
-        try {
-            Object obj = parser.parse(new FileReader(args[0]));
+        if(args.length ==1) {
+                Object obj = parser.parse(new FileReader(args[0]));
+                jsonObject = (JSONObject) obj;
+        } else {
+            Path path = Paths.get(ClassLoader.getSystemResource(PARAMETERS_JSON).toURI());
+            Object obj = parser.parse(new FileReader(path.toString()));
             jsonObject = (JSONObject) obj;
-            
-        }catch (FileNotFoundException e) {
-            e.getMessage();
-        }catch (IOException | ParseException e) {
-            e.getMessage();
         }
+
         String PATH = (String) jsonObject.get("PATH");
-        
+        System.out.println("Writing to path["+PATH+"]");
+
         System.out.println("INIT PEOPLE LIST !!!");
         // 1. generate list of pepole
         
