@@ -9,6 +9,8 @@ import com.google.inject.Injector;
 import com.kayhut.fuse.asg.AsgDriver;
 import com.kayhut.fuse.epb.EpbDriver;
 import com.kayhut.fuse.gta.GtaDriver;
+import com.kayhut.fuse.model.process.AsgData;
+import com.kayhut.fuse.model.process.EpbData;
 import com.kayhut.fuse.model.process.GtaData;
 import com.kayhut.fuse.model.process.QueryData;
 import org.junit.Assert;
@@ -35,7 +37,7 @@ public class DispatcherTest {
         }
     });
 
-    private CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch latch = new CountDownLatch(3);
 
     @Before
     public void setup() {
@@ -50,8 +52,22 @@ public class DispatcherTest {
     EventBus eventBus;
 
     @Subscribe
-    public void endProcess(GtaData input) {
+    public void asgDriverProcess(AsgData input) {
         Assert.assertNotNull(input);
+        System.out.println("Asg Driver proccess passed");
+        latch.countDown();
+    }
+
+    @Subscribe
+    public void epbDriverProcess(EpbData input) {
+        Assert.assertNotNull(input);
+        System.out.println("Epb Driver proccess passed");
+        latch.countDown();
+    }
+    @Subscribe
+    public void gtaDriverProcess(GtaData input) {
+        Assert.assertNotNull(input);
+        System.out.println("Gta Driver proccess passed");
         latch.countDown();
     }
 

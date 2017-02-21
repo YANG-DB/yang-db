@@ -1,10 +1,17 @@
 package com.kayhut.fuse.datagen.storyoficeandfire;
 
-import com.kayhut.fuse.datagen.utilities.GenerateRandom;
-import com.kayhut.fuse.datagen.storyoficeandfire.relations.*;
-import com.kayhut.fuse.datagen.utilities.Print2CSVFile;
 import com.kayhut.fuse.datagen.dateandtime.DateFactory;
-import java.io.FileNotFoundException;
+import com.kayhut.fuse.datagen.storyoficeandfire.entities.*;
+import com.kayhut.fuse.datagen.storyoficeandfire.relations.DragonRelasion;
+import com.kayhut.fuse.datagen.storyoficeandfire.relations.KingdomRelasion;
+import com.kayhut.fuse.datagen.storyoficeandfire.relations.PeopleRelasion;
+import com.kayhut.fuse.datagen.storyoficeandfire.relations.RelasionList;
+import com.kayhut.fuse.datagen.utilities.GenerateRandom;
+import com.kayhut.fuse.datagen.utilities.Print2CSVFile;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,10 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.GregorianCalendar;
 import java.util.List;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import com.kayhut.fuse.datagen.storyoficeandfire.entities.*;
 
 
 /**
