@@ -365,8 +365,6 @@ public class QueryTest {
     public void setup() {
     }
 
-
-
     @BeforeClass
     public static void setUpOnce() {
         createQ1();
