@@ -8,6 +8,7 @@ import org.junit.Test;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class PlanTest {
 
@@ -29,7 +30,9 @@ public class PlanTest {
                 .post("/fuse/plan")
                 .then()
                 .assertThat()
-                .body(equalTo("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"results\":11,\"completed\":true}}"))
+                .body(sameJSONAs("{\"id\":\"1\",\"metadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"plan\"},\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"results\":11,\"completed\":true}}")
+                        .allowingExtraUnexpectedFields()
+                        .allowingAnyArrayOrdering())
                 .statusCode(201)
                 .contentType("application/json;charset=UTF-8");
     }

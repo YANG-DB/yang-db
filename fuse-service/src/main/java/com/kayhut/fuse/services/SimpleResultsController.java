@@ -5,7 +5,6 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.events.ExecutionCompleteEvent;
-import com.kayhut.fuse.model.Content;
 import com.kayhut.fuse.model.transport.Request;
 import com.kayhut.fuse.model.transport.Response;
 import javaslang.Tuple2;
@@ -18,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Singleton
 public class SimpleResultsController implements ResultsController {
-    private final Map<String, Tuple2<Request,Content>> map = new ConcurrentHashMap<>();
+    private final Map<String, Tuple2<Request,Response>> map = new ConcurrentHashMap<>();
 
     @Inject
     public SimpleResultsController(EventBus eventBus) {
@@ -27,14 +26,14 @@ public class SimpleResultsController implements ResultsController {
 
     @Subscribe
     public void observe(ExecutionCompleteEvent event) {
-        map.put(event.getRequest().getId(),new Tuple2<>(event.getRequest(),event.getData()));
-
+        map.put(event.getRequest().getId(),new Tuple2<>(event.getRequest(),event.getResponse()));
     }
+
     @Override
     public Response get(String id) {
         if(!map.containsKey(id))
-            return new Response(id,"Not Found",null);
+            return new Response(id);
         //return cached result
-        return new Response(id,map.get(id)._1.getName(),map.get(id)._2());
+        return map.get(id)._2();
     }
 }

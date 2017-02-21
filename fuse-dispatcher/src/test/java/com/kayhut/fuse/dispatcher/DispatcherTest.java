@@ -6,21 +6,15 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.kayhut.fuse.asg.AsgDriver;
-import com.kayhut.fuse.epb.EpbDriver;
-import com.kayhut.fuse.gta.GtaDriver;
-import com.kayhut.fuse.model.process.AsgData;
-import com.kayhut.fuse.model.process.EpbData;
-import com.kayhut.fuse.model.process.GtaData;
-import com.kayhut.fuse.model.process.QueryData;
+import com.kayhut.fuse.asg.BaseAsgDriver;
+import com.kayhut.fuse.epb.BaseEpbDriver;
+import com.kayhut.fuse.gta.BaseGtaDriver;
+import com.kayhut.fuse.model.process.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
-
-import static com.kayhut.fuse.model.Utils.submit;
 
 
 public class DispatcherTest {
@@ -30,10 +24,10 @@ public class DispatcherTest {
         @Override
         protected void configure() {
             bind(EventBus.class).toInstance(new EventBus());
-            bind(DispatcherDriver.class);
-            bind(AsgDriver.class).asEagerSingleton();
-            bind(EpbDriver.class).asEagerSingleton();
-            bind(GtaDriver.class).asEagerSingleton();
+            bind(BaseDispatcherDriver.class);
+            bind(BaseAsgDriver.class).asEagerSingleton();
+            bind(BaseEpbDriver.class).asEagerSingleton();
+            bind(BaseGtaDriver.class).asEagerSingleton();
         }
     });
 
@@ -73,7 +67,7 @@ public class DispatcherTest {
 
     @Test
     public void dispatcherFlow() throws InterruptedException {
-        driver.process(new QueryData());
+        driver.process(new QueryData(new QueryMetadata("a","b","c",System.currentTimeMillis())));
         latch.await();
         Assert.assertEquals(latch.getCount(),0);
     }

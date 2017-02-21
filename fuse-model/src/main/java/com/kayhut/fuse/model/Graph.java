@@ -6,22 +6,22 @@ import com.kayhut.fuse.model.transport.UrlContent;
  * Created by lior on 19/02/2017.
  */
 public class Graph extends UrlContent {
-    private String data;
+    private Object data;
 
     public Graph() {}
 
 
-    public void setData(String data) {
+    public void setData(Object data) {
         this.data = data;
     }
 
     @Override
     public long getResults() {
-        return data.length();
+        return data.toString().length();
     }
 
     @Override
-    public String getData() {
+    public Object getData() {
         return data;
     }
 
@@ -38,7 +38,7 @@ public class Graph extends UrlContent {
             return builder;
         }
 
-        public GraphBuilder data(String data) {
+        public GraphBuilder data(Object data) {
             this.graph.setData(data);
             this.graph.setCompleted(true);
             return this;

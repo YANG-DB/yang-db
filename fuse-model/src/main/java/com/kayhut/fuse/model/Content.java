@@ -7,5 +7,5 @@ public interface Content {
     String getId();
     boolean isCompleted();
     long getResults();
-    String getData();
+    Object getData();
 }
