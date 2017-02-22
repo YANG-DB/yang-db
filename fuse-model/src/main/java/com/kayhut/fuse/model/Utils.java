@@ -1,12 +1,17 @@
 package com.kayhut.fuse.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.kayhut.fuse.model.process.ProcessElement;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 /**
@@ -27,15 +32,27 @@ public interface Utils {
     static Object readJsonFile(String name) {
         String result = "{}";
         try {
-            java.nio.file.Path path = Paths.get(ClassLoader.getSystemResource("result.json").toURI());
-            result = new String(Files.readAllBytes(Paths.get(path.toString())));
-            Object value = mapper.readValue(result, Object.class);
-            result = mapper.writeValueAsString(value);
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/result.json");
+            if(stream!=null ) {
+                System.out.println("Loading - /result.json");
+                result = loadJsonString(stream);
+            } else {
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("result.json");
+                System.out.println("Loading - result.json");
+                result = loadJsonString(stream);
+            }
         } catch (Exception e) {
+            e.printStackTrace();
             //todo something clever
         } finally {
             return result;
         }
+    }
+
+    static String loadJsonString(InputStream stream) throws IOException {
+        String s = IOUtils.toString(stream);
+        Object value = mapper.readValue(s, Object.class);
+        return mapper.writeValueAsString(value);
     }
 
     /**

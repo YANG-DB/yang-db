@@ -17,20 +17,15 @@ import org.jooby.Jooby;
 
 /**
  * Created by lior on 15/02/2017.
+ *
+ * This module is called by the fuse-service scanner class loader
  */
-public class Module implements Jooby.Module {
+public class ServicesModule implements Jooby.Module {
 
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
-        //register eventBus with service life cycle
-        binder.bind(EventBus.class).toInstance(new EventBus());
-        binder.bind(DeadEventsListener.class).toInstance(new DeadEventsListener());
-
-        //dispatcher & enginemodules
+        //dispatcher
         binder.bind(DispatcherDriver.class).to(BaseDispatcherDriver.class).asEagerSingleton();
-        binder.bind(AsgDriver.class).to(BaseAsgDriver.class).asEagerSingleton();
-        binder.bind(EpbDriver.class).to(BaseEpbDriver.class).asEagerSingleton();
-        binder.bind(GtaDriver.class).to(BaseGtaDriver.class).asEagerSingleton();
 
         //service controllers
         binder.bind(QueryController.class).to(SimpleQueryController.class).asEagerSingleton();

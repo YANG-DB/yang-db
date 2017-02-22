@@ -16,6 +16,7 @@ public class Neo4JDriverTest {
 
     @Ignore
     @Test
+    @Ignore
     public void checkDriverConnection() {
 
         Neo4jDriver driver = new Neo4jDriver();
