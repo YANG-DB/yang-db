@@ -17,6 +17,7 @@
         <module>fuse-gta</module>
         <module>fuse-dispatcher</module>
         <module>fuse-service</module>
+        <module>fuse-neo4j</module>
     </modules>
 
     <properties>
@@ -55,6 +56,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-netty</artifactId>

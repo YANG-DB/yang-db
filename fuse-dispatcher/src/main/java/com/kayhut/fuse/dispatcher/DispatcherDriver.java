@@ -1,29 +1,16 @@
 package com.kayhut.fuse.dispatcher;
 
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.kayhut.fuse.model.process.AsgData;
+import com.google.common.eventbus.Subscribe;
+import com.kayhut.fuse.model.process.GtaData;
 import com.kayhut.fuse.model.process.QueryData;
-
-import static com.kayhut.fuse.model.Utils.submit;
+import com.kayhut.fuse.model.transport.Response;
 
 /**
- * Created by lior on 20/02/2017.
+ * Created by lior on 21/02/2017.
  */
-@Singleton
-public class DispatcherDriver  {
+public interface DispatcherDriver {
+    QueryData process(QueryData input);
 
-    private EventBus eventBus;
-
-    @Inject
-    public DispatcherDriver(EventBus eventBus) {
-        this.eventBus = eventBus;
-        this.eventBus.register(this);
-    }
-
-    public QueryData process(QueryData input) {
-        return submit(eventBus,new QueryData());
-    }
-
+    @Subscribe
+    Response response(GtaData input);
 }

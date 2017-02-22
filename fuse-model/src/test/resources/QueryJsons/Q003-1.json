@@ -1,0 +1,41 @@
+{
+  "ont": "Dragons",
+  "name": "Q3-1",
+  "elements": [
+    {
+      "eNum": 0,
+      "type": "Start",
+      "next": 1
+    },
+    {
+      "eNum": 1,
+      "type": "ETyped",
+      "eTag": "A",
+      "eType": 2,
+      "next": 2
+    },
+    {
+      "eNum": 2,
+      "type": "Rel",
+      "rType": 1,
+      "dir": "L",
+      "next": 3
+    },
+    {
+      "eNum": 3,
+      "type": "ETyped",
+      "eTag": "B",
+      "eType": 1,
+      "next": 4
+    },
+    {
+      "eNum": 4,
+      "type": "EProp",
+      "pType": 1,
+      "cond": {
+        "op": "eq",
+        "value": "Brandon"
+      }
+    }
+  ]
+}
