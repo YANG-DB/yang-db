@@ -2,6 +2,7 @@ package com.kayhut.fuse.neo4j.test.driver;
 
 import com.kayhut.fuse.neo4j.driver.Neo4jDriver;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.Rule;
 
@@ -14,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 public class Neo4JDriverTest {
 
     @Test
+    @Ignore
     public void checkDriverConnection() {
 
         Neo4jDriver driver = new Neo4jDriver();
