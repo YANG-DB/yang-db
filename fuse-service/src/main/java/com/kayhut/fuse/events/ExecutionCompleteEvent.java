@@ -1,25 +1,25 @@
 package com.kayhut.fuse.events;
 
-import com.kayhut.fuse.model.Content;
 import com.kayhut.fuse.model.transport.Request;
+import com.kayhut.fuse.model.transport.Response;
 
 /**
  * Created by lior on 19/02/2017.
  */
 public class ExecutionCompleteEvent{
     private final Request request;
-    private final Content data;
+    private final Response response;
 
-    public ExecutionCompleteEvent(Request request, Content data) {
+    public ExecutionCompleteEvent(Request request, Response data) {
         this.request = request;
-        this.data = data;
+        this.response = data;
     }
 
     public Request getRequest() {
         return request;
     }
 
-    public Content getData() {
-        return data;
+    public Response getResponse() {
+        return response;
     }
 }

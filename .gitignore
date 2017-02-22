@@ -1,3 +1,4 @@
+.idea/
 /.idea/
 .idea/
 fuse-dispatcher/target/
@@ -16,5 +17,8 @@ fuse-model/fuse-model.iml
 fuse-asg/fuse-asg.iml
 fuse-epb/fuse-epb.iml
 fuse-gta/fuse-gta.iml
+data-gen/data-gen.iml
+fuse-neo4j/fuse-neo4j.iml
 */*.iml
 /*/*.iml
+

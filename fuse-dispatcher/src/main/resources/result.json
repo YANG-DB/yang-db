@@ -1,0 +1,64 @@
+{
+  "pattern": {
+    "ont": "Dragons",
+    "name": "Q1",
+    "elements": []
+  },
+  "assignments": [
+    {
+      "entities": [
+        {
+          "eTag": ["A","C"],
+          "eID": "12345678",
+          "eType": 1,
+          "properties": [
+            {
+              "pType": 1,
+              "agg": "raw",
+              "value": "a"
+            },
+            {
+              "pType": 3,
+              "agg": "raw",
+              "value": 5.35
+            }
+          ],
+          "attachedProperties": [
+            {
+              "pName": "count(relationships)",
+              "value": 53
+            }
+          ]
+        }
+      ],
+      "relationships": [
+        {
+          "rID": "12345678",
+          "agg": true,
+          "rType": 2,
+          "directional": true,
+          "eID1": "12345678",
+          "eID2": "12345679",
+          "properties": [
+            {
+              "pType": 1,
+              "agg": "max",
+              "value": 76
+            },
+            {
+              "pType": 1,
+              "agg": "avg",
+              "value": 34.56
+            }
+          ],
+          "attachedProperties": [
+            {
+              "pName": "sum(duration)",
+              "value": 124
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
