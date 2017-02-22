@@ -1,13 +1,14 @@
 package com.kayhut.fuse.model.results;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 /**
  * Created by benishue on 21-Feb-17.
  */
-
 public class Pattern {
 
     public String getOnt() {
@@ -44,6 +45,7 @@ public class Pattern {
     //region Fields
     public String ont;
     public String name;
+    @JsonProperty(required = true)
     public List<Object> elements;
     //endregion
 }
