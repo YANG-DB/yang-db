@@ -24,3 +24,5 @@ data-gen/data-gen.iml
 fuse-neo4j/fuse-neo4j.iml
 fuse-service/log/*.log
 
+log/access.log
+log/todo-backend.log
