@@ -7,63 +7,52 @@ import java.util.List;
 /**
  * Created by benishue on 21-Feb-17.
  */
-@JsonPropertyOrder({ "eTag", "eID", "eType", "properties", "attachedProperties" })
 public class Entity {
 
-    public List<String> getETag ()
-    {
+    public List<String> geteTag() {
         return eTag;
     }
 
-    public void setETag (List<String> eTag)
-    {
+    public void seteTag(List<String> eTag) {
         this.eTag = eTag;
     }
 
-    public List<AttachedProperty> getAttachedProperties ()
-    {
-        return attachedProperties;
-    }
-
-    public void setAttachedProperties (List<AttachedProperty> attachedProperties)
-    {
-        this.attachedProperties = attachedProperties;
-    }
-
-    public int getEType ()
-    {
-        return eType;
-    }
-
-    public void setEType (int eType)
-    {
-        this.eType = eType;
-    }
-
-    public String getEID ()
-    {
+    public String geteID() {
         return eID;
     }
 
-    public void setEID (String eID)
-    {
+    public void seteID(String eID) {
         this.eID = eID;
     }
 
-    public List<Property> getProperties ()
-    {
+    public int geteType() {
+        return eType;
+    }
+
+    public void seteType(int eType) {
+        this.eType = eType;
+    }
+
+    public List<Property> getProperties() {
         return properties;
     }
 
-    public void setProperties (List<Property> properties)
-    {
+    public void setProperties(List<Property> properties) {
         this.properties = properties;
+    }
+
+    public List<AttachedProperty> getAttachedProperties() {
+        return attachedProperties;
+    }
+
+    public void setAttachedProperties(List<AttachedProperty> attachedProperties) {
+        this.attachedProperties = attachedProperties;
     }
 
     @Override
     public String toString()
     {
-        return "ClassPojo [eTag = "+eTag+", attachedProperties = "+attachedProperties+", eType = "+eType+", eID = "+eID+", properties = "+properties+"]";
+        return "Entity [eTag = "+eTag+", attachedProperties = "+attachedProperties+", eType = "+eType+", eID = "+eID+", properties = "+properties+"]";
     }
 
     //region Fields

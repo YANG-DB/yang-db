@@ -9,34 +9,28 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Property {
 
-    public String getAgg ()
-    {
-        return agg;
-    }
-
-    public void setAgg (String agg)
-    {
-        this.agg = agg;
-    }
-
-    public Object getValue ()
-    {
-        return value;
-    }
-
-    public void setValue (Object value)
-    {
-        this.value = value;
-    }
-
-    public int getPType ()
-    {
+    public int getpType() {
         return pType;
     }
 
-    public void setPType (int pType)
-    {
+    public void setpType(int pType) {
         this.pType = pType;
+    }
+
+    public String getAgg() {
+        return agg;
+    }
+
+    public void setAgg(String agg) {
+        this.agg = agg;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     @Override

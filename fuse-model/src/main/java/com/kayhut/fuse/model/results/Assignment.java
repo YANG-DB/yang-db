@@ -34,7 +34,7 @@ public class Assignment {
     @Override
     public String toString()
     {
-        return "ClassPojo [relationships = "+relationships+", entities = "+entities+"]";
+        return "Assignment [relationships = "+relationships+", entities = "+entities+"]";
     }
 
     //region Fields

@@ -50,18 +50,18 @@ public class QueryResultsTest {
         List<Entity> entities = new ArrayList<Entity>();
 
         Entity entity = new Entity();
-        entity.setETag(Arrays.asList("A", "C"));
-        entity.setEID("12345678");
-        entity.setEType(1);
+        entity.seteTag(Arrays.asList("A", "C"));
+        entity.seteID("12345678");
+        entity.seteType(1);
 
         List<Property> properties = new ArrayList<Property>();
         Property property1 = new Property();
-        property1.setPType(1);
+        property1.setpType(1);
         property1.setAgg("raw");
         property1.setValue("a");
 
         Property property2 = new Property();
-        property2.setPType(3);
+        property2.setpType(3);
         property2.setAgg("raw");
         property2.setValue(5.35);
 
@@ -77,21 +77,21 @@ public class QueryResultsTest {
 
         List<Relationship> relationships = new ArrayList<Relationship>();
         Relationship relationship1 = new Relationship();
-        relationship1.setRID("12345678");
+        relationship1.setrID("12345678");
         relationship1.setAgg(true);
-        relationship1.setRType(2);
+        relationship1.setrType(2);
         relationship1.setDirectional(true);
-        relationship1.setEID1("12345678");
-        relationship1.setEID2("12345679");
+        relationship1.seteID1("12345678");
+        relationship1.seteID2("12345679");
 
         List<Property> propertiesRelationship = new ArrayList<Property>();
         Property propertyRelationship1 =  new Property();
-        propertyRelationship1.setPType(1);
+        propertyRelationship1.setpType(1);
         propertyRelationship1.setAgg("max");
         propertyRelationship1.setValue(76);
 
         Property propertyRelationship2 =  new Property();
-        propertyRelationship2.setPType(1);
+        propertyRelationship2.setpType(1);
         propertyRelationship2.setAgg("avg");
         propertyRelationship2.setValue(34.56);
 

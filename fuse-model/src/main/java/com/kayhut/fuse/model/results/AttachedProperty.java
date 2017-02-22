@@ -9,11 +9,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class AttachedProperty {
 
-    public String getPName ()
-    {
-        return pName;
-    }
-
     public void setPName (String pName)
     {
         this.pName = pName;
@@ -29,14 +24,31 @@ public class AttachedProperty {
         this.value = value;
     }
 
+    public String getpName() {
+        return pName;
+    }
+
+    public void setpName(String pName) {
+        this.pName = pName;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
     @Override
     public String toString()
     {
-        return "ClassPojo [pName = "+pName+", value = "+value+"]";
+        return "AttachedProperty [pName = "+pName+", value = "+value+"]";
     }
 
     //region Fields
     private String pName;
     private Object value;
+    private String tag;
     //endregion
 }
