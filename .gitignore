@@ -21,4 +21,4 @@ data-gen/data-gen.iml
 fuse-neo4j/fuse-neo4j.iml
 */*.iml
 /*/*.iml
-
+*.iml

@@ -14,6 +14,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class Neo4JDriverTest {
 
+    @Ignore
     @Test
     @Ignore
     public void checkDriverConnection() {
