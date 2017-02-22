@@ -57,6 +57,12 @@
         <dependencies>
             <dependency>
                 <groupId>org.jooby</groupId>
+                <artifactId>jooby</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jooby</groupId>
                 <artifactId>jooby-netty</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
