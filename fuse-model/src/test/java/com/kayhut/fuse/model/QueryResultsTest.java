@@ -29,7 +29,7 @@ public class QueryResultsTest {
         JSONAssert.assertEquals(result1ExpectedJSONString, result1ActualJSON,false);
     }
 
-    
+
     @Test
     public void testDeSerialization() throws Exception {
         String result1ExpectedJson = readJsonToString("results1.json");
