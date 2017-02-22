@@ -19,7 +19,7 @@ public class QueryResultsTest {
     private ObjectMapper mapper = new ObjectMapper();
     private static QueryResult result1Obj = new QueryResult();
 
-    @Ignore
+
     @Test
     public void testResults1Serialization() throws IOException, JSONException {
         String result1ActualJSON = mapper.writeValueAsString(result1Obj);
@@ -29,7 +29,7 @@ public class QueryResultsTest {
         JSONAssert.assertEquals(result1ExpectedJSONString, result1ActualJSON,false);
     }
 
-    @Ignore
+    
     @Test
     public void testDeSerialization() throws Exception {
         String result1ExpectedJson = readJsonToString("results1.json");
