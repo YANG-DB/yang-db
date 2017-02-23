@@ -1,16 +1,17 @@
 package com.kayhut.fuse.model;
 
-import com.kayhut.fuse.model.transport.UrlContent;
+import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.transport.BaseContent;
 
 /**
  * Created by lior on 19/02/2017.
  */
-public class Path extends UrlContent {
-    private Object data;
+public class Path extends BaseContent<QueryResult> {
+    private QueryResult data;
 
     public Path() {}
 
-    public void setData(Object data) {
+    public void setData(QueryResult data) {
         this.data = data;
     }
 
@@ -20,7 +21,7 @@ public class Path extends UrlContent {
     }
 
     @Override
-    public Object getData() {
+    public QueryResult getData() {
         return data;
     }
 
@@ -37,15 +38,9 @@ public class Path extends UrlContent {
             return builder;
         }
 
-        public PathBuilder data(Object data) {
+        public PathBuilder data(QueryResult data) {
             this.path.setData(data);
             this.path.setCompleted(true);
-            return this;
-        }
-
-        public PathBuilder url(String url) {
-            this.path.setUrl(url);
-            this.path.setUrl("http://localhost:8080/fuse"+url +"/"+path.getId());
             return this;
         }
 

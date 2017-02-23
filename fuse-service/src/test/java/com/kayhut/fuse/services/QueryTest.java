@@ -44,7 +44,7 @@ public class QueryTest {
                 .then()
                 .assertThat()
 /*
-                .body(sameJSONAs("{\"metadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"graph\",\"content\":{\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\"}")
+                .body(sameJSONAs("{\"queryMetadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"graph\",\"content\":{\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\"}")
                         .allowingExtraUnexpectedFields()
                         .allowingAnyArrayOrdering())
 */
@@ -69,7 +69,7 @@ public class QueryTest {
                 .then()
                 .assertThat()
 /*
-                .body(sameJSONAs("{\"metadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"graph\",\"content\":{\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\"}")
+                .body(sameJSONAs("{\"queryMetadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"graph\",\"content\":{\"completed\":true,\"url\":\"http://localhost:8080/fuse/result/1\",\"id\":\"1\"}")
                         .allowingExtraUnexpectedFields()
                         .allowingAnyArrayOrdering())
 */

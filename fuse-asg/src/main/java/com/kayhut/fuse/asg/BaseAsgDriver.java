@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.model.process.AsgData;
 import com.kayhut.fuse.model.process.ProcessElement;
+import com.kayhut.fuse.model.process.QueryCursorData;
 import com.kayhut.fuse.model.process.QueryData;
 
 import static com.kayhut.fuse.model.Utils.submit;
@@ -15,7 +16,7 @@ import static com.kayhut.fuse.model.Utils.submit;
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class BaseAsgDriver implements ProcessElement<QueryData,AsgData>, AsgDriver {
+public class BaseAsgDriver implements ProcessElement<QueryCursorData,AsgData>, AsgDriver {
     private EventBus eventBus;
 
     @Inject
@@ -26,8 +27,8 @@ public class BaseAsgDriver implements ProcessElement<QueryData,AsgData>, AsgDriv
 
     @Override
     @Subscribe
-    public AsgData process(QueryData input) {
-        return submit(eventBus,new AsgData(input.getMetadata()));
+    public AsgData process(QueryCursorData input) {
+        return submit(eventBus,new AsgData(input.getId(),input.getQueryMetadata(),input.getQuery(),input.getResultMetadata()));
     }
 
 }

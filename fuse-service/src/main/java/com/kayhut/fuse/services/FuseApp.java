@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services;
 
+import com.kayhut.fuse.model.transport.CursorFetchRequest;
 import com.kayhut.fuse.model.transport.Request;
 import org.jooby.Jooby;
 import org.jooby.Results;
@@ -34,27 +35,34 @@ public class FuseApp extends Jooby {
                 /** check health */
                 .get(() -> "Alive And Well...");
 
-        use("/fuse/plan")
-                /** submit a plan */
-                .post(req -> Results.with(queryCtrl().plan(req.body(Request.class)), Status.CREATED));
+
+        use("/fuse/query")
+                /** submit a graph query */
+                .post("/graph",req -> Results.with(queryCtrl().query(req.body(Request.class)), Status.CREATED));
 
         use("/fuse/search")
                 /** submit a plan */
                 .post(req -> Results.with(searchCtrl().search(req.body(Request.class)), Status.CREATED));
 
-        use("/fuse/query")
-                /** submit a path query */
-                .post("/path",req -> Results.with(queryCtrl().pathQuery(req.body(Request.class)), Status.CREATED))
-                /** submit a graph query */
-                .post("/graph",req -> Results.with(queryCtrl().graphQuery(req.body(Request.class)), Status.CREATED));
+        use("/fuse/query/:id/plan")
+                /** submit a plan */
+                .post(req -> Results.with(cursorCtrl().plan(req.param("getId").value()), Status.CREATED));
 
-        use("/fuse/result")
+        use("/fuse/query/:id/fetch")
+                /** submit a plan */
+                .post(req -> Results.with(cursorCtrl().fetch(req.param("id").value(),req.body(CursorFetchRequest.class)), Status.CREATED));
+
+        use("/fuse/query/:id/result/:page")
                 /** result by ID. */
-                .get("/:getId", req -> Results.with(resultsCtrl().get(req.param("getId").value()), Status.FOUND));
+                .get(req -> Results.with(resultsCtrl().get(req.param("id").value(), req.param("page").value()), Status.FOUND));
     }
 
     private QueryController queryCtrl() {
         return require(QueryController.class);
+    }
+
+    private CursorController cursorCtrl() {
+        return require(CursorController.class);
     }
 
     private SearchController searchCtrl() {

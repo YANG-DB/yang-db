@@ -3,14 +3,14 @@ package com.kayhut.fuse.model;
 /**
  * Created by lior on 19/02/2017.
  */
-public class Plan implements Content {
-    private Object data;
+public class Plan implements Content<Plan> {
+    private Plan data;
     private String id;
 
     public Plan() {}
 
 
-    public void setData(Object data) {
+    public void setData(Plan data) {
         this.data = data;
     }
 
@@ -24,7 +24,7 @@ public class Plan implements Content {
     }
 
     @Override
-    public Object getData() {
+    public Plan getData() {
         return data;
     }
 
@@ -52,7 +52,7 @@ public class Plan implements Content {
             return builder;
         }
 
-        public PlanBuilder data(Object data) {
+        public PlanBuilder data(Plan data) {
             this.plan.setData(data);
             return this;
         }
