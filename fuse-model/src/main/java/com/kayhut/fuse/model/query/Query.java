@@ -50,5 +50,48 @@ public class Query {
     private List<List<String>> nonidentical;
     //endregion
 
+    public static final class QueryBuilder {
+        private String ont;
+        private String name;
+        private List<EBase> elements;
+        private List<List<String>> nonidentical;
+
+        private QueryBuilder() {
+        }
+
+        public static QueryBuilder aQuery() {
+            return new QueryBuilder();
+        }
+
+        public QueryBuilder withOnt(String ont) {
+            this.ont = ont;
+            return this;
+        }
+
+        public QueryBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public QueryBuilder withElements(List<EBase> elements) {
+            this.elements = elements;
+            return this;
+        }
+
+        public QueryBuilder withNonidentical(List<List<String>> nonidentical) {
+            this.nonidentical = nonidentical;
+            return this;
+        }
+
+        public Query build() {
+            Query query = new Query();
+            query.setOnt(ont);
+            query.setName(name);
+            query.setElements(elements);
+            query.setNonidentical(nonidentical);
+            return query;
+        }
+    }
+
 
 }

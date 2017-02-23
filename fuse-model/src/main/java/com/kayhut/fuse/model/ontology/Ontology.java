@@ -54,4 +54,49 @@ public class Ontology {
     private List<RelationshipType> relationshipTypes;
     private List<EnumeratedType> enumeratedTypes;
     //endregion
+
+    public static final class OntologyBuilder {
+        private String ont;
+        private List<EntityType> entityTypes;
+        private List<RelationshipType> relationshipTypes;
+        private List<EnumeratedType> enumeratedTypes;
+
+        private OntologyBuilder() {
+        }
+
+        public static OntologyBuilder anOntology() {
+            return new OntologyBuilder();
+        }
+
+        public OntologyBuilder withOnt(String ont) {
+            this.ont = ont;
+            return this;
+        }
+
+        public OntologyBuilder withEntityTypes(List<EntityType> entityTypes) {
+            this.entityTypes = entityTypes;
+            return this;
+        }
+
+        public OntologyBuilder withRelationshipTypes(List<RelationshipType> relationshipTypes) {
+            this.relationshipTypes = relationshipTypes;
+            return this;
+        }
+
+        public OntologyBuilder withEnumeratedTypes(List<EnumeratedType> enumeratedTypes) {
+            this.enumeratedTypes = enumeratedTypes;
+            return this;
+        }
+
+        public Ontology build() {
+            Ontology ontology = new Ontology();
+            ontology.setOnt(ont);
+            ontology.setEntityTypes(entityTypes);
+            ontology.setRelationshipTypes(relationshipTypes);
+            ontology.setEnumeratedTypes(enumeratedTypes);
+            return ontology;
+        }
+    }
+
+
 }

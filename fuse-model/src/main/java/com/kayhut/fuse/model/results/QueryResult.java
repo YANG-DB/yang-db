@@ -42,4 +42,35 @@ public class QueryResult {
     private Pattern pattern;
     private List<Assignment> assignments;
     //endregion
+
+    public static final class QueryResultBuilder {
+        private Pattern pattern;
+        private List<Assignment> assignments;
+
+        private QueryResultBuilder() {
+        }
+
+        public static QueryResultBuilder aQueryResult() {
+            return new QueryResultBuilder();
+        }
+
+        public QueryResultBuilder withPattern(Pattern pattern) {
+            this.pattern = pattern;
+            return this;
+        }
+
+        public QueryResultBuilder withAssignments(List<Assignment> assignments) {
+            this.assignments = assignments;
+            return this;
+        }
+
+        public QueryResult build() {
+            QueryResult queryResult = new QueryResult();
+            queryResult.setPattern(pattern);
+            queryResult.setAssignments(assignments);
+            return queryResult;
+        }
+    }
+
+
 }

@@ -92,4 +92,78 @@ public class Relationship {
     private List<Property> properties;
     private List<AttachedProperty> attachedProperties;
     //endregion
+
+
+    public static final class RelationshipBuilder {
+        private String rID;
+        private boolean agg;
+        private int rType;
+        private boolean directional;
+        private String eID1;
+        private String eID2;
+        private List<Property> properties;
+        private List<AttachedProperty> attachedProperties;
+
+        private RelationshipBuilder() {
+        }
+
+        public static RelationshipBuilder aRelationship() {
+            return new RelationshipBuilder();
+        }
+
+        public RelationshipBuilder withRID(String rID) {
+            this.rID = rID;
+            return this;
+        }
+
+        public RelationshipBuilder withAgg(boolean agg) {
+            this.agg = agg;
+            return this;
+        }
+
+        public RelationshipBuilder withRType(int rType) {
+            this.rType = rType;
+            return this;
+        }
+
+        public RelationshipBuilder withDirectional(boolean directional) {
+            this.directional = directional;
+            return this;
+        }
+
+        public RelationshipBuilder withEID1(String eID1) {
+            this.eID1 = eID1;
+            return this;
+        }
+
+        public RelationshipBuilder withEID2(String eID2) {
+            this.eID2 = eID2;
+            return this;
+        }
+
+        public RelationshipBuilder withProperties(List<Property> properties) {
+            this.properties = properties;
+            return this;
+        }
+
+        public RelationshipBuilder withAttachedProperties(List<AttachedProperty> attachedProperties) {
+            this.attachedProperties = attachedProperties;
+            return this;
+        }
+
+        public Relationship build() {
+            Relationship relationship = new Relationship();
+            relationship.setAgg(agg);
+            relationship.setDirectional(directional);
+            relationship.setProperties(properties);
+            relationship.setAttachedProperties(attachedProperties);
+            relationship.eID1 = this.eID1;
+            relationship.rID = this.rID;
+            relationship.rType = this.rType;
+            relationship.eID2 = this.eID2;
+            return relationship;
+        }
+    }
+
+
 }
