@@ -49,10 +49,13 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
                         planExtensions.add(wrapperFactory.wrapPlan(extendedPlan));
                     }
                 }
-                newPlans.addAll(localPruneStrategy.prunePlans(planExtensions));
+                for(PlanWrapper<P,C> pw : localPruneStrategy.prunePlans(planExtensions))
+                    newPlans.add(pw);
             }
 
-            currentPlans = globalPruneStrategy.prunePlans(newPlans);
+            currentPlans.clear();
+            for(PlanWrapper<P,C> pw : globalPruneStrategy.prunePlans(newPlans))
+                currentPlans.add(pw);
             for(PlanWrapper<P,C> planWrapper : currentPlans){
                 if(choiceCriteria.addPlanAndCheckEndCondition(planWrapper)) {
                     shouldStop = true;
