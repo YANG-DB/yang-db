@@ -1,5 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,19 @@ import java.util.List;
 public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
     final Logger logger = LoggerFactory.getLogger(BottomUpPlanBuilderImpl.class);
 
+    @Inject
+    public BottomUpPlanBuilderImpl(PlanExtensionStrategy<P, Q> extensionStrategy,
+                                   @Named("GlobalPruningStrategy") PlanPruneStrategy<P, C> globalPruneStrategy,
+                                   @Named("LocalPruningStrategy") PlanPruneStrategy<P, C> localPruneStrategy,
+                                   PlanValidator<P, Q> planValidator,
+                                   PlanWrapperFactory<P, C> wrapperFactory) {
+        this.extensionStrategy = extensionStrategy;
+        this.globalPruneStrategy = globalPruneStrategy;
+        this.localPruneStrategy = localPruneStrategy;
+        this.planValidator = planValidator;
+        this.wrapperFactory = wrapperFactory;
+    }
+
     //region Fields
     private PlanExtensionStrategy<P,Q> extensionStrategy;
     private PlanPruneStrategy<P,C> globalPruneStrategy;
@@ -21,6 +36,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
     private PlanWrapperFactory<P,C> wrapperFactory;
     //endregion
 
+    //region Methods
     @Override
     public Iterable<PlanWrapper<P,C>> build(Q query, ChoiceCriteria<P,C> choiceCriteria){
         boolean shouldStop = false;
@@ -67,5 +83,6 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
         return choiceCriteria.getChosenPlans();
     }
 
+    //endregion
 
 }
