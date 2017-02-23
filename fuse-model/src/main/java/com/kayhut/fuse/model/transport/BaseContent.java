@@ -5,21 +5,12 @@ import com.kayhut.fuse.model.Content;
 /**
  * Created by lior on 19/02/2017.
  */
-public abstract class UrlContent implements Content {
+public abstract class BaseContent<T> implements Content<T> {
     private boolean completed;
-    private String url;
     private String id;
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public void setId(String id) {
@@ -36,4 +27,18 @@ public abstract class UrlContent implements Content {
         return completed;
     }
 
+    public static BaseContent of(String url) {
+        return new BaseContent() {
+            @Override
+            public long getResults() {
+                return 0;
+            }
+
+            @Override
+            public Object getData() {
+                return "{}";
+            }
+
+        };
+    }
 }

@@ -2,6 +2,7 @@ package com.kayhut.fuse.asg;
 
 import com.google.common.eventbus.Subscribe;
 import com.kayhut.fuse.model.process.AsgData;
+import com.kayhut.fuse.model.process.QueryCursorData;
 import com.kayhut.fuse.model.process.QueryData;
 
 /**
@@ -9,5 +10,5 @@ import com.kayhut.fuse.model.process.QueryData;
  */
 public interface AsgDriver {
     @Subscribe
-    AsgData process(QueryData input);
+    AsgData process(QueryCursorData input);
 }

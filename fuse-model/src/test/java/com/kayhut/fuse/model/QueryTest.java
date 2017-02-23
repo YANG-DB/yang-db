@@ -341,7 +341,7 @@ public class QueryTest {
         eProp.seteNum(4);
         eProp.setpType(1);
         Condition cond = new Condition();
-        cond.setOp("eq");
+        cond.setOp(ConditionOp.eq);
         cond.setValue("Brandon");
         eProp.setCond(cond);
         elements.add(eProp);

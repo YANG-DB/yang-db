@@ -27,7 +27,7 @@ public class BaseEpbDriver implements ProcessElement<AsgData,EpbData>, EpbDriver
     @Override
     @Subscribe
     public EpbData process(AsgData input) {
-        return submit(eventBus,new EpbData(input.getMetadata()));
+        return submit(eventBus,new EpbData(input.getId(),input.getQueryMetadata(),input.getQuery(),input.getResultMetadata()));
     }
 
 }

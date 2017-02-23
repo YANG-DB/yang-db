@@ -13,7 +13,9 @@
 
     <properties>
         <neo4j.version>3.1.0</neo4j.version>
+        <top.dir>${project.basedir}/..</top.dir>
         <checkstyle.skip>true</checkstyle.skip>
+        <build.timestamp>${maven.build.timestamp}</build.timestamp>
     </properties>
 
     <dependencies>
@@ -30,15 +32,11 @@
 
         <!-- Neo4j -->
         <dependency>
-            <!-- This gives us the Procedure API our runtime code uses.
-                 We have a `provided` scope on it, because when this is
-                 deployed in a Neo4j Instance, the API will be provided
-                 by Neo4j. If you add non-Neo4j dependencies to this
-                 project, their scope should normally be `compile` -->
+            <!-- This gives us the Procedure API our runtime code uses. -->
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
             <version>${neo4j.version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -47,28 +45,6 @@
             <artifactId>neo4j-java-driver</artifactId>
             <version>1.1.0</version>
             <scope>compile</scope>
-        </dependency>
-
-        <!-- Server -->
-        <dependency>
-            <groupId>org.jooby</groupId>
-            <artifactId>jooby-netty</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jooby</groupId>
-            <artifactId>jooby-scanner</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jooby</groupId>
-            <artifactId>jooby-jackson</artifactId>
-        </dependency>
-
-        <!-- logging -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
         </dependency>
 
         <!-- Tests -->

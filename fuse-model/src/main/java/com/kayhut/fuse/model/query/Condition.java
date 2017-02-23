@@ -8,11 +8,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Condition {
     //region Properties
-    public String getOp() {
+    public ConditionOp getOp() {
         return op;
     }
 
-    public void setOp(String op) {
+    public void setOp(ConditionOp op) {
         this.op = op;
     }
 
@@ -20,13 +20,13 @@ public class Condition {
         return value;
     }
 
-    public void setValue(Object r) {
-        this.value = r;
+    public void setValue(Object value) {
+        this.value = value;
     }
     //endregion
 
     //region Fields
-    private String op;
+    private ConditionOp op;
     private Object value;
     //endregion
 
