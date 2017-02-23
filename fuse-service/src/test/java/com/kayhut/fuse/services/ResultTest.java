@@ -28,7 +28,7 @@ public class ResultTest {
                  .then()
                  .assertThat()
 /*
-                 .body(sameJSONAs("{\"metadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"plan\"},\"results\":1333}")
+                 .body(sameJSONAs("{\"queryMetadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"plan\"},\"results\":1333}")
                          .allowingExtraUnexpectedFields()
                          .allowingAnyArrayOrdering())
 */
@@ -39,7 +39,7 @@ public class ResultTest {
                 .then()
                 .assertThat()
 /*
-                .body(sameJSONAs("{\"metadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"path\"},\"results\":1333}")
+                .body(sameJSONAs("{\"queryMetadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"path\"},\"results\":1333}")
                         .allowingExtraUnexpectedFields()
                         .allowingAnyArrayOrdering())
 */

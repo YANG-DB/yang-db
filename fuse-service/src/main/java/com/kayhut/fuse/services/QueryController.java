@@ -8,10 +8,7 @@ import com.kayhut.fuse.model.transport.Response;
  */
 public interface QueryController {
 
-    Response graphQuery(Request request);
+    Response query(Request request);
 
-    Response pathQuery(Request request);
-
-    Response plan(Request request);
 
 }

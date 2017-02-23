@@ -1,7 +1,8 @@
 package com.kayhut.fuse.model.transport;
 
 import com.kayhut.fuse.model.Content;
-import com.kayhut.fuse.model.process.QueryMetadata;
+import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.results.ResultMetadata;
 
 /**
  * Created by lior on 19/02/2017.
@@ -9,7 +10,8 @@ import com.kayhut.fuse.model.process.QueryMetadata;
 public class Response {
 
     private String id;
-    private QueryMetadata metadata;
+    private QueryMetadata queryMetadata;
+    private ResultMetadata resultMetadata;
     private Content content;
 
     public Response(String id) {
@@ -20,8 +22,12 @@ public class Response {
         return id;
     }
 
-    public QueryMetadata getMetadata() {
-        return metadata;
+    public QueryMetadata getQueryMetadata() {
+        return queryMetadata;
+    }
+
+    public ResultMetadata getResultMetadata() {
+        return resultMetadata;
     }
 
     public Content getContent() {
@@ -41,8 +47,13 @@ public class Response {
             response.id = id;
         }
 
-        public ResponseBuilder metadata(QueryMetadata metadata) {
-            response.metadata = metadata;
+        public ResponseBuilder queryMetadata(QueryMetadata metadata) {
+            response.queryMetadata = metadata;
+            return this;
+        }
+
+        public ResponseBuilder resultMetadata(ResultMetadata metadata) {
+            response.resultMetadata = metadata;
             return this;
         }
 

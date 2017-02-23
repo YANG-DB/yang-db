@@ -1,14 +1,13 @@
-package com.kayhut.fuse.asg;
+package com.kayhut.fuse.executor;
 
 import com.google.common.eventbus.Subscribe;
 import com.kayhut.fuse.model.process.AsgData;
-import com.kayhut.fuse.model.process.QueryCursorData;
 import com.kayhut.fuse.model.process.QueryData;
 
 /**
  * Created by lior on 21/02/2017.
  */
-public interface AsgDriver {
+public interface ExecutorDriver {
     @Subscribe
-    AsgData process(QueryCursorData input);
+    Object process(Object input);
 }

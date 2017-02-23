@@ -30,7 +30,7 @@ public class PlanTest {
                 .post("/fuse/plan")
                 .then()
                 .assertThat()
-                .body(sameJSONAs("{\"id\":\"1\",\"metadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"plan\"},\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"results\":11,\"completed\":true}}")
+                .body(sameJSONAs("{\"id\":\"1\",\"queryMetadata\":{\"id\":\"1\",\"name\":\"hezi\",\"type\":\"plan\"},\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"results\":11,\"completed\":true}}")
                         .allowingExtraUnexpectedFields()
                         .allowingAnyArrayOrdering())
                 //.body(sameJSONAs("{\"id\":\"1\",\"name\":\"hezi\",\"content\":{\"data\":\"Simple Plan\",\"id\":\"1\",\"completed\":true,\"results\":11}}"))

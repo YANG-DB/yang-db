@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services;
 
-import com.kayhut.fuse.model.Result;
 import com.kayhut.fuse.model.transport.Response;
 
 /**
@@ -8,5 +7,5 @@ import com.kayhut.fuse.model.transport.Response;
  */
 public interface ResultsController {
 
-    Response get(String id);
+    Response get(String cursorId, String resultId);
 }

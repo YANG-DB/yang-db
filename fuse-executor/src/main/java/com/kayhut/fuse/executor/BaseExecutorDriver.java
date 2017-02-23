@@ -1,11 +1,10 @@
-package com.kayhut.fuse.gta;
+package com.kayhut.fuse.executor;
+
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.model.process.EpbData;
-import com.kayhut.fuse.model.process.GtaData;
 import com.kayhut.fuse.model.process.ProcessElement;
 
 import static com.kayhut.fuse.model.Utils.submit;
@@ -14,18 +13,19 @@ import static com.kayhut.fuse.model.Utils.submit;
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class BaseGtaDriver implements ProcessElement<EpbData,GtaData>, GtaDriver {
+public class BaseExecutorDriver implements ProcessElement, ExecutorDriver {
     private EventBus eventBus;
 
     @Inject
-    public BaseGtaDriver(EventBus eventBus) {
+    public BaseExecutorDriver(EventBus eventBus) {
         this.eventBus = eventBus;
         this.eventBus.register(this);
     }
 
     @Override
     @Subscribe
-    public GtaData process(EpbData input) {
-        return submit(eventBus,new GtaData(input.getId(),input.getQueryMetadata(),input.getQuery(),input.getResultMetadata()));
+    public Object process(Object input) {
+        return submit(eventBus,input);
     }
+
 }

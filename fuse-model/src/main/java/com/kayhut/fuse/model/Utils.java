@@ -1,6 +1,5 @@
 package com.kayhut.fuse.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.kayhut.fuse.model.process.ProcessElement;
@@ -8,10 +7,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 /**
@@ -55,26 +50,7 @@ public interface Utils {
         return mapper.writeValueAsString(value);
     }
 
-    /**
-     * @Deprecated
-     */
-    class FlowBuilder {
-        private String name;
-        private EventBus eventBus;
-
-        public FlowBuilder(String name, EventBus eventBus) {
-            this.name = name;
-            this.eventBus = eventBus;
-        }
-
-        public static FlowBuilder build(String name, EventBus eventBus) {
-            return new FlowBuilder(name, eventBus);
-        }
-
-        public FlowBuilder consume(ProcessElement element) {
-            eventBus.register(element);
-            return this;
-        }
-
+    static String baseUrl() {
+        return "http://localhost:8080/fuse";
     }
 }
