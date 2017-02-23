@@ -5,11 +5,12 @@ import java.util.LinkedList;
 /**
  * Created by moti on 2/22/2017.
  */
-public class DefaultChoiceCriteria<P, C, Q> implements ChoiceCriteria<P, C, Q> {
+public class DefaultChoiceCriteria<P, C> implements ChoiceCriteria<P, C> {
     private PlanWrapper<P, C> selectedPlan = null;
 
+
     @Override
-    public boolean addPlanAndCheckEndCondition(PlanWrapper<P, C> plan, Q query) {
+    public boolean addPlanAndCheckEndCondition(PlanWrapper<P, C> plan) {
         if(plan.isPlanComplete()){
             selectedPlan = plan;
         }
