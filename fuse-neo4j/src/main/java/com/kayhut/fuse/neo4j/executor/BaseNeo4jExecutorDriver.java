@@ -15,7 +15,7 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.Pattern;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.Response;
+import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.neo4j.cypher.Compiler;
 import com.kayhut.fuse.neo4j.cypher.Schema;
 import org.neo4j.driver.v1.*;
@@ -60,7 +60,7 @@ public class BaseNeo4jExecutorDriver implements ProcessElement<QueryCursorData, 
             resultGraph.setPattern(pattern);
 
             QueryMetadata queryMetadata = input.getQueryMetadata();
-            Response response = Response.ResponseBuilder.builder(queryMetadata.getId())
+            ContentResponse response = ContentResponse.ResponseBuilder.builder(queryMetadata.getId())
                     .queryMetadata(queryMetadata)
                     .resultMetadata(input.getResultMetadata())
                     .data(Graph.GraphBuilder.builder(UUID.randomUUID().toString())

@@ -1,6 +1,6 @@
 package com.kayhut.fuse.model.process;
 
-import com.kayhut.fuse.model.transport.Response;
+import com.kayhut.fuse.model.transport.ContentResponse;
 
 /**
  * Created by lior on 20/02/2017.
@@ -11,13 +11,13 @@ public interface ProcessElement<IN,OUT> {
     class ProcessContext {
 
         //local response store
-        private static ThreadLocal<Response> context = ThreadLocal.withInitial(() -> new Response("-1"));
+        private static ThreadLocal<ContentResponse> context = ThreadLocal.withInitial(() -> new ContentResponse("-1"));
 
-        public static void set(Response response) {
+        public static void set(ContentResponse response) {
             context.set(response);
         }
 
-        public static Response get() {
+        public static ContentResponse get() {
             return context.get();
         }
 

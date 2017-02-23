@@ -21,6 +21,7 @@ public class ServicesModule implements Jooby.Module {
         binder.bind(CursorController.class).to(SimpleCursorController.class).asEagerSingleton();
         binder.bind(ResultsController.class).to(SimpleResultsController.class).asEagerSingleton();
         binder.bind(SearchController.class).to(SimpleSearchController.class).asEagerSingleton();
+        binder.bind(CatalogController.class).to(SimpleCatalogController.class).asEagerSingleton();
     }
 
 }

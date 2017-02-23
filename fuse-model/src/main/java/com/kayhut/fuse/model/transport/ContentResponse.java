@@ -7,14 +7,14 @@ import com.kayhut.fuse.model.results.ResultMetadata;
 /**
  * Created by lior on 19/02/2017.
  */
-public class Response {
+public class ContentResponse implements BaseResponse {
 
     private String id;
     private QueryMetadata queryMetadata;
     private ResultMetadata resultMetadata;
     private Content content;
 
-    public Response(String id) {
+    public ContentResponse(String id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class Response {
     }
 
     public static class ResponseBuilder {
-        private Response response;
+        private ContentResponse response;
 
         public static ResponseBuilder builder(String id) {
             ResponseBuilder builder = new ResponseBuilder(id);
@@ -43,7 +43,7 @@ public class Response {
         }
 
         public ResponseBuilder(String id) {
-            response = new Response(id);
+            response = new ContentResponse(id);
             response.id = id;
         }
 
@@ -62,7 +62,7 @@ public class Response {
             return this;
         }
 
-        public Response compose() {
+        public ContentResponse compose() {
             return response;
         }
 

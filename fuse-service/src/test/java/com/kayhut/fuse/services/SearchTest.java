@@ -1,15 +1,13 @@
 package com.kayhut.fuse.services;
 
-import com.kayhut.fuse.services.FuseApp;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+@Ignore
 public class SearchTest {
 
     @ClassRule

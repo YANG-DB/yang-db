@@ -5,9 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.model.process.command.ExecutionCompleteCommand;
-import com.kayhut.fuse.model.transport.Request;
-import com.kayhut.fuse.model.transport.Response;
-import javaslang.Tuple2;
+import com.kayhut.fuse.model.transport.ContentResponse;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class SimpleResultsController implements ResultsController {
     //map of cursor id -> map of result id -> results (path/graph)
-    private final Map<String, Map<String,Response>> map = new ConcurrentHashMap<>();
+    private final Map<String, Map<String,ContentResponse>> map = new ConcurrentHashMap<>();
 
     @Inject
     public SimpleResultsController(EventBus eventBus) {
@@ -38,11 +36,11 @@ public class SimpleResultsController implements ResultsController {
     }
 
     @Override
-    public Response get(String cursorId, String resultId) {
+    public ContentResponse get(String cursorId, String resultId) {
         if(!map.containsKey(cursorId))
-            return new Response("CursorId["+cursorId+"] Not Found");
+            return new ContentResponse("CursorId["+cursorId+"] Not Found");
         //return cached result
-        Map<String,Response> map = this.map.getOrDefault(cursorId, Collections.EMPTY_MAP);
-        return map.getOrDefault(resultId,new Response("Not-Found"));
+        Map<String,ContentResponse> map = this.map.getOrDefault(cursorId, Collections.EMPTY_MAP);
+        return map.getOrDefault(resultId,new ContentResponse("Not-Found"));
     }
 }
