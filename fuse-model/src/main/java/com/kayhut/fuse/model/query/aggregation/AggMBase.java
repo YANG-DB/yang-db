@@ -7,14 +7,6 @@ import com.kayhut.fuse.model.query.Condition;
  */
 public abstract class AggMBase {
     //region Properties
-    public String[] getPer() {
-        return this.per;
-    }
-
-    public void setPer(String[] value) {
-        this.per = value;
-    }
-
     public int getN() {
         return this.n;
     }
@@ -30,20 +22,10 @@ public abstract class AggMBase {
     public void setOp(AggMOp value) {
         this.op = value;
     }
-
-    public int getB() {
-        return this.b;
-    }
-
-    public void setB(int value) {
-        this.b = value;
-    }
     //endregion
 
     //region Fields
     private int n;
-    private String[] per;
     private AggMOp op;
-    private int b;
     //endregion
 }
