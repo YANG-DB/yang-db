@@ -27,7 +27,8 @@ public class Bootstrap implements Jooby.Module  {
     }
 
     private void loadModules(Env env, Config conf, Binder binder) {
-        List<String> modules = conf.getStringList("modules");
+        String profile = conf.getString("application.profile");
+        List<String> modules = conf.getStringList("modules."+profile);
         modules.forEach(value -> {
             try {
                 Method method = Jooby.Module.class.getMethod("configure",Env.class,Config.class,Binder.class);

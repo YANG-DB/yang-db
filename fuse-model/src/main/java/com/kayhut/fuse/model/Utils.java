@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.kayhut.fuse.model.process.ProcessElement;
@@ -42,6 +43,10 @@ public interface Utils {
         } finally {
             return result;
         }
+    }
+
+    static String asString(Object value) throws JsonProcessingException {
+        return mapper.writeValueAsString(value);
     }
 
     static String loadJsonString(InputStream stream) throws IOException {

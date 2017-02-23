@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.events.ExecutionCompleteEvent;
+import com.kayhut.fuse.model.process.command.ExecutionCompleteCommand;
 import com.kayhut.fuse.model.transport.Request;
 import com.kayhut.fuse.model.transport.Response;
 import javaslang.Tuple2;
@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class SimpleResultsController implements ResultsController {
     //map of cursor id -> map of result id -> results (path/graph)
-    private final Map<String, Map<String,Tuple2<Request,Response>>> map = new ConcurrentHashMap<>();
+    private final Map<String, Map<String,Response>> map = new ConcurrentHashMap<>();
 
     @Inject
     public SimpleResultsController(EventBus eventBus) {
@@ -28,10 +28,13 @@ public class SimpleResultsController implements ResultsController {
     }
 
     @Subscribe
-    public void observe(ExecutionCompleteEvent event) {
-        String cursorId = event.getRequest().getId();
+    public void observe(ExecutionCompleteCommand event) {
+        String cursorId = event.getResponse().getQueryMetadata().getId();
         String resultId = event.getResponse().getResultMetadata().getId();
-        map.getOrDefault(cursorId,new HashMap<>()).putIfAbsent(resultId,new Tuple2<>(event.getRequest(),event.getResponse()));
+        if(!map.containsKey(cursorId)) {
+            map.put(cursorId,new HashMap<>());
+        }
+        map.get(cursorId).put(resultId,event.getResponse());
     }
 
     @Override
@@ -39,7 +42,7 @@ public class SimpleResultsController implements ResultsController {
         if(!map.containsKey(cursorId))
             return new Response("CursorId["+cursorId+"] Not Found");
         //return cached result
-        Map<String,Tuple2<Request,Response>> map = this.map.getOrDefault(cursorId, Collections.EMPTY_MAP);
-        return map.getOrDefault(resultId,new Tuple2<Request,Response>(null,null))._2();
+        Map<String,Response> map = this.map.getOrDefault(cursorId, Collections.EMPTY_MAP);
+        return map.getOrDefault(resultId,new Response("Not-Found"));
     }
 }

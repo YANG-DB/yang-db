@@ -3,7 +3,7 @@ package com.kayhut.fuse.services;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.events.ExecutionCompleteEvent;
+import com.kayhut.fuse.model.process.command.ExecutionCompleteCommand;
 import com.kayhut.fuse.model.Graph;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.QueryResult;
@@ -38,7 +38,7 @@ public class SimpleSearchController implements SearchController {
                         .compose())
                 .compose();
         //publish execution isCompleted
-        eventBus.post(new ExecutionCompleteEvent(request, response));
+        eventBus.post(new ExecutionCompleteCommand(response));
         return response;
     }
 }
