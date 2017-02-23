@@ -3,13 +3,13 @@ package com.kayhut.fuse.model.execution.plan;
 /**
  * Created by User on 20/02/2017.
  */
-public class EdgeOp extends TaggedOp {
-    //region Constructors
-    public EdgeOp() {
+public class EntityOp extends TaggedOp {
+    //region Constructor
+    public EntityOp() {
 
     }
 
-    public EdgeOp(String tag) {
+    public EntityOp(String tag) {
         super(tag);
     }
     //endregion
