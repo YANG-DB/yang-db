@@ -54,4 +54,49 @@ public class EntityType {
     private List<Property> properties;
     private List<String> display;
     //endregion
+
+    public static final class EntityTypeBuilder {
+        private int eType;
+        private String name;
+        private List<Property> properties;
+        private List<String> display;
+
+        private EntityTypeBuilder() {
+        }
+
+        public static EntityTypeBuilder anEntityType() {
+            return new EntityTypeBuilder();
+        }
+
+        public EntityTypeBuilder withEType(int eType) {
+            this.eType = eType;
+            return this;
+        }
+
+        public EntityTypeBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public EntityTypeBuilder withProperties(List<Property> properties) {
+            this.properties = properties;
+            return this;
+        }
+
+        public EntityTypeBuilder withDisplay(List<String> display) {
+            this.display = display;
+            return this;
+        }
+
+        public EntityType build() {
+            EntityType entityType = new EntityType();
+            entityType.setName(name);
+            entityType.setProperties(properties);
+            entityType.setDisplay(display);
+            entityType.eType = this.eType;
+            return entityType;
+        }
+    }
+
+
 }

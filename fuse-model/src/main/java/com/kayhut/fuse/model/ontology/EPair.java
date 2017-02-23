@@ -35,4 +35,35 @@ public class EPair {
     private int eTypeA;
     private int eTypeB;
     //endregion
+
+    public static final class EPairBuilder {
+        private int eTypeA;
+        private int eTypeB;
+
+        private EPairBuilder() {
+        }
+
+        public static EPairBuilder anEPair() {
+            return new EPairBuilder();
+        }
+
+        public EPairBuilder withETypeA(int eTypeA) {
+            this.eTypeA = eTypeA;
+            return this;
+        }
+
+        public EPairBuilder withETypeB(int eTypeB) {
+            this.eTypeB = eTypeB;
+            return this;
+        }
+
+        public EPair build() {
+            EPair ePair = new EPair();
+            ePair.eTypeA = this.eTypeA;
+            ePair.eTypeB = this.eTypeB;
+            return ePair;
+        }
+    }
+
+
 }

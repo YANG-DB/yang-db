@@ -64,4 +64,56 @@ public class RelationshipType {
     private List<EPair> ePairs;
     private List<Property> properties;
     //endregion
+
+    public static final class RelationshipTypeBuilder {
+        private int rType;
+        private String name;
+        private boolean directional;
+        private List<EPair> ePairs;
+        private List<Property> properties;
+
+        private RelationshipTypeBuilder() {
+        }
+
+        public static RelationshipTypeBuilder aRelationshipType() {
+            return new RelationshipTypeBuilder();
+        }
+
+        public RelationshipTypeBuilder withRType(int rType) {
+            this.rType = rType;
+            return this;
+        }
+
+        public RelationshipTypeBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public RelationshipTypeBuilder withDirectional(boolean directional) {
+            this.directional = directional;
+            return this;
+        }
+
+        public RelationshipTypeBuilder withEPairs(List<EPair> ePairs) {
+            this.ePairs = ePairs;
+            return this;
+        }
+
+        public RelationshipTypeBuilder withProperties(List<Property> properties) {
+            this.properties = properties;
+            return this;
+        }
+
+        public RelationshipType build() {
+            RelationshipType relationshipType = new RelationshipType();
+            relationshipType.setName(name);
+            relationshipType.setDirectional(directional);
+            relationshipType.setProperties(properties);
+            relationshipType.ePairs = this.ePairs;
+            relationshipType.rType = this.rType;
+            return relationshipType;
+        }
+    }
+
+
 }

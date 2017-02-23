@@ -29,7 +29,7 @@ public class Graph extends BaseContent<QueryResult> {
     public static class GraphBuilder {
         private Graph graph;
 
-        public GraphBuilder(String id) {
+        private GraphBuilder(String id) {
             graph = new Graph();
             graph.setId(id);
         }
