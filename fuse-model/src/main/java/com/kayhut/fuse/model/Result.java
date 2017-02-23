@@ -1,6 +1,6 @@
 package com.kayhut.fuse.model;
 
-import com.kayhut.fuse.model.process.QueryMetadata;
+import com.kayhut.fuse.model.query.QueryMetadata;
 
 /**
  * Created by lior on 19/02/2017.

@@ -26,6 +26,6 @@ public class BaseGtaDriver implements ProcessElement<EpbData,GtaData>, GtaDriver
     @Override
     @Subscribe
     public GtaData process(EpbData input) {
-        return submit(eventBus,new GtaData(input.getMetadata()));
+        return submit(eventBus,new GtaData(input.getId(),input.getQueryMetadata(),input.getQuery(),input.getResultMetadata()));
     }
 }

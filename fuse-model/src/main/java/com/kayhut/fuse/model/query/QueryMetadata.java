@@ -1,4 +1,4 @@
-package com.kayhut.fuse.model.process;
+package com.kayhut.fuse.model.query;
 
 /**
  * Created by lior on 21/02/2017.

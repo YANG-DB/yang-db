@@ -1,47 +1,22 @@
 package com.kayhut.fuse.dispatcher;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.kayhut.fuse.model.*;
-import com.kayhut.fuse.model.process.GtaData;
-import com.kayhut.fuse.model.process.QueryData;
-import com.kayhut.fuse.model.process.QueryMetadata;
+import com.kayhut.fuse.model.Content;
+import com.kayhut.fuse.model.Graph;
+import com.kayhut.fuse.model.Path;
+import com.kayhut.fuse.model.process.ExecutionContext;
+import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.Response;
 
 import java.util.UUID;
 
-import static com.kayhut.fuse.model.Utils.readJsonFile;
-import static com.kayhut.fuse.model.Utils.submit;
 import static com.kayhut.fuse.model.process.ProcessElement.ProcessContext.set;
 
 /**
- * Created by lior on 20/02/2017.
+ * Created by lior on 23/02/2017.
  */
-@Singleton
-public class BaseDispatcherDriver implements DispatcherDriver {
-
-    private EventBus eventBus;
-
-    @Inject
-    public BaseDispatcherDriver(EventBus eventBus) {
-        this.eventBus = eventBus;
-        this.eventBus.register(this);
-    }
-
-    /**
-     * fuse query proccess starts here
-     *
-     * @param input
-     * @return
-     */
-    @Override
-    public QueryData process(QueryData input) {
-        set(new Response("In-Process"));
-        return submit(eventBus, new QueryData(input.getMetadata()));
-    }
-
+public abstract class BaseDispatcherDriver implements DispatcherDriver<ExecutionContext>{
     /**
      * fuse query proccess starts here
      *
@@ -50,28 +25,29 @@ public class BaseDispatcherDriver implements DispatcherDriver {
      */
     @Override
     @Subscribe
-    public Response response(GtaData input) {
-        //todo build result according to (input.getMetadata().getType()==["path" | "graph])
-        QueryMetadata metadata = input.getMetadata();
+    public Response wrap(ExecutionContext input) {
+        //todo build result according to (input.getQueryMetadata().getType()==["path" | "graph])
+        QueryMetadata metadata = input.getQueryMetadata();
         Content content;
         //case of graph build graph response
-        if(input.getMetadata().getType().equals("graph")) {
+        if(input.getQueryMetadata().getType().equals("graph")) {
             content = Graph.GraphBuilder.builder(metadata.getId())
-                    .data(readJsonFile("result.json"))
-                    .url("/result")
+                    .data(new QueryResult())
+//                    .data(readJsonFile("result.json"))
                     .compose();
         } else {
             //case of path build path response
             content = Path.PathBuilder.builder(metadata.getId())
-                    .data(readJsonFile("result.json"))
-                    .url("/result")
+                    .data(new QueryResult())
+//                    .data(readJsonFile("result.json"))
                     .compose();
         }
         //compose final response
         Response response = Response.ResponseBuilder.builder(UUID.randomUUID().toString())
-                .metadata(metadata)
+                .queryMetadata(metadata)
                 .data(content)
                 .compose();
+        //As the flow ends -> setting the final response
         set(response);
         return response;
     }

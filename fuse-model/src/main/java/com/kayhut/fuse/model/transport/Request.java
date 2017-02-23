@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.transport;
 
+import com.kayhut.fuse.model.query.Query;
+
 /**
  * Created by lior on 19/02/2017.
  * <p>
@@ -9,7 +11,7 @@ public class Request {
     private String id;
     private String name;
     private String type;
-    private String query;
+    private Query query;
 
     public String getId() {
         return id;
@@ -27,7 +29,7 @@ public class Request {
         this.type = type;
     }
 
-    public void setQuery(String query) {
+    public void setQuery(Query query) {
         this.query = query;
     }
 
@@ -39,7 +41,7 @@ public class Request {
         return type;
     }
 
-    public String getQuery() {
+    public Query getQuery() {
         return query;
     }
 }
