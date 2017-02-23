@@ -3,6 +3,7 @@ package com.kayhut.fuse.services;
 import com.kayhut.fuse.services.FuseApp;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.get;
@@ -16,6 +17,7 @@ public class ResultTest {
     public static JoobyRule app = new JoobyRule(new FuseApp());
 
      @Test
+     @Ignore
     public void getResultById() {
          given()
                  .contentType("application/json")
