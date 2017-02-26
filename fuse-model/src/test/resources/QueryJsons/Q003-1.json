@@ -32,9 +32,10 @@
       "eNum": 4,
       "type": "EProp",
       "pType": 1,
-      "cond": {
+      "pTag": "1",
+      "con": {
         "op": "eq",
-        "value": "Brandon"
+        "expr": "Brandon"
       }
     }
   ]

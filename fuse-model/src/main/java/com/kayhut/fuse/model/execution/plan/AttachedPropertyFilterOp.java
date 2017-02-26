@@ -1,6 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import com.kayhut.fuse.model.query.Condition;
+import com.kayhut.fuse.model.query.Constraint;
 
 /**
  * Created by User on 22/02/2017.
@@ -11,7 +11,7 @@ public class AttachedPropertyFilterOp extends PlanOpBase {
 
     }
 
-    public AttachedPropertyFilterOp(String propName, Condition condition) {
+    public AttachedPropertyFilterOp(String propName, Constraint condition) {
         this.propName = propName;
         this.condition = condition;
     }
@@ -26,17 +26,17 @@ public class AttachedPropertyFilterOp extends PlanOpBase {
         this.propName = value;
     }
 
-    public Condition getCondition() {
+    public Constraint getCondition() {
         return this.condition;
     }
 
-    public void setCondition(Condition value) {
+    public void setCondition(Constraint value) {
         this.condition = value;
     }
     //endregion
 
     //region Fields
     private String propName;
-    private Condition condition;
+    private Constraint condition;
     //endregion
 }

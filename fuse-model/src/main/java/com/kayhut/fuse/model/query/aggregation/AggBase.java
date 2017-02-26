@@ -1,6 +1,5 @@
 package com.kayhut.fuse.model.query.aggregation;
 
-import com.kayhut.fuse.model.query.Condition;
 import com.kayhut.fuse.model.query.EBase;
 
 /**
