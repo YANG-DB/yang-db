@@ -41,7 +41,16 @@ public class EBaseAsg{
         this.parents = parents;
     }
 
+    public int geteNum() {
+        return eNum;
+    }
+
+    public void seteNum(int eNum) {
+        this.eNum = eNum;
+    }
+
     //region Fields
+    private int eNum;
     private EBase eBase;
     private List<EBaseAsg> next;
     private List<EBaseAsg> b;
