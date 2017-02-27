@@ -1,10 +1,13 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.List;
 
 /**
  * Created by benishue on 17/02/2017.
  */
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RelProp extends EBase {
 
 
@@ -24,12 +27,12 @@ public class RelProp extends EBase {
         this.pTag = pTag;
     }
 
-    public List<Condition> getCond() {
-        return cond;
+    public List<Constraint> getCon() {
+        return con;
     }
 
-    public void setCond(List<Condition> cond) {
-        this.cond = cond;
+    public void setCon(List<Constraint> con) {
+        this.con = con;
     }
 
     public int getB() {
@@ -52,7 +55,7 @@ public class RelProp extends EBase {
     private int	pType;
     private String f;
     private String pTag;
-    private List<Condition> cond;
+    private List<Constraint> con;
     private int b;
     //endregion
 

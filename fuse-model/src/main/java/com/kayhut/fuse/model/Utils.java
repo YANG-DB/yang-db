@@ -1,12 +1,14 @@
 package com.kayhut.fuse.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.kayhut.fuse.model.process.ProcessElement;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.UUID;
 
 /**
@@ -24,16 +26,14 @@ public interface Utils {
         return id != null ? id : UUID.randomUUID().toString();
     }
 
-    static Object readJsonFile(String name) {
+    static String readJsonFile(String name) {
         String result = "{}";
         try {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/result.json");
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/"+name+".json");
             if(stream!=null ) {
-                System.out.println("Loading - /result.json");
                 result = loadJsonString(stream);
             } else {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("result.json");
-                System.out.println("Loading - result.json");
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name+".json");
                 result = loadJsonString(stream);
             }
         } catch (Exception e) {
@@ -44,13 +44,30 @@ public interface Utils {
         }
     }
 
+    static String asString(Object value) throws JsonProcessingException {
+        return mapper.writeValueAsString(value);
+    }
+
+    static <T> T asObject(String value,Class<T> clazz) throws IOException {
+        return mapper.readValue(value,clazz);
+    }
+
     static String loadJsonString(InputStream stream) throws IOException {
         String s = IOUtils.toString(stream);
         Object value = mapper.readValue(s, Object.class);
         return mapper.writeValueAsString(value);
     }
 
-    static String baseUrl() {
-        return "http://localhost:8080/fuse";
+    static String baseUrl(String port) {
+        return "http://"+ getHostAddress()+":"+port+"/fuse";
+    }
+
+    static String getHostAddress() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            return "127.0.0.1";
+        }
+
     }
 }

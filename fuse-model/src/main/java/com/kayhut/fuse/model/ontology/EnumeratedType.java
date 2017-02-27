@@ -36,4 +36,35 @@ public class EnumeratedType {
     private String eType;
     private List<Value> values;
     //endregion
+
+    public static final class EnumeratedTypeBuilder {
+        private String eType;
+        private List<Value> values;
+
+        private EnumeratedTypeBuilder() {
+        }
+
+        public static EnumeratedTypeBuilder anEnumeratedType() {
+            return new EnumeratedTypeBuilder();
+        }
+
+        public EnumeratedTypeBuilder withEType(String eType) {
+            this.eType = eType;
+            return this;
+        }
+
+        public EnumeratedTypeBuilder withValues(List<Value> values) {
+            this.values = values;
+            return this;
+        }
+
+        public EnumeratedType build() {
+            EnumeratedType enumeratedType = new EnumeratedType();
+            enumeratedType.setValues(values);
+            enumeratedType.eType = this.eType;
+            return enumeratedType;
+        }
+    }
+
+
 }

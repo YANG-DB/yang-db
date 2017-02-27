@@ -6,7 +6,8 @@ import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.CursorDispatcherDriver;
 import com.kayhut.fuse.model.transport.BaseContent;
 import com.kayhut.fuse.model.transport.CursorFetchRequest;
-import com.kayhut.fuse.model.transport.Response;
+import com.kayhut.fuse.model.transport.ContentResponse;
+import com.typesafe.config.Config;
 
 import static com.kayhut.fuse.model.Utils.baseUrl;
 
@@ -16,11 +17,13 @@ import static com.kayhut.fuse.model.Utils.baseUrl;
 @Singleton
 public class SimpleCursorController implements CursorController {
 
+    private Config conf;
     private EventBus eventBus;
     private CursorDispatcherDriver driver;
 
     @Inject
-    public SimpleCursorController(EventBus eventBus, CursorDispatcherDriver driver) {
+    public SimpleCursorController(Config conf, EventBus eventBus, CursorDispatcherDriver driver) {
+        this.conf = conf;
         this.eventBus = eventBus;
         this.eventBus.register(this);
         this.driver = driver;
@@ -28,28 +31,30 @@ public class SimpleCursorController implements CursorController {
 
 
     @Override
-    public Response fetch(String cursorId, CursorFetchRequest request) {
+    public ContentResponse fetch(String cursorId, CursorFetchRequest request) {
         int requestSequenceNumber = getNextCursorSequence(cursorId);
         //publish execution isCompleted
         Object fetch = driver.fetch(cursorId, request.getFetchSize());
-        Response response = Response.ResponseBuilder.builder(cursorId)
-                .data(BaseContent.of(baseUrl() +  "/"+cursorId+"/result/" + requestSequenceNumber))
+        String host = baseUrl(conf.getString("application.port"));
+        ContentResponse response = ContentResponse.ResponseBuilder.builder(cursorId)
+                .data(BaseContent.of(host +  "/"+cursorId+"/result/" + requestSequenceNumber))
                 .compose();
         return response;
     }
 
     @Override
-    public Response plan(String cursorId) {
+    public ContentResponse plan(String cursorId) {
         //publish execution isCompleted
         Object fetch = driver.plan(cursorId);
-        Response response = Response.ResponseBuilder.builder(cursorId)
-                .data(BaseContent.of(baseUrl() +  "/"+cursorId+"/plan/" ))
+        String host = baseUrl(conf.getString("application.port"));
+        ContentResponse response = ContentResponse.ResponseBuilder.builder(cursorId)
+                .data(BaseContent.of(host +  "/"+cursorId+"/plan/" ))
                 .compose();
         return response;
     }
 
     @Override
-    public Response cancelFetch(String cursorId) {
+    public ContentResponse cancelFetch(String cursorId) {
         return null;
     }
 
@@ -64,8 +69,8 @@ public class SimpleCursorController implements CursorController {
     }
 
     @Override
-    public Response delete(String cursorId) {
+    public ContentResponse delete(String cursorId) {
         //todo delete open cursor
-        return Response.ResponseBuilder.builder(cursorId).compose();
+        return ContentResponse.ResponseBuilder.builder(cursorId).compose();
     }
 }

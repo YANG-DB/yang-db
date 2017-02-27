@@ -8,7 +8,7 @@ import com.kayhut.fuse.model.process.QueryCursorData;
 import com.kayhut.fuse.model.process.QueryData;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.Request;
-import com.kayhut.fuse.model.transport.Response;
+import com.kayhut.fuse.model.transport.ContentResponse;
 
 import static com.kayhut.fuse.model.Utils.getOrCreateId;
 
@@ -22,21 +22,21 @@ public class SimpleQueryController implements QueryController {
     private QueryDispatcherDriver driver;
 
     @Inject
-    public SimpleQueryController(EventBus eventBus, QueryDispatcherDriver driver) {
+    public SimpleQueryController( EventBus eventBus, QueryDispatcherDriver driver ) {
         this.eventBus = eventBus;
         this.eventBus.register(this);
         this.driver = driver;
     }
 
     @Override
-    public Response query(Request request) {
+    public ContentResponse query(Request request) {
         //build graph & transport response
         String id = getOrCreateId(request.getId());
         QueryMetadata metadata = new QueryMetadata(id, request.getName(), request.getType(), System.currentTimeMillis());
         QueryCursorData cursorData = driver.process(new QueryData(metadata, request.getQuery()));
         // Get the response from context - actually the event bus is doing sync (serial) method (listeners) invocation until the last element in the execution chain is called
         // and sets the response in the context (QueryDispatcherDriver.response)
-        return Response.ResponseBuilder.builder(cursorData.getResultMetadata().getId())
+        return ContentResponse.ResponseBuilder.builder(cursorData.getResultMetadata().getId())
                 .queryMetadata(metadata)
                 .resultMetadata(cursorData.getResultMetadata())
                 .compose();

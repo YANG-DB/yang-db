@@ -72,4 +72,63 @@ public class Property {
     private String height;
     private String units;
     //endregion
+
+    public static final class PropertyBuilder {
+        private int pType;
+        private String name;
+        private String type;
+        private List<String> report;
+        private String height;
+        private String units;
+
+        private PropertyBuilder() {
+        }
+
+        public static PropertyBuilder aProperty() {
+            return new PropertyBuilder();
+        }
+
+        public PropertyBuilder withPType(int pType) {
+            this.pType = pType;
+            return this;
+        }
+
+        public PropertyBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public PropertyBuilder withType(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public PropertyBuilder withReport(List<String> report) {
+            this.report = report;
+            return this;
+        }
+
+        public PropertyBuilder withHeight(String height) {
+            this.height = height;
+            return this;
+        }
+
+        public PropertyBuilder withUnits(String units) {
+            this.units = units;
+            return this;
+        }
+
+        public Property build() {
+            Property property = new Property();
+            property.setName(name);
+            property.setType(type);
+            property.setReport(report);
+            property.setHeight(height);
+            property.setUnits(units);
+            property.pType = this.pType;
+            return property;
+        }
+    }
+
+
 }

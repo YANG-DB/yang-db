@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.query;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -25,12 +26,12 @@ public class EProp extends EBase {
         this.pTag = pTag;
     }
 
-    public Condition getCond() {
-        return cond;
+    public Constraint getCon() {
+        return con;
     }
 
-    public void setCond(Condition cond) {
-        this.cond = cond;
+    public void setCon(Constraint con) {
+        this.con = con;
     }
 
     public String getF() {
@@ -44,7 +45,7 @@ public class EProp extends EBase {
     //region Fields
     private int pType;
     private String pTag;
-    private Condition cond;
+    private Constraint con;
     private String f;
     //endregion
 

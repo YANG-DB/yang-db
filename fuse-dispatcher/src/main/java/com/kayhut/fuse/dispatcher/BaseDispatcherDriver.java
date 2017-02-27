@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.Path;
 import com.kayhut.fuse.model.process.ExecutionContext;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.Response;
+import com.kayhut.fuse.model.transport.ContentResponse;
 
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ public abstract class BaseDispatcherDriver implements DispatcherDriver<Execution
      */
     @Override
     @Subscribe
-    public Response wrap(ExecutionContext input) {
+    public ContentResponse wrap(ExecutionContext input) {
         //todo build result according to (input.getQueryMetadata().getType()==["path" | "graph])
         QueryMetadata metadata = input.getQueryMetadata();
         Content content;
@@ -43,7 +43,7 @@ public abstract class BaseDispatcherDriver implements DispatcherDriver<Execution
                     .compose();
         }
         //compose final response
-        Response response = Response.ResponseBuilder.builder(UUID.randomUUID().toString())
+        ContentResponse response = ContentResponse.ResponseBuilder.builder(UUID.randomUUID().toString())
                 .queryMetadata(metadata)
                 .data(content)
                 .compose();

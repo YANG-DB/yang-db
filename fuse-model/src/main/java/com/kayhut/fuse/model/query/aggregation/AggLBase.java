@@ -1,6 +1,6 @@
 package com.kayhut.fuse.model.query.aggregation;
 
-import com.kayhut.fuse.model.query.Condition;
+import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.EBase;
 
 /**
@@ -16,17 +16,17 @@ public abstract class AggLBase extends EBase {
         this.aTag = value;
     }
 
-    public Condition getCond() {
-        return this.cond;
+    public Constraint getCon() {
+        return this.con;
     }
 
-    public void setCond(Condition value) {
-        this.cond = value;
+    public void setCon(Constraint value) {
+        this.con = value;
     }
     //endregion
 
     //region Fields
     private String aTag;
-    private Condition cond;
+    private Constraint con;
     //endregion
 }

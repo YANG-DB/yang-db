@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.results;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -51,4 +52,42 @@ public class AttachedProperty {
     private Object value;
     private String tag;
     //endregion
+
+    public static final class AttachedPropertyBuilder {
+        private String pName;
+        private Object value;
+        private String tag;
+
+        private AttachedPropertyBuilder() {
+        }
+
+        public static AttachedPropertyBuilder anAttachedProperty() {
+            return new AttachedPropertyBuilder();
+        }
+
+        public AttachedPropertyBuilder withPName(String pName) {
+            this.pName = pName;
+            return this;
+        }
+
+        public AttachedPropertyBuilder withValue(Object value) {
+            this.value = value;
+            return this;
+        }
+
+        public AttachedPropertyBuilder withTag(String tag) {
+            this.tag = tag;
+            return this;
+        }
+
+        public AttachedProperty build() {
+            AttachedProperty attachedProperty = new AttachedProperty();
+            attachedProperty.setPName(pName);
+            attachedProperty.setValue(value);
+            attachedProperty.setTag(tag);
+            return attachedProperty;
+        }
+    }
+
+
 }

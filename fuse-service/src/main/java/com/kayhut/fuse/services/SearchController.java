@@ -1,13 +1,13 @@
 package com.kayhut.fuse.services;
 
 import com.kayhut.fuse.model.transport.Request;
-import com.kayhut.fuse.model.transport.Response;
+import com.kayhut.fuse.model.transport.ContentResponse;
 
 /**
  * Created by lior on 19/02/2017.
  */
 public interface SearchController {
 
-    Response search(Request request);
+    ContentResponse search(Request request);
 
 }

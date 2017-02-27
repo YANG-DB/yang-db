@@ -34,4 +34,33 @@ public class Value {
     private int val;
     private String name;
     //endregion
+
+    public static final class ValueBuilder {
+        private int val;
+        private String name;
+
+        private ValueBuilder() {
+        }
+
+        public static ValueBuilder aValue() {
+            return new ValueBuilder();
+        }
+
+        public ValueBuilder withVal(int val) {
+            this.val = val;
+            return this;
+        }
+
+        public ValueBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Value build() {
+            Value value = new Value();
+            value.setVal(val);
+            value.setName(name);
+            return value;
+        }
+    }
 }

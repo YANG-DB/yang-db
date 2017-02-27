@@ -10,6 +10,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
+@Ignore
 public class QueryTest {
 
     @ClassRule

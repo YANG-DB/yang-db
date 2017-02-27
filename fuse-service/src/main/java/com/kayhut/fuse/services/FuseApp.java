@@ -35,10 +35,14 @@ public class FuseApp extends Jooby {
                 /** check health */
                 .get(() -> "Alive And Well...");
 
+        /** Fuse API: */
+        use("/fuse/catalog/ontology/:id")
+                /** check health */
+                .get(req -> Results.with(catalogCtrl().ontology(req.param("id").value()), Status.FOUND));
 
-        use("/fuse/query")
+        use("/fuse/query/graph")
                 /** submit a graph query */
-                .post("/graph",req -> Results.with(queryCtrl().query(req.body(Request.class)), Status.CREATED));
+                .post(req -> Results.with(queryCtrl().query(req.body(Request.class)), Status.CREATED));
 
         use("/fuse/search")
                 /** submit a plan */
@@ -63,6 +67,10 @@ public class FuseApp extends Jooby {
 
     private CursorController cursorCtrl() {
         return require(CursorController.class);
+    }
+
+    private CatalogController catalogCtrl() {
+        return require(CatalogController.class);
     }
 
     private SearchController searchCtrl() {

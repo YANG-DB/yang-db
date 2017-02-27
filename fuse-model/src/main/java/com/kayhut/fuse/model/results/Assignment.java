@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.results;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.List;
@@ -41,4 +42,36 @@ public class Assignment {
     private List<Entity> entities;
     private List<Relationship> relationships;
     //endregion
+
+    public static final class AssignmentBuilder {
+        private List<Entity> entities;
+        private List<Relationship> relationships;
+
+        private AssignmentBuilder() {
+        }
+
+        public static AssignmentBuilder anAssignment() {
+            return new AssignmentBuilder();
+        }
+
+        public AssignmentBuilder withEntities(List<Entity> entities) {
+            this.entities = entities;
+            return this;
+        }
+
+        public AssignmentBuilder withRelationships(List<Relationship> relationships) {
+            this.relationships = relationships;
+            return this;
+        }
+
+        public Assignment build() {
+            Assignment assignment = new Assignment();
+            assignment.setEntities(entities);
+            assignment.setRelationships(relationships);
+            return assignment;
+        }
+    }
+
+
+
 }
