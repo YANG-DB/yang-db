@@ -7,16 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Created by user on 16-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EConcrete extends EBase {
-
-    public String geteTag() {
-        return eTag;
-    }
-
-    public void seteTag(String eTag) {
-        this.eTag = eTag;
-    }
-
+public class EConcrete extends EEntityBase {
     public String geteID() {
         return eID;
     }
@@ -50,7 +41,6 @@ public class EConcrete extends EBase {
     }
 
     //region Fields
-    private String eTag;
     private String eID;
     private int eType;
     private String eName;
