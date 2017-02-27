@@ -10,16 +10,7 @@ import java.util.List;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EUntyped extends EBase {
-
-    public String geteTag() {
-        return eTag;
-    }
-
-    public void seteTag(String eTag) {
-        this.eTag = eTag;
-    }
-
+public class EUntyped extends EEntityBase {
     public List<Integer> getvTypes() {
         return vTypes;
     }
@@ -44,7 +35,6 @@ public class EUntyped extends EBase {
         this.next = next;
     }
 
-    private	String eTag;
     private List<Integer> vTypes;
     private	List<Integer> nvTypes;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)

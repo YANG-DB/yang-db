@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.query.Rel;
+
 /**
  * Created by User on 20/02/2017.
  */
@@ -9,33 +11,23 @@ public class RelationOp extends TaggedOp {
 
     }
 
-    public RelationOp(String tag, String label, Direction direction) {
-        super(tag);
-        this.label = label;
-        this.direction = direction;
+    public RelationOp(Rel relation) {
+        super(null);
+        this.relation = relation;
     }
     //endregion
 
     //region Properties
-    public Direction getDirection() {
-        return this.direction;
+    public Rel getRelation() {
+        return this.relation;
     }
 
-    public void setDirection(Direction value) {
-        this.direction = value;
-    }
-
-    public String getLabel() {
-        return this.label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
+    public void setRelation(Rel value) {
+        this.relation = value;
     }
     //endregion
 
     //region Fields
-    private String label;
-    private Direction direction;
+    private Rel relation;
     //endregion
 }

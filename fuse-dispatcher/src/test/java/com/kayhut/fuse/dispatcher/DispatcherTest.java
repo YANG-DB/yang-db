@@ -12,13 +12,15 @@ import com.kayhut.fuse.gta.BaseGtaDriver;
 import com.kayhut.fuse.model.process.*;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.typesafe.config.Config;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
 
-
+@Ignore
 public class DispatcherTest {
 
     protected Injector injector = Guice.createInjector(new AbstractModule() {
@@ -46,6 +48,8 @@ public class DispatcherTest {
     QueryDispatcherDriver driver;
     @Inject
     EventBus eventBus;
+    @Inject
+    Config config;
 
     @Subscribe
     public void asgDriverProcess(AsgData input) {

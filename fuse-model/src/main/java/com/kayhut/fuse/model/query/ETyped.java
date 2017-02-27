@@ -8,16 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ETyped extends EBase {
-
-    public String geteTag() {
-        return eTag;
-    }
-
-    public void seteTag(String eTag) {
-        this.eTag = eTag;
-    }
-
+public class ETyped extends EEntityBase {
     public int geteType() {
         return eType;
     }
@@ -43,7 +34,7 @@ public class ETyped extends EBase {
     }
 
     //region Fields
-    private	String eTag;
+
     private int	eType;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private	int next;
