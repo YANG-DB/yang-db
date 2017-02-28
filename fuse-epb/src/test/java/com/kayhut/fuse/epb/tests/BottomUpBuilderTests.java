@@ -52,8 +52,8 @@ public class BottomUpBuilderTests {
         PlanPruneStrategy<DummyPlan, DummyCost> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<DummyPlan, DummyQuery> validator = new DummyValidator<>();
 
-        PlanWrapperFactory<DummyPlan, DummyCost> wrapperFactory = Mockito.mock(PlanWrapperFactory.class);
-        when(wrapperFactory.wrapPlan(any())).thenAnswer(invocationOnMock -> new PlanWrapper<DummyPlan, DummyCost>() {
+        PlanWrapperFactory<DummyPlan,DummyQuery, DummyCost> wrapperFactory = Mockito.mock(PlanWrapperFactory.class);
+        when(wrapperFactory.wrapPlan(any(), any())).thenAnswer(invocationOnMock -> new PlanWrapper<DummyPlan, DummyCost>() {
             @Override
             public DummyPlan getPlan() {
                 return (DummyPlan) invocationOnMock.getArguments()[0];

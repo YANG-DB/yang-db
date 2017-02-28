@@ -20,7 +20,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
                                    @Named("GlobalPruningStrategy") PlanPruneStrategy<P, C> globalPruneStrategy,
                                    @Named("LocalPruningStrategy") PlanPruneStrategy<P, C> localPruneStrategy,
                                    PlanValidator<P, Q> planValidator,
-                                   PlanWrapperFactory<P, C> wrapperFactory) {
+                                   PlanWrapperFactory<P,Q,C> wrapperFactory) {
         this.extensionStrategy = extensionStrategy;
         this.globalPruneStrategy = globalPruneStrategy;
         this.localPruneStrategy = localPruneStrategy;
@@ -33,7 +33,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
     private PlanPruneStrategy<P,C> globalPruneStrategy;
     private PlanPruneStrategy<P,C> localPruneStrategy;
     private PlanValidator<P,Q> planValidator;
-    private PlanWrapperFactory<P,C> wrapperFactory;
+    private PlanWrapperFactory<P,Q,C> wrapperFactory;
     //endregion
 
     //region Methods
@@ -45,7 +45,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
         // Generate seed plans (plan is null)
         for(P seedPlan : extensionStrategy.extendPlan(null, query)){
             if(planValidator.isPlanValid(seedPlan, query)){
-                PlanWrapper<P,C> planWrapper = wrapperFactory.wrapPlan(seedPlan);
+                PlanWrapper<P,C> planWrapper = wrapperFactory.wrapPlan(seedPlan, query);
                 currentPlans.add(planWrapper);
                 if(choiceCriteria.addPlanAndCheckEndCondition(planWrapper)){
                     shouldStop = true;
@@ -62,7 +62,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
                 List<PlanWrapper<P,C>> planExtensions = new LinkedList<>();
                 for(P extendedPlan : extensionStrategy.extendPlan(partialPlan.getPlan(), query)){
                     if(planValidator.isPlanValid(extendedPlan, query)){
-                        planExtensions.add(wrapperFactory.wrapPlan(extendedPlan));
+                        planExtensions.add(wrapperFactory.wrapPlan(extendedPlan, query));
                     }
                 }
                 for(PlanWrapper<P,C> pw : localPruneStrategy.prunePlans(planExtensions))
