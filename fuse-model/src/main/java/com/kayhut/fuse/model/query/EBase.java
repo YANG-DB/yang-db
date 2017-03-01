@@ -37,7 +37,7 @@ import com.kayhut.fuse.model.query.aggregation.*;
         @JsonSubTypes.Type(name = "AggM5", value = AggM5.class)
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public abstract class EBase {
+public class EBase {
     //region Properties
     public int geteNum() {
         return eNum;
