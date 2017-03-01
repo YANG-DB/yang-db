@@ -16,7 +16,6 @@ public class HQuant extends QuantBase {
         this.b = b;
     }
 
-
     //region Fields
     private int b;
     //endregion

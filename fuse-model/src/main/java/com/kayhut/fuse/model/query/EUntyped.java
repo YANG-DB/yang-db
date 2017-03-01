@@ -35,9 +35,11 @@ public class EUntyped extends EEntityBase {
         this.next = next;
     }
 
+    //region Fields
     private List<Integer> vTypes;
     private	List<Integer> nvTypes;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private	int	next;
+    //endregion
 
 }

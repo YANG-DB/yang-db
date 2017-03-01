@@ -42,6 +42,7 @@ public class EAgg extends EBase {
         this.next = next;
     }
 
+
     //region Fields
     private	String eTag;
     private	String fName;

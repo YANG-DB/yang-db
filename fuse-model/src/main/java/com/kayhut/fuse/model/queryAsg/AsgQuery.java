@@ -31,6 +31,43 @@ public class AsgQuery {
         this.start = start;
     }
 
+    public static final class AsgQueryBuilder {
+        //region Fields
+        private String ont;
+        private String name;
+        private EBaseAsg start;
+
+        private AsgQueryBuilder() {
+        }
+
+        public static AsgQueryBuilder anAsgQuery() {
+            return new AsgQueryBuilder();
+        }
+
+        public AsgQueryBuilder withOnt(String ont) {
+            this.ont = ont;
+            return this;
+        }
+
+        public AsgQueryBuilder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public AsgQueryBuilder withStart(EBaseAsg start) {
+            this.start = start;
+            return this;
+        }
+
+        public AsgQuery build() {
+            AsgQuery asgQuery = new AsgQuery();
+            asgQuery.setOnt(ont);
+            asgQuery.setName(name);
+            asgQuery.setStart(start);
+            return asgQuery;
+        }
+    }
+
     //region Fields
     private String ont;
     private String name;
