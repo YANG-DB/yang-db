@@ -10,5 +10,5 @@ import com.kayhut.fuse.model.process.QueryData;
  */
 public interface AsgDriver {
     @Subscribe
-    AsgData process(QueryCursorData input);
+    AsgData process(QueryData input);
 }

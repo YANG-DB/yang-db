@@ -7,8 +7,11 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.model.process.AsgData;
 import com.kayhut.fuse.model.process.ProcessElement;
-import com.kayhut.fuse.model.process.QueryCursorData;
 import com.kayhut.fuse.model.process.QueryData;
+import com.kayhut.fuse.model.queryAsg.AsgQuery;
+import org.jooq.lambda.Seq;
+
+import java.util.Collections;
 
 import static com.kayhut.fuse.model.Utils.submit;
 
@@ -16,19 +19,30 @@ import static com.kayhut.fuse.model.Utils.submit;
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class BaseAsgDriver implements ProcessElement<QueryCursorData,AsgData>, AsgDriver {
-    private EventBus eventBus;
-
+public class SimpleStrategyRegisteredAsgDriver implements ProcessElement<QueryData, AsgData>, AsgDriver {
+    //region Constructors
     @Inject
-    public BaseAsgDriver(EventBus eventBus) {
+    public SimpleStrategyRegisteredAsgDriver(EventBus eventBus, AsgStrategyRegistrar registrar) {
         this.eventBus = eventBus;
         this.eventBus.register(this);
-    }
 
+        this.strategies = registrar != null ? registrar.register() : Collections.emptyList();
+    }
+    //endregion
+
+    //region AsgDriver Implementation
     @Override
     @Subscribe
-    public AsgData process(QueryCursorData input) {
-        return submit(eventBus,new AsgData(input.getId(),input.getQueryMetadata(),input.getQuery(),input.getResultMetadata()));
+    public AsgData process(QueryData input) {
+        //// TODO: 01/03/2017 apply asg builder
+        AsgQuery asgQuery = null;
+        Seq.seq(this.strategies).forEach(strategy -> strategy.apply(asgQuery));
+        return submit(eventBus, new AsgData(input.getQueryMetadata(), input.getQuery()));
     }
+    //endregion
 
+    //region Fields
+    private EventBus eventBus;
+    private Iterable<AsgStrategy> strategies;
+    //endregion
 }

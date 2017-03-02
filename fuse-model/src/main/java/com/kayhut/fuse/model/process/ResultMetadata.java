@@ -1,6 +1,4 @@
-package com.kayhut.fuse.model.results;
-
-import java.net.URL;
+package com.kayhut.fuse.model.process;
 
 /**
  * Created by lior on 23/02/2017.
