@@ -2,6 +2,7 @@ package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -17,6 +18,10 @@ public class CompositePlanExtensionStrategy<P,Q> implements PlanExtensionStrateg
 
     @Override
     public Iterable<P> extendPlan(P plan, Q query) {
-        return null;
+        List<P> plans = new LinkedList<P>();
+        for(PlanExtensionStrategy<P,Q> extensionStrategy : innerExtenders){
+            extensionStrategy.extendPlan(plan, query).forEach(plans::add);
+        }
+        return plans;
     }
 }

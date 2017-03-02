@@ -1,11 +1,21 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.epb.plan.*;
+import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.validation.DummyValidator;
+import com.kayhut.fuse.epb.plan.wrappers.SimpleWrapperFactory;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
+import com.kayhut.fuse.model.query.EConcrete;
+import com.kayhut.fuse.model.query.EUntyped;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.queryAsg.AsgQuery;
+import com.kayhut.fuse.model.queryAsg.EBaseAsg;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -83,5 +93,59 @@ public class BottomUpBuilderTests {
         PlanWrapper<DummyPlan, DummyCost> planWrapper = planWrapperIterator.next();
         Assert.assertEquals(planWrapper.getPlan(), extendedPlans.get(0));
         Assert.assertFalse(planWrapperIterator.hasNext());
+    }
+
+    @Test
+    public void TestBuilderSimplePath(){
+
+        AsgQuery query = new AsgQuery();
+        EConcrete concrete = new EConcrete();
+        concrete.seteNum(1);
+        concrete.seteTag("Person");
+        EBaseAsg concreteBaseAsg = new EBaseAsg();
+        concreteBaseAsg.seteBase(concrete);
+        concreteBaseAsg.seteNum(concrete.geteNum());
+        query.setStart(concreteBaseAsg);
+
+        Rel rel = new Rel();
+        rel.seteNum(2);
+        EBaseAsg relBaseAsg = new EBaseAsg();
+        relBaseAsg.seteNum(rel.geteNum());
+        relBaseAsg.seteBase(rel);
+        concreteBaseAsg.setNext(new LinkedList<>());
+        concreteBaseAsg.getNext().add(relBaseAsg);
+
+
+        EUntyped untyped = new EUntyped();
+        untyped.seteNum(3);
+
+        EBaseAsg untypedBaseAsg = new EBaseAsg();
+        untypedBaseAsg.seteBase(untyped);
+        relBaseAsg.setNext(new LinkedList<>());
+        relBaseAsg.getNext().add(untypedBaseAsg);
+
+        List<PlanExtensionStrategy<Plan, AsgQuery>> extenders = new LinkedList<>();
+        extenders.add(new InitialPlanGeneratorExtensionStrategy());
+        extenders.add(new AllDirectionsPlanExtensionStrategy());
+        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(extenders);
+
+        PlanPruneStrategy<Plan, SingleCost> pruneStrategy = new NoPruningPruneStrategy<>();
+        PlanValidator<Plan, AsgQuery> validator = new DummyValidator<>();
+
+        PlanWrapperFactory<Plan, AsgQuery, SingleCost> planWrapperFactory = new SimpleWrapperFactory();
+
+        BottomUpPlanBuilderImpl<Plan, AsgQuery, SingleCost> bottomUpPlanBuilder = new BottomUpPlanBuilderImpl<>(compositePlanExtensionStrategy,
+                                                                                                                pruneStrategy,
+                                                                                                                pruneStrategy,
+                                                                                                                validator,
+                                                                                                                planWrapperFactory);
+
+
+        Iterable<PlanWrapper<Plan, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query, new DefaultChoiceCriteria<>());
+
+        List<PlanWrapper<Plan, SingleCost>> planList = new LinkedList<>();
+        planWrappers.forEach(planList::add);
+
+        Assert.assertEquals(1, planList.size());
     }
 }
