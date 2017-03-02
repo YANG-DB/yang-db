@@ -1,5 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,14 +15,28 @@ import java.util.List;
 public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
     final Logger logger = LoggerFactory.getLogger(BottomUpPlanBuilderImpl.class);
 
+    @Inject
+    public BottomUpPlanBuilderImpl(PlanExtensionStrategy<P, Q> extensionStrategy,
+                                   @Named("GlobalPruningStrategy") PlanPruneStrategy<P, C> globalPruneStrategy,
+                                   @Named("LocalPruningStrategy") PlanPruneStrategy<P, C> localPruneStrategy,
+                                   PlanValidator<P, Q> planValidator,
+                                   PlanWrapperFactory<P,Q,C> wrapperFactory) {
+        this.extensionStrategy = extensionStrategy;
+        this.globalPruneStrategy = globalPruneStrategy;
+        this.localPruneStrategy = localPruneStrategy;
+        this.planValidator = planValidator;
+        this.wrapperFactory = wrapperFactory;
+    }
+
     //region Fields
     private PlanExtensionStrategy<P,Q> extensionStrategy;
     private PlanPruneStrategy<P,C> globalPruneStrategy;
     private PlanPruneStrategy<P,C> localPruneStrategy;
     private PlanValidator<P,Q> planValidator;
-    private PlanWrapperFactory<P,C> wrapperFactory;
+    private PlanWrapperFactory<P,Q,C> wrapperFactory;
     //endregion
 
+    //region Methods
     @Override
     public Iterable<PlanWrapper<P,C>> build(Q query, ChoiceCriteria<P,C> choiceCriteria){
         boolean shouldStop = false;
@@ -29,7 +45,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
         // Generate seed plans (plan is null)
         for(P seedPlan : extensionStrategy.extendPlan(null, query)){
             if(planValidator.isPlanValid(seedPlan, query)){
-                PlanWrapper<P,C> planWrapper = wrapperFactory.wrapPlan(seedPlan);
+                PlanWrapper<P,C> planWrapper = wrapperFactory.wrapPlan(seedPlan, query);
                 currentPlans.add(planWrapper);
                 if(choiceCriteria.addPlanAndCheckEndCondition(planWrapper)){
                     shouldStop = true;
@@ -46,13 +62,16 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
                 List<PlanWrapper<P,C>> planExtensions = new LinkedList<>();
                 for(P extendedPlan : extensionStrategy.extendPlan(partialPlan.getPlan(), query)){
                     if(planValidator.isPlanValid(extendedPlan, query)){
-                        planExtensions.add(wrapperFactory.wrapPlan(extendedPlan));
+                        planExtensions.add(wrapperFactory.wrapPlan(extendedPlan, query));
                     }
                 }
-                newPlans.addAll(localPruneStrategy.prunePlans(planExtensions));
+                for(PlanWrapper<P,C> pw : localPruneStrategy.prunePlans(planExtensions))
+                    newPlans.add(pw);
             }
 
-            currentPlans = globalPruneStrategy.prunePlans(newPlans);
+            currentPlans.clear();
+            for(PlanWrapper<P,C> pw : globalPruneStrategy.prunePlans(newPlans))
+                currentPlans.add(pw);
             for(PlanWrapper<P,C> planWrapper : currentPlans){
                 if(choiceCriteria.addPlanAndCheckEndCondition(planWrapper)) {
                     shouldStop = true;
@@ -64,5 +83,6 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
         return choiceCriteria.getChosenPlans();
     }
 
+    //endregion
 
 }
