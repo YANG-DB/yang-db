@@ -3,64 +3,19 @@ package com.kayhut.fuse.model.queryAsg;
 import com.kayhut.fuse.model.query.EBase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by benishue on 23-Feb-17.
  */
 public class EBaseAsg{
-
-    public List<EBaseAsg> getNext() {
-        return next;
-    }
-
-    public void setNext(List<EBaseAsg> next) {
-        this.next = next;
-    }
-
-    public List<EBaseAsg> getB() {
-        return b;
-    }
-
-    public void setB(List<EBaseAsg> b) {
-        this.b = b;
-    }
-
-    public EBase geteBase() {
-        return eBase;
-    }
-
-    public void seteBase(EBase eBase) {
-        this.eBase = eBase;
-    }
-
-    public List<EBaseAsg> getParents() {
-        return parents;
-    }
-
-    public void setParents(List<EBaseAsg> parents) {
-        this.parents = parents;
-    }
-
-    public void AddToNextList(EBaseAsg eBaseAsg)
-    {
-        if (this.next == null)
-            this.next = new ArrayList<EBaseAsg>();
-        this.next.add(eBaseAsg);
-    }
-
-    public void AddToParentsList(EBaseAsg eBaseAsg)
-    {
-        if (this.parents == null)
-            this.parents = new ArrayList<EBaseAsg>();
-        this.parents.add(eBaseAsg);
-    }
-
+    //region EBaseAsgBuilder
     public static final class EBaseAsgBuilder {
         private EBase eBase;
         private List<EBaseAsg> next;
         private List<EBaseAsg> b;
-        private List<EBaseAsg> parents;
+        private List<EBaseAsg> parent;
 
         private EBaseAsgBuilder() {
         }
@@ -85,27 +40,77 @@ public class EBaseAsg{
         }
 
         public EBaseAsgBuilder withParents(List<EBaseAsg> parents) {
-            this.parents = parents;
+            this.parent = parents;
             return this;
         }
 
         public EBaseAsg build() {
-            EBaseAsg eBaseAsg = new EBaseAsg();
-            eBaseAsg.setNext(next);
-            eBaseAsg.setB(b);
-            eBaseAsg.setParents(parents);
-            eBaseAsg.eBase = this.eBase;
+            EBaseAsg eBaseAsg = new EBaseAsg(this.eBase, this.next, this.b, this.parent);
             return eBaseAsg;
         }
     }
+    //endregion
 
+    //region Constructors
+    public EBaseAsg(EBase eBase, List<EBaseAsg> next, List<EBaseAsg> b, List<EBaseAsg> parent) {
+        this.eBase = eBase;
+        this.next = next == null ? new ArrayList<>() : new ArrayList<>(next);
+        this.b = b == null ? new ArrayList<>() : new ArrayList<>(b);
+        this.parent = parent == null ? new ArrayList<>() : new ArrayList<>(parent);
+    }
+    //endregion
 
+    //region Properties
+    public List<EBaseAsg> getNext() {
+        return Collections.unmodifiableList(this.next);
+    }
+
+    public List<EBaseAsg> getB() {
+        return Collections.unmodifiableList(this.b);
+    }
+
+    public EBase geteBase() {
+        return this.eBase;
+    }
+
+    public List<EBaseAsg> getParents() {
+        return Collections.unmodifiableList(this.parent);
+    }
+    //endregion
+
+    //region Public Methods
+    public void addNextChild(EBaseAsg eBaseAsg)
+    {
+        if (!this.next.contains(eBaseAsg)) {
+            this.next.add(eBaseAsg);
+        }
+
+        eBaseAsg.addToParents(this);
+    }
+
+    public void addBChild(EBaseAsg eBaseAsg)
+    {
+        if (!this.b.contains(eBaseAsg)) {
+            this.b.add(eBaseAsg);
+        }
+
+        eBaseAsg.addToParents(this);
+    }
+    //endregion
+
+    //region Private Methods
+    private void addToParents(EBaseAsg eBaseAsg) {
+        if (!this.parent.contains(eBaseAsg)) {
+            this.parent.add(eBaseAsg);
+        }
+    }
+    //endregion
 
     //region Fields
     private EBase eBase;
     private List<EBaseAsg> next;
     private List<EBaseAsg> b;
-    private List<EBaseAsg> parents;
+    private List<EBaseAsg> parent;
     //endregion
 
 

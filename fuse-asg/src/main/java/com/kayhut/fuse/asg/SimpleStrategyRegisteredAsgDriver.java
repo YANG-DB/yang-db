@@ -9,7 +9,7 @@ import com.kayhut.fuse.model.process.AsgData;
 import com.kayhut.fuse.model.process.ProcessElement;
 import com.kayhut.fuse.model.process.QueryData;
 import com.kayhut.fuse.model.queryAsg.AsgQuery;
-import org.jooq.lambda.Seq;
+import javaslang.collection.Stream;
 
 import java.util.Collections;
 
@@ -34,9 +34,8 @@ public class SimpleStrategyRegisteredAsgDriver implements ProcessElement<QueryDa
     @Override
     @Subscribe
     public AsgData process(QueryData input) {
-        //// TODO: 01/03/2017 apply asg builder
-        AsgQuery asgQuery = null;
-        Seq.seq(this.strategies).forEach(strategy -> strategy.apply(asgQuery));
+        AsgQuery asgQuery = new RecTwoPassAsgQuerySupplier(input.getQuery()).get();
+        Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery));
         return submit(eventBus, new AsgData(input.getQueryMetadata(), input.getQuery()));
     }
     //endregion
