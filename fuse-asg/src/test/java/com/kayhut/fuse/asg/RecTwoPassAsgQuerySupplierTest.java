@@ -24,6 +24,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     private static Query q1Obj = new Query();
     private static Query q5Obj = new Query();
+    private static Query q9Obj = new Query();
 
     @Test
     public void transformQuery1ToAsgQuery() throws Exception {
@@ -71,8 +72,16 @@ public class RecTwoPassAsgQuerySupplierTest {
         }
         HashSet<Integer> expectedNextSet = new HashSet<Integer>(Arrays.asList(3,5,11));
         Assert.assertEquals(expectedNextSet, setOfNext);
+    }
 
+    @Test
+    public void transformQuery9ToAsgQuery() throws Exception {
+        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q9Obj);
+        AsgQuery asgQuery = asgSupplier.get();
+        assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
+        //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
+        assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
     }
 
     private static void createQ1()
@@ -156,6 +165,14 @@ public class RecTwoPassAsgQuerySupplierTest {
         }
     }
 
+    private static void createQ9(){
+        try {
+            q9Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q9\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":4,\"b\":5},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":5,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"1\",\"con\":{\"op\":\"in range\",\"expr\":[\"980-01-01T00:00:00.000Z\",\"981-01-01T00:00:00.000Z\"],\"iType\":\"[]\"}},{\"eNum\":6,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":7,\"b\":8},{\"eNum\":7,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":8,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"in range\",\"expr\":[\"984-01-01T00:00:00.000\",\"985-01-01T00:00:00.000\"],\"iType\":\"[]\"}}]}", Query.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Before
     public void setup() {
     }
@@ -164,8 +181,7 @@ public class RecTwoPassAsgQuerySupplierTest {
     public static void setUpOnce() {
         createQ1();
         createQ5();
+        createQ9();
     }
-
-
 
 }

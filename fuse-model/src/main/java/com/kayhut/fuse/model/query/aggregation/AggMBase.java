@@ -1,9 +1,11 @@
 package com.kayhut.fuse.model.query.aggregation;
 
+import com.kayhut.fuse.model.query.EBase;
+
 /**
  * Created by User on 19/02/2017.
  */
-public abstract class AggMBase {
+public abstract class AggMBase extends AggBase {
     //region Properties
     public int getN() {
         return this.n;

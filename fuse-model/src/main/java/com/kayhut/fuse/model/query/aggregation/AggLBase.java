@@ -6,7 +6,7 @@ import com.kayhut.fuse.model.query.EBase;
 /**
  * Created by User on 19/02/2017.
  */
-public abstract class AggLBase extends EBase {
+public abstract class AggLBase extends AggBase {
     //region Properties
     public String getATag() {
         return this.aTag;

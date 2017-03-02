@@ -9,11 +9,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Constraint {
 
     //region Properties
-    public CostraintOp getOp() {
+    public ConstraintOp getOp() {
         return op;
     }
 
-    public void setOp(CostraintOp op) {
+    public void setOp(ConstraintOp op) {
         this.op = op;
     }
 
@@ -35,7 +35,7 @@ public class Constraint {
     //endregion
 
     //region Fields
-    private CostraintOp op;
+    private ConstraintOp op;
     private Object expr;
     private String iType;
     //endregion

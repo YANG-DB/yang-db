@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.queryAsg.AsgQuery;
 import com.kayhut.fuse.model.queryAsg.EBaseAsg;
 import javaslang.collection.Stream;
+import org.neo4j.shell.kernel.apps.cypher.Foreach;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
         Map<Integer, EBase> queryElements = new HashMap<>();
         Stream.ofAll(query.getElements()).forEach(eBase -> queryElements.put(eBase.geteNum(), eBase));
 
-        //working with the first element
+        //Working with the first element
         Start start = (Start)queryElements.get(0);
 
         //Building the root of the AsgQuery (i.e., start Ebase)
@@ -32,7 +33,9 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
                 .withEBase(start)
                 .withParents(null).build();
 
-        buildSubGraphRec(eBaseAsgStart, queryElements);
+        buildSubGraphRecForNext(eBaseAsgStart, queryElements);
+
+        buildSubGraphForB(queryAsgElements, queryElements);
 
         AsgQuery asgQuery = AsgQuery.AsgQueryBuilder.anAsgQuery()
                 .withName(query.getName())
@@ -42,21 +45,38 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
         return asgQuery;
     }
 
-    //region Private Methods
-    private void buildSubGraphRec(EBaseAsg eBaseAsg, Map<Integer, EBase> queryElements) {
-        Stream.ofAll(new NextEbaseFactory().supply(eBaseAsg.geteBase()))
-                .forEach(eNum -> {
-                    EBaseAsg eBaseAsgNext = EBaseAsg.EBaseAsgBuilder.anEBaseAsg()
-                            .withEBase(queryElements.get(eNum))
-                            .build();
-
-                    eBaseAsg.addNextChild(eBaseAsgNext);
-                    buildSubGraphRec(eBaseAsgNext, queryElements);
-                });
+    private void buildSubGraphForB(Map<Integer, EBaseAsg> queryAsgElements, Map<Integer, EBase> queryElements) {
+        queryElements.forEach( (eNum,eBase) -> {
+            Stream.ofAll(new BEbaseFactory().supply(eBase)).forEach(
+                    b -> {
+                        EBaseAsg eBaseAsg = queryAsgElements.get(eNum);
+                        EBaseAsg eBaseAsgBChild = EBaseAsg.EBaseAsgBuilder.anEBaseAsg()
+                                .withEBase(queryElements.get(b))
+                                .build();
+                        eBaseAsg.addBChild(eBaseAsgBChild);
+                    }
+            );
+        });
     }
-    //endregion
+
+    //region Private Methods
+    private void buildSubGraphRecForNext(EBaseAsg eBaseAsg, Map<Integer, EBase> queryElements) {
+        Stream.ofAll(new NextEbaseFactory().supply(eBaseAsg.geteBase())).forEach(eNum -> {
+             EBase ebase =  queryElements.get(eNum);
+             EBaseAsg eBaseAsgNext = EBaseAsg.EBaseAsgBuilder.anEBaseAsg()
+                        .withEBase(ebase)
+                        .build();
+            eBaseAsg.addNextChild(eBaseAsgNext);
+            buildSubGraphRecForNext(eBaseAsgNext, queryElements);
+            queryAsgElements.put(eBaseAsg.geteBase().geteNum(),eBaseAsg);
+            queryAsgElements.put(eBaseAsgNext.geteBase().geteNum(),eBaseAsgNext);
+        });
+    }
+   //endregion
 
     //region Fields
     private Query query;
+    private Map<Integer, EBaseAsg> queryAsgElements = new HashMap<>();
+
     //endregion
 }
