@@ -2,11 +2,8 @@ package com.kayhut.fuse.asg;
 
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.model.query.*;
-import com.kayhut.fuse.model.queryAsg.AsgQuery;
-import com.kayhut.fuse.model.queryAsg.EBaseAsg;
+import com.kayhut.fuse.model.queryAsg.*;
 import javaslang.collection.Stream;
-import org.neo4j.shell.kernel.apps.cypher.Foreach;
-
 import java.util.*;
 
 /**
@@ -35,7 +32,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
 
         buildSubGraphRecForNext(eBaseAsgStart, queryElements);
 
-        buildSubGraphForB(queryAsgElements, queryElements);
+        buildSubGraphForB(queryElements);
 
         AsgQuery asgQuery = AsgQuery.AsgQueryBuilder.anAsgQuery()
                 .withName(query.getName())
@@ -43,20 +40,6 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
                 .withStart(eBaseAsgStart).build();
 
         return asgQuery;
-    }
-
-    private void buildSubGraphForB(Map<Integer, EBaseAsg> queryAsgElements, Map<Integer, EBase> queryElements) {
-        queryElements.forEach( (eNum,eBase) -> {
-            Stream.ofAll(new BEbaseFactory().supply(eBase)).forEach(
-                    b -> {
-                        EBaseAsg eBaseAsg = queryAsgElements.get(eNum);
-                        EBaseAsg eBaseAsgBChild = EBaseAsg.EBaseAsgBuilder.anEBaseAsg()
-                                .withEBase(queryElements.get(b))
-                                .build();
-                        eBaseAsg.addBChild(eBaseAsgBChild);
-                    }
-            );
-        });
     }
 
     //region Private Methods
@@ -68,9 +51,31 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
                         .build();
             eBaseAsg.addNextChild(eBaseAsgNext);
             buildSubGraphRecForNext(eBaseAsgNext, queryElements);
-            queryAsgElements.put(eBaseAsg.geteBase().geteNum(),eBaseAsg);
-            queryAsgElements.put(eBaseAsgNext.geteBase().geteNum(),eBaseAsgNext);
+            addAsgElementToMap(eBaseAsg.geteBase().geteNum(),eBaseAsg);
+            addAsgElementToMap(eBaseAsgNext.geteBase().geteNum(),eBaseAsgNext);
         });
+    }
+
+    private void buildSubGraphForB(Map<Integer, EBase> queryElements) {
+        queryElements.forEach( (eNum,eBase) -> {
+            Stream.ofAll(new BEbaseFactory().supply(eBase)).forEach(
+                    b -> {
+                        EBaseAsg eBaseAsg = this.queryAsgElements.get(eNum);
+                        EBaseAsg eBaseAsgBChild = EBaseAsg.EBaseAsgBuilder.anEBaseAsg()
+                                .withEBase(queryElements.get(b))
+                                .build();
+                        eBaseAsg.addBChild(eBaseAsgBChild);
+                    }
+            );
+        });
+    }
+
+    private void addAsgElementToMap(int key, EBaseAsg eBaseAsg)
+    {
+        if (!this.queryAsgElements.containsKey(key))
+        {
+            this.queryAsgElements.put(key,eBaseAsg);
+        }
     }
    //endregion
 
