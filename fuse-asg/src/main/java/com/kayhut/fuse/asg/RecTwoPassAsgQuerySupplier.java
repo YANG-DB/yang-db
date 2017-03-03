@@ -10,6 +10,7 @@ import java.util.*;
  * Created by benishue on 27-Feb-17.
  */
 public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
+
     //region Constructor
     public RecTwoPassAsgQuerySupplier(Query query) {
         this.query = query;
@@ -41,6 +42,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
 
         return asgQuery;
     }
+    //endregion
 
     //region Private Methods
     private void buildSubGraphRecForNext(EBaseAsg eBaseAsg, Map<Integer, EBase> queryElements) {
