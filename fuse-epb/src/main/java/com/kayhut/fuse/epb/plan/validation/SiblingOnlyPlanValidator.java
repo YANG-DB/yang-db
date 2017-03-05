@@ -16,7 +16,7 @@ public class SiblingOnlyPlanValidator implements PlanValidator<Plan, AsgQuery>{
 
     @Override
     public boolean isPlanValid(Plan plan, AsgQuery query) {
-        Map<Integer, EBaseAsg> eBaseAsgMap = SimpleExtenderUtils.flattenQuery(query);
+        /*Map<Integer, EBaseAsg> eBaseAsgMap = SimpleExtenderUtils.flattenQuery(query);
         PlanOpBase lastOp = null;
         EBaseAsg lastOpElem = null;
         for(PlanOpBase currentOp : plan.getOps()){
@@ -30,7 +30,7 @@ public class SiblingOnlyPlanValidator implements PlanValidator<Plan, AsgQuery>{
             }
             lastOp = currentOp;
             lastOpElem = currentOpElem;
-        }
+        }*/
 
         return true;
     }

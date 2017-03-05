@@ -46,7 +46,7 @@ public class SimpleBuilderTests {
 
     @Test
     public void TestInitialCreationMultipleEntities(){
-        Pair<AsgQuery, EBaseAsg> query = BuilderTestUtil.createTwoEntitiesPathQuery();
+        Pair<AsgQuery, EBaseAsg<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
         InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
         Iterable<Plan> plans = strategy.extendPlan(null, query.getLeft());
@@ -55,7 +55,7 @@ public class SimpleBuilderTests {
 
         Assert.assertEquals(2,plansList.size());
 
-        EBaseAsg untypedBaseAsg = query.getRight().getNext().get(0).getNext().get(0);
+        EBaseAsg<? extends EBase> untypedBaseAsg = query.getRight().getNext().get(0).getNext().get(0);
 
         boolean foundFirst = false, foundSecond = false;
         for(Plan plan : plans){

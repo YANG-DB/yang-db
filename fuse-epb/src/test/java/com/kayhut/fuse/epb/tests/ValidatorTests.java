@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.tests;
 import com.kayhut.fuse.epb.plan.validation.SiblingOnlyPlanValidator;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.queryAsg.AsgQuery;
 import com.kayhut.fuse.model.queryAsg.EBaseAsg;
 import org.apache.commons.lang3.tuple.Pair;
@@ -19,7 +20,7 @@ public class ValidatorTests {
 
     @Test
     public void SiblingValidatorLegalPlanTest(){
-        Pair<AsgQuery, EBaseAsg> pathQuery = BuilderTestUtil.createTwoEntitiesPathQuery();
+        Pair<AsgQuery, EBaseAsg<? extends EBase>> pathQuery = BuilderTestUtil.createTwoEntitiesPathQuery();
         Plan plan = BuilderTestUtil.createPlanForTwoEntitiesPathQuery(pathQuery.getKey());
         SiblingOnlyPlanValidator validator = new SiblingOnlyPlanValidator();
         Assert.assertTrue(validator.isPlanValid(plan, pathQuery.getLeft()));
@@ -27,7 +28,7 @@ public class ValidatorTests {
 
     @Test
     public void SiblingValidatorNotLegalPlanTest(){
-        Pair<AsgQuery, EBaseAsg> pathQuery = BuilderTestUtil.createTwoEntitiesPathQuery();
+        Pair<AsgQuery, EBaseAsg<? extends EBase>> pathQuery = BuilderTestUtil.createTwoEntitiesPathQuery();
         Plan plan = BuilderTestUtil.createPlanForTwoEntitiesPathQuery(pathQuery.getKey());
         List<PlanOpBase> ops = new LinkedList<>();
         ops.add(plan.getOps().get(0));

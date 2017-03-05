@@ -2,6 +2,7 @@ package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.EEntityBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.RelProp;
@@ -31,9 +32,9 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         return plans;
     }
 
-    private void extendPart(EBaseAsg handledPartToExtend, Map<Integer, EBaseAsg> queryPartsNotHandled, List<Plan> plans, Plan originalPlan) {
+    private void extendPart(EBaseAsg<? extends EBase> handledPartToExtend, Map<Integer, EBaseAsg> queryPartsNotHandled, List<Plan> plans, Plan originalPlan) {
         if(SimpleExtenderUtils.shouldAdvanceToNext(handledPartToExtend)){
-            for(EBaseAsg next : handledPartToExtend.getNext()){
+            for(EBaseAsg<? extends EBase> next : handledPartToExtend.getNext()){
                 if(SimpleExtenderUtils.shouldAddElement(next) && queryPartsNotHandled.containsKey(next.geteNum())){
                     PlanOpBase op = createOpForElement(next);
                     Plan newPlan = new Plan(new LinkedList<>(originalPlan.getOps()));

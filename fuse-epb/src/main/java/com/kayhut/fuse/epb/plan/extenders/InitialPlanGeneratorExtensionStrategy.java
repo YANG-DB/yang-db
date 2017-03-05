@@ -5,10 +5,7 @@ import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.query.EConcrete;
-import com.kayhut.fuse.model.query.EEntityBase;
-import com.kayhut.fuse.model.query.ETyped;
-import com.kayhut.fuse.model.query.EUntyped;
+import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.queryAsg.AsgQuery;
 import com.kayhut.fuse.model.queryAsg.EBaseAsg;
 import com.kayhut.fuse.model.results.Entity;
@@ -29,7 +26,7 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
         return plans;
     }
 
-    private void recursiveSeedGenerator(EBaseAsg asgNode, List<Plan> plans, HashSet<EBaseAsg> visitedNodes){
+    private void recursiveSeedGenerator(EBaseAsg<? extends EBase> asgNode, List<Plan> plans, HashSet<EBaseAsg> visitedNodes){
         visitedNodes.add(asgNode);
         if(asgNode.geteBase() instanceof EEntityBase){
             EEntityBase eEntityBase = (EEntityBase) asgNode.geteBase();
@@ -41,14 +38,14 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
             plans.add(new Plan(ops));
         }
         if(asgNode.getNext() != null) {
-            for (EBaseAsg next : asgNode.getNext()) {
+            for (EBaseAsg<? extends EBase> next : asgNode.getNext()) {
                 if (!visitedNodes.contains(next)) {
                     recursiveSeedGenerator(next, plans, visitedNodes);
                 }
             }
         }
         if(asgNode.getB() != null) {
-            for (EBaseAsg next : asgNode.getB()) {
+            for (EBaseAsg<? extends EBase> next : asgNode.getB()) {
                 if (!visitedNodes.contains(next)) {
                     recursiveSeedGenerator(next, plans, visitedNodes);
                 }

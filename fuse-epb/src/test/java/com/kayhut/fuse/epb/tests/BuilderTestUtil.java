@@ -4,16 +4,14 @@ import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
-import com.kayhut.fuse.model.query.EConcrete;
-import com.kayhut.fuse.model.query.EEntityBase;
-import com.kayhut.fuse.model.query.EUntyped;
-import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.queryAsg.AsgQuery;
 import com.kayhut.fuse.model.queryAsg.EBaseAsg;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.management.relation.Relation;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,63 +20,65 @@ import java.util.List;
  */
 public class BuilderTestUtil {
     public static Pair<AsgQuery, EBaseAsg> CreateSingleEntityQuery(){
-        AsgQuery query = new AsgQuery();
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("Person");
-        EBaseAsg eBaseAsg = new EBaseAsg();
-        eBaseAsg.seteBase(concrete);
-        eBaseAsg.seteNum(concrete.geteNum());
-        query.setStart(eBaseAsg);
-        return new ImmutablePair<>(query, eBaseAsg);
+        EBaseAsg<EConcrete> ebaseAsg = EBaseAsg.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).build();
+
+        Start start = new Start();
+        start.seteNum(0);
+        start.setNext(1);
+        EBaseAsg<Start> startAsg = EBaseAsg.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(ebaseAsg).build();
+
+        AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(startAsg).build();
+
+        return new ImmutablePair<>(query, ebaseAsg);
     }
 
-    public static Pair<AsgQuery, EBaseAsg> createTwoEntitiesPathQuery(){
-        AsgQuery query = new AsgQuery();
-        EConcrete concrete = new EConcrete();
-        concrete.seteNum(1);
-        concrete.seteTag("Person");
-        EBaseAsg concreteBaseAsg = new EBaseAsg();
-        concreteBaseAsg.seteBase(concrete);
-        concreteBaseAsg.seteNum(concrete.geteNum());
-        query.setStart(concreteBaseAsg);
+    public static Pair<AsgQuery, EBaseAsg<? extends EBase>> createTwoEntitiesPathQuery(){
+        EUntyped untyped = new EUntyped();
+        untyped.seteNum(3);
+        EBaseAsg<EUntyped> unTypedAsg3 = EBaseAsg.EBaseAsgBuilder.<EUntyped>anEBaseAsg().withEBase(untyped).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        EBaseAsg relBaseAsg = new EBaseAsg();
-        relBaseAsg.seteNum(rel.geteNum());
-        relBaseAsg.seteBase(rel);
-        concreteBaseAsg.setNext(new LinkedList<>());
-        concreteBaseAsg.getNext().add(relBaseAsg);
-        concreteBaseAsg.setB(new LinkedList<>());
+        EBaseAsg<Rel> relAsg2 = EBaseAsg.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(unTypedAsg3).build();
 
-        EUntyped untyped = new EUntyped();
-        untyped.seteNum(3);
+        EConcrete concrete = new EConcrete();
+        concrete.seteNum(1);
+        concrete.seteTag("Person");
+        EBaseAsg<EConcrete> concreteAsg1 = EBaseAsg.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).withNext(relAsg2).build();
 
-        EBaseAsg untypedBaseAsg = new EBaseAsg();
-        untypedBaseAsg.seteBase(untyped);
-        relBaseAsg.setNext(new LinkedList<>());
-        relBaseAsg.getNext().add(untypedBaseAsg);
-        relBaseAsg.setB(new LinkedList<>());
-        return  new ImmutablePair<>(query, concreteBaseAsg);
+        Start start = new Start();
+        start.seteNum(0);
+        start.setNext(1);
+        EBaseAsg<Start> startAsg = EBaseAsg.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg1).build();
+
+        AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(startAsg).build();
+
+        return  new ImmutablePair<>(query, concreteAsg1);
     }
 
     public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery){
         List<PlanOpBase> ops = new LinkedList<>();
-        EBaseAsg start = asgQuery.getStart();
-        EntityOp concOp = new EntityOp((EEntityBase) start.geteBase());
-        concOp.seteNum(asgQuery.getStart().geteNum());
+
+        EBaseAsg<Start> startAsg = asgQuery.getStart();
+        EBaseAsg<? extends EBase> entityAsg = startAsg.getNext().get(0);
+
+        EntityOp concOp = new EntityOp((EEntityBase) entityAsg.geteBase());
+        concOp.seteNum(entityAsg.geteNum());
         ops.add(concOp);
-        EBaseAsg relBaseAsg = start.getNext().get(0);
-        Rel rel = (Rel)relBaseAsg.geteBase();
-        RelationOp relOp = new RelationOp();
-        relOp.setRelation(rel);
+
+        EBaseAsg<Rel> relBaseAsg = (EBaseAsg<Rel>)entityAsg.getNext().get(0);
+        Rel rel = relBaseAsg.geteBase();
+        RelationOp relOp = new RelationOp(rel);
         relOp.seteNum(relBaseAsg.geteNum());
         ops.add(relOp);
-        EBaseAsg unBaseAsg = relBaseAsg.getNext().get(0);
+
+        EBaseAsg<? extends EBase> unBaseAsg = relBaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp((EEntityBase) unBaseAsg.geteBase());
-        unBaseAsg.seteNum(unBaseAsg.geteNum());
         ops.add(unOp);
+
         return new Plan(ops);
     }
 }

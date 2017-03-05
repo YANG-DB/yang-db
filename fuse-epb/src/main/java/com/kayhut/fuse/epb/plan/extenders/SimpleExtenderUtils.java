@@ -20,14 +20,14 @@ public class SimpleExtenderUtils {
     }
 
     public static void flattenQueryRecursive(EBaseAsg element, Map<Integer, EBaseAsg> allElements){
-        if(!allElements.containsKey(element.geteNum())) {
+        /*if(!allElements.containsKey(element.geteNum())) {
             if(shouldAddElement(element))
                 allElements.put(element.geteNum(), element);
             if(shouldAdvanceToNext(element) && element.getNext() != null)
                 element.getNext().forEach(e -> flattenQueryRecursive(e, allElements));
             if(shouldAdvanceToBs(element) && element.getB() != null)
                 element.getB().forEach(e -> flattenQueryRecursive(e, allElements));
-        }
+        }*/
     }
 
     public static boolean shouldAdvanceToBs(EBaseAsg element) {
