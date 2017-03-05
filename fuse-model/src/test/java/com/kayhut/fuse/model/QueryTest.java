@@ -2,6 +2,10 @@ package com.kayhut.fuse.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.quant.Quant1;
 import org.json.JSONException;
 import org.junit.*;
 import org.skyscreamer.jsonassert.JSONAssert;

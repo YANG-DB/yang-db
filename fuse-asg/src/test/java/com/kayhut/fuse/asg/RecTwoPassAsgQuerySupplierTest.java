@@ -2,8 +2,11 @@ package com.kayhut.fuse.asg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
+import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.model.query.*;
-import com.kayhut.fuse.model.queryAsg.*;
+import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.asgQuery.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,15 +43,15 @@ public class RecTwoPassAsgQuerySupplierTest {
 
         assertEquals(asgQuery.getStart().getNext().get(0).getNext().get(0).geteBase().geteNum(), 2);
 
-        EBaseAsg<? extends EBase> elementEbaseAsg3 = asgQuery.getStart().getNext().get(0).getNext().get(0).getNext().get(0);
+        AsgEBase<? extends EBase> elementEbaseAsgEBase3 = asgQuery.getStart().getNext().get(0).getNext().get(0).getNext().get(0);
 
-        assertEquals(elementEbaseAsg3.geteBase().geteNum(), 3);
+        assertEquals(elementEbaseAsgEBase3.geteBase().geteNum(), 3);
 
         //Parent of element( eNum = 3) => element with eNum = 2
-        assertEquals(elementEbaseAsg3.getParents().get(0).geteBase().geteNum(), 2);
+        assertEquals(elementEbaseAsgEBase3.getParents().get(0).geteBase().geteNum(), 2);
 
         //No next for the last element
-        assertEquals(elementEbaseAsg3.getNext().size() ,0);
+        assertEquals(elementEbaseAsgEBase3.getNext().size() ,0);
     }
 
     @Test
@@ -61,15 +64,15 @@ public class RecTwoPassAsgQuerySupplierTest {
         assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
 
 
-        EBaseAsg<? extends EBase> elementEbaseAsg1 = asgQuery.getStart().getNext().get(0);
-        EBaseAsg<? extends EBase> elementEbaseAsg2 = elementEbaseAsg1.getNext().get(0);
+        AsgEBase<? extends EBase> elementEbaseAsgEBase1 = asgQuery.getStart().getNext().get(0);
+        AsgEBase<? extends EBase> elementEbaseAsgEBase2 = elementEbaseAsgEBase1.getNext().get(0);
 
 
         //{"eNum": 2, ..., "next": [3,5,11]
         HashSet<Integer> setOfNext= new HashSet<>();
-        for (EBaseAsg eBaseAsg : elementEbaseAsg2.getNext())
+        for (AsgEBase asgEBase : elementEbaseAsgEBase2.getNext())
         {
-            setOfNext.add(eBaseAsg.geteBase().geteNum());
+            setOfNext.add(asgEBase.geteBase().geteNum());
         }
         HashSet<Integer> expectedNextSet = new HashSet<>(Arrays.asList(3,5,11));
         Assert.assertEquals(expectedNextSet, setOfNext);
@@ -83,25 +86,25 @@ public class RecTwoPassAsgQuerySupplierTest {
 
         //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
         assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
-        EBaseAsg<? extends EBase> eBaseAsg1 = asgQuery.getStart().getNext().get(0);
-        assertEquals(eBaseAsg1.geteBase().geteNum(),1);
+        AsgEBase<? extends EBase> asgEBase1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(asgEBase1.geteBase().geteNum(),1);
 
-        EBaseAsg<? extends EBase> eBaseAsg2 = eBaseAsg1.getNext().get(0);
-        assertEquals(eBaseAsg2.geteBase().geteNum(),2);
+        AsgEBase<? extends EBase> asgEBase2 = asgEBase1.getNext().get(0);
+        assertEquals(asgEBase2.geteBase().geteNum(),2);
 
         //Entity Type enum = 2 has 2 children [3, 6]
-        assertEquals(eBaseAsg2.getNext().size(),2);
+        assertEquals(asgEBase2.getNext().size(),2);
 
         //Entity Enum 3
-        EBaseAsg<? extends EBase> eBaseAsg3 = eBaseAsg2.getNext().get(0);
-        assertEquals(eBaseAsg3.geteBase().geteNum(),3);
+        AsgEBase<? extends EBase> asgEBase3 = asgEBase2.getNext().get(0);
+        assertEquals(asgEBase3.geteBase().geteNum(),3);
 
         //Entity Enum 5
-        EBaseAsg<? extends EBase> eBaseAsg5 = eBaseAsg3.getB().get(0);
-        assertEquals(eBaseAsg5.geteBase().geteNum(),5);
+        AsgEBase<? extends EBase> asgEBase5 = asgEBase3.getB().get(0);
+        assertEquals(asgEBase5.geteBase().geteNum(),5);
 
         //Parent of enum=5 is enum=4
-        assertEquals(eBaseAsg5.getParents().get(0).geteBase().geteNum(),3);
+        assertEquals(asgEBase5.getParents().get(0).geteBase().geteNum(),3);
     }
 
     @Test
@@ -112,39 +115,39 @@ public class RecTwoPassAsgQuerySupplierTest {
 
         //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
         assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
-        EBaseAsg<? extends EBase> eBaseAsg1 = asgQuery.getStart().getNext().get(0);
-        assertEquals(eBaseAsg1.geteBase().geteNum(),1);
+        AsgEBase<? extends EBase> asgEBase1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(asgEBase1.geteBase().geteNum(),1);
 
-        EBaseAsg<? extends EBase> eBaseAsg2 = eBaseAsg1.getNext().get(0);
-        assertEquals(eBaseAsg2.geteBase().geteNum(),2);
+        AsgEBase<? extends EBase> asgEBase2 = asgEBase1.getNext().get(0);
+        assertEquals(asgEBase2.geteBase().geteNum(),2);
 
         //Entity Type enum = 2 has 1 child 4
-        assertEquals(eBaseAsg2.getNext().size(),1);
+        assertEquals(asgEBase2.getNext().size(),1);
 
         //Entity Enum 4
-        EBaseAsg eBaseAsg4 = eBaseAsg2.getNext().get(0);
-        assertEquals(eBaseAsg4.geteBase().geteNum(),4);
-        assertEquals(((ETyped)eBaseAsg4.geteBase()).geteTag(),"B");
+        AsgEBase asgEBase4 = asgEBase2.getNext().get(0);
+        assertEquals(asgEBase4.geteBase().geteNum(),4);
+        assertEquals(((ETyped) asgEBase4.geteBase()).geteTag(),"B");
 
         //Entity Enum 5
-        EBaseAsg<? extends EBase> eBaseAsg5 = eBaseAsg2.getB().get(0);
-        assertEquals(eBaseAsg5.geteBase().geteNum(),5);
+        AsgEBase<? extends EBase> asgEBase5 = asgEBase2.getB().get(0);
+        assertEquals(asgEBase5.geteBase().geteNum(),5);
 
         //{"eNum": 5, ..., "b": [6,7]
         HashSet<Integer> setOfB= new HashSet<>();
 
-        eBaseAsg5.getB().stream()
+        asgEBase5.getB().stream()
                 .forEach( eBaseAsg -> setOfB.add(eBaseAsg.geteBase().geteNum()));
 
         HashSet<Integer> expectedBSet = new HashSet<>(Arrays.asList(6,7));
         Assert.assertEquals(expectedBSet, setOfB);
 
         //Parent of enum=5 is enum=2
-        assertEquals(eBaseAsg5.getParents().get(0).geteBase().geteNum(),2);
+        assertEquals(asgEBase5.getParents().get(0).geteBase().geteNum(),2);
 
         //Entity Enum 7
-        EBaseAsg eBaseAsg7 = eBaseAsg5.getB().get(1);
-        assertEquals(eBaseAsg7.geteBase().geteNum(),7);
+        AsgEBase asgEBase7 = asgEBase5.getB().get(1);
+        assertEquals(asgEBase7.geteBase().geteNum(),7);
 
     }
 

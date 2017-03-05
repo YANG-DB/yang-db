@@ -1,6 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import com.kayhut.fuse.model.query.RelProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
 
 /**
  * Created by User on 22/02/2017.

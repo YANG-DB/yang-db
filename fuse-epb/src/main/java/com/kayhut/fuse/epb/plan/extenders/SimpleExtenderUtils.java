@@ -1,8 +1,8 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.queryAsg.AsgQuery;
-import com.kayhut.fuse.model.queryAsg.EBaseAsg;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,13 +13,13 @@ import java.util.Map;
  * Created by moti on 2/28/2017.
  */
 public class SimpleExtenderUtils {
-    public static Map<Integer, EBaseAsg> flattenQuery(AsgQuery query) {
-        Map<Integer, EBaseAsg> elements = new HashMap<>();
+    public static Map<Integer, AsgEBase> flattenQuery(AsgQuery query) {
+        Map<Integer, AsgEBase> elements = new HashMap<>();
         flattenQueryRecursive(query.getStart(), elements);
         return elements;
     }
 
-    public static void flattenQueryRecursive(EBaseAsg element, Map<Integer, EBaseAsg> allElements){
+    public static void flattenQueryRecursive(AsgEBase element, Map<Integer, AsgEBase> allElements){
         /*if(!allElements.containsKey(element.geteNum())) {
             if(shouldAddElement(element))
                 allElements.put(element.geteNum(), element);
@@ -30,20 +30,20 @@ public class SimpleExtenderUtils {
         }*/
     }
 
-    public static boolean shouldAdvanceToBs(EBaseAsg element) {
+    public static boolean shouldAdvanceToBs(AsgEBase element) {
         return element.getB() != null;
     }
 
-    public static boolean shouldAdvanceToNext(EBaseAsg element) {
+    public static boolean shouldAdvanceToNext(AsgEBase element) {
         return element.getNext() != null;
     }
 
-    public static boolean shouldAddElement(EBaseAsg element) {
+    public static boolean shouldAddElement(AsgEBase element) {
         return true;
     }
 
-    public static List<EBaseAsg> removeHandledParts(Plan plan, Map<Integer, EBaseAsg> queryParts) {
-        List<EBaseAsg> handledParts = new LinkedList<>();
+    public static List<AsgEBase> removeHandledParts(Plan plan, Map<Integer, AsgEBase> queryParts) {
+        List<AsgEBase> handledParts = new LinkedList<>();
         plan.getOps().forEach(op -> {
             handledParts.add(queryParts.get(op.geteNum()));
             queryParts.remove(op.geteNum());

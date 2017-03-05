@@ -6,7 +6,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.kayhut.fuse.asg.SimpleStrategyRegisteredAsgDriver;
+import com.kayhut.fuse.asg.strategy.SimpleStrategyRegisteredAsgDriver;
 import com.kayhut.fuse.epb.BaseEpbDriver;
 import com.kayhut.fuse.gta.BaseGtaDriver;
 import com.kayhut.fuse.model.process.*;

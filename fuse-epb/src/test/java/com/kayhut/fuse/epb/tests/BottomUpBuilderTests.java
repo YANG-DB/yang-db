@@ -9,11 +9,8 @@ import com.kayhut.fuse.epb.plan.wrappers.SimpleWrapperFactory;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.EConcrete;
-import com.kayhut.fuse.model.query.EUntyped;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.queryAsg.AsgQuery;
-import com.kayhut.fuse.model.queryAsg.EBaseAsg;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -99,7 +96,7 @@ public class BottomUpBuilderTests {
 
     @Test
     public void TestBuilderSimplePath(){
-        Pair<AsgQuery, EBaseAsg<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
+        Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
         List<PlanExtensionStrategy<Plan, AsgQuery>> extenders = new LinkedList<>();
         extenders.add(new InitialPlanGeneratorExtensionStrategy());
         extenders.add(new AllDirectionsPlanExtensionStrategy());

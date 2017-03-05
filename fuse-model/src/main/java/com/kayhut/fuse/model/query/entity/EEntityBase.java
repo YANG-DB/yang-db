@@ -1,4 +1,6 @@
-package com.kayhut.fuse.model.query;
+package com.kayhut.fuse.model.query.entity;
+
+import com.kayhut.fuse.model.query.EBase;
 
 /**
  * Created by User on 27/02/2017.

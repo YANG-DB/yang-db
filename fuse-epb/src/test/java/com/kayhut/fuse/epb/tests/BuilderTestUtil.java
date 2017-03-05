@@ -5,13 +5,14 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.query.*;
-import com.kayhut.fuse.model.queryAsg.AsgQuery;
-import com.kayhut.fuse.model.queryAsg.EBaseAsg;
+import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.management.relation.Relation;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,40 +20,40 @@ import java.util.List;
  * Created by moti on 3/2/2017.
  */
 public class BuilderTestUtil {
-    public static Pair<AsgQuery, EBaseAsg> CreateSingleEntityQuery(){
+    public static Pair<AsgQuery, AsgEBase> CreateSingleEntityQuery(){
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("Person");
-        EBaseAsg<EConcrete> ebaseAsg = EBaseAsg.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).build();
+        AsgEBase<EConcrete> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).build();
 
         Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
-        EBaseAsg<Start> startAsg = EBaseAsg.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(ebaseAsg).build();
+        AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(ebaseAsgEBase).build();
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(startAsg).build();
 
-        return new ImmutablePair<>(query, ebaseAsg);
+        return new ImmutablePair<>(query, ebaseAsgEBase);
     }
 
-    public static Pair<AsgQuery, EBaseAsg<? extends EBase>> createTwoEntitiesPathQuery(){
+    public static Pair<AsgQuery, AsgEBase<? extends EBase>> createTwoEntitiesPathQuery(){
         EUntyped untyped = new EUntyped();
         untyped.seteNum(3);
-        EBaseAsg<EUntyped> unTypedAsg3 = EBaseAsg.EBaseAsgBuilder.<EUntyped>anEBaseAsg().withEBase(untyped).build();
+        AsgEBase<EUntyped> unTypedAsg3 = AsgEBase.EBaseAsgBuilder.<EUntyped>anEBaseAsg().withEBase(untyped).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        EBaseAsg<Rel> relAsg2 = EBaseAsg.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(unTypedAsg3).build();
+        AsgEBase<Rel> relAsg2 = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(unTypedAsg3).build();
 
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("Person");
-        EBaseAsg<EConcrete> concreteAsg1 = EBaseAsg.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).withNext(relAsg2).build();
+        AsgEBase<EConcrete> concreteAsg1 = AsgEBase.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).withNext(relAsg2).build();
 
         Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
-        EBaseAsg<Start> startAsg = EBaseAsg.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg1).build();
+        AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg1).build();
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(startAsg).build();
 
@@ -62,20 +63,20 @@ public class BuilderTestUtil {
     public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery){
         List<PlanOpBase> ops = new LinkedList<>();
 
-        EBaseAsg<Start> startAsg = asgQuery.getStart();
-        EBaseAsg<? extends EBase> entityAsg = startAsg.getNext().get(0);
+        AsgEBase<Start> startAsg = asgQuery.getStart();
+        AsgEBase<? extends EBase> entityAsg = startAsg.getNext().get(0);
 
         EntityOp concOp = new EntityOp((EEntityBase) entityAsg.geteBase());
         concOp.seteNum(entityAsg.geteNum());
         ops.add(concOp);
 
-        EBaseAsg<Rel> relBaseAsg = (EBaseAsg<Rel>)entityAsg.getNext().get(0);
+        AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>)entityAsg.getNext().get(0);
         Rel rel = relBaseAsg.geteBase();
         RelationOp relOp = new RelationOp(rel);
         relOp.seteNum(relBaseAsg.geteNum());
         ops.add(relOp);
 
-        EBaseAsg<? extends EBase> unBaseAsg = relBaseAsg.getNext().get(0);
+        AsgEBase<? extends EBase> unBaseAsg = relBaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp((EEntityBase) unBaseAsg.geteBase());
         ops.add(unOp);
 

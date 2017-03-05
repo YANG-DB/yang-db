@@ -1,7 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.EEntityBase;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 
 /**
  * Created by User on 20/02/2017.
