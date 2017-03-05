@@ -25,6 +25,8 @@ public class RecTwoPassAsgQuerySupplierTest {
     private static Query q1Obj = new Query();
     private static Query q5Obj = new Query();
     private static Query q9Obj = new Query();
+    private static Query q187Obj = new Query();
+
 
     @Test
     public void transformQuery1ToAsgQuery() throws Exception {
@@ -70,7 +72,7 @@ public class RecTwoPassAsgQuerySupplierTest {
         {
             setOfNext.add(eBaseAsg.geteBase().geteNum());
         }
-        HashSet<Integer> expectedNextSet = new HashSet<Integer>(Arrays.asList(3,5,11));
+        HashSet<Integer> expectedNextSet = new HashSet<>(Arrays.asList(3,5,11));
         Assert.assertEquals(expectedNextSet, setOfNext);
     }
 
@@ -102,6 +104,52 @@ public class RecTwoPassAsgQuerySupplierTest {
         //Parent of enum=5 is enum=4
         assertEquals(eBaseAsg5.getParents().get(0).geteBase().geteNum(),3);
     }
+
+    @Test
+    public void transformQuery187ToAsgQuery() throws Exception {
+        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q187Obj);
+        AsgQuery asgQuery = asgSupplier.get();
+        assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
+
+        //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
+        assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
+        EBaseAsg eBaseAsg1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(eBaseAsg1.geteBase().geteNum(),1);
+
+        EBaseAsg eBaseAsg2 = eBaseAsg1.getNext().get(0);
+        assertEquals(eBaseAsg2.geteBase().geteNum(),2);
+
+        //Entity Type enum = 2 has 1 child 4
+        assertEquals(eBaseAsg2.getNext().size(),1);
+
+        //Entity Enum 4
+        EBaseAsg eBaseAsg4 = eBaseAsg2.getNext().get(0);
+        assertEquals(eBaseAsg4.geteBase().geteNum(),4);
+        assertEquals(((ETyped)eBaseAsg4.geteBase()).geteTag(),"B");
+
+        //Entity Enum 5
+        EBaseAsg eBaseAsg5 = eBaseAsg2.getB().get(0);
+        assertEquals(eBaseAsg5.geteBase().geteNum(),5);
+
+        //{"eNum": 5, ..., "b": [6,7]
+        HashSet<Integer> setOfB= new HashSet<>();
+
+        eBaseAsg5.getB().stream()
+                .forEach( eBaseAsg -> setOfB.add(eBaseAsg.geteBase().geteNum()));
+
+        HashSet<Integer> expectedBSet = new HashSet<>(Arrays.asList(6,7));
+        Assert.assertEquals(expectedBSet, setOfB);
+
+        //Parent of enum=5 is enum=2
+        assertEquals(eBaseAsg5.getParents().get(0).geteBase().geteNum(),2);
+
+        //Entity Enum 7
+        EBaseAsg eBaseAsg7 = eBaseAsg5.getB().get(1);
+        assertEquals(eBaseAsg7.geteBase().geteNum(),7);
+
+    }
+
+
 
     private static void createQ1()
     {
@@ -192,6 +240,14 @@ public class RecTwoPassAsgQuerySupplierTest {
         }
     }
 
+    private static void createQ187(){
+        try {
+            q187Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q187\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"1234\",\"eType\":2,\"eName\":\"Balerion\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":4,\"b\":5},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":5,\"type\":\"HQuant\",\"qType\":\"all\",\"b\":[6,7]},{\"eNum\":6,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"1\",\"con\":{\"op\":\"gt\",\"expr\":\"1010-01-01T00:00:00.000\"}},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"2\",\"pTag\":\"2\",\"con\":{\"op\":\"lt\",\"expr\":\"10\"}}]}", Query.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Before
     public void setup() {
     }
@@ -201,6 +257,7 @@ public class RecTwoPassAsgQuerySupplierTest {
         createQ1();
         createQ5();
         createQ9();
+        createQ187();
     }
 
 }

@@ -43,8 +43,8 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
     //endregion
 
     //region Private Methods
-    private void buildSubGraphRec(EBaseAsg eBaseAsg, Map<Integer, EBase> queryElements) {
-        EBase eBaseCurrent = eBaseAsg.geteBase();
+    private void buildSubGraphRec(EBaseAsg eBaseAsgCurrent, Map<Integer, EBase> queryElements) {
+        EBase eBaseCurrent = eBaseAsgCurrent.geteBase();
 
         Stream.ofAll(new NextEbaseFactory().supply(eBaseCurrent)).forEach(eNum -> {
              EBase eBaseNext =  queryElements.get(eNum);
@@ -52,20 +52,20 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
                         .withEBase(eBaseNext)
                         .build();
 
-            eBaseAsg.addNextChild(eBaseAsgNext);
+            eBaseAsgCurrent.addNextChild(eBaseAsgNext);
 
             buildSubGraphRec(eBaseAsgNext, queryElements);
         });
 
 
         Stream.ofAll(new BEbaseFactory().supply(eBaseCurrent)).forEach(
-                b -> {
-                    EBase eBaseB =  queryElements.get(b);
+                eNum -> {
+                    EBase eBaseB =  queryElements.get(eNum);
                     EBaseAsg eBaseAsgB = EBaseAsg.EBaseAsgBuilder.anEBaseAsg()
                             .withEBase(eBaseB)
                             .build();
 
-                    eBaseAsg.addBChild(eBaseAsgB);
+                    eBaseAsgCurrent.addBChild(eBaseAsgB);
                     buildSubGraphRec(eBaseAsgB, queryElements);
                 }
         );
