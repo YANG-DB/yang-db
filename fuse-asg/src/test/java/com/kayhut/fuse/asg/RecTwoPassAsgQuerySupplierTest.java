@@ -41,7 +41,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
         assertEquals(asgQuery.getStart().getNext().get(0).getNext().get(0).geteBase().geteNum(), 2);
 
-        EBaseAsg elementEbaseAsg3 = asgQuery.getStart().getNext().get(0).getNext().get(0).getNext().get(0);
+        EBaseAsg<? extends EBase> elementEbaseAsg3 = asgQuery.getStart().getNext().get(0).getNext().get(0).getNext().get(0);
 
         assertEquals(elementEbaseAsg3.geteBase().geteNum(), 3);
 
@@ -62,8 +62,8 @@ public class RecTwoPassAsgQuerySupplierTest {
         assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
 
 
-        EBaseAsg elementEbaseAsg1 = asgQuery.getStart().getNext().get(0);
-        EBaseAsg elementEbaseAsg2 = elementEbaseAsg1.getNext().get(0);
+        EBaseAsg<? extends EBase> elementEbaseAsg1 = asgQuery.getStart().getNext().get(0);
+        EBaseAsg<? extends EBase> elementEbaseAsg2 = elementEbaseAsg1.getNext().get(0);
 
 
         //{"eNum": 2, ..., "next": [3,5,11]
@@ -84,21 +84,21 @@ public class RecTwoPassAsgQuerySupplierTest {
 
         //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
         assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
-        EBaseAsg eBaseAsg1 = asgQuery.getStart().getNext().get(0);
+        EBaseAsg<? extends EBase> eBaseAsg1 = asgQuery.getStart().getNext().get(0);
         assertEquals(eBaseAsg1.geteBase().geteNum(),1);
 
-        EBaseAsg eBaseAsg2 = eBaseAsg1.getNext().get(0);
+        EBaseAsg<? extends EBase> eBaseAsg2 = eBaseAsg1.getNext().get(0);
         assertEquals(eBaseAsg2.geteBase().geteNum(),2);
 
         //Entity Type enum = 2 has 2 children [3, 6]
         assertEquals(eBaseAsg2.getNext().size(),2);
 
         //Entity Enum 3
-        EBaseAsg eBaseAsg3 = eBaseAsg2.getNext().get(0);
+        EBaseAsg<? extends EBase> eBaseAsg3 = eBaseAsg2.getNext().get(0);
         assertEquals(eBaseAsg3.geteBase().geteNum(),3);
 
         //Entity Enum 5
-        EBaseAsg eBaseAsg5 = eBaseAsg3.getB().get(0);
+        EBaseAsg<? extends EBase> eBaseAsg5 = eBaseAsg3.getB().get(0);
         assertEquals(eBaseAsg5.geteBase().geteNum(),5);
 
         //Parent of enum=5 is enum=4
@@ -113,10 +113,10 @@ public class RecTwoPassAsgQuerySupplierTest {
 
         //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
         assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
-        EBaseAsg eBaseAsg1 = asgQuery.getStart().getNext().get(0);
+        EBaseAsg<? extends EBase> eBaseAsg1 = asgQuery.getStart().getNext().get(0);
         assertEquals(eBaseAsg1.geteBase().geteNum(),1);
 
-        EBaseAsg eBaseAsg2 = eBaseAsg1.getNext().get(0);
+        EBaseAsg<? extends EBase> eBaseAsg2 = eBaseAsg1.getNext().get(0);
         assertEquals(eBaseAsg2.geteBase().geteNum(),2);
 
         //Entity Type enum = 2 has 1 child 4
@@ -128,7 +128,7 @@ public class RecTwoPassAsgQuerySupplierTest {
         assertEquals(((ETyped)eBaseAsg4.geteBase()).geteTag(),"B");
 
         //Entity Enum 5
-        EBaseAsg eBaseAsg5 = eBaseAsg2.getB().get(0);
+        EBaseAsg<? extends EBase> eBaseAsg5 = eBaseAsg2.getB().get(0);
         assertEquals(eBaseAsg5.geteBase().geteNum(),5);
 
         //{"eNum": 5, ..., "b": [6,7]

@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.queryAsg;
 
+import com.kayhut.fuse.model.query.Start;
+
 import java.util.List;
 
 /**
@@ -23,11 +25,11 @@ public class AsgQuery {
         this.name = name;
     }
 
-    public EBaseAsg getStart() {
+    public EBaseAsg<Start> getStart() {
         return start;
     }
 
-    public void setStart(EBaseAsg start) {
+    public void setStart(EBaseAsg<Start> start) {
         this.start = start;
     }
 
@@ -54,7 +56,7 @@ public class AsgQuery {
             return this;
         }
 
-        public AsgQueryBuilder withStart(EBaseAsg start) {
+        public AsgQueryBuilder withStart(EBaseAsg<Start> start) {
             this.start = start;
             return this;
         }
@@ -71,7 +73,7 @@ public class AsgQuery {
     //region Fields
     private String ont;
     private String name;
-    private EBaseAsg start;
+    private EBaseAsg<Start> start;
     //endregion
 
 

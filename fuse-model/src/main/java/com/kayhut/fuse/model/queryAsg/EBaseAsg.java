@@ -9,10 +9,10 @@ import java.util.List;
 /**
  * Created by benishue on 23-Feb-17.
  */
-public class EBaseAsg{
+public class EBaseAsg<T extends EBase>{
     //region EBaseAsgBuilder
-    public static final class EBaseAsgBuilder {
-        private EBase eBase;
+    public static final class EBaseAsgBuilder<T extends EBase> {
+        private T eBase;
         private List<EBaseAsg> next;
         private List<EBaseAsg> b;
         private List<EBaseAsg> parent;
@@ -24,7 +24,7 @@ public class EBaseAsg{
             return new EBaseAsgBuilder();
         }
 
-        public EBaseAsgBuilder withEBase(EBase eBase) {
+        public EBaseAsgBuilder withEBase(T eBase) {
             this.eBase = eBase;
             return this;
         }
@@ -52,7 +52,10 @@ public class EBaseAsg{
     //endregion
 
     //region Constructors
-    public EBaseAsg(EBase eBase, List<EBaseAsg> next, List<EBaseAsg> b, List<EBaseAsg> parent) {
+    public EBaseAsg(T eBase,
+                    List<EBaseAsg<? extends EBase>> next,
+                    List<EBaseAsg<? extends EBase>> b,
+                    List<EBaseAsg<? extends EBase>> parent) {
         this.eBase = eBase;
         this.next = next == null ? new ArrayList<>() : new ArrayList<>(next);
         this.b = b == null ? new ArrayList<>() : new ArrayList<>(b);
@@ -61,20 +64,24 @@ public class EBaseAsg{
     //endregion
 
     //region Properties
-    public List<EBaseAsg> getNext() {
+    public List<EBaseAsg<? extends EBase>> getNext() {
         return Collections.unmodifiableList(this.next);
     }
 
-    public List<EBaseAsg> getB() {
+    public List<EBaseAsg<? extends EBase>> getB() {
         return Collections.unmodifiableList(this.b);
     }
 
-    public EBase geteBase() {
+    public T geteBase() {
         return this.eBase;
     }
 
-    public List<EBaseAsg> getParents() {
+    public List<EBaseAsg<? extends EBase>> getParents() {
         return Collections.unmodifiableList(this.parent);
+    }
+
+    public int geteNum() {
+        return this.eBase.geteNum();
     }
     //endregion
 
@@ -107,10 +114,10 @@ public class EBaseAsg{
     //endregion
 
     //region Fields
-    private EBase eBase;
-    private List<EBaseAsg> next;
-    private List<EBaseAsg> b;
-    private List<EBaseAsg> parent;
+    private T eBase;
+    private List<EBaseAsg<? extends EBase>> next;
+    private List<EBaseAsg<? extends EBase>> b;
+    private List<EBaseAsg<? extends EBase>> parent;
     //endregion
 
 
