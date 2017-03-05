@@ -55,7 +55,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         if(element.geteBase() instanceof Rel){
             Rel rel = (Rel) element.geteBase();
             RelationOp op = new RelationOp(rel);
-            op.setRelation((Rel)element.geteBase());
+            op.setRelation(rel);
             op.seteNum(element.geteNum());
             return op;
         }
