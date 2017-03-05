@@ -26,6 +26,7 @@ public class Quant1 extends QuantBase {
         this.next = next;
     }
 
+
     //region Fields
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;

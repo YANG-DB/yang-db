@@ -27,11 +27,11 @@ public class RelProp extends EBase {
         this.pTag = pTag;
     }
 
-    public List<Constraint> getCon() {
+    public Constraint getCon() {
         return con;
     }
 
-    public void setCon(List<Constraint> con) {
+    public void setCon(Constraint con) {
         this.con = con;
     }
 
@@ -55,7 +55,7 @@ public class RelProp extends EBase {
     private int	pType;
     private String f;
     private String pTag;
-    private List<Constraint> con;
+    private Constraint con;
     private int b;
     //endregion
 

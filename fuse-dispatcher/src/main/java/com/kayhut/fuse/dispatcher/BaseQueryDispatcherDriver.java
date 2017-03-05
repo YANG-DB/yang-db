@@ -5,11 +5,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.model.process.QueryCursorData;
 import com.kayhut.fuse.model.process.QueryData;
-import com.kayhut.fuse.model.results.ResultMetadata;
+import com.kayhut.fuse.model.process.ResultMetadata;
 import com.typesafe.config.Config;
 
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.kayhut.fuse.model.Utils.baseUrl;
 import static com.kayhut.fuse.model.Utils.submit;

@@ -377,7 +377,7 @@ public class QueryTest {
         eProp.setpType(1);
         eProp.setpTag("1");
         Constraint con = new Constraint();
-        con.setOp(CostraintOp.eq);
+        con.setOp(ConstraintOp.eq);
         con.setExpr("Brandon");
         eProp.setCon(con);
         elements.add(eProp);
@@ -455,7 +455,7 @@ public class QueryTest {
         eProp.setpType(1);
         eProp.setpTag("1");
         Constraint con = new Constraint();
-        con.setOp(CostraintOp.eq);
+        con.setOp(ConstraintOp.eq);
         con.setExpr("Brandon");
         eProp.setCon(con);
         elements.add(eProp);

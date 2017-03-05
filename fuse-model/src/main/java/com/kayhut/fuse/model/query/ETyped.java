@@ -34,7 +34,6 @@ public class ETyped extends EEntityBase {
     }
 
     //region Fields
-
     private int	eType;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private	int next;

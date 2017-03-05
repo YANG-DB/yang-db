@@ -6,19 +6,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 
 /**
- * Created by user on 19-Feb-17.
+ * Created by benishue on 02-Mar-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class HQuant extends QuantBase {
-    public List<Integer> getB() {
+public class HComb extends EBase {
+    public int getB() {
         return b;
     }
 
-    public void setB(List<Integer> b) {
+    public void setB(int b) {
         this.b = b;
     }
 
     //region Fields
-    private List<Integer> b;
+    private int b;
     //endregion
 }

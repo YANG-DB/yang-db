@@ -2,7 +2,7 @@ package com.kayhut.fuse.model.transport;
 
 import com.kayhut.fuse.model.Content;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.results.ResultMetadata;
+import com.kayhut.fuse.model.process.ResultMetadata;
 
 /**
  * Created by lior on 19/02/2017.

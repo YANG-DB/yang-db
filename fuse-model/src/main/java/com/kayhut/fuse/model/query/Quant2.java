@@ -19,6 +19,7 @@ public class Quant2 extends QuantBase {
         this.next = next;
     }
 
+
     //region Fields
     private List<Integer> next;
     //endregion

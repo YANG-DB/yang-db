@@ -47,6 +47,7 @@ public class EBase {
         this.eNum = eNum;
     }
 
+
 //    public String getType() {
 //        return type;
 //    }

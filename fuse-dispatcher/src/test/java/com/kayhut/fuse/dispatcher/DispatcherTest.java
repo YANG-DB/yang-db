@@ -6,12 +6,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.kayhut.fuse.asg.BaseAsgDriver;
+import com.kayhut.fuse.asg.SimpleStrategyRegisteredAsgDriver;
 import com.kayhut.fuse.epb.BaseEpbDriver;
 import com.kayhut.fuse.gta.BaseGtaDriver;
 import com.kayhut.fuse.model.process.*;
-import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.QueryMetadata;
 import com.typesafe.config.Config;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +27,7 @@ public class DispatcherTest {
         protected void configure() {
             bind(EventBus.class).toInstance(new EventBus());
             bind(QueryDispatcherDriver.class).to(BaseQueryDispatcherDriver.class);
-            bind(BaseAsgDriver.class).asEagerSingleton();
+            bind(SimpleStrategyRegisteredAsgDriver.class).asEagerSingleton();
             bind(BaseEpbDriver.class).asEagerSingleton();
             bind(BaseGtaDriver.class).asEagerSingleton();
         }

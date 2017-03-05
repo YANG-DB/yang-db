@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.process.command.ExecutionCompleteCommand;
 import com.kayhut.fuse.model.Graph;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.results.ResultMetadata;
+import com.kayhut.fuse.model.process.ResultMetadata;
 import com.kayhut.fuse.model.transport.Request;
 import com.kayhut.fuse.model.transport.ContentResponse;
 
