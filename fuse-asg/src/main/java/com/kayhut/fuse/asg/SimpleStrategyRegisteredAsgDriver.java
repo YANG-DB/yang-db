@@ -20,6 +20,7 @@ import static com.kayhut.fuse.model.Utils.submit;
  */
 @Singleton
 public class SimpleStrategyRegisteredAsgDriver implements ProcessElement<QueryData, AsgData>, AsgDriver {
+
     //region Constructors
     @Inject
     public SimpleStrategyRegisteredAsgDriver(EventBus eventBus, AsgStrategyRegistrar registrar) {

@@ -65,7 +65,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
 
         //{"eNum": 2, ..., "next": [3,5,11]
-        HashSet<Integer> setOfNext= new HashSet<Integer>();
+        HashSet<Integer> setOfNext= new HashSet<>();
         for (EBaseAsg eBaseAsg : elementEbaseAsg2.getNext())
         {
             setOfNext.add(eBaseAsg.geteBase().geteNum());
@@ -82,6 +82,25 @@ public class RecTwoPassAsgQuerySupplierTest {
 
         //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
         assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
+        EBaseAsg eBaseAsg1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(eBaseAsg1.geteBase().geteNum(),1);
+
+        EBaseAsg eBaseAsg2 = eBaseAsg1.getNext().get(0);
+        assertEquals(eBaseAsg2.geteBase().geteNum(),2);
+
+        //Entity Type enum = 2 has 2 children [3, 6]
+        assertEquals(eBaseAsg2.getNext().size(),2);
+
+        //Entity Enum 3
+        EBaseAsg eBaseAsg3 = eBaseAsg2.getNext().get(0);
+        assertEquals(eBaseAsg3.geteBase().geteNum(),3);
+
+        //Entity Enum 5
+        EBaseAsg eBaseAsg5 = eBaseAsg3.getB().get(0);
+        assertEquals(eBaseAsg5.geteBase().geteNum(),5);
+
+        //Parent of enum=5 is enum=4
+        assertEquals(eBaseAsg5.getParents().get(0).geteBase().geteNum(),3);
     }
 
     private static void createQ1()

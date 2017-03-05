@@ -1,6 +1,7 @@
 package com.kayhut.fuse.asg;
 
 import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.aggregation.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -9,9 +10,21 @@ import java.util.function.Function;
  * Created by benishue on 01-Mar-17.
  */
 public class NextEbaseFactory {
+
     //region Constructor
     public NextEbaseFactory() {
         this.map = new HashMap<>() ;
+        this.map.put(AggM5.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(AggM4.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(AggM3.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(AggM2.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(AggM1.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(AggL3.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(AggL2.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(AggL1.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(HComb.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(HQuant.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(RelProp.class, (ebase) ->  (Collections.emptyList()));
         this.map.put(ETyped.class, (ebase) -> ((ETyped)ebase).getNext() == 0 ? Collections.emptyList() : Arrays.asList(((ETyped) ebase).getNext()));
         this.map.put(EUntyped.class, (ebase) -> ((EUntyped)ebase).getNext() == 0 ? Collections.emptyList() : Arrays.asList(((EUntyped) ebase).getNext()));
         this.map.put(EAgg.class, (ebase) -> ((EAgg)ebase).getNext() == 0 ? Collections.emptyList() : Arrays.asList(((EAgg) ebase).getNext()));

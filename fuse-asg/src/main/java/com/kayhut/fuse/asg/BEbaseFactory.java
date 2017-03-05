@@ -12,6 +12,7 @@ import java.util.function.Function;
  */
 
 public class BEbaseFactory {
+
     //region Constructor
     public BEbaseFactory() {
         this.map = new HashMap<>() ;
