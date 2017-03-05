@@ -27,7 +27,6 @@ public class RecTwoPassAsgQuerySupplierTest {
     private static Query q9Obj = new Query();
     private static Query q187Obj = new Query();
 
-
     @Test
     public void transformQuery1ToAsgQuery() throws Exception {
         Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q1Obj);

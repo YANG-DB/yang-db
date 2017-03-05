@@ -52,6 +52,10 @@ public class EBaseAsg{
     //endregion
 
     //region Constructors
+
+    public EBaseAsg() {
+    }
+
     public EBaseAsg(EBase eBase, List<EBaseAsg> next, List<EBaseAsg> b, List<EBaseAsg> parent) {
         this.eBase = eBase;
         this.next = next == null ? new ArrayList<>() : new ArrayList<>(next);
