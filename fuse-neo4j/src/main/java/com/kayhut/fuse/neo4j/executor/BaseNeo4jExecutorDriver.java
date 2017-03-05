@@ -7,6 +7,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.model.Graph;
+import com.kayhut.fuse.model.process.AsgData;
 import com.kayhut.fuse.model.process.ProcessElement;
 import com.kayhut.fuse.model.process.QueryCursorData;
 import com.kayhut.fuse.model.process.command.CursorCommand;
@@ -56,13 +57,15 @@ public class BaseNeo4jExecutorDriver implements ProcessElement<QueryCursorData, 
     @Subscribe
     public ExecutionCompleteCommand process(QueryCursorData input) {
 
-        QueryResult result = query(input.getQuery());
+        AsgData asg = new AsgData(input.getId(),input.getQueryMetadata(),input.getQuery(),input.getResultMetadata());
 
-        QueryMetadata queryMetadata = input.getQueryMetadata();
+        QueryResult result = query(asg.getQuery());
+
+        QueryMetadata queryMetadata = asg.getQueryMetadata();
 
         ContentResponse response = ContentResponse.ResponseBuilder.builder(queryMetadata.getId())
                 .queryMetadata(queryMetadata)
-                .resultMetadata(input.getResultMetadata())
+                .resultMetadata(asg.getResultMetadata())
                 .data(Graph.GraphBuilder.builder(UUID.randomUUID().toString())
                         .data(result)
                         .compose())
