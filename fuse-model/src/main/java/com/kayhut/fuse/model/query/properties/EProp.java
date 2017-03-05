@@ -1,7 +1,9 @@
-package com.kayhut.fuse.model.query;
+package com.kayhut.fuse.model.query.properties;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.EBase;
 
 /**
  * Created by benishue on 17/02/2017.

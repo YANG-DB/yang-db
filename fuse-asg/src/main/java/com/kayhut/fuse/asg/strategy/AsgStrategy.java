@@ -1,6 +1,6 @@
-package com.kayhut.fuse.asg;
+package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.model.queryAsg.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 
 /**
  * Created by User on 27/02/2017.

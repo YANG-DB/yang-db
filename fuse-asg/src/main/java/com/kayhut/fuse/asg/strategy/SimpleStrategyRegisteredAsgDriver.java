@@ -1,14 +1,16 @@
-package com.kayhut.fuse.asg;
+package com.kayhut.fuse.asg.strategy;
 
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.kayhut.fuse.asg.AsgDriver;
+import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.model.process.AsgData;
 import com.kayhut.fuse.model.process.ProcessElement;
 import com.kayhut.fuse.model.process.QueryData;
-import com.kayhut.fuse.model.queryAsg.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import javaslang.collection.Stream;
 
 import java.util.Collections;

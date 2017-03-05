@@ -5,6 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kayhut.fuse.model.query.aggregation.*;
+import com.kayhut.fuse.model.query.combiner.EComb;
+import com.kayhut.fuse.model.query.combiner.RComb;
+import com.kayhut.fuse.model.query.entity.*;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.quant.HQuant;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.Quant2;
 
 /**
  * Created by User on 16/02/2017.

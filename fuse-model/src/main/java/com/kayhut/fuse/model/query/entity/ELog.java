@@ -1,4 +1,4 @@
-package com.kayhut.fuse.model.query;
+package com.kayhut.fuse.model.query.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,18 +6,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 /**
  * Created by user on 16-Feb-17.
  */
-
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EAgg extends EBase {
-
-    public String geteTag() {
-        return eTag;
-    }
-
-    public void seteTag(String eTag) {
-        this.eTag = eTag;
-    }
-
+public class ELog extends EEntityBase {
     public String getfName() {
         return fName;
     }
@@ -42,13 +32,9 @@ public class EAgg extends EBase {
         this.next = next;
     }
 
-
     //region Fields
-    private	String eTag;
     private	String fName;
     private	String eName;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private	int	next;
     //endregion
-
 }

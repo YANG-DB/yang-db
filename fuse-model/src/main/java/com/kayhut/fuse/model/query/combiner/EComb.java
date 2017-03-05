@@ -1,4 +1,4 @@
-package com.kayhut.fuse.model.query;
+package com.kayhut.fuse.model.query.combiner;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;

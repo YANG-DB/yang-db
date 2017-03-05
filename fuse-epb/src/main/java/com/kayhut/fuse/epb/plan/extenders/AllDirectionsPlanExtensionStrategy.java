@@ -3,11 +3,11 @@ package com.kayhut.fuse.epb.plan.extenders;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.EEntityBase;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.RelProp;
-import com.kayhut.fuse.model.queryAsg.AsgQuery;
-import com.kayhut.fuse.model.queryAsg.EBaseAsg;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
@@ -20,11 +20,11 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
     public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
         List<Plan> plans = new LinkedList<>();
         if(plan != null){
-            Map<Integer, EBaseAsg> queryParts = SimpleExtenderUtils.flattenQuery(query);
+            Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
 
-            List<EBaseAsg> handledParts = SimpleExtenderUtils.removeHandledParts(plan, queryParts);
+            List<AsgEBase> handledParts = SimpleExtenderUtils.removeHandledParts(plan, queryParts);
             if(queryParts.size() > 0){
-                for(EBaseAsg handledPart : handledParts){
+                for(AsgEBase handledPart : handledParts){
                     extendPart(handledPart, queryParts, plans, plan);
                 }
             }
@@ -32,9 +32,9 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         return plans;
     }
 
-    private void extendPart(EBaseAsg<? extends EBase> handledPartToExtend, Map<Integer, EBaseAsg> queryPartsNotHandled, List<Plan> plans, Plan originalPlan) {
+    private void extendPart(AsgEBase<? extends EBase> handledPartToExtend, Map<Integer, AsgEBase> queryPartsNotHandled, List<Plan> plans, Plan originalPlan) {
         if(SimpleExtenderUtils.shouldAdvanceToNext(handledPartToExtend)){
-            for(EBaseAsg<? extends EBase> next : handledPartToExtend.getNext()){
+            for(AsgEBase<? extends EBase> next : handledPartToExtend.getNext()){
                 if(SimpleExtenderUtils.shouldAddElement(next) && queryPartsNotHandled.containsKey(next.geteNum())){
                     PlanOpBase op = createOpForElement(next);
                     Plan newPlan = new Plan(new LinkedList<>(originalPlan.getOps()));
@@ -45,7 +45,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         }
     }
 
-    private PlanOpBase createOpForElement(EBaseAsg element) {
+    private PlanOpBase createOpForElement(AsgEBase element) {
         if(element.geteBase() instanceof EEntityBase){
             EEntityBase eEntityBase = (EEntityBase) element.geteBase();
             EntityOp op = new EntityOp(eEntityBase);
