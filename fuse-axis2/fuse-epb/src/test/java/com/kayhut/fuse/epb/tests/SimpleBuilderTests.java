@@ -37,7 +37,7 @@ public class SimpleBuilderTests {
         PlanOpBase op = plan.getOps().get(0);
         Assert.assertTrue(op instanceof EntityOp);
         Assert.assertEquals(op.geteNum(), query.getRight().geteNum());
-        Assert.assertEquals(query.getLeft().getStart().geteBase(), ((EntityOp)op).getEntity());
+        Assert.assertEquals(query.getLeft().getStart().getNext().get(0), ((EntityOp)op).getEntity());
     }
 
     @Test
@@ -58,12 +58,12 @@ public class SimpleBuilderTests {
             Assert.assertEquals(1,plan.getOps().size());
             PlanOpBase op = plan.getOps().get(0);
             Assert.assertTrue(op instanceof EntityOp);
-            if(((EntityOp)op).getEntity() == query.getRight().geteBase()){
+            if(((EntityOp)op).getEntity().geteBase() == query.getRight().geteBase()){
                 foundFirst = true;
                 Assert.assertEquals(query.getRight().geteBase().geteNum(), op.geteNum());
             }
 
-            if(((EntityOp)op).getEntity() == query.getRight().getNext().get(0).getNext().get(0).geteBase()) {
+            if(((EntityOp)op).getEntity().geteBase() == query.getRight().getNext().get(0).getNext().get(0).geteBase()) {
                 foundSecond = true;
                 Assert.assertEquals(untypedBaseAsg.geteNum(), op.geteNum());
             }
@@ -90,7 +90,7 @@ public class SimpleBuilderTests {
         PlanOpBase op = plan.getOps().get(0);
         Assert.assertTrue(op instanceof EntityOp);
         Assert.assertEquals(op.geteNum(), query.getRight().geteNum());
-        Assert.assertEquals(query.getLeft().getStart().geteBase(), ((EntityOp)op).getEntity());
+        Assert.assertEquals(query.getLeft().getStart().getNext().get(0), ((EntityOp)op).getEntity());
     }
 
 

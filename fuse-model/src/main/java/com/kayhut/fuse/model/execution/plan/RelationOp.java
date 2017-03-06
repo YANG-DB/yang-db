@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.Rel;
 
 /**
@@ -11,23 +12,34 @@ public class RelationOp extends TaggedOp {
 
     }
 
-    public RelationOp(Rel relation) {
+    public RelationOp(AsgEBase<Rel> relation) {
         super(null);
         this.relation = relation;
     }
     //endregion
 
     //region Properties
-    public Rel getRelation() {
-        return this.relation;
+
+    public AsgEBase<Rel> getRelation() {
+        return relation;
     }
 
-    public void setRelation(Rel value) {
-        this.relation = value;
+    public void setRelation(AsgEBase<Rel> relation) {
+        this.relation = relation;
     }
+
+    //endregion
+
+    //region Methods
+
+    @Override
+    public int geteNum() {
+        return this.relation.geteNum();
+    }
+
     //endregion
 
     //region Fields
-    private Rel relation;
+    private AsgEBase<Rel> relation;
     //endregion
 }

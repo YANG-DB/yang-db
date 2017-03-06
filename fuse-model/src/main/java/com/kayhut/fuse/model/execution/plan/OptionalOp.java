@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.Optional;
 
 /**
@@ -28,5 +30,10 @@ public class OptionalOp extends PlanOpBase {
 
     //region Fields
     private Plan plan;
+
+    @Override
+    public int geteNum() {
+        throw new NotImplementedException();
+    }
     //endregion
 }

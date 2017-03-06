@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.aggregation.AggBase;
 
 /**
@@ -11,22 +12,33 @@ public class RelationGroupingOp extends PlanOpBase {
 
     }
 
-    public RelationGroupingOp(AggBase agg) {
+    public RelationGroupingOp(AsgEBase<AggBase> agg) {
         this.agg = agg;
     }
     //endregion
 
     //region Properties
-    public AggBase getAgg() {
-        return this.agg;
+
+    public AsgEBase<AggBase> getAgg() {
+        return agg;
     }
 
-    public void setAgg(AggBase value) {
-        this.agg = value;
+    public void setAgg(AsgEBase<AggBase> agg) {
+        this.agg = agg;
     }
+
+    //endregion
+
+    //region Methods
+
+    @Override
+    public int geteNum() {
+        return this.agg.geteNum();
+    }
+
     //endregion
 
     //region Fields
-    private AggBase agg;
+    private AsgEBase<AggBase> agg;
     //endregion
 }

@@ -28,10 +28,7 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
     private void recursiveSeedGenerator(AsgEBase<? extends EBase> asgNode, List<Plan> plans, HashSet<AsgEBase> visitedNodes){
         visitedNodes.add(asgNode);
         if(asgNode.geteBase() instanceof EEntityBase){
-            EEntityBase eEntityBase = (EEntityBase) asgNode.geteBase();
-            EntityOp op = new EntityOp(eEntityBase);
-            op.seteNum(asgNode.geteNum());
-            op.setEntity((EEntityBase) asgNode.geteBase());
+            EntityOp op = new EntityOp((AsgEBase<EEntityBase>) asgNode);
             List<PlanOpBase> ops = new LinkedList<>();
             ops.add(op);
             plans.add(new Plan(ops));

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.aggregation.AggBase;
 
 /**
@@ -11,7 +12,7 @@ public class EntityGroupByOp extends PlanOpBase {
 
     }
 
-    public EntityGroupByOp(String name, String vertexTag, AggBase agg) {
+    public EntityGroupByOp(String name, String vertexTag, AsgEBase<AggBase> agg) {
         this.name = name;
         this.vertexTag = vertexTag;
         this.agg = agg;
@@ -35,18 +36,28 @@ public class EntityGroupByOp extends PlanOpBase {
         this.vertexTag = value;
     }
 
-    public AggBase getAgg() {
-        return this.agg;
+    public AsgEBase<AggBase> getAgg() {
+        return agg;
     }
 
-    public void setAgg(AggBase value) {
-        this.agg = value;
+    public void setAgg(AsgEBase<AggBase> agg) {
+        this.agg = agg;
     }
+
+    //endregion
+
+    //region Methods
+
+    @Override
+    public int geteNum() {
+        return this.agg.geteNum();
+    }
+
     //endregion
 
     //region Fields
     private String vertexTag;
     private String name;
-    private AggBase agg;
+    private AsgEBase<AggBase> agg;
     //endregion
 }

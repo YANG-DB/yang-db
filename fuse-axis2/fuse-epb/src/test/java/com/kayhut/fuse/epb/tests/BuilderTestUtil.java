@@ -64,20 +64,17 @@ public class BuilderTestUtil {
         List<PlanOpBase> ops = new LinkedList<>();
 
         AsgEBase<Start> startAsg = asgQuery.getStart();
-        AsgEBase<? extends EBase> entityAsg = startAsg.getNext().get(0);
+        AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
 
-        EntityOp concOp = new EntityOp((EEntityBase) entityAsg.geteBase());
-        concOp.seteNum(entityAsg.geteNum());
+        EntityOp concOp = new EntityOp(entityAsg);
         ops.add(concOp);
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>)entityAsg.getNext().get(0);
-        Rel rel = relBaseAsg.geteBase();
-        RelationOp relOp = new RelationOp(rel);
-        relOp.seteNum(relBaseAsg.geteNum());
+        RelationOp relOp = new RelationOp(relBaseAsg);
         ops.add(relOp);
 
-        AsgEBase<? extends EBase> unBaseAsg = relBaseAsg.getNext().get(0);
-        EntityOp unOp = new EntityOp((EEntityBase) unBaseAsg.geteBase());
+        AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>)relBaseAsg.getNext().get(0);
+        EntityOp unOp = new EntityOp(unBaseAsg);
         ops.add(unOp);
 
         return new Plan(ops);

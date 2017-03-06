@@ -1,11 +1,13 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.List;
 
 /**
  * Created by User on 22/02/2017.
  */
-public class UnionOp {
+public class UnionOp extends PlanOpBase{
     //region Constructors
     public UnionOp() {
 
@@ -24,6 +26,15 @@ public class UnionOp {
     public void setBranches(List<Plan> branches) {
         this.branches = branches;
     }
+    //endregion
+
+    //region Methods
+
+    @Override
+    public int geteNum() {
+        throw new NotImplementedException();
+    }
+
     //endregion
 
     //region Fields

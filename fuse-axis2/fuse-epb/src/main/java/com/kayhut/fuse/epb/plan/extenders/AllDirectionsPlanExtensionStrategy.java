@@ -47,24 +47,15 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
 
     private PlanOpBase createOpForElement(AsgEBase element) {
         if(element.geteBase() instanceof EEntityBase){
-            EEntityBase eEntityBase = (EEntityBase) element.geteBase();
-            EntityOp op = new EntityOp(eEntityBase);
-            op.seteNum(element.geteNum());
-            op.setEntity((EEntityBase)element.geteBase());
+            EntityOp op = new EntityOp(element);
             return op;
         }
         if(element.geteBase() instanceof Rel){
-            Rel rel = (Rel) element.geteBase();
-            RelationOp op = new RelationOp(rel);
-            op.setRelation(rel);
-            op.seteNum(element.geteNum());
+            RelationOp op = new RelationOp(element);
             return op;
         }
         if(element.geteBase() instanceof RelProp){
-            RelProp rel = (RelProp) element.geteBase();
-            RelationFilterOp op = new RelationFilterOp(rel);
-            op.seteNum(rel.geteNum());
-            op.setRelProp((RelProp)element.geteBase());
+            RelationFilterOp op = new RelationFilterOp(element);
             return op;
         }
         throw new NotImplementedException();

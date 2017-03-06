@@ -1,6 +1,9 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.properties.EProp;
+
+import java.util.LinkedList;
 
 /**
  * Created by User on 20/02/2017.
@@ -11,22 +14,23 @@ public class EntityFilterOp extends PlanOpBase {
 
     }
 
-    public EntityFilterOp(EProp eprop) {
+    public EntityFilterOp(AsgEBase<EProp> eprop) {
         this.eprop = eprop;
     }
     //endregion
 
     //region Properties
-    public EProp getEprop() {
-        return this.eprop;
-    }
 
-    public void setEprop(EProp eprop) {
-        this.eprop = eprop;
+    //endregion
+
+    //region Methods
+    @Override
+    public int geteNum() {
+        return this.eprop.geteNum();
     }
     //endregion
 
     //region Fields
-    private EProp eprop;
+    private AsgEBase<EProp> eprop;
     //endregion
 }

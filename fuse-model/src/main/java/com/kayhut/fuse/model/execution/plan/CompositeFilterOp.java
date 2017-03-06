@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.List;
 
 /**
@@ -38,5 +40,10 @@ public class CompositeFilterOp extends FilterOpBase {
     //region Fields
     private LogicalOperator op;
     private List<FilterOpBase> filters;
+
+    @Override
+    public int geteNum() {
+        throw new NotImplementedException();
+    }
     //endregion
 }

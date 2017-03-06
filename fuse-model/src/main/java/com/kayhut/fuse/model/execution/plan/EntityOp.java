@@ -1,6 +1,9 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+
+import java.util.LinkedList;
 
 /**
  * Created by User on 20/02/2017.
@@ -11,22 +14,34 @@ public class EntityOp extends TaggedOp {
 
     }
 
-    public EntityOp(EEntityBase entity) {
-        super(entity.geteTag());
+    public EntityOp(AsgEBase<EEntityBase> entity) {
+        super(entity.geteBase().geteTag());
+        this.entity = entity;
     }
     //endregion
 
-    //properties
-    public EEntityBase getEntity() {
-        return this.entity;
+    //region Methods
+
+    @Override
+    public int geteNum() {
+        return this.entity.geteNum();
     }
 
-    public void setEntity(EEntityBase value) {
-        this.entity = value;
+    //endregion
+
+    //region properties
+
+    public AsgEBase<EEntityBase> getEntity() {
+        return entity;
     }
+
+    public void setEntity(AsgEBase<EEntityBase> entity) {
+        this.entity = entity;
+    }
+
     //endregion
 
     //region Fields
-    private EEntityBase entity;
+    private AsgEBase<EEntityBase> entity;
     //endregion
 }
