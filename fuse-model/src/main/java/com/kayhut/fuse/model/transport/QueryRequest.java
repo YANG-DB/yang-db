@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.query.Query;
  * <p>
  * Mutable structure due to json reflective builder needs...
  */
-public class Request {
+public class QueryRequest {
     private String id;
     private String name;
     private String type;

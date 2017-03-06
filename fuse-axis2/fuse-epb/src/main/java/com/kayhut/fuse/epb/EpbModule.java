@@ -12,7 +12,7 @@ public class EpbModule implements Jooby.Module  {
 
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(EpbDriver.class).to(BaseEpbDriver.class).asEagerSingleton();
+        //binder.bind(EpbDriver.class).to(BaseEpbDriver.class).asEagerSingleton();
 
     }
 }

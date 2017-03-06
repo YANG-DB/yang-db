@@ -1,6 +1,8 @@
 package com.kayhut.fuse.dispatcher;
 
 import com.google.inject.Binder;
+import com.kayhut.fuse.dispatcher.resource.InMemoryResourceStore;
+import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.Jooby;
@@ -15,6 +17,7 @@ public class DispatcherModule implements Jooby.Module {
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
         //service controllers
+        binder.bind(ResourceStore.class).to(InMemoryResourceStore.class).asEagerSingleton();
         binder.bind(CursorDispatcherDriver.class).to(BaseCursorDispatcherDriver.class).asEagerSingleton();
         binder.bind(QueryDispatcherDriver.class).to(BaseQueryDispatcherDriver.class).asEagerSingleton();
     }

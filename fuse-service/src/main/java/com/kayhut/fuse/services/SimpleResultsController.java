@@ -1,46 +1,49 @@
 package com.kayhut.fuse.services;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.model.process.command.ExecutionCompleteCommand;
+import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.CursorResource;
+import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.model.transport.ContentResponse;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Optional;
 
 /**
  * Created by lior on 19/02/2017.
  */
 @Singleton
 public class SimpleResultsController implements ResultsController {
-    //map of cursor id -> map of result id -> results (path/graph)
-    private final Map<String, Map<String,ContentResponse>> map = new ConcurrentHashMap<>();
+    private final ResourceStore resourceStore;
 
     @Inject
-    public SimpleResultsController(EventBus eventBus) {
+    public SimpleResultsController(
+            EventBus eventBus,
+            ResourceStore resourceStore) {
+        this.resourceStore = resourceStore;
         eventBus.register(this);
     }
 
-    @Subscribe
-    public void observe(ExecutionCompleteCommand event) {
-        String cursorId = event.getResponse().getQueryMetadata().getId();
-        String resultId = event.getResponse().getResultMetadata().getId();
-        if(!map.containsKey(cursorId)) {
-            map.put(cursorId,new HashMap<>());
-        }
-        map.get(cursorId).put(resultId,event.getResponse());
-    }
-
     @Override
-    public ContentResponse get(String cursorId, String resultId) {
-        if(!map.containsKey(cursorId))
-            return new ContentResponse("CursorId["+cursorId+"] Not Found");
-        //return cached result
-        Map<String,ContentResponse> map = this.map.getOrDefault(cursorId, Collections.EMPTY_MAP);
-        return map.getOrDefault(resultId,new ContentResponse("Not-Found"));
+    public ContentResponse get(String queryId, int cursorId, int resultId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+
+        if(!queryResource.isPresent()) {
+            return new ContentResponse("QueryId[" + queryId + "] Not Found");
+        }
+
+        Optional<CursorResource> cursorResource = queryResource.get().getCursor(cursorId);
+        if (!cursorResource.isPresent()) {
+            return new ContentResponse("CursorId[" + cursorId + "] Not Found");
+        }
+
+        Optional<ContentResponse> result = cursorResource.get().getResultResource(resultId);
+        if (!result.isPresent()) {
+            return new ContentResponse("ResultId[" + resultId + "] Not Found");
+        }
+
+
+        return result.get();
     }
 }

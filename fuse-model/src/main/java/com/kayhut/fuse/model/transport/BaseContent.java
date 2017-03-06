@@ -1,44 +1,29 @@
 package com.kayhut.fuse.model.transport;
 
-import com.kayhut.fuse.model.Content;
-
 /**
  * Created by lior on 19/02/2017.
  */
 public abstract class BaseContent<T> implements Content<T> {
-    private boolean completed;
+    //region Fields
     private String id;
+    private T data;
+    //endregion
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
-    public void setId(String id) {
+    //region Constructors
+    public BaseContent(String id, T data) {
         this.id = id;
+        this.data = data;
     }
+    //endregion
 
+    //region properties
     @Override
     public String getId() {
         return id;
     }
 
-    @Override
-    public boolean isCompleted() {
-        return completed;
+    public T getData() {
+        return this.data;
     }
-
-    public static BaseContent of(String url) {
-        return new BaseContent() {
-            @Override
-            public long getResults() {
-                return 0;
-            }
-
-            @Override
-            public Object getData() {
-                return "{}";
-            }
-
-        };
-    }
+    //endregion
 }
