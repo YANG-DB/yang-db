@@ -9,16 +9,13 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>fuse-unipop</module>
         <module>data-gen</module>
         <module>fuse-model</module>
         <module>fuse-asg</module>
-        <module>fuse-epb</module>
-        <module>fuse-gta</module>
         <module>fuse-dispatcher</module>
-        <module>fuse-executor</module>
         <module>fuse-service</module>
-        <module>fuse-neo4j</module>
+        <module>fuse-axis1</module>
+        <module>fuse-axis2</module>
     </modules>
     <dependencies>
         <dependency>
