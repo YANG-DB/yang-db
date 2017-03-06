@@ -19,6 +19,7 @@
         <module>fuse-executor</module>
         <module>fuse-service</module>
         <module>fuse-neo4j</module>
+        <module>fuse-neo4j-extensions</module>
     </modules>
     <dependencies>
         <dependency>

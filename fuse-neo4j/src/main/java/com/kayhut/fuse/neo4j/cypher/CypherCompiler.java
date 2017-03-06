@@ -1,6 +1,6 @@
 package com.kayhut.fuse.neo4j.cypher;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.model.process.AsgData;
 import com.kayhut.fuse.model.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,74 +75,64 @@ public class CypherCompiler {
         }
     }
 
-    public static String compile(com.kayhut.fuse.model.query.Query query, Schema schema) {
+    public static String compile(com.kayhut.fuse.model.query.Query query, Schema schema) throws CypherCompilerException {
 
-        StringBuilder cypherMatch = new StringBuilder();
-
-        cypherMatch.append("MATCH ");
-
-        StringBuilder cypherWhere = new StringBuilder();
-
-        cypherWhere.append(" WHERE ");
-
-        StringBuilder cypherReturn = new StringBuilder();
-
-        cypherReturn.append(" RETURN ");
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        Iterator<EBase> itr = new QueryElementsOrderedIterator(query);
-
-        boolean hasWhere = false;
-
-        int prevEtype = 0;
-        String prevTag = null;
-
-        while (itr.hasNext()) {
-
-            EBase next = itr.next();
-
-            if (next instanceof ETyped) {
-                cypherMatch.append(String.format("(%s:%s)", ((ETyped) next).geteTag(), schema.getEntityLabel(((ETyped) next).geteType())));
-                cypherReturn.append(String.format("%s ,", ((ETyped) next).geteTag()));
-                prevEtype = ((ETyped) next).geteType();
-                prevTag = ((ETyped) next).geteTag();
-            } else if (next instanceof Rel) {
-                Rel r = (Rel) next;
-                if (r.getDir() == "R") {
-                    cypherMatch.append(String.format("-[:%s]->", schema.getRelationLabel(r.getrType())));
-                } else {
-                    cypherMatch.append(String.format("<-[:%s]-", schema.getRelationLabel(r.getrType())));
-                }
-                prevEtype = r.getrType();
-            } else if (next instanceof EProp) {
-                EProp eprop = (EProp) next;
-                if (eprop.getCond().getOp() == ConditionOp.eq) {
-                    hasWhere = true;
-                    Schema.Property prop = schema.getProperty(prevEtype, eprop.getpType());
-                    if (prop.type.equals("string")) {
-                        cypherWhere.append(String.format("%s.%s = '%s'", prevTag, schema.getPropertyField(prop.name), eprop.getCond().getValue()));
-                    } else {
-                        cypherWhere.append(String.format("%s.%s = %s", prevTag, schema.getPropertyField(prop.name), eprop.getCond().getValue()));
-                    }
-                }
-            }
-
-        }
-
-        StringBuilder cypher = new StringBuilder();
-
-        cypher.append(cypherMatch);
-
-        if (hasWhere) {
-            cypher.append(cypherWhere);
-        }
-
-        cypher.append(cypherReturn.substring(0, cypherReturn.length() - 1));
+        String cypher = buildStatement( new QueryElementsOrderedIterator(query), schema).compose();
 
         logger.info(String.format("(%s) -[:Compiled]-> ( %s)", query.getName(), cypher));
 
         return cypher.toString();
     }
 
+    private static CypherStatement buildStatement(QueryElementsOrderedIterator itr, Schema schema) throws CypherCompilerException {
+
+        CypherMatch match = new CypherMatch();
+        CypherWhere where = new CypherWhere();
+        CypherReturn ret = new CypherReturn();
+
+        EBase prevElement = null;
+
+        while(itr.hasNext()) {
+
+            EBase next = itr.next();
+
+            if (next instanceof ETyped) {
+                match.appendNode(((ETyped) next).geteTag(),
+                            schema.getEntityLabel(((ETyped) next).geteType()),
+                            null);
+                ret.append(((ETyped) next).geteTag(), null, null);
+                prevElement = next;
+            }
+
+            if(next instanceof Rel) {
+                match.appendRelationship(null,
+                                        schema.getRelationLabel(((Rel)next).getrType()),
+                                        null,
+                                        ((Rel)next).getDir() == "R" ? CypherMatch.Direction.RIGHT : CypherMatch.Direction.LEFT);
+            }
+
+            if(next instanceof EProp) {
+                EProp eprop = (EProp) next;
+                Schema.Property prop = schema.getProperty(((ETyped)prevElement).geteType(), eprop.getpType());
+                where.appendUnary(CypherWhere.ConditionType.AND,
+                                  ((ETyped)prevElement).geteTag(),
+                                    schema.getPropertyField(schema.getProperty(((ETyped)prevElement).geteType(), eprop.getpType()).name),
+                                    null,
+                                    eprop.getCond().getOp() == ConditionOp.eq ? CypherWhere.OpType.EQUALS :
+                                                        CypherWhere.OpType.LARGER,
+                                    prop.type.equals("string") ? String.format("'%s'", eprop.getCond().getValue()) :
+                                                        String.valueOf(eprop.getCond().getValue()));
+
+            }
+
+            if(next instanceof Quant1) {
+                Quant1 quant = (Quant1)next;
+                //todo: 2 nexts ??
+            }
+
+        }
+
+        return CypherStatement.build().with(match).with(where).with(ret);
+
+    }
 }
