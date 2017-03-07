@@ -37,7 +37,9 @@ public class SimpleStrategyRegisteredAsgDriver implements ProcessElement {
     public QueryExecutionContext process(QueryExecutionContext input) {
         if(!shouldRun(input))
             return input;
-        AsgQuery asgQuery = new RecTwoPassAsgQuerySupplier(input.getQuery()).get();
+        //AsgQuery asgQuery = new RecTwoPassAsgQuerySupplier(input.getQuery()).get();
+        AsgQuery asgQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().build();
+
         Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery));
         return submit(eventBus, input.of(asgQuery));
     }

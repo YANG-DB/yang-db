@@ -54,7 +54,7 @@ public class BaseQueryDispatcherDriver implements QueryDispatcherDriver {
         //build response metadata
         String host = baseUrl(port);
         QueryResourceResult queryResourceResult = QueryResourceResult.ResultMetadataBuilder.build(String.valueOf(sequence))
-                .cursorUrl(host + "/query/" + metadata.getId())
+                .cursorUrl(host + "/query/" + metadata.getId() + "/cursor/" + 1)
                 .compose();
 
         submit(eventBus, new QueryExecutionContext(metadata, query));

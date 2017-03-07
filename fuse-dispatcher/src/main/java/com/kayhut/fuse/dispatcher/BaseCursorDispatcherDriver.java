@@ -58,6 +58,10 @@ public class BaseCursorDispatcherDriver implements CursorDispatcherDriver{
 
     @Subscribe
     public void persistResultResource(CursorExecutionContext context) {
+        if (context.getResult() == null) {
+            return;
+        }
+
         context.getCursorResource().addResultResource(context.getResultId(),
                 ContentResponse.ResponseBuilder.<QueryResult>builder("1").data(context.getResult()).compose());
     }

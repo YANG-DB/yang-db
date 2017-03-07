@@ -52,7 +52,7 @@ public class FuseApp extends Jooby {
                 /** submit a plan */
                 .post(req -> Results.with(queryCtrl().explain(req.param("getId").value()), Status.CREATED));
 
-        use("/fuse/query/:queryId/cursor/:cursorId/fetch")
+        use("/fuse/query/:queryId/cursor/:cursorId")
                 /** submit a plan */
                 .post(req -> Results.with(cursorCtrl().fetch(req.param("queryId").value(), req.param("cursorId").intValue(), req.body(CursorFetchRequest.class).getFetchSize()), Status.CREATED));
 
