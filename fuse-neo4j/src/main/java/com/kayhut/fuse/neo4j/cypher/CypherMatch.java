@@ -18,7 +18,15 @@ public class CypherMatch {
 
     public enum Direction {RIGHT, LEFT, BOTH}
 
-    private StringBuilder builder = new StringBuilder(MATCH);
+    private StringBuilder builder;
+
+    public CypherMatch() {
+        builder = new StringBuilder(MATCH);
+    }
+
+    public CypherMatch(String initialString) {
+        builder = new StringBuilder(initialString);
+    }
 
     public void appendNode(String tag, String label, Map<String, String> inlineProps) {
         if(inlineProps == null) {
@@ -46,6 +54,11 @@ public class CypherMatch {
         } else {
 
         }
+    }
+
+    public CypherMatch and(CypherMatch otherMatch) {
+        CypherMatch newMatch = new CypherMatch(this.toString() + "\n" + otherMatch.toString());
+        return newMatch;
     }
 
     private String buildProps(Map<String, String> props) {
