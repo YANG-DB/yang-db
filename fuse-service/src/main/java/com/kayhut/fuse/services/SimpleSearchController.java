@@ -3,7 +3,6 @@ package com.kayhut.fuse.services;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.model.transport.GraphContent;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.process.QueryResourceResult;

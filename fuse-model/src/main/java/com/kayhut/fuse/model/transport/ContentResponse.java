@@ -1,15 +1,12 @@
 package com.kayhut.fuse.model.transport;
 
-import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.process.QueryResourceResult;
-
 /**
  * Created by lior on 19/02/2017.
  */
-public class ContentResponse<T> implements BaseResponse {
+public class ContentResponse<T> implements Response {
     public static final ContentResponse EMPTY =  new ContentResponse("NOT-FOUND");
     private String id;
-    private Content<T> content;
+    private T data;
 
     public ContentResponse(String id) {
         this.id = id;
@@ -19,8 +16,8 @@ public class ContentResponse<T> implements BaseResponse {
         return id;
     }
 
-    public Content getContent() {
-        return content;
+    public T getData() {
+        return data;
     }
 
     public static class ResponseBuilder<T> {
@@ -35,8 +32,8 @@ public class ContentResponse<T> implements BaseResponse {
             response.id = id;
         }
 
-        public ResponseBuilder<T> data(Content<T> data) {
-            this.response.content = data;
+        public ResponseBuilder<T> data(T data) {
+            this.response.data = data;
             return this;
         }
 

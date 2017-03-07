@@ -5,7 +5,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 /**
  * Created by lior on 23/02/2017.
  */
-public class OntologyResponse implements BaseResponse {
+public class OntologyResponse implements Response {
     private String id;
     private Ontology ontology;
 

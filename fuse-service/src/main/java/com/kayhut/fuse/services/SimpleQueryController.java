@@ -40,7 +40,7 @@ public class SimpleQueryController implements QueryController {
         // Get the response from context - actually the event bus is doing sync (serial) method (listeners) invocation until the last element in the execution chain is called
         // and sets the response in the context (QueryDispatcherDriver.response)
         return ContentResponse.ResponseBuilder.<QueryResourceResult>builder(request.getId())
-                .data(new QueryResourceContent(id, result))
+                .data(result)
                 .compose();
     }
 
@@ -48,9 +48,9 @@ public class SimpleQueryController implements QueryController {
     public ContentResponse explain(String queryId) {
         Optional<Plan> plan = this.driver.explain(queryId);
         if (!plan.isPresent()) {
-            ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(new PlanContent("-1", null)).compose();
+            ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(null).compose();
         }
 
-        return ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(new PlanContent("1", plan.get())).compose();
+        return ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(plan.get()).compose();
     }
 }

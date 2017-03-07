@@ -11,7 +11,6 @@ import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.model.process.CursorResourceResult;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.GraphContent;
 import com.typesafe.config.Config;
 
 import java.util.Optional;
@@ -60,6 +59,6 @@ public class BaseCursorDispatcherDriver implements CursorDispatcherDriver{
     @Subscribe
     public void persistResultResource(CursorExecutionContext context) {
         context.getCursorResource().addResultResource(context.getResultId(),
-                ContentResponse.ResponseBuilder.<QueryResult>builder("1").data(new GraphContent("1", context.getResult())).compose());
+                ContentResponse.ResponseBuilder.<QueryResult>builder("1").data(context.getResult()).compose());
     }
 }

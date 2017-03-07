@@ -6,7 +6,6 @@ import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.CursorDispatcherDriver;
 import com.kayhut.fuse.model.process.CursorResourceResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CursorResourceContent;
 import com.typesafe.config.Config;
 
 import java.util.Optional;
@@ -38,6 +37,6 @@ public class SimpleCursorController implements CursorController {
         }
 
         return ContentResponse.ResponseBuilder.<CursorResourceResult>builder(UUID.randomUUID().toString())
-                .data(new CursorResourceContent("1", fetch.get())).compose();
+                .data(fetch.get()).compose();
     }
 }
