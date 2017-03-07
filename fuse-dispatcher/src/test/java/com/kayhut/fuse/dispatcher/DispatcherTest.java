@@ -6,9 +6,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.kayhut.fuse.asg.strategy.SimpleStrategyRegisteredAsgDriver;
-import com.kayhut.fuse.epb.BaseEpbDriver;
-import com.kayhut.fuse.gta.BaseGtaDriver;
+
 import com.kayhut.fuse.model.process.*;
 import com.typesafe.config.Config;
 import org.junit.Assert;
@@ -27,9 +25,6 @@ public class DispatcherTest {
         protected void configure() {
             bind(EventBus.class).toInstance(new EventBus());
             bind(QueryDispatcherDriver.class).to(BaseQueryDispatcherDriver.class);
-            bind(SimpleStrategyRegisteredAsgDriver.class).asEagerSingleton();
-            bind(BaseEpbDriver.class).asEagerSingleton();
-            bind(BaseGtaDriver.class).asEagerSingleton();
         }
     });
 
@@ -48,26 +43,6 @@ public class DispatcherTest {
     EventBus eventBus;
     @Inject
     Config config;
-
-    @Subscribe
-    public void asgDriverProcess(AsgData input) {
-        Assert.assertNotNull(input);
-        System.out.println("Asg Driver proccess passed");
-        latch.countDown();
-    }
-
-    @Subscribe
-    public void epbDriverProcess(EpbData input) {
-        Assert.assertNotNull(input);
-        System.out.println("Epb Driver proccess passed");
-        latch.countDown();
-    }
-    @Subscribe
-    public void gtaDriverProcess(GtaData input) {
-        Assert.assertNotNull(input);
-        System.out.println("Gta Driver proccess passed");
-        latch.countDown();
-    }
 
     @Test
     public void dispatcherFlow() throws InterruptedException {

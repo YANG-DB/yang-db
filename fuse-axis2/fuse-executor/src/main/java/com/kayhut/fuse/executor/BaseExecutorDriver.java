@@ -5,15 +5,14 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.model.process.ProcessElement;
-
-import static com.kayhut.fuse.model.Utils.submit;
+import com.kayhut.fuse.dispatcher.ProcessElement;
+import com.kayhut.fuse.dispatcher.context.QueryExecutionContext;
 
 /**
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class BaseExecutorDriver implements ProcessElement, ExecutorDriver {
+public class BaseExecutorDriver implements ProcessElement {
     private EventBus eventBus;
 
     @Inject
@@ -24,8 +23,7 @@ public class BaseExecutorDriver implements ProcessElement, ExecutorDriver {
 
     @Override
     @Subscribe
-    public Object process(Object input) {
-        return submit(eventBus,input);
+    public QueryExecutionContext process(QueryExecutionContext input) {
+        return null;
     }
-
 }

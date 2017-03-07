@@ -12,6 +12,6 @@ public class ExecutorModule implements Jooby.Module  {
 
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(ExecutorDriver.class).to(BaseExecutorDriver.class).asEagerSingleton();
+        //binder.bind(ExecutorDriver.class).to(BaseExecutorDriver.class).asEagerSingleton();
     }
 }

@@ -1,12 +1,13 @@
-package com.kayhut.fuse.model.process;
+package com.kayhut.fuse.dispatcher;
 
+import com.kayhut.fuse.dispatcher.context.QueryExecutionContext;
 import com.kayhut.fuse.model.transport.ContentResponse;
 
 /**
  * Created by lior on 20/02/2017.
  */
-public interface ProcessElement<IN,OUT> {
-    OUT process(IN input);
+public interface ProcessElement {
+    QueryExecutionContext process(QueryExecutionContext input);
 
     class ProcessContext {
 

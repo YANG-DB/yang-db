@@ -1,18 +1,12 @@
 package com.kayhut.fuse.model.transport;
 
-import com.kayhut.fuse.model.Content;
-import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.process.ResultMetadata;
-
 /**
  * Created by lior on 19/02/2017.
  */
-public class ContentResponse implements BaseResponse {
-
+public class ContentResponse<T> implements Response {
+    public static final ContentResponse EMPTY =  new ContentResponse("NOT-FOUND");
     private String id;
-    private QueryMetadata queryMetadata;
-    private ResultMetadata resultMetadata;
-    private Content content;
+    private T data;
 
     public ContentResponse(String id) {
         this.id = id;
@@ -22,24 +16,15 @@ public class ContentResponse implements BaseResponse {
         return id;
     }
 
-    public QueryMetadata getQueryMetadata() {
-        return queryMetadata;
+    public T getData() {
+        return data;
     }
 
-    public ResultMetadata getResultMetadata() {
-        return resultMetadata;
-    }
-
-    public Content getContent() {
-        return content;
-    }
-
-    public static class ResponseBuilder {
+    public static class ResponseBuilder<T> {
         private ContentResponse response;
 
-        public static ResponseBuilder builder(String id) {
-            ResponseBuilder builder = new ResponseBuilder(id);
-            return builder;
+        public static <S> ResponseBuilder<S> builder(String id) {
+            return new ResponseBuilder<>(id);
         }
 
         public ResponseBuilder(String id) {
@@ -47,22 +32,12 @@ public class ContentResponse implements BaseResponse {
             response.id = id;
         }
 
-        public ResponseBuilder queryMetadata(QueryMetadata metadata) {
-            response.queryMetadata = metadata;
+        public ResponseBuilder<T> data(T data) {
+            this.response.data = data;
             return this;
         }
 
-        public ResponseBuilder resultMetadata(ResultMetadata metadata) {
-            response.resultMetadata = metadata;
-            return this;
-        }
-
-        public ResponseBuilder data(Content data) {
-            this.response.content = data;
-            return this;
-        }
-
-        public ContentResponse compose() {
+        public ContentResponse<T> compose() {
             return response;
         }
 

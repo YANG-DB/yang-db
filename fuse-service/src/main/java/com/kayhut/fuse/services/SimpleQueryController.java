@@ -4,12 +4,15 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.QueryDispatcherDriver;
-import com.kayhut.fuse.model.process.QueryCursorData;
-import com.kayhut.fuse.model.process.QueryData;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.process.QueryResourceResult;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.transport.Request;
-import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.*;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.kayhut.fuse.model.Utils.baseUrl;
 import static com.kayhut.fuse.model.Utils.getOrCreateId;
 
 /**
@@ -29,17 +32,25 @@ public class SimpleQueryController implements QueryController {
     }
 
     @Override
-    public ContentResponse query(Request request) {
+    public ContentResponse<QueryResourceResult> query(QueryRequest request) {
         //build graph & transport response
         String id = getOrCreateId(request.getId());
         QueryMetadata metadata = new QueryMetadata(id, request.getName(), request.getType(), System.currentTimeMillis());
-        QueryCursorData cursorData = driver.process(new QueryData(metadata, request.getQuery()));
+        QueryResourceResult result = driver.process(metadata, request.getQuery());
         // Get the response from context - actually the event bus is doing sync (serial) method (listeners) invocation until the last element in the execution chain is called
         // and sets the response in the context (QueryDispatcherDriver.response)
-        return ContentResponse.ResponseBuilder.builder(cursorData.getResultMetadata().getId())
-                .queryMetadata(metadata)
-                .resultMetadata(cursorData.getResultMetadata())
+        return ContentResponse.ResponseBuilder.<QueryResourceResult>builder(request.getId())
+                .data(result)
                 .compose();
     }
 
+    @Override
+    public ContentResponse explain(String queryId) {
+        Optional<Plan> plan = this.driver.explain(queryId);
+        if (!plan.isPresent()) {
+            ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(null).compose();
+        }
+
+        return ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(plan.get()).compose();
+    }
 }

@@ -6,23 +6,21 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.model.Graph;
-import com.kayhut.fuse.model.process.ProcessElement;
-import com.kayhut.fuse.model.process.QueryCursorData;
-import com.kayhut.fuse.model.process.command.CursorCommand;
-import com.kayhut.fuse.model.process.command.ExecutionCompleteCommand;
+import com.kayhut.fuse.dispatcher.BaseCursorDispatcherDriver;
+import com.kayhut.fuse.dispatcher.ProcessElement;
+import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.context.CursorExecutionContext;
+import com.kayhut.fuse.dispatcher.context.QueryExecutionContext;
 import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.results.Pattern;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.neo4j.cypher.Compiler;
 import com.kayhut.fuse.neo4j.cypher.Schema;
+import com.typesafe.config.Config;
 import org.neo4j.driver.v1.*;
 
 import java.io.File;
 import java.util.Scanner;
-import java.util.UUID;
 
 import static com.kayhut.fuse.model.Utils.asString;
 import static com.kayhut.fuse.model.Utils.submit;
@@ -31,53 +29,46 @@ import static com.kayhut.fuse.model.Utils.submit;
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class BaseNeo4jExecutorDriver implements ProcessElement<QueryCursorData, ExecutionCompleteCommand>, Neo4jExecutorDriver {
+public class BaseNeo4jExecutorDriver extends BaseCursorDispatcherDriver implements ProcessElement {
     static String NEO4J_BOLT_URL = "bolt://localhost:7687";
 
     static String NEO4J_USER = "neo4j";
 
     static String NEO4J_PWD = "1234";
 
-    private EventBus eventBus;
-
     @Inject
-    public BaseNeo4jExecutorDriver(EventBus eventBus) {
-        this.eventBus = eventBus;
-        this.eventBus.register(this);
+    public BaseNeo4jExecutorDriver(Config conf, EventBus eventBus, ResourceStore resourceStore) {
+        super(conf, eventBus, resourceStore);
+    }
+
+
+
+    @Subscribe
+    public CursorExecutionContext process(CursorExecutionContext input) {
+        Neo4jCursor neo4jCursor = (Neo4jCursor)input.getCursorResource().getCursor();
+        String cypherQuery = neo4jCursor.getCypherQuery();
+
+        String result = query(cypherQuery);
+
+        QueryResult resultGraph = new QueryResult();
+        Pattern pattern = new Pattern();
+        pattern.setName(result);
+        resultGraph.setPattern(pattern);
+
+        return submit(eventBus, input.of(resultGraph));
     }
 
     @Override
     @Subscribe
-    public ExecutionCompleteCommand process(QueryCursorData input) {
+    public QueryExecutionContext process(QueryExecutionContext input) {
         Query query = input.getQuery();
         try {
             String queryStr = asString(query);
-            String result = query(queryStr);
-
-            QueryResult resultGraph = new QueryResult();
-            Pattern pattern = new Pattern();
-            pattern.setName(result);
-            resultGraph.setPattern(pattern);
-
-            QueryMetadata queryMetadata = input.getQueryMetadata();
-            ContentResponse response = ContentResponse.ResponseBuilder.builder(queryMetadata.getId())
-                    .queryMetadata(queryMetadata)
-                    .resultMetadata(input.getResultMetadata())
-                    .data(Graph.GraphBuilder.builder(UUID.randomUUID().toString())
-                            .data(resultGraph)
-                            .compose())
-                    .compose();
-            return submit(eventBus, new ExecutionCompleteCommand(response));
+            return submit(eventBus, input.of(new Neo4jCursor(queryStr)));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+            return null;
         }
-        return new ExecutionCompleteCommand();
-    }
-
-
-    @Subscribe
-    public ExecutionCompleteCommand processCursor(CursorCommand input) {
-        return submit(eventBus, new ExecutionCompleteCommand());
     }
 
     public String query(String query) {
@@ -117,5 +108,4 @@ public class BaseNeo4jExecutorDriver implements ProcessElement<QueryCursorData, 
         }
 
     }
-
 }

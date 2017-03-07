@@ -1,6 +1,8 @@
 package com.kayhut.fuse.services;
 
-import com.kayhut.fuse.model.transport.Request;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.process.QueryResourceResult;
+import com.kayhut.fuse.model.transport.QueryRequest;
 import com.kayhut.fuse.model.transport.ContentResponse;
 
 /**
@@ -8,7 +10,7 @@ import com.kayhut.fuse.model.transport.ContentResponse;
  */
 public interface QueryController {
 
-    ContentResponse query(Request request);
-
+    ContentResponse<QueryResourceResult> query(QueryRequest request);
+    ContentResponse<Plan> explain(String queryId);
 
 }
