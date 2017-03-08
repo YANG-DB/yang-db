@@ -1,8 +1,6 @@
 package com.kayhut.fuse.services;
 
 import com.google.inject.Binder;
-import com.kayhut.fuse.dispatcher.BaseQueryDispatcherDriver;
-import com.kayhut.fuse.dispatcher.QueryDispatcherDriver;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.Jooby;
@@ -19,7 +17,7 @@ public class ServicesModule implements Jooby.Module {
         //service controllers
         binder.bind(QueryController.class).to(SimpleQueryController.class).asEagerSingleton();
         binder.bind(CursorController.class).to(SimpleCursorController.class).asEagerSingleton();
-        binder.bind(ResultsController.class).to(SimpleResultsController.class).asEagerSingleton();
+        binder.bind(PageController.class).to(SimplePageController.class).asEagerSingleton();
         binder.bind(SearchController.class).to(SimpleSearchController.class).asEagerSingleton();
         binder.bind(CatalogController.class).to(SimpleCatalogController.class).asEagerSingleton();
     }

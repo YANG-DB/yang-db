@@ -18,21 +18,33 @@ public class QueryResource {
     public QueryResource(Query query, QueryMetadata queryMetadata) {
         this.query = query;
         this.queryMetadata = queryMetadata;
-        this.cursors = new HashMap<>();
+        this.cursorResources = new HashMap<>();
     }
     //endregion
 
     //region Public Methods
-    public void addCursor(int key, CursorResource<ContentResponse> cursorResource) {
-        this.cursors.put(key, cursorResource);
+    public void addCursorResource(int cursorId, CursorResource<Object> cursorResource) {
+        this.cursorResources.put(cursorId, cursorResource);
     }
 
-    public Optional<CursorResource> getCursor(int key) {
-        return Optional.ofNullable(this.cursors.get(key));
+    public Optional<CursorResource> getCursorResource(int cursorId) {
+        return Optional.ofNullable(this.cursorResources.get(cursorId));
+    }
+
+    public void deleteCursorResource(int cursorId) {
+        this.cursorResources.remove(cursorId);
+    }
+
+    public int getNextCursorSequence() {
+        return this.cursorSequence++;
     }
     //endregion
 
     //region Properties
+    public Query getQuery() {
+        return this.query;
+    }
+
     public QueryMetadata getQueryMetadata() {
         return queryMetadata;
     }
@@ -46,6 +58,8 @@ public class QueryResource {
     private Query query;
     private QueryMetadata queryMetadata;
     private Plan executionPlan;
-    private Map<Integer, CursorResource> cursors;
+    private Map<Integer, CursorResource> cursorResources;
+
+    private int cursorSequence;
     //endregion
 }

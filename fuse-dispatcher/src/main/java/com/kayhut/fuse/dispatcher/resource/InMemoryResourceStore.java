@@ -24,6 +24,11 @@ public class InMemoryResourceStore implements ResourceStore {
     public void addQueryResource(QueryResource queryResource) {
         this.queryResources.put(queryResource.getQueryMetadata().getId(), queryResource);
     }
+
+    @Override
+    public void deleteQueryResource(String queryId) {
+        this.queryResources.remove(queryId);
+    }
     //endregion
 
     //region Fields

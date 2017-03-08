@@ -1,15 +1,14 @@
 package com.kayhut.fuse.dispatcher;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 
-import com.kayhut.fuse.model.process.*;
+import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
+import com.kayhut.fuse.dispatcher.driver.SimpleQueryDispatcherDriver;
 import com.typesafe.config.Config;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class DispatcherTest {
         @Override
         protected void configure() {
             bind(EventBus.class).toInstance(new EventBus());
-            bind(QueryDispatcherDriver.class).to(BaseQueryDispatcherDriver.class);
+            bind(QueryDispatcherDriver.class).to(SimpleQueryDispatcherDriver.class);
         }
     });
 

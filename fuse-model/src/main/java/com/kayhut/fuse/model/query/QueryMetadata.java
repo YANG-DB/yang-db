@@ -6,13 +6,11 @@ package com.kayhut.fuse.model.query;
 public final class QueryMetadata {
     private String id;
     private String name;
-    private String type;
     private long time;
 
-    public QueryMetadata(String id, String name,String type, long time) {
+    public QueryMetadata(String id, String name, long time) {
         this.id = id;
         this.name = name;
-        this.type = type;
         this.time = time;
     }
 
@@ -26,9 +24,5 @@ public final class QueryMetadata {
 
     public long getTime() {
         return time;
-    }
-
-    public String getType() {
-        return type;
     }
 }

@@ -1,22 +1,15 @@
 package com.kayhut.fuse.neo4j.executor;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.kayhut.fuse.dispatcher.BaseCursorDispatcherDriver;
-import com.kayhut.fuse.dispatcher.ProcessElement;
-import com.kayhut.fuse.dispatcher.resource.ResourceStore;
-import com.kayhut.fuse.dispatcher.context.CursorExecutionContext;
-import com.kayhut.fuse.dispatcher.context.QueryExecutionContext;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
+import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
+import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 import com.kayhut.fuse.neo4j.cypher.Schema;
-import com.typesafe.config.Config;
 import org.neo4j.driver.internal.value.NodeValue;
 import org.neo4j.driver.internal.value.RelationshipValue;
 import org.neo4j.driver.v1.*;
@@ -26,49 +19,48 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.model.Utils.asString;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
- * Created by lior on 20/02/2017.
+ * Created by User on 08/03/2017.
  */
-@Singleton
-public class BaseNeo4jExecutorDriver extends BaseCursorDispatcherDriver implements ProcessElement {
-    static String NEO4J_BOLT_URL = "bolt://localhost:7687";
-
-    static String NEO4J_USER = "neo4j";
-
-    static String NEO4J_PWD = "1234";
-
+public class Neo4JOperationContextProcessor implements
+        CursorCreationOperationContext.Processor,
+        PageCreationOperationContext.Processor {
+    //region Constructors
     @Inject
-    public BaseNeo4jExecutorDriver(Config conf, EventBus eventBus, ResourceStore resourceStore) {
-        super(conf, eventBus, resourceStore);
+    public Neo4JOperationContextProcessor(EventBus eventBus) {
+        this.eventBus = eventBus;
+        this.eventBus.register(this);
     }
+    //endregion
 
+    //region CursorCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    public QueryExecutionContext process(QueryExecutionContext input) {
-        if (!input.phase(QueryExecutionContext.Phase.asg) ||
-                input.phase(QueryExecutionContext.Phase.cursor)) {
-            return input;
+    public CursorCreationOperationContext process(CursorCreationOperationContext context) {
+        if (context.getCursor() != null) {
+            return context;
         }
 
         // TODO: use ASG
         // AsgQuery asgQuery = input.getAsgQuery();
 
-        return submit(eventBus, input.of(new Neo4jCursor(input.getQuery())));
+        return submit(eventBus, context.of(new Neo4jCursor(context.getQueryResource().getQuery())));
     }
+    //endregion
 
+    //region PageCreationOperationContext.Processor Implementation
+    @Override
     @Subscribe
-    public CursorExecutionContext process(CursorExecutionContext input) {
-        if (input.getResult() != null) {
-            return input;
+    public PageCreationOperationContext process(PageCreationOperationContext context) {
+        if (context.getPageResource() != null) {
+            return context;
         }
 
-        Neo4jCursor neo4jCursor = (Neo4jCursor)input.getCursorResource().getCursor();
+        Neo4jCursor neo4jCursor = (Neo4jCursor)context.getCursorResource().getCursor();
         Query query = neo4jCursor.getQuery();
 
         QueryResult result = query(query);
@@ -76,9 +68,11 @@ public class BaseNeo4jExecutorDriver extends BaseCursorDispatcherDriver implemen
             result = new QueryResult();
         }
 
-        return submit(eventBus, input.of(result));
+        return submit(eventBus, context.of(result));
     }
+    //endregion
 
+    //region Private Methods
     public QueryResult query(Query query) {
 
         try {
@@ -130,8 +124,8 @@ public class BaseNeo4jExecutorDriver extends BaseCursorDispatcherDriver implemen
                         });
 
                         Entity entity = Entity.EntityBuilder.anEntity()
-                                            .withETag(Iterators.asList(n.asNode().labels().iterator()))
-                                            .withProperties(props).build();
+                                .withETag(Iterators.asList(n.asNode().labels().iterator()))
+                                .withProperties(props).build();
 
                         entities.add(entity);
 
@@ -150,12 +144,12 @@ public class BaseNeo4jExecutorDriver extends BaseCursorDispatcherDriver implemen
                         });
 
                         Relationship rel = Relationship.RelationshipBuilder.aRelationship()
-                                                    .withAgg(false)
-                                                    .withRID(String.valueOf(r.asRelationship().id()))
-                                                    .withDirectional(true)
-                                                    .withEID1(String.valueOf(r.asRelationship().startNodeId()))
-                                                    .withEID2(String.valueOf(r.asRelationship().endNodeId()))
-                                                    .withProperties(props).build();
+                                .withAgg(false)
+                                .withRID(String.valueOf(r.asRelationship().id()))
+                                .withDirectional(true)
+                                .withEID1(String.valueOf(r.asRelationship().startNodeId()))
+                                .withEID2(String.valueOf(r.asRelationship().endNodeId()))
+                                .withProperties(props).build();
 
                         rels.add(rel);
                     }
@@ -163,9 +157,9 @@ public class BaseNeo4jExecutorDriver extends BaseCursorDispatcherDriver implemen
                 });
 
                 Assignment assignment = Assignment.AssignmentBuilder.anAssignment()
-                                                            .withEntities(entities)
-                                                            .withRelationships(rels)
-                                                            .build();
+                        .withEntities(entities)
+                        .withRelationships(rels)
+                        .build();
 
                 assignments.add(assignment);
 
@@ -178,6 +172,14 @@ public class BaseNeo4jExecutorDriver extends BaseCursorDispatcherDriver implemen
         } catch (Exception e) {
             return null;
         }
-
     }
+    //endregion
+
+    //region Fields
+    protected EventBus eventBus;
+
+    static String NEO4J_BOLT_URL = "bolt://localhost:7687";
+    static String NEO4J_USER = "neo4j";
+    static String NEO4J_PWD = "1234";
+    //endregion
 }

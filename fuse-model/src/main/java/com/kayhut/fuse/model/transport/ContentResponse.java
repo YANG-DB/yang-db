@@ -4,7 +4,7 @@ package com.kayhut.fuse.model.transport;
  * Created by lior on 19/02/2017.
  */
 public class ContentResponse<T> implements Response {
-    public static final ContentResponse EMPTY =  new ContentResponse("NOT-FOUND");
+    public static final ContentResponse NOT_FOUND =  new ContentResponse("NOT-FOUND");
     private String id;
     private T data;
 
@@ -20,19 +20,19 @@ public class ContentResponse<T> implements Response {
         return data;
     }
 
-    public static class ResponseBuilder<T> {
+    public static class Builder<T> {
         private ContentResponse response;
 
-        public static <S> ResponseBuilder<S> builder(String id) {
-            return new ResponseBuilder<>(id);
+        public static <S> Builder<S> builder(String id) {
+            return new Builder<>(id);
         }
 
-        public ResponseBuilder(String id) {
+        public Builder(String id) {
             response = new ContentResponse(id);
             response.id = id;
         }
 
-        public ResponseBuilder<T> data(T data) {
+        public Builder<T> data(T data) {
             this.response.data = data;
             return this;
         }

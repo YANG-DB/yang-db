@@ -1,6 +1,6 @@
 package com.kayhut.fuse.services;
 
-import com.kayhut.fuse.model.transport.QueryRequest;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ContentResponse;
 
 /**
@@ -8,6 +8,6 @@ import com.kayhut.fuse.model.transport.ContentResponse;
  */
 public interface SearchController {
 
-    ContentResponse search(QueryRequest request);
+    ContentResponse search(CreateQueryRequest request);
 
 }

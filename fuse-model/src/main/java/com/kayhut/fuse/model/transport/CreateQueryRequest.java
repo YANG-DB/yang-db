@@ -7,10 +7,9 @@ import com.kayhut.fuse.model.query.Query;
  * <p>
  * Mutable structure due to json reflective builder needs...
  */
-public class QueryRequest {
+public class CreateQueryRequest {
     private String id;
     private String name;
-    private String type;
     private Query query;
 
     public String getId() {
@@ -25,20 +24,12 @@ public class QueryRequest {
         this.name = name;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
     public void setQuery(Query query) {
         this.query = query;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public Query getQuery() {

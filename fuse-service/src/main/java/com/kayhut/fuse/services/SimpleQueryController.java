@@ -3,16 +3,15 @@ package com.kayhut.fuse.services;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.dispatcher.QueryDispatcherDriver;
+import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.process.QueryResourceResult;
+import com.kayhut.fuse.model.process.QueryResourceInfo;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.*;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.kayhut.fuse.model.Utils.baseUrl;
 import static com.kayhut.fuse.model.Utils.getOrCreateId;
 
 /**
@@ -32,25 +31,45 @@ public class SimpleQueryController implements QueryController {
     }
 
     @Override
-    public ContentResponse<QueryResourceResult> query(QueryRequest request) {
-        //build graph & transport response
-        String id = getOrCreateId(request.getId());
-        QueryMetadata metadata = new QueryMetadata(id, request.getName(), request.getType(), System.currentTimeMillis());
-        QueryResourceResult result = driver.process(metadata, request.getQuery());
-        // Get the response from context - actually the event bus is doing sync (serial) method (listeners) invocation until the last element in the execution chain is called
-        // and sets the response in the context (QueryDispatcherDriver.response)
-        return ContentResponse.ResponseBuilder.<QueryResourceResult>builder(request.getId())
-                .data(result)
+    public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
+        String queryId = getOrCreateId(request.getId());
+        QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis());
+        Optional<QueryResourceInfo> resourceInfo = driver.create(metadata, request.getQuery());
+
+        return ContentResponse.Builder.<QueryResourceInfo>builder(request.getId())
+                .data(resourceInfo.get())
                 .compose();
     }
 
     @Override
-    public ContentResponse explain(String queryId) {
-        Optional<Plan> plan = this.driver.explain(queryId);
-        if (!plan.isPresent()) {
-            ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(null).compose();
+    public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
+        Optional<QueryResourceInfo> resourceInfo = this.driver.getInfo(queryId);
+        if (!resourceInfo.isPresent()) {
+            return ContentResponse.NOT_FOUND;
         }
 
-        return ContentResponse.ResponseBuilder.<Plan>builder(UUID.randomUUID().toString()).data(plan.get()).compose();
+        return ContentResponse.Builder.<QueryResourceInfo>builder(UUID.randomUUID().toString())
+                .data(resourceInfo.get()).compose();
+    }
+
+    @Override
+    public ContentResponse<Plan> explain(String queryId) {
+        Optional<Plan> plan = this.driver.explain(queryId);
+        if (!plan.isPresent()) {
+            ContentResponse.Builder.<Plan>builder(UUID.randomUUID().toString()).data(null).compose();
+        }
+
+        return ContentResponse.Builder.<Plan>builder(UUID.randomUUID().toString()).data(plan.get()).compose();
+    }
+
+    @Override
+    public ContentResponse<Boolean> delete(String queryId) {
+        Optional<Boolean> isDeleted = this.driver.delete(queryId);
+        if (!isDeleted.isPresent()) {
+            return ContentResponse.NOT_FOUND;
+        }
+
+        return ContentResponse.Builder.<Boolean>builder(UUID.randomUUID().toString())
+                .data(isDeleted.get()).compose();
     }
 }
