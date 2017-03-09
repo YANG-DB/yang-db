@@ -4,7 +4,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.PageDispatcherDriver;
-import com.kayhut.fuse.model.process.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 
@@ -36,13 +37,33 @@ public class SimplePageController implements PageController {
     }
 
     @Override
-    public ContentResponse<Object> get(String queryId, String cursorId, String pageId) {
-        Optional<Object> pageResource = this.driver.get(queryId, cursorId, pageId);
+    public ContentResponse<StoreResourceInfo> getInfo(String queryid, String cursorId) {
+        Optional<StoreResourceInfo> resourceInfo = this.driver.getInfo(queryid, cursorId);
+        if (!resourceInfo.isPresent()) {
+            return ContentResponse.NOT_FOUND;
+        }
+
+        return ContentResponse.Builder.<StoreResourceInfo>builder(UUID.randomUUID().toString()).data(resourceInfo.get()).compose();
+    }
+
+    @Override
+    public ContentResponse<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId) {
+        Optional<PageResourceInfo> pageResource = this.driver.getInfo(queryId, cursorId, pageId);
         if (!pageResource.isPresent()) {
             return ContentResponse.NOT_FOUND;
         }
 
-        return ContentResponse.Builder.builder(UUID.randomUUID().toString()).data(pageResource.get()).compose();
+        return ContentResponse.Builder.<PageResourceInfo>builder(UUID.randomUUID().toString()).data(pageResource.get()).compose();
+    }
+
+    @Override
+    public ContentResponse<Object> getData(String queryId, String cursorId, String pageId) {
+        Optional<Object> pageData = this.driver.getData(queryId, cursorId, pageId);
+        if (!pageData.isPresent()) {
+            return ContentResponse.NOT_FOUND;
+        }
+
+        return ContentResponse.Builder.builder(UUID.randomUUID().toString()).data(pageData.get()).compose();
     }
 
     @Override

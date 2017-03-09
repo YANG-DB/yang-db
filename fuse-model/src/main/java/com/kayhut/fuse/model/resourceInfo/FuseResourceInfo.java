@@ -1,11 +1,12 @@
-package com.kayhut.fuse.model.process;
+package com.kayhut.fuse.model.resourceInfo;
 
 /**
  * Created by User on 09/03/2017.
  */
-public class FuseResourceInfo {
+public class FuseResourceInfo extends ResourceInfoBase {
     //region Constructors
-    public FuseResourceInfo(String healthUrl, String queryStoreUrl, String searchStoreUrl, String catalogStoreUrl) {
+    public FuseResourceInfo(String resourceUrl, String healthUrl, String queryStoreUrl, String searchStoreUrl, String catalogStoreUrl) {
+        super(resourceUrl);
         this.healthUrl = healthUrl;
         this.queryStoreUrl = queryStoreUrl;
         this.searchStoreUrl = searchStoreUrl;

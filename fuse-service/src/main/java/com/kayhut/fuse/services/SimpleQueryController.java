@@ -5,8 +5,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.process.QueryResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.*;
 
 import java.util.Optional;
@@ -39,6 +40,17 @@ public class SimpleQueryController implements QueryController {
         return ContentResponse.Builder.<QueryResourceInfo>builder(request.getId())
                 .data(resourceInfo.get())
                 .compose();
+    }
+
+    @Override
+    public ContentResponse<StoreResourceInfo> getInfo() {
+        Optional<StoreResourceInfo> resourceInfo = this.driver.getInfo();
+        if (!resourceInfo.isPresent()) {
+            return ContentResponse.NOT_FOUND;
+        }
+
+        return ContentResponse.Builder.<StoreResourceInfo>builder(UUID.randomUUID().toString())
+                .data(resourceInfo.get()).compose();
     }
 
     @Override

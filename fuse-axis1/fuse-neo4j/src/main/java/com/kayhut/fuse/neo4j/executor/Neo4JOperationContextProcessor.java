@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
+import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
@@ -68,7 +69,7 @@ public class Neo4JOperationContextProcessor implements
             result = new QueryResult();
         }
 
-        return submit(eventBus, context.of(result));
+        return submit(eventBus, context.of(new PageResource(context.getPageId(), result, context.getPageSize())));
     }
     //endregion
 

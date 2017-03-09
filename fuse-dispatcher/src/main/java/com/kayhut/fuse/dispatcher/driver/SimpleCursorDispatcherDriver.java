@@ -8,8 +8,10 @@ import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.kayhut.fuse.model.process.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import javaslang.collection.Stream;
 
 import java.util.Optional;
 
@@ -45,6 +47,22 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
                 urlSupplier.resourceUrl(queryId, cursorId),
                 cursorType,
                 urlSupplier.pageStoreUrl(queryId, cursorId)));
+    }
+
+    @Override
+    public Optional<StoreResourceInfo> getInfo(String queryId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Iterable<String> resourceUrls = Stream.ofAll(queryResource.get().getCursorResources())
+                .sortBy(cursorResource -> cursorResource.getTimeCreated())
+                .map(cursorResource -> cursorResource.getCursorId())
+                .map(cursorId -> this.urlSupplier.resourceUrl(queryId, cursorId))
+                .toJavaList();
+
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.cursorStoreUrl(queryId), resourceUrls));
     }
 
     @Override

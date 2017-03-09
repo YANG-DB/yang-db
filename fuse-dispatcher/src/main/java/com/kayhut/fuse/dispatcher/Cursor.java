@@ -1,4 +1,4 @@
-package com.kayhut.fuse.model.process;
+package com.kayhut.fuse.dispatcher;
 
 /**
  * Created by User on 06/03/2017.

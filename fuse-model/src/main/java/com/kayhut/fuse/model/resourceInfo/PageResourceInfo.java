@@ -1,12 +1,13 @@
-package com.kayhut.fuse.model.process;
+package com.kayhut.fuse.model.resourceInfo;
 
 /**
  * Created by User on 08/03/2017.
  */
-public class PageResourceInfo {
+public class PageResourceInfo extends ResourceInfoBase{
     //region Constructor
     public PageResourceInfo(String resourceUrl, int requestedPageSize, int actualPageSize) {
-        this.resourceUrl = resourceUrl;
+        super(resourceUrl);
+        this.dataUrl = this.getResourceUrl() + "/data";
         this.requestedPageSize = requestedPageSize;
         this.actualPageSize = actualPageSize;
     }
@@ -14,13 +15,13 @@ public class PageResourceInfo {
 
     //region Public Methods
     public PageResourceInfo withActualPageSize(int actualPageSize) {
-        return new PageResourceInfo(this.resourceUrl, this.requestedPageSize, actualPageSize);
+        return new PageResourceInfo(this.getResourceUrl(), this.requestedPageSize, actualPageSize);
     }
     //endregion
 
     //region Properties
-    public String getResourceUrl() {
-        return this.resourceUrl;
+    public String getDataUrl() {
+        return this.dataUrl;
     }
 
     public int getRequestedPageSize() {
@@ -33,7 +34,7 @@ public class PageResourceInfo {
     //endregion
 
     //region Fields
-    private String resourceUrl;
+    private String dataUrl;
     private int requestedPageSize;
     private int actualPageSize;
     //endregion

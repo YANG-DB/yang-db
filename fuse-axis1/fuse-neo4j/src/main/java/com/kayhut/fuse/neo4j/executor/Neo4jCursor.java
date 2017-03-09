@@ -1,6 +1,6 @@
 package com.kayhut.fuse.neo4j.executor;
 
-import com.kayhut.fuse.model.process.Cursor;
+import com.kayhut.fuse.dispatcher.Cursor;
 import com.kayhut.fuse.model.query.Query;
 
 /**

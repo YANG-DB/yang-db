@@ -2,7 +2,7 @@ package com.kayhut.fuse.services;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.process.FuseResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
@@ -72,6 +72,7 @@ public class FuseApp extends Jooby {
     private void registerFuseApi(AppUrlSupplier urlSupplier) {
         use("/fuse")
                 .get(() -> new FuseResourceInfo(
+                        "/fuse",
                         "/fuse/health",
                         urlSupplier.queryStoreUrl(),
                         "/fuse/search",
@@ -96,6 +97,10 @@ public class FuseApp extends Jooby {
     }
 
     private void registerQueryApi(AppUrlSupplier urlSupplier) {
+        /** get the query store info */
+        use(urlSupplier.queryStoreUrl())
+                .get(req -> Results.with(queryCtrl().getInfo(), Status.FOUND));
+
         /** create a query */
         use(urlSupplier.queryStoreUrl())
                 .post(req -> Results.with(queryCtrl().create(req.body(CreateQueryRequest.class)), Status.CREATED));
@@ -123,6 +128,13 @@ public class FuseApp extends Jooby {
     }
 
     private void registerCursorApi(AppUrlSupplier urlSupplier) {
+        /** get the query cursor store info */
+        use(urlSupplier.cursorStoreUrl(":queryId"))
+                .get(req -> {
+                    ContentResponse response = cursorCtrl().getInfo(req.param("queryId").value());
+                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                });
+
         /** create a query cursor */
         use(urlSupplier.cursorStoreUrl(":queryId"))
                 .post(req -> {
@@ -145,14 +157,28 @@ public class FuseApp extends Jooby {
     }
 
     private void registerPageApi(AppUrlSupplier urlSupplier) {
+        /** get the cursor page store info*/
+        use(urlSupplier.pageStoreUrl(":queryId", ":cursorId"))
+                .get(req -> {
+                    ContentResponse response = pageCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value());
+                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                });
+
         /** create the next page */
         use(urlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .post(req -> Results.with(pageCtrl().create(req.param("queryId").value(), req.param("cursorId").value(), req.body(CreatePageRequest.class)), Status.CREATED));
 
-        /** get page by id */
+        /** get page info by id */
         use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
                 .get(req -> {
-                    ContentResponse response = pageCtrl().get(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
+                    ContentResponse response = pageCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
+                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                });
+
+        /** get page data by id */
+        use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data")
+                .get(req -> {
+                    ContentResponse response = pageCtrl().getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
                 });
 

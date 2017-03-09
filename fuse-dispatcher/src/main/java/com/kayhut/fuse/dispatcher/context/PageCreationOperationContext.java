@@ -1,6 +1,7 @@
 package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
+import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.model.results.QueryResult;
 
 /**
@@ -29,7 +30,7 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
     //endregion
 
     //region Public Methods
-    public PageCreationOperationContext of(Object pageResource) {
+    public PageCreationOperationContext of(PageResource pageResource) {
         PageCreationOperationContext clone = cloneImpl();
         clone.pageResource = pageResource;
         return clone;
@@ -45,11 +46,11 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
         return this.pageId;
     }
 
-    public long getPageSize() {
+    public int getPageSize() {
         return this.pageSize;
     }
 
-    public Object getPageResource() {
+    public PageResource getPageResource() {
         return this.pageResource;
     }
     //endregion
@@ -58,6 +59,6 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
     private CursorResource cursorResource;
     private String pageId;
     private int pageSize;
-    private Object pageResource;
+    private PageResource pageResource;
     //endregion
 }
