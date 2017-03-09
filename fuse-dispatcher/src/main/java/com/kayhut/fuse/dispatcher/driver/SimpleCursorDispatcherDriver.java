@@ -10,11 +10,9 @@ import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.process.CursorResourceInfo;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.typesafe.config.Config;
 
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.Utils.baseUrl;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -40,7 +38,7 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
             return Optional.empty();
         }
 
-        int cursorId = queryResource.get().getNextCursorSequence();
+        String cursorId = queryResource.get().getNextCursorId();
         submit(eventBus, new CursorCreationOperationContext(queryResource.get(), cursorId, cursorType));
 
         return Optional.of(new CursorResourceInfo(
@@ -50,7 +48,7 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
     }
 
     @Override
-    public Optional<CursorResourceInfo> getInfo(String queryId, int cursorId) {
+    public Optional<CursorResourceInfo> getInfo(String queryId, String cursorId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
             return Optional.empty();
@@ -68,7 +66,7 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
     }
 
     @Override
-    public Optional<Boolean> delete(String queryId, int cursorId) {
+    public Optional<Boolean> delete(String queryId, String cursorId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
             return Optional.empty();

@@ -23,20 +23,20 @@ public class QueryResource {
     //endregion
 
     //region Public Methods
-    public void addCursorResource(int cursorId, CursorResource<Object> cursorResource) {
+    public void addCursorResource(String cursorId, CursorResource<Object> cursorResource) {
         this.cursorResources.put(cursorId, cursorResource);
     }
 
-    public Optional<CursorResource> getCursorResource(int cursorId) {
+    public Optional<CursorResource> getCursorResource(String cursorId) {
         return Optional.ofNullable(this.cursorResources.get(cursorId));
     }
 
-    public void deleteCursorResource(int cursorId) {
+    public void deleteCursorResource(String cursorId) {
         this.cursorResources.remove(cursorId);
     }
 
-    public int getNextCursorSequence() {
-        return this.cursorSequence++;
+    public String getNextCursorId() {
+        return String.valueOf(this.cursorSequence++);
     }
     //endregion
 
@@ -58,7 +58,7 @@ public class QueryResource {
     private Query query;
     private QueryMetadata queryMetadata;
     private Plan executionPlan;
-    private Map<Integer, CursorResource> cursorResources;
+    private Map<String, CursorResource> cursorResources;
 
     private int cursorSequence;
     //endregion

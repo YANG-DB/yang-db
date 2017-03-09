@@ -18,20 +18,20 @@ public class CursorResource<T> {
     //endregion
 
     //region Public Methods
-    public Optional<T> getPageResource(int pageId) {
+    public Optional<T> getPageResource(String pageId) {
         return Optional.ofNullable(this.pageResources.get(pageId));
     }
 
-    public void addPageResource(int pageId, T pageResource) {
+    public void addPageResource(String pageId, T pageResource) {
         this.pageResources.put(pageId, pageResource);
     }
 
-    public void deletePageResource(int pageId) {
+    public void deletePageResource(String pageId) {
         this.pageResources.remove(pageId);
     }
 
-    public int getNextPageSequence() {
-        return this.pageSequence++;
+    public String getNextPageId() {
+        return String.valueOf(this.pageSequence++);
     }
 
     public Cursor getCursor() {
@@ -46,7 +46,7 @@ public class CursorResource<T> {
     //region Fields
     private CreateCursorRequest.CursorType cursorType;
     private Cursor cursor;
-    private Map<Integer, T> pageResources;
+    private Map<String, T> pageResources;
     private int pageSequence;
     //endregion
 }

@@ -22,13 +22,13 @@ public class ResourceUrlSupplier extends UrlSupplierBase {
         return clone;
     }
 
-    public ResourceUrlSupplier cursorId(int cursorId) {
+    public ResourceUrlSupplier cursorId(String cursorId) {
         ResourceUrlSupplier clone = cloneImpl();
         clone.cursorId = Optional.of(cursorId);
         return clone;
     }
 
-    public ResourceUrlSupplier pageId(int pageId) {
+    public ResourceUrlSupplier pageId(String pageId) {
         ResourceUrlSupplier clone = cloneImpl();
         clone.pageId = Optional.of(pageId);
         return clone;
@@ -66,7 +66,7 @@ public class ResourceUrlSupplier extends UrlSupplierBase {
 
     //region Fields
     protected Optional<String> queryId;
-    protected Optional<Integer> cursorId;
-    protected Optional<Integer> pageId;
+    protected Optional<String> cursorId;
+    protected Optional<String> pageId;
     //endregion
 }

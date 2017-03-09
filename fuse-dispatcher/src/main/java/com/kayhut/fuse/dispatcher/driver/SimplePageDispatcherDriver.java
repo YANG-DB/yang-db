@@ -8,11 +8,9 @@ import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.process.PageResourceInfo;
-import com.typesafe.config.Config;
 
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.Utils.baseUrl;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -30,7 +28,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
 
     //region PageDispatcherDriver Implementation
     @Override
-    public Optional<PageResourceInfo> create(String queryId, int cursorId, int pageSize) {
+    public Optional<PageResourceInfo> create(String queryId, String cursorId, int pageSize) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
             return Optional.empty();
@@ -41,14 +39,14 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
             return Optional.empty();
         }
 
-        int pageId = cursorResource.get().getNextPageSequence();
+        String pageId = cursorResource.get().getNextPageId();
         submit(this.eventBus, new PageCreationOperationContext(cursorResource.get(), pageId, pageSize));
 
         return Optional.of(new PageResourceInfo(urlSupplier.resourceUrl(queryId, cursorId, pageId), pageSize, 0));
     }
 
     @Override
-    public Optional<Object> get(String queryId, int cursorId, int pageId) {
+    public Optional<Object> get(String queryId, String cursorId, String pageId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
 
         if(!queryResource.isPresent()) {
@@ -69,7 +67,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
     }
 
     @Override
-    public Optional<Boolean> delete(String queryId, int cursorId, int pageId) {
+    public Optional<Boolean> delete(String queryId, String cursorId, String pageId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
 
         if(!queryResource.isPresent()) {

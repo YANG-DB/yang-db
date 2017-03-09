@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services;
 
+import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -11,7 +12,7 @@ import static io.restassured.RestAssured.given;
 public class SearchTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(new FuseApp());
+    public static JoobyRule app = new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse")));
 
     @Test
     @Ignore

@@ -13,7 +13,7 @@ public class CursorCreationOperationContext extends OperationContextBase<CursorC
     }
 
     //region Constructors
-    public CursorCreationOperationContext(QueryResource queryResource, int cursorId, CreateCursorRequest.CursorType cursorType) {
+    public CursorCreationOperationContext(QueryResource queryResource, String cursorId, CreateCursorRequest.CursorType cursorType) {
         this.queryResource = queryResource;
         this.cursorId = cursorId;
         this.cursorType = cursorType;
@@ -33,7 +33,7 @@ public class CursorCreationOperationContext extends OperationContextBase<CursorC
         return this.queryResource;
     }
 
-    public int getCursorId() {
+    public String getCursorId() {
         return this.cursorId;
     }
 
@@ -57,7 +57,7 @@ public class CursorCreationOperationContext extends OperationContextBase<CursorC
 
     //region Fields
     private QueryResource queryResource;
-    private int cursorId;
+    private String cursorId;
     private CreateCursorRequest.CursorType cursorType;
     private Cursor cursor;
     //endregion

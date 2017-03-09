@@ -5,10 +5,10 @@ package com.kayhut.fuse.dispatcher.urlSupplier;
  */
 public interface AppUrlSupplier {
     String resourceUrl(String queryId);
-    String resourceUrl(String queryId, int cursorId);
-    String resourceUrl(String queryId, int cursorId, int pageId);
+    String resourceUrl(String queryId, String cursorId);
+    String resourceUrl(String queryId, String cursorId, String pageId);
 
     String queryStoreUrl();
     String cursorStoreUrl(String queryId);
-    String pageStoreUrl(String queryId, int cursorId);
+    String pageStoreUrl(String queryId, String cursorId);
 }

@@ -17,12 +17,12 @@ public class DefaultAppUrlSupplier implements AppUrlSupplier {
     }
 
     @Override
-    public String resourceUrl(String queryId, int cursorId) {
+    public String resourceUrl(String queryId, String cursorId) {
         return new ResourceUrlSupplier(this.baseUrl).queryId(queryId).cursorId(cursorId).get();
     }
 
     @Override
-    public String resourceUrl(String queryId, int cursorId, int pageId) {
+    public String resourceUrl(String queryId, String cursorId, String pageId) {
         return new ResourceUrlSupplier(this.baseUrl).queryId(queryId).cursorId(cursorId).pageId(pageId).get();
     }
 
@@ -37,7 +37,7 @@ public class DefaultAppUrlSupplier implements AppUrlSupplier {
     }
 
     @Override
-    public String pageStoreUrl(String queryId, int cursorId) {
+    public String pageStoreUrl(String queryId, String cursorId) {
         return new ResourceStoreUrlSupplier(this.baseUrl, ResourceStoreUrlSupplier.Store.Page).queryId(queryId).cursorId(cursorId).get();
     }
     //endregion

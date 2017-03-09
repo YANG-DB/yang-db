@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services;
 
+import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -14,7 +15,7 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 public class QueryTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(new FuseApp());
+    public static JoobyRule app = new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse")));
 
     @Test
     public void checkHealth() {

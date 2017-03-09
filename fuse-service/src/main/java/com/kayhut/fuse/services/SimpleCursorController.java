@@ -30,17 +30,6 @@ public class SimpleCursorController implements CursorController {
         this.driver = driver;
     }
 
-    /*@Override
-    public ContentResponse fetch(String queryId, int cursorId, long fetchSize) {
-        Optional<CursorResourceInfo> fetch = driver.fetch(queryId, cursorId, fetchSize);
-        if(!fetch.isPresent()) {
-            return ContentResponse.EMPTY;
-        }
-
-        return ContentResponse.Builder.<CursorResourceInfo>builder(UUID.randomUUID().toString())
-                .data(fetch.get()).compose();
-    }*/
-
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
         Optional<CursorResourceInfo> resourceInfo = driver.create(queryId, createCursorRequest.getCursorType());
@@ -53,7 +42,7 @@ public class SimpleCursorController implements CursorController {
     }
 
     @Override
-    public ContentResponse<CursorResourceInfo> getInfo(String queryId, int cursorId) {
+    public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
         Optional<CursorResourceInfo> resourceInfo = driver.getInfo(queryId, cursorId);
         if (!resourceInfo.isPresent()) {
             return ContentResponse.NOT_FOUND;
@@ -64,7 +53,7 @@ public class SimpleCursorController implements CursorController {
     }
 
     @Override
-    public ContentResponse<Boolean> delete(String queryId, int cursorId) {
+    public ContentResponse<Boolean> delete(String queryId, String cursorId) {
         Optional<Boolean> isDeleted = driver.delete(queryId, cursorId);
         if (!isDeleted.isPresent()) {
             return ContentResponse.NOT_FOUND;
