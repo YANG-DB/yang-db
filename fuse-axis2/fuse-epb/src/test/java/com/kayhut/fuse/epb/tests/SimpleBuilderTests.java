@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by moti on 2/28/2017.
@@ -27,7 +28,7 @@ public class SimpleBuilderTests {
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.CreateSingleEntityQuery();
 
         InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
-        Iterable<Plan> plans = strategy.extendPlan(null, query.getLeft());
+        Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
 
@@ -45,7 +46,7 @@ public class SimpleBuilderTests {
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
         InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
-        Iterable<Plan> plans = strategy.extendPlan(null, query.getLeft());
+        Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
 
@@ -80,7 +81,7 @@ public class SimpleBuilderTests {
 
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.CreateSingleEntityQuery();
 
-        Iterable<Plan> plans = compositePlanExtensionStrategy.extendPlan(null, query.getLeft());
+        Iterable<Plan> plans = compositePlanExtensionStrategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> planList = new LinkedList<>();
         plans.forEach(p -> planList.add(p));
 

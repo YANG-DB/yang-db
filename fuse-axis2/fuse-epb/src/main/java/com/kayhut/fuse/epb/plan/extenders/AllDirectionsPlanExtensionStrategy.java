@@ -17,15 +17,15 @@ import java.util.*;
  */
 public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     @Override
-    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
+    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         List<Plan> plans = new LinkedList<>();
-        if(plan != null){
+        if(plan.isPresent()){
             Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
 
-            List<AsgEBase> handledParts = SimpleExtenderUtils.removeHandledParts(plan, queryParts);
+            List<AsgEBase> handledParts = SimpleExtenderUtils.removeHandledParts(plan.get(), queryParts);
             if(queryParts.size() > 0){
                 for(AsgEBase handledPart : handledParts){
-                    extendPart(handledPart, queryParts, plans, plan);
+                    extendPart(handledPart, queryParts, plans, plan.get());
                 }
             }
         }

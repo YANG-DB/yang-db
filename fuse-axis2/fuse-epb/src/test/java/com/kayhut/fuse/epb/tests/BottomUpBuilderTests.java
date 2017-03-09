@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -52,11 +53,22 @@ public class BottomUpBuilderTests {
         PlanExtensionStrategy<DummyPlan, DummyQuery> extensionStrategy = Mockito.mock(PlanExtensionStrategy.class);
         List<DummyPlan> initialPlans = new LinkedList<>();
         initialPlans.add(new DummyPlan("P1"));
-        when(extensionStrategy.extendPlan(any(), any())).thenReturn(new LinkedList<>());
-        when(extensionStrategy.extendPlan(isNull(DummyPlan.class),  any())).thenReturn(initialPlans);
         List<DummyPlan> extendedPlans = new LinkedList<>();
         extendedPlans.add(new DummyPlan(completePlanName));
-        when(extensionStrategy.extendPlan(eq(initialPlans.get(0)), any())).thenReturn(extendedPlans);
+
+
+        when(extensionStrategy.extendPlan(any(), any())).thenAnswer(invocationOnMock -> {
+            Optional<DummyPlan> optional = (Optional<DummyPlan>)invocationOnMock.getArguments()[0];
+            if(optional.isPresent()){
+                if(optional.get() == initialPlans.get(0)){
+                    return extendedPlans;
+                }else{
+                    return new LinkedList<>();
+                }
+            }else{
+                return initialPlans;
+            }
+        });
 
         PlanPruneStrategy<DummyPlan, DummyCost> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<DummyPlan, DummyQuery> validator = new DummyValidator<>();
@@ -108,10 +120,10 @@ public class BottomUpBuilderTests {
         PlanWrapperFactory<Plan, AsgQuery, SingleCost> planWrapperFactory = new SimpleWrapperFactory();
 
         BottomUpPlanBuilderImpl<Plan, AsgQuery, SingleCost> bottomUpPlanBuilder = new BottomUpPlanBuilderImpl<>(compositePlanExtensionStrategy,
-                                                                                                                pruneStrategy,
-                                                                                                                pruneStrategy,
-                                                                                                                validator,
-                                                                                                                planWrapperFactory);
+                pruneStrategy,
+                pruneStrategy,
+                validator,
+                planWrapperFactory);
 
 
         Iterable<PlanWrapper<Plan, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query.getLeft(), new DefaultChoiceCriteria<>());

@@ -12,15 +12,16 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by moti on 2/27/2017.
  */
 public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     @Override
-    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
+    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         List<Plan> plans = new LinkedList<>();
-        if(plan == null)
+        if(!plan.isPresent())
             recursiveSeedGenerator(query.getStart(), plans, new HashSet<>());
         return plans;
     }

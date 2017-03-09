@@ -2,12 +2,11 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by moti on 2/21/2017.
@@ -43,7 +42,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
         List<PlanWrapper<P,C>> currentPlans = new LinkedList<>();
 
         // Generate seed plans (plan is null)
-        for(P seedPlan : extensionStrategy.extendPlan(null, query)){
+        for(P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)){
             if(planValidator.isPlanValid(seedPlan, query)){
                 PlanWrapper<P,C> planWrapper = wrapperFactory.wrapPlan(seedPlan, query);
                 currentPlans.add(planWrapper);
@@ -60,7 +59,7 @@ public class BottomUpPlanBuilderImpl<P,Q,C> implements PlanSearcher<P,Q,C> {
             List<PlanWrapper<P,C>> newPlans = new LinkedList<>();
             for(PlanWrapper<P,C> partialPlan : currentPlans){
                 List<PlanWrapper<P,C>> planExtensions = new LinkedList<>();
-                for(P extendedPlan : extensionStrategy.extendPlan(partialPlan.getPlan(), query)){
+                for(P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)){
                     if(planValidator.isPlanValid(extendedPlan, query)){
                         planExtensions.add(wrapperFactory.wrapPlan(extendedPlan, query));
                     }
