@@ -12,11 +12,11 @@ import com.kayhut.fuse.model.query.EBase;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EProp extends EBase {
 
-    public int getpType() {
+    public String getpType() {
         return pType;
     }
 
-    public void setpType(int pType) {
+    public void setpType(String pType) {
         this.pType = pType;
     }
 
@@ -45,7 +45,7 @@ public class EProp extends EBase {
     }
 
     //region Fields
-    private int pType;
+    private String pType;
     private String pTag;
     private Constraint con;
     private String f;
