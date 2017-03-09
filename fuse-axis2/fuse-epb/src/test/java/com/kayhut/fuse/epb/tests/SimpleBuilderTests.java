@@ -77,7 +77,8 @@ public class SimpleBuilderTests {
         List<PlanExtensionStrategy<Plan, AsgQuery>> extenders = new LinkedList<>();
         extenders.add(new InitialPlanGeneratorExtensionStrategy());
         extenders.add(new AllDirectionsPlanExtensionStrategy());
-        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(extenders);
+        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy(),
+                                                                                                                            new AllDirectionsPlanExtensionStrategy());
 
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.CreateSingleEntityQuery();
 

@@ -11,9 +11,9 @@ import java.util.Optional;
  */
 public class CompositePlanExtensionStrategy<P,Q> implements PlanExtensionStrategy<P,Q> {
 
-    private List<PlanExtensionStrategy<P,Q>> innerExtenders;
+    private PlanExtensionStrategy<P,Q>[] innerExtenders;
 
-    public CompositePlanExtensionStrategy(List<PlanExtensionStrategy<P, Q>> innerExtenders) {
+    public CompositePlanExtensionStrategy(PlanExtensionStrategy<P, Q> ... innerExtenders) {
         this.innerExtenders = innerExtenders;
     }
 

@@ -109,10 +109,9 @@ public class BottomUpBuilderTests {
     @Test
     public void TestBuilderSimplePath(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
-        List<PlanExtensionStrategy<Plan, AsgQuery>> extenders = new LinkedList<>();
-        extenders.add(new InitialPlanGeneratorExtensionStrategy());
-        extenders.add(new AllDirectionsPlanExtensionStrategy());
-        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(extenders);
+
+        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy(),
+                new AllDirectionsPlanExtensionStrategy());
 
         PlanPruneStrategy<Plan, SingleCost> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new DummyValidator<>();
