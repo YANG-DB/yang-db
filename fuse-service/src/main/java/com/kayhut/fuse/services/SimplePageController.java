@@ -26,7 +26,7 @@ public class SimplePageController implements PageController {
 
     //region PageController Implementation
     @Override
-    public ContentResponse<PageResourceInfo> create(String queryId, int cursorId, CreatePageRequest createPageRequest) {
+    public ContentResponse<PageResourceInfo> create(String queryId, String cursorId, CreatePageRequest createPageRequest) {
         Optional<PageResourceInfo> resourceInfo = this.driver.create(queryId, cursorId, createPageRequest.getPageSize());
         if (!resourceInfo.isPresent()) {
             return ContentResponse.NOT_FOUND;
@@ -36,7 +36,7 @@ public class SimplePageController implements PageController {
     }
 
     @Override
-    public ContentResponse<Object> get(String queryId, int cursorId, int pageId) {
+    public ContentResponse<Object> get(String queryId, String cursorId, String pageId) {
         Optional<Object> pageResource = this.driver.get(queryId, cursorId, pageId);
         if (!pageResource.isPresent()) {
             return ContentResponse.NOT_FOUND;
@@ -46,7 +46,7 @@ public class SimplePageController implements PageController {
     }
 
     @Override
-    public ContentResponse<Boolean> delete(String queryId, int cursorId, int pageId) {
+    public ContentResponse<Boolean> delete(String queryId, String cursorId, String pageId) {
         Optional<Boolean> isDeleted = this.driver.delete(queryId, cursorId, pageId);
         if (!isDeleted.isPresent()) {
             return ContentResponse.NOT_FOUND;

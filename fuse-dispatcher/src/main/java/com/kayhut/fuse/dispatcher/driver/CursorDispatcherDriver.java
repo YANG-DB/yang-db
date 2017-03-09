@@ -10,8 +10,6 @@ import java.util.Optional;
  */
 public interface CursorDispatcherDriver {
     Optional<CursorResourceInfo> create(String queryId, CreateCursorRequest.CursorType cursorType);
-    Optional<CursorResourceInfo> getInfo(String queryId, int cursorId);
-    Optional<Boolean> delete(String queryId, int cursorId);
-
-    //Optional<CursorResourceInfo> fetch(String queryId, int cursorId, long fetchSize);
+    Optional<CursorResourceInfo> getInfo(String queryId, String cursorId);
+    Optional<Boolean> delete(String queryId, String cursorId);
 }

@@ -9,6 +9,6 @@ import com.kayhut.fuse.model.transport.CreateCursorRequest;
  */
 public interface CursorController {
     ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest);
-    ContentResponse<CursorResourceInfo> getInfo(String queryId, int cursorId);
-    ContentResponse<Boolean> delete(String queryId, int cursorId);
+    ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId);
+    ContentResponse<Boolean> delete(String queryId, String cursorId);
 }
