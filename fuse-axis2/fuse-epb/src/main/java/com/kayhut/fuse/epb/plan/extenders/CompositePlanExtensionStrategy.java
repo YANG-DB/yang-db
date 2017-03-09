@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
+import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ public class CompositePlanExtensionStrategy<P,Q> implements PlanExtensionStrateg
 
     private PlanExtensionStrategy<P,Q>[] innerExtenders;
 
+    @Inject
     public CompositePlanExtensionStrategy(PlanExtensionStrategy<P, Q> ... innerExtenders) {
         this.innerExtenders = innerExtenders;
     }
