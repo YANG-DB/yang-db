@@ -1,24 +1,21 @@
 package com.kayhut.fuse.dispatcher.driver;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.kayhut.fuse.dispatcher.urlSupplier.ResourceStoreUrlSupplier;
-import com.kayhut.fuse.dispatcher.urlSupplier.ResourceUrlSupplier;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.model.process.QueryResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.typesafe.config.Config;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
+import javaslang.collection.Stream;
 
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.Utils.baseUrl;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -45,6 +42,17 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
 
         submit(eventBus, new QueryCreationOperationContext(metadata, query));
         return Optional.of(resourceInfo);
+    }
+
+    @Override
+    public Optional<StoreResourceInfo> getInfo() {
+        Iterable<String> resourceUrls = Stream.ofAll(this.resourceStore.getQueryResources())
+                .sortBy(queryResource -> queryResource.getQueryMetadata().getTime())
+                .map(queryResource -> queryResource.getQueryMetadata().getId())
+                .map(this.urlSupplier::resourceUrl)
+                .toJavaList();
+
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.queryStoreUrl(), resourceUrls));
     }
 
     @Override

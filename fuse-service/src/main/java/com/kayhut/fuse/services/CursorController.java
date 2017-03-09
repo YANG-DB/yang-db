@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services;
 
-import com.kayhut.fuse.model.process.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
@@ -9,6 +10,7 @@ import com.kayhut.fuse.model.transport.CreateCursorRequest;
  */
 public interface CursorController {
     ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest);
+    ContentResponse<StoreResourceInfo> getInfo(String queryId);
     ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId);
     ContentResponse<Boolean> delete(String queryId, String cursorId);
 }

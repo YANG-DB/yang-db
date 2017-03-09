@@ -1,6 +1,7 @@
 package com.kayhut.fuse.dispatcher.resource;
 
-import com.kayhut.fuse.model.process.Cursor;
+import com.kayhut.fuse.dispatcher.Cursor;
+import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
 import java.util.*;
@@ -8,21 +9,36 @@ import java.util.*;
 /**
  * Created by User on 06/03/2017.
  */
-public class CursorResource<T> {
+public class CursorResource {
     //region Constructors
-    public CursorResource(Cursor cursor, CreateCursorRequest.CursorType cursorType) {
+    public CursorResource(String cursorId, Cursor cursor, CreateCursorRequest.CursorType cursorType) {
+        this.cursorId = cursorId;
         this.pageResources = new HashMap<>();
         this.cursor = cursor;
         this.cursorType = cursorType;
+
+        this.timeCreated = new Date(System.currentTimeMillis());
     }
     //endregion
 
     //region Public Methods
-    public Optional<T> getPageResource(String pageId) {
+    public String getCursorId() {
+        return this.cursorId;
+    }
+
+    public Date getTimeCreated() {
+        return this.timeCreated;
+    }
+
+    public Iterable<PageResource> getPageResources() {
+        return this.pageResources.values();
+    }
+
+    public Optional<PageResource> getPageResource(String pageId) {
         return Optional.ofNullable(this.pageResources.get(pageId));
     }
 
-    public void addPageResource(String pageId, T pageResource) {
+    public void addPageResource(String pageId, PageResource pageResource) {
         this.pageResources.put(pageId, pageResource);
     }
 
@@ -44,9 +60,12 @@ public class CursorResource<T> {
     //endregion
 
     //region Fields
+    private String cursorId;
     private CreateCursorRequest.CursorType cursorType;
     private Cursor cursor;
-    private Map<String, T> pageResources;
+    private Date timeCreated;
+
+    private Map<String, PageResource> pageResources;
     private int pageSequence;
     //endregion
 }

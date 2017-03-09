@@ -4,10 +4,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
+import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.kayhut.fuse.model.process.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
+import javaslang.collection.Stream;
 
 import java.util.Optional;
 
@@ -46,9 +49,8 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
     }
 
     @Override
-    public Optional<Object> get(String queryId, String cursorId, String pageId) {
+    public Optional<StoreResourceInfo> getInfo(String queryId, String cursorId) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
-
         if(!queryResource.isPresent()) {
             return Optional.empty();
         }
@@ -58,12 +60,54 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
             return Optional.empty();
         }
 
-        Optional<Object> pageResource = cursorResource.get().getPageResource(pageId);
+        Iterable<String> resourceUrls = Stream.ofAll(cursorResource.get().getPageResources())
+                .sortBy(pageResource -> pageResource.getTimeCreated())
+                .map(pageResource -> pageResource.getPageId())
+                .map(pageId -> this.urlSupplier.resourceUrl(queryId, cursorId, pageId))
+                .toJavaList();
+
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.pageStoreUrl(queryId, cursorId), resourceUrls));
+    }
+
+    @Override
+    public Optional<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if(!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        if (!cursorResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
         if (!pageResource.isPresent()) {
             return Optional.empty();
         }
 
-        return pageResource;
+        return Optional.of(new PageResourceInfo(this.urlSupplier.resourceUrl(queryId, cursorId, pageId),
+                pageResource.get().getRequestedSize(), pageResource.get().getActualSize()));
+    }
+
+    @Override
+    public Optional<Object> getData(String queryId, String cursorId, String pageId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if(!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
+        if (!cursorResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
+        if (!pageResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(pageResource.get().getData());
     }
 
     @Override
@@ -79,7 +123,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
             return Optional.empty();
         }
 
-        Optional<Object> pageResource = cursorResource.get().getPageResource(pageId);
+        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
         if (!pageResource.isPresent()) {
             return Optional.empty();
         }

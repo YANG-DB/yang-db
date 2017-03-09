@@ -1,5 +1,7 @@
 package com.kayhut.fuse.dispatcher.resource;
 
+import javaslang.collection.Stream;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +17,11 @@ public class InMemoryResourceStore implements ResourceStore {
     //endregion
 
     //region ResourceStore Implementation
+    @Override
+    public Iterable<QueryResource> getQueryResources() {
+        return this.queryResources.values();
+    }
+
     @Override
     public Optional<QueryResource> getQueryResource(String id) {
         return Optional.ofNullable(this.queryResources.get(id));

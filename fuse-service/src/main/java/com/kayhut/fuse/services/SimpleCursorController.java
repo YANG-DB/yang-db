@@ -4,7 +4,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.CursorDispatcherDriver;
-import com.kayhut.fuse.model.process.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.typesafe.config.Config;
@@ -32,7 +33,7 @@ public class SimpleCursorController implements CursorController {
 
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
-        Optional<CursorResourceInfo> resourceInfo = driver.create(queryId, createCursorRequest.getCursorType());
+        Optional<CursorResourceInfo> resourceInfo = this.driver.create(queryId, createCursorRequest.getCursorType());
         if (!resourceInfo.isPresent()) {
             return ContentResponse.NOT_FOUND;
         }
@@ -42,8 +43,19 @@ public class SimpleCursorController implements CursorController {
     }
 
     @Override
+    public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
+        Optional<StoreResourceInfo> resourceInfo = this.driver.getInfo(queryId);
+        if (!resourceInfo.isPresent()) {
+            return ContentResponse.NOT_FOUND;
+        }
+
+        return ContentResponse.Builder.<StoreResourceInfo>builder(UUID.randomUUID().toString())
+                .data(resourceInfo.get()).compose();
+    }
+
+    @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
-        Optional<CursorResourceInfo> resourceInfo = driver.getInfo(queryId, cursorId);
+        Optional<CursorResourceInfo> resourceInfo = this.driver.getInfo(queryId, cursorId);
         if (!resourceInfo.isPresent()) {
             return ContentResponse.NOT_FOUND;
         }
@@ -54,7 +66,7 @@ public class SimpleCursorController implements CursorController {
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
-        Optional<Boolean> isDeleted = driver.delete(queryId, cursorId);
+        Optional<Boolean> isDeleted = this.driver.delete(queryId, cursorId);
         if (!isDeleted.isPresent()) {
             return ContentResponse.NOT_FOUND;
         }

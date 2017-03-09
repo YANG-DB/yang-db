@@ -51,7 +51,8 @@ public class ResourcePersistProcessor implements
             return context;
         }
 
-        context.getQueryResource().addCursorResource(context.getCursorId(), new CursorResource<>(context.getCursor(), context.getCursorType()));
+        context.getQueryResource().addCursorResource(context.getCursorId(),
+                new CursorResource(context.getCursorId(), context.getCursor(), context.getCursorType()));
         context = context.complete();
         return context;
     }
