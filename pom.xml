@@ -16,6 +16,7 @@
         <module>fuse-service</module>
         <module>fuse-axis1</module>
         <module>fuse-axis2</module>
+        <module>fuse-test</module>
     </modules>
     <dependencies>
         <dependency>
