@@ -11,6 +11,12 @@ import org.apache.tinkerpop.gremlin.structure.Graph;
 
 /**
  * Created by benishue on 08-Mar-17.
+ *
+ *
+ *
+ * EConcrete =   g.V().has('promise', P.eq(Promise.as(<EConcrete.Id>)).as(<EConcrete.ETag>)
+ * ETyped = g.V().has('constraint', P.eq(Constraint.by(__.has('label', P.eq(<Ontology(<ETyped.EType>)>)))).as(<ETyped.ETag>)
+ * EUntyped = g.V().as(<EUntyped.ETag>)
  */
 public class EntityOpStartTranslationStrategy implements TranslationStrategy {
     private Graph graph;
@@ -26,6 +32,7 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
         PlanOpBase planOpBase = context._2;
         if(plan.isFirst(planOpBase)) {
             //Creating the Graph
+
             traversal = new GraphTraversalSource(graph).V().as(((EntityOp)planOpBase).getEntity().geteBase().geteTag());
             return traversal;
         }

@@ -10,6 +10,9 @@ import java.util.Optional;
 
 /**
  * Created by benishue on 08-Mar-17.
+ *
+ *
+ * EEntityBase = select(<EntityBase.Etag>)
  */
 public class EntityOpAdjcentTranslationStrategy implements TranslationStrategy {
 

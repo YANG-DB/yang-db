@@ -15,7 +15,6 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.unipop.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.SelectOneStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Assert;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.when;
  */
 public class GremlinTranslatorAppenderTest {
 
-    private static SimplePlanOpTranslator factory;
+    private static SimplePlanOpTranslator translator;
     private static Plan planOf2;
 
     @Test
@@ -57,7 +56,7 @@ public class GremlinTranslatorAppenderTest {
         when(plan.getPrev(any())).thenAnswer(invocationOnMock -> {
             return Optional.empty();
         });
-        GraphTraversal traversal = factory.translate(plan, new DefaultGraphTraversal());
+        GraphTraversal traversal = translator.translate(plan, new DefaultGraphTraversal());
         Assert.assertTrue(traversal.asAdmin().getSteps().iterator().hasNext());
 
     }
@@ -90,7 +89,7 @@ public class GremlinTranslatorAppenderTest {
             return Optional.empty();
         });
 
-        GraphTraversal traversal = factory.translate(plan,new DefaultGraphTraversal());
+        GraphTraversal traversal = translator.translate(plan,new DefaultGraphTraversal());
         Assert.assertEquals(traversal.asAdmin().getSteps().get(0).getClass().getSimpleName(), "SelectOneStep"); ;
 
     }
@@ -121,11 +120,10 @@ public class GremlinTranslatorAppenderTest {
             return Optional.empty();
         });
 
-        GraphTraversal traversal = factory.translate(plan,new DefaultGraphTraversal());
+        GraphTraversal traversal = translator.translate(plan,new DefaultGraphTraversal());
         List steps = traversal.asAdmin().getSteps();
         Assert.assertEquals(steps.get(steps.size()-1).getClass().getSimpleName(), "EdgeOtherVertexStep"); ;
     }
-
 
     @Test
     public void relationOpTranslationStrategyTest() throws Exception {
@@ -143,16 +141,15 @@ public class GremlinTranslatorAppenderTest {
             return ops;
         });
         when(plan.isFirst(any())).thenAnswer(invocationOnMock -> false);
-        GraphTraversal traversal = factory.translate(plan, new DefaultGraphTraversal());
+        GraphTraversal traversal = translator.translate(plan, new DefaultGraphTraversal());
         Assert.assertEquals(traversal.asAdmin().getSteps().get(0).getClass().getSimpleName(),"VertexStep");
         Assert.assertEquals(((VertexStep)traversal.asAdmin().getSteps().get(0)).getDirection(), Direction.OUT);
     }
 
 
-
     @Before
     public void setUp() throws Exception {
-        factory = new SimplePlanOpTranslator(new PromiseGraph());
+        translator = new SimplePlanOpTranslator(new PromiseGraph());
     }
 
     @BeforeClass

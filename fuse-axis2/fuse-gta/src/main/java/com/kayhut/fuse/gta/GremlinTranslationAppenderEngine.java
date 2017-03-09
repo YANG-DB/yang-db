@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 
 import java.util.Collection;
 
@@ -22,7 +23,7 @@ public class GremlinTranslationAppenderEngine {
 
     public Traversal CreateTraversal(Plan plan){
         // Create initial traversal
-        GraphTraversal graphTraversal = new DefaultGraphTraversal();
+        GraphTraversal graphTraversal = __.start();
         return simplePlanOpTranslator.translate(plan,graphTraversal);
     }
 }
