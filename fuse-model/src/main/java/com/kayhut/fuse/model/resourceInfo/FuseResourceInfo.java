@@ -6,7 +6,7 @@ package com.kayhut.fuse.model.resourceInfo;
 public class FuseResourceInfo extends ResourceInfoBase {
     //region Constructors
     public FuseResourceInfo(String resourceUrl, String healthUrl, String queryStoreUrl, String searchStoreUrl, String catalogStoreUrl) {
-        super(resourceUrl);
+        super(resourceUrl,null);
         this.healthUrl = healthUrl;
         this.queryStoreUrl = queryStoreUrl;
         this.searchStoreUrl = searchStoreUrl;

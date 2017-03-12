@@ -38,6 +38,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
     public Optional<QueryResourceInfo> create(QueryMetadata metadata, Query query) {
         QueryResourceInfo resourceInfo = new QueryResourceInfo(
                 urlSupplier.resourceUrl(metadata.getId()),
+                metadata.getId(),
                 urlSupplier.cursorStoreUrl(metadata.getId()));
 
         submit(eventBus, new QueryCreationOperationContext(metadata, query));
@@ -52,7 +53,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
                 .map(this.urlSupplier::resourceUrl)
                 .toJavaList();
 
-        return Optional.of(new StoreResourceInfo(this.urlSupplier.queryStoreUrl(), resourceUrls));
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.queryStoreUrl(),null, resourceUrls));
     }
 
     @Override
@@ -62,7 +63,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
             return Optional.empty();
         }
 
-        QueryResourceInfo resourceInfo = new QueryResourceInfo(urlSupplier.resourceUrl(queryId), urlSupplier.cursorStoreUrl(queryId));
+        QueryResourceInfo resourceInfo = new QueryResourceInfo(urlSupplier.resourceUrl(queryId),queryId, urlSupplier.cursorStoreUrl(queryId));
         return Optional.of(resourceInfo);
     }
 

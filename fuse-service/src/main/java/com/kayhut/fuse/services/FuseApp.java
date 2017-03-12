@@ -3,9 +3,11 @@ package com.kayhut.fuse.services;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import org.jooby.Jooby;
 import org.jooby.Results;
@@ -22,7 +24,7 @@ public class FuseApp extends Jooby {
         use(new Jackson());
 
         registerCors(urlSupplier);
-        registerFuseApi(urlSupplier);
+        registerFuseApiDescription(urlSupplier);
         registerHealthApi(urlSupplier);
         registerCatalogApi(urlSupplier);
         registerQueryApi(urlSupplier);
@@ -69,7 +71,7 @@ public class FuseApp extends Jooby {
         });
     }
 
-    private void registerFuseApi(AppUrlSupplier urlSupplier) {
+    private void registerFuseApiDescription(AppUrlSupplier urlSupplier) {
         use("/fuse")
                 .get(() -> new FuseResourceInfo(
                         "/fuse",
@@ -92,7 +94,7 @@ public class FuseApp extends Jooby {
                 /** check health */
                 .get(req -> {
                     ContentResponse response = catalogCtrl().get(req.param("id").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                    return Results.with(response, response.status());
                 });
     }
 
@@ -103,27 +105,30 @@ public class FuseApp extends Jooby {
 
         /** create a query */
         use(urlSupplier.queryStoreUrl())
-                .post(req -> Results.with(queryCtrl().create(req.body(CreateQueryRequest.class)), Status.CREATED));
+                .post(req -> {
+                    ContentResponse<QueryResourceInfo> entity = queryCtrl().create(req.body(CreateQueryRequest.class));
+                    return Results.with(entity, entity.status());
+                });
 
         /** get the query info */
         use(urlSupplier.resourceUrl(":queryId"))
                 .get(req -> {
                     ContentResponse response = queryCtrl().getInfo(req.param("queryId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                    return Results.with(response, response.status());
                 });
 
         /** delete a query */
         use(urlSupplier.resourceUrl(":queryId"))
                 .delete(req -> {
                     ContentResponse response = queryCtrl().delete(req.param("queryId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.OK);
+                    return Results.with(response, response.status());
                 });
 
         /** get the query execution plan */
         use(urlSupplier.resourceUrl(":queryId") + "/plan")
                 .get(req -> {
                     ContentResponse response = queryCtrl().explain(req.param("queryId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.CREATED);
+                    return Results.with(response, response.status());
                 });
     }
 
@@ -132,27 +137,27 @@ public class FuseApp extends Jooby {
         use(urlSupplier.cursorStoreUrl(":queryId"))
                 .get(req -> {
                     ContentResponse response = cursorCtrl().getInfo(req.param("queryId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                    return Results.with(response, response.status());
                 });
 
         /** create a query cursor */
         use(urlSupplier.cursorStoreUrl(":queryId"))
                 .post(req -> {
                     ContentResponse response = cursorCtrl().create(req.param("queryId").value(), req.body(CreateCursorRequest.class));
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.CREATED);
+                    return Results.with(response, response.status());
                 });
 
         /** get the cursor resource info */
         use(urlSupplier.resourceUrl(":queryId", ":cursorId"))
                 .get(req -> {
                     ContentResponse response = cursorCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                    return Results.with(response, response.status());
                 });
 
         use(urlSupplier.resourceUrl(":queryId", ":cursorId"))
                 .delete(req -> {
                     ContentResponse response = cursorCtrl().delete(req.param("queryId").value(), req.param("cursorId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.OK);
+                    return Results.with(response, response.status());
                 });
     }
 
@@ -161,39 +166,45 @@ public class FuseApp extends Jooby {
         use(urlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .get(req -> {
                     ContentResponse response = pageCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                    return Results.with(response, response.status());
                 });
 
         /** create the next page */
         use(urlSupplier.pageStoreUrl(":queryId", ":cursorId"))
-                .post(req -> Results.with(pageCtrl().create(req.param("queryId").value(), req.param("cursorId").value(), req.body(CreatePageRequest.class)), Status.CREATED));
+                .post(req -> {
+                    ContentResponse<PageResourceInfo> entity = pageCtrl().create(req.param("queryId").value(), req.param("cursorId").value(), req.body(CreatePageRequest.class));
+                    return Results.with(entity, entity.status());
+                });
 
         /** get page info by id */
         use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
                 .get(req -> {
                     ContentResponse response = pageCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                    return Results.with(response, response.status());
                 });
 
         /** get page data by id */
         use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data")
                 .get(req -> {
                     ContentResponse response = pageCtrl().getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.FOUND);
+                    return Results.with(response, response.status());
                 });
 
         /** delete page by id */
         use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
                 .delete(req -> {
                     ContentResponse response = pageCtrl().delete(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.with(response, response == ContentResponse.NOT_FOUND ? Status.NOT_FOUND : Status.OK);
+                    return Results.with(response, response.status());
                 });
     }
 
     private void registerSearchApi(AppUrlSupplier urlSupplier) {
         /** submit a search */
         use("/fuse/search")
-                .post(req -> Results.with(searchCtrl().search(req.body(CreateQueryRequest.class)), Status.CREATED));
+                .post(req -> {
+                    ContentResponse search = searchCtrl().search(req.body(CreateQueryRequest.class));
+                    return Results.with(search, search.status());
+                });
     }
     //endregion
 

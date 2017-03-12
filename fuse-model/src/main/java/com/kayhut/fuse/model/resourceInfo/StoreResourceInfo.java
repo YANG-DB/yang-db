@@ -5,8 +5,8 @@ package com.kayhut.fuse.model.resourceInfo;
  */
 public class StoreResourceInfo extends ResourceInfoBase {
     //region Constructors
-    public StoreResourceInfo(String resourceUrl, Iterable<String> resourceUrls) {
-        super(resourceUrl);
+    public StoreResourceInfo(String resourceUrl,String resourceId, Iterable<String> resourceUrls) {
+        super(resourceUrl,resourceId);
         this.resourceUrls = resourceUrls;
     }
     //endregion

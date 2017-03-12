@@ -17,6 +17,7 @@ public class QueryResource {
         this.query = query;
         this.queryMetadata = queryMetadata;
         this.cursorResources = new HashMap<>();
+        this.executionPlan = new Plan();
     }
     //endregion
 

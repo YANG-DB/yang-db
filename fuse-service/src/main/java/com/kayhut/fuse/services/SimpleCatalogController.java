@@ -5,12 +5,16 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 
 import java.io.IOException;
-import java.util.UUID;
+import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.asObject;
 import static com.kayhut.fuse.model.Utils.readJsonFile;
+import static java.util.UUID.randomUUID;
+import static org.jooby.Status.NOT_FOUND;
+import static org.jooby.Status.OK;
 
 /**
  * Created by lior on 19/02/2017.
@@ -28,7 +32,9 @@ public class SimpleCatalogController implements CatalogController {
     @Override
     public ContentResponse<Ontology> get(String id) {
         try {
-            return ContentResponse.Builder.<Ontology>builder(UUID.randomUUID().toString()).data(asObject(readJsonFile(id), Ontology.class)).compose();
+            return Builder.<Ontology>builder(randomUUID().toString(),OK, NOT_FOUND)
+                    .data(Optional.of(asObject(readJsonFile(id), Ontology.class)))
+                    .compose();
         } catch (IOException e) {
             return ContentResponse.NOT_FOUND;
         }
