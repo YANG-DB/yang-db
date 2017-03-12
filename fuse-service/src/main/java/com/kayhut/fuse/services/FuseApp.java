@@ -189,13 +189,6 @@ public class FuseApp extends Jooby {
                     ContentResponse response = pageCtrl().getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response.status());
                 });
-
-        /** delete page by id */
-        use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
-                .delete(req -> {
-                    ContentResponse response = pageCtrl().delete(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
-                    return Results.with(response, response.status());
-                });
     }
 
     private void registerSearchApi(AppUrlSupplier urlSupplier) {

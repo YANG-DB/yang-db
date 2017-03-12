@@ -13,5 +13,4 @@ public interface PageController {
     ContentResponse<StoreResourceInfo> getInfo(String queryId, String cursorId);
     ContentResponse<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
     ContentResponse<Object> getData(String queryId, String cursorId, String pageId);
-    ContentResponse<Boolean> delete(String queryId, String cursorId, String pageId);
 }

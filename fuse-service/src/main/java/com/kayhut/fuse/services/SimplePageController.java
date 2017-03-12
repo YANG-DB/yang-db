@@ -59,12 +59,6 @@ public class SimplePageController implements PageController {
                 .compose();
     }
 
-    @Override
-    public ContentResponse<Boolean> delete(String queryId, String cursorId, String pageId) {
-        return Builder.<Boolean>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
-                .data(this.driver.delete(queryId, cursorId, pageId))
-                .compose();
-    }
     //endregion
 
     //region Fields
