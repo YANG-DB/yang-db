@@ -30,7 +30,6 @@ public class OntologyTest {
         JSONAssert.assertEquals(ontologyExpectedJSONString, ontologyActualJSON, false);
     }
 
-
     @Test
     public void testOntologyDeSerialization() throws Exception {
         String ontologyExpectedJson = readJsonToString("Dragons_Ontology_Short.json");
@@ -252,7 +251,6 @@ public class OntologyTest {
         ontologyObj.setEnumeratedTypes(enumeratedTypes);
 
     }
-
 
     private String readJsonToString(String jsonFileName) throws Exception {
         String result = "";

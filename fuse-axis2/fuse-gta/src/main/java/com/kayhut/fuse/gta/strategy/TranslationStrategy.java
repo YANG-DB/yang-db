@@ -10,12 +10,12 @@ import java.util.function.BiFunction;
 /**
  * Created by benishue on 08-Mar-17.
  */
-public interface TranslationStrategy extends BiFunction<Tuple2<Plan, PlanOpBase>, GraphTraversal, GraphTraversal> {
+public interface TranslationStrategy extends BiFunction<TranslationStrategyContext, GraphTraversal, GraphTraversal> {
     /**
      * traversal returns same instance as in parameter
      * @param context
      * @param traversal - is mutated parameter
      * @return
      */
-    GraphTraversal apply(Tuple2<Plan, PlanOpBase> context, GraphTraversal traversal);
+    GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal);
 }

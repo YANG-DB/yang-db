@@ -1,13 +1,13 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.unipop.*;
 import com.kayhut.fuse.model.query.entity.*;
 import javaslang.Tuple2;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 
@@ -27,23 +27,30 @@ import java.util.function.Function;
 public class EntityOpPostRelTranslationStrategy implements TranslationStrategy {
 
     @Override
-    public GraphTraversal apply(Tuple2<Plan, PlanOpBase> context, GraphTraversal traversal) {
-        Plan plan = context._1;
-        PlanOpBase currentPlanOpBase = context._2;
-        Optional<PlanOpBase> prev = plan.getPrev(currentPlanOpBase);
-        if(!prev.isPresent())
+    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
+        Plan plan = context.getPlan();
+        PlanOpBase currentPlanOpBase = context.getPlanOpBase();
+        PlanUtil planUtil = new PlanUtil();
+        Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(), currentPlanOpBase);
+        if(!prev.isPresent()) {
             return traversal;
+        }
 
         //EntityOp Post RelOp
         if(currentPlanOpBase instanceof EntityOp && prev.get() instanceof RelationOp) {
             EEntityBase eEntityBase = ((EntityOp) currentPlanOpBase).getEntity().geteBase();
-            if (eEntityBase instanceof EConcrete)
-                traversal.otherV().has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID()))).as(eEntityBase.geteTag());
-            else if (eEntityBase instanceof ETyped)
-                traversal.otherV().has("constraint", P.eq(Constraint.by(__.has("label",P.eq(((ETyped) eEntityBase).geteType())))))
-                        .as(eEntityBase.geteTag());
-            else if (eEntityBase instanceof EUntyped)
-                traversal.otherV().as(eEntityBase.geteTag());
+
+            traversal.otherV();
+
+            if (eEntityBase instanceof EConcrete) {
+                traversal.has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
+            } else if (eEntityBase instanceof ETyped) {
+                traversal.has("constraint", P.eq(Constraint.by(__.has("label", P.eq(((ETyped) eEntityBase).geteType())))));
+            } else if (eEntityBase instanceof EUntyped) {
+                ;
+            }
+
+            traversal.as(eEntityBase.geteTag());
         }
         return traversal;
 

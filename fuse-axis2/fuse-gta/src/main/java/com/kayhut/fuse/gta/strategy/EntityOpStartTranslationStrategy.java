@@ -1,12 +1,18 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyUtil;
+import com.kayhut.fuse.gta.translation.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.unipop.Constraint;
+import com.kayhut.fuse.model.query.entity.*;
+import com.kayhut.fuse.unipop.Promise;
 import javaslang.Tuple2;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 
 /**
@@ -27,14 +33,29 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
     }
 
     @Override
-    public GraphTraversal apply(Tuple2<Plan, PlanOpBase> context, GraphTraversal traversal) {
-        Plan plan = context._1;
-        PlanOpBase planOpBase = context._2;
-        if(plan.isFirst(planOpBase)) {
-            //Creating the Graph
+    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
+        Plan plan = context.getPlan();
+        PlanOpBase planOpBase = context.getPlanOpBase();
+        PlanUtil planUtil = new PlanUtil();
+        if(planUtil.isFirst(plan.getOps(),planOpBase)) {
+            EEntityBase eEntityBase = ((EntityOp) planOpBase).getEntity().geteBase();
+            String entityETag = ((EntityOp)planOpBase).getEntity().geteBase().geteTag();
 
-            traversal = new GraphTraversalSource(graph).V().as(((EntityOp)planOpBase).getEntity().geteBase().geteTag());
-            return traversal;
+            //Creating the Graph
+            traversal = new GraphTraversalSource(graph).V();
+
+            if (eEntityBase instanceof EConcrete) {
+                traversal.has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
+            }
+            else if (eEntityBase instanceof ETyped) {
+                String eTypeName = OntologyUtil.getEntityTypeNameById(context.getOntology(),((ETyped) eEntityBase).geteType());
+                traversal.has("constraint", P.eq(Constraint.by(__.has("label", P.eq(eTypeName)))));
+            }
+            else if (eEntityBase instanceof EUntyped) {
+                ;
+            }
+
+            traversal.as(entityETag);
         }
         return traversal;
 

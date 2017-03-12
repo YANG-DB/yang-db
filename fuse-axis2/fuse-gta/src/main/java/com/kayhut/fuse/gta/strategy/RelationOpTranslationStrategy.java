@@ -1,10 +1,13 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.unipop.Constraint;
 import javaslang.Tuple2;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -26,33 +29,47 @@ import java.util.Optional;
  */
 public class RelationOpTranslationStrategy implements TranslationStrategy {
 
-
+    public RelationOpTranslationStrategy() {
+    }
 
     @Override
-    public GraphTraversal apply(Tuple2<Plan, PlanOpBase> context, GraphTraversal traversal) {
-        Plan plan = context._1;
-        PlanOpBase planOpBase = context._2;
-        Optional<PlanOpBase> prev = plan.getPrev(planOpBase);
+    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
+        Plan plan = context.getPlan();
+        PlanOpBase planOpBase = context.getPlanOpBase();
+
+        PlanUtil planUtil = new PlanUtil();
+        Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(),planOpBase);
+        Optional<PlanOpBase> next = planUtil.getNext(plan.getOps(),planOpBase);
 
         if(planOpBase instanceof RelationOp) {
             Rel rel = ((RelationOp) planOpBase).getRelation().geteBase();
             traversal.outE("promise").has("constraint", P.eq(Constraint.by(__.and(
                    __.has("label",P.eq(rel.getrType())),
                    __.has("direction", P.eq(getTinkerPopDirection(rel.getDir())))
-            ))));
+            )))).as(createLabelForRelation(prev, next));
         }
         return traversal;
-
     }
 
+    private String createLabelForRelation(Optional<PlanOpBase> prev, Optional<PlanOpBase> next) {
+        StringBuilder relLabel = new StringBuilder();
+
+        if (prev.isPresent())
+            relLabel.append(((EntityOp)prev.get()).getEntity().geteBase().geteTag());
+        relLabel.append("-->");
+        if (next.isPresent())
+            relLabel.append(((EntityOp)next.get()).getEntity().geteBase().geteTag());
+
+        return relLabel.toString();
+    }
 
     private String getTinkerPopDirection(String dir) {
         String tinkerPopDirection;
-        switch (dir) {
-            case "R":
+        switch (dir.toLowerCase()) {
+            case "r":
                 tinkerPopDirection = "out";
                 break;
-            case "L":
+            case "l":
                 tinkerPopDirection = "in";
                 break;
             default:
@@ -60,4 +77,9 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
         }
         return tinkerPopDirection;
     }
+
+    //region Fields
+    private Ontology ontology;
+    //endregion
+
 }

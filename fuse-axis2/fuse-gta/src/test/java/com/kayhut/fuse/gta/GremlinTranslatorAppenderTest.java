@@ -1,5 +1,6 @@
 package com.kayhut.fuse.gta;
 
+import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.gta.translation.SimplePlanOpTranslator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -7,6 +8,7 @@ import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -47,18 +49,15 @@ public class GremlinTranslatorAppenderTest {
         AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete).build();
 
         Plan plan = Mockito.mock(Plan.class);
-        when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            List<PlanOpBase> ops = new ArrayList<>();
-            ops.add(new EntityOp(ebaseAsgEBase));
-            return ops;
-        });
-        when(plan.isFirst(any())).thenAnswer(invocationOnMock -> true);
-        when(plan.getPrev(any())).thenAnswer(invocationOnMock -> {
-            return Optional.empty();
-        });
+
+
+        List<PlanOpBase> ops = new ArrayList<>();
+        ops.add(new EntityOp(ebaseAsgEBase));
+        when(plan.getOps()).thenAnswer(invocationOnMock -> ops);
+        when(Plan.PlanUtil.isFirst(ops,any())).thenAnswer(invocationOnMock -> true);
+        when(Plan.PlanUtil.getPrev(ops, any())).thenAnswer(invocationOnMock -> Optional.empty());
         GraphTraversal traversal = translator.translate(plan, new DefaultGraphTraversal());
         Assert.assertTrue(traversal.asAdmin().getSteps().iterator().hasNext());
-
     }
 
     @Test
@@ -76,14 +75,14 @@ public class GremlinTranslatorAppenderTest {
         EntityOp entity2 = new EntityOp(AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete2).build());
 
         Plan plan = Mockito.mock(Plan.class);
-        when(plan.isFirst(any())).thenAnswer(invocationOnMock -> false);
+        when(Plan.PlanUtil.isFirst(any(), any())).thenAnswer(invocationOnMock -> false);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
             List<PlanOpBase> ops = new ArrayList<>();
             ops.add(entity1);
             ops.add(entity2);
             return ops;
         });
-        when(plan.getPrev(any())).thenAnswer(invocationOnMock -> {
+        when(Plan.PlanUtil.getPrev(any(),any())).thenAnswer(invocationOnMock -> {
             if(invocationOnMock.getArgumentAt(0,EntityOp.class).equals(entity2))
                 return Optional.of(entity1);
             return Optional.empty();
@@ -107,14 +106,14 @@ public class GremlinTranslatorAppenderTest {
         RelationOp relationOp = new RelationOp(AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).build());
 
         Plan plan = Mockito.mock(Plan.class);
-        when(plan.isFirst(any())).thenAnswer(invocationOnMock -> false);
+        when(Plan.PlanUtil.isFirst(any(),any())).thenAnswer(invocationOnMock -> false);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
             List<PlanOpBase> ops = new ArrayList<>();
             ops.add(relationOp);
             ops.add(entityOp);
             return ops;
         });
-        when(plan.getPrev(any())).thenAnswer(invocationOnMock -> {
+        when(Plan.PlanUtil.getPrev(any(),any())).thenAnswer(invocationOnMock -> {
             if(invocationOnMock.getArgumentAt(0,EntityOp.class).equals(entityOp))
                 return Optional.of(relationOp);
             return Optional.empty();
@@ -140,7 +139,9 @@ public class GremlinTranslatorAppenderTest {
             ops.add(relationOp);
             return ops;
         });
-        when(plan.isFirst(any())).thenAnswer(invocationOnMock -> false);
+
+        Ontology ontology
+
         GraphTraversal traversal = translator.translate(plan, new DefaultGraphTraversal());
         Assert.assertEquals(traversal.asAdmin().getSteps().get(0).getClass().getSimpleName(),"VertexStep");
         Assert.assertEquals(((VertexStep)traversal.asAdmin().getSteps().get(0)).getDirection(), Direction.OUT);

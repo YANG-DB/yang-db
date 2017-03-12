@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.PromiseGraph;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -39,15 +40,17 @@ public class SimplePlanOpTranslator {
     }
     //endregion
 
-    public GraphTraversal translate(Plan plan, GraphTraversal graphTraversal) {
+    public GraphTraversal translate(Plan plan, GraphTraversal graphTraversal, Ontology ontology) {
         AtomicReference<GraphTraversal> traversalReference = new AtomicReference<>(graphTraversal);
         // Create initial traversal
         Stream.ofAll(plan.getOps()).forEach(op ->
-                map.get(op.getClass()).forEach(v -> traversalReference.set(v.apply(new Tuple2<>(plan, op), traversalReference.get()))));
+                map.get(op.getClass()).forEach(strategy -> {
+                    traversalReference.set(strategy.apply(new TranslationStrategyContext(op, plan, ontology), traversalReference.get()));
+                }));
 
     // iterate ops
     // translate each op via factory
 
         return traversalReference.get();
-}
+    }
 }
