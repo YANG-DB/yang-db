@@ -36,6 +36,7 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
         Plan plan = context.getPlan();
         PlanOpBase planOpBase = context.getPlanOpBase();
+        Ontology ontology = context.getOntology();
         PlanUtil planUtil = new PlanUtil();
         if(planUtil.isFirst(plan.getOps(),planOpBase)) {
             EEntityBase eEntityBase = ((EntityOp) planOpBase).getEntity().geteBase();
@@ -48,7 +49,7 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
                 traversal.has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
             }
             else if (eEntityBase instanceof ETyped) {
-                String eTypeName = OntologyUtil.getEntityTypeNameById(context.getOntology(),((ETyped) eEntityBase).geteType());
+                String eTypeName = OntologyUtil.getEntityTypeNameById(ontology,((ETyped) eEntityBase).geteType());
                 traversal.has("constraint", P.eq(Constraint.by(__.has("label", P.eq(eTypeName)))));
             }
             else if (eEntityBase instanceof EUntyped) {

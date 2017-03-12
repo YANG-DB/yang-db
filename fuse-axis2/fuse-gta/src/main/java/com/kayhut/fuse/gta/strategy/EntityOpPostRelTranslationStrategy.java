@@ -1,8 +1,10 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.unipop.*;
 import com.kayhut.fuse.model.query.entity.*;
@@ -30,6 +32,7 @@ public class EntityOpPostRelTranslationStrategy implements TranslationStrategy {
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
         Plan plan = context.getPlan();
         PlanOpBase currentPlanOpBase = context.getPlanOpBase();
+        Ontology ontology = context.getOntology();
         PlanUtil planUtil = new PlanUtil();
         Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(), currentPlanOpBase);
         if(!prev.isPresent()) {
@@ -45,7 +48,8 @@ public class EntityOpPostRelTranslationStrategy implements TranslationStrategy {
             if (eEntityBase instanceof EConcrete) {
                 traversal.has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
             } else if (eEntityBase instanceof ETyped) {
-                traversal.has("constraint", P.eq(Constraint.by(__.has("label", P.eq(((ETyped) eEntityBase).geteType())))));
+                String eTypeName = OntologyUtil.getEntityTypeNameById(ontology,((ETyped) eEntityBase).geteType());
+                traversal.has("constraint", P.eq(Constraint.by(__.has("label", P.eq(eTypeName)))));
             } else if (eEntityBase instanceof EUntyped) {
                 ;
             }
