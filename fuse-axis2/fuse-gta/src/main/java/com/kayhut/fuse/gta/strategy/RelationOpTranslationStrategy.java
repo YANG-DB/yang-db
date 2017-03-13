@@ -1,5 +1,6 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.google.common.base.Strings;
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -64,17 +65,21 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
     }
 
     private String getTinkerPopDirection(String dir) {
-        String tinkerPopDirection;
-        switch (dir.toLowerCase()) {
-            case "r":
-                tinkerPopDirection = "out";
-                break;
-            case "l":
-                tinkerPopDirection = "in";
-                break;
-            default:
-                throw new IllegalArgumentException("Not Supported Direction: " + dir);
+        String tinkerPopDirection = "";
+        if (!Strings.isNullOrEmpty(dir)) {
+            switch (dir.toLowerCase()) {
+                case "r":
+                    tinkerPopDirection = "out";
+                    break;
+                case "l":
+                    tinkerPopDirection = "in";
+                    break;
+                default:
+                    throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+            }
         }
+        else
+            throw new IllegalArgumentException("Empty Relation Direction");
         return tinkerPopDirection;
     }
 

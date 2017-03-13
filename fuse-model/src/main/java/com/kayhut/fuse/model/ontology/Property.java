@@ -58,6 +58,14 @@ public class Property {
         this.units = units;
     }
 
+    public String getDBrName() {
+        return DBrName;
+    }
+
+    public void setDBrName(String DBrName) {
+        this.DBrName = DBrName;
+    }
+
     @Override
     public String toString()
     {
@@ -68,15 +76,18 @@ public class Property {
     private int pType;
     private String name;
     private String type;
+    private String DBrName;
     private List<String> report;
     private String height;
     private String units;
     //endregion
 
+    //region Builder
     public static final class PropertyBuilder {
         private int pType;
         private String name;
         private String type;
+        private String DBrName;
         private List<String> report;
         private String height;
         private String units;
@@ -103,6 +114,11 @@ public class Property {
             return this;
         }
 
+        public PropertyBuilder withDBrName(String DBrName) {
+            this.DBrName = DBrName;
+            return this;
+        }
+
         public PropertyBuilder withReport(List<String> report) {
             this.report = report;
             return this;
@@ -122,6 +138,7 @@ public class Property {
             Property property = new Property();
             property.setName(name);
             property.setType(type);
+            property.setDBrName(DBrName);
             property.setReport(report);
             property.setHeight(height);
             property.setUnits(units);
@@ -129,6 +146,8 @@ public class Property {
             return property;
         }
     }
+    //endregion
+
 
 
 }

@@ -23,7 +23,6 @@ public class GremlinTranslationAppenderEngine {
         this.ontology = ontology;
     }
 
-    private SimplePlanOpTranslator simplePlanOpTranslator;
 
     public Traversal CreateTraversal(Plan plan){
         // Create initial traversal
@@ -32,4 +31,5 @@ public class GremlinTranslationAppenderEngine {
     }
 
     private Ontology ontology;
+    private SimplePlanOpTranslator simplePlanOpTranslator;
 }
