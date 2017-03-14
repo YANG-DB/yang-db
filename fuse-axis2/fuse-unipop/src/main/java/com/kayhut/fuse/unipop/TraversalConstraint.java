@@ -16,4 +16,9 @@ public class TraversalConstraint extends TraversalPromise implements Constraint 
         super(null, traversal);
     }
     //endregion
+
+    @Override
+    public String toString() {
+        return this.getTraversal().toString();
+    }
 }

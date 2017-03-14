@@ -1,6 +1,9 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import java.util.List;
+import java.util.*;
+
+import com.google.common.collect.PeekingIterator;
+import static com.google.common.collect.Iterators.peekingIterator;
 
 /**
  * Created by User on 22/02/2017.
@@ -29,4 +32,5 @@ public class Plan {
     //region Fields
     private List<PlanOpBase> ops;
     //endregion
+
 }

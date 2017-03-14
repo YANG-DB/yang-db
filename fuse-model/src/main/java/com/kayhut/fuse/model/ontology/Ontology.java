@@ -55,6 +55,7 @@ public class Ontology {
     private List<EnumeratedType> enumeratedTypes;
     //endregion
 
+    //region Builder
     public static final class OntologyBuilder {
         private String ont;
         private List<EntityType> entityTypes;
@@ -97,6 +98,6 @@ public class Ontology {
             return ontology;
         }
     }
-
+    //endregion
 
 }
