@@ -20,7 +20,9 @@ public class TraversalPromise implements Promise{
     //endregion
 
     //region properties
-
+    public Traversal getTraversal() {
+        return this.traversal;
+    }
     //endregion
 
     @Override

@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -81,6 +82,15 @@ public class RelationOpTranslationStrategyTest {
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(1).withName("Person").build());
                     return  entityTypes;
+                }
+        );
+
+        when(ontology.getRelationshipTypes()).thenAnswer(invocationOnMock ->
+                {
+                    ArrayList<RelationshipType> relTypes = new ArrayList<>();
+                    relTypes.add(RelationshipType.RelationshipTypeBuilder.aRelationshipType()
+                            .withRType(1).withName("Fire").build());
+                    return  relTypes;
                 }
         );
 

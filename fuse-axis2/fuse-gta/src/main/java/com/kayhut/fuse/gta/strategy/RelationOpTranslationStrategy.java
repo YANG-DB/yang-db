@@ -1,6 +1,7 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.google.common.base.Strings;
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -37,6 +38,7 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
         Plan plan = context.getPlan();
         PlanOpBase planOpBase = context.getPlanOpBase();
+        Ontology ontology = context.getOntology();
 
         PlanUtil planUtil = new PlanUtil();
         Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(),planOpBase);
@@ -44,8 +46,9 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
 
         if(planOpBase instanceof RelationOp) {
             Rel rel = ((RelationOp) planOpBase).getRelation().geteBase();
+            String rTypeName = OntologyUtil.getRelationTypeNameById(ontology, rel.getrType());
             traversal.outE("promise").has("constraint", P.eq(Constraint.by(__.and(
-                   __.has("label",P.eq(rel.getrType())),
+                   __.has("label",P.eq(rTypeName)),
                    __.has("direction", P.eq(getTinkerPopDirection(rel.getDir())))
             )))).as(createLabelForRelation(prev, next));
         }

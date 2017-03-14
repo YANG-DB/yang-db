@@ -65,6 +65,7 @@ public class RelationshipType {
     private List<Property> properties;
     //endregion
 
+    //region Builder
     public static final class RelationshipTypeBuilder {
         private int rType;
         private String name;
@@ -114,6 +115,6 @@ public class RelationshipType {
             return relationshipType;
         }
     }
-
+    //endregion
 
 }
