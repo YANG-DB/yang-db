@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan.extenders;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Start;
 import javaslang.Tuple2;
 
@@ -60,5 +61,9 @@ public class SimpleExtenderUtils {
             unHandledParts.remove(op.geteNum());
         });
         return new Tuple2<>(handledParts, unHandledParts);
+    }
+
+    public static boolean shouldAdvanceToParents(AsgEBase<? extends EBase> handledPartToExtend) {
+        return handledPartToExtend.getParents() != null;
     }
 }

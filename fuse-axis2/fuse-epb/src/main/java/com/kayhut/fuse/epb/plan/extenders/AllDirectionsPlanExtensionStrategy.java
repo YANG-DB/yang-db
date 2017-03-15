@@ -49,10 +49,25 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
                 }
             }
         }
+
+        if(SimpleExtenderUtils.shouldAdvanceToParents(handledPartToExtend)){
+            for(AsgEBase<? extends  EBase> parent : handledPartToExtend.getParents()){
+                if(SimpleExtenderUtils.shouldAddElement(parent) && queryPartsNotHandled.containsKey(parent.geteNum())){
+                    PlanOpBase op = createOpForElement(parent);
+                    Plan newPlan = new Plan(new LinkedList<>(originalPlan.getOps()));
+                    newPlan.getOps().add(op);
+                    plans.add(newPlan);
+                }
+            }
+        }
         return plans;
     }
 
     private PlanOpBase createOpForElement(AsgEBase element) {
+        return createOpForElement(element, false);
+    }
+
+    private PlanOpBase createOpForElement(AsgEBase element, boolean reverseDirection) {
         if(element.geteBase() instanceof EEntityBase){
             EntityOp op = new EntityOp(element);
             return op;
