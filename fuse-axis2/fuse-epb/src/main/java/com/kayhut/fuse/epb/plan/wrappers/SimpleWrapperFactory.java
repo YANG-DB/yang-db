@@ -18,7 +18,7 @@ public class SimpleWrapperFactory implements PlanWrapperFactory<Plan, AsgQuery ,
     public PlanWrapper<Plan, SingleCost> wrapPlan(Plan extendedPlan, AsgQuery query) {
 
         Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
-        SimpleExtenderUtils.removeHandledParts(extendedPlan, queryParts);
+        SimpleExtenderUtils.removeHandledQueryParts(extendedPlan, queryParts);
         boolean isComplete = queryParts.isEmpty();
 
         PlanWrapper<Plan, SingleCost> wrapper = new PlanWrapper<Plan, SingleCost>() {
