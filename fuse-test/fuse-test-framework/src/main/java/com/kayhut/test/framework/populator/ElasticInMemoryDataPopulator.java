@@ -1,6 +1,6 @@
 package com.kayhut.test.framework.populator;
 
-import com.kayhut.test.framework.scenario.DataScenarioDescriptor;
+import com.kayhut.test.framework.scenario.ScenarioDocument;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -8,7 +8,6 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.Node;
 
 import java.io.File;
-import java.io.InvalidObjectException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
@@ -19,7 +18,7 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 /**
  * Created by moti on 3/12/2017.
  */
-public class ElasticInMemoryDataPopulator {
+public class ElasticInMemoryDataPopulator extends BaseDataPopulator<TransportClient>{
 
     private static final int HTTP_PORT = 9205;
     private static final String HTTP_BASE_URL = "http://localhost";
@@ -28,6 +27,7 @@ public class ElasticInMemoryDataPopulator {
     private final String NODE_NAME = "fuse.test_elastic";
     private Node node;
     private List<TransportClient> transportClients = new LinkedList<>();
+    private TransportClient client = null;
 
     public void prepare(){
         deleteFolder(ES_WORKING_DIR + "/" + NODE_NAME);
@@ -47,27 +47,14 @@ public class ElasticInMemoryDataPopulator {
         node.start();
     }
 
-    public TransportClient getClient() throws UnknownHostException {
-        TransportClient client = TransportClient.builder().build().addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), HTTP_TRANSPORT_PORT));
-        transportClients.add(client);
-        return client;
-    }
-
-
-    public void populate(DataScenarioDescriptor descriptor) throws UnknownHostException {
-        TransportClient client = getClient();
-        descriptor.getScenarioDocuments().forEach(doc -> {
-            IndexResponse indexResponse = client.prepareIndex()
-                                                .setId(doc.getId())
-                                                .setIndex(doc.getIndexName())
-                                                .setType(doc.getDocType())
-                                                .setSource(doc.getDocValues())
-                                                .execute()
-                                                .actionGet();
-            if(!indexResponse.isCreated()){
-                throw new IllegalArgumentException("Inserting doc failed, docId = " + doc.getId());
-            }
-        });
+    public TransportClient getClient(){
+        try {
+            TransportClient client = TransportClient.builder().build().addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), HTTP_TRANSPORT_PORT));
+            transportClients.add(client);
+            return client;
+        } catch (UnknownHostException e) {
+            throw new UnknownError(e.getMessage());
+        }
     }
 
     public void teardown(){
@@ -79,6 +66,23 @@ public class ElasticInMemoryDataPopulator {
             }catch(Exception ex){
                 // do nothing
             }
+        }
+    }
+
+    @Override
+    public void indexDocument(ScenarioDocument doc) {
+        if(client == null){
+            client = getClient();
+        }
+        IndexResponse indexResponse = client.prepareIndex()
+                .setId(doc.getId())
+                .setIndex(doc.getIndexName())
+                .setType(doc.getDocType())
+                .setSource(doc.getDocValues())
+                .execute()
+                .actionGet();
+        if(!indexResponse.isCreated()){
+            throw new IllegalArgumentException("Inserting doc failed, docId = " + doc.getId());
         }
     }
 
