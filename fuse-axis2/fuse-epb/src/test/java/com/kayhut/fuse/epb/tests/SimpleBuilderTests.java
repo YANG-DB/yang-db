@@ -25,7 +25,7 @@ public class SimpleBuilderTests {
 
     @Test
     public void TestInitialCreationSingleEntity(){
-        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.CreateSingleEntityQuery();
+        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
         InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
         Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
@@ -80,7 +80,7 @@ public class SimpleBuilderTests {
         CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy(),
                                                                                                                             new AllDirectionsPlanExtensionStrategy());
 
-        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.CreateSingleEntityQuery();
+        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
         Iterable<Plan> plans = compositePlanExtensionStrategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> planList = new LinkedList<>();

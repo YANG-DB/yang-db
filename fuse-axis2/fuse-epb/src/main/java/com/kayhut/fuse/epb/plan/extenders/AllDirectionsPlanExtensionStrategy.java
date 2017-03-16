@@ -87,7 +87,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
                 }else{
                     rel2.setDir(rel1.getDir());
                 }
-                rel = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel2).withB(rel.getB()).withNext(rel.getNext()).withParents(rel.getParents()).build();
+                rel = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel2).build();
             }
             RelationOp op = new RelationOp(rel);
             return op;
