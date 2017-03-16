@@ -51,13 +51,12 @@ public class AsgEBase<T extends EBase>{
             return this;
         }
 
-        public EBaseAsgBuilder<T> withParents(List<AsgEBase<? extends EBase>> parents) {
-            this.parent = parents;
-            return this;
-        }
 
         public AsgEBase<T> build() {
-            return new AsgEBase<>(this.eBase, this.next, this.b, this.parent);
+            AsgEBase<T> asg = new AsgEBase(this.eBase);
+            if(this.next != null) this.next.forEach(asg::addNextChild);
+            if(this.b != null) this.b.forEach(asg::addBChild);
+            return asg;
         }
     }
     //endregion
@@ -74,6 +73,13 @@ public class AsgEBase<T extends EBase>{
         this.next = next == null ? new ArrayList<>() : new ArrayList<>(next);
         this.b = b == null ? new ArrayList<>() : new ArrayList<>(b);
         this.parent = parent == null ? new ArrayList<>() : new ArrayList<>(parent);
+    }
+
+    public AsgEBase(T eBase) {
+        this.eBase = eBase;
+        this.parent = new ArrayList<>();
+        this.next = new ArrayList<>();
+        this.b = new ArrayList<>();
     }
     //endregion
 

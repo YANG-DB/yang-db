@@ -53,7 +53,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         if(SimpleExtenderUtils.shouldAdvanceToParents(handledPartToExtend)){
             for(AsgEBase<? extends  EBase> parent : handledPartToExtend.getParents()){
                 if(SimpleExtenderUtils.shouldAddElement(parent) && queryPartsNotHandled.containsKey(parent.geteNum())){
-                    PlanOpBase op = createOpForElement(parent);
+                    PlanOpBase op = createOpForElement(parent, true);
                     Plan newPlan = new Plan(new LinkedList<>(originalPlan.getOps()));
                     newPlan.getOps().add(op);
                     plans.add(newPlan);
@@ -73,7 +73,23 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
             return op;
         }
         if(element.geteBase() instanceof Rel){
-            RelationOp op = new RelationOp(element);
+            AsgEBase<Rel> rel = element;
+            if(reverseDirection){
+                Rel rel1 = rel.geteBase();
+                Rel rel2 = new Rel();
+                rel2.seteNum(rel1.geteNum());
+                rel2.setrType(rel1.getrType());
+                rel2.setWrapper(rel1.getWrapper());
+                if(rel1.getDir().equals("L")){
+                    rel2.setDir("R");
+                }else if(rel1.getDir().equals("R")){
+                    rel2.setDir("L");
+                }else{
+                    rel2.setDir(rel1.getDir());
+                }
+                rel = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel2).withB(rel.getB()).withNext(rel.getNext()).withParents(rel.getParents()).build();
+            }
+            RelationOp op = new RelationOp(rel);
             return op;
         }
         if(element.geteBase() instanceof RelProp){

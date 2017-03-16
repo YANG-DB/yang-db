@@ -24,6 +24,7 @@ public class SiblingOnlyPlanValidator implements PlanValidator<Plan, AsgQuery>{
             if(lastOp != null){
                 boolean found = lastOpElem.getNext().stream().anyMatch(n -> ((AsgEBase)n).geteNum() == currentOpElem.geteNum());
                 found |= lastOpElem.getB().stream().anyMatch(n -> ((AsgEBase)n).geteNum() == currentOpElem.geteNum());
+                found |= lastOpElem.getParents().stream().anyMatch(n -> ((AsgEBase)n).geteNum() == currentOpElem.geteNum());
                 if(!found){
                     return false;
                 }

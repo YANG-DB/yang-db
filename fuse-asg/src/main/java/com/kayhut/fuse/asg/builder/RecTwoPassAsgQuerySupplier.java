@@ -28,8 +28,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
 
         //Building the root of the AsgQuery (i.e., start Ebase)
         AsgEBase asgEBaseStart = AsgEBase.EBaseAsgBuilder.anEBaseAsg()
-                .withEBase(start)
-                .withParents(null).build();
+                .withEBase(start).build();
 
         buildSubGraphRec(asgEBaseStart, queryElements);
 
