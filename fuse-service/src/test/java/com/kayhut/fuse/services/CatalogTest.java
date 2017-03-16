@@ -27,7 +27,7 @@ public class CatalogTest {
         Ontology ontology = loadOntology("dragons.json");
         given()
                 .contentType("application/json")
-                .get("/fuse/catalog/ontology/dragons")
+                .get("/fuse/catalog/ontology/Dragons")
                 .then()
                 .assertThat()
                 .body(new ContentMatcher(o -> {
