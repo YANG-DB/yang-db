@@ -8,14 +8,13 @@ import java.util.LinkedList;
 /**
  * Created by User on 20/02/2017.
  */
-public class EntityOp extends TaggedOp {
+public class EntityOp extends PlanOpBase {
     //region Constructor
     public EntityOp() {
 
     }
 
     public EntityOp(AsgEBase<EEntityBase> entity) {
-        super(entity.geteBase().geteTag());
         this.entity = entity;
     }
     //endregion

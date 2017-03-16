@@ -2,12 +2,10 @@ package com.kayhut.fuse.asg.builder;
 
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.aggregation.*;
-import com.kayhut.fuse.model.query.combiner.HComb;
+import com.kayhut.fuse.model.query.combiner.*;
 import com.kayhut.fuse.model.query.entity.*;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.quant.HQuant;
-import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.Quant2;
+import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.quant.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -38,6 +36,7 @@ public class BEbaseFactory {
         this.map.put(ETyped.class, (ebase) -> ((ETyped)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((ETyped) ebase).getB()));
         this.map.put(EUntyped.class, (ebase) -> (Collections.emptyList()));
         this.map.put(EAgg.class, (ebase) -> (Collections.emptyList()));
+        this.map.put(EProp.class, (ebase) -> (Collections.emptyList()));
         this.map.put(EConcrete.class, (ebase) -> (Collections.emptyList()));
         this.map.put(ELog.class, (ebase) -> (Collections.emptyList()));
         this.map.put(Start.class, (ebase) -> ((Start)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((Start) ebase).getB()));

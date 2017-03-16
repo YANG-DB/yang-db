@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import javaslang.Tuple2;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
@@ -22,17 +23,22 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         if(plan.isPresent()){
             Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
 
-            List<AsgEBase> handledParts = SimpleExtenderUtils.removeHandledParts(plan.get(), queryParts);
-            if(queryParts.size() > 0){
+            Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(plan.get(), queryParts);
+            List<AsgEBase> handledParts = partsTuple._1();
+            Map<Integer, AsgEBase> remainingQueryParts = partsTuple._2();
+
+            // If we have query parts that need further handling
+            if(remainingQueryParts.size() > 0){
                 for(AsgEBase handledPart : handledParts){
-                    extendPart(handledPart, queryParts, plans, plan.get());
+                    plans.addAll(extendPart(handledPart, remainingQueryParts, plan.get()));
                 }
             }
         }
         return plans;
     }
 
-    private void extendPart(AsgEBase<? extends EBase> handledPartToExtend, Map<Integer, AsgEBase> queryPartsNotHandled, List<Plan> plans, Plan originalPlan) {
+    private Collection<Plan> extendPart(AsgEBase<? extends EBase> handledPartToExtend, Map<Integer, AsgEBase> queryPartsNotHandled, Plan originalPlan) {
+        List<Plan> plans = new ArrayList<>();
         if(SimpleExtenderUtils.shouldAdvanceToNext(handledPartToExtend)){
             for(AsgEBase<? extends EBase> next : handledPartToExtend.getNext()){
                 if(SimpleExtenderUtils.shouldAddElement(next) && queryPartsNotHandled.containsKey(next.geteNum())){
@@ -43,6 +49,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
                 }
             }
         }
+        return plans;
     }
 
     private PlanOpBase createOpForElement(AsgEBase element) {

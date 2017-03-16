@@ -7,7 +7,9 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import javaslang.Tuple2;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,8 +20,8 @@ public class SimpleWrapperFactory implements PlanWrapperFactory<Plan, AsgQuery ,
     public PlanWrapper<Plan, SingleCost> wrapPlan(Plan extendedPlan, AsgQuery query) {
 
         Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
-        SimpleExtenderUtils.removeHandledParts(extendedPlan, queryParts);
-        boolean isComplete = queryParts.isEmpty();
+        Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(extendedPlan, queryParts);
+        boolean isComplete = partsTuple._2().isEmpty();
 
         PlanWrapper<Plan, SingleCost> wrapper = new PlanWrapper<Plan, SingleCost>() {
             @Override

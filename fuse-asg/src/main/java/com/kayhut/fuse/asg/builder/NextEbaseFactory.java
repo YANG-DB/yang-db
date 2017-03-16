@@ -2,12 +2,10 @@ package com.kayhut.fuse.asg.builder;
 
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.aggregation.*;
-import com.kayhut.fuse.model.query.combiner.HComb;
+import com.kayhut.fuse.model.query.combiner.*;
 import com.kayhut.fuse.model.query.entity.*;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.quant.HQuant;
-import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.Quant2;
+import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.quant.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -36,6 +34,7 @@ public class NextEbaseFactory {
         this.map.put(EAgg.class, (ebase) -> ((EAgg)ebase).getNext() == 0 ? Collections.emptyList() : Arrays.asList(((EAgg) ebase).getNext()));
         this.map.put(EConcrete.class, (ebase) -> ((EConcrete)ebase).getNext() == 0 ? Collections.emptyList() : Arrays.asList(((EConcrete) ebase).getNext()));
         this.map.put(ELog.class, (ebase) -> ((ELog)ebase).getNext() == 0 ? Collections.emptyList() : Arrays.asList(((ELog) ebase).getNext()));
+        this.map.put(EProp.class, (ebase) -> (Collections.emptyList()));
         this.map.put(Quant1.class, (ebase) -> ((Quant1) ebase).getNext());
         this.map.put(Quant2.class, (ebase) -> ((Quant2) ebase).getNext());
         this.map.put(Rel.class, (ebase) -> ((Rel)ebase).getNext() == 0 ? Collections.emptyList() : Arrays.asList(((Rel) ebase).getNext()));
