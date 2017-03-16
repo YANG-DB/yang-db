@@ -2,25 +2,19 @@ package com.kayhut.fuse.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.TestUtils.ContentMatcher;
 import org.jooby.test.JoobyRule;
-import org.junit.Assert;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
 
 import static com.kayhut.fuse.services.TestUtils.loadQuery;
-import static com.kayhut.fuse.services.TestUtils.loadResult;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class QueryTest {
 
