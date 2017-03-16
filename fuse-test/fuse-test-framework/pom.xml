@@ -10,7 +10,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>fuse-test-framework</artifactId>
-    
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch -->
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>2.4.4</version>
+        </dependency>
+
+    </dependencies>
+
+
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
     </properties>
