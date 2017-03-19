@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop;
+package com.kayhut.fuse.unipop.promise;
 
 /**
  * Created by User on 07/03/2017.

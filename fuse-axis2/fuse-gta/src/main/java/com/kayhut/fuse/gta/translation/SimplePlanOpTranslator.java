@@ -3,17 +3,14 @@ package com.kayhut.fuse.gta.translation;
 import com.kayhut.fuse.gta.strategy.*;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.unipop.PromiseGraph;
-import javaslang.Tuple2;
+import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
 
 /**
  * Created by moti on 3/7/2017.

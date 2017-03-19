@@ -3,21 +3,15 @@ package com.kayhut.fuse.gta.strategy;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.unipop.*;
 import com.kayhut.fuse.model.query.entity.*;
-import javaslang.Tuple2;
+import com.kayhut.fuse.unipop.promise.Constraint;
+import com.kayhut.fuse.unipop.promise.Promise;
 import org.apache.tinkerpop.gremlin.process.traversal.*;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * Created by benishue on 08-Mar-17.

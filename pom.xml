@@ -249,4 +249,12 @@
     <!-- todo profiles -->
     <profiles></profiles>
 
+    <distributionManagement>
+        <repository>
+            <id>nexuss.westeurope.cloudapp.azure.com-snapshots</id>
+            <name>nexuss.westeurope.cloudapp.azure.com-snapshots</name>
+            <url>https://nexuss.westeurope.cloudapp.azure.com:8443/repository/maven-snapshots/</url>
+        </repository>
+    </distributionManagement>
+
 </project>
