@@ -1,6 +1,8 @@
 package com.kayhut.fuse.neo4j.cypher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.model.ontology.EntityType;
+import com.kayhut.fuse.model.ontology.Ontology;
 
 import java.io.IOException;
 import java.util.List;
@@ -10,8 +12,6 @@ import java.util.List;
  * Created by EladW on 23/02/2017.
  */
 public class Schema {
-
-    private Ontology ontology;
 
     public static class Entity {
         public Entity() {
@@ -71,73 +71,9 @@ public class Schema {
         public List<EnumVal> values;
     }
 
-    public static class Ontology {
-
-        public Ontology(){
-
-        }
-
-        public String ont;
-        public List<Entity> entityTypes;
-        public List<Relation> relationshipTypes;
-        public List<Enum> enumeratedTypes;
-
-        public String getName() {
-            return ont;
-        }
-    }
-
-    public String getName() {
-        return ontology.getName();
-    }
-
-    public String getEntityLabel(int eType) {
-        for(Entity e : ontology.entityTypes) {
-            if(e.eType == eType) {
-                return e.name;
-            }
-        }
-        return null;
-    }
-
-    public String getRelationLabel(int rType) {
-        for(Relation r : ontology.relationshipTypes) {
-            if(r.rType == rType) {
-                return r.name;
-            }
-        }
-        return null;
-    }
-
-    public Property getProperty(int eType, int pType) {
-        for(Entity e : ontology.entityTypes) {
-            if(e.eType == eType) {
-                for(Property p : e.properties) {
-                    if(p.pType == pType) {
-                        return p;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     public String getPropertyField(String pName) {
         return pName.replace(' ','_');
     }
 
-    public void load(String ontJson) {
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        try {
-
-            ontology = mapper.readValue(ontJson, Ontology.class);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 }

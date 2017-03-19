@@ -45,6 +45,7 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
 
         return Optional.of(new CursorResourceInfo(
                 urlSupplier.resourceUrl(queryId, cursorId),
+                cursorId,
                 cursorType,
                 urlSupplier.pageStoreUrl(queryId, cursorId)));
     }
@@ -62,7 +63,7 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
                 .map(cursorId -> this.urlSupplier.resourceUrl(queryId, cursorId))
                 .toJavaList();
 
-        return Optional.of(new StoreResourceInfo(this.urlSupplier.cursorStoreUrl(queryId), resourceUrls));
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.cursorStoreUrl(queryId),queryId, resourceUrls));
     }
 
     @Override
@@ -79,6 +80,7 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
 
         return Optional.of(new CursorResourceInfo(
                 urlSupplier.resourceUrl(queryId, cursorId),
+                cursorId,
                 cursorResource.get().getCursorType(),
                 urlSupplier.pageStoreUrl(queryId, cursorId)));
     }

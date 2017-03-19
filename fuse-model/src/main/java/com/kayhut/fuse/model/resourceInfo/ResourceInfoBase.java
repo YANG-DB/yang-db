@@ -5,8 +5,9 @@ package com.kayhut.fuse.model.resourceInfo;
  */
 public abstract class ResourceInfoBase {
     //region Constructor
-    public ResourceInfoBase(String resourceUrl) {
+    public ResourceInfoBase(String resourceUrl,String resourceId) {
         this.resourceUrl = resourceUrl;
+        this.resourceId = resourceId;
     }
     //endregion
 
@@ -14,9 +15,15 @@ public abstract class ResourceInfoBase {
     public String getResourceUrl() {
         return this.resourceUrl;
     }
+
+    public String getResourceId() {
+        return resourceId;
+    }
     //endregion
 
     //region Fields
     private String resourceUrl;
+    private String resourceId;
     //endregion
+
 }

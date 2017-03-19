@@ -17,6 +17,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     public QueryCreationOperationContext(QueryMetadata queryMetadata, Query query) {
         this.queryMetadata = queryMetadata;
         this.query = query;
+        this.executionPlan = new Plan();
     }
     //endregion
 

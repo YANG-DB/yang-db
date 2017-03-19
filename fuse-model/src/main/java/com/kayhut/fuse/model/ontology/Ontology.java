@@ -2,7 +2,9 @@ package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import javax.management.relation.Relation;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -47,6 +49,38 @@ public class Ontology {
     {
         return "Ontology [enumeratedTypes = "+enumeratedTypes+", ont = "+ont+", relationshipTypes = "+relationshipTypes+", entityTypes = "+entityTypes+"]";
     }
+
+    public Optional<String> getEntityLabel(int eType) {
+        for(EntityType e : entityTypes) {
+            if(e.geteType() == eType) {
+                return Optional.of(e.getName());
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<String> getRelationLabel(int rType) {
+        for(RelationshipType r : relationshipTypes) {
+            if(r.getrType() == rType) {
+                return Optional.of(r.getName());
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Property> getProperty(int eType, int pType) {
+        for(EntityType e : entityTypes) {
+            if(e.geteType() == eType) {
+                for(Property p : e.getProperties()) {
+                    if(p.getpType() == pType) {
+                        return Optional.of(p);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
 
     //region Fields
     private String ont;

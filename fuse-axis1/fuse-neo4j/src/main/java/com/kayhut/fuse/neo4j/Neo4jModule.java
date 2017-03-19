@@ -15,6 +15,7 @@ public class Neo4jModule implements Jooby.Module {
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
         //service controllers
         binder.bind(Neo4JOperationContextProcessor.class).asEagerSingleton();
+        binder.bind(GraphProvider.class).to(SimpleGraphProvider.class).asEagerSingleton();
     }
 
 }

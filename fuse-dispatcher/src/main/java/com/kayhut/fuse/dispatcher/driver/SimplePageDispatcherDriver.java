@@ -45,7 +45,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
         String pageId = cursorResource.get().getNextPageId();
         submit(this.eventBus, new PageCreationOperationContext(cursorResource.get(), pageId, pageSize));
 
-        return Optional.of(new PageResourceInfo(urlSupplier.resourceUrl(queryId, cursorId, pageId), pageSize, 0));
+        return Optional.of(new PageResourceInfo(urlSupplier.resourceUrl(queryId, cursorId, pageId), pageId, pageSize, 0));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
                 .map(pageId -> this.urlSupplier.resourceUrl(queryId, cursorId, pageId))
                 .toJavaList();
 
-        return Optional.of(new StoreResourceInfo(this.urlSupplier.pageStoreUrl(queryId, cursorId), resourceUrls));
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.pageStoreUrl(queryId, cursorId),null, resourceUrls));
     }
 
     @Override
@@ -87,7 +87,9 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
         }
 
         return Optional.of(new PageResourceInfo(this.urlSupplier.resourceUrl(queryId, cursorId, pageId),
-                pageResource.get().getRequestedSize(), pageResource.get().getActualSize()));
+                pageId,
+                pageResource.get().getRequestedSize(),
+                pageResource.get().getActualSize()));
     }
 
     @Override
@@ -108,28 +110,6 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
         }
 
         return Optional.of(pageResource.get().getData());
-    }
-
-    @Override
-    public Optional<Boolean> delete(String queryId, String cursorId, String pageId) {
-        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
-
-        if(!queryResource.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<CursorResource> cursorResource = queryResource.get().getCursorResource(cursorId);
-        if (!cursorResource.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<PageResource> pageResource = cursorResource.get().getPageResource(pageId);
-        if (!pageResource.isPresent()) {
-            return Optional.empty();
-        }
-
-        cursorResource.get().deletePageResource(pageId);
-        return Optional.of(true);
     }
     //endregion
 

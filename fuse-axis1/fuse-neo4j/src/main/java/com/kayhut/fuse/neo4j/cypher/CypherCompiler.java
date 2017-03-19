@@ -1,5 +1,7 @@
 package com.kayhut.fuse.neo4j.cypher;
 
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -8,7 +10,8 @@ import com.kayhut.fuse.model.query.quant.Quant2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -107,7 +110,7 @@ public class CypherCompiler {
 
     //Traverses a tree of query elements and building the cypher statement along the way.
     //Each leaf node will contain a complete ready to run cypher statement, describing the single path from the root node to this leaf node.
-    private static void cypherTreeTraverse(QueryElementTreeNode curNode, QueryElementTreeNode ancestor, Schema schema) throws CypherCompilerException {
+    private static void cypherTreeTraverse(QueryElementTreeNode curNode, QueryElementTreeNode ancestor, Ontology schema) throws CypherCompilerException {
 
         //start with ancestor statement, and update it
         if (ancestor != null) {
@@ -116,28 +119,28 @@ public class CypherCompiler {
 
             if (curNode.value instanceof ETyped) {
                 curStmt.getMatch().appendNode(((ETyped) curNode.value).geteTag(),
-                        schema.getEntityLabel(((ETyped) curNode.value).geteType()),
+                        schema.getEntityLabel(((ETyped) curNode.value).geteType()).get(),
                         null);
                 curStmt.getReturn().append(((ETyped) curNode.value).geteTag(), null, null);
             }
 
             if (curNode.value instanceof Rel) {
                 curStmt.getMatch().appendRelationship(null,
-                        schema.getRelationLabel(((Rel) curNode.value).getrType()),
+                        schema.getRelationLabel(((Rel) curNode.value).getrType()).get(),
                         null,
                         ((Rel) curNode.value).getDir() == "R" ? CypherMatch.Direction.RIGHT : CypherMatch.Direction.LEFT);
             }
 
             if (curNode.value instanceof EProp) {
                 EProp eprop = (EProp) curNode.value;
-                Schema.Property prop = schema.getProperty(((ETyped) ancestor.value).geteType(), eprop.getpType());
+                Property prop = schema.getProperty(((ETyped) ancestor.value).geteType(), Integer.valueOf(eprop.getpType())).get();
                 curStmt.getWhere().appendUnary(CypherWhere.ConditionType.AND,
                         ((ETyped) ancestor.value).geteTag(),
-                        schema.getPropertyField(schema.getProperty(((ETyped) ancestor.value).geteType(), eprop.getpType()).name),
+                        schema.getProperty(((ETyped) ancestor.value).geteType(), Integer.valueOf(eprop.getpType())).get().getType(),
                         null,
                         eprop.getCon().getOp() == ConstraintOp.eq ? CypherWhere.OpType.EQUALS :
                                 CypherWhere.OpType.LARGER,
-                        prop.type.equals("string") ? String.format("'%s'", eprop.getCon().getExpr()) :
+                        prop.getType().equals("string") ? String.format("'%s'", eprop.getCon().getExpr()) :
                                 String.valueOf(eprop.getCon().getExpr()));
 
             }
@@ -199,7 +202,7 @@ public class CypherCompiler {
         return node.cypher;
     }
 
-    public static String compile(com.kayhut.fuse.model.query.Query query, Schema schema) throws CypherCompilerException {
+    public static String compile(com.kayhut.fuse.model.query.Query query, Ontology schema) throws CypherCompilerException {
 
         //build query tree
         QueryElementsTree tree = buildTree(query);

@@ -4,12 +4,14 @@ import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.model.results.QueryResult;
 
+import java.io.IOException;
+
 /**
  * Created by User on 06/03/2017.
  */
 public class PageCreationOperationContext extends OperationContextBase<PageCreationOperationContext>{
     public interface Processor {
-        PageCreationOperationContext process(PageCreationOperationContext context);
+        PageCreationOperationContext process(PageCreationOperationContext context) throws IOException;
     }
 
     //region Constructors
