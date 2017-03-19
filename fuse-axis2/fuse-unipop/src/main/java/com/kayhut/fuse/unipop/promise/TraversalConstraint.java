@@ -19,6 +19,6 @@ public class TraversalConstraint extends TraversalPromise implements Constraint 
 
     @Override
     public String toString() {
-        return this.getTraversal().toString();
+        return "Constraint.by(" + this.getTraversal().toString() + ")";
     }
 }

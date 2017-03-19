@@ -28,6 +28,19 @@
             <artifactId>unipop-core</artifactId>
             <version>0.2</version>
         </dependency>
+        <dependency>
+            <groupId>io.javaslang</groupId>
+            <artifactId>javaslang</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+
+        <!-- tests-->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.10.19</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

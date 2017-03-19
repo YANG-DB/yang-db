@@ -25,6 +25,11 @@ public class IdPromise implements Promise {
     }
     //endregion
 
+    @Override
+    public String toString() {
+        return "Promise.as(" + getId().toString() + ")";
+    }
+
     //region fields
     private Object id;
     //endregion

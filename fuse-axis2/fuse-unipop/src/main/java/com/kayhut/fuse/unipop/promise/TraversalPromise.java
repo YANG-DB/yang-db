@@ -27,7 +27,7 @@ public class TraversalPromise implements Promise{
 
     @Override
     public String toString() {
-        return getId().toString() + ": " + traversal.toString();
+        return "Promise.as(" + getId().toString() + ").by(" + traversal.toString() + ")";
     }
 
 
