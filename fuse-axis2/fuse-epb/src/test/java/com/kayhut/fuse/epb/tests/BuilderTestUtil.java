@@ -20,7 +20,7 @@ import java.util.List;
  * Created by moti on 3/2/2017.
  */
 public class BuilderTestUtil {
-    public static Pair<AsgQuery, AsgEBase> CreateSingleEntityQuery(){
+    public static Pair<AsgQuery, AsgEBase> createSingleEntityQuery(){
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("Person");
@@ -43,6 +43,7 @@ public class BuilderTestUtil {
 
         Rel rel = new Rel();
         rel.seteNum(2);
+        rel.setDir("R");
         AsgEBase<Rel> relAsg2 = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(unTypedAsg3).build();
 
         EConcrete concrete = new EConcrete();
