@@ -10,6 +10,7 @@ public class CypherStatement {
     private CypherMatch match;
     private CypherReturn returns;
     private CypherWhere where;
+    private int nextPathTag = 0;
 
     private CypherStatement() {
         match = CypherMatch.cypherMatch();
@@ -46,16 +47,18 @@ public class CypherStatement {
     }
 
     public CypherStatement appendNode(String pathTag, CypherNode node) {
-        if(match.getPaths().containsKey(pathTag)) {
-            match.getPaths().get(pathTag).appendNode(node);
+        if(!match.getPaths().containsKey(pathTag)) {
+            match.addPath(CypherPath.cypherPath(pathTag));
         }
+        match.getPaths().get(pathTag).appendNode(node);
         return this;
     }
 
     public CypherStatement appendRel(String pathTag, CypherRelationship rel) {
-        if(match.getPaths().containsKey(pathTag)) {
-            match.getPaths().get(pathTag).appendRelationship(rel);
+        if(!match.getPaths().containsKey(pathTag)) {
+            match.addPath(CypherPath.cypherPath(pathTag));
         }
+        match.getPaths().get(pathTag).appendRelationship(rel);
         return this;
     }
 
@@ -94,7 +97,15 @@ public class CypherStatement {
         return sb.toString();
     }
 
+    public String getNextPathTag() {
+        return "p" + match.getPaths().size();
+    }
+
     public static CypherStatement union(List<CypherStatement> statements) {
+        if(statements.size() == 1) {
+            return statements.get(0);
+        }
+        //TODO: return String ??
         return new CypherStatement();
     }
 }
