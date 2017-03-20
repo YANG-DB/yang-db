@@ -11,11 +11,9 @@ import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.neo4j.GraphProvider;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
-import com.kayhut.fuse.neo4j.cypher.CypherCompilerException;
 
 import java.util.Optional;
 
@@ -28,7 +26,8 @@ import static com.kayhut.fuse.neo4j.executor.NeoGraphUtils.query;
 public class Neo4JOperationContextProcessor implements
         QueryCreationOperationContext.Processor,
         CursorCreationOperationContext.Processor,
-        PageCreationOperationContext.Processor {
+        PageCreationOperationContext.Processor,
+        QueryCreationOperationContext.Processor {
 
     //region Constructors
     @Inject
@@ -41,28 +40,40 @@ public class Neo4JOperationContextProcessor implements
     }
     //endregion
 
+    //region QueryCreationOperationContext.Processor Implementation
+    @Override
+    @Subscribe
+    public QueryCreationOperationContext process(QueryCreationOperationContext context) {
+
+        if(context.getAsgQuery() == null) {
+            return context;
+        }
+
+        asgQuery = context.getAsgQuery();
+        Optional<Ontology> ont = provider.get(asgQuery.getOnt());
+        if(ont.isPresent()) {
+            ontology = ont.get();
+        } else {
+            throw new RuntimeException("Query ontology not present in catalog.");
+        }
+
+        return context;
+    }
+    //endregion
+
     //region CursorCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
+
         if (context.getCursor() != null) {
             return context;
         }
 
-        // TODO: use ASG
-        // AsgQuery asgQuery = input.getAsgQuery();
+        //Compile the query and get the cursor ready
+        String cypherQuery = CypherCompiler.compile(asgQuery,ontology);
 
-        Query query = context.getQueryResource().getQuery();
-        Optional<Ontology> ontology = provider.get(query.getOnt());
-        if(!ontology.isPresent())
-            throw new RuntimeException("Ontology "+query.getOnt() + " not present in catalog ");
-
-        try {
-            String cypherQuery = CypherCompiler.compile(query, ontology.get());
-            return submit(eventBus, context.of(new Neo4jCursor(context.getQueryResource().getQuery(),cypherQuery)));
-        } catch (CypherCompilerException e) {
-            throw new RuntimeException(e);
-        }
+        return submit(eventBus, context.of(new Neo4jCursor(context.getQueryResource().getQuery(), cypherQuery)));
 
     }
     //endregion
@@ -90,6 +101,8 @@ public class Neo4JOperationContextProcessor implements
     protected EventBus eventBus;
     private ResourceStore store;
     private OntologyProvider provider;
+    private AsgQuery asgQuery;
+    private Ontology ontology;
 
     @Override
     @Subscribe

@@ -1,18 +1,17 @@
 package com.kayhut.fuse.neo4j.cypher;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.Quant2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Created by EladW on 23/02/2017.
@@ -21,142 +20,100 @@ public class CypherCompiler {
 
     static Logger logger = LoggerFactory.getLogger("com.kayhut.fuse.neo4j.cypher.CypherCompiler");
 
-    // A node in the query tree
-    private static class QueryElementTreeNode {
-        EBase value;
-        ArrayList<QueryElementTreeNode> children;
-        CypherStatement cypher;
+    //Traverses a tree of query elements, building the cypher statements along the way.
+    //Each leaf node will contain a complete ready-to-run cypher statement, describing the single path from the root node to this leaf node.
+    private static void cypherTreeTraverse(AsgEBase curNode,
+                                           AsgEBase ancestor,
+                                           List<CypherStatement> cypherStatemenstMap,
+                                           Ontology ontology) {
 
-        public QueryElementTreeNode(EBase val) {
-            value = val;
+        //start node - initialize an empty cypher statement
+        if(ancestor == null) {
+            //TODO: add new cypher statement to list
+            //cypherStatemenstMap.addput(curNode,CypherStatement.cypherStatement());
         }
 
-        public void addChildNode(QueryElementTreeNode child) {
-            if(children == null) {
-                children = new ArrayList<>();
-            }
-            children.add(child);
-        }
-
-        public void setCypher(CypherStatement statement) {
-            cypher = statement;
-        }
-    }
-
-    // A tree representing a query
-    private static class QueryElementsTree {
-        QueryElementTreeNode root;
-
-        public QueryElementsTree(QueryElementTreeNode r) {
-            root = r;
-        }
-    }
-
-    // Gets a Query, and return a tree of elements representing that query
-    private static QueryElementsTree buildTree(Query query) {
-
-        EBase startElement = query.getElements().stream().filter(element -> element instanceof Start).findFirst().get();
-
-        QueryElementTreeNode root = new QueryElementTreeNode(startElement);
-
-        buildSubTree(root, query.getElements());
-
-        return new QueryElementsTree(root);
-    }
-
-    // Gets a node in the tree, and builds the sub-tree rooted at that node
-    private static void buildSubTree(QueryElementTreeNode node, List<EBase> elementsList) {
-
-        elementsList.stream()
-                //find node's children - the elements that their number is contained in the node's next list
-                //todo: move next-is-not-start to getNext()
-                .filter(entry -> !getNext(node.value).contains(0) && getNext(node.value).contains(entry.geteNum()))
-                .collect(Collectors.toList())
-                //recursively build sub-trees for each child node
-                .forEach(entry -> {
-                    QueryElementTreeNode childNode = new QueryElementTreeNode(entry);
-                    buildSubTree(childNode, elementsList);
-                    //add child node to the node's children list
-                    node.addChildNode(childNode);
-                });
-
-    }
-
-    //Returns the next elements following a given element
-    private static List<Integer> getNext(EBase e) {
-        if( e instanceof Start) {
-            ArrayList<Integer> list = new ArrayList<>();
-            list.add(((Start)e).getNext());
-            return list;
-        }
-        if(e instanceof Quant1) {
-            return ((Quant1)e).getNext();
-        }
-        if(e instanceof Quant2) {
-            return ((Quant2)e).getNext();
-        }
-        if( e instanceof ETyped) {
-            ArrayList<Integer> list = new ArrayList<>();
-            list.add(((ETyped)e).getNext());
-            return list;
-        }
-        if( e instanceof Rel) {
-            ArrayList<Integer> list = new ArrayList<>();
-            list.add(((Rel)e).getNext());
-            return list;
-        }
-        return new ArrayList<>();
-    }
-
-    //Traverses a tree of query elements and building the cypher statement along the way.
-    //Each leaf node will contain a complete ready to run cypher statement, describing the single path from the root node to this leaf node.
-    private static void cypherTreeTraverse(QueryElementTreeNode curNode, QueryElementTreeNode ancestor, Ontology schema) throws CypherCompilerException {
-
-        //start with ancestor statement, and update it
+        //append to ancestor's statement
         if (ancestor != null) {
-
-            CypherStatement curStmt = ancestor.cypher.copy();
-
-            if (curNode.value instanceof ETyped) {
-                curStmt.getMatch().appendNode(((ETyped) curNode.value).geteTag(),
-                        schema.getEntityLabel(((ETyped) curNode.value).geteType()).get(),
-                        null);
-                curStmt.getReturn().append(((ETyped) curNode.value).geteTag(), null, null);
-            }
-
-            if (curNode.value instanceof Rel) {
-                curStmt.getMatch().appendRelationship(null,
-                        schema.getRelationLabel(((Rel) curNode.value).getrType()).get(),
-                        null,
-                        ((Rel) curNode.value).getDir() == "R" ? CypherMatch.Direction.RIGHT : CypherMatch.Direction.LEFT);
-            }
-
-            if (curNode.value instanceof EProp) {
-                EProp eprop = (EProp) curNode.value;
-                Property prop = schema.getProperty(((ETyped) ancestor.value).geteType(), Integer.valueOf(eprop.getpType())).get();
-                curStmt.getWhere().appendUnary(CypherWhere.ConditionType.AND,
-                        ((ETyped) ancestor.value).geteTag(),
-                        schema.getProperty(((ETyped) ancestor.value).geteType(), Integer.valueOf(eprop.getpType())).get().getType(),
-                        null,
-                        eprop.getCon().getOp() == ConstraintOp.eq ? CypherWhere.OpType.EQUALS :
-                                CypherWhere.OpType.LARGER,
-                        prop.getType().equals("string") ? String.format("'%s'", eprop.getCon().getExpr()) :
-                                String.valueOf(eprop.getCon().getExpr()));
-
-            }
-
-            curNode.cypher = curStmt;
+            //TODO: pass ancestor's statement along the way
+            //TODO: When to create new statement ??
+            // cypherStatemenstMap.put(curNode, append(cypherStatemenstMap.get(ancestor),curNode.geteBase(),ontology));
         }
 
-        if (curNode.children != null) {
-            for (QueryElementTreeNode child :
-                    curNode.children) {
-                cypherTreeTraverse(child, curNode, schema);
-            }
-        }
+        //recursively apply to children
+        curNode.getNext().forEach(child -> cypherTreeTraverse((AsgEBase) child,curNode,cypherStatemenstMap,ontology));
 
     }
 
+    private static CypherStatement append(CypherStatement cypherStatement, EBase eBase, Ontology ontology) {
+
+        CypherStatement newStmt = cypherStatement.copy();
+
+        if(eBase instanceof ETyped) {
+
+            ETyped eTyped = (ETyped) eBase;
+
+            Optional<String> label = ontology.getEntityLabel(eTyped.geteType());
+
+            if(!label.isPresent()) {
+                throw new RuntimeException("Failed compiling query. Unknown entity type: " + eTyped.geteType());
+            }
+
+            CypherNode node = CypherNode.cypherNode()
+                                        .withTag(eTyped.geteTag())
+                                        .withLabel(label.get());
+
+            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement(node);
+
+            //TODO: use path tag
+            return newStmt.appendNode("",node).addReturn(returnElement);
+
+        }
+        if(eBase instanceof EConcrete) {
+            EConcrete eConcrete = (EConcrete)eBase;
+
+            Optional<String> label = ontology.getEntityLabel(eConcrete.geteType());
+
+            if(!label.isPresent()) {
+                throw new RuntimeException("Failed compiling query. Unknown entity type: " + eConcrete.geteType());
+            }
+
+            CypherNode node = CypherNode.cypherNode()
+                    .withTag(eConcrete.geteTag())
+                    .withLabel(label.get());
+
+            CypherCondition cond = CypherCondition.cypherCondition()
+                                                  .withOperator("=")
+                                                  .withTarget(eConcrete.geteTag() + ".id")
+                                                  .withValue(eConcrete.geteID());
+
+            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement(node);
+
+            //TODO: use path tag
+            return newStmt.appendNode("",node).appendCondition(cond).addReturn(returnElement);
+        }
+        if(eBase instanceof Rel) {
+
+            Rel rel = (Rel)eBase;
+            Optional<String> label = ontology.getRelationLabel(rel.getrType());
+
+            if(!label.isPresent()) {
+                throw new RuntimeException("Failed compiling query. Unknown entity type: " + rel.getrType());
+            }
+
+            CypherRelationship crel = CypherRelationship.cypherRel()
+                                                        .withLabel(label.get())
+                                                        .withDirection(rel.getDir().equals("R") ? CypherRelationship.Direction.RIGHT :
+                                                                      (rel.getDir().equals("L") ? CypherRelationship.Direction.LEFT :
+                                                                                                  CypherRelationship.Direction.BOTH));
+            //TODO: use path tag
+            return newStmt.appendRel("",crel);
+
+        }
+        return newStmt;
+    }
+
+    /*
     //Perform a post order traversal on the tree (bottom-up), collecting cypher statements from the leaf nodes,
     // and combining them on AND \ OR nodes along the way.
     //The result should be a single cypher statement represented by the query tree.
@@ -201,8 +158,26 @@ public class CypherCompiler {
 
         return node.cypher;
     }
+    */
 
-    public static String compile(com.kayhut.fuse.model.query.Query query, Ontology schema) throws CypherCompilerException {
+    public static String compile(AsgQuery asgQuery, Ontology ontology) {
+
+        List<CypherStatement> cypherStatements = new LinkedList<>();
+
+        //perform top-bottom traversal to build separate statements for each branch
+        AsgEBase<Start> start = asgQuery.getStart();
+
+        cypherTreeTraverse(start,null,cypherStatements,ontology);
+
+        CypherStatement finalStatement = CypherStatement.union(cypherStatements);
+
+        logger.info(String.format("\n(%s) -[:Compiled]-> ( %s)", asgQuery.getName(), finalStatement.toString()));
+
+        return finalStatement.toString();
+    }
+
+    /*
+    public static String compile(Query query, Ontology schema) throws CypherCompilerException {
 
         //build query tree
         QueryElementsTree tree = buildTree(query);
@@ -221,5 +196,6 @@ public class CypherCompiler {
 
         return cypher.toString();
     }
+    */
 
 }

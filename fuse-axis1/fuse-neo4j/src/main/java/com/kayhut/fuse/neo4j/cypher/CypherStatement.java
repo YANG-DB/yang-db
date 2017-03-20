@@ -1,6 +1,5 @@
 package com.kayhut.fuse.neo4j.cypher;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,27 +10,70 @@ public class CypherStatement {
     private CypherMatch match;
     private CypherReturn returns;
     private CypherWhere where;
-    private List<CypherStatement> union;
 
-    public CypherStatement() {
-        match = new CypherMatch();
-        returns = new CypherReturn();
-        where = new CypherWhere();
+    private CypherStatement() {
+        match = CypherMatch.cypherMatch();
+        where = CypherWhere.cypherWhere();
+        returns = CypherReturn.cypherReturn();
+    }
+
+    public static CypherStatement cypherStatement() {
+        return new CypherStatement();
     }
 
     public CypherStatement copy() {
-        CypherStatement newSt = new CypherStatement();
-        newSt.match = new CypherMatch(match.toString());
-        newSt.where = new CypherWhere(where.toString());
-        newSt.returns = new CypherReturn(returns.toString());
-        return newSt;
+        //TODO: need to implement deep clone ??
+        CypherStatement newCs = new CypherStatement();
+        newCs.match = getMatch().copy();
+        newCs.where = getWhere().copy();
+        newCs.returns = getReturns().copy();
+        return newCs;
+    }
+
+    public CypherStatement withMatch(CypherMatch m) {
+        match = m;
+        return this;
+    }
+
+    public CypherStatement withWhere(CypherWhere w) {
+        where = w;
+        return this;
+    }
+
+    public CypherStatement withReturn(CypherReturn r) {
+        returns = r;
+        return this;
+    }
+
+    public CypherStatement appendNode(String pathTag, CypherNode node) {
+        if(match.getPaths().containsKey(pathTag)) {
+            match.getPaths().get(pathTag).appendNode(node);
+        }
+        return this;
+    }
+
+    public CypherStatement appendRel(String pathTag, CypherRelationship rel) {
+        if(match.getPaths().containsKey(pathTag)) {
+            match.getPaths().get(pathTag).appendRelationship(rel);
+        }
+        return this;
+    }
+
+    public CypherStatement appendCondition(CypherCondition cond) {
+        where.conditions.add(cond);
+        return this;
+    }
+
+    public CypherStatement addReturn(CypherReturnElement returnElement) {
+        returns.withElement(returnElement);
+        return this;
     }
 
     public CypherMatch getMatch() {
         return match;
     }
 
-    public CypherReturn getReturn() {
+    public CypherReturn getReturns() {
         return returns;
     }
 
@@ -39,47 +81,20 @@ public class CypherStatement {
         return where;
     }
 
-    public void and(CypherStatement other) {
-        match = match.and(other.match);
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(match.toString());
+        sb.append("\n");
+        if(getWhere().conditions.size() > 0) {
+            sb.append(where.toString());
+            sb.append("\n");
+        }
+        sb.append(returns.toString());
+        sb.append("\n");
+        return sb.toString();
     }
 
-    public void or(CypherStatement other) {
-        if (union == null) {
-            union = new ArrayList<>();
-        }
-        union.add(other);
+    public static CypherStatement union(List<CypherStatement> statements) {
+        return new CypherStatement();
     }
-
-    public static CypherStatement and(List<CypherStatement> statements) {
-        CypherStatement st = statements.get(0);
-        for(int i=1; i<statements.size(); i++) {
-            st.and(statements.get(i));
-        }
-        return st;
-    }
-
-    public static CypherStatement or(List<CypherStatement> statements) {
-        CypherStatement st = statements.get(0);
-        for(int i=1; i<statements.size(); i++) {
-            st.or(statements.get(i));
-        }
-        return st;
-    }
-
-    public String compose() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(match);
-        if(where != null) {
-            builder.append(where);
-        }
-        builder.append(returns);
-        if(union != null) {
-            for (CypherStatement u :
-                    union) {
-                builder.append("\nUNION\n" + u.compose());
-            }
-        }
-        return builder.toString();
-    }
-
 }

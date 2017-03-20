@@ -1,6 +1,5 @@
 package com.kayhut.fuse.neo4j.test.cypher;
 
-import com.kayhut.fuse.neo4j.cypher.Schema;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -20,8 +19,6 @@ public class KnownQueriesCompilerTest {
         try {
 
             String ontology = new Scanner(new File("C:\\Elad\\Cypher\\dragon_ont.json")).useDelimiter("\\Z").next();
-
-            Schema schema = new Schema();
 
 
             //TODO: Update Tests!
