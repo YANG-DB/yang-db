@@ -33,9 +33,9 @@ public class ContentResponse<T> implements Response {
     }
 
     public static class Builder<T> {
-        private static String id;
-        private static Status success;
-        private static Status fail;
+        private String id;
+        private Status success;
+        private Status fail;
         private ContentResponse response;
 
         public static <S> Builder<S> builder(String id, Status success,Status fail) {
