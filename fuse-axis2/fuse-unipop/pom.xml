@@ -41,6 +41,11 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>RELEASE</version>
+        </dependency>
     </dependencies>
 
     <build>

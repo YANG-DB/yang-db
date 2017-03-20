@@ -36,6 +36,11 @@ public class SimpleWrapperFactory implements PlanWrapperFactory<Plan, AsgQuery ,
             }
 
             @Override
+            public Tuple2<Plan,SingleCost> asTuple2() {
+                return new Tuple2<>(getPlan(),getPlanCost());
+            }
+
+            @Override
             public boolean isPlanComplete() {
                 return isComplete;
             }

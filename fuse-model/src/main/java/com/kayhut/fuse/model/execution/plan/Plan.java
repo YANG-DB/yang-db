@@ -1,18 +1,14 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import java.util.*;
-
-import com.google.common.collect.PeekingIterator;
-import static com.google.common.collect.Iterators.peekingIterator;
+import java.util.List;
 
 /**
  * Created by User on 22/02/2017.
  */
 public class Plan {
     //region Constructors
-    public Plan() {
 
-    }
+    public Plan() {}
 
     public Plan(List<PlanOpBase> ops) {
         this.ops = ops;

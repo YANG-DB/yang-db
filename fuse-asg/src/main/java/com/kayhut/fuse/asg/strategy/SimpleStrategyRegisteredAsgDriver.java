@@ -5,6 +5,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import javaslang.collection.Stream;
@@ -36,9 +37,7 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
         if(context.getAsgQuery() != null) {
             return context;
         }
-        //AsgQuery asgQuery = new RecTwoPassAsgQuerySupplier(input.getQuery()).get();
-        AsgQuery asgQuery = AsgQuery.AsgQueryBuilder.anAsgQuery().build();
-
+        AsgQuery asgQuery = new RecTwoPassAsgQuerySupplier(context.getQuery()).get();
         Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery));
         return submit(eventBus, context.of(asgQuery));
     }

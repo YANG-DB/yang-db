@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services;
 
+import com.cedarsoftware.util.io.JsonWriter;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
@@ -128,7 +129,8 @@ public class FuseApp extends Jooby {
         use(urlSupplier.resourceUrl(":queryId") + "/plan")
                 .get(req -> {
                     ContentResponse response = queryCtrl().explain(req.param("queryId").value());
-                    return Results.with(response, response.status());
+                    //temporary fix for jason serialization of object graphs
+                    return Results.with(JsonWriter.objectToJson(response), response.status());
                 });
     }
 

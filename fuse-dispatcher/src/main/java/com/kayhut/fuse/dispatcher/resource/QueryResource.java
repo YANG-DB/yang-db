@@ -1,8 +1,10 @@
 package com.kayhut.fuse.dispatcher.resource;
 
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import javaslang.Tuple2;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +15,11 @@ import java.util.Optional;
  */
 public class QueryResource {
     //region Constructors
-    public QueryResource(Query query, QueryMetadata queryMetadata) {
+    public QueryResource(Query query, QueryMetadata queryMetadata, Tuple2<Plan,SingleCost> plan) {
         this.query = query;
         this.queryMetadata = queryMetadata;
         this.cursorResources = new HashMap<>();
-        this.executionPlan = new Plan();
+        this.executionPlan = plan;
     }
     //endregion
 
@@ -52,7 +54,7 @@ public class QueryResource {
         return queryMetadata;
     }
 
-    public Plan getExecutionPlan() {
+    public Tuple2<Plan,SingleCost> getExecutionPlan() {
         return this.executionPlan;
     }
     //endregion
@@ -60,7 +62,7 @@ public class QueryResource {
     //region Fields
     private Query query;
     private QueryMetadata queryMetadata;
-    private Plan executionPlan;
+    private Tuple2<Plan,SingleCost> executionPlan;
     private Map<String, CursorResource> cursorResources;
 
     private int cursorSequence;

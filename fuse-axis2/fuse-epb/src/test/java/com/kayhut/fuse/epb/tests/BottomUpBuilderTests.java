@@ -13,6 +13,7 @@ import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import javaslang.Tuple2;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,6 +82,11 @@ public class BottomUpBuilderTests {
             @Override
             public DummyCost getPlanCost() {
                 return new DummyCost();
+            }
+
+            @Override
+            public Tuple2<DummyPlan, DummyCost> asTuple2() {
+                return new Tuple2<>(getPlan(),getPlanCost());
             }
 
             @Override

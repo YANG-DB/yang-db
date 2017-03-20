@@ -58,7 +58,7 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- Server -->
+       <!-- Server -->
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-netty</artifactId>
@@ -73,7 +73,12 @@
             <groupId>org.jooby</groupId>
             <artifactId>jooby-jackson</artifactId>
         </dependency>
-
+        <!--serialization-->
+        <dependency>
+            <groupId>com.cedarsoftware</groupId>
+            <artifactId>json-io</artifactId>
+            <version>4.9.10</version>
+        </dependency>
         <!-- logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -81,12 +86,6 @@
         </dependency>
 
         <!-- Tests -->
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.query;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -45,6 +46,7 @@ import com.kayhut.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "AggM5", value = AggM5.class)
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EBase {
     //region Properties
     public int geteNum() {

@@ -3,14 +3,14 @@ package com.kayhut.fuse.dispatcher.driver;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import javaslang.collection.Stream;
 
@@ -74,7 +74,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
             return Optional.empty();
         }
 
-        return Optional.of(queryResource.get().getExecutionPlan());
+        return Optional.of(queryResource.get().getExecutionPlan()._1());
     }
 
     @Override

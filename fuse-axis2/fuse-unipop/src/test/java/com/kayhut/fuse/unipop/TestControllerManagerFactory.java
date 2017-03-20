@@ -8,7 +8,6 @@ import org.unipop.query.controller.ControllerManagerFactory;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**

@@ -2,13 +2,17 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import javaslang.Tuple2;
 
 /**
  * Created by lior on 22/02/2017.
  */
 public final class QueryCreationOperationContext extends OperationContextBase<QueryCreationOperationContext>{
+
+
     public interface Processor {
         QueryCreationOperationContext process(QueryCreationOperationContext context);
     }
@@ -17,7 +21,6 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     public QueryCreationOperationContext(QueryMetadata queryMetadata, Query query) {
         this.queryMetadata = queryMetadata;
         this.query = query;
-        this.executionPlan = new Plan();
     }
     //endregion
 
@@ -42,7 +45,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return asgQuery;
     }
 
-    public Plan getExecutionPlan() {
+    public Tuple2<Plan, SingleCost> getExecutionPlan() {
         return executionPlan;
     }
 
@@ -50,7 +53,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this.cloneImpl().asg(asgQuery);
     }
 
-    public QueryCreationOperationContext of(Plan executionPlan) {
+    public QueryCreationOperationContext of(Tuple2<Plan, SingleCost> executionPlan) {
         return this.cloneImpl().executionPlan(executionPlan);
     }
     //endregion
@@ -69,7 +72,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this;
     }
 
-    private QueryCreationOperationContext executionPlan(Plan executionPlan) {
+    private QueryCreationOperationContext executionPlan(Tuple2<Plan, SingleCost> executionPlan) {
         this.executionPlan = executionPlan;
         return this;
     }
@@ -79,6 +82,6 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     private QueryMetadata queryMetadata;
     private Query query;
     private AsgQuery asgQuery;
-    private Plan executionPlan;
+    private Tuple2<Plan, SingleCost> executionPlan;
     //endregion
 }

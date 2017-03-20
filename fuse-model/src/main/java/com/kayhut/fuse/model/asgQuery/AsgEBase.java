@@ -1,5 +1,9 @@
 package com.kayhut.fuse.model.asgQuery;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kayhut.fuse.model.query.EBase;
 
 import java.util.ArrayList;
@@ -9,13 +13,16 @@ import java.util.List;
 /**
  * Created by benishue on 23-Feb-17.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class AsgEBase<T extends EBase>{
     //region EBaseAsgBuilder
     public static final class EBaseAsgBuilder<T extends EBase> {
         private T eBase;
         private List<AsgEBase<? extends EBase>> next;
         private List<AsgEBase<? extends EBase>> b;
-        private List<AsgEBase<? extends EBase>> parent;
+        @JsonIgnore
+        private transient List<AsgEBase<? extends EBase>> parent;
 
         private EBaseAsgBuilder() {
         }

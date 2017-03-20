@@ -5,9 +5,11 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
+import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.results.QueryResult;
@@ -24,6 +26,7 @@ import static com.kayhut.fuse.neo4j.executor.NeoGraphUtils.query;
  * Created by User on 08/03/2017.
  */
 public class Neo4JOperationContextProcessor implements
+        QueryCreationOperationContext.Processor,
         CursorCreationOperationContext.Processor,
         PageCreationOperationContext.Processor {
 
@@ -87,6 +90,14 @@ public class Neo4JOperationContextProcessor implements
     protected EventBus eventBus;
     private ResourceStore store;
     private OntologyProvider provider;
+
+    @Override
+    @Subscribe
+    public QueryCreationOperationContext process(QueryCreationOperationContext context) {
+        AsgQuery asgQuery = context.getAsgQuery();
+        System.out.println(asgQuery);
+        return context;
+    }
 
     //endregion
 }

@@ -15,18 +15,16 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 public class GremlinTranslationAppenderEngine {
 
     @Inject
-    public GremlinTranslationAppenderEngine(Ontology ontology) {
+    public GremlinTranslationAppenderEngine() {
         this.simplePlanOpTranslator = new SimplePlanOpTranslator(new PromiseGraph());
-        this.ontology = ontology;
     }
 
 
-    public Traversal CreateTraversal(Plan plan){
+    public Traversal createTraversal(Ontology ontology, Plan plan){
         // Create initial traversal
         GraphTraversal graphTraversal = __.start();
-        return simplePlanOpTranslator.translate(plan,graphTraversal, this.ontology);
+        return simplePlanOpTranslator.translate(plan,graphTraversal, ontology);
     }
 
-    private Ontology ontology;
     private SimplePlanOpTranslator simplePlanOpTranslator;
 }

@@ -5,7 +5,6 @@ import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.promise.TraversalPromise;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
-import com.sun.org.apache.regexp.internal.StreamCharacterIterator;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;

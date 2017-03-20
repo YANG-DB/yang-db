@@ -4,22 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.services.FuseApp;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
 
 import static com.kayhut.fuse.services.TestUtils.loadQuery;
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class PlanTest {
 
@@ -67,10 +61,7 @@ public class PlanTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
-                        Map data = (Map) contentResponse.getData();
-                        assertTrue(data.containsKey("ops"));
-                        return contentResponse.getData()!=null;
+                        return o.toString().contains("ops");
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;

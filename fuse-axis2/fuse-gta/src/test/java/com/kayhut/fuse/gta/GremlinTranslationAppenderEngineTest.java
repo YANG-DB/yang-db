@@ -1,7 +1,6 @@
 package com.kayhut.fuse.gta;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
@@ -16,7 +15,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.junit.BeforeClass;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -35,40 +34,45 @@ public class GremlinTranslationAppenderEngineTest {
     public void createTraversal_Con_Rel_Unt_Test1() throws Exception {
         Plan planOf_Con_Rel_Unt = create_Con_Rel_Unt_PathQuery();
         Ontology ontology = getOntology();
-        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(ontology);
-        Traversal traversal = gtae.CreateTraversal(planOf_Con_Rel_Unt);
+        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine();
+        Traversal traversal = gtae.createTraversal(ontology,planOf_Con_Rel_Unt);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),5);
     }
 
     @Test
     public void createTraversal_Con_Rel_Typ_Test2() throws Exception {
         Plan planOf_Con_Rel_Typ = create_Con_Rel_Typ_PathQuery();
         Ontology ontology = getOntology();
-        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(ontology);
-        Traversal traversal = gtae.CreateTraversal(planOf_Con_Rel_Typ);
+        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine();
+        Traversal traversal = gtae.createTraversal(ontology,planOf_Con_Rel_Typ);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),6);
     }
 
     @Test
     public void createTraversal_Typ_Rel_Typ_Test3() throws Exception {
         Plan planOf_Typ_Rel_Typ = create_Typ_Rel_Typ_PathQuery();
         Ontology ontology = getOntology();
-        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(ontology);
-        Traversal traversal = gtae.CreateTraversal(planOf_Typ_Rel_Typ);
+        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine();
+        Traversal traversal = gtae.createTraversal(ontology,planOf_Typ_Rel_Typ);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),6);
     }
 
     @Test
     public void createTraversal_Typ_Rel_Con_Test4() throws Exception {
         Plan planOf_Typ_Rel_Con = create_Typ_Rel_Con_PathQuery();
         Ontology ontology = getOntology();
-        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(ontology);
-        Traversal traversal = gtae.CreateTraversal(planOf_Typ_Rel_Con);
+        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine();
+        Traversal traversal = gtae.createTraversal(ontology,planOf_Typ_Rel_Con);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),6);
     }
 
     @Test
     public void createTraversal_Con_Rel_Typ_Rel_Unt_Test5() throws Exception {
         Plan planOf_Con_Rel_Typ_Rel_Unt = create_Con_Rel_Typ_Rel_Unt_PathQuery();
         Ontology ontology = getOntology();
-        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(ontology);
-        Traversal traversal = gtae.CreateTraversal(planOf_Con_Rel_Typ_Rel_Unt);
+        GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine();
+        Traversal traversal = gtae.createTraversal(ontology,planOf_Con_Rel_Typ_Rel_Unt);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),9);
     }
 
 
