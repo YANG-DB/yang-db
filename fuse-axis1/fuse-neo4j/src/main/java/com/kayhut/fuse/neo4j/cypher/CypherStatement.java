@@ -102,4 +102,10 @@ public class CypherStatement {
     public CypherPath getPath(String tag) {
         return match.getPaths().get(tag);
     }
+
+    public String startNewPath() {
+        String tag = getNextPathTag();
+        match.addPath(CypherPath.cypherPath(tag));
+        return tag;
+    }
 }

@@ -1,15 +1,30 @@
 package com.kayhut.fuse.neo4j.cypher;
 
+
 /**
  * Created by User on 19/03/2017.
  */
 public class CypherCondition {
+
+    public CypherCondition copy() {
+        CypherCondition c = new CypherCondition();
+        c.target = target;
+        c.value = value;
+        c.targetFunction = targetFunction;
+        c.valueFunction = valueFunction;
+        c.operator = operator;
+        c.type = type;
+        return c;
+    }
+
+    public enum Condition{AND, OR}
 
     String target;
     String value;
     String targetFunction;
     String valueFunction;
     String operator;
+    Condition type;
 
     private CypherCondition(){
 
@@ -41,6 +56,11 @@ public class CypherCondition {
 
     public CypherCondition withOperator(String op) {
         operator = op;
+        return this;
+    }
+
+    public CypherCondition withType(Condition t) {
+        type = t;
         return this;
     }
 

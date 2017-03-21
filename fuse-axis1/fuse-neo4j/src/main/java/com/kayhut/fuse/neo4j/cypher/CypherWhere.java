@@ -29,14 +29,19 @@ public class CypherWhere {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("WHERE ");
-        conditions.forEach(c -> sb.append(c.toString() + ","));
-        sb.deleteCharAt(sb.lastIndexOf(","));
+        sb.append(conditions.get(0).toString());
+        for(int i=1; i<conditions.size(); i++) {
+            sb.append(String.format(" %s %s",conditions.get(i).type,conditions.get(i).toString()));
+        }
         return sb.toString();
     }
 
     public CypherWhere copy() {
         CypherWhere newWhere = new CypherWhere();
-        newWhere.conditions = conditions;
+        for (CypherCondition c :
+                conditions) {
+            newWhere.conditions.add(c.copy());
+        }
         return newWhere;
     }
 }
