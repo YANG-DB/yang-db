@@ -1,5 +1,6 @@
 package com.kayhut.fuse.neo4j.cypher;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,6 +33,21 @@ public class CypherNode extends CypherElement{
         return String.format("(%s%s%s)", tag == null ? "" : tag,
                                           label == null ? "" : ":"+label,
                                           inlineProps == null ? "" : buildPropsStr());
+    }
+
+    @Override
+    public CypherElement copy() {
+        CypherNode node = new CypherNode();
+        node.tag = tag;
+        node.label = label;
+        if(inlineProps != null) {
+            node.inlineProps = new HashMap<>();
+            for (Map.Entry<String, String> entry :
+                    inlineProps.entrySet()) {
+                node.inlineProps.put(entry.getKey(),entry.getValue());
+            }
+        }
+        return node;
     }
 
 }

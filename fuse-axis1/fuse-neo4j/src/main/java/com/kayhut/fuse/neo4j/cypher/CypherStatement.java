@@ -10,7 +10,6 @@ public class CypherStatement {
     private CypherMatch match;
     private CypherReturn returns;
     private CypherWhere where;
-    private int nextPathTag = 0;
 
     private CypherStatement() {
         match = CypherMatch.cypherMatch();
@@ -23,11 +22,10 @@ public class CypherStatement {
     }
 
     public CypherStatement copy() {
-        //TODO: need to implement deep clone ??
         CypherStatement newCs = new CypherStatement();
-        newCs.match = getMatch().copy();
-        newCs.where = getWhere().copy();
-        newCs.returns = getReturns().copy();
+        newCs.match = match.copy();
+        newCs.where = where.copy();
+        newCs.returns = returns.copy();
         return newCs;
     }
 
@@ -101,11 +99,7 @@ public class CypherStatement {
         return "p" + match.getPaths().size();
     }
 
-    public static CypherStatement union(List<CypherStatement> statements) {
-        if(statements.size() == 1) {
-            return statements.get(0);
-        }
-        //TODO: return String ??
-        return new CypherStatement();
+    public CypherPath getPath(String tag) {
+        return match.getPaths().get(tag);
     }
 }

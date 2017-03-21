@@ -35,7 +35,10 @@ public class CypherMatch {
 
     public CypherMatch copy() {
         CypherMatch newMatch = new CypherMatch();
-        newMatch.paths = paths;
+        for (CypherPath cp :
+                paths.values()) {
+            newMatch.paths.put(cp.tag, cp.copy());
+        }
         return newMatch;
     }
 

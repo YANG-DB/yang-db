@@ -1,11 +1,28 @@
 package com.kayhut.fuse.neo4j.cypher;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by elad on 19/03/2017.
  */
 public class CypherRelationship extends CypherElement{
+
+    @Override
+    public CypherElement copy() {
+        CypherRelationship rel = new CypherRelationship();
+        rel.tag = tag;
+        rel.label = label;
+        rel.direction = direction;
+        if(inlineProps != null) {
+            rel.inlineProps = new HashMap<>();
+            for (Map.Entry<String, String> entry :
+                 inlineProps.entrySet()) {
+                rel.inlineProps.put(entry.getKey(),entry.getValue());
+            }
+        }
+        return rel;
+    }
 
     public enum Direction{BOTH, LEFT, RIGHT};
 

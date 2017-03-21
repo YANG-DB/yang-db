@@ -27,11 +27,11 @@ public class CypherPath {
         return this;
     }
 
-    public CypherElement getLastElement() {
-        if(pathElements.size() == 0) {
+    public CypherElement getElementFromEnd(int n) {
+        if(pathElements.size() < n) {
             return null;
         }
-        return pathElements.get(pathElements.size() - 1);
+        return pathElements.get(pathElements.size() - n);
     }
 
     public String toString() {
@@ -44,4 +44,11 @@ public class CypherPath {
         return sb.toString();
     }
 
+    public CypherPath copy() {
+        CypherPath cp = new CypherPath(tag);
+        for(CypherElement ce: pathElements) {
+            cp.pathElements.add(ce.copy());
+        }
+        return cp;
+    }
 }

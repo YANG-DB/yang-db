@@ -31,7 +31,7 @@ public class CypherCompiler {
                                            Map<AsgEBase, Tuple2<CypherStatement, String>> cypherStatemenstMap,
                                            Ontology ontology) {
 
-        //start node - initialize an empty cypher statement
+        //start node - initialize an empty cypher statement, with one path
         if(ancestor == null) {
             CypherStatement newStatement = CypherStatement.cypherStatement();
             cypherStatemenstMap.put(curNode,new Tuple2(newStatement, newStatement.getNextPathTag()));
@@ -39,36 +39,66 @@ public class CypherCompiler {
 
         //append to ancestor's statement
         if (ancestor != null) {
-            Tuple2<CypherStatement, String> ancestorStatement = cypherStatemenstMap.get(ancestor);
+
+            Tuple2<CypherStatement, String> ancestorCypher = cypherStatemenstMap.get(ancestor);
+
+            CypherStatement ancestorStatement = ancestorCypher.a;
+
+            String ancestorPath = ancestorCypher.b;
+
+            //if ancestor is a quantifier, this node should start a new statement ["some" quantifier], or a new path ["all].
             if(ancestor.geteBase() instanceof Quant1) {
+
                 Quant1 quant1 = (Quant1) ancestor.geteBase();
+
                 if(quant1.getqType().equals("all")) {
-                    //start new path
+                    //start new path in existing statement.
+
+                    //new path should start with the last node (or node + relationship) of the previous path.
+                    CypherElement lastElement = ancestorStatement.getPath(ancestorPath).getElementFromEnd(1);
+
+                    String nextPathTag =  ancestorStatement.getNextPathTag();
+
+                    if(lastElement instanceof CypherNode) {
+                        ancestorStatement.appendNode(nextPathTag,
+                                                     CypherNode.cypherNode().withTag(lastElement.tag));
+                    } else {
+                        ancestorStatement.appendNode(nextPathTag,
+                                                     CypherNode.cypherNode().withTag(
+                                                                                ancestorStatement.
+                                                                                getPath(ancestorPath).
+                                                                                getElementFromEnd(2).tag));
+
+                        ancestorStatement.appendRel(nextPathTag,
+                                                    CypherRelationship.cypherRel().withTag(lastElement.tag));
+                    }
+
                     cypherStatemenstMap.put(curNode,
                                             new Tuple2<>(
-                                                    append(ancestorStatement.a,
-                                                           ancestorStatement.a.getNextPathTag(),
+                                                    append(ancestorStatement,
+                                                           nextPathTag,
                                                            curNode.geteBase(),
                                                            ontology),
-                                                    ancestorStatement.a.getNextPathTag()));
+                                                    nextPathTag));
                 }
                 else if(quant1.getqType().equals("some")) {
+                    //start a new statement
                     cypherStatemenstMap.put(curNode,
                                             new Tuple2<>(
-                                                    append(ancestorStatement.a.copy(),
-                                                           ancestorStatement.b,
+                                                    append(ancestorStatement.copy(),
+                                                           ancestorPath,
                                                            curNode.geteBase(),
                                                            ontology),
-                                                    ancestorStatement.b));
+                                                    ancestorPath));
                 }
             } else {
                 cypherStatemenstMap.put(curNode,
                         new Tuple2<>(
-                                append(ancestorStatement.a,
-                                       ancestorStatement.b,
+                                append(ancestorStatement,
+                                       ancestorPath,
                                        curNode.geteBase(),
                                        ontology),
-                                ancestorStatement.b));
+                                ancestorPath));
             }
         }
 
@@ -113,7 +143,8 @@ public class CypherCompiler {
 
             CypherCondition cond = CypherCondition.cypherCondition()
                                                   .withOperator("=")
-                                                  .withTarget(eConcrete.geteTag() + ".id")
+                                                  .withTarget(eConcrete.geteTag())
+                                                  .withTargetFunc("id") //TODO: id function is hard coded
                                                   .withValue(eConcrete.geteID());
 
             CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement(node);
@@ -149,15 +180,18 @@ public class CypherCompiler {
 
         cypherTreeTraverse(start,null,cypherStatements,ontology);
 
-        CypherStatement finalStatement = CypherStatement.union(cypherStatements.values()
-                                                                               .stream()
-                                                                               .map(t -> t.a)
-                                                                               .distinct()
-                                                                               .collect(Collectors.toList()));
+        CypherUnion union = CypherUnion.union();
 
-        logger.info(String.format("\n(%s) -[:Compiled]-> ( %s)", asgQuery.getName(), finalStatement.toString()));
+        cypherStatements.values()
+                .stream()
+                .map(t -> t.a)
+                .distinct().forEach(st -> union.add(st));
 
-        return finalStatement.toString();
+        String finalCypher = union.toString();
+
+        logger.info(String.format("\n(%s) -[:Compiled]-> ( %s)", asgQuery.getName(), finalCypher));
+
+        return finalCypher;
 
     }
 

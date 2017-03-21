@@ -19,4 +19,6 @@ public abstract class CypherElement {
         sb.append("}");
         return sb.toString();
     }
+
+    public abstract CypherElement copy();
 }
