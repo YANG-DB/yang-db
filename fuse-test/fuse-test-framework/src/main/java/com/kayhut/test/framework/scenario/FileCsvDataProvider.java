@@ -21,12 +21,20 @@ import java.util.stream.StreamSupport;
 /**
  * Created by moti on 3/12/2017.
  */
-public abstract class FileCsvDataProvider implements GenericDataProvider {
+public class FileCsvDataProvider implements GenericDataProvider {
     private ObjectMapper mapper = new ObjectMapper();
     private String filePath;
+    private CsvSchema csvSchema;
+    private String csvCypher;
 
-    public FileCsvDataProvider(String filePath) {
+    public FileCsvDataProvider(String filePath, CsvSchema csvSchema) {
         this.filePath = filePath;
+        this.csvSchema = csvSchema;
+    }
+
+    public FileCsvDataProvider(String filePath, String csvCypher) {
+        this.filePath = filePath;
+        this.csvCypher = csvCypher;
     }
 
     @Override
@@ -34,12 +42,17 @@ public abstract class FileCsvDataProvider implements GenericDataProvider {
         CsvMapper mapper = new CsvMapper();
 
         ObjectReader reader = mapper.readerFor(new TypeReference<HashMap<String, Object>>() {
-        }).with(getSchema());
+        }).with(this.csvSchema);
         MappingIterator<HashMap<String, Object>> objectMappingIterator = reader.readValues(new File(filePath));
         Iterable<HashMap<String, Object>> iterable = () -> objectMappingIterator;
         return StreamSupport.stream(iterable.spliterator(), false);
     }
 
-    public abstract CsvSchema getSchema();
+    public CsvSchema getCsvSchema() {
+        return csvSchema;
+    }
 
+    public String getCsvCypher() {
+        return csvCypher;
+    }
 }

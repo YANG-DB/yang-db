@@ -17,6 +17,7 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
  * Created by moti on 3/19/2017.
  */
 public class ElasticInMemoryIndex  implements AutoCloseable{
+    //region Members
     private final int httpPort;
     private final int httpTransportPort;
     private final String esWorkingDir;
@@ -24,38 +25,26 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
     private Node node;
     private List<TransportClient> transportClients = new LinkedList<>();
     private TransportClient client = null;
+    //endregion
 
-
+    //region Constructors
     public ElasticInMemoryIndex() {
-        this("target/es", 9305, 9300, "fuse.test_elastic");
+        this("target/es", 9305, 9300, "fuse.test_elastic", null);
     }
 
-    public ElasticInMemoryIndex(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName) {
+    public ElasticInMemoryIndex(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer configurer) {
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.httpTransportPort = httpTransportPort;
         this.nodeName = nodeName;
         prepare();
+        if(configurer != null)
+            configure(configurer);
     }
 
-    private void prepare(){
-        deleteFolder(esWorkingDir + "/" + nodeName);
-        Settings settings = Settings.builder()
-                .put("path.home", esWorkingDir)
-                .put("path.conf", esWorkingDir)
-                .put("path.data", esWorkingDir)
-                .put("path.work", esWorkingDir)
-                .put("path.logs", esWorkingDir)
-                .put("http.port", httpPort)
-                .put("transport.tcp.port", httpTransportPort)
-                .put("index.number_of_shards", "1")
-                .put("index.number_of_replicas", "0")
-                .put("discovery.zen.ping.multicast.enabled", "false")
-                .build();
-        node = nodeBuilder().settings(settings).clusterName(nodeName).client(false).node();
-        node = node.start();
-    }
+    //endregion
 
+    //region Methods
     public TransportClient getClient(){
         try {
             Settings settings = Settings.settingsBuilder()
@@ -96,4 +85,27 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
         node.close();
         deleteFolder(esWorkingDir + "\\" + nodeName);
     }
+
+    private void configure(ElasticIndexConfigurer configurer) {
+        configurer.configure(this.getClient());
+    }
+
+    private void prepare(){
+        deleteFolder(esWorkingDir + "/" + nodeName);
+        Settings settings = Settings.builder()
+                .put("path.home", esWorkingDir)
+                .put("path.conf", esWorkingDir)
+                .put("path.data", esWorkingDir)
+                .put("path.work", esWorkingDir)
+                .put("path.logs", esWorkingDir)
+                .put("http.port", httpPort)
+                .put("transport.tcp.port", httpTransportPort)
+                .put("index.number_of_shards", "1")
+                .put("index.number_of_replicas", "0")
+                .put("discovery.zen.ping.multicast.enabled", "false")
+                .build();
+        node = nodeBuilder().settings(settings).clusterName(nodeName).client(false).node();
+        node = node.start();
+    }
+    //endregion
 }
