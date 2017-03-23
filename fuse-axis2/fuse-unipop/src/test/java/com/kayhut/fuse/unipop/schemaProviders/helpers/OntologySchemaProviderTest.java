@@ -5,13 +5,12 @@ import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -24,15 +23,29 @@ public class OntologySchemaProviderTest {
     @Test
     public void getVertexSchema() throws Exception {
         Ontology ontology = getOntology();
-        OntologySchemaProvider ontologySchemaProvider = new OntologySchemaProvider("index", ontology );
+        OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
         assertEquals(vertexPersonSchema.getType(),"Person");
+    }
+
+    private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
+        return new OntologySchemaProvider(new PhysicalIndexProvider() {
+                @Override
+                public Iterable<IndexPartition> getIndicesByVertexLabel(String vertexType) {
+                    return Collections.singletonList(() -> Arrays.asList("index1", "index2"));
+                }
+
+                @Override
+                public Iterable<IndexPartition> getIndicesByEdgeLabel(String edgeType) {
+                    return Collections.singletonList(() -> Arrays.asList("index1", "index2"));
+                }
+            }, ontology);
     }
 
     @Test
     public void getEdgeSchema() throws Exception {
         Ontology ontology = getOntology();
-        OntologySchemaProvider ontologySchemaProvider = new OntologySchemaProvider("index", ontology );
+        OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire", Optional.of("Dragon"), Optional.of("Person")).get();
         assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getType().get(),"Person");
     }
@@ -40,7 +53,7 @@ public class OntologySchemaProviderTest {
     @Test
     public void getEdgeSchemas() throws Exception {
         Ontology ontology = getOntology();
-        OntologySchemaProvider ontologySchemaProvider = new OntologySchemaProvider("index", ontology );
+        OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         Optional<Iterable<GraphEdgeSchema>> edgeSchemas = ontologySchemaProvider.getEdgeSchemas("Fire");
         assertEquals(Lists.newArrayList(edgeSchemas.get()).size(),1);
     }

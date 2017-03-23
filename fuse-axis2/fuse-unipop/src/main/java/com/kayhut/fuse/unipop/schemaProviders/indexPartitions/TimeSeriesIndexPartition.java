@@ -5,5 +5,4 @@ public interface TimeSeriesIndexPartition extends IndexPartition{
     String getIndexPrefix();
     String getIndexFormat();
     String getTimeField();
-    Iterable<String> getAllIndices();
 }

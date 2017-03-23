@@ -7,11 +7,8 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
 
 import java.util.*;
-
-import static java.util.Collections.singletonList;
 
 /**
  * Created by benishue on 22-Mar-17.
@@ -19,8 +16,8 @@ import static java.util.Collections.singletonList;
 public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region Constructor
-    public OntologySchemaProvider(String indexName, Ontology ontology) {
-        this.indexName = indexName;
+    public OntologySchemaProvider(PhysicalIndexProvider indexProvider, Ontology ontology) {
+        this.indexProvider = this.indexProvider;
         this.ontology = ontology;
         this.vertexTypes = new HashSet<>(OntologyUtil.getAllEntityLabels(ontology).get());
         this.edgeTypes = new HashSet<>(OntologyUtil.getAllRelationshipTypeLabels(ontology).get());
@@ -112,7 +109,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<IndexPartition> getIndexPartitions() {
-                return singletonList((StaticIndexPartition) () -> singletonList(indexName));
+                return indexProvider.getIndicesByVertexLabel(vertexType);
             }
         });
     }
@@ -176,23 +173,16 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<IndexPartition> getIndexPartitions() {
-                return Arrays.asList(
-                        new StaticIndexPartition() {
-                            @Override
-                            public Iterable<String> getIndices() {
-                                return Arrays.asList(indexName);
-                            }
-                        }
-                );
+                return indexProvider.getIndicesByEdgeLabel(edgeType);
             }
         });
     }
     //endregion
 
     //region Fields
+    protected PhysicalIndexProvider indexProvider;
     protected Set<String> vertexTypes;
     protected Set<String> edgeTypes;
-    protected String indexName;
     protected Ontology ontology;
     //endregion
 }

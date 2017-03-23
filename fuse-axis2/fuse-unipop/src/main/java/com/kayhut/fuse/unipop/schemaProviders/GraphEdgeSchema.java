@@ -12,21 +12,21 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         return Edge.class;
     }
 
-    public interface End {
-        public String getIdField();
-        public Optional<String> getType();
-        public Optional<GraphEdgeRedundancy> getEdgeRedundancy();
+    interface End {
+        String getIdField();
+        Optional<String> getType();
+        Optional<GraphEdgeRedundancy> getEdgeRedundancy();
     }
 
-    public interface Direction {
-        public String getField();
-        public Object getInValue();
-        public Object getOutValue();
+    interface Direction {
+        String getField();
+        Object getInValue();
+        Object getOutValue();
     }
 
-    public Optional<End> getSource();
-    public Optional<End> getDestination();
+    Optional<End> getSource();
+    Optional<End> getDestination();
 
-    public Optional<Direction> getDirection();
+    Optional<Direction> getDirection();
 
 }
