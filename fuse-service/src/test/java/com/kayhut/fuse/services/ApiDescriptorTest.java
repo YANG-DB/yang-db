@@ -3,7 +3,6 @@ package com.kayhut.fuse.services;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static io.restassured.RestAssured.get;

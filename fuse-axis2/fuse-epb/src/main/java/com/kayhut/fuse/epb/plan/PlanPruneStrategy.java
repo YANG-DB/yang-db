@@ -1,7 +1,5 @@
 package com.kayhut.fuse.epb.plan;
 
-import java.util.List;
-
 /**
  * Created by moti on 2/22/2017.
  */

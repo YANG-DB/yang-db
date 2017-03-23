@@ -9,9 +9,6 @@ import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
-import org.jooby.Status;
-
-import java.util.UUID;
 
 import static com.kayhut.fuse.model.transport.ContentResponse.Builder.builder;
 import static java.util.UUID.randomUUID;

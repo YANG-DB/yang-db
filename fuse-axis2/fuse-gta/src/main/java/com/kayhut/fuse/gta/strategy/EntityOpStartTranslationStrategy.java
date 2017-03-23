@@ -1,12 +1,17 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyUtil;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.unipop.promise.Promise;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;

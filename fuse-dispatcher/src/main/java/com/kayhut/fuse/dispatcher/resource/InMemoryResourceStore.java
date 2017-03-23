@@ -1,7 +1,5 @@
 package com.kayhut.fuse.dispatcher.resource;
 
-import javaslang.collection.Stream;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

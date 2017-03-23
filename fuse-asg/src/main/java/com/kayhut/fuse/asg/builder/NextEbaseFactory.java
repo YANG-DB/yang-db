@@ -1,11 +1,16 @@
 package com.kayhut.fuse.asg.builder;
 
-import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.aggregation.*;
-import com.kayhut.fuse.model.query.combiner.*;
+import com.kayhut.fuse.model.query.combiner.HComb;
 import com.kayhut.fuse.model.query.entity.*;
-import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.model.query.quant.*;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.quant.HQuant;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.Quant2;
 
 import java.util.*;
 import java.util.function.Function;

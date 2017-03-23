@@ -5,7 +5,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-
 import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
 import com.kayhut.fuse.dispatcher.driver.SimpleQueryDispatcherDriver;
 import com.typesafe.config.Config;

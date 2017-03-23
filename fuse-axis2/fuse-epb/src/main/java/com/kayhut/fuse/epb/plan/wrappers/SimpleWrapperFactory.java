@@ -3,10 +3,10 @@ package com.kayhut.fuse.epb.plan.wrappers;
 import com.kayhut.fuse.epb.plan.PlanWrapper;
 import com.kayhut.fuse.epb.plan.PlanWrapperFactory;
 import com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import javaslang.Tuple2;
 
 import java.util.List;
