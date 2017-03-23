@@ -1,6 +1,5 @@
 package com.kayhut.fuse.neo4j.cypher;
 
-import java.util.List;
 
 /**
  * Created by elad on 06/03/2017.

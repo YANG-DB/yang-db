@@ -10,7 +10,7 @@ public class CypherReturnElement {
     private String function;
 
     private CypherReturnElement(CypherElement e) {
-        element = e;
+        setElement(e);
     }
 
     public static CypherReturnElement cypherReturnElement(CypherElement e) {
@@ -32,7 +32,7 @@ public class CypherReturnElement {
         if(function != null) {
             sb.append(function + "(");
         }
-        sb.append(element.tag);
+        sb.append(getElement().tag);
         if(function != null) {
             sb.append(")");
         }
@@ -42,4 +42,11 @@ public class CypherReturnElement {
         return sb.toString();
     }
 
+    public CypherElement getElement() {
+        return element;
+    }
+
+    public void setElement(CypherElement element) {
+        this.element = element;
+    }
 }

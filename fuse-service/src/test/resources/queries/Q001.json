@@ -1,6 +1,6 @@
 {
   "ont": "Dragons",
-  "name": "Q8",
+  "name": "Q11",
   "elements": [
     {
       "eNum": 0,
@@ -17,7 +17,7 @@
     {
       "eNum": 2,
       "type": "Quant1",
-      "qType": "some",
+      "qType": "all",
       "next": [
         3,
         6
@@ -25,74 +25,96 @@
     },
     {
       "eNum": 3,
-      "type": "Quant1",
-      "qType": "all",
-      "next": [
-        4,
-        5
-      ]
+      "type": "Rel",
+      "rType": 6,
+      "dir": "R",
+      "next": 5,
+      "b": 4
     },
     {
       "eNum": 4,
-      "type": "EProp",
-      "pType": "4",
+      "type": "RelProp",
+      "pType": "2",
       "pTag": "1",
       "con": {
-        "op": "lt",
-        "expr": "970-1-1"
+        "op": "empty"
       }
     },
     {
       "eNum": 5,
-      "type": "EProp",
-      "pTag": "2",
-      "pType": "5",
-      "con": {
-        "op": "not empty"
-      }
+      "type": "EConcrete",
+      "eTag": "B",
+      "eID": "22345670",
+      "eType": 4,
+      "eName": "Masons"
     },
     {
       "eNum": 6,
       "type": "Rel",
-      "rType": 4,
+      "rType": 5,
       "dir": "R",
-      "next": 7
+      "next": 8,
+      "b": 7
     },
     {
       "eNum": 7,
-      "type": "ETyped",
-      "eTag": "B",
-      "eType": 1,
-      "next": 8
+      "type": "RelProp",
+      "pType": "1",
+      "pTag": "2",
+      "con": {
+        "op": "ge",
+        "expr": "1011-01-01T00:00:00.000"
+      }
     },
     {
       "eNum": 8,
-      "type": "Quant1",
-      "qType": "all",
-      "next": [
-        9,
-        10
-      ]
+      "type": "ETyped",
+      "eTag": "C",
+      "eType": 1,
+      "next": 9
     },
     {
       "eNum": 9,
-      "type": "EProp",
-      "pType": "4",
-      "pTag": "3",
-      "con": {
-        "op": "le",
-        "expr": "950-1-1"
-      }
+      "type": "Rel",
+      "rType": 6,
+      "dir": "R",
+      "next": 11,
+      "b": 10
     },
     {
       "eNum": 10,
-      "type": "EProp",
-      "pType": "5",
-      "pTag": "4",
+      "type": "RelProp",
+      "pType": "2",
+      "pTag": "3",
       "con": {
-        "op": "eq",
-        "expr": "2"
+        "op": "ge",
+        "expr": "1010-06-01T00:00:00.000"
       }
+    },
+    {
+      "eNum": 11,
+      "type": "Quant2",
+      "qType": "some",
+      "next": [
+        12,
+        13
+      ]
+    },
+    {
+      "eNum": 12,
+      "type": "EConcrete",
+      "eTag": "D",
+      "eID": "22345671",
+      "eType": 4,
+      "eName": "Saddlers"
+    },
+    {
+      "eNum": 13,
+      "type": "EConcrete",
+      "eTag": "E",
+      "eID": "22345672",
+      "eType": 4,
+      "eName": "Blacksmiths"
     }
   ]
 }
