@@ -105,6 +105,20 @@ public class SearchPromiseElementController implements SearchQuery.SearchControl
          * @return the promise vertex iterator
          */
         private Iterator<Vertex> queryPromiseVertices(List<HasContainer> constraintHasContainers) {
+            //TODO
+            //1. Build the SearchBuilder
+            //1.1 Create the QueryAppender neccessary for the SearchBuilder
+            //1.2 Apply the QueryAppender with the propriate arguments and get the SearchBuilder
+            //
+            //2. Execute the SearchBuilder - run the query (elastic)
+            //
+            //3. Get the PromiseVertex Results
+            //3.1   Get the elastic results
+            //3.2   Build the ElementConverter
+            //3.3   Apply the ElementConverter on the elastic results
+            //3.4   return/build the PromiseVertex results iterator
+
+
             return Collections.emptyIterator();
         }
         //endregion
