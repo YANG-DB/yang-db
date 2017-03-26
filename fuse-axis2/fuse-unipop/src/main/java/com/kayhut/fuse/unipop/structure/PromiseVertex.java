@@ -3,14 +3,11 @@ package com.kayhut.fuse.unipop.structure;
 import com.google.common.collect.ImmutableMap;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
-import javaslang.collection.List;
-import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.unipop.structure.UniGraph;
 import org.unipop.structure.UniVertex;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -31,6 +28,7 @@ public class PromiseVertex extends UniVertex {
     }
 
     public Optional<Constraint> getConstraint() {
+
         return this.constraint;
     }
     //endregion

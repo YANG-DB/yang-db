@@ -1,7 +1,5 @@
 package com.kayhut.fuse.dispatcher.resource;
 
-import com.kayhut.fuse.dispatcher.resource.QueryResource;
-
 import java.util.Optional;
 
 /**

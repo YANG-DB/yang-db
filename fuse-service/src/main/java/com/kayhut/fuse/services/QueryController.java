@@ -3,8 +3,8 @@ package com.kayhut.fuse.services;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
 /**
  * Created by lior on 19/02/2017.

@@ -3,8 +3,8 @@ package com.kayhut.fuse.services;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
 /**
  * Created by lior on 19/02/2017.

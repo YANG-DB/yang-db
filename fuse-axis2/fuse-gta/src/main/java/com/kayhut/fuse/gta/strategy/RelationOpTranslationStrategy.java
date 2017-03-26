@@ -1,7 +1,7 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.google.common.base.Strings;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyUtil;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;

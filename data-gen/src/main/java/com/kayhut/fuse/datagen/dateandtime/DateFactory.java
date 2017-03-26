@@ -1,7 +1,9 @@
 
 package com.kayhut.fuse.datagen.dateandtime;
+
+import com.kayhut.fuse.datagen.utilities.GenerateRandom;
+
 import java.util.GregorianCalendar;
-import com.kayhut.fuse.datagen.utilities.GenerateRandom ;
 /**
  *
  * @author smuel

@@ -1,9 +1,10 @@
 
 package com.kayhut.fuse.datagen.storyoficeandfire.relations;
 
+import com.kayhut.fuse.datagen.storyoficeandfire.entities.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import com.kayhut.fuse.datagen.storyoficeandfire.entities.*;
 
 
 /**

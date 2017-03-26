@@ -9,9 +9,7 @@ import com.kayhut.fuse.model.results.QueryResult;
 
 import java.io.IOException;
 
-import static com.kayhut.fuse.model.Utils.asObject;
-import static com.kayhut.fuse.model.Utils.readJsonFile;
-import static com.kayhut.fuse.model.Utils.submit;
+import static com.kayhut.fuse.model.Utils.*;
 
 /**
  * Created by liorp on 3/16/2017.

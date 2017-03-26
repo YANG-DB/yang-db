@@ -1,9 +1,9 @@
 package com.kayhut.fuse.dispatcher.driver;
 
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 
 import java.util.Optional;

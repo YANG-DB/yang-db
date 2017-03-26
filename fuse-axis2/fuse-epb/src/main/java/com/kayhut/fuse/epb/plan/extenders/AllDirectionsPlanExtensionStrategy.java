@@ -1,13 +1,13 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import javaslang.Tuple2;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

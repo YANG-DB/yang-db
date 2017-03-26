@@ -13,12 +13,10 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.unipop.query.controller.UniQueryController;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiPredicate;
 
 /**

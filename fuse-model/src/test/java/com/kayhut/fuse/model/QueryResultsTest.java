@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.results.*;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;

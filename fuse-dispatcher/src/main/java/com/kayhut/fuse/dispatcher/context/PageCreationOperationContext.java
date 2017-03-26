@@ -2,7 +2,6 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
-import com.kayhut.fuse.model.results.QueryResult;
 
 import java.io.IOException;
 

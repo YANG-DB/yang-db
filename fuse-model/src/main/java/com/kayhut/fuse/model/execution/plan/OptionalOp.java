@@ -2,8 +2,6 @@ package com.kayhut.fuse.model.execution.plan;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.Optional;
-
 /**
  * Created by User on 23/02/2017.
  */

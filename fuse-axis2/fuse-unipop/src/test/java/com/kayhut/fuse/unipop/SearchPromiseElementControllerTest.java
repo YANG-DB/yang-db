@@ -11,7 +11,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
@@ -21,7 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by User on 19/03/2017.

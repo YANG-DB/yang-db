@@ -3,10 +3,14 @@ package com.kayhut.fuse.asg;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
-import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.asgQuery.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,7 +22,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by benishue on 27-Feb-17.
