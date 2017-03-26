@@ -6,8 +6,14 @@ import java.util.Map;
  * Created by User on 19/03/2017.
  */
 public abstract class CypherElement {
+    public static final CypherElement EMPTY = new CypherElement() {
+        @Override
+        public CypherElement copy() {
+            return this;
+        }
+    };
 
-    String tag;
+    public String tag;
     String label;
     Map<String, String> inlineProps;
 

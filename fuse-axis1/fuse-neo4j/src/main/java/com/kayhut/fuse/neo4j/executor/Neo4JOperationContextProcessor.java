@@ -24,7 +24,6 @@ import static com.kayhut.fuse.neo4j.executor.NeoGraphUtils.query;
  * Created by User on 08/03/2017.
  */
 public class Neo4JOperationContextProcessor implements
-        QueryCreationOperationContext.Processor,
         CursorCreationOperationContext.Processor,
         PageCreationOperationContext.Processor,
         QueryCreationOperationContext.Processor {
@@ -103,14 +102,6 @@ public class Neo4JOperationContextProcessor implements
     private OntologyProvider provider;
     private AsgQuery asgQuery;
     private Ontology ontology;
-
-    @Override
-    @Subscribe
-    public QueryCreationOperationContext process(QueryCreationOperationContext context) {
-        AsgQuery asgQuery = context.getAsgQuery();
-        System.out.println(asgQuery);
-        return context;
-    }
 
     //endregion
 }

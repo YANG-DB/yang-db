@@ -28,6 +28,11 @@
             <artifactId>fuse-dispatcher</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-asg</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
         <!-- Neo4j -->
         <dependency>
@@ -61,7 +66,6 @@
             <version>${neo4j.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
