@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.TestUtils.ContentMatcher;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -55,6 +56,7 @@ public class QueryTest {
 
     }
 
+    @Ignore
     @Test
     public void queryCreateAndFetchResource() throws IOException {
         //query request
