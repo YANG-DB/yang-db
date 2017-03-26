@@ -84,7 +84,8 @@ abstract class NeoGraphUtils{
             return QueryResult.QueryResultBuilder.aQueryResult().withAssignments(assignments).build();
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            return null;
         }
     }
 }

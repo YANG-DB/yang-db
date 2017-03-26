@@ -6,13 +6,16 @@ import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static io.restassured.RestAssured.given;
 
 @Ignore
 public class SearchTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse")));
+    public static JoobyRule app = new JoobyRule(
+            new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()));
 
     @Test
     @Ignore

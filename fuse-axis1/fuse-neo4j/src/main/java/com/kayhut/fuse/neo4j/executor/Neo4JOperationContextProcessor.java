@@ -10,10 +10,13 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.neo4j.GraphProvider;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
+import javaslang.Tuple2;
 
 import java.util.Optional;
 
@@ -44,7 +47,7 @@ public class Neo4JOperationContextProcessor implements
     @Subscribe
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
 
-        if(context.getAsgQuery() == null) {
+        if((asgQuery != null && ontology != null) || context.getAsgQuery() == null) {
             return context;
         }
 
@@ -56,7 +59,7 @@ public class Neo4JOperationContextProcessor implements
             throw new RuntimeException("Query ontology not present in catalog.");
         }
 
-        return context;
+        return submit(eventBus, context.of(new Tuple2<>(new Plan(), new SingleCost(0.0))));
     }
     //endregion
 

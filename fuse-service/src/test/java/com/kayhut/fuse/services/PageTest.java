@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.kayhut.fuse.services.TestUtils.loadQuery;
@@ -22,7 +23,8 @@ import static org.junit.Assert.assertTrue;
 public class PageTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse")));
+    public static JoobyRule app = new JoobyRule(
+            new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()));
 
     @Test
     /**

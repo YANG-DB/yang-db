@@ -10,6 +10,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.kayhut.fuse.services.TestUtils.loadOntology;
 import static io.restassured.RestAssured.given;
@@ -17,7 +18,8 @@ import static io.restassured.RestAssured.given;
 public class CatalogTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse")));
+    public static JoobyRule app = new JoobyRule(
+            new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()));
 
     @Test
     /**

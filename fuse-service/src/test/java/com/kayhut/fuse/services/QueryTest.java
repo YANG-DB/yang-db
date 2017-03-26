@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.kayhut.fuse.services.TestUtils.loadQuery;
 import static io.restassured.RestAssured.given;
@@ -20,7 +21,8 @@ import static org.junit.Assert.assertTrue;
 public class QueryTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse")));
+    public static JoobyRule app = new JoobyRule(
+            new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()));
 
     /**
      * execute query with expected path result

@@ -16,11 +16,17 @@ import org.jooby.Status;
 import org.jooby.json.Jackson;
 import org.jooby.scanner.Scanner;
 
+import java.util.Optional;
+
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class FuseApp extends Jooby {
     //region Consructors
-    public FuseApp(AppUrlSupplier urlSupplier) {
+    public FuseApp(AppUrlSupplier urlSupplier, Optional<String> conf) {
+        if (conf.isPresent()) {
+            conf(conf.get());
+        }
+
         use(new Scanner());
         use(new Jackson());
 
@@ -204,6 +210,6 @@ public class FuseApp extends Jooby {
     //endregion
 
     public static void main(final String[] args) {
-        run(() -> new FuseApp(new DefaultAppUrlSupplier("/fuse")), args);
+        run(() -> new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()), args);
     }
 }

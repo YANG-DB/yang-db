@@ -5,6 +5,8 @@ import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -13,7 +15,8 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 public class ApiDescriptorTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse")));
+    public static JoobyRule app = new JoobyRule(
+            new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()));
 
     @Test
     /**
