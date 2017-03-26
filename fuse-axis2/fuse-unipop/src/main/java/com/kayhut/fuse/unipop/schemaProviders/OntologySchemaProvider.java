@@ -17,7 +17,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region Constructor
     public OntologySchemaProvider(PhysicalIndexProvider indexProvider, Ontology ontology) {
-        this.indexProvider = this.indexProvider;
+        this.indexProvider = indexProvider;
         this.ontology = ontology;
         this.vertexTypes = new HashSet<>(OntologyUtil.getAllEntityLabels(ontology).get());
         this.edgeTypes = new HashSet<>(OntologyUtil.getAllRelationshipTypeLabels(ontology).get());
@@ -109,7 +109,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<IndexPartition> getIndexPartitions() {
-                return indexProvider.getIndicesByVertexLabel(vertexType);
+                return indexProvider.getIndexPartitionsByLabel(vertexType, PhysicalIndexProvider.ElementType.vertex);
             }
         });
     }
@@ -173,7 +173,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<IndexPartition> getIndexPartitions() {
-                return indexProvider.getIndicesByEdgeLabel(edgeType);
+                return indexProvider.getIndexPartitionsByLabel(edgeType, PhysicalIndexProvider.ElementType.edge);
             }
         });
     }
