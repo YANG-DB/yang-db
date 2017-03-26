@@ -11,5 +11,8 @@
 
     <artifactId>geojson-jackson</artifactId>
 
+    <properties>
+        <checkstyle.skip>true</checkstyle.skip>
+    </properties>
 
 </project>
