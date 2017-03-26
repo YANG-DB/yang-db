@@ -1,6 +1,7 @@
 package com.kayhut.test.framework.populator;
 
 import com.kayhut.test.framework.scenario.GenericDataProvider;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -30,13 +31,14 @@ public class ElasticDataPopulator implements DataPopulator {
     private void indexDocument(HashMap<String, Object> doc) {
         IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
                 .setIndex(this.indexName)
-                .setType(this.docType);
+                .setType(this.docType)
+                .setOpType(IndexRequest.OpType.INDEX);
         if(doc.containsKey(idField))
             indexRequestBuilder = indexRequestBuilder.setId((String)doc.remove(idField));
         indexRequestBuilder = indexRequestBuilder.setSource(doc);
         IndexResponse indexResponse = indexRequestBuilder.execute()
                 .actionGet();
-        if(!indexResponse.isCreated()){
+        if(indexResponse.getShardInfo().getFailures().length != 0){
             throw new IllegalArgumentException("Inserting doc failed, doc = " + doc);
         }
     }
