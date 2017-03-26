@@ -30,7 +30,7 @@ public class OntologySchemaProviderTest {
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
 
-        assertEquals(vertexPersonSchema.getType(),"Person");
+        assertEquals(vertexPersonSchema.getType(), "Person");
         assertEquals(1, Stream.ofAll(vertexPersonSchema.getIndexPartitions()).size());
         assertEquals(2, Stream.ofAll(Stream.ofAll(vertexPersonSchema.getIndexPartitions()).get(0).getIndices()).size());
 
@@ -45,7 +45,7 @@ public class OntologySchemaProviderTest {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire", Optional.of("Dragon"), Optional.of("Person")).get();
-        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getType().get(),"Person");
+        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getType().get(), "Person");
 
         assertEquals(1, Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions()).size());
         assertEquals(2, Stream.ofAll(Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions()).get(0).getIndices()).size());
@@ -61,7 +61,7 @@ public class OntologySchemaProviderTest {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         Optional<Iterable<GraphEdgeSchema>> edgeSchemas = ontologySchemaProvider.getEdgeSchemas("Fire");
-        assertEquals(Lists.newArrayList(edgeSchemas.get()).size(),1);
+        assertEquals(Lists.newArrayList(edgeSchemas.get()).size(), 1);
     }
     //ednregion
 
@@ -95,19 +95,18 @@ public class OntologySchemaProviderTest {
                             .withEType(1).withName("Person").build());
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(2).withName("Dragon").build());
-                    return  entityTypes;
+                    return entityTypes;
                 }
         );
         when(ontology.getRelationshipTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<RelationshipType> relTypes = new ArrayList<>();
                     relTypes.add(fireRelationshipType);
-                    return  relTypes;
+                    return relTypes;
                 }
         );
 
         return ontology;
     }
     //endregion
-
 }
