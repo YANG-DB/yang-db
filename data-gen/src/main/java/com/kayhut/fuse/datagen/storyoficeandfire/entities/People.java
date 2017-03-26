@@ -1,14 +1,15 @@
 
 package com.kayhut.fuse.datagen.storyoficeandfire.entities;
 
-import com.kayhut.fuse.datagen.utilities.GenerateRandom;
 import com.github.javafaker.Faker;
 import com.github.javafaker.Name;
 import com.kayhut.fuse.datagen.dateandtime.DateFactory;
+import com.kayhut.fuse.datagen.utilities.GenerateRandom;
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
-import org.json.simple.JSONObject;
 
 /**
  *

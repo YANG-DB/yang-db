@@ -1,10 +1,12 @@
 package com.kayhut.fuse.dispatcher.resource;
 
 import com.kayhut.fuse.dispatcher.Cursor;
-import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by User on 06/03/2017.

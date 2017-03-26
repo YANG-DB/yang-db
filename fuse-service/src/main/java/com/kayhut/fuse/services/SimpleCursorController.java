@@ -11,8 +11,6 @@ import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.typesafe.config.Config;
 
-import java.util.UUID;
-
 import static java.util.UUID.randomUUID;
 import static org.jooby.Status.*;
 

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.EBase;
 
-import java.util.List;
-
 /**
  * Created by benishue on 17/02/2017.
  */

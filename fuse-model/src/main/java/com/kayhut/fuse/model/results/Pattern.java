@@ -1,7 +1,6 @@
 package com.kayhut.fuse.model.results;
 
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;

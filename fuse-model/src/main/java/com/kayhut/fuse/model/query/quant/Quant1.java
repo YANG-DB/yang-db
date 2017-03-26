@@ -2,7 +2,6 @@ package com.kayhut.fuse.model.query.quant;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kayhut.fuse.model.query.quant.QuantBase;
 
 import java.util.List;
 

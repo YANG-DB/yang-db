@@ -3,8 +3,6 @@ package com.kayhut.fuse.model.execution.plan;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 
-import java.util.LinkedList;
-
 /**
  * Created by User on 20/02/2017.
  */

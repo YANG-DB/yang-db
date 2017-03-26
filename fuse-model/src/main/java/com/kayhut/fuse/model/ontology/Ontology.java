@@ -2,15 +2,15 @@ package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import javax.management.relation.Relation;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by benishue on 22-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Ontology {
+
+    //region Getters & Setters
 
     public String getOnt() {
         return ont;
@@ -44,43 +44,17 @@ public class Ontology {
         this.enumeratedTypes = enumeratedTypes;
     }
 
+    //endregion
+
+    //region Public Methods
+
     @Override
     public String toString()
     {
         return "Ontology [enumeratedTypes = "+enumeratedTypes+", ont = "+ont+", relationshipTypes = "+relationshipTypes+", entityTypes = "+entityTypes+"]";
     }
 
-    public Optional<String> getEntityLabel(int eType) {
-        for(EntityType e : entityTypes) {
-            if(e.geteType() == eType) {
-                return Optional.of(e.getName());
-            }
-        }
-        return Optional.empty();
-    }
-
-    public Optional<String> getRelationLabel(int rType) {
-        for(RelationshipType r : relationshipTypes) {
-            if(r.getrType() == rType) {
-                return Optional.of(r.getName());
-            }
-        }
-        return Optional.empty();
-    }
-
-    public Optional<Property> getProperty(int eType, int pType) {
-        for(EntityType e : entityTypes) {
-            if(e.geteType() == eType) {
-                for(Property p : e.getProperties()) {
-                    if(p.getpType() == pType) {
-                        return Optional.of(p);
-                    }
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
+    //endregion
 
     //region Fields
     private String ont;

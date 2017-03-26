@@ -1,8 +1,8 @@
 package com.kayhut.fuse.asg;
 
 import com.google.inject.Binder;
-import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.AsgDefaultStrategyRegistrar;
+import com.kayhut.fuse.asg.strategy.AsgStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.SimpleStrategyRegisteredAsgDriver;
 import com.typesafe.config.Config;
 import org.jooby.Env;

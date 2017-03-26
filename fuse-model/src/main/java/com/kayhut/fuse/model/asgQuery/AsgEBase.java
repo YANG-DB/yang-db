@@ -1,9 +1,7 @@
 package com.kayhut.fuse.model.asgQuery;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kayhut.fuse.model.query.EBase;
 
 import java.util.ArrayList;
