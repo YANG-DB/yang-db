@@ -2,6 +2,7 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -60,10 +61,10 @@ public class ConditionCypherStrategy extends CypherStrategy {
         while (!parents.isEmpty()) {
             AsgEBase p = parents.poll();
             if (p.geteBase() instanceof ETyped) {
-                return ont.getProperty(((ETyped) p.geteBase()).geteType(), pType);
+                return OntologyUtil.getProperty(ont,((ETyped) p.geteBase()).geteType(), pType);
             }
             if (p.geteBase() instanceof Rel) {
-                return ont.getProperty(((Rel) p.geteBase()).getrType(), pType);
+                return OntologyUtil.getProperty(ont,((Rel) p.geteBase()).getrType(), pType);
             } else {
                 parents.addAll(p.getParents());
             }

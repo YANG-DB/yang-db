@@ -2,6 +2,7 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.neo4j.cypher.CypherNode;
@@ -29,7 +30,7 @@ public class TypedRelCypherStrategy extends CypherStrategy {
 
             Rel eTyped = (Rel) element.geteBase();
 
-            Optional<String> label = ontology.getEntityLabel(eTyped.getrType());
+            Optional<String> label = OntologyUtil.getEntityLabel(ontology, eTyped.getrType());
 
             if (!label.isPresent()) {
                 throw new RuntimeException("Failed compiling query. Unknown entity type: " + eTyped.getrType());

@@ -3,6 +3,7 @@ package com.kayhut.fuse.neo4j.cypher;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -154,7 +155,7 @@ public class CypherCompiler {
 
             ETyped eTyped = (ETyped) eBase;
 
-            Optional<String> label = ontology.getEntityLabel(eTyped.geteType());
+            Optional<String> label = OntologyUtil.getEntityLabel(ontology,eTyped.geteType());
 
             if (!label.isPresent()) {
                 throw new RuntimeException("Failed compiling query. Unknown entity type: " + eTyped.geteType());
@@ -172,7 +173,7 @@ public class CypherCompiler {
         if (eBase instanceof EConcrete) {
             EConcrete eConcrete = (EConcrete) eBase;
 
-            Optional<String> label = ontology.getEntityLabel(eConcrete.geteType());
+            Optional<String> label = OntologyUtil.getEntityLabel(ontology,eConcrete.geteType());
 
             if (!label.isPresent()) {
                 throw new RuntimeException("Failed compiling query. Unknown entity type: " + eConcrete.geteType());
@@ -197,7 +198,7 @@ public class CypherCompiler {
 
             Rel rel = (Rel) eBase;
 
-            Optional<String> label = ontology.getRelationLabel(rel.getrType());
+            Optional<String> label = OntologyUtil.getRelationLabel(ontology,rel.getrType());
 
             if (!label.isPresent()) {
                 throw new RuntimeException("Failed compiling query. Unknown entity type: " + rel.getrType());
@@ -300,10 +301,10 @@ public class CypherCompiler {
         while (!parents.isEmpty()) {
             AsgEBase p = parents.poll();
             if (p.geteBase() instanceof ETyped) {
-                return ont.getProperty(((ETyped) p.geteBase()).geteType(), pType);
+                return OntologyUtil.getProperty(ont,((ETyped) p.geteBase()).geteType(), pType);
             }
             if (p.geteBase() instanceof Rel) {
-                return ont.getProperty(((Rel) p.geteBase()).getrType(), pType);
+                return OntologyUtil.getProperty(ont, ((Rel) p.geteBase()).getrType(), pType);
             } else {
                 parents.addAll(p.getParents());
             }
