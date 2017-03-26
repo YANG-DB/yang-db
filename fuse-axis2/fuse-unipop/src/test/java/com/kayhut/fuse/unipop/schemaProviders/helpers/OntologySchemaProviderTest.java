@@ -30,16 +30,16 @@ public class OntologySchemaProviderTest {
 
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider(new PhysicalIndexProvider() {
-                @Override
-                public Iterable<IndexPartition> getIndicesByVertexLabel(String vertexType) {
-                    return Collections.singletonList(() -> Arrays.asList("index1", "index2"));
-                }
+            @Override
+            public Iterable<IndexPartition> getIndicesByVertexLabel(String vertexType) {
+                return Collections.singletonList(() -> Arrays.asList("index1", "index2"));
+            }
 
-                @Override
-                public Iterable<IndexPartition> getIndicesByEdgeLabel(String edgeType) {
-                    return Collections.singletonList(() -> Arrays.asList("index1", "index2"));
-                }
-            }, ontology);
+            @Override
+            public Iterable<IndexPartition> getIndicesByEdgeLabel(String edgeType) {
+                return Collections.singletonList(() -> Arrays.asList("index1", "index2"));
+            }
+        }, ontology);
     }
 
     @Test
