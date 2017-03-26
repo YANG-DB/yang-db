@@ -17,6 +17,7 @@
         <module>fuse-axis1</module>
         <module>fuse-axis2</module>
         <module>fuse-test</module>
+        <module>geojson-jackson</module>
     </modules>
     <dependencies>
         <dependency>
