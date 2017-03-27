@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop;
+package com.kayhut.fuse.unipop.controller.utils;
 
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
