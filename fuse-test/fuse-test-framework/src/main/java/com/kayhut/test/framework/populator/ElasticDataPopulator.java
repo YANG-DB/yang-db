@@ -1,6 +1,6 @@
 package com.kayhut.test.framework.populator;
 
-import com.kayhut.test.framework.scenario.GenericDataProvider;
+import com.kayhut.test.framework.providers.GenericDataProvider;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;

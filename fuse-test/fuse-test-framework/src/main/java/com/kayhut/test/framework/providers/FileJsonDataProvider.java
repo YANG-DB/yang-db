@@ -1,4 +1,4 @@
-package com.kayhut.test.framework.scenario;
+package com.kayhut.test.framework.providers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

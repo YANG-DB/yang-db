@@ -1,7 +1,5 @@
 package com.kayhut.test.framework.populator;
 
-import com.kayhut.test.framework.scenario.FileCsvDataProvider;
-import com.kayhut.test.framework.scenario.GenericDataProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
 
@@ -13,16 +11,16 @@ import java.io.IOException;
 public class Neo4jCsvDataPopulator implements DataPopulator{
 
     private GraphDatabaseService graphDatabaseService;
-    private FileCsvDataProvider dataProvider;
+    private String csvLoadCypher;
 
-    public Neo4jCsvDataPopulator(GraphDatabaseService graphDatabaseService, FileCsvDataProvider dataProvider) {
+    public Neo4jCsvDataPopulator(GraphDatabaseService graphDatabaseService, String csvLoadCypher) {
         this.graphDatabaseService = graphDatabaseService;
-        this.dataProvider = dataProvider;
+        this.csvLoadCypher = csvLoadCypher;
     }
 
     @Override
     public void populate() throws IOException {
-        Result executionResult = this.graphDatabaseService.execute(this.dataProvider.getCsvCypher());
+        Result executionResult = this.graphDatabaseService.execute(this.csvLoadCypher);
         if (executionResult.hasNext())
             throw new RuntimeException("Insertion failed");
 

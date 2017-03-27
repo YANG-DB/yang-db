@@ -1,6 +1,8 @@
+package index.test;
+
 import com.kayhut.test.framework.index.Neo4jInMemoryIndex;
 import com.kayhut.test.framework.populator.Neo4jGenericNodeDataPopulator;
-import com.kayhut.test.framework.scenario.FileJsonDataProvider;
+import com.kayhut.test.framework.providers.FileJsonDataProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

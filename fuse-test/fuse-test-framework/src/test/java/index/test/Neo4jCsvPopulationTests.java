@@ -1,7 +1,9 @@
+package index.test;
+
 import com.kayhut.test.framework.DragonScenarioLoadConstants;
 import com.kayhut.test.framework.index.Neo4jInMemoryIndex;
 import com.kayhut.test.framework.populator.Neo4jCsvDataPopulator;
-import com.kayhut.test.framework.scenario.FileCsvDataProvider;
+import com.kayhut.test.framework.providers.FileCsvDataProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,8 +36,8 @@ public class Neo4jCsvPopulationTests {
     }
 
     private void loadFileToNeo(String fileName,String cypherTemplate, GraphDatabaseService graphDatabaseService) throws IOException {
-        String cypherLoadHorses = String.format(cypherTemplate, getFilePath(fileName));
-        Neo4jCsvDataPopulator populator = new Neo4jCsvDataPopulator(graphDatabaseService, new FileCsvDataProvider(dragonsFolder+fileName, cypherLoadHorses));
+        String cypherLoadCsv = String.format(cypherTemplate, getFilePath(fileName));
+        Neo4jCsvDataPopulator populator = new Neo4jCsvDataPopulator(graphDatabaseService, cypherLoadCsv);
         populator.populate();
     }
 

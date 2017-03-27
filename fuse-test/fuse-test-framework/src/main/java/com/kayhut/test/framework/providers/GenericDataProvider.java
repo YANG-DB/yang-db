@@ -1,4 +1,4 @@
-package com.kayhut.test.framework.scenario;
+package com.kayhut.test.framework.providers;
 
 import java.io.IOException;
 import java.util.HashMap;

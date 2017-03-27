@@ -1,7 +1,6 @@
 package com.kayhut.test.framework.populator;
 
-import com.kayhut.test.framework.scenario.FileCsvDataProvider;
-import com.kayhut.test.framework.scenario.GenericDataProvider;
+import com.kayhut.test.framework.providers.GenericDataProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;

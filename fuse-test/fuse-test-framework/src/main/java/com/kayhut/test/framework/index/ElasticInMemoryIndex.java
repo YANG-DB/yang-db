@@ -91,7 +91,7 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
     }
 
     private void prepare(){
-        deleteFolder(esWorkingDir + "/" + nodeName);
+        deleteFolder(esWorkingDir + "\\" + nodeName);
         Settings settings = Settings.builder()
                 .put("path.home", esWorkingDir)
                 .put("path.conf", esWorkingDir)
