@@ -1,6 +1,8 @@
 package com.kayhut.test.framework.index;
 
+import com.kayhut.test.framework.TestUtil;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.test.TestGraphDatabaseFactory;
 
 import java.io.File;
@@ -10,9 +12,22 @@ import java.io.File;
  */
 public class Neo4jInMemoryIndex implements AutoCloseable {
     private GraphDatabaseService graphDatabaseService;
+    private boolean isTest;
+    private String folder;
 
     public Neo4jInMemoryIndex(String folder) {
-         this.graphDatabaseService = new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder(new File(folder)).newGraphDatabase();
+        this(folder, true);
+    }
+
+    public Neo4jInMemoryIndex(String folder, boolean isTest) {
+        if(isTest) {
+            this.graphDatabaseService = new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder(new File(folder)).newGraphDatabase();
+        }
+        else {
+            this.graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase(new File(folder));
+        }
+        this.folder = folder;
+        this.isTest = isTest;
     }
 
     public GraphDatabaseService getClient(){
@@ -23,5 +38,8 @@ public class Neo4jInMemoryIndex implements AutoCloseable {
     @Override
     public void close() throws Exception {
         this.graphDatabaseService.shutdown();
+        if(!this.isTest){
+            TestUtil.deleteFolder(this.folder);
+        }
     }
 }

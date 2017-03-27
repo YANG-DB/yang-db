@@ -3,7 +3,6 @@ package index.test;
 import com.kayhut.test.framework.DragonScenarioLoadConstants;
 import com.kayhut.test.framework.index.Neo4jInMemoryIndex;
 import com.kayhut.test.framework.populator.Neo4jCsvDataPopulator;
-import com.kayhut.test.framework.providers.FileCsvDataProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,9 +15,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Created by moti on 3/21/2017.
+ * Created by moti on 3/27/2017.
  */
-public class Neo4jCsvPopulationTests {
+public class Neo4jEmbeddedCsvPopTests {
     private String dragonsFolder = new File("src\\test\\resources\\dragons\\").getAbsolutePath().replace('\\','/') + "/";
     private String neoFolder = "target\\neo";
     private Neo4jInMemoryIndex index;
@@ -26,7 +25,7 @@ public class Neo4jCsvPopulationTests {
 
     @Before
     public void initialize(){
-        this.index = new Neo4jInMemoryIndex(this.neoFolder);
+        this.index = new Neo4jInMemoryIndex(this.neoFolder, false);
         this.graphDatabaseService = index.getClient();
     }
 

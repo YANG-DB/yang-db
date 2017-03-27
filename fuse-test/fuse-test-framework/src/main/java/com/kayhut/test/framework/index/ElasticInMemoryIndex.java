@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.kayhut.test.framework.TestUtil.deleteFolder;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 /**
@@ -29,7 +30,12 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
 
     //region Constructors
     public ElasticInMemoryIndex() {
-        this("target/es", 9305, 9300, "fuse.test_elastic", null);
+        this("target/es", 9305, 9300, "fuse.test_elastic", new ElasticIndexConfigurer() {
+            @Override
+            public void configure(TransportClient client) {
+
+            }
+        });
     }
 
     public ElasticInMemoryIndex(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer configurer) {
@@ -38,8 +44,7 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
         this.httpTransportPort = httpTransportPort;
         this.nodeName = nodeName;
         prepare();
-        if(configurer != null)
-            configure(configurer);
+        configure(configurer);
     }
 
     //endregion
@@ -55,21 +60,6 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
         } catch (UnknownHostException e) {
             throw new UnknownError(e.getMessage());
         }
-    }
-
-    public static void deleteFolder(String folder) {
-        File folderFile = new File(folder);
-        File[] files = folderFile.listFiles();
-        if(files!=null) {
-            for(File f: files) {
-                if(f.isDirectory()) {
-                    deleteFolder(f.getAbsolutePath());
-                } else {
-                    f.delete();
-                }
-            }
-        }
-        folderFile.delete();
     }
 
     @Override

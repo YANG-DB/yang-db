@@ -20,7 +20,7 @@ import java.io.IOException;
  */
 public class Neo4jGenericPopulationTests {
     private String dragonsFolder = new File("src\\test\\resources\\dragons\\").getAbsolutePath().replace('\\','/') + "/";
-    private String neoFolder = "src\\test\\resources\\neo";
+    private String neoFolder = "target\\neo";
     private Neo4jInMemoryIndex index;
     private GraphDatabaseService graphDatabaseService;
     private String docsFile = "src\\test\\resources\\IndexDocs\\docs.txt";
