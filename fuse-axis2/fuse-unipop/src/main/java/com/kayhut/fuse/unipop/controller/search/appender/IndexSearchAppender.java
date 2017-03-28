@@ -59,7 +59,7 @@ public class IndexSearchAppender implements SearchAppender<PromiseElementControl
         } catch (Exception e) {
             return false;
         }
-        return false;
+        return true;
     }
     //endregion
 }
