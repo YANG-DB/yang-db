@@ -1,10 +1,7 @@
 package com.kayhut.fuse.unipop.controller.context;
 
-import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.Promise;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.promise.*;
+import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 
