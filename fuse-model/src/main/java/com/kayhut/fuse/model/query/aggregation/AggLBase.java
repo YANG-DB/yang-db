@@ -1,7 +1,6 @@
 package com.kayhut.fuse.model.query.aggregation;
 
 import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.EBase;
 
 /**
  * Created by User on 19/02/2017.

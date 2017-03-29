@@ -1,7 +1,5 @@
 package com.kayhut.fuse.dispatcher.urlSupplier;
 
-import java.util.Optional;
-
 /**
  * Created by User on 08/03/2017.
  */

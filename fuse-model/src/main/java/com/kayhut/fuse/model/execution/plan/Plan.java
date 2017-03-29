@@ -7,9 +7,8 @@ import java.util.List;
  */
 public class Plan {
     //region Constructors
-    public Plan() {
 
-    }
+    public Plan() {}
 
     public Plan(List<PlanOpBase> ops) {
         this.ops = ops;
@@ -29,4 +28,5 @@ public class Plan {
     //region Fields
     private List<PlanOpBase> ops;
     //endregion
+
 }

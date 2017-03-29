@@ -3,6 +3,7 @@ package com.kayhut.fuse.dispatcher;
 import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.context.processor.ResourcePersistProcessor;
 import com.kayhut.fuse.dispatcher.driver.*;
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.InMemoryResourceStore;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
@@ -26,6 +27,7 @@ public class DispatcherModule implements Jooby.Module {
 
         // resource store and persist processor
         binder.bind(ResourceStore.class).to(InMemoryResourceStore.class).asEagerSingleton();
+        binder.bind(OntologyProvider.class).to(SimpleOntologyProvider.class).asEagerSingleton();
         binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
 
         //service controllers

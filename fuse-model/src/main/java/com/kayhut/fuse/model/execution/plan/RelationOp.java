@@ -6,14 +6,13 @@ import com.kayhut.fuse.model.query.Rel;
 /**
  * Created by User on 20/02/2017.
  */
-public class RelationOp extends TaggedOp {
+public class RelationOp extends PlanOpBase {
     //region Constructors
     public RelationOp() {
 
     }
 
     public RelationOp(AsgEBase<Rel> relation) {
-        super(null);
         this.relation = relation;
     }
     //endregion

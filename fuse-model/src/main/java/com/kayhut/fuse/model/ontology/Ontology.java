@@ -10,6 +10,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Ontology {
 
+    //region Getters & Setters
+
     public String getOnt() {
         return ont;
     }
@@ -42,11 +44,17 @@ public class Ontology {
         this.enumeratedTypes = enumeratedTypes;
     }
 
+    //endregion
+
+    //region Public Methods
+
     @Override
     public String toString()
     {
         return "Ontology [enumeratedTypes = "+enumeratedTypes+", ont = "+ont+", relationshipTypes = "+relationshipTypes+", entityTypes = "+entityTypes+"]";
     }
+
+    //endregion
 
     //region Fields
     private String ont;
@@ -55,6 +63,7 @@ public class Ontology {
     private List<EnumeratedType> enumeratedTypes;
     //endregion
 
+    //region Builder
     public static final class OntologyBuilder {
         private String ont;
         private List<EntityType> entityTypes;
@@ -97,6 +106,6 @@ public class Ontology {
             return ontology;
         }
     }
-
+    //endregion
 
 }

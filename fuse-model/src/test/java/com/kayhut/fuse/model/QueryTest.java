@@ -6,11 +6,15 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
-import org.json.JSONException;
-import org.junit.*;
-import org.skyscreamer.jsonassert.JSONAssert;
-import java.io.IOException;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +52,7 @@ public class QueryTest {
     @Test
     public void testQ3_1Serialization() throws IOException, JSONException {
         String q3_1ActualJSON = mapper.writeValueAsString(q3_1Obj);
-        String q3_1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":1,\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":1,\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}";
+        String q3_1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":1,\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}";
 
         JSONAssert.assertEquals(q3_1ExpectedJSONString, q3_1ActualJSON,false);
     }
@@ -56,7 +60,7 @@ public class QueryTest {
     @Test
     public void testQ3_2Serialization() throws IOException, JSONException {
         String q3_2ActualJSON = mapper.writeValueAsString(q3_2Obj);
-        String q3_2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,4]},{\"eNum\":3,\"type\":\"EProp\",\"pType\":1,\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}},{\"eNum\":4,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2}]}";
+        String q3_2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,4]},{\"eNum\":3,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}},{\"eNum\":4,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2}]}";
 
         JSONAssert.assertEquals(q3_2ExpectedJSONString, q3_2ActualJSON,false);
     }
@@ -369,16 +373,17 @@ public class QueryTest {
             {
               "eNum": 4,
               "type": "EProp",
-              "pType": 1,
+              "pType": "1.1",
+              "pTag": "1",
               "con": {
-              "op": "eq",
-              "value": "Brandon"
-             }
+                "op": "eq",
+                "expr": "Brandon"
+              }
          */
 
         EProp eProp = new EProp();
         eProp.seteNum(4);
-        eProp.setpType(1);
+        eProp.setpType("1.1");
         eProp.setpTag("1");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.eq);
@@ -456,7 +461,7 @@ public class QueryTest {
 
         EProp eProp = new EProp();
         eProp.seteNum(3);
-        eProp.setpType(1);
+        eProp.setpType("1.1");
         eProp.setpTag("1");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.eq);

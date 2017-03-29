@@ -3,10 +3,14 @@ package com.kayhut.fuse.asg;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
-import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.asgQuery.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,7 +22,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by benishue on 27-Feb-17.
@@ -29,6 +33,7 @@ public class RecTwoPassAsgQuerySupplierTest {
     private static Query q5Obj = new Query();
     private static Query q9Obj = new Query();
     private static Query q187Obj = new Query();
+    private static Query q3_1Obj = new Query();
 
     @Test
     public void transformQuery1ToAsgQuery() throws Exception {
@@ -151,7 +156,28 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     }
 
+    @Test
+    public void transformQuery3_1ToAsgQuery() throws Exception {
+        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q3_1Obj);
+        AsgQuery asgQuery = asgSupplier.get();
+        assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
+        //start = parent -> son (next element) -> call get parents -> (start) -> get eNum
+        assertEquals(asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum(), 0);
+        AsgEBase<? extends EBase> asgEBase1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(asgEBase1.geteBase().geteNum(),1);
+
+        AsgEBase<? extends EBase> asgEBase2 = asgEBase1.getNext().get(0);
+        assertEquals(asgEBase2.geteBase().geteNum(),2);
+
+        //Entity Type enum = 2 has dir="L"
+        assertEquals(((Rel)asgEBase2.geteBase()).getDir(),"L");
+
+        //Entity Enum 3
+        AsgEBase<? extends EBase> asgEBase3 = asgEBase2.getNext().get(0);
+        assertEquals(asgEBase3.geteBase().geteNum(),3);
+        assertEquals(asgEBase3.getNext().get(0).getParents().get(0).geteNum(),3);
+    }
 
     private static void createQ1()
     {
@@ -250,6 +276,14 @@ public class RecTwoPassAsgQuerySupplierTest {
         }
     }
 
+    private static void createQ3_1() {
+        try {
+            q3_1Obj = new ObjectMapper().readValue("{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":1,\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}", Query.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Before
     public void setup() {
     }
@@ -259,7 +293,10 @@ public class RecTwoPassAsgQuerySupplierTest {
         createQ1();
         createQ5();
         createQ9();
+        createQ3_1();
         createQ187();
     }
+
+
 
 }

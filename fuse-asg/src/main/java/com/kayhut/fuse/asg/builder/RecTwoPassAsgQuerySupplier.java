@@ -1,10 +1,15 @@
 package com.kayhut.fuse.asg.builder;
 
 import com.google.common.base.Supplier;
-import com.kayhut.fuse.model.query.*;
-import com.kayhut.fuse.model.asgQuery.*;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.query.Start;
 import javaslang.collection.Stream;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by benishue on 27-Feb-17.
@@ -28,8 +33,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
 
         //Building the root of the AsgQuery (i.e., start Ebase)
         AsgEBase asgEBaseStart = AsgEBase.EBaseAsgBuilder.anEBaseAsg()
-                .withEBase(start)
-                .withParents(null).build();
+                .withEBase(start).build();
 
         buildSubGraphRec(asgEBaseStart, queryElements);
 

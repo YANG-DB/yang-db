@@ -42,6 +42,14 @@ public class EntityType {
         this.display = display;
     }
 
+    public String getDBeName() {
+        return DBeName;
+    }
+
+    public void setDBeName(String DBeName) {
+        this.DBeName = DBeName;
+    }
+
     @Override
     public String toString()
     {
@@ -50,13 +58,16 @@ public class EntityType {
 
     //region Fields
     private int eType;
+    private String DBeName;
     private String name;
     private List<Property> properties;
     private List<String> display;
     //endregion
 
+    //region Builder
     public static final class EntityTypeBuilder {
         private int eType;
+        private String DBeName;
         private String name;
         private List<Property> properties;
         private List<String> display;
@@ -70,6 +81,11 @@ public class EntityType {
 
         public EntityTypeBuilder withEType(int eType) {
             this.eType = eType;
+            return this;
+        }
+
+        public EntityTypeBuilder withDBeName(String DBeName) {
+            this.DBeName = DBeName;
             return this;
         }
 
@@ -90,6 +106,7 @@ public class EntityType {
 
         public EntityType build() {
             EntityType entityType = new EntityType();
+            entityType.setDBeName(DBeName);
             entityType.setName(name);
             entityType.setProperties(properties);
             entityType.setDisplay(display);
@@ -97,6 +114,6 @@ public class EntityType {
             return entityType;
         }
     }
-
+    //endregion
 
 }

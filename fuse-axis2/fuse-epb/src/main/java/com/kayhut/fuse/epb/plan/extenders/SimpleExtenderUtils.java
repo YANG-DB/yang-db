@@ -1,9 +1,11 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Start;
+import javaslang.Tuple2;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,12 +45,25 @@ public class SimpleExtenderUtils {
         return element != null && !(element.geteBase() instanceof Start);
     }
 
-    public static List<AsgEBase> removeHandledParts(Plan plan, Map<Integer, AsgEBase> queryParts) {
+    /**
+     * Takes a flattened query and an execution plan, and seperates the query to two collections - parts that exist
+     * in the plan and parts that do not exist
+     * @param plan
+     * @param queryParts
+     * @return A tuple, where the first element is the query parts that exist in the plan ("handled"), and a map with the
+     * "unhandled" parts
+     */
+    public static Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> removeHandledQueryParts(Plan plan, Map<Integer, AsgEBase> queryParts) {
+        Map<Integer, AsgEBase> unHandledParts = new HashMap<>(queryParts);
         List<AsgEBase> handledParts = new LinkedList<>();
         plan.getOps().forEach(op -> {
             handledParts.add(queryParts.get(op.geteNum()));
-            queryParts.remove(op.geteNum());
+            unHandledParts.remove(op.geteNum());
         });
-        return handledParts;
+        return new Tuple2<>(handledParts, unHandledParts);
+    }
+
+    public static boolean shouldAdvanceToParents(AsgEBase<? extends EBase> handledPartToExtend) {
+        return handledPartToExtend.getParents() != null;
     }
 }

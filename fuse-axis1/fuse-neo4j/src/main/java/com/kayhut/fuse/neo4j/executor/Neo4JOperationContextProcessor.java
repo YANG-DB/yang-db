@@ -6,34 +6,60 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.resource.PageResource;
+import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.neo4j.GraphProvider;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
-import com.kayhut.fuse.neo4j.cypher.Schema;
-import org.neo4j.driver.internal.value.NodeValue;
-import org.neo4j.driver.internal.value.RelationshipValue;
-import org.neo4j.driver.v1.*;
-import org.neo4j.helpers.collection.Iterators;
+import javaslang.Tuple2;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
+import static com.kayhut.fuse.neo4j.executor.NeoGraphUtils.query;
 
 /**
  * Created by User on 08/03/2017.
  */
 public class Neo4JOperationContextProcessor implements
         CursorCreationOperationContext.Processor,
-        PageCreationOperationContext.Processor {
+        PageCreationOperationContext.Processor,
+        QueryCreationOperationContext.Processor {
+
     //region Constructors
     @Inject
-    public Neo4JOperationContextProcessor(EventBus eventBus) {
+    public Neo4JOperationContextProcessor(GraphProvider graphProvider, EventBus eventBus, ResourceStore store, OntologyProvider provider) {
+        this.graphProvider = graphProvider;
         this.eventBus = eventBus;
+        this.store = store;
+        this.provider = provider;
         this.eventBus.register(this);
+    }
+    //endregion
+
+    //region QueryCreationOperationContext.Processor Implementation
+    @Override
+    @Subscribe
+    public QueryCreationOperationContext process(QueryCreationOperationContext context) {
+
+        if((asgQuery != null && ontology != null) || context.getAsgQuery() == null) {
+            return context;
+        }
+
+        asgQuery = context.getAsgQuery();
+        Optional<Ontology> ont = provider.get(asgQuery.getOnt());
+        if(ont.isPresent()) {
+            ontology = ont.get();
+        } else {
+            throw new RuntimeException("Query ontology not present in catalog.");
+        }
+
+        return submit(eventBus, context.of(new Tuple2<>(new Plan(), new SingleCost(0.0))));
     }
     //endregion
 
@@ -41,14 +67,16 @@ public class Neo4JOperationContextProcessor implements
     @Override
     @Subscribe
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
+
         if (context.getCursor() != null) {
             return context;
         }
 
-        // TODO: use ASG
-        // AsgQuery asgQuery = input.getAsgQuery();
+        //Compile the query and get the cursor ready
+        String cypherQuery = CypherCompiler.compile(asgQuery,ontology);
 
-        return submit(eventBus, context.of(new Neo4jCursor(context.getQueryResource().getQuery())));
+        return submit(eventBus, context.of(new Neo4jCursor(context.getQueryResource().getQuery(), cypherQuery)));
+
     }
     //endregion
 
@@ -61,125 +89,22 @@ public class Neo4JOperationContextProcessor implements
         }
 
         Neo4jCursor neo4jCursor = (Neo4jCursor)context.getCursorResource().getCursor();
-        Query query = neo4jCursor.getQuery();
-
-        QueryResult result = query(query);
+        QueryResult result = query(graphProvider,neo4jCursor);
         if (result == null) {
             result = new QueryResult();
         }
 
-        return submit(eventBus, context.of(result));
+        return submit(eventBus, context.of(new PageResource(context.getPageId(), result, context.getPageSize())));
     }
     //endregion
 
-    //region Private Methods
-    public QueryResult query(Query query) {
-
-        try {
-
-            ArrayList<Assignment> assignments = new ArrayList<>();
-
-            //TODO: get ontology from the ontology service
-            String ontology = new Scanner(new File("C:\\Elad\\Cypher\\dragon_ont.json")).useDelimiter("\\Z").next();
-
-            Schema schema = new Schema();
-
-            schema.load(ontology);
-
-            String cypherQuery = CypherCompiler.compile(query, schema);
-
-            Driver driver = GraphDatabase.driver(NEO4J_BOLT_URL, AuthTokens.basic(NEO4J_USER, NEO4J_PWD));
-
-            Session session = driver.session();
-
-            Transaction tx = session.beginTransaction();
-
-            StatementResult statementResult = tx.run(cypherQuery);
-
-            Iterators.asList(statementResult).stream().forEach(record -> {
-
-                //Each records represents an assignment (containing nodes and relationships)
-
-                ArrayList<Entity> entities = new ArrayList<>();
-
-                ArrayList<Relationship> rels = new ArrayList<>();
-
-                List<Value> valueList = record.values().stream().collect(Collectors.toList());
-
-                valueList.stream().forEach(value -> {
-
-                    //Each value inside a record is either a node or a relationship
-
-                    if(value instanceof NodeValue) {
-
-                        NodeValue n = (NodeValue)value;
-
-                        ArrayList<Property> props = new ArrayList<>();
-
-                        n.asNode().keys().forEach(propName -> {
-                            Property prop = new Property();
-                            prop.setAgg(propName);
-                            prop.setValue(String.valueOf(n.asNode().get(propName)));
-                            props.add(prop);
-                        });
-
-                        Entity entity = Entity.EntityBuilder.anEntity()
-                                .withETag(Iterators.asList(n.asNode().labels().iterator()))
-                                .withProperties(props).build();
-
-                        entities.add(entity);
-
-                    }
-                    else if(value instanceof RelationshipValue) {
-
-                        RelationshipValue r = (RelationshipValue) value;
-
-                        ArrayList<Property> props = new ArrayList<>();
-
-                        r.asRelationship().keys().forEach(propName -> {
-                            Property prop = new Property();
-                            prop.setAgg(propName);
-                            prop.setValue(String.valueOf(r.asRelationship().get(propName)));
-                            props.add(prop);
-                        });
-
-                        Relationship rel = Relationship.RelationshipBuilder.aRelationship()
-                                .withAgg(false)
-                                .withRID(String.valueOf(r.asRelationship().id()))
-                                .withDirectional(true)
-                                .withEID1(String.valueOf(r.asRelationship().startNodeId()))
-                                .withEID2(String.valueOf(r.asRelationship().endNodeId()))
-                                .withProperties(props).build();
-
-                        rels.add(rel);
-                    }
-
-                });
-
-                Assignment assignment = Assignment.AssignmentBuilder.anAssignment()
-                        .withEntities(entities)
-                        .withRelationships(rels)
-                        .build();
-
-                assignments.add(assignment);
-
-            });
-
-            tx.success();
-
-            return QueryResult.QueryResultBuilder.aQueryResult().withAssignments(assignments).build();
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-    //endregion
-
+    private GraphProvider graphProvider;
     //region Fields
     protected EventBus eventBus;
+    private ResourceStore store;
+    private OntologyProvider provider;
+    private AsgQuery asgQuery;
+    private Ontology ontology;
 
-    static String NEO4J_BOLT_URL = "bolt://localhost:7687";
-    static String NEO4J_USER = "neo4j";
-    static String NEO4J_PWD = "1234";
     //endregion
 }

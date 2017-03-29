@@ -1,8 +1,8 @@
 
 package com.kayhut.fuse.datagen.storyoficeandfire.entities;
 
-import com.kayhut.fuse.datagen.utilities.GenerateRandom;
 import com.github.javafaker.Faker;
+import com.kayhut.fuse.datagen.utilities.GenerateRandom;
 
 /**
  *

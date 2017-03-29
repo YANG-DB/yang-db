@@ -1,11 +1,11 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.epb.plan.validation.SiblingOnlyPlanValidator;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;

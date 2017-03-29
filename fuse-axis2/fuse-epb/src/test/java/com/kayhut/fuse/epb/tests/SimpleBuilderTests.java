@@ -4,12 +4,12 @@ import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class SimpleBuilderTests {
 
     @Test
     public void TestInitialCreationSingleEntity(){
-        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.CreateSingleEntityQuery();
+        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
         InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
         Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
@@ -80,7 +80,7 @@ public class SimpleBuilderTests {
         CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy(),
                                                                                                                             new AllDirectionsPlanExtensionStrategy());
 
-        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.CreateSingleEntityQuery();
+        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
         Iterable<Plan> plans = compositePlanExtensionStrategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> planList = new LinkedList<>();

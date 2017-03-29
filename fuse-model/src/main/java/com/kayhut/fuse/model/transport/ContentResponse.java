@@ -1,12 +1,20 @@
 package com.kayhut.fuse.model.transport;
 
+import org.jooby.Status;
+
+import java.util.Optional;
+
 /**
  * Created by lior on 19/02/2017.
  */
 public class ContentResponse<T> implements Response {
     public static final ContentResponse NOT_FOUND =  new ContentResponse("NOT-FOUND");
+    private Status status = Status.NOT_FOUND;
     private String id;
     private T data;
+
+    //empty ctor for jackson
+    public ContentResponse() {}
 
     public ContentResponse(String id) {
         this.id = id;
@@ -20,24 +28,38 @@ public class ContentResponse<T> implements Response {
         return data;
     }
 
+    public Status status() {
+        return status;
+    }
+
     public static class Builder<T> {
+        private String id;
+        private Status success;
+        private Status fail;
         private ContentResponse response;
 
-        public static <S> Builder<S> builder(String id) {
-            return new Builder<>(id);
+        public static <S> Builder<S> builder(String id, Status success,Status fail) {
+            return new Builder<>(id,success,fail);
         }
 
-        public Builder(String id) {
+        public Builder(String id, Status success, Status fail) {
             response = new ContentResponse(id);
             response.id = id;
+            this.success = success;
+            this.fail = fail;
         }
 
-        public Builder<T> data(T data) {
-            this.response.data = data;
+        public Builder<T> data(Optional<T> data) {
+            this.response.data = data.orElse(null);
             return this;
         }
 
         public ContentResponse<T> compose() {
+            if(response.data!=null) {
+                response.status = success;
+            } else {
+                response.status = fail;
+            }
             return response;
         }
 

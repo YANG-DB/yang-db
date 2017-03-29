@@ -32,14 +32,14 @@ public class ResourcePersistProcessor implements
     @Override
     @Subscribe
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
-        if (context.getAsgQuery() == null || context.isComplete()) {
+        //last step in creation of QueryCreationOperationContext => we can save the context now to the resourceStore
+        if (context.getExecutionPlan() == null) {
             return context;
         }
 
-        resourceStore.addQueryResource(new QueryResource(context.getQuery(), context.getQueryMetadata()));
-
-        context = context.complete();
-        return context;
+        //store as query resource
+        resourceStore.addQueryResource(new QueryResource(context.getQuery(), context.getQueryMetadata(),context.getExecutionPlan()));
+        return context.complete();
     }
     //endregion
 
@@ -51,9 +51,9 @@ public class ResourcePersistProcessor implements
             return context;
         }
 
-        context.getQueryResource().addCursorResource(context.getCursorId(), new CursorResource<>(context.getCursor(), context.getCursorType()));
-        context = context.complete();
-        return context;
+        context.getQueryResource().addCursorResource(context.getCursorId(),
+                new CursorResource(context.getCursorId(), context.getCursor(), context.getCursorType()));
+        return context.complete();
     }
     //endregion
 
@@ -66,8 +66,7 @@ public class ResourcePersistProcessor implements
         }
 
         context.getCursorResource().addPageResource(context.getPageId(), context.getPageResource());
-        context = context.complete();
-        return context;
+        return context.complete();
     }
     //endregion
 

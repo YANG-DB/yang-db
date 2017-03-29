@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings xsi:schemaLocation='http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd'
+          xmlns='http://maven.apache.org/SETTINGS/1.0.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+    <profiles>
+        <profile>
+            <repositories>
+                <repository>
+                    <id>nexus-releases</id>
+                    <name>mxsnapshots</name>
+                    <url>https://nexuss.westeurope.cloudapp.azure.com:8443/repository/maven-releases/</url>
+                </repository>
+            </repositories>
+            <id>nexuss</id>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>nexuss</activeProfile>
+    </activeProfiles>
+
+    <servers>
+        <server>
+            <id>nexuss.westeurope.cloudapp.azure.com-snapshots</id>
+            <username>admin</username>
+            <password>admin123</password>
+        </server>
+        <server>
+            <id>nexuss.westeurope.cloudapp.azure.com-releases</id>
+            <username>admin</username>
+            <password>admin123</password>
+        </server>
+    </servers>
+</settings>

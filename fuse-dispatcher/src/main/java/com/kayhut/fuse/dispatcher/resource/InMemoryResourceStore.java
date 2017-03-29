@@ -16,6 +16,11 @@ public class InMemoryResourceStore implements ResourceStore {
 
     //region ResourceStore Implementation
     @Override
+    public Iterable<QueryResource> getQueryResources() {
+        return this.queryResources.values();
+    }
+
+    @Override
     public Optional<QueryResource> getQueryResource(String id) {
         return Optional.ofNullable(this.queryResources.get(id));
     }

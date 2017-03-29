@@ -4,13 +4,15 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.CursorDispatcherDriver;
-import com.kayhut.fuse.model.process.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.typesafe.config.Config;
 
-import java.util.Optional;
-import java.util.UUID;
+import static java.util.UUID.randomUUID;
+import static org.jooby.Status.*;
 
 /**
  * Created by lior on 19/02/2017.
@@ -32,34 +34,28 @@ public class SimpleCursorController implements CursorController {
 
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
-        Optional<CursorResourceInfo> resourceInfo = driver.create(queryId, createCursorRequest.getCursorType());
-        if (!resourceInfo.isPresent()) {
-            return ContentResponse.NOT_FOUND;
-        }
+        return Builder.<CursorResourceInfo>builder(randomUUID().toString(),CREATED, SERVER_ERROR)
+                .data(this.driver.create(queryId, createCursorRequest.getCursorType()))
+                .compose();
+    }
 
-        return ContentResponse.Builder.<CursorResourceInfo>builder(UUID.randomUUID().toString())
-                .data(resourceInfo.get()).compose();
+    @Override
+    public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
+        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+                .data(this.driver.getInfo(queryId))
+                .compose();
     }
 
     @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
-        Optional<CursorResourceInfo> resourceInfo = driver.getInfo(queryId, cursorId);
-        if (!resourceInfo.isPresent()) {
-            return ContentResponse.NOT_FOUND;
-        }
-
-        return ContentResponse.Builder.<CursorResourceInfo>builder(UUID.randomUUID().toString())
-                .data(resourceInfo.get()).compose();
+        return Builder.<CursorResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+                .data(this.driver.getInfo(queryId, cursorId))
+                .compose();
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
-        Optional<Boolean> isDeleted = driver.delete(queryId, cursorId);
-        if (!isDeleted.isPresent()) {
-            return ContentResponse.NOT_FOUND;
-        }
-
-        return ContentResponse.Builder.<Boolean>builder(UUID.randomUUID().toString())
-                .data(isDeleted.get()).compose();
+        return Builder.<Boolean>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
+                .data(this.driver.delete(queryId, cursorId)).compose();
     }
 }

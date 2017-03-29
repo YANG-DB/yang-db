@@ -1,7 +1,7 @@
 package com.kayhut.fuse.dispatcher.driver;
 
-import com.kayhut.fuse.model.process.PageResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 
 import java.util.Optional;
 
@@ -10,6 +10,7 @@ import java.util.Optional;
  */
 public interface PageDispatcherDriver {
     Optional<PageResourceInfo> create(String queryId, String cursorId, int pageSize);
-    Optional<Object> get(String queryId, String cursorId, String pageId);
-    Optional<Boolean> delete(String queryId, String cursorId, String pageId);
+    Optional<StoreResourceInfo> getInfo(String queryId, String cursorId);
+    Optional<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId);
+    Optional<Object> getData(String queryId, String cursorId, String pageId);
 }

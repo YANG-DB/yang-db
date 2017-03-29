@@ -26,12 +26,7 @@
         <!--functional dependencies -->
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-unipop</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>fuse-model</artifactId>
+            <artifactId>fuse-asg</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -39,18 +34,31 @@
             <artifactId>fuse-dispatcher</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-neo4j</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>org.kayhut</groupId>
-            <artifactId>fuse-asg</artifactId>
+            <artifactId>fuse-epb</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- Server -->
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-executor</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-gta</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+       <!-- Server -->
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-netty</artifactId>
@@ -65,7 +73,12 @@
             <groupId>org.jooby</groupId>
             <artifactId>jooby-jackson</artifactId>
         </dependency>
-
+        <!--serialization-->
+        <dependency>
+            <groupId>com.cedarsoftware</groupId>
+            <artifactId>json-io</artifactId>
+            <version>4.9.10</version>
+        </dependency>
         <!-- logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -73,12 +86,6 @@
         </dependency>
 
         <!-- Tests -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>

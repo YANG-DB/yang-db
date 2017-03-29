@@ -26,7 +26,7 @@
     {
       "eNum": 3,
       "type": "EProp",
-      "pType": 1,
+      "pType": "1.1",
       "pTag": "1",
       "con": {
         "op": "eq",

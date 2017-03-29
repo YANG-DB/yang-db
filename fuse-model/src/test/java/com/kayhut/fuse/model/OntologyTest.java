@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.*;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
@@ -29,7 +32,6 @@ public class OntologyTest {
         System.out.println("ontologyActualJSON:" + ontologyActualJSON);
         JSONAssert.assertEquals(ontologyExpectedJSONString, ontologyActualJSON, false);
     }
-
 
     @Test
     public void testOntologyDeSerialization() throws Exception {
@@ -252,7 +254,6 @@ public class OntologyTest {
         ontologyObj.setEnumeratedTypes(enumeratedTypes);
 
     }
-
 
     private String readJsonToString(String jsonFileName) throws Exception {
         String result = "";
