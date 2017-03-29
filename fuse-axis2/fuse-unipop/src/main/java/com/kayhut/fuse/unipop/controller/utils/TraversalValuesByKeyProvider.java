@@ -33,14 +33,18 @@ public class TraversalValuesByKeyProvider<T> implements TraversalValueByKeyProvi
         //region Override Methods
         @Override
         protected Boolean visitHasStep(HasStep hasStep) {
-            Stream.of(hasStep.getHasContainers()).flatMap((Object hasContainerObj) -> {
+            Stream.ofAll(hasStep.getHasContainers()).flatMap(hasContainerObj ->
+            {
                 HasContainer hasContainer = (HasContainer)hasContainerObj;
-                if (this.key == hasContainer.getKey()) {
+                if (this.key == hasContainer.getKey())
+                {
                     if (Iterable.class.isAssignableFrom(hasContainer.getValue().getClass())) {
                         return Stream.of(((Iterable) hasContainer.getValue())).map(value -> value.toString());
-                    } else if (String[].class.isAssignableFrom(hasContainer.getValue().getClass())) {
+                    }
+                    else if (String[].class.isAssignableFrom(hasContainer.getValue().getClass())) {
                         return Stream.of((String[]) hasContainer.getValue());
-                    } else {
+                    }
+                    else {
                         return Stream.of(hasContainer.getValue());
                     }
                 }
