@@ -20,9 +20,9 @@ import java.util.*;
  */
 public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrategy<Plan<C>, AsgQuery> {
     private PlanOpCostEstimator<C> costEstimator;
-    private PlanCostEstimator<C> planCostEstimator;
+    private PlanCostEstimator<Plan<C>, C> planCostEstimator;
 
-    public AllDirectionsPlanExtensionStrategy(PlanOpCostEstimator<C> costEstimator, PlanCostEstimator<C> planCostEstimator) {
+    public AllDirectionsPlanExtensionStrategy(PlanOpCostEstimator<C> costEstimator, PlanCostEstimator<Plan<C>,C> planCostEstimator) {
         this.costEstimator = costEstimator;
         this.planCostEstimator = planCostEstimator;
     }

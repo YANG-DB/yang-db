@@ -6,7 +6,7 @@ import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 /**
  * Created by moti on 3/29/2017.
  */
-public class DummyPlanCostEstimator implements PlanCostEstimator<SingleCost> {
+public class DummyPlanCostEstimator implements PlanCostEstimator<Plan<SingleCost>,SingleCost> {
 
     @Override
     public SingleCost estimateCost(Plan<SingleCost> newPlan) {
