@@ -8,6 +8,10 @@ import javaslang.collection.Stream;
  */
 public class CompositeSearchAppender<TContext> implements SearchAppender<TContext> {
     //region Constructors
+    public CompositeSearchAppender(SearchAppender<TContext>...searchAppenders) {
+        this(Stream.of(searchAppenders));
+    }
+
     public CompositeSearchAppender(Iterable<SearchAppender<TContext>> searchAppenders) {
         this.searchAppenders = Stream.ofAll(searchAppenders).toList();
     }

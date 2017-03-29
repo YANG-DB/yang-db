@@ -15,6 +15,6 @@ public abstract class SearchQueryAppenderBase<TContext> implements SearchAppende
     //endregion
 
     //region Abstract Methods
-    public abstract boolean append(QueryBuilder queryBuilder, TContext context);
+    protected abstract boolean append(QueryBuilder queryBuilder, TContext context);
     //endregion
 }

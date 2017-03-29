@@ -10,7 +10,7 @@ import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
 public class ElementConstraintSearchAppender extends SearchQueryAppenderBase<PromiseElementControllerContext> {
     //region SearchQueryAppenderBase Implementation
     @Override
-    public boolean append(QueryBuilder queryBuilder, PromiseElementControllerContext promiseElementControllerContext) {
+    protected boolean append(QueryBuilder queryBuilder, PromiseElementControllerContext promiseElementControllerContext) {
         if (!promiseElementControllerContext.getConstraint().isPresent()) {
             return false;
         }
