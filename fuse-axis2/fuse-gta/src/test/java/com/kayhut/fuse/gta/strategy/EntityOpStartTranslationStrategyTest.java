@@ -34,10 +34,10 @@ public class EntityOpStartTranslationStrategyTest {
         AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete).build();
         PlanOpBase planOpBase = new EntityOp(ebaseAsgEBase);
 
-        Plan plan = Mockito.mock(Plan.class);
+        Plan<?> plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            ArrayList<PlanOpWithCost> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost(planOpBase, null));
+            ArrayList<PlanOpWithCost<?>> ops = new ArrayList<>();
+            ops.add(new PlanOpWithCost<>(planOpBase, null));
             return ops;
         });
 
@@ -78,10 +78,10 @@ public class EntityOpStartTranslationStrategyTest {
         AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(eTyped).build();
         PlanOpBase planOpBase = new EntityOp(ebaseAsgEBase);
 
-        Plan plan = Mockito.mock(Plan.class);
+        Plan<?> plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            ArrayList<PlanOpWithCost> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost(planOpBase, null));
+            ArrayList<PlanOpWithCost<?>> ops = new ArrayList<>();
+            ops.add(new PlanOpWithCost<>(planOpBase, null));
             return ops;
         });
 

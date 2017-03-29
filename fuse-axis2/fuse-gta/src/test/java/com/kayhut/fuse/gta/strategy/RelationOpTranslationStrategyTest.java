@@ -48,12 +48,12 @@ public class RelationOpTranslationStrategyTest {
         EntityOp entity2 = new EntityOp(AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete2).build());
         RelationOp relationOp = new RelationOp(AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).build());
 
-        Plan plan = Mockito.mock(Plan.class);
+        Plan<?> plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            List<PlanOpWithCost> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost(entity1, null));
-            ops.add(new PlanOpWithCost(relationOp, null));
-            ops.add(new PlanOpWithCost(entity2, null));
+            List<PlanOpWithCost<?>> ops = new ArrayList<>();
+            ops.add(new PlanOpWithCost<>(entity1, null));
+            ops.add(new PlanOpWithCost<>(relationOp, null));
+            ops.add(new PlanOpWithCost<>(entity2, null));
             return ops;
         });
 

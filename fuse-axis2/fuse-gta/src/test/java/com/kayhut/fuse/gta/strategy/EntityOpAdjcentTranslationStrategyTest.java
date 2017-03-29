@@ -4,7 +4,6 @@ import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.when;
  */
 public class EntityOpAdjcentTranslationStrategyTest {
     @Test
-    public void entityOpAdjcentTranslationStrategyTest1() throws Exception {
+    public void entityOpAdjacentTranslationStrategyTest1() throws Exception {
         EConcrete concrete1 = new EConcrete();
         concrete1.seteNum(1);
         concrete1.seteTag("A");
@@ -42,9 +41,9 @@ public class EntityOpAdjcentTranslationStrategyTest {
 
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            List<PlanOpWithCost> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost(entity1, null));
-            ops.add(new PlanOpWithCost(entity2, null));
+            List<PlanOpWithCost<?>> ops = new ArrayList<>();
+            ops.add(new PlanOpWithCost<>(entity1, null));
+            ops.add(new PlanOpWithCost<>(entity2, null));
             return ops;
         });
 
@@ -71,8 +70,8 @@ public class EntityOpAdjcentTranslationStrategyTest {
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
         when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> ((PlanOpWithCost)plan.getOps().get(1)).getOpBase());
 
-        EntityOpAdjcentTranslationStrategy entityOpAdjcentTranslationStrategy = new EntityOpAdjcentTranslationStrategy();
-        GraphTraversal traversal = entityOpAdjcentTranslationStrategy.apply(context, new DefaultGraphTraversal());
+        EntityOpAdjacentTranslationStrategy entityOpAdjacentTranslationStrategy = new EntityOpAdjacentTranslationStrategy();
+        GraphTraversal traversal = entityOpAdjacentTranslationStrategy.apply(context, new DefaultGraphTraversal());
 
         Assert.assertEquals(traversal.asAdmin().getSteps().get(0).getClass().getSimpleName(), "SelectOneStep"); ;
     }

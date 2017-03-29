@@ -26,7 +26,7 @@ public class PlanUtilTest {
 
     @Test
     public void isFirst() throws Exception {
-        List<PlanOpWithCost> ops = planOf2.getOps();
+        List<PlanOpWithCost<?>> ops = planOf2.getOps();
         PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
         PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
 
@@ -38,7 +38,7 @@ public class PlanUtilTest {
     @Test
     public void getNext() throws Exception {
 
-        List<PlanOpWithCost> ops = planOf2.getOps();
+        List<PlanOpWithCost<?>> ops = planOf2.getOps();
         PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
         PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
 
@@ -49,7 +49,7 @@ public class PlanUtilTest {
 
     @Test
     public void getPrev() throws Exception {
-        List<PlanOpWithCost> ops = planOf2.getOps();
+        List<PlanOpWithCost<?>> ops = planOf2.getOps();
         PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
         PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
 

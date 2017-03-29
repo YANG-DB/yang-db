@@ -39,9 +39,9 @@ public class EntityOpPostRelTranslationStrategyTest {
 
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            List<PlanOpWithCost> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost(relationOp, null));
-            ops.add(new PlanOpWithCost(entityOp, null));
+            List<PlanOpWithCost<?>> ops = new ArrayList<>();
+            ops.add(new PlanOpWithCost<>(relationOp, null));
+            ops.add(new PlanOpWithCost<>(entityOp, null));
             return ops;
         });
 
