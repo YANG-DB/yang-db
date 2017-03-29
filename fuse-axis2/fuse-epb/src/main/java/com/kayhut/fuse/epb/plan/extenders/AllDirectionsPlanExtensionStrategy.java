@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.cost.PlanCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.PlanOpCostEstimator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -20,9 +20,11 @@ import java.util.*;
  */
 public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrategy<Plan<C>, AsgQuery> {
     private PlanOpCostEstimator<C> costEstimator;
+    private PlanCostEstimator<C> planCostEstimator;
 
-    public AllDirectionsPlanExtensionStrategy(PlanOpCostEstimator<C> costEstimator) {
+    public AllDirectionsPlanExtensionStrategy(PlanOpCostEstimator<C> costEstimator, PlanCostEstimator<C> planCostEstimator) {
         this.costEstimator = costEstimator;
+        this.planCostEstimator = planCostEstimator;
     }
 
     @Override
@@ -42,6 +44,10 @@ public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrat
                 }
             }
         }
+        for(Plan<C> newPlan : plans){
+            newPlan.setPlanComplete(SimpleExtenderUtils.checkIfPlanIsComplete(newPlan, query));
+        }
+
         return plans;
     }
 
@@ -53,6 +59,7 @@ public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrat
                     PlanOpBase op = createOpForElement(next);
                     Plan<C> newPlan = new Plan<C>(new LinkedList<>(originalPlan.getOps()));
                     newPlan.getOps().add(new PlanOpWithCost<C>(op, costEstimator.estimateCost(Optional.of(originalPlan), op)));
+                    newPlan.setCost(planCostEstimator.estimateCost(newPlan));
                     plans.add(newPlan);
                 }
             }

@@ -25,10 +25,28 @@ public class Plan<C> {
     public void setOps(List<PlanOpWithCost<C>> ops) {
         this.ops = ops;
     }
-    //endregion
+
+    public boolean isPlanComplete() {
+        return isPlanComplete;
+    }
+
+    public void setPlanComplete(boolean planComplete) {
+        isPlanComplete = planComplete;
+    }
+
+    public C getCost() {
+        return cost;
+    }
+
+    public void setCost(C cost) {
+        this.cost = cost;
+    }
+//endregion
 
     //region Fields
     private List<PlanOpWithCost<C>> ops;
+    private boolean isPlanComplete;
+    private C cost;
     //endregion
 
 }

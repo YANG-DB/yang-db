@@ -58,8 +58,9 @@ public class Neo4JOperationContextProcessor implements
         } else {
             throw new RuntimeException("Query ontology not present in catalog.");
         }
-
-        return submit(eventBus, context.of(new Tuple2<>(new Plan(), new SingleCost(0.0))));
+        Plan<SingleCost> plan = new Plan<>();
+        plan.setCost(new SingleCost(0.0));
+        return submit(eventBus, context.of(plan));
     }
     //endregion
 

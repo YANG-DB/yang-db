@@ -16,10 +16,10 @@ import static com.kayhut.fuse.model.Utils.submit;
 public class SimpleEpbDriver implements QueryCreationOperationContext.Processor {
 
     private EventBus bus;
-    private PlanSearcher<Plan, AsgQuery, SingleCost> planSearcher;
+    private PlanSearcher<Plan<SingleCost>, AsgQuery> planSearcher;
 
     @Inject
-    public SimpleEpbDriver(EventBus bus,PlanSearcher<Plan, AsgQuery, SingleCost> planSearcher) {
+    public SimpleEpbDriver(EventBus bus,PlanSearcher<Plan<SingleCost>, AsgQuery> planSearcher) {
         this.bus = bus;
         this.planSearcher = planSearcher;
         this.bus.register(this);
@@ -38,9 +38,9 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
         }
 
         AsgQuery query = context.getAsgQuery();
-        Iterable<PlanWrapper<Plan, SingleCost>> wrappers = planSearcher.build(query, new DefaultChoiceCriteria<>());
+        Iterable<Plan<SingleCost>> plans = planSearcher.build(query, new DefaultChoiceCriteria<SingleCost>());
         //get first
-        PlanWrapper<Plan, SingleCost> first = wrappers.iterator().next();
-        return submit(bus, context.of(first.asTuple2()));
+        Plan first = plans.iterator().next();
+        return submit(bus, context.of(first));
     }
 }

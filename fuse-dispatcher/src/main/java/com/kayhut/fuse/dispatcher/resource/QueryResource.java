@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public class QueryResource {
     //region Constructors
-    public QueryResource(Query query, QueryMetadata queryMetadata, Tuple2<Plan,SingleCost> plan) {
+    public QueryResource(Query query, QueryMetadata queryMetadata, Plan<SingleCost> plan) {
         this.query = query;
         this.queryMetadata = queryMetadata;
         this.cursorResources = new HashMap<>();
@@ -54,7 +54,7 @@ public class QueryResource {
         return queryMetadata;
     }
 
-    public Tuple2<Plan,SingleCost> getExecutionPlan() {
+    public Plan<SingleCost> getExecutionPlan() {
         return this.executionPlan;
     }
     //endregion
@@ -62,7 +62,7 @@ public class QueryResource {
     //region Fields
     private Query query;
     private QueryMetadata queryMetadata;
-    private Tuple2<Plan,SingleCost> executionPlan;
+    private Plan<SingleCost> executionPlan;
     private Map<String, CursorResource> cursorResources;
 
     private int cursorSequence;

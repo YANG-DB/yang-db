@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.cost.DummyPlanCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.DummyPlanOpCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
@@ -29,7 +29,7 @@ public class SimpleBuilderTests {
     public void TestInitialCreationSingleEntity(){
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
-        InitialPlanGeneratorExtensionStrategy<SingleCost> strategy = new InitialPlanGeneratorExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator());
+        InitialPlanGeneratorExtensionStrategy<SingleCost> strategy = new InitialPlanGeneratorExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator(), new DummyPlanCostEstimator());
         Iterable<Plan<SingleCost>> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
@@ -47,7 +47,7 @@ public class SimpleBuilderTests {
     public void TestInitialCreationMultipleEntities(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
-        InitialPlanGeneratorExtensionStrategy<SingleCost> strategy = new InitialPlanGeneratorExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator());
+        InitialPlanGeneratorExtensionStrategy<SingleCost> strategy = new InitialPlanGeneratorExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator(), new DummyPlanCostEstimator());
         Iterable<Plan<SingleCost>> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
@@ -76,8 +76,8 @@ public class SimpleBuilderTests {
 
     @Test
     public void TestCompositePlanStrategyInit(){
-        CompositePlanExtensionStrategy<Plan<SingleCost>, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator()),
-                                                                                                                            new AllDirectionsPlanExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator()));
+        CompositePlanExtensionStrategy<Plan<SingleCost>, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator(), new DummyPlanCostEstimator()),
+                                                                                                                            new AllDirectionsPlanExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator(), new DummyPlanCostEstimator()));
 
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 

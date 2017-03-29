@@ -45,7 +45,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return asgQuery;
     }
 
-    public Tuple2<Plan, SingleCost> getExecutionPlan() {
+    public Plan<SingleCost> getExecutionPlan() {
         return executionPlan;
     }
 
@@ -53,7 +53,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this.cloneImpl().asg(asgQuery);
     }
 
-    public QueryCreationOperationContext of(Tuple2<Plan, SingleCost> executionPlan) {
+    public QueryCreationOperationContext of(Plan<SingleCost> executionPlan) {
         return this.cloneImpl().executionPlan(executionPlan);
     }
     //endregion
@@ -72,7 +72,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this;
     }
 
-    private QueryCreationOperationContext executionPlan(Tuple2<Plan, SingleCost> executionPlan) {
+    private QueryCreationOperationContext executionPlan(Plan<SingleCost> executionPlan) {
         this.executionPlan = executionPlan;
         return this;
     }
@@ -82,6 +82,6 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     private QueryMetadata queryMetadata;
     private Query query;
     private AsgQuery asgQuery;
-    private Tuple2<Plan, SingleCost> executionPlan;
+    private Plan<SingleCost> executionPlan;
     //endregion
 }

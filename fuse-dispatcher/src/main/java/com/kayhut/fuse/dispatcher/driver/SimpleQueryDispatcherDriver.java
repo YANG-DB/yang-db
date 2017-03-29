@@ -74,7 +74,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
             return Optional.empty();
         }
 
-        return Optional.of(queryResource.get().getExecutionPlan()._1());
+        return Optional.of(queryResource.get().getExecutionPlan());
     }
 
     @Override

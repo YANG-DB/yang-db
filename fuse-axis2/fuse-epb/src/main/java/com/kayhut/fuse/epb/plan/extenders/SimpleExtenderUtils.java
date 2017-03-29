@@ -66,4 +66,10 @@ public class SimpleExtenderUtils {
     public static boolean shouldAdvanceToParents(AsgEBase<? extends EBase> handledPartToExtend) {
         return handledPartToExtend.getParents() != null;
     }
+
+    public static <C> boolean checkIfPlanIsComplete(Plan<C> plan, AsgQuery query){
+        Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
+        Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(plan, queryParts);
+        return partsTuple._2().isEmpty();
+    }
 }

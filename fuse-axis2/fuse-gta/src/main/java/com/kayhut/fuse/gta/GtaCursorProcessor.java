@@ -39,9 +39,9 @@ public class GtaCursorProcessor implements
             return context;
         }
         //execute gta plan ==> traversal extraction
-        Tuple2<Plan, SingleCost> executionPlan = context.getQueryResource().getExecutionPlan();
+        Plan<SingleCost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
-        Traversal traversal = engine.createTraversal(ontology, executionPlan._1());
+        Traversal traversal = engine.createTraversal(ontology, executionPlan);
         //submit
         return submit(eventBus, context.of(new TraversalCursor(traversal)));
 
