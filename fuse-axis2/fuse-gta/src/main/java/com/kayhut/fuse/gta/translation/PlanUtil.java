@@ -1,6 +1,7 @@
 package com.kayhut.fuse.gta.translation;
 
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,20 +13,28 @@ public class PlanUtil {
 
     //region Plan Util Class
 
-        public boolean isFirst(List<PlanOpBase> ops, PlanOpBase planOpBase) {
-            return ops.size() > 0 && ops.get(0) == planOpBase;
+        public boolean isFirst(List<PlanOpWithCost> ops, PlanOpBase planOpBase) {
+            return ops.size() > 0 && ops.get(0).getOpBase() == planOpBase;
         }
 
-        public Optional<PlanOpBase> getNext(List<PlanOpBase> ops, PlanOpBase planOpBase)
+        public Optional<PlanOpBase> getNext(List<PlanOpWithCost> ops, PlanOpBase planOpBase)
         {
-            int indexOfCurrent = ops.indexOf(planOpBase);
-            return indexOfCurrent == ops.size() - 1 ? Optional.empty() : Optional.of(ops.get(++indexOfCurrent));
+            int indexOfCurrent = findIndexOfOp(ops, planOpBase);
+            return indexOfCurrent == ops.size() - 1 ? Optional.empty() : Optional.of(ops.get(++indexOfCurrent).getOpBase());
         }
 
-        public Optional<PlanOpBase> getPrev(List<PlanOpBase> ops, PlanOpBase planOpBase)
+        public Optional<PlanOpBase> getPrev(List<PlanOpWithCost> ops, PlanOpBase planOpBase)
         {
-            int indexOfCurrent = ops.indexOf(planOpBase);
-            return indexOfCurrent == 0 ? Optional.empty() : Optional.of(ops.get(--indexOfCurrent));
+            int indexOfCurrent = findIndexOfOp(ops, planOpBase);
+            return indexOfCurrent == 0 ? Optional.empty() : Optional.of(ops.get(--indexOfCurrent).getOpBase());
+        }
+
+        private int findIndexOfOp(List<PlanOpWithCost> ops, PlanOpBase planOpBase){
+            for (int i = 0;i < ops.size(); i++){
+                if(ops.get(i).getOpBase() == planOpBase)
+                    return i;
+            }
+            return -1;
         }
 
 

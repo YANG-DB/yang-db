@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -41,9 +42,9 @@ public class EntityOpAdjcentTranslationStrategyTest {
 
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            List<PlanOpBase> ops = new ArrayList<>();
-            ops.add(entity1);
-            ops.add(entity2);
+            List<PlanOpWithCost> ops = new ArrayList<>();
+            ops.add(new PlanOpWithCost(entity1, null));
+            ops.add(new PlanOpWithCost(entity2, null));
             return ops;
         });
 
@@ -68,7 +69,7 @@ public class EntityOpAdjcentTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> plan.getOps().get(1));
+        when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> ((PlanOpWithCost)plan.getOps().get(1)).getOpBase());
 
         EntityOpAdjcentTranslationStrategy entityOpAdjcentTranslationStrategy = new EntityOpAdjcentTranslationStrategy();
         GraphTraversal traversal = entityOpAdjcentTranslationStrategy.apply(context, new DefaultGraphTraversal());

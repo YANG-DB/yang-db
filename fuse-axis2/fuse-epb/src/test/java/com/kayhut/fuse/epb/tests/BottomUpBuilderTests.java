@@ -1,6 +1,8 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.epb.plan.*;
+import com.kayhut.fuse.epb.plan.cost.DummyPlanOpCostEstimator;
+import com.kayhut.fuse.epb.plan.cost.PlanOpCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
@@ -11,6 +13,7 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.EBase;
 import javaslang.Tuple2;
@@ -116,12 +119,12 @@ public class BottomUpBuilderTests {
     public void TestBuilderSimplePath(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
-        BottomUpPlanBuilderImpl<Plan, AsgQuery, SingleCost> bottomUpPlanBuilder = createBottomUpPlanBuilder();
+        BottomUpPlanBuilderImpl<Plan<SingleCost>, AsgQuery, SingleCost> bottomUpPlanBuilder = createBottomUpPlanBuilder();
 
 
-        Iterable<PlanWrapper<Plan, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query.getLeft(), new DefaultChoiceCriteria<>());
+        Iterable<PlanWrapper<Plan<SingleCost>, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query.getLeft(), new DefaultChoiceCriteria<>());
 
-        List<PlanWrapper<Plan, SingleCost>> planList = new LinkedList<>();
+        List<PlanWrapper<Plan<SingleCost>, SingleCost>> planList = new LinkedList<>();
         planWrappers.forEach(planList::add);
 
         Assert.assertEquals(1, planList.size());
@@ -134,12 +137,12 @@ public class BottomUpBuilderTests {
 
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
-        BottomUpPlanBuilderImpl<Plan, AsgQuery, SingleCost> bottomUpPlanBuilder = createBottomUpPlanBuilder();
+        BottomUpPlanBuilderImpl<Plan<SingleCost>, AsgQuery, SingleCost> bottomUpPlanBuilder = createBottomUpPlanBuilder();
 
 
-        Iterable<PlanWrapper<Plan, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query.getLeft(), new DefaultChoiceCriteria<>());
+        Iterable<PlanWrapper<Plan<SingleCost>, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query.getLeft(), new DefaultChoiceCriteria<>());
 
-        List<PlanWrapper<Plan, SingleCost>> planList = new LinkedList<>();
+        List<PlanWrapper<Plan<SingleCost>, SingleCost>> planList = new LinkedList<>();
         planWrappers.forEach(planList::add);
 
         Assert.assertEquals(1, planList.size());
@@ -151,12 +154,12 @@ public class BottomUpBuilderTests {
     public void TestBuilderAllPaths(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
-        BottomUpPlanBuilderImpl<Plan, AsgQuery, SingleCost> bottomUpPlanBuilder = createBottomUpPlanBuilder();
+        BottomUpPlanBuilderImpl<Plan<SingleCost>, AsgQuery, SingleCost> bottomUpPlanBuilder = createBottomUpPlanBuilder();
 
 
-        Iterable<PlanWrapper<Plan, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query.getLeft(), new DefaultAllCompletePlansChoiceCriteria<>());
+        Iterable<PlanWrapper<Plan<SingleCost>, SingleCost>> planWrappers = bottomUpPlanBuilder.build(query.getLeft(), new DefaultAllCompletePlansChoiceCriteria<>());
 
-        List<PlanWrapper<Plan, SingleCost>> planList = new LinkedList<>();
+        List<PlanWrapper<Plan<SingleCost>, SingleCost>> planList = new LinkedList<>();
         planWrappers.forEach(planList::add);
 
         Assert.assertEquals(2, planList.size());
@@ -170,24 +173,24 @@ public class BottomUpBuilderTests {
         AsgEBase thirdElement = (AsgEBase) secondElement.getNext().get(0);
         boolean foundFirstPlan = false;
         boolean foundSecondPlan = false;
-        for(PlanWrapper<Plan, SingleCost> plan : planList){
-            List<PlanOpBase> ops = plan.getPlan().getOps();
-            if(firstElement.geteNum() == ops.get(0).geteNum() && secondElement.geteNum() == ops.get(1).geteNum() && thirdElement.geteNum() == ops.get(2).geteNum())
+        for(PlanWrapper<Plan<SingleCost>, SingleCost> plan : planList){
+            List<PlanOpWithCost<SingleCost>> ops = plan.getPlan().getOps();
+            if(firstElement.geteNum() == ops.get(0).getOpBase().geteNum() && secondElement.geteNum() == ops.get(1).getOpBase().geteNum() && thirdElement.geteNum() == ops.get(2).getOpBase().geteNum())
                 foundFirstPlan = true;
-            if(firstElement.geteNum() == ops.get(2).geteNum() && secondElement.geteNum() == ops.get(1).geteNum() && thirdElement.geteNum() == ops.get(0).geteNum())
+            if(firstElement.geteNum() == ops.get(2).getOpBase().geteNum() && secondElement.geteNum() == ops.get(1).getOpBase().geteNum() && thirdElement.geteNum() == ops.get(0).getOpBase().geteNum())
                 foundSecondPlan = true;
         }
         Assert.assertTrue(foundFirstPlan && foundSecondPlan);
     }
 
-    private BottomUpPlanBuilderImpl<Plan, AsgQuery, SingleCost> createBottomUpPlanBuilder() {
-        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy(),
-                new AllDirectionsPlanExtensionStrategy());
+    private BottomUpPlanBuilderImpl<Plan<SingleCost>, AsgQuery, SingleCost> createBottomUpPlanBuilder() {
+        CompositePlanExtensionStrategy<Plan<SingleCost>, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator()),
+                new AllDirectionsPlanExtensionStrategy<SingleCost>(new DummyPlanOpCostEstimator()));
 
-        PlanPruneStrategy<Plan, SingleCost> pruneStrategy = new NoPruningPruneStrategy<>();
-        PlanValidator<Plan, AsgQuery> validator = new SiblingOnlyPlanValidator();
+        PlanPruneStrategy<Plan<SingleCost>, SingleCost> pruneStrategy = new NoPruningPruneStrategy<>();
+        PlanValidator<Plan<SingleCost>, AsgQuery> validator = new SiblingOnlyPlanValidator();
 
-        PlanWrapperFactory<Plan, AsgQuery, SingleCost> planWrapperFactory = new SimpleWrapperFactory();
+        PlanWrapperFactory<Plan<SingleCost>, AsgQuery, SingleCost> planWrapperFactory = new SimpleWrapperFactory();
 
         return new BottomUpPlanBuilderImpl<>(compositePlanExtensionStrategy,
                 pruneStrategy,

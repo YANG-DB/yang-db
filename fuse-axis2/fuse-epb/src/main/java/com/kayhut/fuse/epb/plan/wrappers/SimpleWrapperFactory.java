@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created by moti on 2/28/2017.
  */
-public class SimpleWrapperFactory implements PlanWrapperFactory<Plan, AsgQuery ,SingleCost> {
+public class SimpleWrapperFactory implements PlanWrapperFactory<Plan<SingleCost>, AsgQuery ,SingleCost> {
     @Override
     public PlanWrapper<Plan, SingleCost> wrapPlan(Plan extendedPlan, AsgQuery query) {
 

@@ -2,10 +2,7 @@ package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
@@ -42,9 +39,9 @@ public class EntityOpPostRelTranslationStrategyTest {
 
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            List<PlanOpBase> ops = new ArrayList<>();
-            ops.add(relationOp);
-            ops.add(entityOp);
+            List<PlanOpWithCost> ops = new ArrayList<>();
+            ops.add(new PlanOpWithCost(relationOp, null));
+            ops.add(new PlanOpWithCost(entityOp, null));
             return ops;
         });
 

@@ -2,10 +2,8 @@ package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -63,23 +61,23 @@ public class BuilderTestUtil {
         return  new ImmutablePair<>(query, concreteAsg1);
     }
 
-    public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery){
-        List<PlanOpBase> ops = new LinkedList<>();
+    public static Plan<SingleCost> createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery){
+        List<PlanOpWithCost<SingleCost>> ops = new LinkedList<>();
 
         AsgEBase<Start> startAsg = asgQuery.getStart();
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
 
         EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
+        ops.add(new PlanOpWithCost<SingleCost>(concOp, new SingleCost(0)));
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>)entityAsg.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
+        ops.add(new PlanOpWithCost<SingleCost>(relOp, new SingleCost(0)));
 
         AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>)relBaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(unOp);
+        ops.add(new PlanOpWithCost<SingleCost>(unOp, new SingleCost(0)));
 
-        return new Plan(ops);
+        return new Plan<SingleCost>(ops);
     }
 }

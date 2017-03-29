@@ -3,6 +3,7 @@ package com.kayhut.fuse.gta.translation;
 import com.kayhut.fuse.gta.strategy.*;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
@@ -37,12 +38,12 @@ public class SimplePlanOpTranslator {
     }
     //endregion
 
-    public GraphTraversal translate(Plan plan, GraphTraversal graphTraversal, Ontology ontology) {
+    public <C> GraphTraversal translate(Plan<C> plan, GraphTraversal graphTraversal, Ontology ontology) {
         AtomicReference<GraphTraversal> traversalReference = new AtomicReference<>(graphTraversal);
         // Create initial traversal
         Stream.ofAll(plan.getOps()).forEach(op ->
-                map.get(op.getClass()).forEach(strategy -> {
-                    traversalReference.set(strategy.apply(new TranslationStrategyContext(op, plan, ontology), traversalReference.get()));
+                map.get(op.getOpBase().getClass()).forEach(strategy -> {
+                    traversalReference.set(strategy.apply(new TranslationStrategyContext( op.getOpBase(), plan, ontology), traversalReference.get()));
                 }));
 
     // iterate ops

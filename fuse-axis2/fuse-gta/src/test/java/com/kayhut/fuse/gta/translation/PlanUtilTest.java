@@ -2,10 +2,8 @@ package com.kayhut.fuse.gta.translation;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -28,9 +26,9 @@ public class PlanUtilTest {
 
     @Test
     public void isFirst() throws Exception {
-        List<PlanOpBase> ops = planOf2.getOps();
-        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
-        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
+        List<PlanOpWithCost> ops = planOf2.getOps();
+        PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
+        PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
 
         PlanUtil planUtil = new PlanUtil();
         assertTrue(planUtil.isFirst(ops,planOpBaseFirst));
@@ -40,9 +38,9 @@ public class PlanUtilTest {
     @Test
     public void getNext() throws Exception {
 
-        List<PlanOpBase> ops = planOf2.getOps();
-        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
-        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
+        List<PlanOpWithCost> ops = planOf2.getOps();
+        PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
+        PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
 
         PlanUtil planUtil = new PlanUtil();
         assertEquals(planOpBaseSecond,planUtil.getNext(ops,planOpBaseFirst).get());
@@ -51,9 +49,9 @@ public class PlanUtilTest {
 
     @Test
     public void getPrev() throws Exception {
-        List<PlanOpBase> ops = planOf2.getOps();
-        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
-        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
+        List<PlanOpWithCost> ops = planOf2.getOps();
+        PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
+        PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
 
         PlanUtil planUtil = new PlanUtil();
         assertTrue(!planUtil.getPrev(ops,planOpBaseFirst).isPresent());
@@ -96,23 +94,23 @@ public class PlanUtilTest {
     }
 
     public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery) {
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOpWithCost<SingleCost>> ops = new LinkedList<>();
 
         AsgEBase<Start> startAsg = asgQuery.getStart();
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
 
         EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
+        ops.add(new PlanOpWithCost<>(concOp, new SingleCost(0)));
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
+        ops.add(new PlanOpWithCost<>(relOp, new SingleCost(0)));
 
         AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(unOp);
+        ops.add(new PlanOpWithCost<>(unOp, new SingleCost(0)));
 
-        return new Plan(ops);
+        return new Plan<>(ops);
     }
 
 }

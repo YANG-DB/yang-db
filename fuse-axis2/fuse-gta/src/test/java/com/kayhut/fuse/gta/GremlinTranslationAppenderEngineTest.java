@@ -1,10 +1,7 @@
 package com.kayhut.fuse.gta;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
@@ -104,19 +101,19 @@ public class GremlinTranslationAppenderEngineTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(eTypedAsg).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOpWithCost> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> eTypBaseAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp typOp = new EntityOp(eTypBaseAsg);
-        ops.add(typOp);
+        ops.add(new PlanOpWithCost(typOp, null));
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) eTypBaseAsg.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
+        ops.add(new PlanOpWithCost(relOp, null));
 
         AsgEBase<EEntityBase> conAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
         EntityOp concOp = new EntityOp(conAsg);
-        ops.add(concOp);
+        ops.add(new PlanOpWithCost(concOp, null));
 
         return new Plan(ops);
     }
@@ -145,19 +142,19 @@ public class GremlinTranslationAppenderEngineTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(eTypedAsg1).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOpWithCost> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> typBaseAsg1 = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp typOp1 = new EntityOp(typBaseAsg1);
-        ops.add(typOp1);
+        ops.add(new PlanOpWithCost(typOp1, null));
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) typBaseAsg1.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
+        ops.add(new PlanOpWithCost(relOp, null));
 
         AsgEBase<EEntityBase> typBaseAsg2 = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
         EntityOp typOp2 = new EntityOp(typBaseAsg2);
-        ops.add(typOp2);
+        ops.add(new PlanOpWithCost(typOp2, null));
 
         return new Plan(ops);
     }
@@ -189,19 +186,19 @@ public class GremlinTranslationAppenderEngineTest {
         AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg1).build();
 
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOpWithCost> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
+        ops.add(new PlanOpWithCost(concOp, null));
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
+        ops.add(new PlanOpWithCost(relOp, null));
 
         AsgEBase<EEntityBase> typBaseAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
         EntityOp typOp = new EntityOp(typBaseAsg);
-        ops.add(typOp);
+        ops.add(new PlanOpWithCost(typOp, null));
 
         return new Plan(ops);
     }
@@ -231,19 +228,19 @@ public class GremlinTranslationAppenderEngineTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOpWithCost> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
+        ops.add(new PlanOpWithCost(concOp, null));
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
+        ops.add(new PlanOpWithCost(relOp, null));
 
         AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(unOp);
+        ops.add(new PlanOpWithCost(unOp, null));
 
         return new Plan(ops);
     }
@@ -287,29 +284,29 @@ public class GremlinTranslationAppenderEngineTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOpWithCost> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
+        ops.add(new PlanOpWithCost(concOp, null));
 
         AsgEBase<Rel> rel1BaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
         RelationOp rel1Op = new RelationOp(rel1BaseAsg);
-        ops.add(rel1Op);
+        ops.add(new PlanOpWithCost(rel1Op, null));
 
 
         AsgEBase<EEntityBase> typBaseAsg = (AsgEBase<EEntityBase>) rel1BaseAsg.getNext().get(0);
         EntityOp typOp = new EntityOp(typBaseAsg);
-        ops.add(typOp);
+        ops.add(new PlanOpWithCost(typOp, null));
 
         AsgEBase<Rel> rel2BaseAsg = (AsgEBase<Rel>) typBaseAsg.getNext().get(0);
         RelationOp rel2Op = new RelationOp(rel1BaseAsg);
-        ops.add(rel2Op);
+        ops.add(new PlanOpWithCost(rel2Op, null));
 
 
         AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>) rel2BaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(unOp);
+        ops.add(new PlanOpWithCost(unOp, null));
 
         Plan plan  = new Plan(ops);
 
