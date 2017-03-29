@@ -1,6 +1,7 @@
 package com.kayhut.fuse.unipop.controller.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.model.query.Query;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
@@ -1173,9 +1174,9 @@ public class QueryBuilder {
         //region Composite Implementation
         @Override
         protected Object build() {
-            ArrayList<QueryBuilder> filters = new ArrayList<>();
+            ArrayList<org.elasticsearch.index.query.QueryBuilder> filters = new ArrayList<>();
             for(Composite child : getChildren()) {
-                filters.add((QueryBuilder) child.build());
+                filters.add((org.elasticsearch.index.query.QueryBuilder) child.build());
             }
             return filters;
         }
@@ -1292,7 +1293,7 @@ public class QueryBuilder {
             if (this.value != null && Iterable.class.isAssignableFrom(this.value.getClass())) {
                 return QueryBuilders.termsQuery(
                         this.getFieldName(),
-                        javaslang.collection.Stream.ofAll((Iterable)value));
+                        javaslang.collection.Stream.ofAll((Iterable)value).toJavaList());
             }
 
             return QueryBuilders.termsQuery(this.getFieldName(), this.value);

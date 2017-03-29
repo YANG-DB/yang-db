@@ -10,13 +10,13 @@ import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
 public class ElementConstraintSearchAppender extends SearchQueryAppenderBase<PromiseElementControllerContext> {
     //region SearchQueryAppenderBase Implementation
     @Override
-    public boolean append(QueryBuilder queryBuilder, PromiseElementControllerContext context) {
-        if (!context.getConstraint().isPresent()) {
+    protected boolean append(QueryBuilder queryBuilder, PromiseElementControllerContext promiseElementControllerContext) {
+        if (!promiseElementControllerContext.getConstraint().isPresent()) {
             return false;
         }
 
         new TraversalQueryTranslator(queryBuilder.seekRoot().query().filtered().filter().bool().must(), false)
-                .visit(context.getConstraint().get().getTraversal());
+                .visit(promiseElementControllerContext.getConstraint().get().getTraversal());
 
         return true;
     }

@@ -15,6 +15,8 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import java.util.*;
 
@@ -40,9 +42,10 @@ public class ElementGlobalTypeSearchAppenderTest {
 
         Assert.assertTrue(appendResult);
 
-        System.out.println(searchBuilder.getQueryBuilder().getQuery().toString());
-
-
+        JSONAssert.assertEquals(
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}}}}}}",
+                searchBuilder.getQueryBuilder().getQuery().toString(),
+                JSONCompareMode.LENIENT);
     }
 
 
