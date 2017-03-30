@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.search.appender;
+package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender;
@@ -29,7 +29,7 @@ public class CompositeSearchAppenderTest {
         SearchAppender<Context> searchAppender1 = (SearchAppender<Context>)mock(SearchAppender.class);
         when(searchAppender1.append(eq(searchBuilder), eq(context))).thenReturn(false);
 
-        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(searchAppender1);
+        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.first, searchAppender1);
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
 
         Assert.assertFalse(appendResult);
@@ -43,7 +43,7 @@ public class CompositeSearchAppenderTest {
         SearchAppender<Context> searchAppender1 = (SearchAppender<Context>)mock(SearchAppender.class);
         when(searchAppender1.append(eq(searchBuilder), eq(context))).thenReturn(true);
 
-        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(searchAppender1);
+        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.first, searchAppender1);
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
 
         Assert.assertTrue(appendResult);
@@ -60,7 +60,7 @@ public class CompositeSearchAppenderTest {
         SearchAppender<Context> searchAppender2 = (SearchAppender<Context>)mock(SearchAppender.class);
         when(searchAppender1.append(eq(searchBuilder), eq(context))).thenReturn(false);
 
-        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(searchAppender1, searchAppender2);
+        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.first, searchAppender1, searchAppender2);
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
 
         Assert.assertFalse(appendResult);
@@ -77,7 +77,7 @@ public class CompositeSearchAppenderTest {
         SearchAppender<Context> searchAppender2 = (SearchAppender<Context>)mock(SearchAppender.class);
         when(searchAppender1.append(eq(searchBuilder), eq(context))).thenReturn(true);
 
-        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(searchAppender1, searchAppender2);
+        CompositeSearchAppender<Context> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.first, searchAppender1, searchAppender2);
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
 
         Assert.assertTrue(appendResult);
