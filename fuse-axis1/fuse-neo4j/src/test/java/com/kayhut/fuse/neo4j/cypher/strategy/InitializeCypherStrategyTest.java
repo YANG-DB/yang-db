@@ -1,20 +1,16 @@
 package com.kayhut.fuse.neo4j.cypher.strategy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Start;
-import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
+import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
 
-import static com.kayhut.fuse.neo4j.cypher.strategy.TestUtils.loadOntology;
-import static org.junit.Assert.*;
+import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
 
 /**
  * Created by User on 26/03/2017.
@@ -29,8 +25,9 @@ public class InitializeCypherStrategyTest {
 
     @Test
     public void apply() throws Exception {
-        CypherStatement statement = new InitializeCypherStrategy(ontology, new HashMap<>()).apply(new AsgEBase(new Start()));
-        Assert.assertNotNull(statement.toString());
+        InitializeCypherStrategy initializeCypherStrategy = new InitializeCypherStrategy(new HashMap<>(), ontology);
+        CypherCompilationState state = initializeCypherStrategy.apply(new AsgEBase(new Start()));
+        Assert.assertNotNull(state.getStatement().toString());
     }
 
 
