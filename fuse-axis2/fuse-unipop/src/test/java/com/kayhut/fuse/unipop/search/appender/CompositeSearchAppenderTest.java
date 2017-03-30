@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
  */
 public class CompositeSearchAppenderTest {
     public class Context {
-
     }
 
     @Test
