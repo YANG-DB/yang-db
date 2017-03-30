@@ -1,4 +1,4 @@
-package com.kayhut.fuse.neo4j.test.driver;
+package com.kayhut.fuse.neo4j.driver;
 
 import org.junit.Test;
 

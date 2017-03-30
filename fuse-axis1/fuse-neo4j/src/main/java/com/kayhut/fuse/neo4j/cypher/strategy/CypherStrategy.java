@@ -2,37 +2,34 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.neo4j.cypher.CypherElement;
-import com.kayhut.fuse.neo4j.cypher.CypherNode;
-import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
+import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by User on 26/03/2017.
+ * Created by Elad on 26/03/2017.
  */
 public abstract class CypherStrategy {
-    private Map<AsgEBase, Tuple2<CypherStatement, String>> cypherStatementsMap;
+
+    protected Map<AsgEBase, CypherCompilationState> state;
     protected Ontology ontology;
 
-    public CypherStrategy(Ontology ontology, Map<AsgEBase, Tuple2<CypherStatement, String>> cypherStatementsMap) {
-        this.ontology = ontology;
-        this.cypherStatementsMap = cypherStatementsMap;
+    public CypherStrategy(Map<AsgEBase, CypherCompilationState> compilationState, Ontology ont) {
+       state = compilationState;
+       ontology = ont;
     }
 
-    protected Tuple2<CypherStatement, String> getWorkingStatement(AsgEBase element) {
-        if(cypherStatementsMap.containsKey(element))
-            return cypherStatementsMap.get(element);
-        //todo manage multi parents in map
-        return cypherStatementsMap.get(element.getParents().get(0));
+    protected CypherCompilationState getRelevantState(AsgEBase element) {
+        if(state.containsKey(element))
+            return state.get(element);
+        //TODO: manage multi parents in map
+        return state.get(element.getParents().get(0));
     }
 
-    protected CypherStatement context(AsgEBase element, CypherStatement newStatement) {
-        cypherStatementsMap.put(element, new Tuple2(newStatement, newStatement.getNextPathTag()));
-        return newStatement;
+    protected CypherCompilationState context(AsgEBase element, CypherCompilationState compilationState) {
+        state.put(element, compilationState);
+        return compilationState;
     }
 
-    public abstract CypherStatement apply(AsgEBase element);
+    public abstract CypherCompilationState apply(AsgEBase element);
 }

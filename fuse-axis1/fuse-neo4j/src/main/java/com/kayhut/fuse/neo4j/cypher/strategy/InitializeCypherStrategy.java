@@ -3,30 +3,28 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Start;
-import com.kayhut.fuse.neo4j.cypher.CypherElement;
-import com.kayhut.fuse.neo4j.cypher.CypherNode;
+import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
 
 import java.util.Map;
 
-import static com.kayhut.fuse.neo4j.cypher.CypherNode.EMPTY;
-
 /**
- * Created by User on 26/03/2017.
+ * Created by Elad on 26/03/2017.
  */
 public class InitializeCypherStrategy extends CypherStrategy {
 
-    public InitializeCypherStrategy(Ontology ontology, Map<AsgEBase, Tuple2<CypherStatement, String>> cypherStatementsMap) {
-        super(ontology,cypherStatementsMap);
+    public InitializeCypherStrategy(Map<AsgEBase, CypherCompilationState> compilationState, Ontology ont) {
+        super(compilationState, ont);
     }
 
-    public CypherStatement apply(AsgEBase element) {
-        //start node - initialize an empty cypher statement, with one path
+    public CypherCompilationState apply(AsgEBase element) {
+        //start node - initialize an empty cypher statement, with one path.
         if (element.geteBase() instanceof Start) {
-            return context(element,CypherStatement.cypherStatement());
+            CypherStatement statement = CypherStatement.cypherStatement();
+            String path = statement.getNextPathTag();
+            return context(element, new CypherCompilationState(statement, path));
         }
-        return getWorkingStatement(element)._1();
+        return getRelevantState(element);
     }
 }
 

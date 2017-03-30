@@ -1,4 +1,4 @@
-package com.kayhut.fuse.neo4j.cypher.strategy;
+package com.kayhut.fuse.neo4j.cypher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
