@@ -73,9 +73,15 @@ public class Neo4JOperationContextProcessor implements
         }
 
         //Compile the query and get the cursor ready
-        String cypherQuery = CypherCompiler.compile(asgQuery,ontology);
+        Neo4jCursor cursor = null;
+        try {
+            String cypherQuery = CypherCompiler.compile(asgQuery, ontology);
+            cursor = new Neo4jCursor(context.getQueryResource().getQuery(), cypherQuery, true);
+        } catch (Exception ex) {
+            cursor = new Neo4jCursor(context.getQueryResource().getQuery(), null, false);
+        }
 
-        return submit(eventBus, context.of(new Neo4jCursor(context.getQueryResource().getQuery(), cypherQuery)));
+        return submit(eventBus, context.of(cursor));
 
     }
     //endregion
@@ -89,7 +95,12 @@ public class Neo4JOperationContextProcessor implements
         }
 
         Neo4jCursor neo4jCursor = (Neo4jCursor)context.getCursorResource().getCursor();
-        QueryResult result = query(graphProvider,neo4jCursor);
+
+        QueryResult result = null;
+        if (neo4jCursor.isValid()) {
+            result = query(graphProvider, neo4jCursor);
+        }
+
         if (result == null) {
             result = new QueryResult();
         }

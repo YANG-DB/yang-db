@@ -8,7 +8,7 @@ import com.kayhut.fuse.model.query.Query;
  */
 public class Neo4jCursor implements Cursor {
     //region Constructors
-    public Neo4jCursor(Query query,String cypher) {
+    public Neo4jCursor(Query query,String cypher, boolean isValid) {
         this.query = query;
         this.cypher = cypher;
     }
@@ -24,8 +24,13 @@ public class Neo4jCursor implements Cursor {
         return cypher;
     }
 
+    public boolean isValid() {
+        return isValid;
+    }
+
     //region Fields
     private Query query;
     private String cypher;
+    private boolean isValid;
     //endregion
 }
