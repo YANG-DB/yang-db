@@ -12,8 +12,8 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static com.kayhut.fuse.neo4j.cypher.strategy.TestUtils.loadOntology;
-import static com.kayhut.fuse.neo4j.cypher.strategy.TestUtils.loadQuery;
+import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
+import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadQuery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

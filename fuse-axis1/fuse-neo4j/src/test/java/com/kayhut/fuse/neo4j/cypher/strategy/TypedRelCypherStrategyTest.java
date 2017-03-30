@@ -5,14 +5,14 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
+import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import static com.kayhut.fuse.neo4j.cypher.strategy.TestUtils.loadOntology;
+import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
 import static org.junit.Assert.*;
 
 /**
@@ -30,8 +30,8 @@ public class TypedRelCypherStrategyTest {
     @Test
     public void apply() throws Exception {
         AsgEBase element = new AsgEBase(new Start());
-        HashMap<AsgEBase, Tuple2<CypherStatement, String>> statementsMap = new HashMap<>();
-        new InitializeCypherStrategy(ontology, statementsMap).apply(element);
+        Map<AsgEBase, CypherCompilationState> state = new HashMap<>();
+        new InitializeCypherStrategy(state, ontology).apply(element);
 
         Rel rel = new Rel();
         rel.setrType(1);
@@ -39,10 +39,9 @@ public class TypedRelCypherStrategyTest {
         AsgEBase<ETyped> asgEBase = new AsgEBase(rel);
         element.addNextChild(asgEBase);
 
-        CypherStatement statement = new TypedRelCypherStrategy(ontology, statementsMap).apply(asgEBase);
-        assertNotNull(statement);
-        assertEquals(statement.toString(), "MATCH p0 = -[:Person]-\n" +
-                "RETURN null\n");
+        CypherCompilationState updatedState = new TypedRelCypherStrategy(state, ontology).apply(asgEBase);
+        assertNotNull(updatedState.getStatement());
+        assertTrue(updatedState.getStatement().toString().contains(":own]-"));
 
     }
 

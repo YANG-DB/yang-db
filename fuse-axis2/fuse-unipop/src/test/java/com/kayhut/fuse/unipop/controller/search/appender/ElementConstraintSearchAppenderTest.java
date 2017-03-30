@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.search.appender;
+package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;

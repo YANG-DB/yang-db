@@ -12,10 +12,10 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
+import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherCondition;
 import com.kayhut.fuse.neo4j.cypher.CypherElement;
 import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
 
 import java.util.LinkedList;
 import java.util.Map;
@@ -29,22 +29,25 @@ import static com.kayhut.fuse.neo4j.cypher.CypherOps.getOp;
  */
 public class ConditionCypherStrategy extends CypherStrategy {
 
-    public ConditionCypherStrategy(Ontology ontology, Map<AsgEBase, Tuple2<CypherStatement, String>> cypherStatementsMap) {
-        super(ontology, cypherStatementsMap);
+
+    public ConditionCypherStrategy(Map<AsgEBase, CypherCompilationState> compilationState, Ontology ont) {
+        super(compilationState, ont);
     }
 
     @Override
-    public CypherStatement apply(AsgEBase element) {
+    public CypherCompilationState apply(AsgEBase element) {
         if (element.geteBase() instanceof EProp) {
-            
-            CypherStatement workingSt = getWorkingStatement(element)._1();
 
-            CypherCondition cond = getPropertyCondition(element, workingSt, getWorkingStatement(element)._2(),ontology);
+            CypherCompilationState curState = getRelevantState(element);
 
-            return context(element, workingSt.appendCondition(cond));
+            CypherCondition cond = getPropertyCondition(element, curState.getStatement(), curState.getPathTag(), ontology);
+
+            curState.getStatement().appendCondition(cond);
+
+            return context(element, new CypherCompilationState(curState.getStatement(), curState.getPathTag()));
 
         }
-        return getWorkingStatement(element)._1();
+        return getRelevantState(element);
     }
 
     private Optional<Property> getProperty(AsgEBase asgNode, Ontology ont) {
@@ -89,21 +92,32 @@ public class ConditionCypherStrategy extends CypherStrategy {
 
         String val = property.get().getType().equals("int") ? (String) con.getExpr() : "'" + con.getExpr() + "'";
 
-        Object parent = asgNode.getParents().stream().filter(p -> ((AsgEBase) p).geteBase() instanceof Quant1 ||
-                ((AsgEBase) p).geteBase() instanceof Quant2).findAny().get();
+        Optional any = asgNode.getParents().stream().filter(p -> ((AsgEBase) p).geteBase() instanceof Quant1 ||
+                                                            ((AsgEBase) p).geteBase() instanceof Quant2).findAny();
 
-        String qType = "all";
-        if(parent instanceof Quant1) {
-            qType = ((Quant1)parent).getqType();
-        } else if(parent instanceof Quant2) {
-            qType = ((Quant2)parent).getqType();
+        CypherCondition.Condition condType = CypherCondition.Condition.AND;
+        if(any.isPresent()) {
+            if(any.get() instanceof  Quant1) {
+                if (((Quant1) any.get()).getqType().equals("all")) {
+                    condType = CypherCondition.Condition.AND;
+                } else {
+                    condType = CypherCondition.Condition.OR;
+                }
+            }
+            if(any.get() instanceof  Quant2) {
+                if (((Quant2) any.get()).getqType().equals("all")) {
+                    condType = CypherCondition.Condition.AND;
+                } else {
+                    condType = CypherCondition.Condition.OR;
+                }
+            }
         }
 
         CypherCondition cond = CypherCondition.cypherCondition()
                 .withTarget(String.format("%s.%s", lastElement.tag, property.get().getName().replace(" ","_")))
                 .withValue(val)
                 .withOperator(getOp(op))
-                .withType(qType.equals("all") ? CypherCondition.Condition.AND : CypherCondition.Condition.OR);
+                .withType(condType);
 
         return cond;
 

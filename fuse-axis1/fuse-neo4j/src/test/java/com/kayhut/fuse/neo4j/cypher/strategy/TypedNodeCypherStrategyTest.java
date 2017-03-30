@@ -4,14 +4,14 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
+import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import static com.kayhut.fuse.neo4j.cypher.strategy.TestUtils.loadOntology;
+import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
 import static org.junit.Assert.*;
 
 /**
@@ -29,8 +29,8 @@ public class TypedNodeCypherStrategyTest {
     @Test
     public void apply() throws Exception {
         AsgEBase element = new AsgEBase(new Start());
-        HashMap<AsgEBase, Tuple2<CypherStatement, String>> statementsMap = new HashMap<>();
-        new InitializeCypherStrategy(ontology, statementsMap).apply(element);
+        Map<AsgEBase, CypherCompilationState> state = new HashMap<>();
+        new InitializeCypherStrategy(state, ontology).apply(element);
 
         ETyped eTyped = new ETyped();
         eTyped.seteTag("test");
@@ -39,9 +39,9 @@ public class TypedNodeCypherStrategyTest {
         AsgEBase<ETyped> asgEBase = new AsgEBase<>(eTyped);
         element.addNextChild(asgEBase);
 
-        CypherStatement statement = new TypedNodeCypherStrategy(ontology, statementsMap).apply(asgEBase);
-        assertNotNull(statement);
-        assertEquals(statement.toString(), "MATCH p0 = (test:Person)\n" +
+        CypherCompilationState statement = new TypedNodeCypherStrategy(state, ontology).apply(asgEBase);
+        assertNotNull(statement.getStatement());
+        assertEquals(statement.getStatement().toString(), "MATCH p0 = (test:Person)\n" +
                 "RETURN test\n");
     }
 
