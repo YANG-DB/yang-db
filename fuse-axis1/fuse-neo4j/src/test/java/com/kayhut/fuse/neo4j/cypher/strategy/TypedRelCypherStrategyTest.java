@@ -41,8 +41,7 @@ public class TypedRelCypherStrategyTest {
 
         CypherCompilationState updatedState = new TypedRelCypherStrategy(state, ontology).apply(asgEBase);
         assertNotNull(updatedState.getStatement());
-        assertEquals(updatedState.getStatement().toString(), "MATCH p0 = -[:Person]-\n" +
-                "RETURN null\n");
+        assertTrue(updatedState.getStatement().toString().contains(":own]-"));
 
     }
 
