@@ -11,7 +11,6 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.kayhut.fuse.unipop.search.appender.CompositeSearchAppenderTest;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.junit.Assert;
