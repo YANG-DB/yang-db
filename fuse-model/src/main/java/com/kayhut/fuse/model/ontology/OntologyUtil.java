@@ -86,6 +86,19 @@ public interface OntologyUtil {
         return Optional.empty();
     }
 
+    static Optional<Property> getRelationshipProperty(Ontology ontology,int rType, int pType) {
+        for(RelationshipType r : ontology.getRelationshipTypes()) {
+            if(r.getrType() == rType) {
+                for(Property p : r.getProperties()) {
+                    if(p.getpType() == pType) {
+                        return Optional.of(p);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     static Optional<RelationshipType> getRelationshipType(Ontology ontology,String name) {
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()
                 .filter(relationshipType-> relationshipType.getName().equals(name))
