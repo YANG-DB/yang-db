@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop;
+package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.EntityType;
@@ -42,29 +42,26 @@ public class CompositeAllAppendersTest {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        //Index Appender
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
-        //Global Appender
         ElementGlobalTypeSearchAppender globalAppender = new ElementGlobalTypeSearchAppender();
-        //Element Constraint Search Appender
         ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
 
         //Testing the composition of the the above appenders
-        CompositeSearchAppender compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender);
+        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender);
 
         //Just Global Appender - nothing should be done - since the traversal contains a "Label"
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertFalse(appendResult);
 
         //Just Global Appender - nothing should be done beside the index appender
-        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 1);
         Assert.assertTrue(searchBuilder.getIndices().contains("personIndex1"));
 
         // Index appender, Global Appender, Constraint Appender
-        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 1);
