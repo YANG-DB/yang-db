@@ -62,7 +62,7 @@ public class CypherRelationship extends CypherElement{
             sb.append("<");
         }
         sb.append(String.format("-[%s%s%s]-", tag == null ? "" : tag,
-                label == null ? "" : ":"+label,
+                label == null ? "" : ":"+label.replace(" ", "_"),
                 inlineProps == null ? "" : buildPropsStr()));
         if (direction == Direction.RIGHT) {
             sb.append(">");

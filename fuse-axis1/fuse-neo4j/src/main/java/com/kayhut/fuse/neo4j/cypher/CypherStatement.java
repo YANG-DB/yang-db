@@ -9,6 +9,7 @@ public class CypherStatement {
     private CypherMatch match;
     private CypherReturn returns;
     private CypherWhere where;
+    private int relsCounter = 0;
 
     private CypherStatement() {
         match = CypherMatch.cypherMatch();
@@ -102,9 +103,7 @@ public class CypherStatement {
         return match.getPaths().get(tag);
     }
 
-    public String startNewPath() {
-        String tag = getNextPathTag();
-        match.addPath(CypherPath.cypherPath(tag));
-        return tag;
+    public String getNewRelTag() {
+        return "r" + (++relsCounter);
     }
 }

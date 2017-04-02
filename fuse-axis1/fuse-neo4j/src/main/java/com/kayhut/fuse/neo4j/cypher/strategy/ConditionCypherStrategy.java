@@ -90,7 +90,7 @@ public class ConditionCypherStrategy extends CypherStrategy {
 
         ConstraintOp op = con.getOp();
 
-        String val = property.get().getType().equals("int") ? (String) con.getExpr() : "'" + con.getExpr() + "'";
+        String val = property.get().getType().equals("int") || con.getExpr() == null ? (String) con.getExpr() : "'" + con.getExpr() + "'";
 
         Optional any = asgNode.getParents().stream().filter(p -> ((AsgEBase) p).geteBase() instanceof Quant1 ||
                                                             ((AsgEBase) p).geteBase() instanceof Quant2).findAny();
