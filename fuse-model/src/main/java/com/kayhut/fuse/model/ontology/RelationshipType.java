@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -35,6 +36,16 @@ public class RelationshipType {
         this.directional = directional;
     }
 
+    @JsonProperty("DBrName")
+    public String getDBrName() {
+        return DBrName;
+    }
+
+    @JsonProperty("DBrName")
+    public void setDBrName(String DBrName) {
+        this.DBrName = DBrName;
+    }
+
     public List<EPair> getePairs() {
         return ePairs;
     }
@@ -61,6 +72,7 @@ public class RelationshipType {
     private int rType;
     private String name;
     private boolean directional;
+    private String DBrName;
     private List<EPair> ePairs;
     private List<Property> properties;
     //endregion
@@ -70,6 +82,7 @@ public class RelationshipType {
         private int rType;
         private String name;
         private boolean directional;
+        private String DBrName;
         private List<EPair> ePairs;
         private List<Property> properties;
 
@@ -95,6 +108,11 @@ public class RelationshipType {
             return this;
         }
 
+        public RelationshipTypeBuilder withDBrName(String DBrName) {
+            this.DBrName = DBrName;
+            return this;
+        }
+
         public RelationshipTypeBuilder withEPairs(List<EPair> ePairs) {
             this.ePairs = ePairs;
             return this;
@@ -109,6 +127,7 @@ public class RelationshipType {
             RelationshipType relationshipType = new RelationshipType();
             relationshipType.setName(name);
             relationshipType.setDirectional(directional);
+            relationshipType.setDBrName(DBrName);
             relationshipType.setProperties(properties);
             relationshipType.ePairs = this.ePairs;
             relationshipType.rType = this.rType;
@@ -116,5 +135,7 @@ public class RelationshipType {
         }
     }
     //endregion
+
+
 
 }

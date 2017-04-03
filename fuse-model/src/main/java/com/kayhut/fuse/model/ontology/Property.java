@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -58,12 +59,14 @@ public class Property {
         this.units = units;
     }
 
-    public String getDBrName() {
-        return DBrName;
+    @JsonProperty("DBpName")
+    public String getDBpName() {
+        return DBpName;
     }
 
-    public void setDBrName(String DBrName) {
-        this.DBrName = DBrName;
+    @JsonProperty("DBpName")
+    public void setDBpName(String DBpName) {
+        this.DBpName = DBpName;
     }
 
     @Override
@@ -76,7 +79,7 @@ public class Property {
     private int pType;
     private String name;
     private String type;
-    private String DBrName;
+    private String DBpName;
     private List<String> report;
     private String height;
     private String units;
@@ -138,7 +141,7 @@ public class Property {
             Property property = new Property();
             property.setName(name);
             property.setType(type);
-            property.setDBrName(DBrName);
+            property.setDBpName(DBrName);
             property.setReport(report);
             property.setHeight(height);
             property.setUnits(units);

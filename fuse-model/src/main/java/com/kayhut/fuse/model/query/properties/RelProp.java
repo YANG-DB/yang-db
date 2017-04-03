@@ -11,11 +11,11 @@ import com.kayhut.fuse.model.query.EBase;
 public class RelProp extends EBase {
 
 
-    public int getpType() {
+    public String getpType() {
         return pType;
     }
 
-    public void setpType(int pType) {
+    public void setpType(String pType) {
         this.pType = pType;
     }
 
@@ -52,7 +52,7 @@ public class RelProp extends EBase {
     }
 
     //region Fields
-    private int	pType;
+    private String pType;
     private String f;
     private String pTag;
     private Constraint con;

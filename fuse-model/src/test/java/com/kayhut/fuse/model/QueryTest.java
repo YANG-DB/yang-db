@@ -5,7 +5,9 @@ import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.Quant2;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -31,6 +33,7 @@ public class QueryTest {
     private static Query q3_1Obj = new Query();
     private static Query q3_2Obj = new Query();
     private static Query q5Obj = new Query();
+    private static Query q11Obj = new Query();
 
 
     @Test
@@ -74,6 +77,14 @@ public class QueryTest {
     }
 
     @Test
+    public void testQ11Serialization() throws IOException, JSONException {
+        String q11ActualJSON = mapper.writeValueAsString(q11Obj);
+        String q11ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q11\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":5,\"b\":4},{\"eNum\":4,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"1\",\"con\":{\"op\":\"empty\"}},{\"eNum\":5,\"type\":\"EConcrete\",\"eTag\":\"B\",\"eID\":\"22345670\",\"eType\":4,\"eName\":\"Masons\"},{\"eNum\":6,\"type\":\"Rel\",\"rType\":5,\"dir\":\"R\",\"next\":8,\"b\":7},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"ge\",\"expr\":\"1011-01-01T00:00:00.000\"}},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":1,\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":11,\"b\":10},{\"eNum\":10,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"3\",\"con\":{\"op\":\"ge\",\"expr\":\"1010-06-01T00:00:00.000\"}},{\"eNum\":11,\"type\":\"Quant2\",\"qType\":\"some\",\"next\":[12,13]},{\"eNum\":12,\"type\":\"EConcrete\",\"eTag\":\"D\",\"eID\":\"22345671\",\"eType\":4,\"eName\":\"Saddlers\"},{\"eNum\":13,\"type\":\"EConcrete\",\"eTag\":\"E\",\"eID\":\"22345672\",\"eType\":4,\"eName\":\"Blacksmiths\"}]}";
+
+        JSONAssert.assertEquals(q11ExpectedJSONString, q11ActualJSON,false);
+    }
+
+    @Test
     public void testDeSerialization() throws Exception {
         String q1ExpectedJson = readJsonToString("Q001.json");
         Query q1Obj = new ObjectMapper().readValue(q1ExpectedJson, Query.class);
@@ -113,6 +124,12 @@ public class QueryTest {
         Assert.assertNotNull(q5Obj);
         String q5ActualJSON = mapper.writeValueAsString(q5Obj);
         JSONAssert.assertEquals(q5ExpectedJson, q5ActualJSON,false);
+
+        String q11ExpectedJson = readJsonToString("Q005.json");
+        Query q11Obj = new ObjectMapper().readValue(q11ExpectedJson, Query.class);
+        Assert.assertNotNull(q11Obj);
+        String q11ActualJSON = mapper.writeValueAsString(q11Obj);
+        JSONAssert.assertEquals(q11ExpectedJson, q11ActualJSON,false);
 
     }
 
@@ -752,6 +769,278 @@ public class QueryTest {
        q5Obj.setElements(elements);
     }
 
+    private static void createQ11(){
+        q11Obj.setOnt("Dragons");
+        q11Obj.setName("Q11");
+        List<EBase> elements = new ArrayList<>();
+
+        /*
+        {
+          "eNum": 0,
+          "type": "Start",
+          "next": 1
+        }
+        */
+
+        Start start  = new Start();
+        start.seteNum(0);
+        start.setNext(1);
+        elements.add(start);
+
+        /*
+        {
+          "eNum": 1,
+          "type": "ETyped",
+          "eTag": "A",
+          "eType": 1,
+          "next": 2
+        }
+        */
+
+        ETyped eTyped1 = new ETyped();
+        eTyped1.seteNum(1);
+        eTyped1.seteTag("A");
+        eTyped1.seteType(1);
+        eTyped1. setNext(2);
+        elements.add(eTyped1);
+
+        /*
+        {
+          "eNum": 2,
+          "type": "Quant1",
+          "qType": "all",
+          "next": [
+            3,
+            6
+          ]
+        }
+        */
+
+        Quant1 quant1 = new Quant1();
+        quant1.seteNum(2);
+        quant1.setqType("all");
+        quant1.setNext(Arrays.asList(3,6));
+        elements.add(quant1);
+
+        /*
+        {
+          "eNum": 3,
+          "type": "Rel",
+          "rType": 6,
+          "dir": "R",
+          "next": 5,
+          "b": 4
+        }
+        */
+
+        Rel rel1 = new Rel();
+        rel1.seteNum(3);
+        rel1.setrType(6);
+        rel1.setDir("R");
+        rel1.setNext(5);
+        rel1.setB(4);
+        elements.add(rel1);
+
+        /*
+        {
+          "eNum": 4,
+          "type": "RelProp",
+          "pType": "1.2",
+          "pTag": "1",
+          "con": {
+            "op": "empty"
+          }
+        */
+
+        Constraint conRelProp1 = new Constraint();
+        conRelProp1.setOp(ConstraintOp.empty);
+
+        RelProp relProp1 = new RelProp();
+        relProp1.seteNum(4);
+        relProp1.setpType("1.2");
+        relProp1.setpTag("1");
+        relProp1.setCon(conRelProp1);
+        elements.add(relProp1);
+
+        /*
+        {
+          "eNum": 5,
+          "type": "EConcrete",
+          "eTag": "B",
+          "eID": "22345670",
+          "eType": 4,
+          "eName": "Masons"
+        }
+        */
+
+        EConcrete eConcrete1 = new EConcrete();
+        eConcrete1.seteNum(5);
+        eConcrete1.seteTag("B");
+        eConcrete1.seteID("22345670");
+        eConcrete1.seteType(4);
+        eConcrete1.seteName("Masons");
+        elements.add(eConcrete1);
+
+        /*
+        {
+          "eNum": 6,
+          "type": "Rel",
+          "rType": 5,
+          "dir": "R",
+          "next": 8,
+          "b": 7
+        }
+        */
+
+        Rel rel2 = new Rel();
+        rel2.seteNum(6);
+        rel2.setrType(5);
+        rel2.setDir("R");
+        rel2.setNext(8);
+        rel2.setB(7);
+        elements.add(rel2);
+
+        /*
+        {
+          "eNum": 7,
+          "type": "RelProp",
+          "pType": "1",
+          "pTag": "2",
+          "con": {
+            "op": "ge",
+            "expr": "1011-01-01T00:00:00.000"
+          }
+        }
+        */
+
+        Constraint conRelProp2 = new Constraint();
+        conRelProp2.setOp(ConstraintOp.ge);
+        conRelProp2.setExpr("1011-01-01T00:00:00.000");
+        RelProp relProp2 = new RelProp();
+        relProp2.seteNum(7);
+        relProp2.setpType("1");
+        relProp2.setpTag("2");
+        relProp2.setCon(conRelProp2);
+        elements.add(relProp2);
+
+        /*
+        {
+          "eNum": 8,
+          "type": "ETyped",
+          "eTag": "C",
+          "eType": 1,
+          "next": 9
+        }
+        */
+
+        ETyped eTyped3 = new ETyped();
+        eTyped3.seteNum(8);
+        eTyped3.seteTag("C");
+        eTyped3.seteType(1);
+        eTyped3.setNext(9);
+        elements.add(eTyped3);
+
+        /*
+        {
+          "eNum": 9,
+          "type": "Rel",
+          "rType": 6,
+          "dir": "R",
+          "next": 11,
+          "b": 10
+        }
+        */
+
+        Rel rel3 = new Rel();
+        rel3.seteNum(9);
+        rel3.setrType(6);
+        rel3.setDir("R");
+        rel3.setNext(11);
+        rel3.setB(10);
+        elements.add(rel3);
+
+        /*
+        {
+          "eNum": 10,
+          "type": "RelProp",
+          "pType": "1.2",
+          "pTag": "3",
+          "con": {
+            "op": "ge",
+            "expr": "1010-06-01T00:00:00.000"
+          }
+        },
+        */
+        Constraint conRelProp3 = new Constraint();
+        conRelProp3.setOp(ConstraintOp.ge);
+        conRelProp3.setExpr("1010-06-01T00:00:00.000");
+        RelProp relProp3 = new RelProp();
+        relProp3.seteNum(10);
+        relProp3.setpType("1.2");
+        relProp3.setpTag("3");
+        relProp3.setCon(conRelProp3);
+        elements.add(relProp3);
+
+        /*
+        {
+          "eNum": 11,
+          "type": "Quant2",
+          "qType": "some",
+          "next": [
+            12,
+            13
+          ]
+        }
+        */
+
+        Quant2 quant2 = new Quant2();
+        quant2.seteNum(11);
+        quant2.setqType("some");
+        quant2.setNext(Arrays.asList(12,13));
+        elements.add(quant2);
+
+
+        /*
+        {
+          "eNum": 12,
+          "type": "EConcrete",
+          "eTag": "D",
+          "eID": "22345671",
+          "eType": 4,
+          "eName": "Saddlers"
+        }
+        */
+
+        EConcrete eConcrete2 = new EConcrete();
+        eConcrete2.seteNum(12);
+        eConcrete2.seteTag("D");
+        eConcrete2.seteID("22345671");
+        eConcrete2.seteType(4);
+        eConcrete2.seteName("Saddlers");
+        elements.add(eConcrete2);
+
+        /*
+        {
+          "eNum": 13,
+          "type": "EConcrete",
+          "eTag": "E",
+          "eID": "22345672",
+          "eType": 4,
+          "eName": "Blacksmiths"
+        }
+        */
+
+        EConcrete eConcrete3 = new EConcrete();
+        eConcrete3.seteNum(13);
+        eConcrete3.seteTag("E");
+        eConcrete3.seteID("22345672");
+        eConcrete3.seteType(4);
+        eConcrete3.seteName("Blacksmiths");
+        elements.add(eConcrete3);
+
+        q11Obj.setElements(elements);
+
+    }
 
     private String readJsonToString(String jsonFileName) throws Exception {
         String result = "";
@@ -775,7 +1064,7 @@ public class QueryTest {
         createQ3_1();
         createQ3_2();
         createQ5();
-
+        createQ11();
     }
 
 

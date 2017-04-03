@@ -44,6 +44,14 @@ public class Ontology {
         this.enumeratedTypes = enumeratedTypes;
     }
 
+    public List<CompositeType> getCompositeTypes() {
+        return compositeTypes;
+    }
+
+    public void setCompositeTypes(List<CompositeType> compositeTypes) {
+        this.compositeTypes = compositeTypes;
+    }
+
     //endregion
 
     //region Public Methods
@@ -61,14 +69,17 @@ public class Ontology {
     private List<EntityType> entityTypes;
     private List<RelationshipType> relationshipTypes;
     private List<EnumeratedType> enumeratedTypes;
+    private List<CompositeType> compositeTypes;
     //endregion
 
     //region Builder
+
     public static final class OntologyBuilder {
         private String ont;
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;
         private List<EnumeratedType> enumeratedTypes;
+        private List<CompositeType> compositeTypes;
 
         private OntologyBuilder() {
         }
@@ -97,15 +108,22 @@ public class Ontology {
             return this;
         }
 
+        public OntologyBuilder withCompositeTypes(List<CompositeType> compositeTypes) {
+            this.compositeTypes = compositeTypes;
+            return this;
+        }
+
         public Ontology build() {
             Ontology ontology = new Ontology();
             ontology.setOnt(ont);
             ontology.setEntityTypes(entityTypes);
             ontology.setRelationshipTypes(relationshipTypes);
             ontology.setEnumeratedTypes(enumeratedTypes);
+            ontology.setCompositeTypes(compositeTypes);
             return ontology;
         }
     }
+
     //endregion
 
 }
