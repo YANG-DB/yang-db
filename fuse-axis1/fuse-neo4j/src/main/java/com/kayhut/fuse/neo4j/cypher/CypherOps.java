@@ -18,6 +18,10 @@ public interface CypherOps {
                 return ">";
             case "ge":
                 return ">=";
+            case "empty":
+                return "=";
+            case "not_empty":
+                return "<>";
             default:
                 return " <> ";
         }

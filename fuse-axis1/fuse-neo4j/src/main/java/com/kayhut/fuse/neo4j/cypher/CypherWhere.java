@@ -28,7 +28,7 @@ public class CypherWhere {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("WHERE ");
+        sb.append("\nWHERE ");
         sb.append(conditions.get(0).toString());
         for(int i=1; i<conditions.size(); i++) {
             sb.append(String.format(" %s %s",conditions.get(i).type,conditions.get(i).toString()));

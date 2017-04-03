@@ -4,25 +4,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by elad on 06/03/2017.
+ * Created by Elad on 4/2/2017.
  */
-public class CypherReturn {
+public class CypherWith {
 
     private List<CypherReturnElement> elements = new LinkedList<>();
 
-    private CypherReturn() {
+    private CypherWith() {
 
     }
 
-    public static CypherReturn cypherReturn() {return new CypherReturn();}
+    public static CypherWith cypherWith() { return new CypherWith(); }
 
-    public CypherReturn withElement(CypherReturnElement element) {
+    public CypherWith withElement(CypherReturnElement element) {
         elements.add(element);
         return this;
     }
 
-    public CypherReturn copy() {
-        CypherReturn newRet = new CypherReturn();
+    public CypherWith copy() {
+        CypherWith newRet = new CypherWith();
         for (CypherReturnElement ret :
                 elements) {
             newRet.elements.add(ret.copy());
@@ -40,7 +40,7 @@ public class CypherReturn {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("\nRETURN ");
+        sb.append("\nWITH ");
         elements.forEach(e -> sb.append(e.toString() + ","));
         sb.deleteCharAt(sb.lastIndexOf(","));
         return sb.toString();

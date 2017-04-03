@@ -12,6 +12,7 @@ import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.junit.Assert;
 import org.junit.Test;
@@ -75,6 +76,107 @@ public class CompositeAllAppendersTest {
                 JSONCompareMode.LENIENT);
 
     }
+
+    @Test
+    public void testCompositeAppender_No_Label_AND_Statement() {
+
+        Ontology ontology = getOntology();
+        GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has("name", "bubu"), __.has("color", P.within((Collection)Arrays.asList("brown", "red")))));
+
+        PromiseElementControllerContext context = new
+                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+
+        SearchBuilder searchBuilder = new SearchBuilder();
+
+        //Index Appender
+        IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
+        //Global Appender
+        ElementGlobalTypeSearchAppender globalAppender = new ElementGlobalTypeSearchAppender();
+        //Element Constraint Search Appender
+        ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
+
+        //Testing the composition of the the above appenders
+        CompositeSearchAppender compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender);
+
+        //One of the appenders should return true
+        boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
+        Assert.assertTrue(appendResult);
+
+        //Since we didn't specify any Label in the constraint, we should get all vertex types.
+        JSONAssert.assertEquals(
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}}}}}}",
+                searchBuilder.getQueryBuilder().getQuery().toString(),
+                JSONCompareMode.LENIENT);
+
+        //Just Global Appender - nothing should be done beside the index appender
+        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
+        appendResult = compositeSearchAppender.append(searchBuilder, context);
+        Assert.assertTrue(appendResult);
+        Assert.assertTrue(searchBuilder.getIndices().size() == 3);
+        Assert.assertTrue(searchBuilder.getIndices().contains("personIndex1"));
+        Assert.assertTrue(searchBuilder.getIndices().contains("dragonIndex2"));
+
+        //The query should be the same as above
+        JSONAssert.assertEquals(
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}}}}}}",
+                searchBuilder.getQueryBuilder().getQuery().toString(),
+                JSONCompareMode.LENIENT);
+
+        // Index appender, Global Appender, Constraint Appender
+        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
+        appendResult = compositeSearchAppender.append(searchBuilder, context);
+        Assert.assertTrue(appendResult);
+        Assert.assertTrue(searchBuilder.getIndices().size() == 3);
+        Assert.assertTrue(searchBuilder.getIndices().contains("personIndex1"));
+        JSONAssert.assertEquals(
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}},{\"bool\":{\"must\":[{\"term\":{\"name\":\"bubu\"}},{\"terms\":{\"color\":[\"brown\",\"red\"]}}]}}]}}}}",
+                searchBuilder.getQueryBuilder().getQuery().toString(),
+                JSONCompareMode.LENIENT);
+
+    }
+
+    @Test
+    public void testCompositeAppender_Label_OR_Statement() {
+
+        Ontology ontology = getOntology();
+        GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.or(__.has("label", "Dragon"), __.has("color", "yarok_bakbuk")));
+
+        PromiseElementControllerContext context = new
+                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+
+        SearchBuilder searchBuilder = new SearchBuilder();
+
+        //Index Appender
+        IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
+        //Global Appender
+        ElementGlobalTypeSearchAppender globalAppender = new ElementGlobalTypeSearchAppender();
+        //Element Constraint Search Appender
+        ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
+
+        CompositeSearchAppender compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender);
+
+        boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
+
+        //Since we have a label, the global appender should be skip i.e., appender result is False
+        Assert.assertFalse(appendResult);
+
+        // Index appender, Constraint Appender
+        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, indexSearchAppender, constraintSearchAppender);
+        appendResult = compositeSearchAppender.append(searchBuilder, context);
+        Assert.assertTrue(appendResult);
+        Assert.assertTrue(searchBuilder.getIndices().size() == 2);
+        HashSet<String> expectedIndicesSet = new HashSet<>(Arrays.asList("dragonIndex1", "dragonIndex2"));
+        Assert.assertEquals(expectedIndicesSet, searchBuilder.getIndices());
+
+        JSONAssert.assertEquals(
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"bool\":{\"should\":[{\"term\":{\"label\":\"Dragon\"}},{\"term\":{\"color\":\"yarok_bakbuk\"}}]}}}}}}",
+                searchBuilder.getQueryBuilder().getQuery().toString(),
+                JSONCompareMode.LENIENT);
+
+    }
+
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {

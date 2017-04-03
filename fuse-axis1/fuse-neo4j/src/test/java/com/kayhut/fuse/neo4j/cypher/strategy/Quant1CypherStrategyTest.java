@@ -1,29 +1,27 @@
 package com.kayhut.fuse.neo4j.cypher.strategy;
 
+import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.Start;
-import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
-import com.kayhut.fuse.neo4j.cypher.CypherCondition;
+import com.kayhut.fuse.neo4j.cypher.CypherStatement;
+import javaslang.Tuple2;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
 import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadQuery;
 import static org.junit.Assert.*;
 
 /**
- * Created by User on 26/03/2017.
+ * Created by Elad on 4/2/2017.
  */
-public class TypedRelCypherStrategyTest {
+public class Quant1CypherStrategyTest {
 
     Ontology ontology;
     AsgQuery asgQuery;
@@ -31,7 +29,7 @@ public class TypedRelCypherStrategyTest {
     @Before
     public void setUp() throws Exception {
         ontology = loadOntology("dragons.json");
-        asgQuery = new RecTwoPassAsgQuerySupplier(loadQuery("Q190-1.json")).get();
+        asgQuery = new RecTwoPassAsgQuerySupplier(loadQuery("Q008.json")).get();
     }
 
     @Test
@@ -39,8 +37,6 @@ public class TypedRelCypherStrategyTest {
 
         String cypher = CypherCompiler.compile(asgQuery, ontology);
 
-        assertTrue(cypher.contains("MATCH p0 = (A:Person)-[r1:own]->(B:Dragon)"));
-
+        assertTrue(cypher.contains("UNION\nMATCH p0 = (A:Person)"));
     }
-
 }

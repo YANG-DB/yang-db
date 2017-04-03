@@ -29,6 +29,9 @@ public class CypherCompiler {
         //apply the appropriate strategy for this type of node
         strategiesFactory.applyStrategy(curNode);
 
+        //apply strategies on each below element
+        curNode.getB().forEach(b -> recursiveApplyBelow((AsgEBase)b, strategiesFactory));
+
         //recursively apply to children
         curNode.getNext().forEach(child -> nodesQueue.add((AsgEBase) child));
 
@@ -67,4 +70,8 @@ public class CypherCompiler {
 
     }
 
+    private static void recursiveApplyBelow(AsgEBase node, CypherStrategiesFactory factory) {
+        factory.applyStrategy(node);
+        node.getB().forEach(b -> recursiveApplyBelow((AsgEBase) b, factory));
+    }
 }
