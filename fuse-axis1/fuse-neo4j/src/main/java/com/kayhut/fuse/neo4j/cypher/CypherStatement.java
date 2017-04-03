@@ -9,12 +9,15 @@ public class CypherStatement {
     private CypherMatch match;
     private CypherReturn returns;
     private CypherWhere where;
+    private CypherWith with;
     private int relsCounter = 0;
+    private int aggsCounter = 0;
 
     private CypherStatement() {
         match = CypherMatch.cypherMatch();
         where = CypherWhere.cypherWhere();
         returns = CypherReturn.cypherReturn();
+        with = CypherWith.cypherWith();
     }
 
     public static CypherStatement cypherStatement() {
@@ -26,22 +29,8 @@ public class CypherStatement {
         newCs.match = match.copy();
         newCs.where = where.copy();
         newCs.returns = returns.copy();
+        newCs.with = with.copy();
         return newCs;
-    }
-
-    public CypherStatement withMatch(CypherMatch m) {
-        match = m;
-        return this;
-    }
-
-    public CypherStatement withWhere(CypherWhere w) {
-        where = w;
-        return this;
-    }
-
-    public CypherStatement withReturn(CypherReturn r) {
-        returns = r;
-        return this;
     }
 
     public CypherStatement appendNode(String pathTag, CypherNode node) {
@@ -70,29 +59,9 @@ public class CypherStatement {
         return this;
     }
 
-    public CypherMatch getMatch() {
-        return match;
-    }
-
-    public CypherReturn getReturns() {
-        return returns;
-    }
-
-    public CypherWhere getWhere() {
-        return where;
-    }
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(match.toString());
-        sb.append("\n");
-        if(getWhere().conditions.size() > 0) {
-            sb.append(where.toString());
-            sb.append("\n");
-        }
-        sb.append(returns.toString());
-        sb.append("\n");
-        return sb.toString();
+    public CypherStatement addWith(CypherReturnElement returnElement) {
+        with.withElement(returnElement);
+        return this;
     }
 
     public String getNextPathTag() {
@@ -106,4 +75,63 @@ public class CypherStatement {
     public String getNewRelTag() {
         return "r" + (++relsCounter);
     }
+
+    public String getNewAggTag() {
+        return "agg" + (++aggsCounter);
+    }
+
+    public CypherReturn getReturns() {
+        return returns;
+    }
+
+    private void validateWithAndReturn() {
+
+        if (with.getElements().size() == 0) {
+            return;
+        }
+
+        //make sure that every tag in the return clause also appears in the with clause
+        for (CypherReturnElement retEl :
+                returns.getElements()) {
+            boolean isFound = false;
+            for (CypherReturnElement withEl :
+                    with.getElements()) {
+
+                if (isSameElement(retEl, withEl)) {
+                    isFound = true;
+                    break;
+                }
+
+            }
+            if (!isFound) {
+                //add to with clause
+                with.withElement(retEl);
+            }
+        }
+    }
+
+    private boolean isSameElement(CypherReturnElement a, CypherReturnElement b) {
+        if(a.getAlias() != null && b.getAlias() != null) {
+            return a.getAlias().equals(b.getAlias());
+        }
+        else {
+            if(a.getAlias() != null) {
+                return a.getAlias().equals(b.getTag());
+            } else if (b.getAlias() != null) {
+                return b.getAlias().equals(a.getTag());
+            }
+        }
+        return a.getTag().equals(b.getTag());
+    }
+
+    public String toString() {
+        validateWithAndReturn();
+        StringBuilder sb = new StringBuilder();
+        sb.append(match.toString());
+        sb.append(with.toString());
+        sb.append(where.toString());
+        sb.append(returns.toString());
+        return sb.toString();
+    }
+
 }

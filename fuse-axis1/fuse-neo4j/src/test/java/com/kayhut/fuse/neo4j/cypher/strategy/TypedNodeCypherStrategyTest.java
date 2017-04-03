@@ -42,7 +42,7 @@ public class TypedNodeCypherStrategyTest {
         CypherCompilationState statement = new TypedNodeCypherStrategy(state, ontology).apply(asgEBase);
         assertNotNull(statement.getStatement());
         assertEquals(statement.getStatement().toString(), "MATCH p0 = (test:Person)\n" +
-                "RETURN test\n");
+                "RETURN test");
     }
 
 }

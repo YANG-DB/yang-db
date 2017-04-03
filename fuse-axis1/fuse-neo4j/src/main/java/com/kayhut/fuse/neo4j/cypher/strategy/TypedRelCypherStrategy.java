@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.aggregation.AggL1;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherCondition;
@@ -48,36 +49,7 @@ public class TypedRelCypherStrategy extends CypherStrategy {
                                                        .withTag(tag)
                                                        .withDirection(getDirection(typedRel));
 
-            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement(rel);
-
-            List<AsgEBase> relationConditions = element.getB();
-
-            for (AsgEBase relCond:
-                 relationConditions) {
-                if(relCond.geteBase() instanceof RelProp) {
-
-                    RelProp relProp = (RelProp) relCond.geteBase();
-
-                    Optional<Property> prop = getProperty(relProp, typedRel);
-
-                    if(!prop.isPresent()) {
-                        //TODO: support composite properties!
-                        continue;
-                        // throw new RuntimeException(String.format("Unknown property type %d for relation type %d.",relProp.getpType(),typedRel.getrType()));
-                    }
-
-                    String propType = prop.get().getType();
-
-                    String val = propType.equals("int") || relProp.getCon().getExpr() == null ? (String) relProp.getCon().getExpr() : "'" + relProp.getCon().getExpr() + "'";
-
-                    CypherCondition cypherCondition = CypherCondition.cypherCondition().withTarget(String.format("%s.%s", tag, prop.get().getName().replace(" ", "_")))
-                            .withValue(val)
-                            .withOperator(getOp(relProp.getCon().getOp()))
-                            .withType(CypherCondition.Condition.AND);
-
-                    curState.getStatement().appendCondition(cypherCondition);
-                }
-            }
+            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement().withTag(rel.tag);
 
             //create updated state with new statement
             return context(element, new CypherCompilationState(curState.getStatement()
@@ -87,10 +59,6 @@ public class TypedRelCypherStrategy extends CypherStrategy {
         }
 
         return getRelevantState(element);
-    }
-
-    private Optional<Property> getProperty(RelProp relProp, Rel rel) {
-        return OntologyUtil.getRelationshipProperty(ontology, rel.getrType(), relProp.getpType());
     }
 
     private CypherRelationship.Direction getDirection(Rel typedRel) {

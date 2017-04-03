@@ -31,7 +31,7 @@ public class ConcreteNodeCypherStrategy extends CypherStrategy {
             CypherNode node = CypherNode.cypherNode()
                     .withTag(eConcrete.geteTag());
 
-            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement(node);
+            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement().withTag(node.tag);
 
             CypherCondition cond = CypherCondition.cypherCondition()
                     .withTarget(eConcrete.geteTag())
