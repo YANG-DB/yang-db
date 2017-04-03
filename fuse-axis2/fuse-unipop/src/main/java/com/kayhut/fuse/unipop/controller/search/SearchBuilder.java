@@ -1,7 +1,6 @@
 package com.kayhut.fuse.unipop.controller.search;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 
 import java.util.Collection;
@@ -20,21 +19,6 @@ public class SearchBuilder {
 
         this.queryBuilder = new QueryBuilder();
         this.aggregationBuilder = new AggregationBuilder();
-    }
-    //endregion
-
-    //region Public Methods
-    public SearchRequestBuilder getSearchRequest(Client client) {
-        return getSearchRequest(client, this.getQueryBuilder().getQuery(), true);
-    }
-
-    public long getCount(Client client) {
-        return getSearchRequest(client, this.getQueryBuilder().getQuery(), false)
-                .setSearchType(SearchType.COUNT)
-                .execute()
-                .actionGet()
-                .getHits()
-                .getTotalHits();
     }
     //endregion
 
@@ -80,15 +64,14 @@ public class SearchBuilder {
     }
     //endregion
 
-    //region Private Methods
-    private SearchRequestBuilder getSearchRequest(
+    //region API
+    public SearchRequestBuilder compose(
             Client client,
-            org.elasticsearch.index.query.QueryBuilder query,
             boolean includeAggregations) {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch()
                 .setIndices(getIndices().stream().toArray(String[]::new))
-                .setQuery(query)
-                .setSize((int)getLimit());
+                .setQuery(queryBuilder.getQuery())
+                .setSize((int) getLimit());
 
         if (getIncludeSourceFields().size() == 0) {
             searchRequestBuilder.setFetchSource(false);
@@ -99,7 +82,7 @@ public class SearchBuilder {
         }
 
         if (includeAggregations) {
-            for (org.elasticsearch.search.aggregations.AbstractAggregationBuilder aggregationBuilder : this.aggregationBuilder.getAggregations()) {
+            for (org.elasticsearch.search.aggregations.AbstractAggregationBuilder aggregationBuilder : aggregationBuilder.getAggregations()) {
                 searchRequestBuilder.addAggregation(aggregationBuilder);
             }
         }

@@ -4,10 +4,12 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.gta.translation.SimplePlanOpTranslator;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.unipop.controller.UniGraphProvider;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.unipop.structure.UniGraph;
 
 /**
  * Created by moti on 3/7/2017.
@@ -15,8 +17,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 public class GremlinTranslationAppenderEngine {
 
     @Inject
-    public GremlinTranslationAppenderEngine() {
-        this.simplePlanOpTranslator = new SimplePlanOpTranslator(new PromiseGraph());
+    public GremlinTranslationAppenderEngine(UniGraphProvider graphProvider) {
+        this.simplePlanOpTranslator = new SimplePlanOpTranslator(graphProvider.getGraph());
     }
 
 

@@ -1,0 +1,42 @@
+{
+  "ont": "Dragons",
+  "name": "Q190-1",
+  "elements": [
+    {
+      "eNum": 0,
+      "type": "Start",
+      "next": 1
+    },
+    {
+      "eNum": 1,
+      "type": "ETyped",
+      "eTag": "A",
+      "eType": 1,
+      "next": 2
+    },
+    {
+      "eNum": 2,
+      "type": "Rel",
+      "rType": 1,
+      "dir": "R",
+      "next": 3,
+      "b": 4
+    },
+    {
+      "eNum": 3,
+      "type": "ETyped",
+      "eTag": "B",
+      "eType": 2
+    },
+    {
+      "eNum": 4,
+      "type": "RelProp",
+      "pType": "1",
+      "pTag": "1",
+      "con": {
+        "op": "ge",
+        "expr": "1011-01-01"
+      }
+    }
+  ]
+}
