@@ -7,7 +7,8 @@ import com.kayhut.fuse.unipop.controller.search.appender.ElementConstraintSearch
 import com.kayhut.fuse.unipop.controller.search.appender.ElementGlobalTypeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.appender.IndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtils;
-import com.kayhut.fuse.unipop.converter.CompositeConverter;
+import com.kayhut.fuse.unipop.converter.ElementConverter;
+import com.kayhut.fuse.unipop.converter.SearchHitPromiseVertexConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
@@ -23,13 +24,11 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 /**
@@ -38,12 +37,11 @@ import java.util.function.BiPredicate;
 class VertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    VertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, CompositeConverter converter) {
+    VertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.converter = converter;
     }
     //endregion
 
@@ -117,7 +115,7 @@ class VertexController implements SearchQuery.SearchController {
      * @param constraintHasContainers - the constraint predicate
      * @return the promise vertex iterator
      */
-    private Iterator<Vertex> queryPromiseVertices(List<HasContainer> constraintHasContainers) {
+    private Iterator<Element> queryPromiseVertices(List<HasContainer> constraintHasContainers) {
         Optional<TraversalConstraint> constraint = constraintHasContainers.stream()
                 .findFirst().filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
                 .map(h -> (TraversalConstraint) h.getValue());
@@ -135,8 +133,15 @@ class VertexController implements SearchQuery.SearchController {
         //compose
         SearchRequestBuilder compose = builder.compose(client, false);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(configuration, compose, builder.getLimit(), client);
-        return converter.convert(searchHits.iterator());
+        return convert(searchHits,new SearchHitPromiseVertexConverter(graph));
     }
+
+    private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable ,ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {
+        return Stream.ofAll(searchHitIterable)
+                .map(hit -> searchHitPromiseVertexConverter.convert(hit))
+                .filter(Objects::nonNull).iterator();
+    }
+
     //endregion
 
     private Client client;
@@ -144,6 +149,5 @@ class VertexController implements SearchQuery.SearchController {
     //region Fields
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
-    private CompositeConverter converter;
     //endregion
 }

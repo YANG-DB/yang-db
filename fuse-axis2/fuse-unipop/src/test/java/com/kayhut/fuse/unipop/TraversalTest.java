@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
 import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
-import com.kayhut.fuse.unipop.converter.CompositeConverter;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -50,8 +49,8 @@ public class TraversalTest {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(), new CompositeConverter()),
-                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(), new CompositeConverter()));
+                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
+                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
             }
 
             @Override
@@ -86,8 +85,8 @@ public class TraversalTest {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(), new CompositeConverter()),
-                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(), new CompositeConverter()));
+                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
+                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
             }
 
             @Override

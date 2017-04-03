@@ -1,6 +1,5 @@
 package com.kayhut.fuse.unipop.controller;
 
-import com.kayhut.fuse.unipop.converter.CompositeConverter;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.client.Client;
@@ -13,7 +12,7 @@ import java.util.Iterator;
  * Created by User on 16/03/2017.
  */
 public class SearchPromiseVertexController implements SearchVertexQuery.SearchVertexController {
-    public SearchPromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, CompositeConverter converter) {
+    public SearchPromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
 
     }
 

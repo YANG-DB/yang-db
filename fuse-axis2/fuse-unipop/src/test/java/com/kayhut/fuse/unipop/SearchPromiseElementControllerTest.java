@@ -2,7 +2,6 @@ package com.kayhut.fuse.unipop;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
-import com.kayhut.fuse.unipop.converter.CompositeConverter;
 import com.kayhut.fuse.unipop.promise.*;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
@@ -53,7 +52,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -80,7 +79,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -110,7 +109,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
@@ -146,7 +145,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
@@ -182,7 +181,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -212,7 +211,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -247,7 +246,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
@@ -286,7 +285,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(), new CompositeConverter());
+        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
