@@ -37,7 +37,7 @@ public class TypedNodeCypherStrategy extends CypherStrategy {
                     .withTag(eTyped.geteTag())
                     .withLabel(label.get());
 
-            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement(node);
+            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement().withTag(node.tag);
 
             //create updated state with new statement
             return context(element, new CypherCompilationState(curState.getStatement().

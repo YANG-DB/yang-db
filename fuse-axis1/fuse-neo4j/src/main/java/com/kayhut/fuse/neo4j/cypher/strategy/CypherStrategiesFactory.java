@@ -4,9 +4,11 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.aggregation.AggL1;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
@@ -28,9 +30,11 @@ public class CypherStrategiesFactory {
         cypherStrategyMap.put(ETyped.class, new TypedNodeCypherStrategy(compilationState, ont));
         cypherStrategyMap.put(Rel.class, new TypedRelCypherStrategy(compilationState, ont));
         cypherStrategyMap.put(EProp.class, new ConditionCypherStrategy(compilationState, ont));
+        cypherStrategyMap.put(RelProp.class, new ConditionCypherStrategy(compilationState, ont));
         cypherStrategyMap.put(Quant1.class, new Quant1CypherStrategy(compilationState, ont));
         cypherStrategyMap.put(Quant2.class, new Quant2CypherStrategy(compilationState, ont));
         cypherStrategyMap.put(EConcrete.class, new ConcreteNodeCypherStrategy(compilationState, ont));
+        cypherStrategyMap.put(AggL1.class, new AggL1CypherStrategy(compilationState, ont));
         defaultStrategy = new DefaultCypherStrategy(compilationState, ont);
     }
 
