@@ -68,10 +68,12 @@ public class SearchBuilder {
     public SearchRequestBuilder compose(
             Client client,
             boolean includeAggregations) {
-        SearchRequestBuilder searchRequestBuilder = client.prepareSearch()
-                .setIndices(getIndices().stream().toArray(String[]::new))
-                .setQuery(queryBuilder.getQuery())
-                .setSize((int) getLimit());
+        String[] indices = getIndices().stream().toArray(String[]::new);
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch();
+        searchRequestBuilder.setQuery(queryBuilder.getQuery());
+        searchRequestBuilder.setSize((int) getLimit());
+        searchRequestBuilder.setIndices(indices);
+
 
         if (getIncludeSourceFields().size() == 0) {
             searchRequestBuilder.setFetchSource(false);
