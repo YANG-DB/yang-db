@@ -1,0 +1,224 @@
+{
+  "ont": "Dragons",
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 1,
+          "name": "Female"
+        },
+        {
+          "val": 2,
+          "name": "Male"
+        },
+        {
+          "val": 3,
+          "name": "Other"
+        }
+      ]
+    }
+  ],
+  "compositeTypes": [
+    {
+      "cType": "datespan",
+      "properties": [
+        {
+          "pType": 1,
+          "type": "date",
+          "DBpName": "since",
+          "name": "since"
+        },
+        {
+          "pType": 2,
+          "type": "date",
+          "DBpName": "till",
+          "name": "till"
+        }
+      ]
+    },
+    {
+      "cType": "personName",
+      "properties": [
+        {
+          "pType": 1,
+          "type": "string",
+          "DBpName": "first",
+          "name": "first"
+        },
+        {
+          "pType": 2,
+          "type": "string",
+          "DBpName": "last",
+          "name": "last"
+        }
+      ]
+    }
+  ],
+  "entityTypes": [
+    {
+      "eType": 1,
+      "DBeName": "Person",
+      "name": "Person",
+      "properties": [
+        {
+          "pType": 1,
+          "type": "personName",
+          "DBpName": "name",
+          "name": "name",
+          "report": [
+            "raw(first)",
+            "raw(last)"
+          ]
+        },
+        {
+          "pType": 3,
+          "type": "TYPE_Gender",
+          "DBpName": "gender",
+          "name": "gender"
+        },
+        {
+          "pType": 4,
+          "type": "date",
+          "DBpName": "birth",
+          "name": "birth date",
+          "report": [
+            "raw"
+          ]
+        },
+        {
+          "pType": 5,
+          "type": "date",
+          "DBpName": "death",
+          "name": "death date"
+        },
+        {
+          "pType": 6,
+          "type": "int",
+          "DBpName": "height",
+          "name": "height",
+          "units": "cm",
+          "report": [
+            "raw"
+          ]
+        }
+      ],
+      "display": [
+        "%1 %2",
+        "%4",
+        "%6"
+      ]
+    },
+    {
+      "eType": 2,
+      "DBeName": "Dragon",
+      "name": "Dragon",
+      "properties": [
+        {
+          "pType": 1,
+          "type": "string",
+          "DBpName": "name",
+          "name": "name",
+          "report": [
+            "raw"
+          ]
+        }
+      ],
+      "display": [
+        "name: %1"
+      ]
+    },
+    {
+      "eType": 4,
+      "DBeName": "Guild",
+      "name": "Guild",
+      "properties": [
+        {
+          "pType": 1,
+          "type": "string",
+          "DBpName": "name",
+          "name": "name",
+          "report": [
+            "raw"
+          ]
+        }
+      ]
+    }
+
+ ],
+  "relationshipTypes": [
+    {
+      "rType": 1,
+      "DBrName": "own",
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        {
+          "pType": 1,
+          "type": "datespan",
+          "DBpName": "span",
+          "name": "tf",
+          "report": [
+            "min(since)",
+            "max(since)",
+            "min(till)",
+            "max(till)"
+          ]
+        }
+      ]
+    },
+    {
+      "rType": 5,
+      "DBrName": "knows",
+      "name": "knows",
+      "directional": false,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 1
+        }
+      ],
+      "properties": [
+        {
+          "pType": 1,
+          "type": "date",
+          "DBpName": "since",
+          "name": "since",
+          "report": [
+            "raw"
+          ]
+        }
+      ]
+    },
+    {
+      "rType": 6,
+      "DBrName": "member",
+      "name": "member of",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        {
+          "pType": 1,
+          "type": "datespan",
+          "DBpName": "time",
+          "name": "tf",
+          "report": [
+            "raw(since)",
+            "raw(till)"
+          ]
+        }
+      ]
+    }
+  ]
+}

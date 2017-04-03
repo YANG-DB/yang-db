@@ -34,7 +34,7 @@
     {
       "eNum": 4,
       "type": "RelProp",
-      "pType": "2",
+      "pType": "1.2",
       "pTag": "1",
       "con": {
         "op": "empty"
@@ -84,7 +84,7 @@
     {
       "eNum": 10,
       "type": "RelProp",
-      "pType": "1",
+      "pType": "1.2",
       "pTag": "3",
       "con": {
         "op": "ge",

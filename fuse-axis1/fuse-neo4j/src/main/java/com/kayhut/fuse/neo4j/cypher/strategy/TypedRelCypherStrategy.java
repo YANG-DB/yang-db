@@ -38,7 +38,7 @@ public class TypedRelCypherStrategy extends CypherStrategy {
             Optional<String> label = OntologyUtil.getRelationLabel(ontology, typedRel.getrType());
 
             if (!label.isPresent()) {
-                throw new RuntimeException("Failed compiling query. Unknown entity type: " + typedRel.getrType());
+                throw new RuntimeException("Failed compiling query. Unknown Relationship type: " + typedRel.getrType());
             }
 
             //TODO: v1 doesn't have tags for relationships.

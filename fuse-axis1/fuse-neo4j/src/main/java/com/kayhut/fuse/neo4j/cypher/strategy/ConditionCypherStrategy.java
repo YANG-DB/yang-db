@@ -59,11 +59,11 @@ public class ConditionCypherStrategy extends CypherStrategy {
 
     }
 
-    private int getPropertyType(EBase eBase) {
+    private String getPropertyType(EBase eBase) {
         if(eBase instanceof EProp) {
-            return Integer.valueOf(((EProp)eBase).getpType());
+            return ((EProp)eBase).getpType();
         } else {
-            return Integer.valueOf(((RelProp)eBase).getpType());
+            return ((RelProp)eBase).getpType();
         }
     }
 
@@ -77,7 +77,7 @@ public class ConditionCypherStrategy extends CypherStrategy {
 
     private Optional<Property> getProperty(AsgEBase asgNode, Ontology ont) {
 
-        int pType = getPropertyType(asgNode.geteBase());
+        String pType = getPropertyType(asgNode.geteBase());
 
         //Need to traverse the tree bottom-up, and find the first parent entity element.
 
