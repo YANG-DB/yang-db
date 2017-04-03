@@ -2,7 +2,6 @@ package com.kayhut.fuse.unipop;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.UniGraphProvider;
-import com.kayhut.fuse.unipop.converter.CompositeConverter;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -27,7 +26,7 @@ public class UniGraphProviderTest {
 
     @Test
     public void unigraphProvider() throws Exception {
-        UniGraphProvider provider = new UniGraphProvider(client,configuration,new EmptyGraphElementSchemaProvider(),new CompositeConverter());
+        UniGraphProvider provider = new UniGraphProvider(client,configuration,new EmptyGraphElementSchemaProvider());
         //region ControllerManagerFactory Implementation
         Assert.assertNotNull(provider);
         Assert.assertNotNull(provider.getGraph());
