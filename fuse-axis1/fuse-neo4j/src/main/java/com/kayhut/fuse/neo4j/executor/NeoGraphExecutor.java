@@ -24,7 +24,7 @@ abstract class NeoGraphUtils{
 
         try {
             ArrayList<Assignment> assignments = new ArrayList<>();
-            Tuple2<Transaction, StatementResult> resultTuple2 = graphProvider.run(cursor.getMetadata().getCypher());
+            Tuple2<Transaction, StatementResult> resultTuple2 = graphProvider.run(cursor.getContext().getCypher());
 
             Iterators.asList(resultTuple2._2).forEach(record -> {
                 //Each records represents an assignment (containing nodes and relationships)

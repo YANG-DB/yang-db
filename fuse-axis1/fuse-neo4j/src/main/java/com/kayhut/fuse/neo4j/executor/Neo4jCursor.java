@@ -9,8 +9,8 @@ import com.kayhut.fuse.neo4j.GraphProvider;
  */
 public class Neo4jCursor implements Cursor {
     //region Constructors
-    public Neo4jCursor(Neo4jCursorContext metadata, GraphProvider graphProvider) {
-        this.metadata = metadata;
+    public Neo4jCursor(Neo4jCursorContext context, GraphProvider graphProvider) {
+        this.context = context;
         this.graphProvider = graphProvider;
     }
     //endregion
@@ -23,13 +23,13 @@ public class Neo4jCursor implements Cursor {
     //endregion
 
     //region Properties
-    public Neo4jCursorContext getMetadata() {
-        return metadata;
+    public Neo4jCursorContext getContext() {
+        return context;
     }
     //endregion
 
     //region Fields
-    private Neo4jCursorContext metadata;
+    private Neo4jCursorContext context;
     private GraphProvider graphProvider;
     //endregion
 }

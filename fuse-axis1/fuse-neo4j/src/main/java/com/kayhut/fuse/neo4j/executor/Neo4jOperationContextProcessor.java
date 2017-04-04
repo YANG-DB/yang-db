@@ -72,16 +72,16 @@ public class Neo4jOperationContextProcessor implements
         }
 
         //Compile the query and get the cursor ready
-        Cursor cursor = null;
+        String cypherQuery = null;
         try {
-            String cypherQuery = CypherCompiler.compile(
+            cypherQuery = CypherCompiler.compile(
                     context.getQueryResource().getAsgQuery(),
                     ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get());
-
-            cursor = this.cursorFactory.createCursor(new Neo4jCursorContext(context.getQueryResource(), cypherQuery, true));
         } catch (Exception ex) {
-            cursor = this.cursorFactory.createCursor(new Neo4jCursorContext(context.getQueryResource(), null, false));
+
         }
+
+        Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorContext(context.getQueryResource(), null));
 
         return submit(eventBus, context.of(cursor));
 

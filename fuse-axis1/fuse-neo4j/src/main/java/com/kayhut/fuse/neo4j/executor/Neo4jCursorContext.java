@@ -9,10 +9,9 @@ import com.kayhut.fuse.dispatcher.resource.QueryResource;
  */
 public class Neo4jCursorContext implements CursorFactory.Context {
     //region Constructors
-    public Neo4jCursorContext(QueryResource queryResource, String cypher, boolean isValid) {
+    public Neo4jCursorContext(QueryResource queryResource, String cypher) {
         this.queryResource = queryResource;
         this.cypher = cypher;
-        this.isValid = isValid;
     }
     //endregion
 
@@ -24,10 +23,6 @@ public class Neo4jCursorContext implements CursorFactory.Context {
 
     public String getCypher() {
         return cypher;
-    }
-
-    public boolean isValid() {
-        return isValid;
     }
     //endregion
 
