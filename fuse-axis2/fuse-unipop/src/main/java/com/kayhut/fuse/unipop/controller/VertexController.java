@@ -2,10 +2,7 @@ package com.kayhut.fuse.unipop.controller;
 
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.ElementConstraintSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.ElementGlobalTypeSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.IndexSearchAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtils;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseVertexConverter;
@@ -64,8 +61,8 @@ class VertexController implements SearchQuery.SearchController {
         }
 
         return (Iterator<E>) (promiseHasContainers.isEmpty() ?
-                queryPromiseVertices(constraintHasContainers) :
-                createPromiseVertices(promiseHasContainers, constraintHasContainers));
+                queryPromiseVertices(searchQuery, constraintHasContainers) :
+                createPromiseVertices(searchQuery,promiseHasContainers, constraintHasContainers));
     }
     //endregion
 
@@ -75,11 +72,13 @@ class VertexController implements SearchQuery.SearchController {
      * This method will create promise vertices from promise and constraint predicates.
      * The method need not actually query the data store for the vertices as it is a promise vertex with a promise predicate.
      *
+     *
+     * @param searchQuery
      * @param promiseHasContainers     - the promise predicate
      * @param constraintHasConstainers - the constraint predicate
      * @return the promise vertex iterator
      */
-    private Iterator<Vertex> createPromiseVertices(List<HasContainer> promiseHasContainers, List<HasContainer> constraintHasConstainers) {
+    private Iterator<Vertex> createPromiseVertices(SearchQuery searchQuery, List<HasContainer> promiseHasContainers, List<HasContainer> constraintHasConstainers) {
         List<Promise> promises = Collections.emptyList();
         BiPredicate promisePredicate = promiseHasContainers.get(0).getBiPredicate();
 
@@ -112,15 +111,18 @@ class VertexController implements SearchQuery.SearchController {
      *         //3.3   Apply the ElementConverter on the elastic results
      *         //3.4   return/build the PromiseVertex results iterator
      *
+     *
+     * @param searchQuery
      * @param constraintHasContainers - the constraint predicate
      * @return the promise vertex iterator
      */
-    private Iterator<Element> queryPromiseVertices(List<HasContainer> constraintHasContainers) {
+    private Iterator<Element> queryPromiseVertices(SearchQuery searchQuery, List<HasContainer> constraintHasContainers) {
         Optional<TraversalConstraint> constraint = constraintHasContainers.stream()
                 .findFirst().filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
                 .map(h -> (TraversalConstraint) h.getValue());
 
         SearchBuilder builder = new SearchBuilder();
+        builder.setLimit(searchQuery.getLimit());
         PromiseElementControllerContext context = new PromiseElementControllerContext(Collections.EMPTY_LIST, constraint, schemaProvider, ElementType.vertex);
         //search appender
         CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,

@@ -2,10 +2,11 @@ package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.ElementConstraintSearchAppender;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
@@ -37,6 +38,9 @@ public class ElementConstraintSearchAppenderTest {
 
     @Test
     public void testSimpleConstraint() {
+
+        Traversal dragonTraversal = __.has("label", P.eq("dragon")).limit(100);
+
         SearchBuilder searchBuilder = new SearchBuilder();
 
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
