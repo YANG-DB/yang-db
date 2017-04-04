@@ -1,7 +1,13 @@
 package com.kayhut.fuse.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.util.Modules;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
@@ -18,12 +24,32 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.kayhut.fuse.services.TestUtils.loadQuery;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DataTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(
-            new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()));
+    public static JoobyRule createApp() {
+        Cursor cursor = mock(Cursor.class);
+        when(cursor.getNextResults(anyInt())).thenReturn(new QueryResult());
+
+        CursorFactory cursorFactory = mock(CursorFactory.class);
+        when(cursorFactory.createCursor(any())).thenReturn(cursor);
+
+        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                .conf("application.mockEngine.dev.conf")
+                .injector((stage, module) -> {
+                    return Guice.createInjector(stage, Modules.override(module).with(new AbstractModule() {
+                        @Override
+                        protected void configure() {
+                            bind(CursorFactory.class).toInstance(cursorFactory);
+                        }
+                    }));
+                }));
+    }
 
     @Test
     /**
