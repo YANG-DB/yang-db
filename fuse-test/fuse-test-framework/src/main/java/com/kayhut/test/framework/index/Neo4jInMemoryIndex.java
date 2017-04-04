@@ -20,6 +20,7 @@ public class Neo4jInMemoryIndex implements AutoCloseable {
     }
 
     public Neo4jInMemoryIndex(String folder, boolean isTest) {
+        TestUtil.deleteFolder(folder);
         if(isTest) {
             this.graphDatabaseService = new TestGraphDatabaseFactory().newImpermanentDatabaseBuilder(new File(folder)).newGraphDatabase();
         }

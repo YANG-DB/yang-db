@@ -42,40 +42,40 @@ public class Neo4jEmbeddedCsvPopTests {
 
     @Test
     public void testNeoLoadAll() throws IOException {
-        loadFileToNeo("PeopleList.csv", DragonScenarioLoadConstants.LOAD_PERSONS_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("HorsesList.csv", DragonScenarioLoadConstants.LOAD_HORSES_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("GuildList.csv", DragonScenarioLoadConstants.LOAD_GUILDS_TEMPLATE, graphDatabaseService);
-        loadFileToNeo("KingdomList.csv", DragonScenarioLoadConstants.LOAD_KINGDOMS_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("dragonsList.csv", DragonScenarioLoadConstants.LOAD_DRAGONS_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("People.csv", DragonScenarioLoadConstants.LOAD_PERSONS_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("Horses.csv", DragonScenarioLoadConstants.LOAD_HORSES_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("Guild.csv", DragonScenarioLoadConstants.LOAD_GUILDS_TEMPLATE, graphDatabaseService);
+        loadFileToNeo("Kingdom.csv", DragonScenarioLoadConstants.LOAD_KINGDOMS_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("Dragons.csv", DragonScenarioLoadConstants.LOAD_DRAGONS_TEMPLATE,graphDatabaseService);
 
-        loadFileToNeo("DragonFiresAt.csv", DragonScenarioLoadConstants.LOAD_DRAGON_FIRES_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("DragonFreezes.csv", DragonScenarioLoadConstants.LOAD_DRAGON_FREEZES_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("DragonOriginatedInKingdom.csv", DragonScenarioLoadConstants.LOAD_DRAGON_ORIGINATED_IN_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("GuildRegisterInKingdom.csv", DragonScenarioLoadConstants.LOAD_GUILD_REGISTERED_IN_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("HorseOriginatedInKingdom.csv", DragonScenarioLoadConstants.LOAD_HORSE_ORIGINATED_IN_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("OffspringRelation.csv", DragonScenarioLoadConstants.LOAD_PERSON_OFFSPRING_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("PeopleSubjectOfKingdom.csv", DragonScenarioLoadConstants.LOAD_PERSON_SUBJECT_OF_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("PersonKnowsPerson.csv", DragonScenarioLoadConstants.LOAD_PERSON_KNOWS_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("PersonMemberOfGuild.csv", DragonScenarioLoadConstants.LOAD_PERSON_MEMBER_OF_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("PersonOwnsDregons.csv", DragonScenarioLoadConstants.LOAD_PERSON_OWNS_DRAGON_TEMPLATE,graphDatabaseService);
-        loadFileToNeo("PersonOwnsHorses.csv", DragonScenarioLoadConstants.LOAD_PERSON_OWNS_HORSE_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("FiresAt.csv", DragonScenarioLoadConstants.LOAD_DRAGON_FIRES_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("Freezes.csv", DragonScenarioLoadConstants.LOAD_DRAGON_FREEZES_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("DragonOriginatedIn.csv", DragonScenarioLoadConstants.LOAD_DRAGON_ORIGINATED_IN_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("GuildRegisteredIn.csv", DragonScenarioLoadConstants.LOAD_GUILD_REGISTERED_IN_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("HorseOriginatedIn.csv", DragonScenarioLoadConstants.LOAD_HORSE_ORIGINATED_IN_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("Offspring.csv", DragonScenarioLoadConstants.LOAD_PERSON_OFFSPRING_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("PersonSubjectOf.csv", DragonScenarioLoadConstants.LOAD_PERSON_SUBJECT_OF_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("KnowsPerson.csv", DragonScenarioLoadConstants.LOAD_PERSON_KNOWS_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("MemberOfGuild.csv", DragonScenarioLoadConstants.LOAD_PERSON_MEMBER_OF_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("OwnsDragons.csv", DragonScenarioLoadConstants.LOAD_PERSON_OWNS_DRAGON_TEMPLATE,graphDatabaseService);
+        loadFileToNeo("OwnsHorses.csv", DragonScenarioLoadConstants.LOAD_PERSON_OWNS_HORSE_TEMPLATE,graphDatabaseService);
         Transaction transaction = graphDatabaseService.beginTx();
         List<Node> nodes = graphDatabaseService.getAllNodes().stream().collect(Collectors.toList());
         List<Relationship> relationships = graphDatabaseService.getAllRelationships().stream().collect(Collectors.toList());
-        Assert.assertEquals(50, nodes.stream().filter(n -> n.hasLabel(Label.label("Person"))).count());
+        Assert.assertEquals(321, nodes.stream().filter(n -> n.hasLabel(Label.label("Person"))).count());
         Assert.assertEquals(100, nodes.stream().filter(n -> n.hasLabel(Label.label("Horse"))).count());
-        Assert.assertEquals(50, nodes.stream().filter(n -> n.hasLabel(Label.label("Dragon"))).count());
-        Assert.assertEquals(5, nodes.stream().filter(n -> n.hasLabel(Label.label("Guild"))).count());
-        Assert.assertEquals(3, nodes.stream().filter(n -> n.hasLabel(Label.label("Kingdom"))).count());
-        Assert.assertEquals(8988,relationships.stream().filter(r -> r.isType(RelationshipType.withName("FIRES_AT"))).count());
-        Assert.assertEquals(9262,relationships.stream().filter(r -> r.isType(RelationshipType.withName("FREEZES"))).count());
-        Assert.assertEquals(150,relationships.stream().filter(r -> r.isType(RelationshipType.withName("ORIGINATED_IN"))).count());
-        Assert.assertEquals(5,relationships.stream().filter(r -> r.isType(RelationshipType.withName("REGISTERED_IN"))).count());
-        Assert.assertEquals(0,relationships.stream().filter(r -> r.isType(RelationshipType.withName("PARENT"))).count());
-        Assert.assertEquals(50,relationships.stream().filter(r -> r.isType(RelationshipType.withName("SUBJECT_OF"))).count());
-        Assert.assertEquals(124,relationships.stream().filter(r -> r.isType(RelationshipType.withName("KNOWS"))).count());
-        Assert.assertEquals(49,relationships.stream().filter(r -> r.isType(RelationshipType.withName("MEMBER_OF"))).count());
-        Assert.assertEquals(49+33,relationships.stream().filter(r -> r.isType(RelationshipType.withName("OWNS"))).count());
+        Assert.assertEquals(100, nodes.stream().filter(n -> n.hasLabel(Label.label("Dragon"))).count());
+        Assert.assertEquals(60, nodes.stream().filter(n -> n.hasLabel(Label.label("Guild"))).count());
+        Assert.assertEquals(10, nodes.stream().filter(n -> n.hasLabel(Label.label("Kingdom"))).count());
+        Assert.assertEquals(5598,relationships.stream().filter(r -> r.isType(RelationshipType.withName("FIRES_AT"))).count());
+        Assert.assertEquals(5444,relationships.stream().filter(r -> r.isType(RelationshipType.withName("FREEZES"))).count());
+        Assert.assertEquals(200,relationships.stream().filter(r -> r.isType(RelationshipType.withName("ORIGINATED_IN"))).count());
+        Assert.assertEquals(232,relationships.stream().filter(r -> r.isType(RelationshipType.withName("REGISTERED_IN"))).count());
+        Assert.assertEquals(21,relationships.stream().filter(r -> r.isType(RelationshipType.withName("PARENT"))).count());
+        Assert.assertEquals(321,relationships.stream().filter(r -> r.isType(RelationshipType.withName("SUBJECT_OF"))).count());
+        Assert.assertEquals(3668,relationships.stream().filter(r -> r.isType(RelationshipType.withName("KNOWS"))).count());
+        Assert.assertEquals(950,relationships.stream().filter(r -> r.isType(RelationshipType.withName("MEMBER_OF"))).count());
+        Assert.assertEquals(2*93,relationships.stream().filter(r -> r.isType(RelationshipType.withName("OWNS"))).count());
     }
 
     private String getFilePath(String fileName) {
