@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -42,10 +43,11 @@ public class EntityType {
         this.display = display;
     }
 
+    @JsonProperty("DBeName")
     public String getDBeName() {
         return DBeName;
     }
-
+    @JsonProperty("DBeName")
     public void setDBeName(String DBeName) {
         this.DBeName = DBeName;
     }

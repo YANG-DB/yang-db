@@ -32,7 +32,7 @@ public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<Pro
         // If there is no Constraint
         if (context.getElementType() == ElementType.vertex) {
             Iterable<String> vertexTypes = context.getSchemaProvider().getVertexTypes();
-            queryBuilder.seekRoot().query().filtered().filter().bool().must().terms("_type", vertexTypes);
+            queryBuilder.seekRoot().query().filtered().filter().bool().must().terms(this.getClass().getSimpleName(),"_type", vertexTypes);
         }
         else if (context.getElementType() == ElementType.edge) {
             ;//To be continue...
