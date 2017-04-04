@@ -1,6 +1,12 @@
 package com.kayhut.fuse.services;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.util.Modules;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import com.kayhut.fuse.model.results.QueryResult;
 import org.jooby.test.JoobyRule;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -9,13 +15,33 @@ import org.junit.Test;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Ignore
 public class SearchTest {
 
     @ClassRule
-    public static JoobyRule app = new JoobyRule(
-            new FuseApp(new DefaultAppUrlSupplier("/fuse"), Optional.empty()));
+    public static JoobyRule createApp() {
+        Cursor cursor = mock(Cursor.class);
+        when(cursor.getNextResults(anyInt())).thenReturn(new QueryResult());
+
+        CursorFactory cursorFactory = mock(CursorFactory.class);
+        when(cursorFactory.createCursor(any())).thenReturn(cursor);
+
+        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                .conf("application.mockEngine.dev.conf")
+                .injector((stage, module) -> {
+                    return Guice.createInjector(stage, Modules.override(module).with(new AbstractModule() {
+                        @Override
+                        protected void configure() {
+                            bind(CursorFactory.class).toInstance(cursorFactory);
+                        }
+                    }));
+                }));
+    }
 
     @Test
     @Ignore
