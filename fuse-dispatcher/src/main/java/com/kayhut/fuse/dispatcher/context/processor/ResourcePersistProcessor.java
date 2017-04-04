@@ -38,7 +38,12 @@ public class ResourcePersistProcessor implements
         }
 
         //store as query resource
-        resourceStore.addQueryResource(new QueryResource(context.getQuery(), context.getQueryMetadata(),context.getExecutionPlan()));
+        resourceStore.addQueryResource(new QueryResource(
+                context.getQuery(),
+                context.getAsgQuery(),
+                context.getQueryMetadata(),
+                context.getExecutionPlan()));
+
         return context.complete();
     }
     //endregion

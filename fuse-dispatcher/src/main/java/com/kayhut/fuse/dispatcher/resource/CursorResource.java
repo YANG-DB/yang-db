@@ -1,6 +1,6 @@
 package com.kayhut.fuse.dispatcher.resource;
 
-import com.kayhut.fuse.dispatcher.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
 import java.util.Date;

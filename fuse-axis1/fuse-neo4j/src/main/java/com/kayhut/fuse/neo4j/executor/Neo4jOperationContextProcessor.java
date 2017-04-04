@@ -3,6 +3,8 @@ package com.kayhut.fuse.neo4j.executor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
@@ -14,30 +16,32 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.neo4j.GraphProvider;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 import javaslang.Tuple2;
 
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
-import static com.kayhut.fuse.neo4j.executor.NeoGraphUtils.query;
 
 /**
  * Created by User on 08/03/2017.
  */
-public class Neo4JOperationContextProcessor implements
+public class Neo4jOperationContextProcessor implements
         CursorCreationOperationContext.Processor,
         PageCreationOperationContext.Processor,
         QueryCreationOperationContext.Processor {
 
     //region Constructors
     @Inject
-    public Neo4JOperationContextProcessor(GraphProvider graphProvider, EventBus eventBus, ResourceStore store, OntologyProvider provider) {
-        this.graphProvider = graphProvider;
+    public Neo4jOperationContextProcessor(
+            EventBus eventBus,
+            ResourceStore store,
+            OntologyProvider ontologyProvider,
+            CursorFactory cursorFactory) {
+        this.cursorFactory = cursorFactory;
         this.eventBus = eventBus;
         this.store = store;
-        this.provider = provider;
+        this.ontologyProvider = ontologyProvider;
         this.eventBus.register(this);
     }
     //endregion
@@ -46,16 +50,12 @@ public class Neo4JOperationContextProcessor implements
     @Override
     @Subscribe
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
-
-        if((asgQuery != null && ontology != null) || context.getAsgQuery() == null) {
+        if(context.getAsgQuery() == null || context.getExecutionPlan() != null) {
             return context;
         }
 
-        asgQuery = context.getAsgQuery();
-        Optional<Ontology> ont = provider.get(asgQuery.getOnt());
-        if(ont.isPresent()) {
-            ontology = ont.get();
-        } else {
+        Optional<Ontology> ont = ontologyProvider.get(context.getAsgQuery().getOnt());
+        if(!ont.isPresent()) {
             throw new RuntimeException("Query ontology not present in catalog.");
         }
 
@@ -67,19 +67,21 @@ public class Neo4JOperationContextProcessor implements
     @Override
     @Subscribe
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
-
         if (context.getCursor() != null) {
             return context;
         }
 
         //Compile the query and get the cursor ready
-        Neo4jCursor cursor = null;
+        String cypherQuery = null;
         try {
-            String cypherQuery = CypherCompiler.compile(asgQuery, ontology);
-            cursor = new Neo4jCursor(context.getQueryResource().getQuery(), cypherQuery, true);
+            cypherQuery = CypherCompiler.compile(
+                    context.getQueryResource().getAsgQuery(),
+                    ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get());
         } catch (Exception ex) {
-            cursor = new Neo4jCursor(context.getQueryResource().getQuery(), null, false);
+
         }
+
+        Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorContext(context.getQueryResource(), null));
 
         return submit(eventBus, context.of(cursor));
 
@@ -94,12 +96,8 @@ public class Neo4JOperationContextProcessor implements
             return context;
         }
 
-        Neo4jCursor neo4jCursor = (Neo4jCursor)context.getCursorResource().getCursor();
-
-        QueryResult result = null;
-        if (neo4jCursor.isValid()) {
-            result = query(graphProvider, neo4jCursor);
-        }
+        Cursor cursor = context.getCursorResource().getCursor();
+        QueryResult result = cursor.getNextResults(context.getPageSize());
 
         if (result == null) {
             result = new QueryResult();
@@ -109,13 +107,10 @@ public class Neo4JOperationContextProcessor implements
     }
     //endregion
 
-    private GraphProvider graphProvider;
     //region Fields
     protected EventBus eventBus;
     private ResourceStore store;
-    private OntologyProvider provider;
-    private AsgQuery asgQuery;
-    private Ontology ontology;
-
+    private OntologyProvider ontologyProvider;
+    private CursorFactory cursorFactory;
     //endregion
 }

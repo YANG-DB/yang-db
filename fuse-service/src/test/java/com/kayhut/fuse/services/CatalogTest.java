@@ -26,7 +26,7 @@ public class CatalogTest {
      * execute query with expected plan result
      */
     public void catalog() throws IOException {
-        Ontology ontology = loadOntology("dragons.json");
+        Ontology ontology = loadOntology("Dragons.json");
         given()
                 .contentType("application/json")
                 .get("/fuse/catalog/ontology/Dragons")
