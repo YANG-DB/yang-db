@@ -15,6 +15,5 @@ public class GtaModule implements Jooby.Module  {
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(GremlinTranslationAppenderEngine.class).asEagerSingleton();
         binder.bind(CursorCreationOperationContext.Processor.class).to(GtaCursorProcessor.class).asEagerSingleton();
-
     }
 }
