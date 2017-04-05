@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services.tests.engine1;
+package com.kayhut.fuse.services.engine1;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
@@ -8,7 +8,7 @@ import org.junit.ClassRule;
 /**
  * Created by Roman on 04/04/2017.
  */
-public class PageTest extends com.kayhut.fuse.services.tests.mockEngine.PageTest {
+public class PageTest extends com.kayhut.fuse.services.mockEngine.PageTest {
     @ClassRule
     public static JoobyRule createApp() {
         return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))

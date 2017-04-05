@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services.tests.mockEngine;
+package com.kayhut.fuse.services.mockEngine;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
