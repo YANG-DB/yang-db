@@ -48,8 +48,7 @@ public interface OntologyUtil {
         return Optional.empty();
     }
 
-    static Optional<List<String>> getAllEntityLabels(Ontology ontology)
-    {
+    static Optional<List<String>> getAllEntityLabels(Ontology ontology) {
         List<String> entityLabels = ontology.getEntityTypes().stream().map(p -> p.getName()).collect(Collectors.toList());
         if (entityLabels.size() != 0)
             return Optional.of(entityLabels);
@@ -57,8 +56,7 @@ public interface OntologyUtil {
             return Optional.empty();
     }
 
-    static Optional<List<String>> getAllRelationshipTypeLabels(Ontology ontology)
-    {
+    static Optional<List<String>> getAllRelationshipTypeLabels(Ontology ontology) {
         List<String> relationshipTypeLabels = ontology.getRelationshipTypes().stream().map(p -> p.getName()).collect(Collectors.toList());
         if (relationshipTypeLabels.size() != 0)
             return Optional.of(relationshipTypeLabels);
@@ -83,17 +81,7 @@ public interface OntologyUtil {
 
         if (pType.contains("."))
         {
-            String[] typesTree = pType.split("\\.");
-
-            Optional<Property> rootProperty = OntologyUtil.getProperty(typesTree[0], entityType.get().getProperties());
-            if (rootProperty.isPresent()) {
-                String cType = rootProperty.get().getType();
-                Optional<CompositeType> compositeType = getCompositeType(ontology, cType);
-                if (compositeType.isPresent())
-                {
-                    return getProperty(typesTree[1], compositeType.get().getProperties());
-                }
-            }
+            return getCompositeProperty(ontology, pType, entityType.get().getProperties());
         }
         else {
             Optional<Property> p = getProperty(pType, entityType.get().getProperties());
@@ -109,20 +97,10 @@ public interface OntologyUtil {
         if (!relationType.isPresent())
             return Optional.empty();
 
-        //This is a composite type - we support only 2 levels for now (e.g., 1.2)
+        //This is a composite type - we support currently only 2 levels for now (e.g., 1.2)
         if (pType.contains("."))
         {
-            String[] typesTree = pType.split("\\.");
-
-            Optional<Property> rootProperty = OntologyUtil.getProperty(typesTree[0], relationType.get().getProperties());
-            if (rootProperty.isPresent()) {
-                String cType = rootProperty.get().getType();
-                Optional<CompositeType> compositeType = getCompositeType(ontology, cType);
-                if (compositeType.isPresent())
-                {
-                    return getProperty(typesTree[1], compositeType.get().getProperties());
-                }
-            }
+            return getCompositeProperty(ontology, pType, relationType.get().getProperties());
         }
         else {
             Optional<Property> p = getProperty(pType, relationType.get().getProperties());
@@ -142,6 +120,22 @@ public interface OntologyUtil {
         return Optional.empty();
     }
 
+    static Optional<Property> getCompositeProperty(Ontology ontology, String pType, List<Property> properties) {
+        String[] typesTree = pType.split("\\.");
+
+        if (typesTree.length>1) {
+            Optional<Property> rootProperty = getProperty(typesTree[0], properties);
+            if (rootProperty.isPresent()) {
+                String cType = rootProperty.get().getType();
+                Optional<CompositeType> compositeType = getCompositeType(ontology, cType);
+                if (compositeType.isPresent()) {
+                    return getProperty(typesTree[1], compositeType.get().getProperties());
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
     static Optional<RelationshipType> getRelationshipType(Ontology ontology,String name) {
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()
                 .filter(relationshipType-> relationshipType.getName().equals(name))
@@ -156,7 +150,6 @@ public interface OntologyUtil {
         return Optional.of(relationshipType);
     }
 
-
     static Optional<CompositeType> getCompositeType(Ontology ontology, String cType) {
         Optional<CompositeType> CompositeTypeMatch = ontology.getCompositeTypes().stream()
                 .filter(compositeTypeType-> compositeTypeType.getcType().equals(cType))
@@ -170,6 +163,5 @@ public interface OntologyUtil {
         }
         return Optional.of(compositeType);
     }
-
 
 }

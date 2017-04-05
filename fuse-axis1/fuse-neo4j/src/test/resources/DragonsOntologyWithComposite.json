@@ -38,6 +38,23 @@
       ]
     },
     {
+      "cType": "datetimespan",
+      "properties": [
+        {
+          "pType": 1,
+          "type": "datetime",
+          "DBpName": "since",
+          "name": "since"
+        },
+        {
+          "pType": 2,
+          "type": "datetime",
+          "DBpName": "till",
+          "name": "till"
+        }
+      ]
+    },
+    {
       "cType": "personName",
       "properties": [
         {
@@ -170,6 +187,42 @@
             "min(till)",
             "max(till)"
           ]
+        }
+      ]
+    },
+    {
+      "rType": 3,
+      "DBrName": "freezes",
+      "name": "freezes",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        {
+          "pType": 1,
+          "type": "datetimespan",
+          "DBpName": "span",
+          "name": "tf",
+          "report": [
+            "raw(since)",
+            "raw(till)"
+          ]
+        }
+      ]
+    },
+    {
+      "rType": 4,
+      "DBrName": "offspring",
+      "name": "offspring of",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 1
         }
       ]
     },
