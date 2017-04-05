@@ -1,28 +1,32 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.tests.mockEngine;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.util.Modules;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.transport.ContentResponse;
+import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.services.TestsConfiguration;
 import org.jooby.test.JoobyRule;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import java.util.Optional;
+import java.io.IOException;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
-public class ApiDescriptorTest {
+public class CatalogTest {
 
     @ClassRule
     public static JoobyRule createApp() {
@@ -44,33 +48,32 @@ public class ApiDescriptorTest {
                 }));
     }
 
+    @Before
+    public void before() {
+        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+    }
+
     @Test
     /**
      * execute query with expected plan result
      */
-    public void api() {
+    public void catalog() throws IOException {
+        Ontology ontology = TestUtils.loadOntology("Dragons.json");
         given()
                 .contentType("application/json")
-                .get("/fuse")
+                .get("/fuse/catalog/ontology/Dragons")
                 .then()
                 .assertThat()
-                .body(sameJSONAs("{\"resourceUrl\":\"/fuse\",\"healthUrl\":\"/fuse/health\",\"queryStoreUrl\":\"/fuse/query\",\"searchStoreUrl\":\"/fuse/search\",\"catalogStoreUrl\":\"/fuse/catalog\"}")
-                        .allowingExtraUnexpectedFields()
-                        .allowingAnyArrayOrdering())
-                .statusCode(200)
-                .contentType("application/json;charset=UTF-8");
-    }
-
-    @Test
-    public void checkHealth() {
-        get("/fuse/health")
-                .then()
-                .assertThat()
-                .body(equalTo("\"Alive And Well...\""))
-                .header("Access-Control-Allow-Origin", equalTo("*"))
-                .header("Access-Control-Allow-Methods", equalTo("POST, GET, OPTIONS, DELETE, PATCH"))
-                .header("Access-Control-Max-Age", equalTo("3600"))
-                .header("Access-Control-Allow-Headers", "accept")
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        String expected = new ObjectMapper().writeValueAsString(ontology);
+                        ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
+                        return new ObjectMapper().writeValueAsString(contentResponse.getData()).equals(expected);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
                 .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
     }

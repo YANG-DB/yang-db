@@ -4,7 +4,10 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -22,12 +25,18 @@ public class GtaCursorProcessor implements
     private final EventBus eventBus;
     private OntologyProvider provider;
     private GremlinTranslationAppenderEngine engine;
+    private CursorFactory cursorFactory;
 
     @Inject
-    public GtaCursorProcessor(EventBus eventBus, OntologyProvider provider, GremlinTranslationAppenderEngine engine) {
+    public GtaCursorProcessor(
+            EventBus eventBus,
+            OntologyProvider provider,
+            GremlinTranslationAppenderEngine engine,
+            CursorFactory cursorFactory) {
         this.eventBus = eventBus;
         this.provider = provider;
         this.engine = engine;
+        this.cursorFactory = cursorFactory;
         this.eventBus.register(this);
 
     }
@@ -42,8 +51,11 @@ public class GtaCursorProcessor implements
         Tuple2<Plan, SingleCost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
         Traversal traversal = engine.createTraversal(ontology, executionPlan._1());
+
+
         //submit
-        return submit(eventBus, context.of(new TraversalCursor(traversal)));
+        Cursor cursor = this.cursorFactory.createCursor(new TraversalCursorContext(context.getQueryResource(), traversal));
+        return submit(eventBus, context.of(cursor));
 
     }
 

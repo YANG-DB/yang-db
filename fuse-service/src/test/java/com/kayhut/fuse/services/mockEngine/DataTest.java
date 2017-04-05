@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.tests.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
@@ -12,16 +12,18 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.services.TestsConfiguration;
 import org.jooby.test.JoobyRule;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.kayhut.fuse.services.TestUtils.loadQuery;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -51,6 +53,11 @@ public class DataTest {
                 }));
     }
 
+    @Before
+    public void before() {
+        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+    }
+
     @Test
     /**
      * execute query with expected plan result
@@ -60,7 +67,7 @@ public class DataTest {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(loadQuery("Q001.json"));
+        request.setQuery(TestUtils.loadQuery("Q001.json"));
         //submit query
         given()
                 .contentType("application/json")

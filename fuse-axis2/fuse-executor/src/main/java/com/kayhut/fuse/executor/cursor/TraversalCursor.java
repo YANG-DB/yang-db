@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta;
+package com.kayhut.fuse.executor.cursor;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.model.results.QueryResult;

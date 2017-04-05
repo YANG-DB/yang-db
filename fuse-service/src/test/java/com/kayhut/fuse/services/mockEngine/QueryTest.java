@@ -1,9 +1,8 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.tests.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.util.Modules;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
@@ -11,17 +10,17 @@ import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.services.TestUtils.ContentMatcher;
+import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.services.TestsConfiguration;
 import org.jooby.test.JoobyRule;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
-import static com.kayhut.fuse.services.TestUtils.loadQuery;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -47,6 +46,11 @@ public class QueryTest {
                 }));
     }
 
+    @Before
+    public void before() {
+        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+    }
+
     /**
      * execute query with expected path result
      */
@@ -56,7 +60,7 @@ public class QueryTest {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(loadQuery("Q001.json"));
+        request.setQuery(TestUtils.loadQuery("Q001.json"));
         //submit query
         given()
                 .contentType("application/json")
@@ -64,7 +68,7 @@ public class QueryTest {
                 .post("/fuse/query")
                 .then()
                 .assertThat()
-                .body(new ContentMatcher(o -> {
+                .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
@@ -87,7 +91,7 @@ public class QueryTest {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(loadQuery("Q001.json"));
+        request.setQuery(TestUtils.loadQuery("Q001.json"));
         //submit query
         given()
                 .contentType("application/json")
@@ -95,7 +99,7 @@ public class QueryTest {
                 .post("/fuse/query")
                 .then()
                 .assertThat()
-                .body(new ContentMatcher(o -> {
+                .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
@@ -116,7 +120,7 @@ public class QueryTest {
                 .get("/fuse/query/1")
                 .then()
                 .assertThat()
-                .body(new ContentMatcher(o -> {
+                .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
@@ -137,7 +141,7 @@ public class QueryTest {
                 .get("/fuse/query/1/cursor")
                 .then()
                 .assertThat()
-                .body(new ContentMatcher(o -> {
+                .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
@@ -160,7 +164,7 @@ public class QueryTest {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(loadQuery("Q001.json"));
+        request.setQuery(TestUtils.loadQuery("Q001.json"));
         //submit query
         given()
                 .contentType("application/json")
@@ -168,7 +172,7 @@ public class QueryTest {
                 .post("/fuse/query")
                 .then()
                 .assertThat()
-                .body(new ContentMatcher(o -> {
+                .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
@@ -189,7 +193,7 @@ public class QueryTest {
                 .get("/fuse/query/1")
                 .then()
                 .assertThat()
-                .body(new ContentMatcher(o -> {
+                .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
