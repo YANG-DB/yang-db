@@ -32,10 +32,10 @@ public class TestsConfiguration {
         //this.testClassesToRun.add(com.kayhut.fuse.services.engine1.QueryTest.class);
 
         //engine2 tests
-        //this.testClassesToRun.add(com.kayhut.fuse.services.engine2.CursorTest.class);
-        //this.testClassesToRun.add(com.kayhut.fuse.services.engine2.DataTest.class);
-        //this.testClassesToRun.add(com.kayhut.fuse.services.engine2.PageTest.class);
-        //this.testClassesToRun.add(com.kayhut.fuse.services.engine2.QueryTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.CursorTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.DataTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.PageTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.QueryTest.class);
     }
     //endregion
 

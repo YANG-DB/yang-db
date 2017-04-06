@@ -17,7 +17,7 @@ public class TraversalCursor implements Cursor {
     //region Cursor Implementation
     @Override
     public QueryResult getNextResults(int numResults) {
-        return null;
+        return new QueryResult();
     }
     //endregion
 

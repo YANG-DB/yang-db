@@ -19,28 +19,23 @@ import static com.kayhut.fuse.model.Utils.submit;
 /**
  * Created by liorp on 3/16/2017.
  */
-public class GtaCursorProcessor implements
-        CursorCreationOperationContext.Processor {
-
-    private final EventBus eventBus;
-    private OntologyProvider provider;
-    private GremlinTranslationAppenderEngine engine;
-    private CursorFactory cursorFactory;
-
+public class GtaTraversalCursorProcessor implements CursorCreationOperationContext.Processor {
+    //region Constructors
     @Inject
-    public GtaCursorProcessor(
+    public GtaTraversalCursorProcessor(
             EventBus eventBus,
             OntologyProvider provider,
-            GremlinTranslationAppenderEngine engine,
+            GremlinTranslator gremlinTranslator,
             CursorFactory cursorFactory) {
         this.eventBus = eventBus;
         this.provider = provider;
-        this.engine = engine;
+        this.gremlinTranslator = gremlinTranslator;
         this.cursorFactory = cursorFactory;
         this.eventBus.register(this);
-
     }
+    //endregion
 
+    //region CursorCreationOperationContext.Processor implementation
     @Override
     @Subscribe
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
@@ -50,7 +45,8 @@ public class GtaCursorProcessor implements
         //execute gta plan ==> traversal extraction
         Tuple2<Plan, SingleCost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
-        Traversal traversal = engine.createTraversal(ontology, executionPlan._1());
+
+        Traversal traversal = gremlinTranslator.translate(ontology, executionPlan._1());
 
 
         //submit
@@ -58,5 +54,12 @@ public class GtaCursorProcessor implements
         return submit(eventBus, context.of(cursor));
 
     }
+    //endregion
 
+    //region Fields
+    private final EventBus eventBus;
+    private OntologyProvider provider;
+    private GremlinTranslator gremlinTranslator;
+    private CursorFactory cursorFactory;
+    //endregion
 }
