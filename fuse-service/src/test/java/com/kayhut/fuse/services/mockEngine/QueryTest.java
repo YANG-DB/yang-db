@@ -21,6 +21,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.kayhut.fuse.model.results.QueryResult.QueryResultBuilder.aQueryResult;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -29,7 +30,7 @@ public class QueryTest {
     @ClassRule
     public static JoobyRule createApp() {
         Cursor cursor = mock(Cursor.class);
-        when(cursor.getNextResults(anyInt())).thenReturn(new QueryResult());
+        when(cursor.getNextResults(anyInt())).thenReturn(aQueryResult().build());
 
         CursorFactory cursorFactory = mock(CursorFactory.class);
         when(cursorFactory.createCursor(any())).thenReturn(cursor);

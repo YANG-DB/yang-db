@@ -1,7 +1,5 @@
 package com.kayhut.fuse.model.ontology;
 
-import com.google.common.base.Splitter;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,6 +8,20 @@ import java.util.stream.Collectors;
  * Created by benishue on 12-Mar-17.
  */
 public interface OntologyUtil {
+
+    static int getEntityTypeIdByName(Ontology ontology,String name) {
+        Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()
+                .filter(entityType -> entityType.getName() == null)
+                .findFirst();
+        int entityTypeId ;
+        if (entityTypeMatch.isPresent()) {
+            entityTypeId = entityTypeMatch.get().geteType();
+        }
+        else {
+            throw new IllegalArgumentException("Not Supported Entity Type name: " + name);
+        }
+        return entityTypeId;
+    }
 
     static String getEntityTypeNameById(Ontology ontology, int eTypeId){
         Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()

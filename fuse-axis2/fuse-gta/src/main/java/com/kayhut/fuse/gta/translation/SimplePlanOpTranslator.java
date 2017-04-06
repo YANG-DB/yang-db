@@ -46,7 +46,7 @@ public class SimplePlanOpTranslator {
                 }));
 
     // iterate ops
-    // translate each op via factory
+    // translatePath each op via factory
 
         return traversalReference.get();
     }

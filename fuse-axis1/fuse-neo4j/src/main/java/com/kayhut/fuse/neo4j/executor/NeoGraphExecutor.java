@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 abstract class NeoGraphUtils{
 
     //region Private Methods
-    public static QueryResult query(GraphProvider graphProvider, Neo4jCursor cursor) {
+    public static QueryResult query(GraphProvider graphProvider, Neo4jCursorFactory.Neo4jCursor cursor) {
 
         try {
             ArrayList<Assignment> assignments = new ArrayList<>();

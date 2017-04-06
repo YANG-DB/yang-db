@@ -7,7 +7,7 @@ import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
-import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
+import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -50,7 +50,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
 
 
         //submit
-        Cursor cursor = this.cursorFactory.createCursor(new TraversalCursorContext(context.getQueryResource(), traversal));
+        Cursor cursor = this.cursorFactory.createCursor(new TraversalCursorFactory.TraversalCursorContext(ontology, context.getQueryResource(), traversal));
         return submit(eventBus, context.of(cursor));
 
     }

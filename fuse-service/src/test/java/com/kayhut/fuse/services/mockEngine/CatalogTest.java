@@ -31,7 +31,7 @@ public class CatalogTest {
     @ClassRule
     public static JoobyRule createApp() {
         Cursor cursor = mock(Cursor.class);
-        when(cursor.getNextResults(anyInt())).thenReturn(new QueryResult());
+        when(cursor.getNextResults(anyInt())).thenReturn(QueryResult.QueryResultBuilder.aQueryResult().build());
 
         CursorFactory cursorFactory = mock(CursorFactory.class);
         when(cursorFactory.createCursor(any())).thenReturn(cursor);

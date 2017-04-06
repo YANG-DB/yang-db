@@ -46,21 +46,16 @@ public class ElasticUniGraphProvider implements UniGraphProvider {
      * @return
      */
     private ControllerManagerFactory controllerManagerFactory(GraphElementSchemaProvider schemaProvider) {
-        return new ControllerManagerFactory() {
+        return uniGraph -> new ControllerManager() {
             @Override
-            public ControllerManager create(UniGraph uniGraph) {
-                return new ControllerManager() {
-                    @Override
-                    public Set<UniQueryController> getControllers() {
-                        return ImmutableSet.of(
-                                new SearchPromiseElementController(client, configuration, uniGraph, schemaProvider),
-                                new SearchPromiseVertexController(client, configuration, uniGraph, schemaProvider));
-                    }
+            public Set<UniQueryController> getControllers() {
+                return ImmutableSet.of(
+                        new SearchPromiseElementController(client, configuration, uniGraph, schemaProvider),
+                        new SearchPromiseVertexController(client, configuration, uniGraph, schemaProvider));
+            }
 
-                    @Override
-                    public void close() {
-                    }
-                };
+            @Override
+            public void close() {
             }
         };
     }

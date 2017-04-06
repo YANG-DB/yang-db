@@ -11,7 +11,6 @@ import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -22,6 +21,7 @@ import javaslang.Tuple2;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
+import static com.kayhut.fuse.model.results.QueryResult.QueryResultBuilder.aQueryResult;
 
 /**
  * Created by User on 08/03/2017.
@@ -81,7 +81,7 @@ public class Neo4jOperationContextProcessor implements
 
         }
 
-        Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorContext(context.getQueryResource(), null));
+        Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(), null));
 
         return submit(eventBus, context.of(cursor));
 
@@ -100,7 +100,7 @@ public class Neo4jOperationContextProcessor implements
         QueryResult result = cursor.getNextResults(context.getPageSize());
 
         if (result == null) {
-            result = new QueryResult();
+            result = aQueryResult().build();
         }
 
         return submit(eventBus, context.of(new PageResource(context.getPageId(), result, context.getPageSize())));
