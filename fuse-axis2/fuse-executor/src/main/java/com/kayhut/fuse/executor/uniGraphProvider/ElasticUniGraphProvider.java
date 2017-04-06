@@ -12,6 +12,7 @@ import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
 import org.elasticsearch.client.Client;
 import org.unipop.process.strategyregistrar.StandardStrategyProvider;
 import org.unipop.query.controller.ControllerManager;
+import org.unipop.query.controller.ControllerManagerFactory;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
@@ -36,7 +37,7 @@ public class ElasticUniGraphProvider implements UniGraphProvider {
     @Override
     public UniGraph getGraph(Ontology ontology) throws Exception {
         GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(this.physicalIndexProvider, ontology);
-        return new UniGraph(controllerManager(schemaProvider), new StandardStrategyProvider());
+        return new UniGraph(controllerManagerFactory(schemaProvider), new StandardStrategyProvider());
     }
 
     //region Private Methods
@@ -44,17 +45,22 @@ public class ElasticUniGraphProvider implements UniGraphProvider {
      * default controller Manager
      * @return
      */
-    private ControllerManager controllerManager(GraphElementSchemaProvider schemaProvider) {
-        return new ControllerManager() {
+    private ControllerManagerFactory controllerManagerFactory(GraphElementSchemaProvider schemaProvider) {
+        return new ControllerManagerFactory() {
             @Override
-            public Set<UniQueryController> getControllers() {
-                return ImmutableSet.of(
-                        new SearchPromiseElementController(client, configuration, graph, schemaProvider),
-                        new SearchPromiseVertexController(client, configuration, graph, schemaProvider));
-            }
+            public ControllerManager create(UniGraph uniGraph) {
+                return new ControllerManager() {
+                    @Override
+                    public Set<UniQueryController> getControllers() {
+                        return ImmutableSet.of(
+                                new SearchPromiseElementController(client, configuration, uniGraph, schemaProvider),
+                                new SearchPromiseVertexController(client, configuration, uniGraph, schemaProvider));
+                    }
 
-            @Override
-            public void close() {
+                    @Override
+                    public void close() {
+                    }
+                };
             }
         };
     }
@@ -64,6 +70,5 @@ public class ElasticUniGraphProvider implements UniGraphProvider {
     private final Client client;
     private final ElasticGraphConfiguration configuration;
     private final PhysicalIndexProvider physicalIndexProvider;
-    private UniGraph graph;
     //endregion
 }
