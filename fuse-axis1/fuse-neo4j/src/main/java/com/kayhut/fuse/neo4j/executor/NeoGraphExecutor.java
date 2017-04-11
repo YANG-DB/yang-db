@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 abstract class NeoGraphUtils{
 
     //region Private Methods
-    public static QueryResult query(GraphProvider graphProvider, Neo4jCursor query) {
+    public static QueryResult query(GraphProvider graphProvider, Neo4jCursorFactory.Neo4jCursor cursor) {
 
         try {
             ArrayList<Assignment> assignments = new ArrayList<>();
-            Tuple2<Transaction, StatementResult> resultTuple2 = graphProvider.run(query.getCypher());
+            Tuple2<Transaction, StatementResult> resultTuple2 = graphProvider.run(cursor.getContext().getCypher());
 
             Iterators.asList(resultTuple2._2).forEach(record -> {
                 //Each records represents an assignment (containing nodes and relationships)

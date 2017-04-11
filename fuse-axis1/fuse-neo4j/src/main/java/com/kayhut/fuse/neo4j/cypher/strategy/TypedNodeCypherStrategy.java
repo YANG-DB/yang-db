@@ -4,31 +4,28 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.neo4j.cypher.CypherElement;
-import com.kayhut.fuse.neo4j.cypher.CypherNode;
-import com.kayhut.fuse.neo4j.cypher.CypherReturnElement;
-import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
+import com.kayhut.fuse.neo4j.cypher.*;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static com.kayhut.fuse.neo4j.cypher.CypherNode.EMPTY;
-
 /**
- * Created by User on 26/03/2017.
+ * Created by Elad on 26/03/2017.
  */
 public class TypedNodeCypherStrategy extends CypherStrategy {
 
-    public TypedNodeCypherStrategy(Ontology ontology, Map<AsgEBase, Tuple2<CypherStatement, String>> cypherStatementsMap) {
-        super(ontology,cypherStatementsMap);
+
+    public TypedNodeCypherStrategy(Map<AsgEBase, CypherCompilationState> compilationState, Ontology ont) {
+        super(compilationState, ont);
     }
 
-    public CypherStatement apply(AsgEBase element) {
+    public CypherCompilationState apply(AsgEBase element) {
 
         if (element.geteBase() instanceof ETyped) {
 
             ETyped eTyped = (ETyped) element.geteBase();
+
+            CypherCompilationState curState = getRelevantState(element);
 
             Optional<String> label = OntologyUtil.getEntityLabel(ontology, eTyped.geteType());
 
@@ -40,11 +37,15 @@ public class TypedNodeCypherStrategy extends CypherStrategy {
                     .withTag(eTyped.geteTag())
                     .withLabel(label.get());
 
-            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement(node);
-            Tuple2<CypherStatement, String> workingStatement = getWorkingStatement(element);
-            return context(element, workingStatement._1().appendNode(workingStatement._2, node).addReturn(returnElement));
+            CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement().withTag(node.tag);
+
+            //create updated state with new statement
+            return context(element, new CypherCompilationState(curState.getStatement().
+                                                                    appendNode(curState.getPathTag(), node).
+                                                                    addReturn(returnElement),
+                                                                    curState.getPathTag()));
         }
-        return getWorkingStatement(element)._1();
+        return getRelevantState(element);
 
     }
 }

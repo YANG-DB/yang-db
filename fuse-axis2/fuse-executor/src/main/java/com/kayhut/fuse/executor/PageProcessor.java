@@ -5,11 +5,12 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
+import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
 import com.kayhut.fuse.model.results.QueryResult;
 
 import java.io.IOException;
 
-import static com.kayhut.fuse.model.Utils.*;
+import static com.kayhut.fuse.model.Utils.submit;
 
 /**
  * Created by liorp on 3/16/2017.
@@ -31,7 +32,9 @@ public class PageProcessor implements PageCreationOperationContext.Processor {
         if (context.getPageResource() != null) {
             return context;
         }
-        QueryResult result = asObject(readJsonFile(DRAGONS_RESULTS), QueryResult.class);
-        return submit(eventBus, context.of(new PageResource(context.getPageId(), result, context.getPageSize())));
+
+        TraversalCursorFactory.TraversalCursor cursor = (TraversalCursorFactory.TraversalCursor) context.getCursorResource().getCursor();
+        QueryResult results = cursor.getNextResults(context.getPageSize());
+        return submit(eventBus, context.of(new PageResource(context.getPageId(), results, context.getPageSize())));
     }
 }
