@@ -29,6 +29,11 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
     //endregion
 
     //region Constructors
+
+    public ElasticInMemoryIndex(ElasticIndexConfigurer configurer){
+        this("target/es", 9305, 9300, "fuse.test_elastic", configurer );
+    }
+
     public ElasticInMemoryIndex() {
         this("target/es", 9305, 9300, "fuse.test_elastic", new ElasticIndexConfigurer() {
             @Override
@@ -74,6 +79,7 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
         }
         node.close();
         deleteFolder(esWorkingDir + "\\" + nodeName);
+        System.clearProperty("mapper.allow_dots_in_name");
     }
 
     private void configure(ElasticIndexConfigurer configurer) {
@@ -81,6 +87,7 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
     }
 
     private void prepare(){
+        System.setProperty("mapper.allow_dots_in_name", "true");
         deleteFolder(esWorkingDir + "\\" + nodeName);
         Settings settings = Settings.builder()
                 .put("path.home", esWorkingDir)

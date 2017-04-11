@@ -40,11 +40,11 @@ public class Neo4jGenericEdgeDataPopulator implements DataPopulator{
 
     @Override
     public void populate() throws IOException {
-        Stream<HashMap<String, Object>> documents = dataProvider.getDocuments();
+        Stream<Map<String, Object>> documents = dataProvider.getDocuments();
         Transaction transaction = graphDatabaseService.beginTx();
         int count = 0;
-        for(Iterator<HashMap<String, Object>> iterator = documents.iterator(); iterator.hasNext();){
-            HashMap<String, Object> doc = iterator.next();
+        for(Iterator<Map<String, Object>> iterator = documents.iterator(); iterator.hasNext();){
+            Map<String, Object> doc = iterator.next();
 
             Object sourceId = doc.get(sourceIdField);
             Object destId = doc.get(destIdField);

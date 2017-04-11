@@ -10,6 +10,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -26,13 +27,13 @@ public class FileCsvDataProvider implements GenericDataProvider {
     }
 
     @Override
-    public Stream<HashMap<String, Object>> getDocuments() throws IOException {
+    public Stream<Map<String, Object>> getDocuments() throws IOException {
         CsvMapper mapper = new CsvMapper();
 
-        ObjectReader reader = mapper.readerFor(new TypeReference<HashMap<String, Object>>() {
+        ObjectReader reader = mapper.readerFor(new TypeReference<Map<String, Object>>() {
         }).with(this.csvSchema);
-        MappingIterator<HashMap<String, Object>> objectMappingIterator = reader.readValues(new File(filePath));
-        Iterable<HashMap<String, Object>> iterable = () -> objectMappingIterator;
+        MappingIterator<Map<String, Object>> objectMappingIterator = reader.readValues(new File(filePath));
+        Iterable<Map<String, Object>> iterable = () -> objectMappingIterator;
         return StreamSupport.stream(iterable.spliterator(), false);
     }
 }

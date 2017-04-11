@@ -29,11 +29,11 @@ public class Neo4jGenericNodeDataPopulator implements DataPopulator{
 
     @Override
     public void populate() throws IOException {
-        Stream<HashMap<String, Object>> documents = dataProvider.getDocuments();
+        Stream<Map<String, Object>> documents = dataProvider.getDocuments();
         Transaction transaction = graphDatabaseService.beginTx();
         int count = 0;
-        for(Iterator<HashMap<String, Object>> iterator = documents.iterator(); iterator.hasNext();){
-            HashMap<String, Object> doc = iterator.next();
+        for(Iterator<Map<String, Object>> iterator = documents.iterator(); iterator.hasNext();){
+            Map<String, Object> doc = iterator.next();
             Node node = graphDatabaseService.createNode(Label.label(this.label));
             for(Map.Entry<String, Object> prop : doc.entrySet()){
                 node.setProperty(prop.getKey(), prop.getValue());

@@ -22,7 +22,7 @@ public class FileJsonDataProvider implements GenericDataProvider {
     }
 
     @Override
-    public Stream<HashMap<String, Object>> getDocuments() throws IOException {
+    public Stream<Map<String, Object>> getDocuments() throws IOException {
         return Files.lines(Paths.get(filePath)).map(line -> {
             try {
                 return mapper.readValue(line, new TypeReference<Map<String, Object>>(){});

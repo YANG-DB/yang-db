@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,8 +28,8 @@ public class FolderScenarioProviderTests {
     public void testDeserializeFolder() throws IOException {
 
         FileJsonDataProvider provider = new FileJsonDataProvider(docsFile);
-        Stream<HashMap<String, Object>> scenarioDocuments = provider.getDocuments();
-        List<HashMap<String, Object>> documents = scenarioDocuments.collect(Collectors.toList());
+        Stream<Map<String, Object>> scenarioDocuments = provider.getDocuments();
+        List<Map<String, Object>> documents = scenarioDocuments.collect(Collectors.toList());
         Assert.assertEquals(2, documents.size());
     }
 
