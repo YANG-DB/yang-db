@@ -3,6 +3,7 @@ package com.kayhut.test.scenario;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.kayhut.test.framework.populator.DataPopulator;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import com.kayhut.test.framework.providers.DotSeparatorDataProvider;
 import com.kayhut.test.framework.providers.FileCsvDataProvider;
 import org.elasticsearch.client.transport.TransportClient;
 
@@ -45,7 +46,8 @@ public class DragonScenarioFolderElasticPopulator implements DataPopulator {
 
     private void loadFile(String fileName, CsvSchema schema, String type, String idField) throws IOException {
         FileCsvDataProvider csvDataProvider = new FileCsvDataProvider(Paths.get(dataFolder, fileName).toString(),schema);
-        ElasticDataPopulator elasticDataPopulator = new ElasticDataPopulator(client, indexName, type, idField, csvDataProvider);
+        DotSeparatorDataProvider dotSeparatorDataProvider = new DotSeparatorDataProvider(csvDataProvider);
+        ElasticDataPopulator elasticDataPopulator = new ElasticDataPopulator(client, indexName, type, idField, dotSeparatorDataProvider);
         elasticDataPopulator.populate();
     }
 }

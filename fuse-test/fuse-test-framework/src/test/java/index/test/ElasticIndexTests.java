@@ -17,6 +17,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by moti on 3/27/2017.
@@ -109,5 +110,22 @@ public class ElasticIndexTests {
         }
     }
 
-
+    @Test
+    public void testHierarchy() throws Exception {
+        String indexName = "scenario_index";
+        MappingFileElasticConfigurer configurer = new MappingFileElasticConfigurer(mappingFile, indexName);
+        try (ElasticInMemoryIndex index = new ElasticInMemoryIndex(configurer)) {
+            TransportClient client = index.getClient();
+            DragonScenarioFolderElasticPopulator populator = new DragonScenarioFolderElasticPopulator(client, loadFolder, indexName);
+            populator.populate();
+            client.admin().indices().refresh(new RefreshRequest(indexName)).actionGet();
+            SearchResponse firesAtSearch = client.prepareSearch(indexName).setTypes("fires_at").execute().actionGet();
+            Map<String, Object> source = firesAtSearch.getHits().getAt(0).getSource();
+            Assert.assertTrue(source.containsKey("entityA"));
+            Assert.assertTrue(source.containsKey("entityB"));
+            Assert.assertTrue(source.get("entityA") instanceof Map);
+            Assert.assertTrue(((Map<String, Object>)source.get("entityA")).containsKey("id"));
+            Assert.assertTrue(((Map<String, Object>)source.get("entityB")).containsKey("id"));
+        }
+    }
 }

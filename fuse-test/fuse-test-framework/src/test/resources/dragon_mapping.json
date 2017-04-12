@@ -54,16 +54,26 @@
             }
           }
         },
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
         "dir":    { "type": "string"  }
       }
     },
     "fires_at":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  },
         "time": {"type" : "long"}
       }
@@ -71,8 +81,20 @@
     "freezes":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  },
         "time": {"type" : "long"},
         "duration" : {"type" : "long"}
@@ -81,16 +103,40 @@
     "registered_in":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  }
       }
     },
     "knows":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  },
         "since" : {"type" : "long"}
       }
@@ -98,8 +144,20 @@
     "member_of":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  },
         "since" : {"type" : "long"},
         "till" : {"type" : "long"}
@@ -108,16 +166,40 @@
     "parent":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  }
       }
     },
     "owns":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  },
         "since" : {"type" : "long"},
         "till" : {"type" : "long"}
@@ -126,8 +208,20 @@
     "subject_of":{
       "_all":       { "enabled": false  },
       "properties": {
-        "entityA.id":    { "type": "long"  },
-        "entityB.id":    { "type": "long"  },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "dir":    { "type": "string"  }
       }
     }
