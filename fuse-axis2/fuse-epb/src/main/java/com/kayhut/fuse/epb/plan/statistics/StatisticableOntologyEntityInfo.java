@@ -5,10 +5,10 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 /**
  * Created by moti on 4/2/2017.
  */
-public class StatisticableEntityInfo implements StatisticableItemInfo{
+public class StatisticableOntologyEntityInfo implements StatisticableOntologyItemInfo {
     private EEntityBase entity;
 
-    public StatisticableEntityInfo(EEntityBase entity) {
+    public StatisticableOntologyEntityInfo(EEntityBase entity) {
         this.entity = entity;
     }
 
