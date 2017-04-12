@@ -1,6 +1,8 @@
 package com.kayhut.fuse.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.results.*;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -15,18 +17,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.kayhut.fuse.model.results.QueryResult.QueryResultBuilder.aQueryResult;
+
 /**
  * Created by benishue on 21-Feb-17.
  */
 public class QueryResultsTest {
     private ObjectMapper mapper = new ObjectMapper();
-    private static QueryResult result1Obj = new QueryResult();
+    private static QueryResult result1Obj = aQueryResult().build();
 
 
     @Test
     public void testResults1Serialization() throws IOException, JSONException {
         String result1ActualJSON = mapper.writeValueAsString(result1Obj);
-        String result1ExpectedJSONString = "{\"pattern\":{\"ont\":\"Dragons\",\"name\":\"Q1\",\"elements\":[]},\"assignments\":[{\"entities\":[{\"eTag\":[\"A\",\"C\"],\"eID\":\"12345678\",\"eType\":1,\"properties\":[{\"pType\":1,\"agg\":\"raw\",\"value\":\"a\"},{\"pType\":3,\"agg\":\"raw\",\"value\":5.35}],\"attachedProperties\":[{\"pName\":\"count(relationships)\",\"value\":53}]}],\"relationships\":[{\"rID\":\"12345678\",\"agg\":true,\"rType\":2,\"directional\":true,\"eID1\":\"12345678\",\"eID2\":\"12345679\",\"properties\":[{\"pType\":1,\"agg\":\"max\",\"value\":76},{\"pType\":1,\"agg\":\"avg\",\"value\":34.56}],\"attachedProperties\":[{\"pName\":\"sum(duration)\",\"value\":124}]}]}]}";
+        String result1ExpectedJSONString = "{\"pattern\":{\"ont\":\"Dragons\",\"name\":\"Q1\"},\"assignments\":[{\"entities\":[{\"eTag\":[\"A\",\"C\"],\"eID\":\"12345678\",\"eType\":1,\"properties\":[{\"pType\":1,\"agg\":\"raw\",\"value\":\"a\"},{\"pType\":3,\"agg\":\"raw\",\"value\":5.35}],\"attachedProperties\":[{\"pName\":\"count(relationships)\",\"value\":53}]}],\"relationships\":[{\"rID\":\"12345678\",\"agg\":true,\"rType\":2,\"directional\":true,\"eID1\":\"12345678\",\"eID2\":\"12345679\",\"properties\":[{\"pType\":1,\"agg\":\"max\",\"value\":76},{\"pType\":1,\"agg\":\"avg\",\"value\":34.56}],\"attachedProperties\":[{\"pName\":\"sum(duration)\",\"value\":124}]}]}]}";
         System.out.println("result1ExpectedJSONString:" + result1ExpectedJSONString);
         System.out.println("result1ActualJSON:" + result1ActualJSON);
         JSONAssert.assertEquals(result1ExpectedJSONString, result1ActualJSON,false);
@@ -44,10 +48,10 @@ public class QueryResultsTest {
 
     private static void createResults1()
     {
-        Pattern pattern = new Pattern();
+        Query pattern = new Query();
         pattern.setOnt("Dragons");
         pattern.setName("Q1");
-        pattern.setElements(new ArrayList<Object>() {});
+        pattern.setElements(new ArrayList<EBase>() {});
 
         List<Assignment> assignments = new ArrayList<Assignment>();
         List<Entity> entities = new ArrayList<Entity>();

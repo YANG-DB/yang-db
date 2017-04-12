@@ -2,10 +2,8 @@ package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Streams;
-import com.kayhut.fuse.model.ontology.EPair;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
-import com.kayhut.fuse.model.ontology.RelationshipType;
+import com.kayhut.fuse.model.ontology.*;
+import com.kayhut.fuse.unipop.structure.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 
 import java.util.*;
@@ -109,7 +107,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<IndexPartition> getIndexPartitions() {
-                return indexProvider.getIndexPartitionsByLabel(vertexType, PhysicalIndexProvider.ElementType.vertex);
+                return indexProvider.getIndexPartitionsByLabel(vertexType, ElementType.vertex);
             }
         });
     }
@@ -173,7 +171,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<IndexPartition> getIndexPartitions() {
-                return indexProvider.getIndexPartitionsByLabel(edgeType, PhysicalIndexProvider.ElementType.edge);
+                return indexProvider.getIndexPartitionsByLabel(edgeType, ElementType.edge);
             }
         });
     }

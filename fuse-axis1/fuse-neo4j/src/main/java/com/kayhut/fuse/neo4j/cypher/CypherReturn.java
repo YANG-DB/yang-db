@@ -17,33 +17,33 @@ public class CypherReturn {
     public static CypherReturn cypherReturn() {return new CypherReturn();}
 
     public CypherReturn withElement(CypherReturnElement element) {
-        getElements().add(element);
+        elements.add(element);
         return this;
-    }
-
-    @Override
-    public String toString() {
-        if(getElements().size() == 0) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append("RETURN ");
-        getElements().forEach(e -> sb.append(e.toString() + ","));
-        sb.deleteCharAt(sb.lastIndexOf(","));
-        return sb.toString();
     }
 
     public CypherReturn copy() {
         CypherReturn newRet = new CypherReturn();
         for (CypherReturnElement ret :
-                getElements()) {
-            newRet.getElements().add(CypherReturnElement.cypherReturnElement(ret.getElement()));
+                elements) {
+            newRet.elements.add(ret.copy());
         }
-       return newRet;
+        return newRet;
     }
 
     public List<CypherReturnElement> getElements() {
         return elements;
+    }
+
+    @Override
+    public String toString() {
+        if(elements.size() == 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nRETURN ");
+        elements.forEach(e -> sb.append(e.toString() + ","));
+        sb.deleteCharAt(sb.lastIndexOf(","));
+        return sb.toString();
     }
 
 }

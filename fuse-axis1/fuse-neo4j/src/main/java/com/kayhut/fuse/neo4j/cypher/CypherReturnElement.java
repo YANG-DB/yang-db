@@ -1,20 +1,25 @@
 package com.kayhut.fuse.neo4j.cypher;
 
 /**
- * Created by User on 19/03/2017.
+ * Created by Elad on 19/03/2017.
  */
 public class CypherReturnElement {
 
-    private CypherElement element;
+    private String tag;
     private String alias;
     private String function;
 
-    private CypherReturnElement(CypherElement e) {
-        setElement(e);
+    private CypherReturnElement() {
+
     }
 
-    public static CypherReturnElement cypherReturnElement(CypherElement e) {
-        return new CypherReturnElement(e);
+    public static CypherReturnElement cypherReturnElement() {
+        return new CypherReturnElement();
+    }
+
+    public CypherReturnElement withTag(String t) {
+        tag = t;
+        return this;
     }
 
     public CypherReturnElement withAlias(String aliasName) {
@@ -23,8 +28,16 @@ public class CypherReturnElement {
     }
 
     public CypherReturnElement withFunction(String funcName) {
-        funcName = funcName;
+        function = funcName;
         return this;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public String getAlias() {
+        return alias;
     }
 
     public String toString() {
@@ -32,7 +45,7 @@ public class CypherReturnElement {
         if(function != null) {
             sb.append(function + "(");
         }
-        sb.append(getElement().tag);
+        sb.append(tag);
         if(function != null) {
             sb.append(")");
         }
@@ -42,11 +55,8 @@ public class CypherReturnElement {
         return sb.toString();
     }
 
-    public CypherElement getElement() {
-        return element;
+    public CypherReturnElement copy() {
+        return cypherReturnElement().withTag(tag).withAlias(alias).withFunction(function);
     }
 
-    public void setElement(CypherElement element) {
-        this.element = element;
-    }
 }

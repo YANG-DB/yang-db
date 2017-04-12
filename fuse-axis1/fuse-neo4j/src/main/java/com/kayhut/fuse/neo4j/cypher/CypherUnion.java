@@ -23,9 +23,9 @@ public class CypherUnion {
     public CypherUnion add(CypherStatement statement) {
         //if the new statement has unknown returm elements, they must be removed for a successful union!
         if(statements.size() == 0) {
-            knownReturnTags.addAll(statement.getReturns().getElements().stream().map(cre -> cre.getElement().tag).collect(Collectors.toList()));
+            knownReturnTags.addAll(statement.getReturns().getElements().stream().map(cre -> cre.getTag()).collect(Collectors.toList()));
         } else {
-            knownReturnTags.removeIf(tag -> statement.getReturns().getElements().stream().map(cre -> cre.getElement().tag).collect(Collectors.toList()).contains(tag) == false);
+            knownReturnTags.removeIf(tag -> statement.getReturns().getElements().stream().map(cre -> cre.getTag()).collect(Collectors.toList()).contains(tag) == false);
         }
         statements.add(statement);
         return this;
@@ -34,7 +34,7 @@ public class CypherUnion {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for(CypherStatement st : statements) {
-            st.getReturns().getElements().removeIf(e -> !knownReturnTags.contains(e.getElement().tag));
+            st.getReturns().getElements().removeIf(e -> !knownReturnTags.contains(e.getTag()));
             sb.append(st.toString());
             sb.append("\nUNION\n");
         }

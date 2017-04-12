@@ -5,9 +5,9 @@ import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.unipop.structure.UniGraph;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,7 +21,7 @@ public class SimplePlanOpTranslator {
     //endregion
 
     //region Constructors
-    public SimplePlanOpTranslator(PromiseGraph promiseGraph) {
+    public SimplePlanOpTranslator(UniGraph promiseGraph) {
         this.map = new HashMap<>();
 
         //entity operations types list
@@ -46,7 +46,7 @@ public class SimplePlanOpTranslator {
                 }));
 
     // iterate ops
-    // translate each op via factory
+    // translatePath each op via factory
 
         return traversalReference.get();
     }

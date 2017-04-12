@@ -1,5 +1,6 @@
 package com.kayhut.fuse.dispatcher.resource;
 
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.query.Query;
@@ -15,8 +16,10 @@ import java.util.Optional;
  */
 public class QueryResource {
     //region Constructors
-    public QueryResource(Query query, QueryMetadata queryMetadata, Plan<SingleCost> plan) {
+
+    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, Plan<SingleCost> plan) {
         this.query = query;
+        this.asgQuery = asgQuery;
         this.queryMetadata = queryMetadata;
         this.cursorResources = new HashMap<>();
         this.executionPlan = plan;
@@ -50,6 +53,10 @@ public class QueryResource {
         return this.query;
     }
 
+    public AsgQuery getAsgQuery() {
+        return this.asgQuery;
+    }
+
     public QueryMetadata getQueryMetadata() {
         return queryMetadata;
     }
@@ -63,6 +70,7 @@ public class QueryResource {
     private Query query;
     private QueryMetadata queryMetadata;
     private Plan<SingleCost> executionPlan;
+    private AsgQuery asgQuery;
     private Map<String, CursorResource> cursorResources;
 
     private int cursorSequence;

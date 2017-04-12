@@ -1,6 +1,6 @@
 package com.kayhut.fuse.dispatcher.context;
 
-import com.kayhut.fuse.dispatcher.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 

@@ -6,10 +6,10 @@ import java.util.Optional;
  * Created by r on 1/16/2015.
  */
 public interface GraphElementSchemaProvider {
-    public Optional<GraphVertexSchema> getVertexSchema(String type);
-    public Optional<GraphEdgeSchema> getEdgeSchema(String type, Optional<String> sourceType, Optional<String> destinationType);
-    public Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String type);
+    Optional<GraphVertexSchema> getVertexSchema(String type);
+    Optional<GraphEdgeSchema> getEdgeSchema(String type, Optional<String> sourceType, Optional<String> destinationType);
+    Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String type);
 
-    public Iterable<String> getVertexTypes();
-    public Iterable<String> getEdgeTypes();
+    Iterable<String> getVertexTypes();
+    Iterable<String> getEdgeTypes();
 }

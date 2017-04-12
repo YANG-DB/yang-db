@@ -3,6 +3,7 @@ package com.kayhut.fuse.model.results;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +11,7 @@ import java.util.List;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Assignment {
+public class Assignment extends QueryResult {
 
     public List<Relationship> getRelationships ()
     {
@@ -48,14 +49,26 @@ public class Assignment {
         private List<Relationship> relationships;
 
         private AssignmentBuilder() {
+            entities = new ArrayList<>();
+            relationships = new ArrayList<>();
         }
 
         public static AssignmentBuilder anAssignment() {
             return new AssignmentBuilder();
         }
 
+        public AssignmentBuilder withEntity(Entity entity) {
+            entities.add(entity);
+            return this;
+        }
+
         public AssignmentBuilder withEntities(List<Entity> entities) {
             this.entities = entities;
+            return this;
+        }
+
+        public AssignmentBuilder withRelationship(Relationship relationship) {
+            this.relationships.add(relationship);
             return this;
         }
 

@@ -7,6 +7,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.junit.Assert;
@@ -68,9 +69,9 @@ public class OntologySchemaProviderTest {
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider((label, elementType) -> {
-            if (elementType == PhysicalIndexProvider.ElementType.vertex) {
+            if (elementType == ElementType.vertex) {
                 return Collections.singletonList(() -> Arrays.asList("vertexIndex1", "vertexIndex2"));
-            } else if (elementType == PhysicalIndexProvider.ElementType.edge) {
+            } else if (elementType == ElementType.edge) {
                 return Collections.singletonList(() -> Arrays.asList("edgeIndex1", "edgeIndex2"));
             } else {
                 // must fail
