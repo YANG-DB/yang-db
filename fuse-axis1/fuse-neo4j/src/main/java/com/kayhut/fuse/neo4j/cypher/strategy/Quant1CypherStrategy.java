@@ -8,7 +8,6 @@ import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherElement;
 import com.kayhut.fuse.neo4j.cypher.CypherNode;
 import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import org.neo4j.shell.kernel.apps.cypher.Cypher;
 
 import java.util.List;
 import java.util.Map;
