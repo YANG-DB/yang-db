@@ -1,7 +1,8 @@
-package com.kayhut.test.framework.scenario;
+package com.kayhut.test.framework.providers;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -9,5 +10,5 @@ import java.util.stream.Stream;
  */
 public interface GenericDataProvider {
 
-    Stream<HashMap<String, Object>> getDocuments() throws IOException;
+    Stream<Map<String, Object>> getDocuments() throws IOException;
 }

@@ -1,0 +1,229 @@
+{
+  "mappings":{
+    "dragon":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "name":    { "type": "string"  }
+      }
+    },
+    "horse":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "name":    { "type": "string"  },
+        "color": {"type" : "string"},
+        "weight": {"type" : "double"}
+      }
+    },
+    "guild":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "name":    { "type": "string"  }
+      }
+    },
+    "kingdom":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "name":    { "type": "string"  }
+      }
+    },
+    "person":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "first_name":    { "type": "string"  },
+        "last_name":    { "type": "string"  },
+        "gender":    { "type": "string"  },
+        "height":    { "type": "integer"  },
+        "birth_date":    { "type": "long"  },
+        "death_date":    { "type": "long"  }
+      }
+    },
+    "originated_in":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  }
+      }
+    },
+    "fires_at":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  },
+        "time": {"type" : "long"}
+      }
+    },
+    "freezes":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  },
+        "time": {"type" : "long"},
+        "duration" : {"type" : "long"}
+      }
+    },
+    "registered_in":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  }
+      }
+    },
+    "knows":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  },
+        "since" : {"type" : "long"}
+      }
+    },
+    "member_of":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  },
+        "since" : {"type" : "long"},
+        "till" : {"type" : "long"}
+      }
+    },
+    "parent":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  }
+      }
+    },
+    "owns":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  },
+        "since" : {"type" : "long"},
+        "till" : {"type" : "long"}
+      }
+    },
+    "subject_of":{
+      "_all":       { "enabled": false  },
+      "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "dir":    { "type": "string"  }
+      }
+    }
+  }
+}
