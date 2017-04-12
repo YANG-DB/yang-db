@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class ElasticIndexTests {
     private String docsFile = "src\\test\\resources\\IndexDocs\\docs.txt";
-    private String loadFolder = "src\\test\\resources\\dragons_elastic\\";
+    private String loadFolder = "src\\test\\resources\\dragons_dual\\";
     private String mappingFile =  "src\\test\\resources\\dragon_mapping.json";
 
     @Test

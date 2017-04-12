@@ -17,7 +17,7 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 /**
  * Created by moti on 3/19/2017.
  */
-public class ElasticInMemoryIndex  implements AutoCloseable{
+public class ElasticInMemoryIndex implements AutoCloseable{
     //region Members
     private final int httpPort;
     private final int httpTransportPort;
@@ -74,12 +74,12 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
             try{
                 client.close();
             }catch(Exception ex){
-                // do nothing
+                ex.printStackTrace();
             }
         }
         node.close();
         deleteFolder(esWorkingDir + "\\" + nodeName);
-        System.clearProperty("mapper.allow_dots_in_name");
+        //System.clearProperty("mapper.allow_dots_in_name");
     }
 
     private void configure(ElasticIndexConfigurer configurer) {
@@ -87,7 +87,7 @@ public class ElasticInMemoryIndex  implements AutoCloseable{
     }
 
     private void prepare(){
-        System.setProperty("mapper.allow_dots_in_name", "true");
+        //System.setProperty("mapper.allow_dots_in_name", "true");
         deleteFolder(esWorkingDir + "\\" + nodeName);
         Settings settings = Settings.builder()
                 .put("path.home", esWorkingDir)

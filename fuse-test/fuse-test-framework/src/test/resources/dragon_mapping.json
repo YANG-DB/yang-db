@@ -40,6 +40,20 @@
     "originated_in":{
       "_all":       { "enabled": false  },
       "properties": {
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
         "entityA.id":    { "type": "long"  },
         "entityB.id":    { "type": "long"  },
         "dir":    { "type": "string"  }

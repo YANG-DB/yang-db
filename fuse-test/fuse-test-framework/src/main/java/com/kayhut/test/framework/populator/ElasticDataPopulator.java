@@ -56,26 +56,29 @@ public class ElasticDataPopulator implements DataPopulator {
 
     @Override
     public void populate() throws IOException {
-        int i = 0;
+        int currentBulkSize = 0;
 
         BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
         for(Iterator<Map<String, Object>> iterator = this.provider.getDocuments().iterator(); iterator.hasNext();){
             Map<String, Object> document = iterator.next();
-            i++;
+            currentBulkSize++;
             IndexRequestBuilder indexRequestBuilder = documentIndexRequest(document);
             bulkRequestBuilder.add(indexRequestBuilder);
-            if(i % BULK_SIZE == 0){
+            if(currentBulkSize == BULK_SIZE){
                 BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
                 if(bulkItemResponses.hasFailures()){
                     throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
                 }
                 bulkRequestBuilder = client.prepareBulk();
+                currentBulkSize = 0;
             }
         }
-        BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
-        if(bulkItemResponses.hasFailures()){
-            throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
-        }
 
+        if (currentBulkSize > 0) {
+            BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
+            if (bulkItemResponses.hasFailures()) {
+                throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
+            }
+        }
     }
 }
