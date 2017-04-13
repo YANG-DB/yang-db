@@ -11,6 +11,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class IndexSearchAppender implements SearchAppender<PromiseElementControl
         } else {
             Traversal traversal = constraint.get().getTraversal();
             TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
-            Set<String> labels = traversalValuesByKeyProvider.getValueByKey(traversal, "label");
+            Set<String> labels = traversalValuesByKeyProvider.getValueByKey(traversal, T.label.getAccessor());
             if (!labels.isEmpty()) {
                 labels.stream().forEach(label -> {
                     if (promiseElementControllerContext.getElementType() == ElementType.edge) {

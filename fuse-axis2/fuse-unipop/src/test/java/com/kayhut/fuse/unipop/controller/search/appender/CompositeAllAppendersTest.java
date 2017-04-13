@@ -14,6 +14,7 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,7 +38,7 @@ public class CompositeAllAppendersTest {
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("label","Person"));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Person"));
         SearchQuery searchQuery = mock(SearchQuery.class);
         when(searchQuery.getLimit()).thenReturn(10);
 
@@ -79,7 +80,7 @@ public class CompositeAllAppendersTest {
         Assert.assertTrue(searchBuilder.getIndices().size() == 1);
         Assert.assertTrue(searchBuilder.getIndices().contains("personIndex1"));
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"term\":{\"label\":\"Person\"}}}}}}",
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"term\":{\"_type\":\"Person\"}}}}}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
 
@@ -156,7 +157,7 @@ public class CompositeAllAppendersTest {
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.or(__.has("label", "Dragon"), __.has("color", "yarok_bakbuk")));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.or(__.has(T.label, "Dragon"), __.has("color", "yarok_bakbuk")));
         SearchQuery searchQuery = mock(SearchQuery.class);
         when(searchQuery.getLimit()).thenReturn(10);
 
@@ -193,7 +194,7 @@ public class CompositeAllAppendersTest {
         Assert.assertEquals(expectedIndicesSet, searchBuilder.getIndices());
 
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"bool\":{\"should\":[{\"term\":{\"label\":\"Dragon\"}},{\"term\":{\"color\":\"yarok_bakbuk\"}}]}}}}}}",
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"bool\":{\"should\":[{\"term\":{\"_type\":\"Dragon\"}},{\"term\":{\"color\":\"yarok_bakbuk\"}}]}}}}}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
 

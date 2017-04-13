@@ -19,6 +19,7 @@ import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.mockEngine.TestUtils;
 import com.kayhut.test.framework.index.ElasticInMemoryIndex;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
@@ -28,10 +29,7 @@ import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import com.kayhut.test.framework.providers.GenericDataProvider;
 import org.apache.commons.collections.map.HashedMap;
 import org.jooby.test.JoobyRule;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.neo4j.kernel.api.security.AccessMode;
 
 import java.io.IOException;
@@ -72,6 +70,13 @@ public class SingleEntityTest {
                 "Dragon",
                 idField,
                 () -> createDragons(10)).populate();
+
+        Thread.sleep(2000);
+    }
+
+    @Before
+    public void before() {
+        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
     }
 
     //region TestMethods
@@ -169,9 +174,9 @@ public class SingleEntityTest {
 
         QueryResult pageData = getPageData(pageResourceInfo.getDataUrl());
 
-        Assert.assertTrue(pageResourceInfo.getRequestedPageSize() == requestedPageSize);
-        Assert.assertTrue(pageResourceInfo.getActualPageSize() == actualPageSize);
-        Assert.assertTrue(pageData.getAssignments().size() == actualPageSize);
+        Assert.assertEquals(requestedPageSize, pageResourceInfo.getRequestedPageSize());
+        Assert.assertEquals(actualPageSize, pageResourceInfo.getActualPageSize());
+        Assert.assertEquals(actualPageSize, pageData.getAssignments().size());
 
         Set<String> ids = new HashSet<>();
         pageData.getAssignments().forEach(assignment -> {

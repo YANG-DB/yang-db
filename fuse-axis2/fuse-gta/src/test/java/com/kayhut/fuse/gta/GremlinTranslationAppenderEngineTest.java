@@ -16,6 +16,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,7 @@ public class GremlinTranslationAppenderEngineTest {
     @Before
     public void setUp() throws Exception {
         UniGraph uniGraph = mock(UniGraph.class);
+        when(uniGraph.traversal()).thenReturn(new GraphTraversalSource(uniGraph));
         this.uniGraphProvider = mock(UniGraphProvider.class);
         when(uniGraphProvider.getGraph(any())).thenReturn(uniGraph);
     }
@@ -52,7 +54,7 @@ public class GremlinTranslationAppenderEngineTest {
         Ontology ontology = getOntology();
         GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(this.uniGraphProvider);
         Traversal traversal = gtae.translate(ontology,planOf_Con_Rel_Unt);
-        Assert.assertEquals(traversal.asAdmin().getSteps().size(),5);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),6);
     }
 
     @Test
@@ -61,7 +63,7 @@ public class GremlinTranslationAppenderEngineTest {
         Ontology ontology = getOntology();
         GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(this.uniGraphProvider);
         Traversal traversal = gtae.translate(ontology,planOf_Con_Rel_Typ);
-        Assert.assertEquals(traversal.asAdmin().getSteps().size(),6);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),7);
     }
 
     @Test
@@ -70,7 +72,7 @@ public class GremlinTranslationAppenderEngineTest {
         Ontology ontology = getOntology();
         GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(this.uniGraphProvider);
         Traversal traversal = gtae.translate(ontology,planOf_Typ_Rel_Typ);
-        Assert.assertEquals(traversal.asAdmin().getSteps().size(),6);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),7);
     }
 
     @Test
@@ -79,7 +81,7 @@ public class GremlinTranslationAppenderEngineTest {
         Ontology ontology = getOntology();
         GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(this.uniGraphProvider);
         Traversal traversal = gtae.translate(ontology,planOf_Typ_Rel_Con);
-        Assert.assertEquals(traversal.asAdmin().getSteps().size(),6);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),7);
     }
 
     @Test
@@ -88,7 +90,7 @@ public class GremlinTranslationAppenderEngineTest {
         Ontology ontology = getOntology();
         GremlinTranslationAppenderEngine gtae = new GremlinTranslationAppenderEngine(this.uniGraphProvider);
         Traversal traversal = gtae.translate(ontology,planOf_Con_Rel_Typ_Rel_Unt);
-        Assert.assertEquals(traversal.asAdmin().getSteps().size(),9);
+        Assert.assertEquals(traversal.asAdmin().getSteps().size(),10);
     }
 
 

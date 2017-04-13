@@ -14,6 +14,7 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -34,7 +35,7 @@ public class IndexSearchAppenderTest {
     public void appendTest_Constraint_labelDragon() throws Exception {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("label","Dragon"));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Dragon"));
         PromiseElementControllerContext promiseElementControllerContext = new
                 PromiseElementControllerContext(
                     Collections.emptyList(),
@@ -58,7 +59,7 @@ public class IndexSearchAppenderTest {
     public void appendTest_Constraint_labelPerson() throws Exception {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("label","Person"));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Person"));
         PromiseElementControllerContext promiseElementControllerContext = new
                 PromiseElementControllerContext(
                     Collections.emptyList(),

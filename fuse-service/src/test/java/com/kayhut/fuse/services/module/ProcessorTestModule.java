@@ -12,7 +12,7 @@ import org.jooby.Jooby;
 public class ProcessorTestModule  implements Jooby.Module {
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
-        if (env.name() == "mockEngine") {
+        if (env.name().equals("mockEngine.dev")) {
             binder.bind(QueryCursorPageTestProcessor.class).asEagerSingleton();
         }
     }
