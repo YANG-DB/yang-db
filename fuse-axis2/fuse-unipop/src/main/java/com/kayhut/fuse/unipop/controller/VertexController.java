@@ -121,21 +121,33 @@ class VertexController implements SearchQuery.SearchController {
                 .findFirst().filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
                 .map(h -> (TraversalConstraint) h.getValue());
 
-        SearchBuilder builder = new SearchBuilder();
-        builder.setLimit(searchQuery.getLimit());
-        PromiseElementControllerContext context = new PromiseElementControllerContext(Collections.EMPTY_LIST, constraint, schemaProvider, ElementType.vertex);
+        SearchBuilder searchBuilder = new SearchBuilder();
+        PromiseElementControllerContext context = new PromiseElementControllerContext(
+                Collections.emptyList(),
+                constraint,
+                this.schemaProvider,
+                ElementType.vertex,
+                searchQuery);
+
         //search appender
         CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
-                new ElementConstraintSearchAppender(),
                 new IndexSearchAppender(),
+                new SizeSearchAppender(this.configuration),
+                new ElementConstraintSearchAppender(),
                 new ElementGlobalTypeSearchAppender());
 
-        searchAppender.append(builder, context);
+        searchAppender.append(searchBuilder, context);
 
         //compose
-        SearchRequestBuilder compose = builder.compose(client, false);
-        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(configuration, compose, builder.getLimit(), client);
-        return convert(searchHits,new SearchHitPromiseVertexConverter(graph));
+        SearchRequestBuilder searchRequest = searchBuilder.compose(client, false);
+        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
+                client,
+                searchRequest,
+                searchBuilder.getLimit(),
+                searchBuilder.getScrollSize(),
+                searchBuilder.getScrollTime());
+
+        return convert(searchHits, new SearchHitPromiseVertexConverter(graph));
     }
 
     private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable ,ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {

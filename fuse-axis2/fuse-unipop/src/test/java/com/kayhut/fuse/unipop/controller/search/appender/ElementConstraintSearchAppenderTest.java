@@ -13,9 +13,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.unipop.query.search.SearchQuery;
 
 import java.util.Collections;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by User on 29/03/2017.
@@ -30,7 +33,8 @@ public class ElementConstraintSearchAppenderTest {
                 Collections.emptyList(),
                 Optional.empty(),
                 EmptyGraphElementSchemaProvider.instance,
-                ElementType.vertex));
+                ElementType.vertex,
+                mock(SearchQuery.class)));
 
         Assert.assertTrue(!appendResult);
         Assert.assertTrue(searchBuilder.getQueryBuilder().getQuery() == null);
@@ -48,7 +52,8 @@ public class ElementConstraintSearchAppenderTest {
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.has(T.label, "dragon"))),
                 EmptyGraphElementSchemaProvider.instance,
-                ElementType.vertex));
+                ElementType.vertex,
+                mock(SearchQuery.class)));
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(
@@ -66,7 +71,8 @@ public class ElementConstraintSearchAppenderTest {
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.and(__.has(T.label, "dragon"), __.has("name", "Drogar")))),
                 EmptyGraphElementSchemaProvider.instance,
-                ElementType.vertex));
+                ElementType.vertex,
+                mock(SearchQuery.class)));
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(

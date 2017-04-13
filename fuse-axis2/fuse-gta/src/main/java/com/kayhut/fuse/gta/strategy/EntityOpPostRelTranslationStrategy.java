@@ -16,6 +16,7 @@ import com.kayhut.fuse.unipop.promise.Promise;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public class EntityOpPostRelTranslationStrategy implements TranslationStrategy {
                 traversal.has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
             } else if (eEntityBase instanceof ETyped) {
                 String eTypeName = OntologyUtil.getEntityTypeNameById(ontology,((ETyped) eEntityBase).geteType());
-                traversal.has("constraint", P.eq(Constraint.by(__.has("label", P.eq(eTypeName)))));
+                traversal.has("constraint", P.eq(Constraint.by(__.has(T.label, P.eq(eTypeName)))));
             } else if (eEntityBase instanceof EUntyped) {
                 ;
             }

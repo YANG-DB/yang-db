@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.controller.utils.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.ElementType;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Optional;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<Pro
         Optional<TraversalConstraint> constraint = context.getConstraint();
         if (constraint.isPresent()) {
             TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
-            Set<String> labels = traversalValuesByKeyProvider.getValueByKey(context.getConstraint().get().getTraversal(), "label");
+            Set<String> labels = traversalValuesByKeyProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
 
             // If there are labels in the constraint, this appender is not relevant, exit.
             if (!labels.isEmpty())

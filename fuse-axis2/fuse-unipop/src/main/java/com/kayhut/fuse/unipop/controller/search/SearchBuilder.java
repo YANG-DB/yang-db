@@ -47,6 +47,22 @@ public class SearchBuilder {
         this.limit = value;
     }
 
+    public int getScrollSize() {
+        return this.scrollSize;
+    }
+
+    public void setScrollSize(int value) {
+        this.scrollSize = value;
+    }
+
+    public int getScrollTime() {
+        return this.scrollTime;
+    }
+
+    public void setScrollTime(int value) {
+        this.scrollTime = value;
+    }
+
     public Collection<String> getIncludeSourceFields() {
         return this.includeSourceFields;
     }
@@ -103,5 +119,7 @@ public class SearchBuilder {
     private AggregationBuilder aggregationBuilder;
 
     private long limit;
+    private int scrollSize;
+    private int scrollTime;
     //endregion
 }

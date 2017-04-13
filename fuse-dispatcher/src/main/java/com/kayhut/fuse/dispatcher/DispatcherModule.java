@@ -1,6 +1,8 @@
 package com.kayhut.fuse.dispatcher;
 
 import com.google.inject.Binder;
+import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
+import com.kayhut.fuse.dispatcher.context.processor.PageProcessor;
 import com.kayhut.fuse.dispatcher.context.processor.ResourcePersistProcessor;
 import com.kayhut.fuse.dispatcher.driver.*;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
@@ -30,7 +32,10 @@ public class DispatcherModule implements Jooby.Module {
         binder.bind(OntologyProvider.class).to(SimpleOntologyProvider.class).asEagerSingleton();
         binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
 
-        //service controllers
+        // page processor
+        binder.bind(PageCreationOperationContext.Processor.class).to(PageProcessor.class).asEagerSingleton();
+
+        // service controllers
         binder.bind(QueryDispatcherDriver.class).to(SimpleQueryDispatcherDriver.class).asEagerSingleton();
         binder.bind(CursorDispatcherDriver.class).to(SimpleCursorDispatcherDriver.class).asEagerSingleton();
         binder.bind(PageDispatcherDriver.class).to(SimplePageDispatcherDriver.class).asEagerSingleton();

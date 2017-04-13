@@ -108,11 +108,11 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
         super.addProperty(ELASTIC_GRAPH_SCHEMA_PROVIDER_FACTORY_CLASS, value);
     }
 
-    public long getElasticGraphScrollTime() {
-        return super.getLong(ELASTIC_GRAPH_SCROLL_TIME, 60000);
+    public int getElasticGraphScrollTime() {
+        return super.getInt(ELASTIC_GRAPH_SCROLL_TIME, 60000);
     }
 
-    public void setElasticGraphScrollTime(long value) {
+    public void setElasticGraphScrollTime(int value) {
         super.addProperty(ELASTIC_GRAPH_SCROLL_TIME, value);
     }
 

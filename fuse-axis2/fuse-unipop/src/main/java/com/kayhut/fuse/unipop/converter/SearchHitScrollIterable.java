@@ -17,23 +17,12 @@ import java.util.NoSuchElementException;
  */
 public class SearchHitScrollIterable implements Iterable<SearchHit> {
     //region Constructor
-    public SearchHitScrollIterable(ElasticGraphConfiguration configuration,
-                                   SearchRequestBuilder searchRequestBuilder,
-                                   long limit,
-                                   Client client) {
-        this(client,
-             searchRequestBuilder,
-             limit,
-             configuration.getElasticGraphScrollSize(),
-             configuration.getElasticGraphScrollTime());
-    }
-
     public SearchHitScrollIterable(
             Client client,
             SearchRequestBuilder searchRequestBuilder,
             long limit,
             int scrollSize,
-            long scrollTime) {
+            int scrollTime) {
         this.searchRequestBuilder = searchRequestBuilder;
         this.limit = limit;
         this.scrollSize = scrollSize;
@@ -62,7 +51,7 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
         return this.limit;
     }
 
-    public long getScrollTime() {
+    public int getScrollTime() {
         return this.scrollTime;
     }
 
@@ -77,7 +66,7 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
     private long limit;
     private Client client;
 
-    private long scrollTime;
+    private int scrollTime;
     private int scrollSize;
     //endregion
 

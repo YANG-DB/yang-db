@@ -24,26 +24,20 @@ public class ElasticInMemoryIndex implements AutoCloseable{
     private final String esWorkingDir;
     private final String nodeName;
     private Node node;
-    private List<TransportClient> transportClients = new LinkedList<>();
     private TransportClient client = null;
     //endregion
 
     //region Constructors
-
-    public ElasticInMemoryIndex(ElasticIndexConfigurer configurer){
-        this("target/es", 9305, 9300, "fuse.test_elastic", configurer );
+    public ElasticInMemoryIndex() throws Exception {
+        this("target/es", 9200, 9300, "fuse.test_elastic", (client) -> {});
     }
 
-    public ElasticInMemoryIndex() {
-        this("target/es", 9305, 9300, "fuse.test_elastic", new ElasticIndexConfigurer() {
-            @Override
-            public void configure(TransportClient client) {
-
-            }
-        });
+    public ElasticInMemoryIndex(ElasticIndexConfigurer configurer) throws Exception {
+        this();
+        configure(configurer);
     }
 
-    public ElasticInMemoryIndex(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer configurer) {
+    public ElasticInMemoryIndex(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer configurer) throws Exception {
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.httpTransportPort = httpTransportPort;
@@ -56,29 +50,37 @@ public class ElasticInMemoryIndex implements AutoCloseable{
 
     //region Methods
     public TransportClient getClient(){
-        try {
-            Settings settings = Settings.settingsBuilder()
-                    .put("cluster.name", nodeName).build();
-            TransportClient client = TransportClient.builder().settings(settings).build().addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
-            transportClients.add(client);
-            return client;
-        } catch (UnknownHostException e) {
-            throw new UnknownError(e.getMessage());
+        if (this.client == null) {
+            try {
+                Settings settings = Settings.settingsBuilder()
+                        .put("cluster.name", nodeName).build();
+                this.client = TransportClient.builder().settings(settings).build().addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
+            } catch (UnknownHostException e) {
+                throw new UnknownError(e.getMessage());
+            }
         }
+
+        return this.client;
     }
 
     @Override
     public void close() throws Exception {
         System.out.println("Closing");
-        for(TransportClient client : transportClients){
-            try{
-                client.close();
-            }catch(Exception ex){
+        if (this.client != null) {
+            try {
+                this.client.close();
+                this.client = null;
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-        node.close();
-        deleteFolder(esWorkingDir + "\\" + nodeName);
+
+        if (this.node != null) {
+            this.node.close();
+            this.node = null;
+        }
+
+        deleteFolder(esWorkingDir);
         //System.clearProperty("mapper.allow_dots_in_name");
     }
 
@@ -86,9 +88,9 @@ public class ElasticInMemoryIndex implements AutoCloseable{
         configurer.configure(this.getClient());
     }
 
-    private void prepare(){
+    private void prepare() throws Exception {
         //System.setProperty("mapper.allow_dots_in_name", "true");
-        deleteFolder(esWorkingDir + "\\" + nodeName);
+        this.close();
         Settings settings = Settings.builder()
                 .put("path.home", esWorkingDir)
                 .put("path.conf", esWorkingDir)

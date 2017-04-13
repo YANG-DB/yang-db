@@ -9,6 +9,8 @@ package com.kayhut.fuse.model.resourceInfo;
  */
 public class QueryResourceInfo extends ResourceInfoBase{
     //region Constructors
+    public QueryResourceInfo() {}
+
     public QueryResourceInfo(String resourceUrl,String resourceId, String cursorStoreUrl) {
         super(resourceUrl,resourceId);
         this.cursorStoreUrl = cursorStoreUrl;
@@ -19,6 +21,11 @@ public class QueryResourceInfo extends ResourceInfoBase{
     public String getCursorStoreUrl() {
         return cursorStoreUrl;
     }
+
+    public void setCursorStoreUrl(String cursorStoreUrl) {
+        this.cursorStoreUrl = cursorStoreUrl;
+    }
+
     //endregion
 
     //region Fields

@@ -10,5 +10,5 @@ import java.util.stream.Stream;
  */
 public interface GenericDataProvider {
 
-    Stream<Map<String, Object>> getDocuments() throws IOException;
+    Iterable<Map<String, Object>> getDocuments() throws IOException;
 }

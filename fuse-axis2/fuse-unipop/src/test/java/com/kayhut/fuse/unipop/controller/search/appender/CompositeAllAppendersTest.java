@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop;
+package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.EntityType;
@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.unipop.query.search.SearchQuery;
 
 import java.util.*;
 
@@ -37,9 +38,16 @@ public class CompositeAllAppendersTest {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("label","Person"));
+        SearchQuery searchQuery = mock(SearchQuery.class);
+        when(searchQuery.getLimit()).thenReturn(10);
 
         PromiseElementControllerContext context = new
-                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+                PromiseElementControllerContext(
+                    Collections.emptyList(),
+                    Optional.of(traversalConstraint),
+                    schemaProvider,
+                    ElementType.vertex,
+                    searchQuery);
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -51,21 +59,21 @@ public class CompositeAllAppendersTest {
         ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
 
         //Testing the composition of the the above appenders
-        CompositeSearchAppender compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender);
+        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender);
 
         //Just Global Appender - nothing should be done - since the traversal contains a "Label"
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertFalse(appendResult);
 
         //Just Global Appender - nothing should be done beside the index appender
-        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 1);
         Assert.assertTrue(searchBuilder.getIndices().contains("personIndex1"));
 
         // Index appender, Global Appender, Constraint Appender
-        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 1);
@@ -83,9 +91,16 @@ public class CompositeAllAppendersTest {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has("name", "bubu"), __.has("color", P.within((Collection)Arrays.asList("brown", "red")))));
+        SearchQuery searchQuery = mock(SearchQuery.class);
+        when(searchQuery.getLimit()).thenReturn(10);
 
         PromiseElementControllerContext context = new
-                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+                PromiseElementControllerContext(
+                    Collections.emptyList(),
+                    Optional.of(traversalConstraint),
+                    schemaProvider,
+                    ElementType.vertex,
+                    searchQuery);
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -97,7 +112,7 @@ public class CompositeAllAppendersTest {
         ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
 
         //Testing the composition of the the above appenders
-        CompositeSearchAppender compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender);
+        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender);
 
         //One of the appenders should return true
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
@@ -110,7 +125,7 @@ public class CompositeAllAppendersTest {
                 JSONCompareMode.LENIENT);
 
         //Just Global Appender - nothing should be done beside the index appender
-        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 3);
@@ -124,7 +139,7 @@ public class CompositeAllAppendersTest {
                 JSONCompareMode.LENIENT);
 
         // Index appender, Global Appender, Constraint Appender
-        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 3);
@@ -142,9 +157,16 @@ public class CompositeAllAppendersTest {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.or(__.has("label", "Dragon"), __.has("color", "yarok_bakbuk")));
+        SearchQuery searchQuery = mock(SearchQuery.class);
+        when(searchQuery.getLimit()).thenReturn(10);
 
         PromiseElementControllerContext context = new
-                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+                PromiseElementControllerContext(
+                    Collections.emptyList(),
+                    Optional.of(traversalConstraint),
+                    schemaProvider,
+                    ElementType.vertex,
+                    searchQuery);
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -155,7 +177,7 @@ public class CompositeAllAppendersTest {
         //Element Constraint Search Appender
         ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
 
-        CompositeSearchAppender compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, globalAppender);
+        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender);
 
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
 
@@ -163,7 +185,7 @@ public class CompositeAllAppendersTest {
         Assert.assertFalse(appendResult);
 
         // Index appender, Constraint Appender
-        compositeSearchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all, indexSearchAppender, constraintSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, indexSearchAppender, constraintSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 2);

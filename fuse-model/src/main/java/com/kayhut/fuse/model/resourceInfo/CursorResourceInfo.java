@@ -7,6 +7,8 @@ import com.kayhut.fuse.model.transport.CreateCursorRequest;
  */
 public class CursorResourceInfo extends ResourceInfoBase {
     //region Constructors
+    public CursorResourceInfo() {}
+
     public CursorResourceInfo(String resourceUrl,String resourceId, CreateCursorRequest.CursorType cursorType, String pageStoreUrl) {
         super(resourceUrl,resourceId);
         this.pageStoreUrl = pageStoreUrl;
@@ -22,6 +24,15 @@ public class CursorResourceInfo extends ResourceInfoBase {
     public CreateCursorRequest.CursorType getCursorType() {
         return this.cursorType;
     }
+
+    public void setCursorType(CreateCursorRequest.CursorType cursorType) {
+        this.cursorType = cursorType;
+    }
+
+    public void setPageStoreUrl(String pageStoreUrl) {
+        this.pageStoreUrl = pageStoreUrl;
+    }
+
     //endregion
 
     //region Fields

@@ -12,6 +12,7 @@ public class PageResource<T> {
         this.timeCreated = new Date(System.currentTimeMillis());
         this.data = data;
         this.requestedSize = requestedSize;
+        this.isAvailable = false;
     }
     //endregion
 
@@ -19,6 +20,12 @@ public class PageResource<T> {
     public PageResource<T> withActualSize(int actualSize) {
         PageResource<T> clone = this.cloneImpl();
         clone.actualSize = actualSize;
+        return clone;
+    }
+
+    public PageResource<T> available() {
+        PageResource<T> clone = this.cloneImpl();
+        clone.isAvailable = true;
         return clone;
     }
     //endregion
@@ -43,6 +50,10 @@ public class PageResource<T> {
     public int getActualSize() {
         return this.actualSize;
     }
+
+    public boolean isAvailable() {
+        return this.isAvailable;
+    }
     //endregion
 
     //region Private Methods
@@ -50,6 +61,7 @@ public class PageResource<T> {
         PageResource<T> clone = new PageResource<T>(this.pageId, this.data, this.requestedSize);
         clone.timeCreated = this.timeCreated;
         clone.actualSize = this.actualSize;
+        clone.isAvailable = this.isAvailable;
         return clone;
     }
     //endregion
@@ -60,5 +72,6 @@ public class PageResource<T> {
     private T data;
     private int requestedSize;
     private int actualSize;
+    private boolean isAvailable;
     //endregion
 }

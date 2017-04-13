@@ -21,8 +21,10 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         List<Plan> plans = new LinkedList<>();
-        if(!plan.isPresent())
+        if(!plan.isPresent()) {
             recursiveSeedGenerator(query.getStart(), plans, new HashSet<>());
+        }
+
         return plans;
     }
 

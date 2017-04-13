@@ -4,6 +4,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
+import org.apache.tinkerpop.gremlin.structure.Element;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +12,7 @@ import java.util.Set;
 /**
  * Created by benishue on 27-Mar-17.
  */
-public class TraversalValuesByKeyProvider<T> implements TraversalValueByKeyProvider<Set<String>> {
+public class TraversalValuesByKeyProvider implements TraversalValueByKeyProvider<Set<String>> {
 
     @Override
     public Set<String> getValueByKey(Traversal traversal, String key) {
