@@ -43,9 +43,9 @@ public class Quant2CypherStrategyTest {
 
         String cypher = CypherCompiler.compile(asgQuery10, ontology);
 
-        //todo Elad, see if the result of this compilation is the correct one.
-        //assertTrue(cypher.contains("MATCH p1 = (C)-[r4:freezes]->(F:Dragon)<-[r6:own]-(G)\n" +
-        //        "WHERE A.first_name = 'Brandon' AND r2.time >= '1010-01-01T00:00:00.000'"));
+        //TODO: composite properties are not being processed correctly yet
+        assertTrue(cypher.contains("MATCH p1 = (C)-[r4:freezes]->(F:Dragon)<-[r6:own]-(G)\n" +
+                "WHERE A.name = 'Brandon' AND r2.tf >= '1010-01-01T00:00:00.000'"));
     }
 
 }
