@@ -19,6 +19,10 @@ public class EntityFilterOp extends PlanOpBase {
 
     //region Properties
 
+    public AsgEBase<EProp> getEprop() {
+        return eprop;
+    }
+
     //endregion
 
     //region Methods
