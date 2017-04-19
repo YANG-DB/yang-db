@@ -1,45 +1,53 @@
 package com.kayhut.fuse.epb.plan.cost;
 
-import com.kayhut.fuse.epb.plan.cost.calculation.CostCalculationUtil;
+import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.cost.calculation.CostCalculator;
 import com.kayhut.fuse.epb.plan.statistics.*;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
+import com.kayhut.fuse.model.query.EBase;
 
 import java.util.Optional;
 
 /**
  * Created by moti on 01/04/2017.
  */
-public class PlanOpStatisticsCostEstimator implements PlanOpCostEstimator<SingleCost> {
-    private StatisticsProvider<StatisticableQueryItemInfo> statisticsProvider;
-    private CostCalculator<SingleCost, CardinalityStatistics, Plan<SingleCost>> costCalculator;
+public class PlanOpStatisticsCostEstimator<C> implements PlanOpCostEstimator<C> {
+    private StatisticsProvider<EBase> statisticsProvider;
+    private CostCalculator<C, Statistics, PlanOpBase> opCostCalculator;
+    private CostCalculator<C, C,Plan<C>> costCombiner;
+
+    @Inject
+    public PlanOpStatisticsCostEstimator(StatisticsProvider<EBase> statisticsProvider,
+                                         CostCalculator<C, Statistics, PlanOpBase> opCostCalculator,
+                                         CostCalculator<C, C, Plan<C>> costCombiner) {
+        this.statisticsProvider = statisticsProvider;
+        this.opCostCalculator = opCostCalculator;
+        this.costCombiner = costCombiner;
+    }
 
     @Override
-    public SingleCost estimateCost(Optional<Plan<SingleCost>> plan, PlanOpBase planOpBase) {
-        StatisticableOntologyElementInfo entityInfo;
+    public C estimateCost(Optional<Plan<C>> plan, PlanOpBase planOpBase) {
+        EBase eBase = null;
         if(planOpBase instanceof EntityOp) {
             EntityOp entityOp = (EntityOp) planOpBase;
-            entityInfo = new StatisticableOntologyElementInfo(entityOp.getEntity().geteBase());
-            CardinalityStatistics cardinalityStatistics = statisticsProvider.getCardinalityStatistics(entityInfo);
-            return costCalculator.calculateCost(cardinalityStatistics, plan);
+            eBase = entityOp.getEntity().geteBase();
         }
         if(planOpBase instanceof RelationOp){
             RelationOp relationOp = (RelationOp) planOpBase;
-            entityInfo = new StatisticableOntologyElementInfo(relationOp.getRelation().geteBase());
-            CardinalityStatistics cardinalityStatistics = statisticsProvider.getCardinalityStatistics(entityInfo);
-            return costCalculator.calculateCost(cardinalityStatistics, plan);
+            eBase = relationOp.getRelation().geteBase();
         }
 
         if(planOpBase instanceof EntityFilterOp){
             EntityFilterOp entityFilterOp = (EntityFilterOp) planOpBase;
-            entityInfo = new StatisticableOntologyElementInfo(entityFilterOp.getEprop().geteBase());
-            HistogramStatistics<?> histogramStatistics = statisticsProvider.getHistogramStatistics(entityInfo);
-            //return costCalculator.calculateCost(histogramStatistics, plan);
+            eBase = entityFilterOp.getEprop().geteBase();
         }
-
-        return null;
+        if(eBase != null) {
+            C opCost = opCostCalculator.calculateCost(statisticsProvider.getStatistics(eBase), Optional.of(planOpBase));
+            return costCombiner.calculateCost(opCost, plan);
+        }else {
+            return null;
+        }
 
     }
 
