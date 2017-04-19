@@ -176,4 +176,16 @@ public interface OntologyUtil {
         return Optional.of(compositeType);
     }
 
+    static Optional<PrimitiveType> getPrimitiveType(Ontology ontology, String pType){
+        Optional<PrimitiveType> primitiveTypeMatch = ontology.getPrimitiveTypes().stream().
+                            filter(primitiveType -> primitiveType.getType().equals(pType)).
+                            findFirst();
+
+        if(primitiveTypeMatch.isPresent()){
+            return primitiveTypeMatch;
+        }else{
+            throw new IllegalArgumentException("Not Supported Primitive Type: " + pType);
+        }
+    }
+
 }

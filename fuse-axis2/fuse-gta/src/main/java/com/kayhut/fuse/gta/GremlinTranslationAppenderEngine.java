@@ -7,9 +7,11 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Element;
 
 /**
  * Created by moti on 3/7/2017.
@@ -23,7 +25,7 @@ public class GremlinTranslationAppenderEngine implements GremlinTranslator {
     }
 
     @Override
-    public Traversal translate(Ontology ontology, Plan plan){
+    public Traversal<Element, Path> translate(Ontology ontology, Plan plan){
         // Create initial traversal
         GraphTraversal graphTraversal = __.start();
         try {

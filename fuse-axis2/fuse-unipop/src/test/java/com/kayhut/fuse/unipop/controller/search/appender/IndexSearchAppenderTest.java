@@ -14,13 +14,16 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.unipop.query.search.SearchQuery;
 
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -32,9 +35,14 @@ public class IndexSearchAppenderTest {
     public void appendTest_Constraint_labelDragon() throws Exception {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("label","Dragon"));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Dragon"));
         PromiseElementControllerContext promiseElementControllerContext = new
-                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+                PromiseElementControllerContext(
+                    Collections.emptyList(),
+                    Optional.of(traversalConstraint),
+                    schemaProvider,
+                    ElementType.vertex,
+                    mock(SearchQuery.class));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
@@ -51,9 +59,14 @@ public class IndexSearchAppenderTest {
     public void appendTest_Constraint_labelPerson() throws Exception {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("label","Person"));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Person"));
         PromiseElementControllerContext promiseElementControllerContext = new
-                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+                PromiseElementControllerContext(
+                    Collections.emptyList(),
+                    Optional.of(traversalConstraint),
+                    schemaProvider,
+                    ElementType.vertex,
+                    mock(SearchQuery.class));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
@@ -72,7 +85,12 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("color","sheker"));
         PromiseElementControllerContext promiseElementControllerContext = new
-                PromiseElementControllerContext(Collections.emptyList(), Optional.of(traversalConstraint),schemaProvider,ElementType.vertex);
+                PromiseElementControllerContext(
+                    Collections.emptyList(),
+                    Optional.of(traversalConstraint),
+                    schemaProvider,
+                    ElementType.vertex,
+                    mock(SearchQuery.class));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
@@ -107,7 +125,7 @@ public class IndexSearchAppenderTest {
     }
 
     private Ontology getOntology() {
-        Ontology ontology = Mockito.mock(Ontology.class);
+        Ontology ontology = mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
             seteTypeA(2);
             seteTypeB(1);

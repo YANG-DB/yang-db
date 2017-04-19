@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>fuse-neo4j</module>
-        <module>fuse-neo4j-ext</module>
     </modules>
 
     <properties>

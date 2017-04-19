@@ -31,12 +31,12 @@ public interface TraversalCursorQueryResultsTranslator {
      * translatePath traversal to query results
      * @return
      */
-    static QueryResult translatePath(TraversalCursorFactory.TraversalCursorContext context) {
+    static QueryResult translatePath(int numResults, TraversalCursorFactory.TraversalCursorContext context) {
         QueryResult.QueryResultBuilder builder = aQueryResult();
         builder.withPattern(context.getQueryResource().getQuery());
         //build assignments
-        ((List<Path>) context.getTraversal().toList()).forEach(element -> {
-            builder.withAssignment(toAssignment(context,element));
+        (context.getTraversal().next(numResults)).forEach(path -> {
+            builder.withAssignment(toAssignment(context, path));
         });
         return builder.build();
     }

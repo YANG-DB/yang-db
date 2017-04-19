@@ -1,12 +1,11 @@
 package com.kayhut.test.framework.providers;
 
+import javaslang.collection.Stream;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Created by moti on 4/12/2017.
@@ -19,9 +18,9 @@ public class DotSeparatorDataProvider implements GenericDataProvider {
     }
 
     @Override
-    public Stream<Map<String, Object>> getDocuments() throws IOException {
-        return innerProvider.getDocuments().map(doc -> {
-            List<String> compositeKeys = doc.keySet().stream().filter(key -> key.contains(".")).collect(Collectors.toList());
+    public Iterable<Map<String, Object>> getDocuments() throws IOException {
+        return Stream.ofAll(innerProvider.getDocuments()).map(doc -> {
+            List<String> compositeKeys = Stream.ofAll(doc.keySet()).filter(key -> key.contains(".")).toJavaList();
 
             Map<String, Object> newValues = new HashMap<>();
             for(String key : compositeKeys){

@@ -6,7 +6,9 @@ import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.executor.translation.TraversalCursorQueryResultsTranslator;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.QueryResult;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.structure.Element;
 
 /**
  * Created by Roman on 05/04/2017.
@@ -33,7 +35,7 @@ public class TraversalCursorFactory implements CursorFactory {
         //region Cursor Implementation
         @Override
         public QueryResult getNextResults(int numResults) {
-            return TraversalCursorQueryResultsTranslator.translatePath(context);
+            return TraversalCursorQueryResultsTranslator.translatePath(numResults, context);
         }
         //endregion
 
@@ -54,7 +56,7 @@ public class TraversalCursorFactory implements CursorFactory {
      */
     public static class TraversalCursorContext implements Context {
         //region Constructor
-        public TraversalCursorContext(Ontology ontology, QueryResource queryResource, Traversal traversal) {
+        public TraversalCursorContext(Ontology ontology, QueryResource queryResource, Traversal<Element, Path> traversal) {
             this.ontology = ontology;
             this.queryResource = queryResource;
             this.traversal = traversal;
@@ -69,7 +71,7 @@ public class TraversalCursorFactory implements CursorFactory {
         //endregion
 
         //region Properties
-        public Traversal getTraversal() {
+        public Traversal<Element, Path> getTraversal() {
             return this.traversal;
         }
 
@@ -81,7 +83,7 @@ public class TraversalCursorFactory implements CursorFactory {
         private Ontology ontology;
         //region Fields
         private QueryResource queryResource;
-        private Traversal traversal;
+        private Traversal<Element, Path> traversal;
         //endregion
     }
 }

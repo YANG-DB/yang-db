@@ -5,6 +5,8 @@ package com.kayhut.fuse.model.resourceInfo;
  */
 public class FuseResourceInfo extends ResourceInfoBase {
     //region Constructors
+    public FuseResourceInfo() {}
+
     public FuseResourceInfo(String resourceUrl, String healthUrl, String queryStoreUrl, String searchStoreUrl, String catalogStoreUrl) {
         super(resourceUrl,null);
         this.healthUrl = healthUrl;
@@ -30,6 +32,23 @@ public class FuseResourceInfo extends ResourceInfoBase {
     public String getCatalogStoreUrl() {
         return this.catalogStoreUrl;
     }
+
+    public void setHealthUrl(String healthUrl) {
+        this.healthUrl = healthUrl;
+    }
+
+    public void setQueryStoreUrl(String queryStoreUrl) {
+        this.queryStoreUrl = queryStoreUrl;
+    }
+
+    public void setSearchStoreUrl(String searchStoreUrl) {
+        this.searchStoreUrl = searchStoreUrl;
+    }
+
+    public void setCatalogStoreUrl(String catalogStoreUrl) {
+        this.catalogStoreUrl = catalogStoreUrl;
+    }
+
     //endregion
 
     //region Fields

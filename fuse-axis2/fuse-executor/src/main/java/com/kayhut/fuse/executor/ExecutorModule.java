@@ -28,7 +28,6 @@ public class ExecutorModule implements Jooby.Module  {
     //region Jooby.Module Implementation
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(PageCreationOperationContext.Processor.class).to(PageProcessor.class).asEagerSingleton();
         binder.bind(CursorFactory.class).to(TraversalCursorFactory.class).asEagerSingleton();
 
         ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
@@ -64,7 +63,7 @@ public class ExecutorModule implements Jooby.Module  {
         configuration.setElasticGraphDefaultSearchSize(conf.getLong("elasticsearch.default_search_size"));
         configuration.setElasticGraphMaxSearchSize(conf.getLong("elasticsearch.max_search_size"));
         configuration.setElasticGraphScrollSize(conf.getInt("elasticsearch.scroll_size"));
-        configuration.setElasticGraphScrollTime(conf.getLong("elasticsearch.scroll_time"));
+        configuration.setElasticGraphScrollTime(conf.getInt("elasticsearch.scroll_time"));
         return configuration;
     }
 

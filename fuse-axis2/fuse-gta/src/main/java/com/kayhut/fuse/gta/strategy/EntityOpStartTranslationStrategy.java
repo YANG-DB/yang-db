@@ -18,6 +18,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 /**
  * Created by benishue on 08-Mar-17.
@@ -47,14 +48,14 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
             String entityETag = ((EntityOp)planOpBase).getEntity().geteBase().geteTag();
 
             //Creating the Graph
-            traversal = new GraphTraversalSource(graph).V();
+            traversal = graph.traversal().V();
 
             if (eEntityBase instanceof EConcrete) {
                 traversal.has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
             }
             else if (eEntityBase instanceof ETyped) {
                 String eTypeName = OntologyUtil.getEntityTypeNameById(ontology,((ETyped) eEntityBase).geteType());
-                traversal.has("constraint", P.eq(Constraint.by(__.has("label", P.eq(eTypeName)))));
+                traversal.has("constraint", P.eq(Constraint.by(__.has(T.label, P.eq(eTypeName)))));
             }
             else if (eEntityBase instanceof EUntyped) {
                 ;

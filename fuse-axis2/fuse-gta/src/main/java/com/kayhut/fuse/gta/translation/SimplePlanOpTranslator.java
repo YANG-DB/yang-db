@@ -6,7 +6,9 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
@@ -25,19 +27,19 @@ public class SimplePlanOpTranslator {
         this.map = new HashMap<>();
 
         //entity operations types list
-        List<TranslationStrategy> strategies = new ArrayList<>();
-        strategies.add(new EntityOpStartTranslationStrategy(promiseGraph));
-        strategies.add(new EntityOpAdjacentTranslationStrategy());
-        strategies.add(new EntityOpPostRelTranslationStrategy());
+        this.map.put(EntityOp.class, Arrays.asList(
+                new EntityOpStartTranslationStrategy(promiseGraph),
+                new EntityOpAdjacentTranslationStrategy(),
+                new EntityOpPostRelTranslationStrategy()));
 
-        this.map.put(EntityOp.class, strategies);
 
         //relations operations map
-        this.map.put(RelationOp.class, Arrays.asList(new RelationOpTranslationStrategy()));
+        this.map.put(RelationOp.class, Collections.singletonList(new RelationOpTranslationStrategy()));
     }
     //endregion
 
-    public GraphTraversal translate(Plan<?> plan, GraphTraversal graphTraversal, Ontology ontology) {
+
+    public GraphTraversal<Element, Path>  translate(Plan<?> plan, GraphTraversal graphTraversal, Ontology ontology) {
         AtomicReference<GraphTraversal> traversalReference = new AtomicReference<>(graphTraversal);
         // Create initial traversal
         Stream.ofAll(plan.getOps()).forEach(op ->
@@ -45,9 +47,6 @@ public class SimplePlanOpTranslator {
                     traversalReference.set(strategy.apply(new TranslationStrategyContext( op.getOpBase(), plan, ontology), traversalReference.get()));
                 }));
 
-    // iterate ops
-    // translatePath each op via factory
-
-        return traversalReference.get();
+        return traversalReference.get().path();
     }
 }

@@ -1,14 +1,28 @@
 package com.kayhut.fuse.model.ontology;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by benishue on 22-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonIgnoreProperties({"primitiveTypes"})
 public class Ontology {
+    public Ontology() {
+        primitiveTypes = new ArrayList<>();
+        primitiveTypes.add(new PrimitiveType("int", Long.class));
+        primitiveTypes.add(new PrimitiveType("string", String.class));
+        primitiveTypes.add(new PrimitiveType("float", Double.class));
+        primitiveTypes.add(new PrimitiveType("date", Date.class));
+        primitiveTypes.add(new PrimitiveType("datetime", Date.class));
+        primitiveTypes.add(new PrimitiveType("array", Array.class));
+    }
 
     //region Getters & Setters
 
@@ -52,6 +66,10 @@ public class Ontology {
         this.compositeTypes = compositeTypes;
     }
 
+    public List<PrimitiveType> getPrimitiveTypes() {
+        return primitiveTypes;
+    }
+
     //endregion
 
     //region Public Methods
@@ -70,6 +88,7 @@ public class Ontology {
     private List<RelationshipType> relationshipTypes;
     private List<EnumeratedType> enumeratedTypes;
     private List<CompositeType> compositeTypes;
+    private List<PrimitiveType> primitiveTypes;
     //endregion
 
     //region Builder

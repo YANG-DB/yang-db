@@ -5,6 +5,8 @@ package com.kayhut.fuse.model.resourceInfo;
  */
 public class StoreResourceInfo extends ResourceInfoBase {
     //region Constructors
+    public StoreResourceInfo() {}
+
     public StoreResourceInfo(String resourceUrl,String resourceId, Iterable<String> resourceUrls) {
         super(resourceUrl,resourceId);
         this.resourceUrls = resourceUrls;
@@ -14,6 +16,10 @@ public class StoreResourceInfo extends ResourceInfoBase {
     //region Properties
     public Iterable<String> getResourceUrls() {
         return this.resourceUrls;
+    }
+
+    public void setResourceUrls(Iterable<String> resourceUrls) {
+        this.resourceUrls = resourceUrls;
     }
     //endregion
 

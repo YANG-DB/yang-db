@@ -50,6 +50,10 @@ public class SearchPromiseElementControllerCompositTest {
     public void setUp() throws Exception {
         client = mock(Client.class);
         configuration = mock(ElasticGraphConfiguration.class);
+        when(configuration.getElasticGraphScrollSize()).thenReturn(1000);
+        when(configuration.getElasticGraphScrollTime()).thenReturn(1000);
+        when(configuration.getElasticGraphMaxSearchSize()).thenReturn(1000L);
+
         SearchHits searchHits = mock(SearchHits.class);
         SearchResponse searchResponse = mock(SearchResponse.class);
         ListenableActionFuture actionFuture = mock(ListenableActionFuture.class);

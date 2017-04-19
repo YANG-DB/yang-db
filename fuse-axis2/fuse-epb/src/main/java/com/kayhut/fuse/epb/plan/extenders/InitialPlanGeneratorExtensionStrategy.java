@@ -36,6 +36,7 @@ public class InitialPlanGeneratorExtensionStrategy<C> implements PlanExtensionSt
         for(Plan<C> newPlan : plans){
             newPlan.setPlanComplete(SimpleExtenderUtils.checkIfPlanIsComplete(newPlan, query));
         }
+
         return plans;
     }
 

@@ -17,10 +17,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.unipop.query.search.SearchQuery;
 
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -38,7 +40,8 @@ public class ElementGlobalTypeSearchAppenderTest {
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.has("name", "Sasson"))),
                 schemaProvider,
-                ElementType.vertex));
+                ElementType.vertex,
+                mock(SearchQuery.class)));
 
         Assert.assertTrue(appendResult);
 
@@ -72,7 +75,7 @@ public class ElementGlobalTypeSearchAppenderTest {
     }
 
     private Ontology getOntology() {
-        Ontology ontology = Mockito.mock(Ontology.class);
+        Ontology ontology = mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
             seteTypeA(2);
             seteTypeB(1);

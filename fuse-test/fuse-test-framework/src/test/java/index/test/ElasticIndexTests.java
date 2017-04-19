@@ -46,7 +46,7 @@ public class ElasticIndexTests {
     @Test
     public void testDragons() throws Exception {
         String indexName = "scenario_index";
-        MappingFileElasticConfigurer configurer = new MappingFileElasticConfigurer(mappingFile, indexName);
+        MappingFileElasticConfigurer configurer = new MappingFileElasticConfigurer(indexName, mappingFile);
         try (ElasticInMemoryIndex index = new ElasticInMemoryIndex(configurer)){
             TransportClient client = index.getClient();
             DragonScenarioFolderElasticPopulator populator = new DragonScenarioFolderElasticPopulator(client, loadFolder, indexName);
@@ -113,7 +113,7 @@ public class ElasticIndexTests {
     @Test
     public void testHierarchy() throws Exception {
         String indexName = "scenario_index";
-        MappingFileElasticConfigurer configurer = new MappingFileElasticConfigurer(mappingFile, indexName);
+        MappingFileElasticConfigurer configurer = new MappingFileElasticConfigurer(indexName, mappingFile);
         try (ElasticInMemoryIndex index = new ElasticInMemoryIndex(configurer)) {
             TransportClient client = index.getClient();
             DragonScenarioFolderElasticPopulator populator = new DragonScenarioFolderElasticPopulator(client, loadFolder, indexName);
