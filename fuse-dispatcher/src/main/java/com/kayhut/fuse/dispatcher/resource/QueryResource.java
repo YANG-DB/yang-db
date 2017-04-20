@@ -2,7 +2,7 @@ package com.kayhut.fuse.dispatcher.resource;
 
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.CostCalculator;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class QueryResource {
     //region Constructors
 
-    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, Plan<CostCalculator.Cost> plan) {
+    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, Plan<Cost> plan) {
         this.query = query;
         this.asgQuery = asgQuery;
         this.queryMetadata = queryMetadata;
@@ -60,7 +60,7 @@ public class QueryResource {
         return queryMetadata;
     }
 
-    public Plan<CostCalculator.Cost> getExecutionPlan() {
+    public Plan<Cost> getExecutionPlan() {
         return this.executionPlan;
     }
     //endregion
@@ -68,7 +68,7 @@ public class QueryResource {
     //region Fields
     private Query query;
     private QueryMetadata queryMetadata;
-    private Plan<CostCalculator.Cost> executionPlan;
+    private Plan<Cost> executionPlan;
     private AsgQuery asgQuery;
     private Map<String, CursorResource> cursorResources;
 

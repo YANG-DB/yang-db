@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.CostCalculator;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 
 import static com.kayhut.fuse.model.Utils.submit;
 
@@ -16,10 +16,10 @@ import static com.kayhut.fuse.model.Utils.submit;
 public class SimpleEpbDriver implements QueryCreationOperationContext.Processor {
 
     private EventBus bus;
-    private PlanSearcher<Plan<CostCalculator.Cost>, AsgQuery> planSearcher;
+    private PlanSearcher<Plan<Cost>, AsgQuery> planSearcher;
 
     @Inject
-    public SimpleEpbDriver(EventBus bus,PlanSearcher<Plan<CostCalculator.Cost>, AsgQuery> planSearcher) {
+    public SimpleEpbDriver(EventBus bus,PlanSearcher<Plan<Cost>, AsgQuery> planSearcher) {
         this.bus = bus;
         this.planSearcher = planSearcher;
         this.bus.register(this);
@@ -38,7 +38,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
         }
 
         AsgQuery query = context.getAsgQuery();
-        Iterable<Plan<CostCalculator.Cost>> plans = planSearcher.build(query, new DefaultChoiceCriteria<CostCalculator.Cost>());
+        Iterable<Plan<Cost>> plans = planSearcher.build(query, new DefaultChoiceCriteria<Cost>());
         //get first
         Plan first = plans.iterator().next();
         return submit(bus, context.of(first));

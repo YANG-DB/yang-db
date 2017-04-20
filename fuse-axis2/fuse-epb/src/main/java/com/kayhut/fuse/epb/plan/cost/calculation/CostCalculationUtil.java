@@ -1,13 +1,13 @@
 package com.kayhut.fuse.epb.plan.cost.calculation;
 
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
-import com.kayhut.fuse.model.execution.plan.costs.CostCalculator;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 
 /**
  * Created by moti on 4/2/2017.
  */
 public class CostCalculationUtil {
-    public static <T extends Comparable<T>> CostCalculator.Cost calculateTermsCost(Statistics.HistogramStatistics<T> histogramStatistics, T[] terms){
+    public static <T extends Comparable<T>> Cost calculateTermsCost(Statistics.HistogramStatistics<T> histogramStatistics, T[] terms){
         double total = 0.0;
 
         // TODO: binary search on histogram
@@ -21,10 +21,10 @@ public class CostCalculationUtil {
             }
         }
 
-        return new CostCalculator.Cost(total,0,0);
+        return new Cost(total,0,0);
     }
 
-    public static CostCalculator.Cost calculateCostForCardinality(Statistics.CardinalityStatistics cardinalityStatistics){
-        return new CostCalculator.Cost(cardinalityStatistics.getTotal() / (double)cardinalityStatistics.getCardinality(),0,0);
+    public static Cost calculateCostForCardinality(Statistics.CardinalityStatistics cardinalityStatistics){
+        return new Cost(cardinalityStatistics.getTotal() / (double)cardinalityStatistics.getCardinality(),0,0);
     }
 }

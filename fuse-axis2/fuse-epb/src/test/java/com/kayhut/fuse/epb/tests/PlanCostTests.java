@@ -8,7 +8,7 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.costs.CostCalculator;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.CostEstimator;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
  * Created by moti on 4/19/2017.
  */
 public class PlanCostTests {
-    private StatisticsCostEstimator<CostCalculator.Cost> planOpStatisticsCostEstimator;
+    private StatisticsCostEstimator<Cost> planOpStatisticsCostEstimator;
 
     @Before
     public void setup() {
@@ -76,10 +76,10 @@ public class PlanCostTests {
 
         //cost calculator
         CostEstimator costEstimator = Mockito.mock(CostEstimator.class);
-        when(costEstimator.estimateCost(any(), any())).thenReturn(new CostCalculator.Cost(1.0,1,1));
-        when(costEstimator.estimateCost(any(PlanOpBase.class))).thenReturn(new CostCalculator.Cost(1.0,1,1));
-        OpCostCalculator<CostCalculator.Cost, CostCalculator.Cost, Plan<CostCalculator.Cost>> costCombiner = Mockito.mock(OpCostCalculator.class);
-        when(costCombiner.calculateCost(any(), any())).thenReturn(new CostCalculator.Cost(1.0,1,1));
+        when(costEstimator.estimateCost(any(), any())).thenReturn(new Cost(1.0,1,1));
+        when(costEstimator.estimateCost(any(PlanOpBase.class))).thenReturn(new Cost(1.0,1,1));
+        OpCostCalculator<Cost, Cost, Plan<Cost>> costCombiner = Mockito.mock(OpCostCalculator.class);
+        when(costCombiner.calculateCost(any(), any())).thenReturn(new Cost(1.0,1,1));
 
         //tested class cost estimator
         planOpStatisticsCostEstimator = new StatisticsCostEstimator(statisticsProvider,costEstimator);

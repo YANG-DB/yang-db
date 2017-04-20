@@ -5,7 +5,7 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.CostCalculator;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.query.EBase;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
@@ -22,20 +22,20 @@ public class ValidatorTests {
     @Test
     public void SiblingValidatorLegalPlanTest(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> pathQuery = BuilderTestUtil.createTwoEntitiesPathQuery();
-        Plan<CostCalculator.Cost> plan = BuilderTestUtil.createPlanForTwoEntitiesPathQuery(pathQuery.getKey());
-        SiblingOnlyPlanValidator<CostCalculator.Cost> validator = new SiblingOnlyPlanValidator<>();
+        Plan<Cost> plan = BuilderTestUtil.createPlanForTwoEntitiesPathQuery(pathQuery.getKey());
+        SiblingOnlyPlanValidator<Cost> validator = new SiblingOnlyPlanValidator<>();
         Assert.assertTrue(validator.isPlanValid(plan, pathQuery.getLeft()));
     }
 
     @Test
     public void SiblingValidatorNotLegalPlanTest(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> pathQuery = BuilderTestUtil.createTwoEntitiesPathQuery();
-        Plan<CostCalculator.Cost> plan = BuilderTestUtil.createPlanForTwoEntitiesPathQuery(pathQuery.getKey());
-        List<PlanOpWithCost<CostCalculator.Cost>> ops = new LinkedList<>();
+        Plan<Cost> plan = BuilderTestUtil.createPlanForTwoEntitiesPathQuery(pathQuery.getKey());
+        List<PlanOpWithCost<Cost>> ops = new LinkedList<>();
         ops.add(plan.getOps().get(0));
         ops.add(plan.getOps().get(2));
         ops.add(plan.getOps().get(1));
-        SiblingOnlyPlanValidator<CostCalculator.Cost> validator = new SiblingOnlyPlanValidator<>();
+        SiblingOnlyPlanValidator<Cost> validator = new SiblingOnlyPlanValidator<>();
 
         Assert.assertFalse(validator.isPlanValid(new Plan<>(ops,null), pathQuery.getLeft()));
     }

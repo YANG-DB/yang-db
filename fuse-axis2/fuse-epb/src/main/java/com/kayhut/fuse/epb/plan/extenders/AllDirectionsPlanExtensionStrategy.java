@@ -4,7 +4,6 @@ import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.PlanCostEstimator;
 import com.kayhut.fuse.model.execution.plan.costs.CostEstimator;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
@@ -20,11 +19,9 @@ import java.util.*;
  */
 public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrategy<Plan<C>, AsgQuery> {
     private CostEstimator<C> costEstimator;
-    private PlanCostEstimator<Plan<C>, C> planCostEstimator;
 
-    public AllDirectionsPlanExtensionStrategy(CostEstimator<C> costEstimator, PlanCostEstimator<Plan<C>,C> planCostEstimator) {
+    public AllDirectionsPlanExtensionStrategy(CostEstimator<C> costEstimator ) {
         this.costEstimator = costEstimator;
-        this.planCostEstimator = planCostEstimator;
     }
 
     @Override
