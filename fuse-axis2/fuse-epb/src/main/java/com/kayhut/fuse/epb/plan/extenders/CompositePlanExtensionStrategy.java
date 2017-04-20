@@ -21,7 +21,7 @@ public class CompositePlanExtensionStrategy<P,Q> implements PlanExtensionStrateg
 
     @Override
     public Iterable<P> extendPlan(Optional<P> plan, Q query) {
-        List<P> plans = new LinkedList<P>();
+        List<P> plans = new LinkedList<>();
         for(PlanExtensionStrategy<P,Q> extensionStrategy : innerExtenders){
             extensionStrategy.extendPlan(plan, query).forEach(plans::add);
         }

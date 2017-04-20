@@ -3,21 +3,20 @@ package com.kayhut.fuse.neo4j.executor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
-import javaslang.Tuple2;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
@@ -58,8 +57,8 @@ public class Neo4jOperationContextProcessor implements
         if(!ont.isPresent()) {
             throw new RuntimeException("Query ontology not present in catalog.");
         }
-        Plan<SingleCost> plan = new Plan<>();
-        plan.setCost(new SingleCost(0.0));
+
+        Plan plan = Plan.PlanBuilder.build(Collections.emptyList()).compose();
         return submit(eventBus, context.of(plan));
     }
     //endregion

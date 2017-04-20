@@ -3,7 +3,7 @@ package com.kayhut.fuse.gta.translation;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
+import com.kayhut.fuse.model.execution.plan.costs.CostCalculator;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -94,23 +94,23 @@ public class PlanUtilTest {
     }
 
     public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery) {
-        List<PlanOpWithCost<SingleCost>> ops = new LinkedList<>();
+        List<PlanOpWithCost<CostCalculator.Cost>> ops = new LinkedList<>();
 
         AsgEBase<Start> startAsg = asgQuery.getStart();
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
 
         EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(new PlanOpWithCost<>(concOp, new SingleCost(0)));
+        ops.add(new PlanOpWithCost<>(concOp, new CostCalculator.Cost(0,0,0)));
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(new PlanOpWithCost<>(relOp, new SingleCost(0)));
+        ops.add(new PlanOpWithCost<>(relOp, new CostCalculator.Cost(0,0,0)));
 
         AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(new PlanOpWithCost<>(unOp, new SingleCost(0)));
+        ops.add(new PlanOpWithCost<>(unOp, new CostCalculator.Cost(0,0,0)));
 
-        return new Plan<>(ops);
+        return new Plan(ops,null);
     }
 
 }

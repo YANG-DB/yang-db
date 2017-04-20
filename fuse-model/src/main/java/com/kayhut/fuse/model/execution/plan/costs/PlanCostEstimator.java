@@ -1,6 +1,4 @@
-package com.kayhut.fuse.epb.plan.cost;
-
-import com.kayhut.fuse.model.execution.plan.Plan;
+package com.kayhut.fuse.model.execution.plan.costs;
 
 /**
  * Created by moti on 3/29/2017.

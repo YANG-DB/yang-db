@@ -9,9 +9,8 @@ import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.SingleCost;
+import com.kayhut.fuse.model.execution.plan.costs.CostCalculator;
 import com.kayhut.fuse.model.ontology.Ontology;
-import javaslang.Tuple2;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -45,7 +44,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
             return context;
         }
         //execute gta plan ==> traversal extraction
-        Plan<SingleCost> executionPlan = context.getQueryResource().getExecutionPlan();
+        Plan<CostCalculator.Cost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
 
         Traversal<Element, Path> traversal = gremlinTranslator.translate(ontology, executionPlan);

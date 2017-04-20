@@ -2,8 +2,6 @@ package com.kayhut.fuse.services.engine2.data;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.query.Query;
@@ -12,33 +10,22 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.services.mockEngine.TestUtils;
 import com.kayhut.test.framework.index.ElasticInMemoryIndex;
-import com.kayhut.test.framework.index.MappingElasticConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
-import com.kayhut.test.framework.populator.DataPopulator;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import com.kayhut.test.framework.providers.GenericDataProvider;
 import org.apache.commons.collections.map.HashedMap;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
-import org.neo4j.kernel.api.security.AccessMode;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Roman on 12/04/2017.

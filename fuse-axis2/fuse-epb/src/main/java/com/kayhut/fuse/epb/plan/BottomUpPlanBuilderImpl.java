@@ -35,7 +35,7 @@ public class BottomUpPlanBuilderImpl<P,Q> implements PlanSearcher<P,Q> {
 
     //region Methods
     @Override
-    public Iterable<P> build(Q query, ChoiceCriteria<P> choiceCriteria){
+    public Iterable<P> build(Q query, ChoiceCriteria<P,Q> choiceCriteria){
         boolean shouldStop = false;
         List<P> currentPlans = new LinkedList<>();
 
@@ -43,7 +43,7 @@ public class BottomUpPlanBuilderImpl<P,Q> implements PlanSearcher<P,Q> {
         for(P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)){
             if(planValidator.isPlanValid(seedPlan, query)){
                 currentPlans.add(seedPlan);
-                if(choiceCriteria.addPlanAndCheckEndCondition(seedPlan)){
+                if(choiceCriteria.addPlanAndCheckEndCondition(query,seedPlan)){
                     shouldStop = true;
                     break;
                 }
@@ -68,7 +68,7 @@ public class BottomUpPlanBuilderImpl<P,Q> implements PlanSearcher<P,Q> {
             currentPlans.clear();
             for(P plan : globalPruneStrategy.prunePlans(newPlans)){
                 currentPlans.add(plan);
-                if(choiceCriteria.addPlanAndCheckEndCondition(plan)) {
+                if(choiceCriteria.addPlanAndCheckEndCondition(query, plan)) {
                     shouldStop = true;
                     break;
                 }

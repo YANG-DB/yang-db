@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import java.util.ArrayList;
+import com.kayhut.fuse.model.execution.plan.costs.CostEstimator;
+
 import java.util.List;
 
 /**
@@ -9,10 +10,11 @@ import java.util.List;
 public class Plan<C> {
     //region Constructors
 
-    public Plan() {}
+    private Plan() {}
 
-    public Plan(List<PlanOpWithCost<C>> ops) {
+    public Plan(List<PlanOpWithCost<C>> ops,C cost) {
         this.ops = ops;
+        this.cost = cost;
     }
     //endregion
 
@@ -21,32 +23,42 @@ public class Plan<C> {
         return this.ops;
     }
 
-
-    public void setOps(List<PlanOpWithCost<C>> ops) {
-        this.ops = ops;
-    }
-
-    public boolean isPlanComplete() {
-        return isPlanComplete;
-    }
-
-    public void setPlanComplete(boolean planComplete) {
-        isPlanComplete = planComplete;
-    }
-
     public C getCost() {
         return cost;
     }
 
-    public void setCost(C cost) {
-        this.cost = cost;
-    }
 //endregion
 
     //region Fields
     private List<PlanOpWithCost<C>> ops;
-    private boolean isPlanComplete;
     private C cost;
+
     //endregion
+    public static class PlanBuilder<C> {
+        private Plan<C> plan;
+
+        private PlanBuilder(List<PlanOpWithCost<C>> ops) {
+            plan = new Plan<C>();
+            plan.ops = ops;
+        }
+
+        public static <C> PlanBuilder<C> build(List<PlanOpWithCost<C>> ops) {
+            return new PlanBuilder<C>(ops);
+        }
+
+        public PlanBuilder<C> operation(PlanOpWithCost<C> operation) {
+            plan.ops.add(operation);
+            return this;
+        }
+
+        public PlanBuilder<C> cost(CostEstimator<C> cost) {
+            plan.cost = cost.estimateCost(plan);
+            return this;
+        }
+
+        public Plan<C> compose() {
+            return plan;
+        }
+    }
 
 }

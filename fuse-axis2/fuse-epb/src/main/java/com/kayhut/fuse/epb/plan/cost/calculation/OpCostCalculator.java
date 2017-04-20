@@ -5,6 +5,6 @@ import java.util.Optional;
 /**
  * Created by moti on 31/03/2017.
  */
-public interface CostCalculator<C, I, CX> {
+public interface OpCostCalculator<C, I, CX> {
     C calculateCost(I item, Optional<CX> context);
 }

@@ -1,8 +1,8 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.cost.PlanCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.PlanOpCostEstimator;
+import com.kayhut.fuse.model.execution.plan.costs.PlanCostEstimator;
+import com.kayhut.fuse.model.execution.plan.costs.CostEstimator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -20,10 +20,10 @@ import java.util.Optional;
  * Created by moti on 2/27/2017.
  */
 public class InitialPlanGeneratorExtensionStrategy<C> implements PlanExtensionStrategy<Plan<C>, AsgQuery> {
-    private PlanOpCostEstimator<C> costEstimator;
+    private CostEstimator<C> costEstimator;
     private PlanCostEstimator<Plan<C>,C> planCostEstimator;
 
-    public InitialPlanGeneratorExtensionStrategy(PlanOpCostEstimator<C> costEstimator, PlanCostEstimator<Plan<C>,C> planCostEstimator) {
+    public InitialPlanGeneratorExtensionStrategy(CostEstimator<C> costEstimator, PlanCostEstimator<Plan<C>,C> planCostEstimator) {
         this.costEstimator = costEstimator;
         this.planCostEstimator = planCostEstimator;
     }
@@ -33,9 +33,12 @@ public class InitialPlanGeneratorExtensionStrategy<C> implements PlanExtensionSt
         List<Plan<C>> plans = new LinkedList<>();
         if(!plan.isPresent())
             recursiveSeedGenerator(query.getStart(), plans, new HashSet<>());
+
+        /*
         for(Plan<C> newPlan : plans){
             newPlan.setPlanComplete(SimpleExtenderUtils.checkIfPlanIsComplete(newPlan, query));
         }
+*/
 
         return plans;
     }
@@ -45,9 +48,10 @@ public class InitialPlanGeneratorExtensionStrategy<C> implements PlanExtensionSt
         if(asgNode.geteBase() instanceof EEntityBase){
             EntityOp op = new EntityOp((AsgEBase<EEntityBase>) asgNode);
             List<PlanOpWithCost<C>> ops = new LinkedList<>();
-            ops.add(new PlanOpWithCost<C>(op, costEstimator.estimateCost(Optional.empty(), op)));
-            Plan<C> newPlan = new Plan<>(ops);
-            newPlan.setCost(planCostEstimator.estimateCost(newPlan));
+            PlanOpWithCost<C> opWithCost = new PlanOpWithCost<>(op, costEstimator.estimateCost(op));
+            ops.add(opWithCost);
+            //single op therefor we take its cost as the plan's cost
+            Plan<C> newPlan = new Plan<>(ops,opWithCost.getCost());
             plans.add(newPlan);
         }
         if(asgNode.getNext() != null) {

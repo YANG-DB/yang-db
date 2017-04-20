@@ -133,7 +133,7 @@ public class GremlinTranslationAppenderEngineTest {
         EntityOp concOp = new EntityOp(conAsg);
         ops.add(new PlanOpWithCost(concOp, null));
 
-        return new Plan(ops);
+        return new Plan(ops,null);
     }
 
     private Plan create_Typ_Rel_Typ_PathQuery() {
@@ -174,7 +174,7 @@ public class GremlinTranslationAppenderEngineTest {
         EntityOp typOp2 = new EntityOp(typBaseAsg2);
         ops.add(new PlanOpWithCost(typOp2, null));
 
-        return new Plan(ops);
+        return new Plan(ops,null);
     }
 
     private Plan create_Con_Rel_Typ_PathQuery() {
@@ -218,7 +218,7 @@ public class GremlinTranslationAppenderEngineTest {
         EntityOp typOp = new EntityOp(typBaseAsg);
         ops.add(new PlanOpWithCost(typOp, null));
 
-        return new Plan(ops);
+        return new Plan(ops,null);
     }
 
     private Plan create_Con_Rel_Unt_PathQuery() {
@@ -260,7 +260,7 @@ public class GremlinTranslationAppenderEngineTest {
         EntityOp unOp = new EntityOp(unBaseAsg);
         ops.add(new PlanOpWithCost(unOp, null));
 
-        return new Plan(ops);
+        return new Plan(ops,null);
     }
 
     private Plan create_Con_Rel_Typ_Rel_Unt_PathQuery()
@@ -326,9 +326,7 @@ public class GremlinTranslationAppenderEngineTest {
         EntityOp unOp = new EntityOp(unBaseAsg);
         ops.add(new PlanOpWithCost(unOp, null));
 
-        Plan plan  = new Plan(ops);
-
-        return plan;
+        return new Plan(ops,null);
     }
     //endregion
 
