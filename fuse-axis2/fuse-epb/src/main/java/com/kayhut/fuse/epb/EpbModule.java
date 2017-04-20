@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb;
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
+import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.cost.DummyPlanCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.DummyPlanOpCostEstimator;
@@ -20,10 +21,10 @@ import org.jooby.Jooby;
 /**
  * Created by lior on 22/02/2017.
  */
-public class EpbModule implements Jooby.Module  {
+public class EpbModule extends ModuleBase {
 
     @Override
-    public void configure(Env env, Config conf, Binder binder) throws Throwable {
+    public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(SimpleEpbDriver.class).asEagerSingleton();
         binder.bind(new TypeLiteral<PlanSearcher<Plan<SingleCost>, AsgQuery>>(){}).to(new TypeLiteral<BottomUpPlanBuilderImpl<Plan<SingleCost>, AsgQuery>>(){}).asEagerSingleton();
         DummyPlanOpCostEstimator planOpCostEstimator = new DummyPlanOpCostEstimator();

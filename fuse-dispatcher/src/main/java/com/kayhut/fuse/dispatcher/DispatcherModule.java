@@ -21,10 +21,10 @@ import static com.kayhut.fuse.model.Utils.baseUrl;
  *
  * This module is called by the fuse-service scanner class loader
  */
-public class DispatcherModule implements Jooby.Module {
+public class DispatcherModule extends ModuleBase {
 
     @Override
-    public void configure(Env env, Config conf, Binder binder) throws Throwable {
+    public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(AppUrlSupplier.class).toInstance(new DefaultAppUrlSupplier(baseUrl(conf.getString("application.port"))));
 
         // resource store and persist processor

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
+import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
@@ -24,10 +25,10 @@ import java.net.UnknownHostException;
 /**
  * Created by lior on 22/02/2017.
  */
-public class ExecutorModule implements Jooby.Module  {
+public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
-    public void configure(Env env, Config conf, Binder binder) throws Throwable {
+    public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(CursorFactory.class).to(TraversalCursorFactory.class).asEagerSingleton();
 
         ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
