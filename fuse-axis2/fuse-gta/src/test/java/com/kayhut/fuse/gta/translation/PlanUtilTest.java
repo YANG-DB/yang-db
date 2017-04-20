@@ -26,9 +26,9 @@ public class PlanUtilTest {
 
     @Test
     public void isFirst() throws Exception {
-        List<PlanOpWithCost<?>> ops = planOf2.getOps();
-        PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
-        PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
+        List<PlanOpBase> ops = planOf2.getOps();
+        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
+        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
         PlanUtil planUtil = new PlanUtil();
         assertTrue(planUtil.isFirst(ops,planOpBaseFirst));
@@ -38,20 +38,20 @@ public class PlanUtilTest {
     @Test
     public void getNext() throws Exception {
 
-        List<PlanOpWithCost<?>> ops = planOf2.getOps();
-        PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
-        PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
+        List<PlanOpBase> ops = planOf2.getOps();
+        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
+        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
         PlanUtil planUtil = new PlanUtil();
-        assertEquals(planOpBaseSecond,planUtil.getNext(ops,planOpBaseFirst).get());
-        assertNotEquals(planOpBaseFirst,planUtil.getNext(ops,planOpBaseSecond).get());
+        assertEquals(planOpBaseSecond,planUtil.getNext(ops, planOpBaseFirst).get());
+        assertNotEquals(planOpBaseFirst,planUtil.getNext(ops, planOpBaseSecond).get());
     }
 
     @Test
     public void getPrev() throws Exception {
-        List<PlanOpWithCost<?>> ops = planOf2.getOps();
-        PlanOpBase planOpBaseFirst = ((PlanOpWithCost)planOf2.getOps().get(0)).getOpBase();
-        PlanOpBase planOpBaseSecond = ((PlanOpWithCost)planOf2.getOps().get(1)).getOpBase();
+        List<PlanOpBase> ops = planOf2.getOps();
+        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
+        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
         PlanUtil planUtil = new PlanUtil();
         assertTrue(!planUtil.getPrev(ops,planOpBaseFirst).isPresent());
@@ -94,23 +94,23 @@ public class PlanUtilTest {
     }
 
     public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery) {
-        List<PlanOpWithCost<Cost>> ops = new LinkedList<>();
+        List<PlanOpBase> ops = new LinkedList<>();
 
         AsgEBase<Start> startAsg = asgQuery.getStart();
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
 
         EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(new PlanOpWithCost<>(concOp, new Cost(0,0,0)));
+        ops.add(concOp);
 
         AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
         RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(new PlanOpWithCost<>(relOp, new Cost(0,0,0)));
+        ops.add(relOp);
 
         AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
         EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(new PlanOpWithCost<>(unOp, new Cost(0,0,0)));
+        ops.add(unOp);
 
-        return new Plan(ops,null);
+        return new Plan(ops);
     }
 
 }

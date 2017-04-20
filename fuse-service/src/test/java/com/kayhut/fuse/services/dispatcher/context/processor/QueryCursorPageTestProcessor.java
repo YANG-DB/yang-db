@@ -9,6 +9,8 @@ import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.results.QueryResult;
 
 import java.io.IOException;
@@ -37,7 +39,7 @@ public class QueryCursorPageTestProcessor implements
     @Subscribe
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         if (context.getAsgQuery() != null && context.getExecutionPlan() == null) {
-            context = context.of((Plan) Plan.PlanBuilder.build(Collections.emptyList()).compose());
+            context = context.of(new PlanWithCost<>(new Plan(), new PlanDetailedCost()));
             submit(eventBus, context);
         }
 

@@ -39,7 +39,7 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
 
     @Override
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        Plan<?> plan = context.getPlan();
+        Plan plan = context.getPlan();
         PlanOpBase planOpBase = context.getPlanOpBase();
         Ontology ontology = context.getOntology();
         PlanUtil planUtil = new PlanUtil();

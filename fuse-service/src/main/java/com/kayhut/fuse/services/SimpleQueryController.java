@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -57,8 +59,8 @@ public class SimpleQueryController implements QueryController {
     }
 
     @Override
-    public ContentResponse<Plan> explain(String queryId) {
-        return Builder.<Plan>builder(randomUUID().toString(),OK, NOT_FOUND)
+    public ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId) {
+        return Builder.<PlanWithCost<Plan, PlanDetailedCost>>builder(randomUUID().toString(),OK, NOT_FOUND)
                 .data(this.driver.explain(queryId))
                 .compose();
     }

@@ -12,6 +12,8 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
@@ -58,8 +60,8 @@ public class Neo4jOperationContextProcessor implements
             throw new RuntimeException("Query ontology not present in catalog.");
         }
 
-        Plan plan = Plan.PlanBuilder.build(Collections.emptyList()).compose();
-        return submit(eventBus, context.of(plan));
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = new PlanWithCost<>(new Plan(), new PlanDetailedCost());
+        return submit(eventBus, context.of(planWithCost));
     }
     //endregion
 

@@ -4,7 +4,6 @@ import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.CostEstimator;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -17,16 +16,12 @@ import java.util.*;
 /**
  * Created by moti on 2/27/2017.
  */
-public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrategy<Plan<C>, AsgQuery> {
-    private CostEstimator<C> costEstimator;
-
-    public AllDirectionsPlanExtensionStrategy(CostEstimator<C> costEstimator ) {
-        this.costEstimator = costEstimator;
-    }
+public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+    public AllDirectionsPlanExtensionStrategy() {}
 
     @Override
-    public Iterable<Plan<C>> extendPlan(Optional<Plan<C>> plan, AsgQuery query) {
-        List<Plan<C>> plans = new LinkedList<>();
+    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
+        List<Plan> plans = new LinkedList<>();
         if(plan.isPresent()){
             Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
 
@@ -50,17 +45,13 @@ public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrat
         return plans;
     }
 
-    private Collection<Plan<C>> extendPart(AsgEBase<? extends EBase> handledPartToExtend, Map<Integer, AsgEBase> queryPartsNotHandled, Plan<C> originalPlan) {
-        List<Plan<C>> plans = new ArrayList<>();
+    private Collection<Plan> extendPart(AsgEBase<? extends EBase> handledPartToExtend, Map<Integer, AsgEBase> queryPartsNotHandled, Plan originalPlan) {
+        List<Plan> plans = new ArrayList<>();
         if(SimpleExtenderUtils.shouldAdvanceToNext(handledPartToExtend)){
             for(AsgEBase<? extends EBase> next : handledPartToExtend.getNext()){
                 if(SimpleExtenderUtils.shouldAddElement(next) && queryPartsNotHandled.containsKey(next.geteNum())){
                     PlanOpBase op = createOpForElement(next);
-                    Plan<C> newPlan = Plan.PlanBuilder.build(originalPlan.getOps())
-                            .operation(new PlanOpWithCost<C>(op,costEstimator.estimateCost(originalPlan,op)))
-                            .cost(costEstimator)
-                            .compose();
-                    plans.add(newPlan);
+                    plans.add(new Plan(originalPlan.getOps()).withOp(op));
                 }
             }
         }
@@ -69,11 +60,11 @@ public class AllDirectionsPlanExtensionStrategy<C> implements PlanExtensionStrat
             for(AsgEBase<? extends  EBase> parent : handledPartToExtend.getParents()){
                 if(SimpleExtenderUtils.shouldAddElement(parent) && queryPartsNotHandled.containsKey(parent.geteNum())){
                     PlanOpBase op = createOpForElement(parent, true);
-                    Plan<C> newPlan = Plan.PlanBuilder.build(originalPlan.getOps())
+                    plans.add(new Plan(originalPlan.getOps()).withOp(op));
+                    /*Plan<C> newPlan = Plan.PlanBuilder.build(originalPlan.getOps())
                             .operation(new PlanOpWithCost<C>(op,costEstimator.estimateCost(originalPlan,op)))
                             .cost(costEstimator)
-                            .compose();
-                    plans.add(newPlan);
+                            .compose();*/
                 }
             }
         }

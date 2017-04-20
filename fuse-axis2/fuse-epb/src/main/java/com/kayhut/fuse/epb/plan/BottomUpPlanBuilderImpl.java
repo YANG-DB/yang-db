@@ -2,6 +2,8 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.epb.plan.cost.CostEstimator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,38 +14,42 @@ import java.util.Optional;
 /**
  * Created by moti on 2/21/2017.
  */
-public class BottomUpPlanBuilderImpl<P,Q> implements PlanSearcher<P,Q> {
+public class BottomUpPlanBuilderImpl<P, C, Q> implements PlanSearcher<P, C, Q> {
     final Logger logger = LoggerFactory.getLogger(BottomUpPlanBuilderImpl.class);
 
     @Inject
     public BottomUpPlanBuilderImpl(PlanExtensionStrategy<P, Q> extensionStrategy,
-                                   @Named("GlobalPruningStrategy") PlanPruneStrategy<P> globalPruneStrategy,
-                                   @Named("LocalPruningStrategy") PlanPruneStrategy<P> localPruneStrategy,
-                                   PlanValidator<P, Q> planValidator) {
+                                   @Named("GlobalPruningStrategy") PlanPruneStrategy<PlanWithCost<P, C>> globalPruneStrategy,
+                                   @Named("LocalPruningStrategy") PlanPruneStrategy<PlanWithCost<P, C>> localPruneStrategy,
+                                   PlanValidator<P, Q> planValidator,
+                                   CostEstimator<P, C> costEstimator) {
         this.extensionStrategy = extensionStrategy;
         this.globalPruneStrategy = globalPruneStrategy;
         this.localPruneStrategy = localPruneStrategy;
         this.planValidator = planValidator;
+        this.costEstimator = costEstimator;
     }
 
     //region Fields
-    private PlanExtensionStrategy<P,Q> extensionStrategy;
-    private PlanPruneStrategy<P> globalPruneStrategy;
-    private PlanPruneStrategy<P> localPruneStrategy;
-    private PlanValidator<P,Q> planValidator;
+    private PlanExtensionStrategy<P, Q> extensionStrategy;
+    private PlanPruneStrategy<PlanWithCost<P, C>> globalPruneStrategy;
+    private PlanPruneStrategy<PlanWithCost<P, C>> localPruneStrategy;
+    private PlanValidator<P, Q> planValidator;
+    private CostEstimator<P, C> costEstimator;
     //endregion
 
     //region Methods
     @Override
-    public Iterable<P> build(Q query, ChoiceCriteria<P,Q> choiceCriteria){
+    public Iterable<PlanWithCost<P, C>> build(Q query,  ChoiceCriteria<PlanWithCost<P, C>, Q> choiceCriteria){
         boolean shouldStop = false;
-        List<P> currentPlans = new LinkedList<>();
+        List<PlanWithCost<P, C>> currentPlans = new LinkedList<>();
 
         // Generate seed plans (plan is null)
         for(P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)){
             if(planValidator.isPlanValid(seedPlan, query)){
-                currentPlans.add(seedPlan);
-                if(choiceCriteria.addPlanAndCheckEndCondition(query,seedPlan)){
+                PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, Optional.empty());
+                currentPlans.add(planWithCost);
+                if(choiceCriteria.addPlanAndCheckEndCondition(query, planWithCost)){
                     shouldStop = true;
                     break;
                 }
@@ -53,22 +59,24 @@ public class BottomUpPlanBuilderImpl<P,Q> implements PlanSearcher<P,Q> {
         // As long as we have search options, branch the search tree
         while(currentPlans.size() > 0 && !shouldStop)
         {
-            List<P> newPlans = new LinkedList<>();
-            for(P partialPlan : currentPlans){
-                List<P> planExtensions = new LinkedList<>();
-                for(P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan), query)){
+            List<PlanWithCost<P, C>> newPlans = new LinkedList<>();
+            for(PlanWithCost<P, C> partialPlan : currentPlans){
+                List<PlanWithCost<P, C>> planExtensions = new LinkedList<>();
+                for(P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)){
                     if(planValidator.isPlanValid(extendedPlan, query)){
-                        planExtensions.add(extendedPlan);
+                        PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan.getCost()));
+                        planExtensions.add(planWithCost);
                     }
                 }
-                for(P plan : localPruneStrategy.prunePlans(planExtensions))
-                    newPlans.add(plan);
+
+                for(PlanWithCost<P, C> planWithCost : localPruneStrategy.prunePlans(planExtensions))
+                    newPlans.add(planWithCost);
             }
 
             currentPlans.clear();
-            for(P plan : globalPruneStrategy.prunePlans(newPlans)){
-                currentPlans.add(plan);
-                if(choiceCriteria.addPlanAndCheckEndCondition(query, plan)) {
+            for(PlanWithCost<P, C> planWithCost : globalPruneStrategy.prunePlans(newPlans)){
+                currentPlans.add(planWithCost);
+                if(choiceCriteria.addPlanAndCheckEndCondition(query, planWithCost)) {
                     shouldStop = true;
                     break;
                 }
@@ -79,5 +87,4 @@ public class BottomUpPlanBuilderImpl<P,Q> implements PlanSearcher<P,Q> {
     }
 
     //endregion
-
 }

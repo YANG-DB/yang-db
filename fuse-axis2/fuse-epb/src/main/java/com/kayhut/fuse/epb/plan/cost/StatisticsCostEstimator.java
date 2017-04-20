@@ -4,25 +4,26 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.CostEstimator;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.EBase;
+
+import java.util.Optional;
 
 /**
  * Created by moti on 01/04/2017.
  */
-public class StatisticsCostEstimator<C> implements CostEstimator<C> {
+public class StatisticsCostEstimator<C> implements CostEstimator<Plan, PlanDetailedCost> {
     private StatisticsProvider<EBase> statisticsProvider;
-    private CostEstimator<C> costEstimator;
 
     @Inject
-    public StatisticsCostEstimator(StatisticsProvider<EBase> statisticsProvider,
-                                   CostEstimator<C> costEstimator) {
+    public StatisticsCostEstimator(StatisticsProvider<EBase> statisticsProvider) {
         this.statisticsProvider = statisticsProvider;
-        this.costEstimator = costEstimator;
     }
 
     @Override
-    public C estimateCost(Plan<C> plan, PlanOpBase planOpBase) {
+    public PlanWithCost<Plan, PlanDetailedCost> estimate(Plan plan, Optional<PlanDetailedCost> previousCost) {
+        PlanOpBase planOpBase = plan.getOps().get(plan.getOps().size() - 1);
+
         EBase eBase = null;
         if(planOpBase instanceof EntityOp) {
             EntityOp entityOp = (EntityOp) planOpBase;
@@ -40,21 +41,9 @@ public class StatisticsCostEstimator<C> implements CostEstimator<C> {
         if(eBase != null) {
             Statistics statistics = statisticsProvider.getStatistics(eBase);
             //todo use statistics to implement the additional cost combiner
-            return costEstimator.estimateCost(planOpBase);
+            return null;
         }else {
             return null;
         }
-
     }
-
-    @Override
-    public C estimateCost(PlanOpBase planOpBase) {
-        return costEstimator.estimateCost(planOpBase);
-    }
-
-    @Override
-    public C estimateCost(Plan<C> plan) {
-        return costEstimator.estimateCost(plan);
-    }
-
 }

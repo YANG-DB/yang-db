@@ -1,7 +1,6 @@
 package com.kayhut.fuse.gta.translation;
 
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,25 +12,25 @@ public class PlanUtil {
 
     //region Plan Util Class
 
-        public boolean isFirst(List<? extends PlanOpWithCost> ops, PlanOpBase planOpBase) {
-            return ops.size() > 0 && ops.get(0).getOpBase() == planOpBase;
+        public boolean isFirst(List<PlanOpBase> ops, PlanOpBase planOpBase) {
+            return ops.size() > 0 && ops.get(0) == planOpBase;
         }
 
-        public Optional<PlanOpBase> getNext(List<? extends PlanOpWithCost> ops, PlanOpBase planOpBase)
+        public Optional<PlanOpBase> getNext(List<PlanOpBase> ops, PlanOpBase planOpBase)
         {
             int indexOfCurrent = findIndexOfOp(ops, planOpBase);
-            return indexOfCurrent == ops.size() - 1 ? Optional.empty() : Optional.of(ops.get(++indexOfCurrent).getOpBase());
+            return indexOfCurrent == ops.size() - 1 ? Optional.empty() : Optional.of(ops.get(++indexOfCurrent));
         }
 
-        public Optional<PlanOpBase> getPrev(List<? extends PlanOpWithCost> ops, PlanOpBase planOpBase)
+        public Optional<PlanOpBase> getPrev(List<PlanOpBase> ops, PlanOpBase planOpBase)
         {
             int indexOfCurrent = findIndexOfOp(ops, planOpBase);
-            return indexOfCurrent == 0 ? Optional.empty() : Optional.of(ops.get(--indexOfCurrent).getOpBase());
+            return indexOfCurrent == 0 ? Optional.empty() : Optional.of(ops.get(--indexOfCurrent));
         }
 
-        private int findIndexOfOp(List<? extends PlanOpWithCost> ops, PlanOpBase planOpBase){
+        private int findIndexOfOp(List<PlanOpBase> ops, PlanOpBase planOpBase){
             for (int i = 0;i < ops.size(); i++){
-                if(ops.get(i).getOpBase() == planOpBase)
+                if(ops.get(i) == planOpBase)
                     return i;
             }
             return -1;
