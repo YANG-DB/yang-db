@@ -3,7 +3,7 @@ package com.kayhut.fuse.model.execution.plan.costs;
 /**
  * Created by Roman on 20/04/2017.
  */
-public class PlanCost {
+public class PlanDetailedCost {
     //region properties
 
     public Cost getCost() {
