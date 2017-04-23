@@ -7,6 +7,8 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -88,19 +90,37 @@ public class SearchPromiseVertexControllerTest {
 
     @Test
     public void testSingleIdPromiseVertexWithoutConstraint() throws ExecutionException, InterruptedException {
+
         UniGraph graph = mock(UniGraph.class);
 
+        //basic edge constraint
         Traversal constraint = __.and(__.has("label", "fire"), __.has("direction", "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
+        //create vertices to start from
+        Vertex startVertex1 = mock(Vertex.class);
+        when(startVertex1.id()).thenReturn(3);
+        when(startVertex1.label()).thenReturn("dragon");
+
+        Vertex startVertex2 = mock(Vertex.class);
+        when(startVertex2.id()).thenReturn(13);
+        when(startVertex2.label()).thenReturn("dragon");
+
         SearchVertexQuery searchQuery = mock(SearchVertexQuery.class);
         when(searchQuery.getReturnType()).thenReturn(Edge.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
+        when(searchQuery.getVertices()).thenReturn(Arrays.asList(startVertex1, startVertex2));
 
-        SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        List<Edge> vertices = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
+        GraphVertexSchema graphVertexSchema = mock(GraphVertexSchema.class);
+        when(graphVertexSchema.getType()).thenReturn("type_dragon");
+
+        GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
+        when(schemaProvider.getVertexSchema("dragon")).thenReturn(Optional.of(graphVertexSchema));
+
+        SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, schemaProvider);
+        List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
         List<Aggregation> aggregations = client.prepareSearch("blahblah").setQuery(QueryBuilders.matchAllQuery()).execute().get().getAggregations().asList();
 
