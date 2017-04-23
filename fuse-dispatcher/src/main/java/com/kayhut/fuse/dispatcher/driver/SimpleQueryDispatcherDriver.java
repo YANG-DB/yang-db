@@ -8,6 +8,8 @@ import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
@@ -68,7 +70,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
     }
 
     @Override
-    public Optional<Plan> explain(String queryId) {
+    public Optional<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId) {
         Optional<QueryResource> queryResource = resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
             return Optional.empty();

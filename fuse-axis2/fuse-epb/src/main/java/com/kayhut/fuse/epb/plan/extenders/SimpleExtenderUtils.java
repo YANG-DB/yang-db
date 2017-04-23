@@ -53,12 +53,12 @@ public class SimpleExtenderUtils {
      * @return A tuple, where the first element is the query parts that exist in the plan ("handled"), and a map with the
      * "unhandled" parts
      */
-    public static <C> Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> removeHandledQueryParts(Plan<C> plan, Map<Integer, AsgEBase> queryParts) {
+    public static <C> Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> removeHandledQueryParts(Plan plan, Map<Integer, AsgEBase> queryParts) {
         Map<Integer, AsgEBase> unHandledParts = new HashMap<>(queryParts);
         List<AsgEBase> handledParts = new LinkedList<>();
         plan.getOps().forEach(op -> {
-            handledParts.add(queryParts.get(op.getOpBase().geteNum()));
-            unHandledParts.remove(op.getOpBase().geteNum());
+            handledParts.add(queryParts.get(op.geteNum()));
+            unHandledParts.remove(op.geteNum());
         });
         return new Tuple2<>(handledParts, unHandledParts);
     }
@@ -67,7 +67,7 @@ public class SimpleExtenderUtils {
         return handledPartToExtend.getParents() != null;
     }
 
-    public static <C> boolean checkIfPlanIsComplete(Plan<C> plan, AsgQuery query){
+    public static <C> boolean checkIfPlanIsComplete(Plan plan, AsgQuery query){
         Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
         Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(plan, queryParts);
         return partsTuple._2().isEmpty();

@@ -4,7 +4,6 @@ import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Optional;
@@ -19,7 +18,7 @@ public class EntityOpAdjacentTranslationStrategy implements TranslationStrategy 
 
     @Override
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        Plan<?> plan = context.getPlan();
+        Plan plan = context.getPlan();
         PlanOpBase currentPlanOpBase = context.getPlanOpBase();
         PlanUtil planUtil = new PlanUtil();
         Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(), currentPlanOpBase);

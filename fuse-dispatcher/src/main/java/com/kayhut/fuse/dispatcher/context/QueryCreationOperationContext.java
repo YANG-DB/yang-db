@@ -2,7 +2,9 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 
@@ -44,7 +46,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return asgQuery;
     }
 
-    public Plan<Cost> getExecutionPlan() {
+    public PlanWithCost<Plan, PlanDetailedCost> getExecutionPlan() {
         return executionPlan;
     }
 
@@ -52,7 +54,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this.cloneImpl().asg(asgQuery);
     }
 
-    public QueryCreationOperationContext of(Plan<Cost> executionPlan) {
+    public QueryCreationOperationContext of(PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
         return this.cloneImpl().executionPlan(executionPlan);
     }
     //endregion
@@ -71,7 +73,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this;
     }
 
-    private QueryCreationOperationContext executionPlan(Plan<Cost> executionPlan) {
+    private QueryCreationOperationContext executionPlan(PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
         this.executionPlan = executionPlan;
         return this;
     }
@@ -81,6 +83,6 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     private QueryMetadata queryMetadata;
     private Query query;
     private AsgQuery asgQuery;
-    private Plan<Cost> executionPlan;
+    private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
     //endregion
 }

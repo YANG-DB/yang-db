@@ -28,15 +28,15 @@ public class SimpleBuilderTests {
     public void TestInitialCreationSingleEntity(){
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
-        InitialPlanGeneratorExtensionStrategy<Cost> strategy = new InitialPlanGeneratorExtensionStrategy<Cost>(new DummyCostEstimator());
-        Iterable<Plan<Cost>> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
+        InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
+        Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
 
         Assert.assertEquals(1,plansList.size());
-        Plan<Cost> plan = plansList.get(0);
+        Plan plan = plansList.get(0);
         Assert.assertEquals(1,plan.getOps().size());
-        PlanOpBase op = plan.getOps().get(0).getOpBase();
+        PlanOpBase op = plan.getOps().get(0);
         Assert.assertTrue(op instanceof EntityOp);
         Assert.assertEquals(op.geteNum(), query.getRight().geteNum());
         Assert.assertEquals(query.getLeft().getStart().getNext().get(0), ((EntityOp)op).getEntity());
@@ -46,8 +46,8 @@ public class SimpleBuilderTests {
     public void TestInitialCreationMultipleEntities(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
-        InitialPlanGeneratorExtensionStrategy<Cost> strategy = new InitialPlanGeneratorExtensionStrategy<Cost>(new DummyCostEstimator());
-        Iterable<Plan<Cost>> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
+        InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
+        Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
 
@@ -56,9 +56,9 @@ public class SimpleBuilderTests {
         AsgEBase<? extends EBase> untypedBaseAsg = query.getRight().getNext().get(0).getNext().get(0);
 
         boolean foundFirst = false, foundSecond = false;
-        for(Plan<Cost> plan : plans){
+        for(Plan plan : plans){
             Assert.assertEquals(1,plan.getOps().size());
-            PlanOpBase op = plan.getOps().get(0).getOpBase();
+            PlanOpBase op = plan.getOps().get(0);
             Assert.assertTrue(op instanceof EntityOp);
             if(((EntityOp)op).getEntity().geteBase() == query.getRight().geteBase()){
                 foundFirst = true;
@@ -75,19 +75,21 @@ public class SimpleBuilderTests {
 
     @Test
     public void TestCompositePlanStrategyInit(){
-        CompositePlanExtensionStrategy<Plan<Cost>, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new InitialPlanGeneratorExtensionStrategy<>(new DummyCostEstimator()),
-                                                                                                                            new AllDirectionsPlanExtensionStrategy<>(new DummyCostEstimator()));
+        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy =
+                new CompositePlanExtensionStrategy<>(
+                        new InitialPlanGeneratorExtensionStrategy(),
+                        new AllDirectionsPlanExtensionStrategy());
 
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
-        Iterable<Plan<Cost>> plans = compositePlanExtensionStrategy.extendPlan(Optional.empty(), query.getLeft());
-        List<Plan<Cost>> planList = new LinkedList<>();
+        Iterable<Plan> plans = compositePlanExtensionStrategy.extendPlan(Optional.empty(), query.getLeft());
+        List<Plan> planList = new LinkedList<>();
         plans.forEach(p -> planList.add(p));
 
         Assert.assertEquals(1, planList.size());
-        Plan<Cost> plan = planList.get(0);
+        Plan plan = planList.get(0);
         Assert.assertEquals(1,plan.getOps().size());
-        PlanOpBase op = plan.getOps().get(0).getOpBase();
+        PlanOpBase op = plan.getOps().get(0);
         Assert.assertTrue(op instanceof EntityOp);
         Assert.assertEquals(op.geteNum(), query.getRight().geteNum());
         Assert.assertEquals(query.getLeft().getStart().getNext().get(0), ((EntityOp)op).getEntity());

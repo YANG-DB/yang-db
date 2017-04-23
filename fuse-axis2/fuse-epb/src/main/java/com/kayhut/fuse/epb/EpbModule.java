@@ -5,6 +5,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
+import com.kayhut.fuse.epb.plan.cost.CostEstimator;
 import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
@@ -12,7 +13,9 @@ import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.validation.SiblingOnlyPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
@@ -24,12 +27,28 @@ public class EpbModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(SimpleEpbDriver.class).asEagerSingleton();
-        binder.bind(new TypeLiteral<PlanSearcher<Plan<Cost>, AsgQuery>>(){}).to(new TypeLiteral<BottomUpPlanBuilderImpl<Plan<Cost>, AsgQuery>>(){}).asEagerSingleton();
-        DummyCostEstimator planOpCostEstimator = new DummyCostEstimator();
-        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan<Cost>, AsgQuery>>(){}).toInstance(new CompositePlanExtensionStrategy(new InitialPlanGeneratorExtensionStrategy(planOpCostEstimator), new AllDirectionsPlanExtensionStrategy(planOpCostEstimator)));
-        binder.bind(new TypeLiteral<PlanPruneStrategy<Plan<Cost>>>(){}).annotatedWith(Names.named("GlobalPruningStrategy")).toInstance(new NoPruningPruneStrategy<>());
-        binder.bind(new TypeLiteral<PlanPruneStrategy<Plan<Cost>>>(){}).annotatedWith(Names.named("LocalPruningStrategy")).toInstance(new NoPruningPruneStrategy<>());
-        binder.bind(new TypeLiteral<PlanValidator<Plan<Cost>, AsgQuery>>(){}).toInstance(new SiblingOnlyPlanValidator<>());
+        binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
+                .to(new TypeLiteral<BottomUpPlanBuilderImpl<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
+
+        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost>>(){})
+                .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
+
+        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
+                .toInstance(
+                        new CompositePlanExtensionStrategy<>(
+                                new InitialPlanGeneratorExtensionStrategy(),
+                                new AllDirectionsPlanExtensionStrategy()));
+
+        binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
+                .annotatedWith(Names.named("GlobalPruningStrategy"))
+                .toInstance(new NoPruningPruneStrategy<>());
+
+        binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
+                .annotatedWith(Names.named("LocalPruningStrategy"))
+                .toInstance(new NoPruningPruneStrategy<>());
+
+        binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})
+                .toInstance(new SiblingOnlyPlanValidator());
 
     }
 }

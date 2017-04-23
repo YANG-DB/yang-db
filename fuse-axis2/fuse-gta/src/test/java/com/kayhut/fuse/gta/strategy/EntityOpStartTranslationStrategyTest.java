@@ -5,7 +5,6 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -19,6 +18,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.mockito.Mockito.when;
 
@@ -34,13 +34,8 @@ public class EntityOpStartTranslationStrategyTest {
         AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete).build();
         PlanOpBase planOpBase = new EntityOp(ebaseAsgEBase);
 
-        Plan<?> plan = Mockito.mock(Plan.class);
-        when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            ArrayList<PlanOpWithCost<?>> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost<>(planOpBase, null));
-            return ops;
-        });
-
+        Plan plan = Mockito.mock(Plan.class);
+        when(plan.getOps()).thenAnswer(invocationOnMock -> Arrays.asList(planOpBase));
 
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
@@ -60,7 +55,7 @@ public class EntityOpStartTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> ((PlanOpWithCost)plan.getOps().get(0)).getOpBase());
+        when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> plan.getOps().get(0));
 
         GraphTraversal traversal = entityOpStartTranslationStrategy.apply(context, new DefaultGraphTraversal());
 
@@ -78,13 +73,8 @@ public class EntityOpStartTranslationStrategyTest {
         AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(eTyped).build();
         PlanOpBase planOpBase = new EntityOp(ebaseAsgEBase);
 
-        Plan<?> plan = Mockito.mock(Plan.class);
-        when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            ArrayList<PlanOpWithCost<?>> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost<>(planOpBase, null));
-            return ops;
-        });
-
+        Plan plan = Mockito.mock(Plan.class);
+        when(plan.getOps()).thenAnswer(invocationOnMock -> Arrays.asList(planOpBase));
 
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
@@ -104,7 +94,7 @@ public class EntityOpStartTranslationStrategyTest {
         TranslationStrategyContext translationStrategyContext = Mockito.mock(TranslationStrategyContext.class);
         when(translationStrategyContext.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(translationStrategyContext.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(translationStrategyContext.getPlanOpBase()).thenAnswer(invocationOnMock -> ((PlanOpWithCost)plan.getOps().get(0)).getOpBase());
+        when(translationStrategyContext.getPlanOpBase()).thenAnswer(invocationOnMock -> plan.getOps().get(0));
 
         GraphTraversal traversal = entityOpStartTranslationStrategy.apply(translationStrategyContext, new DefaultGraphTraversal());
 

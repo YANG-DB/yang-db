@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * Created by moti on 2/27/2017.
  */
-public class CompositePlanExtensionStrategy<P,Q> implements PlanExtensionStrategy<P,Q> {
+public class CompositePlanExtensionStrategy<P, Q> implements PlanExtensionStrategy<P, Q> {
 
     private PlanExtensionStrategy<P,Q>[] innerExtenders;
 

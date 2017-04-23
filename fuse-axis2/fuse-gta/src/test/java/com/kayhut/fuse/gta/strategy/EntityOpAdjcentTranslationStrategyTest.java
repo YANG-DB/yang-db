@@ -4,7 +4,6 @@ import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -16,6 +15,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,12 +40,7 @@ public class EntityOpAdjcentTranslationStrategyTest {
         EntityOp entity2 = new EntityOp(AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete2).build());
 
         Plan plan = Mockito.mock(Plan.class);
-        when(plan.getOps()).thenAnswer(invocationOnMock -> {
-            List<PlanOpWithCost<?>> ops = new ArrayList<>();
-            ops.add(new PlanOpWithCost<>(entity1, null));
-            ops.add(new PlanOpWithCost<>(entity2, null));
-            return ops;
-        });
+        when(plan.getOps()).thenAnswer(invocationOnMock -> Arrays.asList(entity1, entity2));
 
         PlanUtil planUtil = Mockito.mock(PlanUtil.class);
         when(planUtil.isFirst(any(),any())).thenAnswer(invocationOnMock -> false);
@@ -68,7 +63,7 @@ public class EntityOpAdjcentTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> ((PlanOpWithCost)plan.getOps().get(1)).getOpBase());
+        when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> plan.getOps().get(1));
 
         EntityOpAdjacentTranslationStrategy entityOpAdjacentTranslationStrategy = new EntityOpAdjacentTranslationStrategy();
         GraphTraversal traversal = entityOpAdjacentTranslationStrategy.apply(context, new DefaultGraphTraversal());
