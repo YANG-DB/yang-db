@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.kayhut.fuse.model.Utils.pattern;
+
 /**
  * Created by User on 22/02/2017.
  */
@@ -36,4 +38,7 @@ public class Plan {
     private List<PlanOpBase> ops;
     //endregion
 
+    public String typePattern() {
+        return pattern(getOps());
+    }
 }

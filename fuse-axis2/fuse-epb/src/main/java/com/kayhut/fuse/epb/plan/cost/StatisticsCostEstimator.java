@@ -1,18 +1,18 @@
 package com.kayhut.fuse.epb.plan.cost;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.EBase;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by moti on 01/04/2017.
  */
-public class StatisticsCostEstimator<C> implements CostEstimator<Plan, PlanDetailedCost> {
+public class StatisticsCostEstimator implements CostEstimator<Plan, PlanWithCost> {
     private StatisticsProvider<EBase> statisticsProvider;
 
     @Inject
@@ -21,29 +21,28 @@ public class StatisticsCostEstimator<C> implements CostEstimator<Plan, PlanDetai
     }
 
     @Override
-    public PlanWithCost<Plan, PlanDetailedCost> estimate(Plan plan, Optional<PlanDetailedCost> previousCost) {
-        PlanOpBase planOpBase = plan.getOps().get(plan.getOps().size() - 1);
-
-        EBase eBase = null;
-        if(planOpBase instanceof EntityOp) {
-            EntityOp entityOp = (EntityOp) planOpBase;
-            eBase = entityOp.getEntity().geteBase();
-        }
-        if(planOpBase instanceof RelationOp){
-            RelationOp relationOp = (RelationOp) planOpBase;
-            eBase = relationOp.getRelation().geteBase();
+    public PlanWithCost<Plan, PlanWithCost> estimate(Plan plan, Optional<PlanWithCost<Plan, PlanWithCost>> previousCost) {
+        List<PlanOpBase> step = plan.getOps();
+        if (previousCost.isPresent()) {
+//            step = extractNewSteps(plan, previousCost.get().getPlan());
         }
 
-        if(planOpBase instanceof EntityFilterOp){
-            EntityFilterOp entityFilterOp = (EntityFilterOp) planOpBase;
-            eBase = entityFilterOp.getEprop().geteBase();
-        }
-        if(eBase != null) {
-            Statistics statistics = statisticsProvider.getStatistics(eBase);
-            //todo use statistics to implement the additional cost combiner
-            return null;
-        }else {
-            return null;
-        }
+
+//        match(getSupportedPattern(),step)
+        return null;
+    }
+
+    public List<String> getSupportedPattern() {
+        /*
+            entity->[filter]
+            entity->[filter]->rel->[filter]->entity->[filter]
+         */
+        return Arrays.asList(
+        //option 1
+                "^(?<entityOnly>" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<optionalEntityOnlyFilter>" + EntityFilterOp.class.getSimpleName() + "))?$",
+        //option2
+                "^(?<entityOne>" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<optionalEntityOneFilter>" + EntityFilterOp.class.getSimpleName() + ":)?" +
+                        "(?<relation>" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<optionalRelFilter>" + RelationFilterOp.class.getSimpleName() + ":)?" +
+                        "(?<entityTwo>" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<optionalEntityTwoFilter>" + EntityFilterOp.class.getSimpleName() + "))?$");
     }
 }
