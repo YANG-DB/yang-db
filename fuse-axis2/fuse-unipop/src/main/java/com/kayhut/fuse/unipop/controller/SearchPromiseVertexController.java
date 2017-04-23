@@ -6,6 +6,7 @@ import org.elasticsearch.client.Client;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -19,7 +20,7 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
     //region SearchVertexQuery.SearchVertexController Implementation
     @Override
     public Iterator<Edge> search(SearchVertexQuery searchVertexQuery) {
-        return null;
+        return Collections.emptyIterator();
     }
     //endregion
 }
