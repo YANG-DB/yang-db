@@ -88,14 +88,14 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
                 rel2.seteNum(rel1.geteNum());
                 rel2.setrType(rel1.getrType());
                 rel2.setWrapper(rel1.getWrapper());
-                if(rel1.getDir().equals("L")){
-                    rel2.setDir("R");
-                }else if(rel1.getDir().equals("R")){
-                    rel2.setDir("L");
+                if(rel1.getDir().equals(Rel.Direction.L)){
+                    rel2.setDir(Rel.Direction.R);
+                }else if(rel1.getDir().equals(Rel.Direction.R)){
+                    rel2.setDir(Rel.Direction.L);
                 }else{
                     rel2.setDir(rel1.getDir());
                 }
-                rel = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel2).build();
+                rel = AsgEBase.Builder.<Rel>get().withEBase(rel2).build();
             }
             RelationOp op = new RelationOp(rel);
             return op;

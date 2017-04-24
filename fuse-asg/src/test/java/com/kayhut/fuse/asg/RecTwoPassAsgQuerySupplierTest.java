@@ -172,7 +172,7 @@ public class RecTwoPassAsgQuerySupplierTest {
         assertEquals(asgEBase2.geteBase().geteNum(),2);
 
         //Entity Type enum = 2 has dir="L"
-        assertEquals(((Rel)asgEBase2.geteBase()).getDir(),"L");
+        assertEquals(((Rel)asgEBase2.geteBase()).getDir(), Rel.Direction.L);
 
         //Entity Enum 3
         AsgEBase<? extends EBase> asgEBase3 = asgEBase2.getNext().get(0);
@@ -241,7 +241,7 @@ public class RecTwoPassAsgQuerySupplierTest {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(1);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
         rel.setNext(3);
         elements.add(rel);
 

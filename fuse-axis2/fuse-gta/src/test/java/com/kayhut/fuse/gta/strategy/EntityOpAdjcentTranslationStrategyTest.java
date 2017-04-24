@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Matchers.any;
@@ -36,8 +35,8 @@ public class EntityOpAdjcentTranslationStrategyTest {
         concrete2.seteNum(2);
         concrete2.seteTag("B");
 
-        EntityOp entity1 = new EntityOp(AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete1).build());
-        EntityOp entity2 = new EntityOp(AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete2).build());
+        EntityOp entity1 = new EntityOp(AsgEBase.Builder.<EEntityBase>get().withEBase(concrete1).build());
+        EntityOp entity2 = new EntityOp(AsgEBase.Builder.<EEntityBase>get().withEBase(concrete2).build());
 
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> Arrays.asList(entity1, entity2));

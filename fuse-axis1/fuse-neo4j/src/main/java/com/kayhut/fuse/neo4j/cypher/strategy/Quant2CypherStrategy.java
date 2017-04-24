@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherElement;
 import com.kayhut.fuse.neo4j.cypher.CypherNode;
@@ -17,10 +18,6 @@ import java.util.Map;
  * Created by Elad on 4/2/2017.
  */
 public class Quant2CypherStrategy extends CypherStrategy {
-
-    private static final String OR_QUANT_TYPE = "some";
-    private static final String AND_QUANT_TYPE = "all";
-
     public Quant2CypherStrategy(Map<AsgEBase, CypherCompilationState> compilationState, Ontology ont) {
         super(compilationState, ont);
     }
@@ -32,13 +29,13 @@ public class Quant2CypherStrategy extends CypherStrategy {
 
             Quant2 quant2 = (Quant2) element.geteBase();
 
-            //A quantifier has one connection on its left side, and two or more branches on its right side
-            //In quantifiers of type 2, the left side always ends with a relation or a path, and the right side starts with:
+            //A quantifier has one connection on its L side, and two or more branches on its R side
+            //In quantifiers of type 2, the L side always ends with a relation or a path, and the R side starts with:
             //          quantifier or an entity.
 
             CypherCompilationState curState = getRelevantState(element);
 
-            //get the entity on the left side of the quantifier
+            //get the entity on the L side of the quantifier
             CypherElement lastElement = curState.getStatement().getPath(curState.getPathTag()).getElementFromEnd(1);
 
             if (!(lastElement instanceof CypherRelationship)) {
@@ -56,14 +53,14 @@ public class Quant2CypherStrategy extends CypherStrategy {
                     context(child, curState);
                 } else {
                     if (!isNewBranchCreated) {
-                        //keep left branch
+                        //keep L branch
                         isNewBranchCreated = true;
                         context(child, curState);
                     } else {
-                        if (quant2.getqType().equals(OR_QUANT_TYPE)) {
+                        if (quant2.getqType().equals(QuantType.some)) {
                             //open new branch
                             context(child, new CypherCompilationState(curState.getStatement().copy(), curState.getPathTag()));
-                        } else if (quant2.getqType().equals(AND_QUANT_TYPE)) {
+                        } else if (quant2.getqType().equals(QuantType.all)) {
                             //open new path
                             context(child, new CypherCompilationState(curState.getStatement(), curState.getStatement().getNextPathTag()));
                         }

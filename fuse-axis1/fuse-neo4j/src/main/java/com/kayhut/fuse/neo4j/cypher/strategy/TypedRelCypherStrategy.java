@@ -65,9 +65,9 @@ public class TypedRelCypherStrategy extends CypherStrategy {
         if(typedRel.getDir() == null) {
             return CypherRelationship.Direction.BOTH;
         }
-        if(typedRel.getDir().equals("R")) {
+        if(typedRel.getDir().equals(Rel.Direction.R)) {
             return CypherRelationship.Direction.RIGHT;
-        } else if(typedRel.getDir().equals("L")){
+        } else if(typedRel.getDir().equals(Rel.Direction.L)){
             return CypherRelationship.Direction.LEFT;
         } else {
             return CypherRelationship.Direction.BOTH;
