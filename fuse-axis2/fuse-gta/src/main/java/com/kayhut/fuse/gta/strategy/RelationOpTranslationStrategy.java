@@ -1,6 +1,5 @@
 package com.kayhut.fuse.gta.strategy;
 
-import com.google.common.base.Strings;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -13,6 +12,7 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.Optional;
 
@@ -65,23 +65,15 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
         return relLabel.toString();
     }
 
-    private String getTinkerPopDirection(String dir) {
-        String tinkerPopDirection = "";
-        if (!Strings.isNullOrEmpty(dir)) {
-            switch (dir.toLowerCase()) {
-                case "r":
-                    tinkerPopDirection = "out";
-                    break;
-                case "l":
-                    tinkerPopDirection = "in";
-                    break;
-                default:
-                    throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
-            }
+    private Direction getTinkerPopDirection(Rel.Direction dir) {
+        switch (dir) {
+            case R:
+                return Direction.OUT;
+            case L:
+                return Direction.IN;
+            default:
+                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
         }
-        else
-            throw new IllegalArgumentException("Empty Relation Direction");
-        return tinkerPopDirection;
     }
 
     //region Fields

@@ -60,7 +60,8 @@ public class SiblingOnlyPlanValidator implements PlanValidator<Plan, AsgQuery>{
         return true;
     }
 
-    private boolean isOpposite(String dir1, String dir2) {
-        return (dir1.equals("R") && dir2.equals("L") ) ||(dir1.equals("L") && dir2.equals("R")) || dir1.equals("-");
+    private boolean isOpposite(Rel.Direction dir1, Rel.Direction dir2) {
+        return (dir1.equals(Rel.Direction.R) && dir2.equals(Rel.Direction.L) )
+                || (dir1.equals(Rel.Direction.L) && dir2.equals(Rel.Direction.R)) || dir1.equals(Rel.Direction.RL);
     }
 }

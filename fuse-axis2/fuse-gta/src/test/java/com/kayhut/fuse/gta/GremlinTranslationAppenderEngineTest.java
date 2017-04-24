@@ -21,14 +21,12 @@ import org.mockito.Mockito;
 import org.unipop.structure.UniGraph;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
 
 /**
@@ -100,24 +98,24 @@ public class GremlinTranslationAppenderEngineTest {
         concrete.seteID("12345678");
         concrete.seteType(1); //Person
         concrete.seteName("Dardas Aba");
-        AsgEBase<EConcrete> concreteAsg = AsgEBase.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).build();
+        AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
         rel.setrType(1);
-        AsgEBase<Rel> relAsg = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(concreteAsg).build();
+        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(concreteAsg).build();
 
         ETyped eTyped = new ETyped();
         eTyped.seteNum(1);
         eTyped.seteTag("B");
         eTyped.seteType(2);
-        AsgEBase<ETyped> eTypedAsg = AsgEBase.EBaseAsgBuilder.<ETyped>anEBaseAsg().withEBase(eTyped).withNext(relAsg).build();
+        AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).withNext(relAsg).build();
 
         Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(eTypedAsg).build();
+        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(eTypedAsg).build();
 
         List<PlanOpBase> ops = new LinkedList<>();
 
@@ -141,24 +139,24 @@ public class GremlinTranslationAppenderEngineTest {
         eTyped2.seteNum(3);
         eTyped2.seteTag("B");
         eTyped2.seteType(2); //Dragon
-        AsgEBase<ETyped> eTypedAsg2 = AsgEBase.EBaseAsgBuilder.<ETyped>anEBaseAsg().withEBase(eTyped2).build();
+        AsgEBase<ETyped> eTypedAsg2 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped2).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
         rel.setrType(1);
-        AsgEBase<Rel> relAsg = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(eTypedAsg2).build();
+        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(eTypedAsg2).build();
 
         ETyped eTyped1 = new ETyped();
         eTyped1.seteNum(1);
         eTyped1.seteTag("A");
         eTyped1.seteType(1); //Person
-        AsgEBase<ETyped> eTypedAsg1 = AsgEBase.EBaseAsgBuilder.<ETyped>anEBaseAsg().withEBase(eTyped1).withNext(relAsg).build();
+        AsgEBase<ETyped> eTypedAsg1 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped1).withNext(relAsg).build();
 
         Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(eTypedAsg1).build();
+        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(eTypedAsg1).build();
 
         List<PlanOpBase> ops = new LinkedList<>();
 
@@ -182,13 +180,13 @@ public class GremlinTranslationAppenderEngineTest {
         eTyped.seteNum(3);
         eTyped.seteTag("B");
         eTyped.seteType(2);
-        AsgEBase<ETyped> eTypedAsg = AsgEBase.EBaseAsgBuilder.<ETyped>anEBaseAsg().withEBase(eTyped).build();
+        AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
         rel.setrType(1);
-        AsgEBase<Rel> relAsg = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(eTypedAsg).build();
+        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(eTypedAsg).build();
 
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
@@ -196,12 +194,12 @@ public class GremlinTranslationAppenderEngineTest {
         concrete.seteID("12345678");
         concrete.seteType(1); //Person
         concrete.seteName("Moshe Ufnik");
-        AsgEBase<EConcrete> concreteAsg1 = AsgEBase.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).withNext(relAsg).build();
+        AsgEBase<EConcrete> concreteAsg1 = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
 
         Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg1).build();
+        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg1).build();
 
 
         List<PlanOpBase> ops = new LinkedList<>();
@@ -225,13 +223,13 @@ public class GremlinTranslationAppenderEngineTest {
         EUntyped untyped = new EUntyped();
         untyped.seteNum(3);
         untyped.seteTag("B");
-        AsgEBase<EUntyped> unTypedAsg = AsgEBase.EBaseAsgBuilder.<EUntyped>anEBaseAsg().withEBase(untyped).build();
+        AsgEBase<EUntyped> unTypedAsg = AsgEBase.Builder.<EUntyped>get().withEBase(untyped).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
         rel.setrType(1);
-        AsgEBase<Rel> relAsg = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).withNext(unTypedAsg).build();
+        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(unTypedAsg).build();
 
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
@@ -239,12 +237,12 @@ public class GremlinTranslationAppenderEngineTest {
         concrete.seteID("12345678");
         concrete.seteType(1); //Person
         concrete.seteName("Moshe Ufnik");
-        AsgEBase<EConcrete> concreteAsg = AsgEBase.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).withNext(relAsg).build();
+        AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
 
         Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg).build();
+        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg).build();
 
         List<PlanOpBase> ops = new LinkedList<>();
 
@@ -268,26 +266,26 @@ public class GremlinTranslationAppenderEngineTest {
         EUntyped untyped = new EUntyped();
         untyped.seteNum(5);
         untyped.seteTag("B");
-        AsgEBase<EUntyped> unTypedAsg = AsgEBase.EBaseAsgBuilder.<EUntyped>anEBaseAsg().withEBase(untyped).build();
+        AsgEBase<EUntyped> unTypedAsg = AsgEBase.Builder.<EUntyped>get().withEBase(untyped).build();
 
 
         Rel rel2 = new Rel();
         rel2.seteNum(4);
-        rel2.setDir("R");
+        rel2.setDir(Rel.Direction.R);
         rel2.setrType(1);
-        AsgEBase<Rel> rel2Asg = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel2).withNext(unTypedAsg).build();
+        AsgEBase<Rel> rel2Asg = AsgEBase.Builder.<Rel>get().withEBase(rel2).withNext(unTypedAsg).build();
 
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
         eTyped.seteType(2);
-        AsgEBase<ETyped> eTypedAsg = AsgEBase.EBaseAsgBuilder.<ETyped>anEBaseAsg().withEBase(eTyped).withNext(rel2Asg).build();
+        AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).withNext(rel2Asg).build();
 
         Rel rel1 = new Rel();
         rel1.seteNum(2);
-        rel1.setDir("R");
+        rel1.setDir(Rel.Direction.R);
         rel1.setrType(1);
-        AsgEBase<Rel> relAsg = AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel1).withNext(eTypedAsg).build();
+        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel1).withNext(eTypedAsg).build();
 
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
@@ -295,12 +293,12 @@ public class GremlinTranslationAppenderEngineTest {
         concrete.seteID("12345678");
         concrete.seteType(1); //Person
         concrete.seteName("Moshe Ufnik");
-        AsgEBase<EConcrete> concreteAsg = AsgEBase.EBaseAsgBuilder.<EConcrete>anEBaseAsg().withEBase(concrete).withNext(relAsg).build();
+        AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
 
         Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.EBaseAsgBuilder.<Start>anEBaseAsg().withEBase(start).withNext(concreteAsg).build();
+        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg).build();
 
         List<PlanOpBase> ops = new LinkedList<>();
 

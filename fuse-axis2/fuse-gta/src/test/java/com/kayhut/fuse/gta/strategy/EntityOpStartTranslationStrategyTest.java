@@ -31,7 +31,7 @@ public class EntityOpStartTranslationStrategyTest {
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("A");
-        AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete).build();
+        AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(concrete).build();
         PlanOpBase planOpBase = new EntityOp(ebaseAsgEBase);
 
         Plan plan = Mockito.mock(Plan.class);
@@ -70,7 +70,7 @@ public class EntityOpStartTranslationStrategyTest {
         eTyped.seteNum(1);
         eTyped.seteTag("A");
         eTyped.seteType(1);
-        AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(eTyped).build();
+        AsgEBase<EEntityBase> ebaseAsgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(eTyped).build();
         PlanOpBase planOpBase = new EntityOp(ebaseAsgEBase);
 
         Plan plan = Mockito.mock(Plan.class);

@@ -32,7 +32,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
         Start start = (Start)queryElements.get(0);
 
         //Building the root of the AsgQuery (i.e., start Ebase)
-        AsgEBase asgEBaseStart = AsgEBase.EBaseAsgBuilder.anEBaseAsg()
+        AsgEBase asgEBaseStart = AsgEBase.Builder.get()
                 .withEBase(start).build();
 
         buildSubGraphRec(asgEBaseStart, queryElements);
@@ -52,7 +52,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
 
         Stream.ofAll(new NextEbaseFactory().supply(eBaseCurrent)).forEach(eNum -> {
              EBase eBaseNext =  queryElements.get(eNum);
-             AsgEBase asgEBaseNext = AsgEBase.EBaseAsgBuilder.anEBaseAsg()
+             AsgEBase asgEBaseNext = AsgEBase.Builder.get()
                         .withEBase(eBaseNext)
                         .build();
 
@@ -65,7 +65,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
         Stream.ofAll(new BEbaseFactory().supply(eBaseCurrent)).forEach(
                 eNum -> {
                     EBase eBaseB =  queryElements.get(eNum);
-                    AsgEBase asgEBaseB = AsgEBase.EBaseAsgBuilder.anEBaseAsg()
+                    AsgEBase asgEBaseB = AsgEBase.Builder.get()
                             .withEBase(eBaseB)
                             .build();
 
