@@ -9,6 +9,11 @@ public class PlanWithCost<P, C> {
         this.plan = plan;
         this.cost = cost;
     }
+
+    public PlanWithCost(PlanWithCost<P, C> planWithCost) {
+        this.cost = planWithCost.cost;//todo clone ?
+        this.plan = planWithCost.plan;//todo clone ?
+    }
     //endregion
 
     //region Properties

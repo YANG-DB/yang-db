@@ -38,7 +38,13 @@ public class Plan {
     private List<PlanOpBase> ops;
     //endregion
 
-    public String typePattern() {
+    public String toPattern() {
         return pattern(getOps());
     }
+
+    public static boolean contains(Plan plan,PlanOpBase op) {
+        return plan.getOps().stream().anyMatch(p->p.equals(op));
+    }
 }
+
+

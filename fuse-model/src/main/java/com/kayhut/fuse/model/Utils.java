@@ -10,9 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by lior on 19/02/2017.
@@ -78,5 +78,18 @@ public interface Utils {
         StringJoiner sj = new StringJoiner(":", "", "");
         pattern.forEach(op -> sj.add(op.getClass().getSimpleName()));
         return sj.toString();
+    }
+
+    static List<Class<? extends PlanOpBase>> fromPattern(String pattern) {
+        if(pattern.split("\\:").length ==0)
+            return Collections.emptyList();
+
+        return Arrays.asList(pattern.split("\\:")).stream().map(element -> {
+            try {
+                return (Class<? extends PlanOpBase>)Class.forName(element);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Class.forName(element) failed for "+element);
+            }
+        }).collect(Collectors.toList());
     }
 }
