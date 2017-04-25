@@ -227,7 +227,7 @@ public class StepAdjacentStrategyTest {
     }
 
     private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtils.<Start, T>getNextDescendant(asgQuery.getStart(), (child) -> child.geteNum() == eNum).get();
+        return AsgQueryUtils.<Start, T>getNextDescendant(asgQuery.getStart(), eNum).get();
     }
 
     private void assertEquals(CompositePlanOpBase expectedCompositePlanOp, CompositePlanOpBase actualCompositePlanOp) {
