@@ -63,6 +63,20 @@ public class AsgQueryUtils {
     public static <T extends EBase> List<AsgEBase<? extends EBase>> collectAncestors(AsgEBase<T> asgEBase, int eNum) {
         return collectAncestors(asgEBase, (child) -> child.geteNum() == eNum, Collections.emptyList());
     }
+
+    public static List<AsgEBase<? extends EBase>> findPath(AsgQuery query, int eNum1, int eNum2) {
+        Optional<AsgEBase<EBase>> asgEBase1 = getNextDescendant(query.getStart(), eNum1);
+        if (!asgEBase1.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        List<AsgEBase<? extends EBase>> path = collectNextDescendants(asgEBase1.get(), eNum2);
+        if (path.isEmpty()) {
+            path = collectAncestors(asgEBase1.get(), eNum2);
+        }
+
+        return path;
+    }
     //endregion
 
     //region Private Methods
@@ -99,7 +113,7 @@ public class AsgQueryUtils {
 
         for (AsgEBase<? extends EBase> elementAsgEBase : elementProvider.apply(asgEBase)) {
             newPath = AsgQueryUtils.collectElements(elementAsgEBase, elementProvider, predicate, newPath);
-            if (predicate.test(path.get(newPath.size() - 1))) {
+            if (predicate.test(newPath.get(newPath.size() - 1))) {
                 return newPath;
             }
         }
