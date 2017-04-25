@@ -134,6 +134,13 @@ public class AsgEBase<T extends EBase>{
 
     //endregion
 
+    //region Override Methods
+    @Override
+    public String toString() {
+        return "{ " + eBase.getClass().getSimpleName() + " : " + eBase.geteNum() + " }";
+    }
+    //endregion
+
     //region Private Methods
     private void addToParents(AsgEBase<? extends EBase> asgEBase) {
         if (!this.parent.contains(asgEBase)) {
