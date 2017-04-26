@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.junit.Assert;
@@ -184,7 +185,7 @@ public class QueryTest {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(1);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
         rel.setNext(3);
         elements.add(rel);
 
@@ -259,7 +260,7 @@ public class QueryTest {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(1);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
         rel.setNext(3);
         elements.add(rel);
 
@@ -293,7 +294,7 @@ public class QueryTest {
         Rel rel2 = new Rel();
         rel2.seteNum(4);
         rel2.setrType(3);
-        rel2.setDir("R");
+        rel2.setDir(Rel.Direction.R);
         rel2.setNext(5);
         elements.add(rel2);
 
@@ -365,7 +366,7 @@ public class QueryTest {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(1);
-        rel.setDir("L");
+        rel.setDir(Rel.Direction.L);
         rel.setNext(3);
         elements.add(rel);
 
@@ -461,7 +462,7 @@ public class QueryTest {
 
         Quant1 quant1 = new Quant1();
         quant1.seteNum(2);
-        quant1.setqType("all");
+        quant1.setqType(QuantType.all);
         quant1.setNext(Arrays.asList(3,4));
         elements.add(quant1);
 
@@ -499,7 +500,7 @@ public class QueryTest {
         Rel rel1 = new Rel();
         rel1.seteNum(4);
         rel1.setrType(1);
-        rel1.setDir("R");
+        rel1.setDir(Rel.Direction.R);
         rel1.setNext(5);
         elements.add(rel1);
 
@@ -565,7 +566,7 @@ public class QueryTest {
          */
         Quant1 quant1 = new Quant1();
         quant1.seteNum(2);
-        quant1.setqType("all");
+        quant1.setqType(QuantType.all);
         quant1.setNext(Arrays.asList(3,5,11));
         elements.add(quant1);
         /*
@@ -580,7 +581,7 @@ public class QueryTest {
         Rel rel1 = new Rel();
         rel1.seteNum(3);
         rel1.setrType(1);
-        rel1.setDir("R");
+        rel1.setDir(Rel.Direction.R);
         rel1.setNext(4);
         elements.add(rel1);
 
@@ -612,7 +613,7 @@ public class QueryTest {
         Rel rel2 =  new Rel();
         rel2.seteNum(5);
         rel2.setrType(4);
-        rel2.setDir("R");
+        rel2.setDir(Rel.Direction.R);
         rel2.setNext(6);
         elements.add(rel2);
 
@@ -646,7 +647,7 @@ public class QueryTest {
         Rel rel3 = new Rel();
         rel3.seteNum(7);
         rel3.setrType(1);
-        rel3.setDir("R");
+        rel3.setDir(Rel.Direction.R);
         rel3.setNext(8);
         elements.add(rel3);
 
@@ -679,7 +680,7 @@ public class QueryTest {
         Rel rel4 = new Rel();
         rel4.seteNum(9);
         rel4.setrType(3);
-        rel4.setDir("R");
+        rel4.setDir(Rel.Direction.R);
         rel4.setNext(10);
         elements.add(rel4);
 
@@ -711,7 +712,7 @@ public class QueryTest {
         Rel rel5 = new Rel();
         rel5.seteNum(11);
         rel5.setrType(4);
-        rel5.setDir("R");
+        rel5.setDir(Rel.Direction.R);
         rel5.setNext(12);
         elements.add(rel5);
 
@@ -745,7 +746,7 @@ public class QueryTest {
         Rel rel6 =  new Rel();
         rel6.seteNum(13);
         rel6.setrType(1);
-        rel6.setDir("R");
+        rel6.setDir(Rel.Direction.R);
         rel6.setNext(14);
         elements.add(rel6);
 
@@ -818,7 +819,7 @@ public class QueryTest {
 
         Quant1 quant1 = new Quant1();
         quant1.seteNum(2);
-        quant1.setqType("all");
+        quant1.setqType(QuantType.all);
         quant1.setNext(Arrays.asList(3,6));
         elements.add(quant1);
 
@@ -836,7 +837,7 @@ public class QueryTest {
         Rel rel1 = new Rel();
         rel1.seteNum(3);
         rel1.setrType(6);
-        rel1.setDir("R");
+        rel1.setDir(Rel.Direction.R);
         rel1.setNext(5);
         rel1.setB(4);
         elements.add(rel1);
@@ -895,7 +896,7 @@ public class QueryTest {
         Rel rel2 = new Rel();
         rel2.seteNum(6);
         rel2.setrType(5);
-        rel2.setDir("R");
+        rel2.setDir(Rel.Direction.R);
         rel2.setNext(8);
         rel2.setB(7);
         elements.add(rel2);
@@ -954,7 +955,7 @@ public class QueryTest {
         Rel rel3 = new Rel();
         rel3.seteNum(9);
         rel3.setrType(6);
-        rel3.setDir("R");
+        rel3.setDir(Rel.Direction.R);
         rel3.setNext(11);
         rel3.setB(10);
         elements.add(rel3);
@@ -995,7 +996,7 @@ public class QueryTest {
 
         Quant2 quant2 = new Quant2();
         quant2.seteNum(11);
-        quant2.setqType("some");
+        quant2.setqType(QuantType.some);
         quant2.setNext(Arrays.asList(12,13));
         elements.add(quant2);
 

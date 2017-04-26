@@ -19,7 +19,6 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Matchers.any;
@@ -39,15 +38,15 @@ public class RelationOpTranslationStrategyTest {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(1);
-        rel.setDir("R");
+        rel.setDir(Rel.Direction.R);
 
         EConcrete concrete2 = new EConcrete();
         concrete2.seteNum(3);
         concrete2.seteTag("B");
 
-        EntityOp entity1 = new EntityOp(AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete1).build());
-        EntityOp entity2 = new EntityOp(AsgEBase.EBaseAsgBuilder.<EEntityBase>anEBaseAsg().withEBase(concrete2).build());
-        RelationOp relationOp = new RelationOp(AsgEBase.EBaseAsgBuilder.<Rel>anEBaseAsg().withEBase(rel).build());
+        EntityOp entity1 = new EntityOp(AsgEBase.Builder.<EEntityBase>get().withEBase(concrete1).build());
+        EntityOp entity2 = new EntityOp(AsgEBase.Builder.<EEntityBase>get().withEBase(concrete2).build());
+        RelationOp relationOp = new RelationOp(AsgEBase.Builder.<Rel>get().withEBase(rel).build());
 
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> new ArrayList<>(Arrays.asList(entity1, relationOp, entity2)));

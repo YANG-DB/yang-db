@@ -14,43 +14,46 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class AsgEBase<T extends EBase>{
-    //region EBaseAsgBuilder
-    public static final class EBaseAsgBuilder<T extends EBase> {
+    //region Builder
+    public static final class Builder<T extends EBase> {
         private T eBase;
         private List<AsgEBase<? extends EBase>> next;
         private List<AsgEBase<? extends EBase>> b;
         @JsonIgnore
         private transient List<AsgEBase<? extends EBase>> parent;
 
-        private EBaseAsgBuilder() {
+        private Builder() {
         }
 
-        public static <S extends EBase> EBaseAsgBuilder<S> anEBaseAsg() {
-            return new EBaseAsgBuilder<>();
+        public static <S extends EBase> Builder<S> get() {
+            return new Builder<>();
         }
 
-        public EBaseAsgBuilder<T> withEBase(T eBase) {
+        public Builder<T> withEBase(T eBase) {
             this.eBase = eBase;
             return this;
         }
 
-        public EBaseAsgBuilder<T> withNext(List<AsgEBase<? extends EBase>> next) {
+        public Builder<T> withNext(List<AsgEBase<? extends EBase>> next) {
             this.next = next;
             return this;
         }
 
-        public EBaseAsgBuilder<T> withNext(AsgEBase<? extends EBase> next) {
-            this.next = new ArrayList<>();
+        public Builder<T> withNext(AsgEBase<? extends EBase> next) {
+            if (this.next == null) {
+                this.next = new ArrayList<>();
+            }
+
             this.next.add(next);
             return this;
         }
 
-        public EBaseAsgBuilder<T> withB(List<AsgEBase<? extends EBase>> b) {
+        public Builder<T> withB(List<AsgEBase<? extends EBase>> b) {
             this.b = b;
             return this;
         }
 
-        public EBaseAsgBuilder<T> withB(AsgEBase<? extends EBase> b) {
+        public Builder<T> withB(AsgEBase<? extends EBase> b) {
             this.b = new ArrayList<>();
             this.b.add(b);
             return this;
@@ -129,6 +132,13 @@ public class AsgEBase<T extends EBase>{
         asgEBase.addToParents(this);
     }
 
+    //endregion
+
+    //region Override Methods
+    @Override
+    public String toString() {
+        return "{ " + eBase.getClass().getSimpleName() + " : " + eBase.geteNum() + " }";
+    }
     //endregion
 
     //region Private Methods

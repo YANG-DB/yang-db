@@ -11,16 +11,16 @@ import com.kayhut.fuse.model.query.EBase;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QuantBase extends EBase {
 
-    public String getqType() {
+    public QuantType getqType() {
         return qType;
     }
 
-    public void setqType(String qType) {
+    public void setqType(QuantType qType) {
         this.qType = qType;
     }
 
     //region Fields
-    private String qType;
+    private QuantType qType;
     //endregion
 
 }

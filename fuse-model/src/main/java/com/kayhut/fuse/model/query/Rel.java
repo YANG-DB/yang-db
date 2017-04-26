@@ -8,6 +8,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Rel extends EBase {
+    public enum Direction {
+        R,
+        L,
+        RL
+    }
 
     public int getrType() {
         return rType;
@@ -17,11 +22,11 @@ public class Rel extends EBase {
         this.rType = rType;
     }
 
-    public String getDir() {
+    public Direction getDir() {
         return dir;
     }
 
-    public void setDir(String dir) {
+    public void setDir(Direction dir) {
         this.dir = dir;
     }
 
@@ -51,7 +56,7 @@ public class Rel extends EBase {
 
    //region Fields
     private int rType;
-    private String dir;
+    private Direction dir;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private String wrapper;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
