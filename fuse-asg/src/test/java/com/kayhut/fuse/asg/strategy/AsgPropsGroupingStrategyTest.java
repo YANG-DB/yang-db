@@ -1,6 +1,8 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.google.common.base.Supplier;
+import com.kayhut.fuse.asg.AsgQueryStore;
+import com.kayhut.fuse.asg.AsgUtils;
 import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -9,6 +11,7 @@ import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import org.junit.Test;
@@ -16,13 +19,14 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
 /**
  * Created by benishue on 24-Apr-17.
  */
-public class AsgEntityPropertiesGroupingStrategyTest {
+public class AsgPropsGroupingStrategyTest {
 
     //This Eprop is not under an AND quantifier and should be replaced by the EPropGroup Element -  e.g. Q3 on V1
     @Test
@@ -146,7 +150,6 @@ public class AsgEntityPropertiesGroupingStrategyTest {
         assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().contains(originalEPropAsgEbase.geteBase()));
         assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().size() == 1);
     }
-
 
     // Query with an AND Quantifier where all his children are Eprop Type -  e.g., Q27 - 2
     @Test
@@ -293,8 +296,8 @@ public class AsgEntityPropertiesGroupingStrategyTest {
         AsgEBase<EBase> originalEProp1AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 5).get();
         AsgEBase<EBase> originalEProp2AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 6).get();
 
-        AsgVerticalQuantifierPropertiesGroupingStrategy asgVerticalQuantifierPropertiesGroupingStrategy = new AsgVerticalQuantifierPropertiesGroupingStrategy();
-        asgVerticalQuantifierPropertiesGroupingStrategy.apply(asgQuery);
+        AsgVQuantifierPropertiesGroupingStrategy asgVQuantifierPropertiesGroupingStrategy = new AsgVQuantifierPropertiesGroupingStrategy();
+        asgVQuantifierPropertiesGroupingStrategy.apply(asgQuery);
 
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
@@ -322,7 +325,7 @@ public class AsgEntityPropertiesGroupingStrategyTest {
     }
 
     @Test
-    public void andQuantifierWithMixChildren() throws Exception{
+    public void vQuantifierWithEPropsChildrenGroupingTest() throws Exception{
 
         //region Query Building
         Query query = new Query(); //Q3 - 2
@@ -441,8 +444,8 @@ public class AsgEntityPropertiesGroupingStrategyTest {
         AsgQuery asgQuery = asgSupplier.get();
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 3).get();
 
-        AsgVerticalQuantifierPropertiesGroupingStrategy asgVerticalQuantifierPropertiesGroupingStrategy = new AsgVerticalQuantifierPropertiesGroupingStrategy();
-        asgVerticalQuantifierPropertiesGroupingStrategy.apply(asgQuery);
+        AsgVQuantifierPropertiesGroupingStrategy asgVQuantifierPropertiesGroupingStrategy = new AsgVQuantifierPropertiesGroupingStrategy();
+        asgVQuantifierPropertiesGroupingStrategy.apply(asgQuery);
 
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
@@ -471,4 +474,70 @@ public class AsgEntityPropertiesGroupingStrategyTest {
         assertTrue(rel4AsgEBase.getParents().get(0).getNext().contains(newEPropGroupAsgEbase));
     }
 
+    @Test
+    public void relPropsGroupingTest() throws Exception{
+        AsgQuery asgQuery = AsgQueryStore.Q188_V1();
+
+        AsgEBase<EBase> originalRelProp1AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 4).get();
+        AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 5).get();
+
+        AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
+        asgRelPropertiesGroupingStrategy.apply(asgQuery);
+
+        //Checking that the ASG query still hold - nothing has broken
+        assertEquals(0, asgQuery.getStart().geteBase().geteNum());
+        assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
+        AsgEBase<? extends EBase> asgEBase1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(asgEBase1.geteBase().geteNum(),1);
+
+        //Checking the RelProps grouping mechanism
+        AsgEBase<EBase> newRelPropGroupAsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 4).get();
+        assertNotNull(newRelPropGroupAsgEbase);
+        assertEquals(RelPropGroup.class, newRelPropGroupAsgEbase.geteBase().getClass());
+        assertFalse(AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 5).isPresent()); // Relprop with eNum=5 Should be removed from the query
+        assertEquals(2, newRelPropGroupAsgEbase.getParents().get(0).geteNum());
+        assertEquals(0, newRelPropGroupAsgEbase.getB().size());
+
+        //Checking that our RelPropGroup Contains the original EProps
+        assertTrue(((RelPropGroup)newRelPropGroupAsgEbase.geteBase()).getrProps().contains(originalRelProp1AsgEbase.geteBase()));
+        assertTrue(((RelPropGroup)newRelPropGroupAsgEbase.geteBase()).getrProps().contains(originalRelProp2AsgEbase.geteBase()));
+    }
+
+    @Test
+    public void hQuantifierWithRelPropsGroupingTest() throws Exception{
+        AsgQuery asgQuery = AsgQueryStore.Q187_V1();
+
+        AsgEBase<EBase> originalRelProp1AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 5).get();
+        AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 6).get();
+
+        AsgHQuantifierPropertiesGroupingStrategy asgHQuantifierPropertiesGroupingStrategy = new AsgHQuantifierPropertiesGroupingStrategy();
+        asgHQuantifierPropertiesGroupingStrategy.apply(asgQuery);
+
+        //Checking that the ASG query still hold - nothing has broken
+        assertEquals(0, asgQuery.getStart().geteBase().geteNum());
+        assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
+        AsgEBase<? extends EBase> asgEBase1 = asgQuery.getStart().getNext().get(0);
+        assertEquals(asgEBase1.geteBase().geteNum(),1);
+
+         //Checking the RelProps grouping mechanism
+        Map<Integer, AsgEBase> relPropGroups = AsgUtils.searchForAllEntitiesOfType(asgQuery.getStart(), RelPropGroup.class);
+
+        assertTrue(relPropGroups.size() == 2);
+        AsgEBase<EBase> newRelPropGroup1AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 5).get();
+        assertNotNull(newRelPropGroup1AsgEbase);
+        assertEquals(RelPropGroup.class, newRelPropGroup1AsgEbase.geteBase().getClass());
+        assertEquals(4, newRelPropGroup1AsgEbase.getParents().get(0).geteNum());
+        assertEquals(0, newRelPropGroup1AsgEbase.getB().size());
+
+
+        AsgEBase<EBase> newRelPropGroup2AsgEbase = AsgQueryUtils.getAsgEBaseByEnum(asgQuery, 6).get();
+        assertNotNull(newRelPropGroup2AsgEbase);
+        assertEquals(RelPropGroup.class, newRelPropGroup2AsgEbase.geteBase().getClass());
+        assertEquals(4, newRelPropGroup2AsgEbase.getParents().get(0).geteNum());
+        assertEquals(0, newRelPropGroup2AsgEbase.getB().size());
+
+        //Checking that our RelPropGroup Contains the original EProps
+        assertTrue(((RelPropGroup)newRelPropGroup1AsgEbase.geteBase()).getrProps().contains(originalRelProp1AsgEbase.geteBase()));
+        assertTrue(((RelPropGroup)newRelPropGroup2AsgEbase.geteBase()).getrProps().contains(originalRelProp2AsgEbase.geteBase()));
+    }
 }

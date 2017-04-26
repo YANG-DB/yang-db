@@ -4,10 +4,7 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -30,6 +27,10 @@ public class AsgQueryUtils {
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return getElement(asgEBase, AsgEBase::getNext, predicate);
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return getElement(asgEBase, AsgEBase::getB, predicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendant(AsgEBase<T> asgEBase, Class klass) {
@@ -77,6 +78,28 @@ public class AsgQueryUtils {
 
         return path;
     }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate){
+        if (!asgEBase.getB().isEmpty()){
+            Optional<AsgEBase<EBase>> nextBDescendant = getBDescendant(asgEBase, predicate);
+            if (nextBDescendant.isPresent()) {
+                return Optional.of((AsgEBase<S>)nextBDescendant.get());
+            }
+        }
+
+        if (asgEBase.getNext().isEmpty()) {
+            return Optional.empty();
+        }
+
+        for(AsgEBase<? extends EBase> nextAsgEBase : asgEBase.getNext()) {
+            Optional<AsgEBase<EBase>> nextBDescendant = getNextBDescendant(nextAsgEBase, predicate);
+            if (nextBDescendant.isPresent()) {
+                return Optional.of((AsgEBase<S>)nextBDescendant.get());
+            }
+        }
+
+        return Optional.empty();
+    }
     //endregion
 
     //region Private Methods
@@ -122,7 +145,13 @@ public class AsgQueryUtils {
     }
 
     public static <T extends EBase> Optional<AsgEBase<T>> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return getNextDescendant(asgQuery.getStart(), (child) -> child.geteNum() == eNum);
+        Optional<AsgEBase<T>> nextDescendant = getNextDescendant(asgQuery.getStart(), (child) -> child.geteNum() == eNum);
+        Optional<AsgEBase<T>> bDescendant = getNextBDescendant(asgQuery.getStart(), (child) -> child.geteNum() == eNum);
+        if (nextDescendant.isPresent())
+            return nextDescendant;
+        if (bDescendant.isPresent())
+            return bDescendant;
+        return Optional.empty();
     }
     //endregion
 }

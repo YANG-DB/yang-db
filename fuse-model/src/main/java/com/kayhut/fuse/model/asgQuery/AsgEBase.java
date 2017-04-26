@@ -140,6 +140,10 @@ public class AsgEBase<T extends EBase>{
     public void removeNextChild(AsgEBase<? extends EBase> asgEBase) {
         this.next.remove(asgEBase);
     }
+
+    public void removeBChild(AsgEBase<? extends EBase> asgEBase) {
+        this.b.remove(asgEBase);
+    }
     //endregion
 
     //region Override Methods

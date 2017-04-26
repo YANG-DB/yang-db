@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg;
 
+import com.google.common.collect.Ordering;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
@@ -8,6 +9,7 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 19-Apr-17.
@@ -43,15 +45,14 @@ public class AsgUtils {
         return ePropsNextChildren;
     }
 
-    public static List<AsgEBase<? extends EBase>> getEPropsBelowChildren(AsgEBase<? extends EBase> parent) {
-        List<AsgEBase<? extends EBase>> ePropsBelowChildren = new ArrayList<>();
+    public static List<AsgEBase<? extends EBase>> getRelPropsBelowChildren(AsgEBase<? extends EBase> parent) {
+        List<AsgEBase<? extends EBase>> rPropsBelowChildren = new ArrayList<>();
 
         while (parent.getB().size() == 1 && parent.getB().get(0).geteBase() instanceof RelProp) {
-            ePropsBelowChildren.add(parent.getB().get(0));
-            if (parent.getB().size() > 0)
-                parent = parent.getB().get(0);
+            rPropsBelowChildren.add(parent.getB().get(0));
+            parent = parent.getB().get(0);
         }
-        return ePropsBelowChildren;
+        return rPropsBelowChildren;
     }
 
     private static void searchForAllEntitiesOfType(AsgEBase element, Class clazz, Map<Integer, AsgEBase> elementsResult){
@@ -74,4 +75,11 @@ public class AsgUtils {
         return element.getNext() != null;
     }
 
+    public static <T extends EBase> int getMinEnumFromListOfEBase(List<T> eBaseList )
+    {
+        List<Integer> enumsList = eBaseList.stream().map(T::geteNum).collect(Collectors.toList());
+        int min = 999;
+        min = Ordering.<Integer>natural().min(enumsList);
+        return min;
+    }
 }

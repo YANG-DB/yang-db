@@ -57,18 +57,7 @@ public class EBase {
         this.eNum = eNum;
     }
 
-
-//    public String getType() {
-//        return type;
-//    }
-//
-//    public void setType(String type) {
-//        this.type = type;
-//    }
-    //endregion
-
     //region Fields
     private int eNum;
-    //private String type;
     //endregion
 }
