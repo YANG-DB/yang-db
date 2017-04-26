@@ -3,19 +3,23 @@ package com.kayhut.fuse.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Created by lior on 19/02/2017.
  */
 public interface Utils {
     ObjectMapper mapper = new ObjectMapper();
+
     static <T> T submit(EventBus eventBus, T data) {
         System.out.println("EventBus[" + data.toString() + "]");
         eventBus.post(data);
@@ -29,11 +33,11 @@ public interface Utils {
     static String readJsonFile(String name) {
         String result = "{}";
         try {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/"+name+".json");
-            if(stream!=null ) {
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + name + ".json");
+            if (stream != null) {
                 result = loadJsonString(stream);
             } else {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name+".json");
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name + ".json");
                 result = loadJsonString(stream);
             }
         } catch (Exception e) {
@@ -48,8 +52,8 @@ public interface Utils {
         return mapper.writeValueAsString(value);
     }
 
-    static <T> T asObject(String value,Class<T> clazz) throws IOException {
-        return mapper.readValue(value,clazz);
+    static <T> T asObject(String value, Class<T> clazz) throws IOException {
+        return mapper.readValue(value, clazz);
     }
 
     static String loadJsonString(InputStream stream) throws IOException {
@@ -59,7 +63,7 @@ public interface Utils {
     }
 
     static String baseUrl(String port) {
-        return "http://"+ getHostAddress()+":"+port+"/fuse";
+        return "http://" + getHostAddress() + ":" + port + "/fuse";
     }
 
     static String getHostAddress() {
@@ -68,6 +72,24 @@ public interface Utils {
         } catch (UnknownHostException e) {
             return "127.0.0.1";
         }
+    }
 
+    static String pattern(List<PlanOpBase> pattern) {
+        StringJoiner sj = new StringJoiner(":", "", "");
+        pattern.forEach(op -> sj.add(op.getClass().getSimpleName()));
+        return sj.toString();
+    }
+
+    static List<Class<? extends PlanOpBase>> fromPattern(String pattern) {
+        if(pattern.split("\\:").length ==0)
+            return Collections.emptyList();
+
+        return Arrays.asList(pattern.split("\\:")).stream().map(element -> {
+            try {
+                return (Class<? extends PlanOpBase>)Class.forName(element);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Class.forName(element) failed for "+element);
+            }
+        }).collect(Collectors.toList());
     }
 }

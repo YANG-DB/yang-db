@@ -1,37 +1,6 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.OpCostCalculator;
-import com.kayhut.fuse.epb.plan.statistics.QueryItemStatisticsProvider;
-import com.kayhut.fuse.epb.plan.statistics.provider.ElasticSearchStatisticsProvider;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
-import com.kayhut.fuse.epb.plan.cost.CostEstimator;
-import com.kayhut.fuse.model.ontology.EntityType;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.entity.EConcrete;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementRouting;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import org.elasticsearch.client.Client;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.util.Collections;
-import java.util.Optional;
-
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by moti on 4/19/2017.

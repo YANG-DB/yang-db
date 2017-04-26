@@ -10,5 +10,6 @@ import java.util.Optional;
  * Created by moti on 3/27/2017.
  */
 public interface CostEstimator<P, C> {
-    PlanWithCost<P, C> estimate(P plan, Optional<C> previousCost);
+    PlanWithCost<P, C> estimate(P plan, Optional<PlanWithCost<P,C>> previousCost);
+
 }

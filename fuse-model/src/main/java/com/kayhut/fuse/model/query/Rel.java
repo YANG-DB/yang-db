@@ -11,7 +11,9 @@ public class Rel extends EBase {
     public enum Direction {
         R,
         L,
-        RL
+        RL;
+
+
     }
 
     public int getrType() {

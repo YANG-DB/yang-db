@@ -1,5 +1,8 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.kayhut.fuse.model.execution.plan.Direction;
+import javaslang.Tuple2;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,39 +11,6 @@ import java.util.List;
  */
 public interface Statistics {
     Statistics merge(Statistics other);
-
-    /**
-     * Created by moti on 31/03/2017.
-     */
-    class CardinalityStatistics implements Statistics {
-        private long cardinality;
-        private long total;
-
-        public CardinalityStatistics(long cardinality, long total) {
-            this.cardinality = cardinality;
-            this.total = total;
-        }
-
-        public long getCardinality() {
-            return cardinality;
-        }
-
-        public long getTotal() {
-            return total;
-        }
-
-        @Override
-        public Statistics merge(Statistics other) {
-            if(other == null){
-                return this;
-            }
-            if(other instanceof CardinalityStatistics) {
-                return new CardinalityStatistics((long)(((CardinalityStatistics) other).getCardinality() + this.cardinality / 2.0),
-                        ((CardinalityStatistics) other).getTotal() + this.total);
-            }
-            throw new IllegalArgumentException();
-        }
-    }
 
     /**
      * Created by moti on 31/03/2017.
@@ -82,7 +52,19 @@ public interface Statistics {
 
             throw new IllegalArgumentException();
         }
-    }
+
+        /**
+         * _1 = total count
+         * _2 = cardinality
+         * @return
+         */
+        public Tuple2<Long, Long> getCardinality() {
+            long card = buckets.stream().mapToLong(BucketInfo::getCardinality).sum();
+            long total = buckets.stream().mapToLong(BucketInfo::getTotal).sum();
+            return new Tuple2<>(total,card);
+        }
+
+     }
 
     /**
      * Created by moti on 31/03/2017.

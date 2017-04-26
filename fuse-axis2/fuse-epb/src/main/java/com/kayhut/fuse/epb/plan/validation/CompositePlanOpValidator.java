@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import javaslang.collection.Stream;
 
@@ -27,10 +28,10 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
     }
 
     @Override
-    public boolean isPlanOpValid(PlanOpBase planOp, AsgQuery asgQuery) {
+    public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
         boolean isPlanOpValid = false;
         for(ChainedPlanValidator.PlanOpValidator planOpValidator : this.planOpValidators) {
-            isPlanOpValid |= planOpValidator.isPlanOpValid(planOp, asgQuery);
+            isPlanOpValid |= planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
             if (isPlanOpValid && this.mode == Mode.one) {
                 return true;
             }

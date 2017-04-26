@@ -1,12 +1,13 @@
 package com.kayhut.fuse.model.execution.plan;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 
 /**
  * Created by User on 22/02/2017.
  */
-public class RelationFilterOp extends PlanOpBase {
+public class RelationFilterOp extends PlanOpBase implements Filter{
     //region Constructors
     public RelationFilterOp() {
 
@@ -35,9 +36,17 @@ public class RelationFilterOp extends PlanOpBase {
         return this.relProp.geteNum();
     }
 
-    //endregion
+    public AsgEBase<Rel> getRel() {
+        return rel;
+    }
+
+    public void setRel(AsgEBase<Rel> rel) {
+        this.rel = rel;
+    }
+//endregion
 
     //region Fields
     private AsgEBase<RelProp> relProp;
+    private AsgEBase<Rel> rel;
     //endregion
 }

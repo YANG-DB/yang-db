@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ETyped extends EEntityBase {
+public class ETyped extends EEntityBase implements Typed{
     public int geteType() {
         return eType;
     }

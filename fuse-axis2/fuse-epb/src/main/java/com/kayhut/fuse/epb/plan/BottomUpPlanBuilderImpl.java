@@ -2,8 +2,8 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.epb.plan.cost.CostEstimator;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class BottomUpPlanBuilderImpl<P, C, Q> implements PlanSearcher<P, C, Q> {
                 List<PlanWithCost<P, C>> planExtensions = new LinkedList<>();
                 for(P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)){
                     if(planValidator.isPlanValid(extendedPlan, query)){
-                        PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan.getCost()));
+                        PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan));
                         planExtensions.add(planWithCost);
                     }
                 }

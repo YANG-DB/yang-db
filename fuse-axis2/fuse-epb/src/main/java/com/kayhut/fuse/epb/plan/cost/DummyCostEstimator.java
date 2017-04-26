@@ -1,10 +1,6 @@
 package com.kayhut.fuse.epb.plan.cost;
 
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
-import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
 import java.util.Optional;
 
@@ -16,10 +12,11 @@ public class DummyCostEstimator<P, C> implements CostEstimator<P, C> {
         this.dummyCost = dummyCost;
     }
 
-    @Override
-    public PlanWithCost<P, C> estimate(P plan, Optional<C> previousCost) {
-        return new PlanWithCost<>(plan, previousCost.isPresent() ? previousCost.get() : dummyCost);
-    }
 
     private C dummyCost;
+
+    @Override
+    public PlanWithCost<P, C> estimate(P plan, Optional<PlanWithCost<P, C>> previousCost) {
+        return new PlanWithCost<>(plan, previousCost.isPresent() ? previousCost.get().getCost() : dummyCost);
+    }
 }
