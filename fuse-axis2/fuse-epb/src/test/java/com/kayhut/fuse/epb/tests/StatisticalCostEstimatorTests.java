@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.entity.EConcrete;
+import javaslang.Tuple2;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -109,7 +110,8 @@ public class StatisticalCostEstimatorTests {
         EntityOp entityOp = new EntityOp();
         entityOp.setEntity(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY, entityOp);
-        List<PlanOpWithCost<Cost>> costs = estimator.calculate(map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
+        Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = estimator.calculate(map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
+        List<PlanOpWithCost<Cost>> costs = tuple2._2;
 
         Assert.assertNotNull(costs);
         Assert.assertEquals(costs.size(),1);

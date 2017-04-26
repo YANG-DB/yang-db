@@ -1,19 +1,19 @@
 package com.kayhut.fuse.model.execution.plan;
 
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Created by moti on 3/27/2017.
  */
 public class PlanOpWithCost<C> {
     //region Constructors
-    public PlanOpWithCost(C cost, double lambda, PlanOpBase ... opBase) {
+    public PlanOpWithCost(C cost, double countEstimates, PlanOpBase ... opBase) {
         this.cost = cost;
         this.opBase = Arrays.asList(opBase);
-        this.lambda = lambda;
+        this.countEstimates = new Stack<>();
+        this.countEstimates.push(countEstimates);
     }
     //endregion
 
@@ -26,8 +26,8 @@ public class PlanOpWithCost<C> {
         return opBase;
     }
 
-    public double getLambda() {
-        return lambda;
+    public Stack<Double> getCountEstimates() {
+        return countEstimates;
     }
 
     //endregion
@@ -35,7 +35,7 @@ public class PlanOpWithCost<C> {
     //region Members
     private C cost;
     private List<PlanOpBase> opBase;
-    private double lambda;
+    private Stack<Double> countEstimates;
     //endregion
     
     public static <C> C get(List<PlanOpWithCost<C>> ops,int index) {
@@ -51,4 +51,14 @@ public class PlanOpWithCost<C> {
     public static <C> PlanOpWithCost<C> of(C cost, int lambda, PlanOpBase op) {
         return new PlanOpWithCost<C>(cost,lambda,op);
     }
+
+    public double push(double value) {
+        return countEstimates.push(value);
+    }
+
+    public double peek() {
+        return countEstimates.peek();
+    }
+
+
 }

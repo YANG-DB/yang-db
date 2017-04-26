@@ -90,7 +90,7 @@ public interface PlanMockUtils {
 
         public PlanMockBuilder rel(Direction direction, int relType, long total) throws Exception {
             Rel rel = new Rel();
-            rel.setDir(direction.name());
+            rel.setDir(Direction.valueOf(direction.name()).to());
             rel.setrType(relType);
             RelationOp relationOp = new RelationOp(new AsgEBase<>(rel));
             //no type => max nodes return
