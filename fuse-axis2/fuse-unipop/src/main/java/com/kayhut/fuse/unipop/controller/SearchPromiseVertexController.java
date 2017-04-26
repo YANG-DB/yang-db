@@ -2,9 +2,8 @@ package com.kayhut.fuse.unipop.controller;
 
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.EdgeConstraintSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.PromiseEdgeAggregationAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.StartVerticesSearchAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.*;
+import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -60,35 +59,31 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
             throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
         }
 
-        return queryPromiseEdges(searchVertexQuery.getVertices(), constraintHasContainers);
+        Optional<TraversalConstraint> constraint = Optional.empty();
+        if(constraintHasContainers.size() > 0) {
+            constraint = Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
+        }
+
+        return queryPromiseEdges(searchVertexQuery.getVertices(), constraint);
 
     }
     //endregion
 
     //region Private Methods
-    private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, List<HasContainer> edgeConstraints) {
-
-        Optional<TraversalConstraint> constraint = edgeConstraints.stream()
-                                                                  .findFirst()
-                                                                  .filter(hasContainer ->
-                                                                          hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
-                                                                  .map(h -> (TraversalConstraint) h.getValue());
+    private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
         PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices,constraint,schemaProvider);
 
-        //append start vertices constraint
-        StartVerticesSearchAppender startVerticesAppender = new StartVerticesSearchAppender();
-        startVerticesAppender.append(searchBuilder, context);
+        CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
+                new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
+                        new StartVerticesSearchAppender(),
+                        new EdgeConstraintSearchAppender(),
+                        new PromiseEdgeAggregationAppender(),
+                        new PromiseEdgeIndexAppender());
 
-        //append edges constraint to query
-        EdgeConstraintSearchAppender edgeConstraintAppender = new EdgeConstraintSearchAppender();
-        edgeConstraintAppender.append(searchBuilder, context);
-
-        //build aggregations
-        PromiseEdgeAggregationAppender aggregationAppender = new PromiseEdgeAggregationAppender();
-        aggregationAppender.append(searchBuilder, context);
+        compositeAppender.append(searchBuilder, context);
 
         //search
         SearchRequestBuilder searchRequest = searchBuilder.compose(client, true).setSearchType(SearchType.COUNT);
@@ -103,10 +98,10 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
     private Iterator<Edge> convert(SearchResponse response) {
 
         if( response == null ) {
-            return Collections.emptyIterator();
+            throw new RuntimeException("Null response received");
         }
 
-        Aggregation agg = response.getAggregations().asMap().get("layer1");
+        Aggregation agg = response.getAggregations().asMap().get(PromiseEdgeConstants.SOURCE_AGGREGATION_LAYER);
 
         AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(graph);
 
