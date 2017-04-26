@@ -1,23 +1,27 @@
 package com.kayhut.fuse.unipop.controller;
 
+import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.search.appender.EdgeConstraintSearchAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.PromiseEdgeAggregationAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.StartVerticesSearchAppender;
 import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
-import com.kayhut.fuse.unipop.converter.PromiseEdgeConverter;
-import com.kayhut.fuse.unipop.converter.SearchHitPromiseVertexConverter;
-import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
+import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
@@ -47,64 +51,67 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
         }
 
         List<HasContainer> constraintHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
-                                                            .filter(hasContainer -> hasContainer.getKey()
-                                                                                                .toLowerCase()
-                                                                                                .equals(GlobalConstants.HasKeys.CONSTRAINT))
-                                                        .toJavaList();
+                                                           .filter(hasContainer -> hasContainer.getKey()
+                                                                                               .toLowerCase()
+                                                                                               .equals(GlobalConstants.HasKeys.CONSTRAINT))
+                                                            .toJavaList();
 
         if (constraintHasContainers.size() > 1){
             throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
         }
 
-        HasContainer edgeConstraint = constraintHasContainers.get(0);
-
-        Traversal startVerticesConstraint = buildStartVerticesConstraint(searchVertexQuery.getVertices());
-
-        return queryPromiseEdges(startVerticesConstraint, edgeConstraint);
+        return queryPromiseEdges(searchVertexQuery.getVertices(), constraintHasContainers);
 
     }
     //endregion
 
     //region Private Methods
-    private Iterator<Edge> queryPromiseEdges(Traversal startVerticesConstraint, HasContainer edgeConstraint) {
+    private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, List<HasContainer> edgeConstraints) {
+
+        Optional<TraversalConstraint> constraint = edgeConstraints.stream()
+                                                                  .findFirst()
+                                                                  .filter(hasContainer ->
+                                                                          hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
+                                                                  .map(h -> (TraversalConstraint) h.getValue());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
+        PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices,constraint,schemaProvider);
+
         //append start vertices constraint
-        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(
-                searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter().bool("root_bool").must(), true);
-        traversalQueryTranslator.visit(startVerticesConstraint);
+        StartVerticesSearchAppender startVerticesAppender = new StartVerticesSearchAppender();
+        startVerticesAppender.append(searchBuilder, context);
 
         //append edges constraint to query
-        TraversalConstraint traversalConstraint = (TraversalConstraint)edgeConstraint.getValue();
+        EdgeConstraintSearchAppender edgeConstraintAppender = new EdgeConstraintSearchAppender();
+        edgeConstraintAppender.append(searchBuilder, context);
 
-        //append aggregations ?
+        //build aggregations
+        PromiseEdgeAggregationAppender aggregationAppender = new PromiseEdgeAggregationAppender();
+        aggregationAppender.append(searchBuilder, context);
 
         //search
-        /*SearchRequestBuilder searchRequest = searchBuilder.compose(client, false);
-        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
-                client,
-                searchRequest,
-                searchBuilder.getLimit(),
-                searchBuilder.getScrollSize(),
-                searchBuilder.getScrollTime());
-*/
+        SearchRequestBuilder searchRequest = searchBuilder.compose(client, true).setSearchType(SearchType.COUNT);
+
+        SearchResponse response = searchRequest.execute().actionGet();
 
         //convert result
-        // return convert(searchHits, new PromiseEdgeConverter(graph));
+        return convert(response);
 
-        return Collections.emptyIterator();
     }
 
-    private Iterator<Edge> convert(SearchHitScrollIterable searchHits, PromiseEdgeConverter promiseEdgeConverter) {
-        //TODO: change PromiseEdgeConverter to return Edge?
-        return Stream.ofAll(searchHits)
-                .map(hit -> (Edge)promiseEdgeConverter.convert(hit))
-                .filter(Objects::nonNull).iterator();
-    }
+    private Iterator<Edge> convert(SearchResponse response) {
 
-    private Traversal buildStartVerticesConstraint(List<Vertex> vertices) {
-       return __.has("id", P.within(vertices.stream().map(vertex -> vertex.id()).collect(Collectors.toList())));
+        if( response == null ) {
+            return Collections.emptyIterator();
+        }
+
+        Aggregation agg = response.getAggregations().asMap().get("layer1");
+
+        AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(graph);
+
+        return converter.convert(agg);
+
     }
 
     //endregion

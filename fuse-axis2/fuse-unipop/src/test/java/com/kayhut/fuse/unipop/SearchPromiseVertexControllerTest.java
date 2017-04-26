@@ -16,11 +16,14 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -44,6 +47,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +60,8 @@ public class SearchPromiseVertexControllerTest {
 
     @Before
     public void setUp() throws Exception {
+
+
         client = mock(Client.class);
 
         SearchResponse responseMock = mock(SearchResponse.class);
@@ -81,9 +87,10 @@ public class SearchPromiseVertexControllerTest {
             // validation logic
            return searchRequestBuilderMock;
         });
-
-
-        when(client.prepareSearch(any())).thenReturn(searchRequestBuilderMock);
+        when(searchRequestBuilderMock.setSearchType(SearchType.COUNT)).thenReturn(searchRequestBuilderMock);
+        when(searchRequestBuilderMock.setScroll(any(TimeValue.class))).thenReturn(searchRequestBuilderMock);
+        when(searchRequestBuilderMock.setSize(anyInt())).thenReturn(searchRequestBuilderMock);
+        when(client.prepareSearch()).thenReturn(searchRequestBuilderMock);
 
         configuration = mock(ElasticGraphConfiguration.class);
     }
@@ -94,18 +101,18 @@ public class SearchPromiseVertexControllerTest {
         UniGraph graph = mock(UniGraph.class);
 
         //basic edge constraint
-        Traversal constraint = __.and(__.has("label", "fire"), __.has("direction", "out"));
+        Traversal constraint = __.and(__.has(T.label, "fire"), __.has("direction", "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
         //create vertices to start from
         Vertex startVertex1 = mock(Vertex.class);
-        when(startVertex1.id()).thenReturn(3);
+        when(startVertex1.id()).thenReturn("3");
         when(startVertex1.label()).thenReturn("dragon");
 
         Vertex startVertex2 = mock(Vertex.class);
-        when(startVertex2.id()).thenReturn(13);
+        when(startVertex2.id()).thenReturn("13");
         when(startVertex2.label()).thenReturn("dragon");
 
         SearchVertexQuery searchQuery = mock(SearchVertexQuery.class);
@@ -120,9 +127,8 @@ public class SearchPromiseVertexControllerTest {
         when(schemaProvider.getVertexSchema("dragon")).thenReturn(Optional.of(graphVertexSchema));
 
         SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, schemaProvider);
-        List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
-        List<Aggregation> aggregations = client.prepareSearch("blahblah").setQuery(QueryBuilders.matchAllQuery()).execute().get().getAggregations().asList();
+        List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
     }
 }
