@@ -1,49 +1,40 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.google.common.collect.Lists;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.statistics.Statistics;
-import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
+import com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
+import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.getSupportedPattern;
+import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
+import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
+import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
+import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
+import static com.kayhut.fuse.model.execution.plan.Direction.out;
 
 /**
  * Created by moti on 4/19/2017.
  */
 public class StatisticalCostEstimatorTests {
 
-    StatisticsCostEstimator estimator;
-
-    @Before
-    public void setup() {
-        StatisticsProvider mock = Mockito.mock(StatisticsProvider.class);
-        //elastic statistics provider
-        estimator = new StatisticsCostEstimator(mock);
-        //mock statistics provider
-        when(mock.getStatistics(any())).thenReturn(new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<String>(1l,1l,"a","z"))));
-        when(mock.getRedundantStatistics(any())).thenReturn(new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<String>(1l,1l,"a","z"))));
-        when(mock.getRedundantStatistics(any(),any(),any())).thenReturn(new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<String>(1l,1l,"a","z"))));
-    }
 
     @Test
     public void planEstimatorPatternTwoTest(){
-        StatisticsCostEstimator.StatisticsCostEstimatorPatterns[] supportedPattern = estimator.getSupportedPattern();
+
+        StatisticsCostEstimator.StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
 
         String s1 = new Plan().withOp(new EntityOp()).toPattern();
 
@@ -71,7 +62,7 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void planEstimatorPatternOneTest(){
-        StatisticsCostEstimator.StatisticsCostEstimatorPatterns[] supportedPattern = estimator.getSupportedPattern();
+        StatisticsCostEstimator.StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
 
         String s1 = new Plan().withOp(new EntityOp()).toPattern();
 
@@ -112,6 +103,8 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(Collections.emptyMap(),Integer.MAX_VALUE,Integer.MAX_VALUE));
+
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
         entityOp.setEntity(new AsgEBase<>(new EConcrete()));
@@ -129,54 +122,34 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void calculateStepPattern() throws Exception {
-        HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
+        PlanMockBuilder builder = mock().entity(TYPED, 100, 4).entityFilter(0.2,"filter1".hashCode()).startNewPlan().rel(out, 5, 100).relFilter(0.6,"filter2".hashCode()).entity(CONCRETE, 1, 5).entityFilter(1,"filter3".hashCode());
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(builder.statistics(),Integer.MAX_VALUE,Integer.MAX_VALUE));
 
-        EntityOp entityOneOp = new EntityOp();
-        entityOneOp.setEntity(new AsgEBase<>(new EConcrete()));
-        EntityFilterOp filterOneOp = new EntityFilterOp();
+        Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.planWithCost(50, 250));
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost);
 
-        RelationOp relationOp = new RelationOp();
-        Rel rel = new Rel();
-        rel.setDir(Direction.out.name());
-        relationOp.setRelation(new AsgEBase<>(rel));
-        RelationFilterOp relationFilterOp = new RelationFilterOp();
+        Assert.assertNotNull(estimate);
+        Assert.assertEquals(estimate.getPlan().getOps().size(),6);
 
-        EntityOp entityTwoOp = new EntityOp();
-        entityTwoOp.setEntity(new AsgEBase<>(new EConcrete()));
+        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().get(0) instanceof EntityOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().size(),1);
+        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().get(0)  instanceof EntityFilterOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().size(),1);
 
-        Plan plan = new Plan().withOp(entityOneOp).withOp(filterOneOp).withOp(relationOp).withOp(relationFilterOp).withOp(entityTwoOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().size(),2);
+        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().get(0) instanceof RelationOp);
 
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONE, entityOneOp);
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_ONLY_FILTER, filterOneOp);
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.RELATION, relationOp);
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_REL_FILTER, relationFilterOp);
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_TWO, entityTwoOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().size(),2);
+        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().get(0) instanceof EntityOp);
 
-        Cost cost = Cost.of(1, 1);
-        List<PlanOpWithCost<Cost>> opCosts = Arrays.asList(PlanOpWithCost.of(cost,1, entityOneOp),PlanOpWithCost.of(cost,1, filterOneOp ),
-                PlanOpWithCost.of(cost,1, relationOp),PlanOpWithCost.of(cost,1 ,relationFilterOp),PlanOpWithCost.of(cost,1, entityTwoOp));
-
-        PlanDetailedCost planDetailedCost = new PlanDetailedCost(cost, opCosts);
-        PlanWithCost<Plan, PlanDetailedCost> planWithCost = new PlanWithCost<>(plan, planDetailedCost);
-
-        List<PlanOpWithCost<Cost>> costs = estimator.calculate(map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(planWithCost));
-
-        Assert.assertNotNull(costs);
-        Assert.assertEquals(costs.size(),3);
-        Assert.assertEquals(costs.get(0).getOpBase().size(),2);
-        Assert.assertTrue(costs.get(0).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertTrue(costs.get(1).getOpBase().get(0)  instanceof RelationOp);
-        Assert.assertEquals(costs.get(1).getOpBase().size(),2);
-        Assert.assertTrue(costs.get(2).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(costs.get(2).getOpBase().size(),2);
-
-        Assert.assertEquals(costs.get(0).getCost().cost,1,0);
+        Assert.assertTrue(estimate.getCost().getGlobalCost().equals(new Cost(111.0,0)));
 
 
     }
 
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(Collections.emptyMap(),Integer.MAX_VALUE,Integer.MAX_VALUE));
         EntityOp entityOp = new EntityOp();
         entityOp.setEntity(new AsgEBase<>(new EConcrete()));
 
@@ -190,46 +163,4 @@ public class StatisticalCostEstimatorTests {
         Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().size(),2);
     }
 
-    @Test
-    public void estimateStepPattern() throws Exception {
-        EntityOp entityOneOp = new EntityOp();
-        entityOneOp.setEntity(new AsgEBase<>(new EConcrete()));
-        EntityFilterOp filterOneOp = new EntityFilterOp();
-
-        RelationOp relationOp = new RelationOp();
-        Rel rel = new Rel();
-        rel.setDir(Direction.out.name());
-        relationOp.setRelation(new AsgEBase<>(rel));
-        RelationFilterOp relationFilterOp = new RelationFilterOp();
-
-        EntityOp entityTwoOp = new EntityOp();
-        entityTwoOp.setEntity(new AsgEBase<>(new EConcrete()));
-
-        Plan planOld = new Plan().withOp(entityOneOp).withOp(filterOneOp);
-        Plan plan = new Plan().withOp(entityOneOp).withOp(filterOneOp).withOp(relationOp).withOp(relationFilterOp).withOp(entityTwoOp);
-
-        Cost cost = Cost.of(1, 1);
-        List<PlanOpWithCost<Cost>> opCosts = Arrays.asList(PlanOpWithCost.of(cost,1, entityOneOp), PlanOpWithCost.of(cost,1, filterOneOp ));
-        PlanWithCost<Plan, PlanDetailedCost> planWithCost = new PlanWithCost<>(planOld, new PlanDetailedCost(cost, opCosts));
-
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, Optional.of(planWithCost));
-
-        Assert.assertNotNull(estimate);
-        Assert.assertEquals(estimate.getPlan().getOps().size(),6);
-
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().size(),1);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().get(0)  instanceof EntityFilterOp);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().size(),1);
-
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().size(),2);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().get(0) instanceof RelationOp);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().get(1) instanceof RelationFilterOp);
-
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().size(),2);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().get(1) instanceof EntityFilterOp);
-
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getCost().cost,1,0);
-    }
 }

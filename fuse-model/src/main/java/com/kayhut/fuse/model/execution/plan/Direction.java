@@ -6,5 +6,11 @@ package com.kayhut.fuse.model.execution.plan;
 public enum Direction {
     in,
     out,
-    both
+    both;
+
+    public Direction reverse() {
+        if(this==both)
+            return both;
+        return in==this ? out : in;
+    }
 }

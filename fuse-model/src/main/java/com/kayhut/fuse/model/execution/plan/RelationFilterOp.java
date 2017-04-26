@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 /**
  * Created by User on 22/02/2017.
  */
-public class RelationFilterOp extends PlanOpBase {
+public class RelationFilterOp extends PlanOpBase implements Filter{
     //region Constructors
     public RelationFilterOp() {
 

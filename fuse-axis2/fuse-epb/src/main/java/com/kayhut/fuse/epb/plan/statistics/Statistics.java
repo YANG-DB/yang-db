@@ -64,15 +64,7 @@ public interface Statistics {
             return new Tuple2<>(total,card);
         }
 
-        /**
-         * get avarage number of eadges per node (by label context)
-         * @return
-         */
-        public long getGlobalSelectivity(Direction direction) {
-            //todo implement with rel type (edge label)
-            return 0;
-        }
-    }
+     }
 
     /**
      * Created by moti on 31/03/2017.

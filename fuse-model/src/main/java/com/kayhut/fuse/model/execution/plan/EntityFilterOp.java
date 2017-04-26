@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.query.properties.EProp;
 /**
  * Created by User on 20/02/2017.
  */
-public class EntityFilterOp extends PlanOpBase {
+public class EntityFilterOp extends PlanOpBase implements Filter{
     //region Constructors
     public EntityFilterOp() {
 
