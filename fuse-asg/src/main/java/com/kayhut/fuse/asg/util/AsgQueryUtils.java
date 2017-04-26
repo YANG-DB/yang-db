@@ -64,15 +64,24 @@ public class AsgQueryUtils {
         return collectAncestors(asgEBase, (child) -> child.geteNum() == eNum, Collections.emptyList());
     }
 
-    public static List<AsgEBase<? extends EBase>> findPath(AsgQuery query, int eNum1, int eNum2) {
-        Optional<AsgEBase<EBase>> asgEBase1 = getNextDescendant(query.getStart(), eNum1);
-        if (!asgEBase1.isPresent()) {
+    public static <T extends EBase, S extends EBase> List<AsgEBase<? extends EBase>> findPath(AsgQuery query, AsgEBase<T> sourceAsgEBase, AsgEBase<S> destinationAsgEBase) {
+        List<AsgEBase<? extends EBase>> path = collectNextDescendants(sourceAsgEBase, destinationAsgEBase.geteNum());
+        if (path.isEmpty()) {
+            path = collectAncestors(sourceAsgEBase, destinationAsgEBase.geteNum());
+        }
+
+        return path;
+    }
+
+    public static List<AsgEBase<? extends EBase>> findPath(AsgQuery query, int sourceEnum, int destinationEnum) {
+        Optional<AsgEBase<EBase>> sourceAsgEBase = getNextDescendant(query.getStart(), sourceEnum);
+        if (!sourceAsgEBase.isPresent()) {
             return Collections.emptyList();
         }
 
-        List<AsgEBase<? extends EBase>> path = collectNextDescendants(asgEBase1.get(), eNum2);
+        List<AsgEBase<? extends EBase>> path = collectNextDescendants(sourceAsgEBase.get(), destinationEnum);
         if (path.isEmpty()) {
-            path = collectAncestors(asgEBase1.get(), eNum2);
+            path = collectAncestors(sourceAsgEBase.get(), destinationEnum);
         }
 
         return path;
@@ -112,7 +121,7 @@ public class AsgQueryUtils {
         }
 
         for (AsgEBase<? extends EBase> elementAsgEBase : elementProvider.apply(asgEBase)) {
-            newPath = AsgQueryUtils.collectElements(elementAsgEBase, elementProvider, predicate, newPath);
+            newPath = collectElements(elementAsgEBase, elementProvider, predicate, newPath);
             if (predicate.test(newPath.get(newPath.size() - 1))) {
                 return newPath;
             }
