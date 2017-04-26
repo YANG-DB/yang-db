@@ -1,7 +1,9 @@
 package com.kayhut.fuse.asg.util;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Start;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,5 +49,13 @@ public class AsgQueryUtils {
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendant(AsgEBase<T> asgEBase, Class klass) {
         return getNextDescendant(asgEBase, (child) -> klass.isAssignableFrom(child.geteBase().getClass()));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendant(AsgEBase<T> asgEBase, int eNum) {
+        return getNextDescendant(asgEBase, (child) -> child.geteNum() == eNum);
+    }
+
+    public static <T extends EBase> Optional<AsgEBase<T>> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
+        return getNextDescendant(asgQuery.getStart(), (child) -> child.geteNum() == eNum);
     }
 }

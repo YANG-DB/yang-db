@@ -25,13 +25,19 @@ import java.util.Optional;
  * Created by Roman on 23/04/2017.
  */
 public class StepAdjacentStrategyTest {
+
+    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
+        return AsgQueryUtils.<Start, T>getNextDescendant(asgQuery.getStart(), eNum).get();
+    }
+
     @Test
     public void test_startXeTypedXrelXeTypedXXX_seedPlan() {
         AsgQuery asgQuery = startXeTypedXrelXeTypedXXX_query();
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(getAsgEBaseByEnum(asgQuery, 3))
+        );
 
         Plan plan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
         List<Plan> extendedPlans = Stream.ofAll(new StepAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
@@ -224,10 +230,6 @@ public class StepAdjacentStrategyTest {
                 .build();
 
         return AsgQuery.AsgQueryBuilder.anAsgQuery().withName("name").withOnt("ont").withStart(asgStart).build();
-    }
-
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtils.<Start, T>getNextDescendant(asgQuery.getStart(), (child) -> child.geteNum() == eNum).get();
     }
 
     private void assertEquals(CompositePlanOpBase expectedCompositePlanOp, CompositePlanOpBase actualCompositePlanOp) {

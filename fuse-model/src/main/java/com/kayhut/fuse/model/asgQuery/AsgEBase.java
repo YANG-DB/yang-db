@@ -14,6 +14,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class AsgEBase<T extends EBase>{
+
     //region Builder
     public static final class Builder<T extends EBase> {
         private T eBase;
@@ -132,6 +133,13 @@ public class AsgEBase<T extends EBase>{
         asgEBase.addToParents(this);
     }
 
+    public void removeNextChildren() {
+        this.next.clear();
+    }
+
+    public void removeNextChild(AsgEBase<? extends EBase> asgEBase) {
+        this.next.remove(asgEBase);
+    }
     //endregion
 
     //region Private Methods
