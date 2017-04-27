@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
  */
 public class AsgUtils {
 
-    public static Map<Integer, AsgEBase> searchForAllEntitiesOfType(AsgEBase startElement, Class clazz){
+    /*public static Map<Integer, AsgEBase> searchForAllEntitiesOfType(AsgEBase startElement, Class clazz){
        Map<Integer, AsgEBase> elementsResult = new HashMap<>();
        searchForAllEntitiesOfType(startElement,clazz ,elementsResult);
        return elementsResult;
-   }
+   }*/
 
-    public static boolean isAllNextChildrenEProps(AsgEBase<? extends EBase> parent) {
+    /*public static boolean isAllNextChildrenEProps(AsgEBase<? extends EBase> parent) {
         boolean isAllChildrenEProps = true;
         for(AsgEBase asgEBase : parent.getNext())
         {
@@ -32,9 +32,9 @@ public class AsgUtils {
             }
         };
         return isAllChildrenEProps;
-    }
+    }*/
 
-    public static List<AsgEBase<? extends EBase>> getEPropsNextChildren(AsgEBase<? extends EBase> parent) {
+    /*public static List<AsgEBase<? extends EBase>> getEPropsNextChildren(AsgEBase<? extends EBase> parent) {
         List<AsgEBase<? extends EBase>> ePropsNextChildren = new ArrayList<>();
         for(AsgEBase asgEBase : parent.getNext())
         {
@@ -43,9 +43,9 @@ public class AsgUtils {
             }
         };
         return ePropsNextChildren;
-    }
+    }*/
 
-    public static List<AsgEBase<? extends EBase>> getRelPropsBelowChildren(AsgEBase<? extends EBase> parent) {
+    /*public static List<AsgEBase<? extends EBase>> getRelPropsBelowChildren(AsgEBase<? extends EBase> parent) {
         List<AsgEBase<? extends EBase>> rPropsBelowChildren = new ArrayList<>();
 
         while (parent.getB().size() == 1 && parent.getB().get(0).geteBase() instanceof RelProp) {
@@ -53,9 +53,9 @@ public class AsgUtils {
             parent = parent.getB().get(0);
         }
         return rPropsBelowChildren;
-    }
+    }*/
 
-    private static void searchForAllEntitiesOfType(AsgEBase element, Class clazz, Map<Integer, AsgEBase> elementsResult){
+    /*private static void searchForAllEntitiesOfType(AsgEBase element, Class clazz, Map<Integer, AsgEBase> elementsResult){
             if (clazz.isAssignableFrom(element.geteBase().getClass())) {
                 if(!elementsResult.containsKey(element.geteNum())) {
                     elementsResult.put(element.geteNum(), element)   ;
@@ -65,15 +65,15 @@ public class AsgUtils {
                 element.getNext().forEach(e -> searchForAllEntitiesOfType((AsgEBase) e ,clazz, elementsResult));
             if (shouldAdvanceToBs(element) && element.getB() != null && element.getB().size() > 0)
                 element.getB().forEach(e -> searchForAllEntitiesOfType((AsgEBase) e, clazz ,elementsResult));
-    }
+    }*/
 
-    private static boolean shouldAdvanceToBs(AsgEBase element) {
+    /*private static boolean shouldAdvanceToBs(AsgEBase element) {
         return element.getB() != null;
-    }
+    }*/
 
-    private static boolean shouldAdvanceToNext(AsgEBase element) {
+    /*private static boolean shouldAdvanceToNext(AsgEBase element) {
         return element.getNext() != null;
-    }
+    }*/
 
     public static <T extends EBase> int getMinEnumFromListOfEBase(List<T> eBaseList )
     {

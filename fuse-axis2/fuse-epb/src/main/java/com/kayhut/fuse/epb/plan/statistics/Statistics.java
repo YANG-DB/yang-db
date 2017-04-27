@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import com.kayhut.fuse.model.execution.plan.Direction;
 import javaslang.Tuple2;
 
 import java.util.ArrayList;
@@ -58,9 +57,9 @@ public interface Statistics {
          * _2 = cardinality
          * @return
          */
-        public Tuple2<Long, Long> getCardinality() {
-            long card = buckets.stream().mapToLong(BucketInfo::getCardinality).sum();
-            long total = buckets.stream().mapToLong(BucketInfo::getTotal).sum();
+        public Tuple2<Double, Double> getCardinality() {
+            double card = buckets.stream().mapToDouble(BucketInfo::getCardinality).sum();
+            double total = buckets.stream().mapToDouble(BucketInfo::getTotal).sum();
             return new Tuple2<>(total,card);
         }
 
