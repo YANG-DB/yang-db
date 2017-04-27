@@ -7,6 +7,9 @@ import com.kayhut.fuse.unipop.structure.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.map;
 
 /**
  * Created by benishue on 22-Mar-17.
@@ -94,6 +97,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region Private Methods
     private Optional<GraphVertexSchema> getEntityTypeSchema(String vertexType) {
+        EntityType entityType = ontology.getEntityTypes().stream().filter(tp -> tp.getName().equals(vertexType)).findFirst().get();
+
         return Optional.of(new GraphVertexSchema() {
             @Override
             public String getType() {
@@ -109,10 +114,46 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             public Iterable<IndexPartition> getIndexPartitions() {
                 return indexProvider.getIndexPartitionsByLabel(vertexType, ElementType.vertex);
             }
+
+            @Override
+            public Iterable<GraphElementPropertySchema> getProperties() {
+                return entityType.getProperties().stream().map(prop -> new GraphElementPropertySchema() {
+                    @Override
+                    public String getName() {
+                        return prop.getName();
+                    }
+
+                    @Override
+                    public String getType() {
+                        return prop.getType();
+                    }
+                }).collect(Collectors.toList());
+            }
+
+            @Override
+            public Optional<GraphElementPropertySchema> getProperty(String name) {
+                Optional<Property> firstProperty = entityType.getProperties().stream().filter(property -> property.getName().equals(name)).findFirst();
+                if(firstProperty.isPresent()){
+                    return Optional.of(new GraphElementPropertySchema() {
+                        @Override
+                        public String getName() {
+                            return firstProperty.get().getName();
+                        }
+
+                        @Override
+                        public String getType() {
+                            return firstProperty.get().getType();
+                        }
+                    });
+                }else{
+                    return Optional.empty();
+                }
+            }
         });
     }
 
     private Optional<GraphEdgeSchema> getRelationTypeSchema(String edgeType, String sourceVertexType, String destinationVertexType) {
+        RelationshipType relationshipType = OntologyUtil.getRelationshipType(ontology, edgeType).get();
         return Optional.of(new GraphEdgeSchema() {
             @Override
             public Optional<End> getSource() {
@@ -172,6 +213,41 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             @Override
             public Iterable<IndexPartition> getIndexPartitions() {
                 return indexProvider.getIndexPartitionsByLabel(edgeType, ElementType.edge);
+            }
+
+            @Override
+            public Iterable<GraphElementPropertySchema> getProperties() {
+                return relationshipType.getProperties().stream().map(prop -> new GraphElementPropertySchema() {
+                    @Override
+                    public String getName() {
+                        return prop.getName();
+                    }
+
+                    @Override
+                    public String getType() {
+                        return prop.getType();
+                    }
+                }).collect(Collectors.toList());
+            }
+
+            @Override
+            public Optional<GraphElementPropertySchema> getProperty(String name) {
+                Optional<Property> firstProperty = relationshipType.getProperties().stream().filter(property -> property.getName().equals(name)).findFirst();
+                if(firstProperty.isPresent()){
+                    return Optional.of(new GraphElementPropertySchema() {
+                        @Override
+                        public String getName() {
+                            return firstProperty.get().getName();
+                        }
+
+                        @Override
+                        public String getType() {
+                            return firstProperty.get().getType();
+                        }
+                    });
+                }else{
+                    return Optional.empty();
+                }
             }
         });
     }
