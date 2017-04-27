@@ -88,6 +88,21 @@ public interface PlanMockUtils {
             return this;
         }
 
+        public PlanMockBuilder entity(EEntityBase instance, long total, int eType) throws Exception {
+            EntityOp entityOp = new EntityOp();
+            //no type => max nodes return
+            nodeStatistics.put(eType, Double.MAX_VALUE);
+            if (eType > 0) {
+                ((Typed) instance).seteType(eType);
+                nodeStatistics.put(eType, (double) total);
+            }
+            entityOp.setEntity(new AsgEBase<>(instance));
+            plan = plan.withOp(entityOp);
+            //statistics simulator
+            costs.put(entityOp, (double) total);
+            return this;
+        }
+
         public PlanMockBuilder rel(Direction direction, int relType, long total) throws Exception {
             Rel rel = new Rel();
             rel.setDir(Direction.valueOf(direction.name()).to());
@@ -135,7 +150,7 @@ public interface PlanMockUtils {
 
         public PlanWithCost<Plan, PlanDetailedCost> planWithCost(long globalCost, long total) {
             Cost cost = new Cost(globalCost, total);
-            List<PlanOpWithCost<Cost>> collect = oldPlan.getOps().stream().map(element -> new PlanOpWithCost<>(getCost(element), 1, element)).collect(Collectors.toList());
+            List<PlanOpWithCost<Cost>> collect = oldPlan.getOps().stream().map(element -> new PlanOpWithCost<>(getCost(element), getCost(element).total, element)).collect(Collectors.toList());
             return new PlanWithCost<>(oldPlan, new PlanDetailedCost(cost, collect));
         }
 

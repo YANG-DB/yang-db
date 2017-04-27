@@ -4,14 +4,14 @@ package com.kayhut.fuse.model.execution.plan.costs;
  * Created by moti on 4/20/2017.
  */
 public class Cost {
-    public Cost(double cost, long total) {
+    public Cost(double cost, double total) {
         this.cost = cost;
         this.total = total;
         //this.cardinality = cardinality;
     }
 
     public double cost;
-    public long total;
+    public double total;
     //public long cardinality;
 
 
@@ -23,7 +23,7 @@ public class Cost {
         Cost cost1 = (Cost) o;
 
         if (Double.compare(cost1.cost, cost) != 0) return false;
-        return total == cost1.total;
+        return Double.compare(cost1.total, total) == 0;
     }
 
     @Override
@@ -32,7 +32,8 @@ public class Cost {
         long temp;
         temp = Double.doubleToLongBits(cost);
         result = (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (int) (total ^ (total >>> 32));
+        temp = Double.doubleToLongBits(total);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
 

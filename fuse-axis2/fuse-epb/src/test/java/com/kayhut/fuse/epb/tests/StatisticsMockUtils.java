@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
  */
 public class StatisticsMockUtils {
 
-    static StatisticsProvider<String> build(Map<String, Map<Integer, Double>> statistics, long maxCardinalityNode, long maxCardinalityEdge) {
+    static StatisticsProvider build(Map<String, Map<Integer, Double>> statistics, long maxCardinalityNode, long maxCardinalityEdge) {
         StatisticsProvider mock = Mockito.mock(StatisticsProvider.class);
 
 

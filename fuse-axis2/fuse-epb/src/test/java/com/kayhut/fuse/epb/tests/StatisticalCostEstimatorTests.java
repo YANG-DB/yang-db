@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.getSupportedPattern;
@@ -146,8 +147,25 @@ public class StatisticalCostEstimatorTests {
 
         Assert.assertTrue(estimate.getCost().getGlobalCost().equals(new Cost(111.0,0)));
 
+        Assert.assertEquals(1,newArrayList(estimate.getCost().getOpCosts()).get(0).peek(),0);
 
     }
+
+    @Test
+    public void estimateSimpleAndPattern() throws Exception {
+        PlanMockBuilder builder = mock().entity(TYPED, 100,4).rel(out,5,100).entity(TYPED, 100,6).startNewPlan();
+        PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.planWithCost(100, 0);
+        builder.entity(((EntityOp)oldPlan.getPlan().getOps().get(0)).getEntity().geteBase(), 100,4);
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(builder.statistics(),Integer.MAX_VALUE,Integer.MAX_VALUE));
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), Optional.of(oldPlan));
+        Assert.assertEquals(4, StreamSupport.stream(estimate.getCost().getOpCosts().spliterator(), false).count());
+        PlanOpWithCost<Cost> lastOpCost = StreamSupport.stream(estimate.getCost().getOpCosts().spliterator(), false).skip(3).findFirst().get();
+        Assert.assertEquals(100, lastOpCost.peek(),0);
+        Assert.assertEquals(0, lastOpCost.getCost().cost,0);
+        Assert.assertEquals(100, lastOpCost.getCost().total,0);
+    }
+
+
 
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
