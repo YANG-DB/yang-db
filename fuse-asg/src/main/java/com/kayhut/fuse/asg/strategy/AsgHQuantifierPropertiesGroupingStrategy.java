@@ -1,12 +1,15 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.kayhut.fuse.asg.AsgUtils;
+import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.HQuant;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,27 +24,25 @@ public class AsgHQuantifierPropertiesGroupingStrategy implements AsgStrategy {
     // Horizontal Quantifier with Bs below
     @Override
     public void apply(AsgQuery query) {
-        Map<Integer, AsgEBase> hQuants = AsgUtils.searchForAllEntitiesOfType(query.getStart(), HQuant.class);
         List<AsgEBase<? extends EBase>> asgBChildrenToBeRemoved = new ArrayList<>();
         List<AsgEBase<? extends EBase>> asgBChildrenToBeAdded = new ArrayList<>();
 
-        hQuants.forEach((eNum,hQuant) -> {
-            for (Object o : hQuant.getB()) {
-                AsgEBase asgEBase = (AsgEBase) o;
-                List<AsgEBase<? extends EBase>> relPropsAsgBChildren = AsgUtils.getRelPropsBelowChildren(asgEBase);
+        AsgQueryUtils.getElements(query, HQuant.class).forEach(hQuant -> {
+            for (AsgEBase<? extends EBase> asgEBase : hQuant.getB()) {
 
-                //If the Parent (i.e the asgEbase parameter) is Of Type RelProp - we will want to combine it
-                if ((asgEBase).geteBase() instanceof RelProp){
-                    relPropsAsgBChildren.add(asgEBase);
-                }
+                List<AsgEBase<RelProp>> relPropsAsgBChildren =
+                        AsgQueryUtils.getBDescendants(
+                                asgEBase,
+                                (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
+                                (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class));
 
-                RelPropGroup rPropGroup = new RelPropGroup();
-                if (relPropsAsgBChildren.size() > 0 ){
-                    List<RelProp> rProps = relPropsAsgBChildren.stream().map(asgEBase1 -> (RelProp)asgEBase1.geteBase()).collect(Collectors.toList());
-                    rPropGroup.setrProps(rProps);
-                    rPropGroup.seteNum(AsgUtils.getMinEnumFromListOfEBase(rProps));
-                    AsgEBase<? extends EBase> rPropGroupAsgEbase = new AsgEBase<>(rPropGroup);
-                    asgBChildrenToBeAdded.add(rPropGroupAsgEbase);
+                List<RelProp> relProps = Stream.ofAll(relPropsAsgBChildren).map(asgEBase1 -> asgEBase1.geteBase()).toJavaList();
+                if (relProps.size() > 0 ){
+                    RelPropGroup rPropGroup = new RelPropGroup();
+                    rPropGroup.setrProps(relProps);
+                    rPropGroup.seteNum(AsgUtils.getMinEnumFromListOfEBase(relProps));
+
+                    asgBChildrenToBeAdded.add(new AsgEBase<>(rPropGroup));
                 }
                 asgBChildrenToBeRemoved.addAll(relPropsAsgBChildren);
             };
