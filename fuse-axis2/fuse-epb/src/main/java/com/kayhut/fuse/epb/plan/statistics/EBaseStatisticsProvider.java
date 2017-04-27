@@ -9,8 +9,8 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 
 import java.util.Collections;
@@ -62,7 +62,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeFilterStatistics(EEntityBase item, EProp entityFilter) {
+    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter) {
 
         return null;
     }
@@ -73,17 +73,17 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeFilterStatistics(Rel item, RelProp entityFilter) {
+    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter) {
         return null;
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantEdgeStatistics(Rel rel, EBase entity, EProp entityFilter, Direction direction) {
+    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantEdgeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
         return null;
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantNodeStatistics(Rel rel, EBase entity, EProp entityFilter, Direction direction) {
+    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantNodeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
         return null;
     }
 

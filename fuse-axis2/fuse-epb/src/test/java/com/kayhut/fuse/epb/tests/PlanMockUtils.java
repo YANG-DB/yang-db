@@ -7,8 +7,11 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,9 +123,12 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder entityFilter(double factor, int id) throws Exception {
+
+            EPropGroup ePropGroup = new EPropGroup();
             EProp eProp = new EProp();
             eProp.setpType(String.valueOf(id));
-            EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(eProp));
+            ePropGroup.seteProps(Collections.singletonList(eProp));
+            EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
 
             plan = plan.withOp(filterOp);
             nodeFilterStatistics.put(id,factor);
@@ -132,9 +138,11 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder relFilter(double factor, int id) throws Exception {
+            RelPropGroup relPropGroup = new RelPropGroup();
             RelProp relProp = new RelProp();
             relProp.setpType(String.valueOf(id));
-            RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relProp));
+            relPropGroup.setrProps(Collections.singletonList(relProp));
+            RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relPropGroup));
 
             plan = plan.withOp(relationFilterOp);
             edgeFilterStatistics.put(id,factor);
