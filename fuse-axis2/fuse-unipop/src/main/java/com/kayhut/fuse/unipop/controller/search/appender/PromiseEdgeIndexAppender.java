@@ -3,6 +3,7 @@ package com.kayhut.fuse.unipop.controller.search.appender;
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
@@ -11,6 +12,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.AndStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
+import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.ArrayList;
@@ -38,34 +40,32 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
 
     private Optional<String> getEdgeLabel(Optional<TraversalConstraint> edgeConstraint) {
 
-        if (edgeConstraint.isPresent()) {
-            List<Step> steps = edgeConstraint.get().getTraversal().asAdmin().getSteps();
-            for (Step step : steps) {
-                Optional<String> label = findEdgeLabelInStep(step);
-                if(label.isPresent()) {
-                    return label;
-                }
+        if (!edgeConstraint.isPresent()) {
+            return Optional.empty();
+        }
+
+        List<HasStep> hasSteps = TraversalHelper.getStepsOfAssignableClassRecursively(HasStep.class, edgeConstraint.get().getTraversal().asAdmin());
+
+        for (HasStep step : hasSteps) {
+            Optional<String> label = findEdgeLabelInStep(step);
+            if (label.isPresent()) {
+                return label;
             }
         }
 
         return Optional.empty();
     }
 
-    private Optional<String> findEdgeLabelInStep(Step step) {
+    private Optional<String> findEdgeLabelInStep(HasStep step) {
 
-        if (step instanceof HasStep) {
-            List<HasContainer> hasContainers = ((HasStep) step).getHasContainers();
-            for (HasContainer hasContainer :
-                    hasContainers
-                    ) {
-                if (hasContainer.getKey().equals(T.label)) {
-                    return Optional.of((String) hasContainer.getValue());
-                }
+        List<HasContainer> hasContainers = step.getHasContainers();
+        for (HasContainer hasContainer :
+                hasContainers
+                ) {
+            if (hasContainer.getKey().equals(PromiseEdgeConstants.EDGE_LABEL_CONSTRAINT_KEY)) {
+                return Optional.of((String) hasContainer.getPredicate().getValue());
             }
         }
-
-        //TODO: recursively visit all child steps...
-
         return Optional.empty();
     }
 

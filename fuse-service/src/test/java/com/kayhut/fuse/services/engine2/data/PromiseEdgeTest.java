@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -8,8 +9,10 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.test.framework.index.ElasticInMemoryIndex;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -33,6 +36,7 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -43,15 +47,15 @@ public class PromiseEdgeTest{
 
 
     private Client client;
-    private ElasticGraphConfiguration configuration;
+    ElasticInMemoryIndex elasticInMemoryIndex;
 
-    //@Before
+    @Before
     public void setup() throws Exception {
 
         String indexName = "v1";
         String idField = "id";
 
-        ElasticInMemoryIndex elasticInMemoryIndex = new ElasticInMemoryIndex();
+        elasticInMemoryIndex = new ElasticInMemoryIndex();
 
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
@@ -72,8 +76,7 @@ public class PromiseEdgeTest{
         client = elasticInMemoryIndex.getClient();
     }
 
-    //TODO: figure out how to close the client after the test
-    //@Test
+    @Test
     public void testPromiseEdges() {
 
         UniGraph graph = mock(UniGraph.class);
@@ -101,15 +104,21 @@ public class PromiseEdgeTest{
         when(startVertex8.id()).thenReturn("d8");
         when(startVertex8.label()).thenReturn("Dragon");
 
+        //prepare searchVertexQuery for the controller input
         SearchVertexQuery searchQuery = mock(SearchVertexQuery.class);
         when(searchQuery.getReturnType()).thenReturn(Edge.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
         when(searchQuery.getVertices()).thenReturn(Arrays.asList(startVertex1, startVertex2, startVertex6, startVertex8));
 
+        //prepare schema provider
+        IndexPartition indexPartition = mock(IndexPartition.class);
+        when(indexPartition.getIndices()).thenReturn(Arrays.asList("v1"));
+        GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
+        when(edgeSchema.getIndexPartitions()).thenReturn(Arrays.asList(indexPartition));
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
-        /*GraphVertexSchema graphVertexSchema = mock(GraphVertexSchema.class);
-        when(graphVertexSchema.getType()).thenReturn("type_dragon");
-        when(schemaProvider.getVertexSchema("dragon")).thenReturn(Optional.of(graphVertexSchema));*/
+        when(schemaProvider.getEdgeSchema(any(),any(),any())).thenReturn(Optional.of(edgeSchema));
+
+        ElasticGraphConfiguration configuration = mock(ElasticGraphConfiguration.class);
 
         SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, schemaProvider);
 
@@ -120,7 +129,10 @@ public class PromiseEdgeTest{
     }
 
     @After
-    public void cleanup() {
+    public void cleanup() throws Exception {
+
+        elasticInMemoryIndex.close();
+        Thread.sleep(2000);
         client.close();
     }
 

@@ -9,8 +9,11 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -61,21 +64,31 @@ public class SearchPromiseVertexControllerTest {
     @Before
     public void setUp() throws Exception {
 
-
         client = mock(Client.class);
 
+        //mock response with 2 layers of aggregations
         SearchResponse responseMock = mock(SearchResponse.class);
 
-        Terms.Bucket term1 = mock(Terms.Bucket.class);
-        when(term1.getKey()).thenReturn("1");
-        when(term1.getDocCount()).thenReturn(1000L);
-
-        Terms layer1Terms = mock(Terms.class);
-        when(layer1Terms.getBuckets()).thenReturn(Arrays.asList(term1));
-
         Aggregations aggregations = mock(Aggregations.class);
+
+        Terms.Bucket destBucket = mock(Terms.Bucket.class);
+        when(destBucket.getKeyAsString()).thenReturn("destination1");
+        when(destBucket.getDocCount()).thenReturn(1000L);
+
+        Terms.Bucket sourceBucket = mock(Terms.Bucket.class);
+        when(sourceBucket.getKeyAsString()).thenReturn("source1");
+        when(sourceBucket.getDocCount()).thenReturn(1L);
+        when(sourceBucket.getAggregations()).thenReturn(aggregations);
+
+        Terms sourceLayer = mock(Terms.class);
+        when(sourceLayer.getBuckets()).thenReturn(Arrays.asList(sourceBucket));
+
+        Terms destLayer = mock(Terms.class);
+        when(destLayer.getBuckets()).thenReturn(Arrays.asList(destBucket));
+
         Map map = new HashMap();
-        map.put(PromiseEdgeConstants.SOURCE_AGGREGATION_LAYER,layer1Terms);
+        map.put(PromiseEdgeConstants.SOURCE_AGGREGATION_LAYER,sourceLayer);
+        map.put(PromiseEdgeConstants.DEST_AGGREGATION_LAYER,destLayer);
         when(aggregations.asMap()).thenReturn(map);
 
         when(responseMock.getAggregations()).thenReturn(aggregations);
@@ -123,20 +136,22 @@ public class SearchPromiseVertexControllerTest {
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
         when(searchQuery.getVertices()).thenReturn(Arrays.asList(startVertex1, startVertex2));
 
-        GraphVertexSchema graphVertexSchema = mock(GraphVertexSchema.class);
-        when(graphVertexSchema.getType()).thenReturn("type_dragon");
-
+        //prepare schema provider
+        IndexPartition indexPartition = mock(IndexPartition.class);
+        when(indexPartition.getIndices()).thenReturn(Arrays.asList("v1"));
+        GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
+        when(edgeSchema.getIndexPartitions()).thenReturn(Arrays.asList(indexPartition));
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
-        when(schemaProvider.getVertexSchema("dragon")).thenReturn(Optional.of(graphVertexSchema));
+        when(schemaProvider.getEdgeSchema(any(),any(),any())).thenReturn(Optional.of(edgeSchema));
 
         SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, schemaProvider);
 
-        try {
-            List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
-        }
-        catch(Exception e) {
-            //TODO: arrange aggregation mocks to complete the process !!
-        }
+        List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
+
+        edges.forEach(edge -> System.out.println(edge));
+
+        Assert.assertEquals(1, edges.size());
+        Assert.assertEquals(1000L, edges.get(0).property(PromiseEdgeConstants.PROMISE_EDGE_COUNT_PROP).value());
 
     }
 }
