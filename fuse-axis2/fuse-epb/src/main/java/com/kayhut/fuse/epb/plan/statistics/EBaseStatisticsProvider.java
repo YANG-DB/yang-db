@@ -12,6 +12,8 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,11 +35,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeStatistics(EEntityBase entity) {
+    public Statistics.Cardinality getNodeStatistics(EEntityBase entity) {
         if (entity instanceof EConcrete) {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
-            return (Statistics.HistogramStatistics<T>) new Statistics.HistogramStatistics<>(bucketInfos);
+            return bucketInfos.get(0).getCardinalityObject();
         }
+
         List<String> vertexTypes = null;
         if (entity instanceof EUntyped) {
             EUntyped eUntyped = (EUntyped) entity;
@@ -52,38 +55,38 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         } else if (entity instanceof ETyped) {
             vertexTypes = Collections.singletonList(OntologyUtil.getEntityTypeNameById(ontology, ((ETyped) entity).geteType()));
         }
-        Statistics.HistogramStatistics<String> entityStats = getVertexStatistics(vertexTypes.get(0));
+        Statistics.Cardinality entityStats = getVertexStatistics(vertexTypes.get(0)).getBuckets().get(0).getCardinalityObject();
+
         for (int i = 1; i < vertexTypes.size(); i++) {
-            entityStats = (Statistics.HistogramStatistics<String>) entityStats.merge(getVertexStatistics(vertexTypes.get(i)));
+            entityStats = (Statistics.Cardinality) entityStats.merge( getVertexStatistics(vertexTypes.get(i)).getBuckets().get(0).getCardinalityObject());
         }
 
-        return (Statistics.HistogramStatistics<T>) entityStats;
+        return entityStats;
 
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter) {
-
+    public Statistics.Cardinality getNodeFilterStatistics(EEntityBase entity, EPropGroup entityFilter) {
         return null;
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeStatistics(Rel item) {
+    public Statistics.Cardinality getEdgeStatistics(Rel item) {
         return null;
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter) {
+    public Statistics.Cardinality getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter) {
         return null;
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantEdgeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
+    public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
         return null;
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantNodeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
+    public Statistics.Cardinality getRedundantNodeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
         return null;
     }
 
@@ -95,4 +98,5 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private Statistics.HistogramStatistics<String> getVertexStatistics(String vertexType) {
         return graphStatisticsProvider.getVertexCardinality(graphElementSchemaProvider.getVertexSchema(vertexType).get());
     }
+
 }

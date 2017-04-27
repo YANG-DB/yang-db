@@ -18,7 +18,7 @@ public interface StatisticsProvider {
      * @param item
      * @return
      */
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeStatistics(EEntityBase item);
+    Statistics.Cardinality getNodeStatistics(EEntityBase item);
 
     /**
      *
@@ -26,14 +26,14 @@ public interface StatisticsProvider {
      * @param entityFilter
      * @return
      */
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter);
+    Statistics.Cardinality getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter);
 
     /**
      *
      * @param item
      * @return
      */
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeStatistics(Rel item);
+    Statistics.Cardinality getEdgeStatistics(Rel item);
 
     /**
      *
@@ -41,7 +41,7 @@ public interface StatisticsProvider {
      * @param entityFilter
      * @return
      */
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
+    Statistics.Cardinality getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
 
     /**
      *
@@ -50,7 +50,7 @@ public interface StatisticsProvider {
      * @param direction
      * @return
      */
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantEdgeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction);
+    Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction);
 
     /**
      *
@@ -60,7 +60,7 @@ public interface StatisticsProvider {
      * @param direction
      * @return
      */
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantNodeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction);
+    Statistics.Cardinality getRedundantNodeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction);
 
     /**
      * get avarage number of eadges per node (by label context)

@@ -202,12 +202,12 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         //redundant
         //C1_e
-        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getEprop().geteBase(), direction).getCardinality()._1;
+        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getEprop().geteBase(), direction).getTotal();
         //C_2e
-        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getEprop().geteBase(), direction.reverse()).getCardinality()._1;
+        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getEprop().geteBase(), direction.reverse()).getTotal();
         //relation
-        double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality()._1;
-        double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getRelProp().geteBase()).getCardinality()._1;
+        double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getTotal();
+        double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getRelProp().geteBase()).getTotal();
         //get min
         double edgeEstimation = Collections.min(Arrays.asList(C3_v, C3_filter, C1_e, C2_e, edgeEstimation_N1));
         //cost if zero since the real cost is residing on the adjacent filter (rel filter)
@@ -215,14 +215,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         //get entity one statistics calculated in prior step
 
-        double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getEntity().geteBase()).getCardinality()._1;
+        double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getEntity().geteBase()).getTotal();
         double filterTowCard = entityTwoCard;
         if (filterTwoOp.getEprop() != null) {
-            filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getEntity().geteBase(),filterTwoOp.getEprop().geteBase()).getCardinality()._1;
+            filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getEntity().geteBase(),filterTwoOp.getEprop().geteBase()).getTotal();
         }
 
         //node redundand stats: C_2e
-        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(rel.getRelation().geteBase(),entityTwoOp.getEntity().geteBase(), filterTwoOp.getEprop().geteBase(), direction.reverse()).getCardinality()._1;
+        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(rel.getRelation().geteBase(),entityTwoOp.getEntity().geteBase(), filterTwoOp.getEprop().geteBase(), direction.reverse()).getTotal();
 
         //node 2 cardinality estimation
         double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTowCard, edgeEstimation));
@@ -250,10 +250,10 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         //set entity type on this kaka
         filterOp.setEntity(entityOp.getEntity());
         //calculate
-        double entityTotal = statisticsProvider.getNodeStatistics(entityOp.getEntity().geteBase()).getCardinality()._1;
+        double entityTotal = statisticsProvider.getNodeStatistics(entityOp.getEntity().geteBase()).getTotal();
         double filterTotal = entityTotal;
         if (filterOp.getEprop() != null) {
-            filterTotal = statisticsProvider.getNodeFilterStatistics(entityOp.getEntity().geteBase(),filterOp.getEprop().geteBase()).getCardinality()._1;
+            filterTotal = statisticsProvider.getNodeFilterStatistics(entityOp.getEntity().geteBase(),filterOp.getEprop().geteBase()).getTotal();
         }
 
         double min = Math.min(entityTotal, filterTotal);
