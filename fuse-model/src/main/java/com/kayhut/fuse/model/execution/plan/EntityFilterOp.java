@@ -3,6 +3,7 @@ package com.kayhut.fuse.model.execution.plan;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 
 /**
  * Created by User on 20/02/2017.
@@ -13,14 +14,14 @@ public class EntityFilterOp extends PlanOpBase implements Filter{
 
     }
 
-    public EntityFilterOp(AsgEBase<EProp> eprop) {
+    public EntityFilterOp(AsgEBase<EPropGroup> eprop) {
         this.eprop = eprop;
     }
     //endregion
 
     //region Properties
 
-    public AsgEBase<EProp> getEprop() {
+    public AsgEBase<EPropGroup> getEprop() {
         return eprop;
     }
 
@@ -43,7 +44,7 @@ public class EntityFilterOp extends PlanOpBase implements Filter{
     //endregion
 
     //region Fields
-    private AsgEBase<EProp> eprop;
+    private AsgEBase<EPropGroup> eprop;
     //region Fields
     private AsgEBase<EEntityBase> entity;
 

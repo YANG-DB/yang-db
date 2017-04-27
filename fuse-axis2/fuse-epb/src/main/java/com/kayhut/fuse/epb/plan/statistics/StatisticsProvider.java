@@ -4,20 +4,21 @@ import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
 /**
  * Created by moti on 31/03/2017.
  */
-public interface StatisticsProvider<T extends Comparable<T>> {
+public interface StatisticsProvider {
     /**
      *
      * @param item
      * @return
      */
-    Statistics.HistogramStatistics<T> getNodeStatistics(EEntityBase item);
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeStatistics(EEntityBase item);
 
     /**
      *
@@ -25,14 +26,14 @@ public interface StatisticsProvider<T extends Comparable<T>> {
      * @param entityFilter
      * @return
      */
-    Statistics.HistogramStatistics<T> getNodeFilterStatistics(EEntityBase item, EProp entityFilter);
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter);
 
     /**
      *
      * @param item
      * @return
      */
-    Statistics.HistogramStatistics<T> getEdgeStatistics(Rel item);
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeStatistics(Rel item);
 
     /**
      *
@@ -40,7 +41,7 @@ public interface StatisticsProvider<T extends Comparable<T>> {
      * @param entityFilter
      * @return
      */
-    Statistics.HistogramStatistics<T> getEdgeFilterStatistics(Rel item, RelProp entityFilter);
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
 
     /**
      *
@@ -49,7 +50,7 @@ public interface StatisticsProvider<T extends Comparable<T>> {
      * @param direction
      * @return
      */
-    Statistics.HistogramStatistics<T> getRedundantEdgeStatistics(Rel rel, EBase entity, EProp entityFilter, Direction direction);
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantEdgeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction);
 
     /**
      *
@@ -59,7 +60,7 @@ public interface StatisticsProvider<T extends Comparable<T>> {
      * @param direction
      * @return
      */
-    Statistics.HistogramStatistics<T> getRedundantNodeStatistics(Rel rel, EBase entity, EProp entityFilter, Direction direction);
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getRedundantNodeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction);
 
     /**
      * get avarage number of eadges per node (by label context)

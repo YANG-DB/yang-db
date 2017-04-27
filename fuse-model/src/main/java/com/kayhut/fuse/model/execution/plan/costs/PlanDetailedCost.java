@@ -1,7 +1,9 @@
 package com.kayhut.fuse.model.execution.plan.costs;
 
+import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,8 +39,15 @@ public class PlanDetailedCost {
         return StreamSupport.stream(getOpCosts().spliterator(), false).filter(p->p.getOpBase().equals(op)).findFirst();
     }
 
-    public Optional<Cost> getOpLatestCost(PlanOpBase planOpBase){
+    public Optional<Cost> getOpCost(PlanOpBase planOpBase){
         return StreamSupport.stream(opCosts.spliterator(),false).filter(p->p.getOpBase().contains(planOpBase)).map(PlanOpWithCost::getCost).findFirst();
+    }
+
+    public Optional<PlanOpWithCost<Cost>> getPlanOpByEntity(EEntityBase entityBase){
+        return StreamSupport.stream(opCosts.spliterator(),false)
+                .filter(p->p.getOpBase().stream()
+                        .anyMatch(op -> op instanceof EntityOp && ((EntityOp)op).getEntity().geteBase().equals(entityBase)))
+                .findFirst();
     }
     //endregion
 
