@@ -1,9 +1,12 @@
-package com.kayhut.fuse.unipop.controller.utils;
+package com.kayhut.fuse.unipop.controller;
 
-import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
-import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
+import com.kayhut.fuse.unipop.controller.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.EdgeConstraintSearchAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.FilterVerticesSearchAppender;
+import com.kayhut.fuse.unipop.converter.SearchHitPromiseEdgeConverter;
+import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
@@ -11,15 +14,14 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -66,28 +68,39 @@ public class SearchPromiseVertexFilterController implements SearchVertexQuery.Se
 
     }
 
-    private Iterator<Edge> filterPromiseVertices(List<Vertex> vertices, Optional<TraversalConstraint> constraint) {
+      private Iterator<Edge> filterPromiseVertices(List<Vertex> vertices, Optional<TraversalConstraint> constraint) {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter().bool().must();
-        TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
-        traversalQueryTranslator.visit(constraint.get().getTraversal());
+        PromiseVertexFilterControllerContext context = new PromiseVertexFilterControllerContext(vertices, constraint, schemaProvider);
 
-        searchBuilder.setLimit(100);
-        searchBuilder.setScrollSize(100);
-        searchBuilder.setScrollTime(1000);
+        CompositeSearchAppender appender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all,
+                                                                        new FilterVerticesSearchAppender(),
+                                                                        new EdgeConstraintSearchAppender());
 
-        //TODO: Understand how to use the scrolling here to get the response!!!
+        appender.append(searchBuilder, context);
+
+        //TODO: use Size appender ?
+        searchBuilder.setLimit(vertices.size());
+        searchBuilder.setScrollSize(vertices.size());
+        searchBuilder.setScrollTime(10);
+
         SearchRequestBuilder searchRequest = searchBuilder.compose(client, true).setSearchType(SearchType.SCAN);
 
-        SearchResponse response = searchRequest.execute().actionGet();
+        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
+                client,
+                searchRequest,
+                searchBuilder.getLimit(),
+                searchBuilder.getScrollSize(),
+                searchBuilder.getScrollTime());
 
-        return convert(response);
+        return convert(searchHits, new SearchHitPromiseEdgeConverter(graph));
     }
 
-    private Iterator<Edge> convert(SearchResponse response) {
-        return Collections.emptyIterator();
+    private Iterator<Edge> convert(SearchHitScrollIterable searchHits, SearchHitPromiseEdgeConverter converter) {
+        return Stream.ofAll(searchHits)
+                .map(hit -> converter.convert(hit))
+                .filter(Objects::nonNull).iterator();
     }
 
     //region Fields

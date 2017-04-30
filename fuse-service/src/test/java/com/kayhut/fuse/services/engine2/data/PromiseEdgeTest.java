@@ -2,7 +2,7 @@ package com.kayhut.fuse.services.engine2.data;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
-import com.kayhut.fuse.unipop.controller.utils.SearchPromiseVertexFilterController;
+import com.kayhut.fuse.unipop.controller.SearchPromiseVertexFilterController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -20,12 +20,14 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.client.Client;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.mockito.Matchers.any;
@@ -123,29 +125,46 @@ public class PromiseEdgeTest{
     }
 
     @Test
-    public void testPromiseFilterEdge() {
+    public void testPromiseFilterEdge() throws IOException {
+
+        //add old purple dragon
+        String purpleDragonId = "d11";
+        new ElasticDataPopulator(
+                elasticInMemoryIndex.getClient(),
+                "v1",
+                "Dragon",
+                "id",
+                () -> {
+                    Map<String, Object> dragon = new HashedMap();
+                    dragon.put("id", purpleDragonId);
+                    dragon.put("name", "dragon" + purpleDragonId);
+                    dragon.put("age", 100);
+                    dragon.put("color", "purple");
+                    return Arrays.asList(dragon);
+                }).populate();
+
 
         //edge constraint - this is the constraint that filters the end vertices of the promise edges
-        Traversal constraint = __.and(__.has("color", "red"), __.has("age", P.gt(10)));
+        Traversal constraint = __.and(__.has("color", "purple"), __.has("age", P.gt(10)));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
 
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
-        //create vertices to start from
-        Vertex startVertex1 = mock(Vertex.class);
-        when(startVertex1.id()).thenReturn("d1");
-        when(startVertex1.label()).thenReturn("Dragon");
-
-        Vertex startVertex2 = mock(Vertex.class);
-        when(startVertex2.id()).thenReturn("d2");
-        when(startVertex2.label()).thenReturn("Dragon");
+        //create vertices to start from (all)
+        List<Vertex> startVertices = new ArrayList<>();
+        for(int i=0; i<13; i++) {
+            Vertex v = mock(Vertex.class);
+            when(v.id()).thenReturn("d" + i);
+            when(v.label()).thenReturn("Dragon");
+            startVertices.add(v);
+        }
 
         //prepare searchVertexQuery for the controller input
         SearchVertexQuery searchQuery = mock(SearchVertexQuery.class);
         when(searchQuery.getReturnType()).thenReturn(Edge.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
-        when(searchQuery.getVertices()).thenReturn(Arrays.asList(startVertex1, startVertex2));
+        when(searchQuery.getVertices()).thenReturn(startVertices);
 
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
 
@@ -153,7 +172,11 @@ public class PromiseEdgeTest{
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
-        edges.forEach(e -> System.out.println("Promise Filter edge: " + e));
+        edges.forEach(e -> {
+            //Verify that the edge's endpoint is the correct vertex
+            System.out.println("Promise Filter edge: " + e);
+            Assert.assertEquals("d11", e.inVertex().id());
+        });
 
     }
 
