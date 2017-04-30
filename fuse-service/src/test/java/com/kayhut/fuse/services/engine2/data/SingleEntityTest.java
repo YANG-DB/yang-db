@@ -31,6 +31,7 @@ import static io.restassured.RestAssured.given;
  * Created by Roman on 12/04/2017.
  */
 public class SingleEntityTest {
+
     @ClassRule
     public static JoobyRule createApp() {
         return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
@@ -43,7 +44,7 @@ public class SingleEntityTest {
         String typeName = "Dragon";
         String idField = "id";
 
-        ElasticInMemoryIndex elasticInMemoryIndex = new ElasticInMemoryIndex();
+        elasticInMemoryIndex = new ElasticInMemoryIndex();
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
                 indexName,
@@ -64,6 +65,12 @@ public class SingleEntityTest {
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+    }
+
+    @AfterClass
+    public static void cleanup() throws Exception {
+        elasticInMemoryIndex.close();
+        Thread.sleep(2000);
     }
 
     //region TestMethods
@@ -322,6 +329,7 @@ public class SingleEntityTest {
     //endregion
 
     //region Fields
+    private static ElasticInMemoryIndex elasticInMemoryIndex;
     private AppUrlSupplier appUrlSupplier = new DefaultAppUrlSupplier("/fuse");
     //endregion
 }
