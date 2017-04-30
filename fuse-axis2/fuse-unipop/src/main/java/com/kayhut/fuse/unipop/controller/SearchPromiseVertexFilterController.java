@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.appender.EdgeConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.appender.FilterVerticesSearchAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseEdgeConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -64,26 +65,25 @@ public class SearchPromiseVertexFilterController implements SearchVertexQuery.Se
             constraint = Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
         }
 
-        return filterPromiseVertices(searchVertexQuery.getVertices(), constraint);
+        return filterPromiseVertices(searchVertexQuery.getVertices(), constraint, searchVertexQuery);
 
     }
 
-      private Iterator<Edge> filterPromiseVertices(List<Vertex> vertices, Optional<TraversalConstraint> constraint) {
+    private Iterator<Edge> filterPromiseVertices(List<Vertex> vertices, Optional<TraversalConstraint> constraint, SearchVertexQuery searchVertexQuery) {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexFilterControllerContext context = new PromiseVertexFilterControllerContext(vertices, constraint, schemaProvider);
+        PromiseVertexFilterControllerContext context = new PromiseVertexFilterControllerContext(vertices,
+                                                                                                constraint,
+                                                                                                schemaProvider,
+                                                                                                searchVertexQuery);
 
         CompositeSearchAppender appender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all,
-                                                                        new FilterVerticesSearchAppender(),
-                                                                        new EdgeConstraintSearchAppender());
+                new FilterVerticesSearchAppender(),
+                new EdgeConstraintSearchAppender(),
+                new SizeSearchAppender(configuration));
 
         appender.append(searchBuilder, context);
-
-        //TODO: use Size appender ?
-        searchBuilder.setLimit(vertices.size());
-        searchBuilder.setScrollSize(vertices.size());
-        searchBuilder.setScrollTime(10);
 
         SearchRequestBuilder searchRequest = searchBuilder.compose(client, true).setSearchType(SearchType.SCAN);
 

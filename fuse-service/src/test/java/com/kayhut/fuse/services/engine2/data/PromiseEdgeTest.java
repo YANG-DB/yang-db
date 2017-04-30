@@ -165,12 +165,19 @@ public class PromiseEdgeTest{
         when(searchQuery.getReturnType()).thenReturn(Edge.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
         when(searchQuery.getVertices()).thenReturn(startVertices);
+        when(searchQuery.getLimit()).thenReturn(-1);
 
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
+
+        when(configuration.getElasticGraphScrollSize()).thenReturn(100);
+        when(configuration.getElasticGraphScrollTime()).thenReturn(100);
+        when(configuration.getElasticGraphDefaultSearchSize()).thenReturn(100L);
 
         SearchPromiseVertexFilterController controller = new SearchPromiseVertexFilterController(client, configuration, graph, schemaProvider);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
+
+        Assert.assertEquals(1, edges.size());
 
         edges.forEach(e -> {
             //Verify that the edge's endpoint is the correct vertex
