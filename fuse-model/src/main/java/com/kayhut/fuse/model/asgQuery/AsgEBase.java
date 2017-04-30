@@ -149,7 +149,7 @@ public class AsgEBase<T extends EBase>{
     //region Override Methods
     @Override
     public String toString() {
-        return "{ " + eBase.getClass().getSimpleName() + " : " + eBase.geteNum() + " }";
+        return "Asg(" + this.eBase.toString() + ")";
     }
     //endregion
 

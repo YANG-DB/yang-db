@@ -8,32 +8,18 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 /**
  * Created by User on 20/02/2017.
  */
-public class EntityFilterOp extends PlanOpBase implements Filter{
+public class EntityFilterOp extends AsgEBasePlanOp<EPropGroup> implements Filter{
     //region Constructors
     public EntityFilterOp() {
 
     }
 
-    public EntityFilterOp(AsgEBase<EPropGroup> eprop) {
-        this.eprop = eprop;
+    public EntityFilterOp(AsgEBase<EPropGroup> asgEBase) {
+        super(asgEBase);
     }
     //endregion
 
     //region Properties
-
-    public AsgEBase<EPropGroup> getEprop() {
-        return eprop;
-    }
-
-    //endregion
-
-    //region Methods
-    @Override
-    public int geteNum() {
-        return this.eprop.geteNum();
-    }
-
-
     public AsgEBase<EEntityBase> getEntity() {
         return entity;
     }
@@ -44,9 +30,6 @@ public class EntityFilterOp extends PlanOpBase implements Filter{
     //endregion
 
     //region Fields
-    private AsgEBase<EPropGroup> eprop;
-    //region Fields
     private AsgEBase<EEntityBase> entity;
-
     //endregion
 }

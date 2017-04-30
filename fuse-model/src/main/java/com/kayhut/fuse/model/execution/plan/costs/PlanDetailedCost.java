@@ -46,7 +46,7 @@ public class PlanDetailedCost {
     public Optional<PlanOpWithCost<Cost>> getPlanOpByEntity(EEntityBase entityBase){
         return StreamSupport.stream(opCosts.spliterator(),false)
                 .filter(p->p.getOpBase().stream()
-                        .anyMatch(op -> op instanceof EntityOp && ((EntityOp)op).getEntity().geteBase().equals(entityBase)))
+                        .anyMatch(op -> op instanceof EntityOp && ((EntityOp)op).getAsgEBase().geteBase().equals(entityBase)))
                 .findFirst();
     }
     //endregion

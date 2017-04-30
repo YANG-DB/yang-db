@@ -1,5 +1,6 @@
-package com.kayhut.fuse.epb.plan.validation;
+package com.kayhut.fuse.epb.plan.validation.opValidator;
 
+import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
@@ -29,15 +30,19 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
 
     @Override
     public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
-        boolean isPlanOpValid = false;
         for(ChainedPlanValidator.PlanOpValidator planOpValidator : this.planOpValidators) {
-            isPlanOpValid |= planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
+            boolean isPlanOpValid = planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
+
             if (isPlanOpValid && this.mode == Mode.one) {
                 return true;
             }
+
+            if (!isPlanOpValid && this.mode == Mode.all) {
+                return false;
+            }
         }
 
-        return isPlanOpValid;
+        return this.mode == Mode.all;
     }
     //endregion
 

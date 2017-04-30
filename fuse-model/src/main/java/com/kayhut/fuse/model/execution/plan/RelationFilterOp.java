@@ -7,35 +7,18 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 /**
  * Created by User on 22/02/2017.
  */
-public class RelationFilterOp extends PlanOpBase implements Filter{
+public class RelationFilterOp extends AsgEBasePlanOp<RelPropGroup> implements Filter{
     //region Constructors
     public RelationFilterOp() {
 
     }
 
-    public RelationFilterOp(AsgEBase<RelPropGroup> relProp) {
-        this.relProp = relProp;
+    public RelationFilterOp(AsgEBase<RelPropGroup> relPropGroup) {
+        super(relPropGroup);
     }
     //endregion
 
     //region Properties
-
-    public AsgEBase<RelPropGroup> getRelProp() {
-        return relProp;
-    }
-
-    public void setRelProp(AsgEBase<RelPropGroup> relProp) {
-        this.relProp = relProp;
-    }
-    //endregion
-
-    //region Methods
-
-    @Override
-    public int geteNum() {
-        return this.relProp.geteNum();
-    }
-
     public AsgEBase<Rel> getRel() {
         return rel;
     }
@@ -43,10 +26,9 @@ public class RelationFilterOp extends PlanOpBase implements Filter{
     public void setRel(AsgEBase<Rel> rel) {
         this.rel = rel;
     }
-//endregion
+    //endregion
 
     //region Fields
-    private AsgEBase<RelPropGroup> relProp;
     private AsgEBase<Rel> rel;
     //endregion
 }

@@ -48,6 +48,13 @@ import com.kayhut.fuse.model.query.quant.Quant2;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EBase {
+    //region Override Methods
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "(" + this.geteNum() + ")";
+    }
+    //endregion
+
     //region Properties
     public int geteNum() {
         return eNum;

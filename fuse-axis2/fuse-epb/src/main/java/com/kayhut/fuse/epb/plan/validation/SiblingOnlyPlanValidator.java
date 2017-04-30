@@ -41,7 +41,7 @@ public class SiblingOnlyPlanValidator implements PlanValidator<Plan, AsgQuery>{
             if(found){
                 if(currentOp instanceof RelationOp) {
                     RelationOp relationOp = (RelationOp) currentOp;
-                    if (!isOpposite(relationOp.getRelation().geteBase().getDir(), ((AsgEBase<Rel>) currentOpElem).geteBase().getDir())) {
+                    if (!isOpposite(relationOp.getAsgEBase().geteBase().getDir(), ((AsgEBase<Rel>) currentOpElem).geteBase().getDir())) {
                         return false;
                     }
                 }
@@ -52,7 +52,7 @@ public class SiblingOnlyPlanValidator implements PlanValidator<Plan, AsgQuery>{
             // Assert direction is the same as the original
             if(currentOp instanceof RelationOp) {
                 RelationOp relationOp = (RelationOp) currentOp;
-                if (!relationOp.getRelation().geteBase().getDir().equals(((AsgEBase<Rel>) currentOpElem).geteBase().getDir())) {
+                if (!relationOp.getAsgEBase().geteBase().getDir().equals(((AsgEBase<Rel>) currentOpElem).geteBase().getDir())) {
                     return false;
                 }
             }

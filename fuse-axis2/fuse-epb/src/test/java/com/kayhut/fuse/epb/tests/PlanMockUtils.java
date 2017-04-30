@@ -84,7 +84,7 @@ public interface PlanMockUtils {
                 ((Typed) instance).seteType(eType);
                 nodeStatistics.put(eType, (double) total);
             }
-            entityOp.setEntity(new AsgEBase<>(instance));
+            entityOp.setAsgEBase(new AsgEBase<>(instance));
             plan = plan.withOp(entityOp);
             //statistics simulator
             costs.put(entityOp, (double) total);
@@ -99,7 +99,7 @@ public interface PlanMockUtils {
                 ((Typed) instance).seteType(eType);
                 nodeStatistics.put(eType, (double) total);
             }
-            entityOp.setEntity(new AsgEBase<>(instance));
+            entityOp.setAsgEBase(new AsgEBase<>(instance));
             plan = plan.withOp(entityOp);
             //statistics simulator
             costs.put(entityOp, (double) total);
