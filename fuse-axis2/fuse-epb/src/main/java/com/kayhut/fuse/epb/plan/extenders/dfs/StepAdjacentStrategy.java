@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 import javaslang.collection.Stream;
@@ -33,6 +34,8 @@ public class StepAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery
             return Collections.emptyList();
         }
 
+        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation.get(), RelPropGroup.class);
+
         Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getAncestor(nextRelation.get(), EEntityBase.class);
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
 
@@ -47,10 +50,16 @@ public class StepAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
-        newPlan = newPlan.withOp(new RelationOp(nextRelation.get())).withOp(new EntityOp(toEntity.get()));
+        newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
+        if (nextRelationPropGroup.isPresent()) {
+            newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
+        }
+
+        newPlan = newPlan.withOp(new EntityOp(toEntity.get()));
         if (toEntityPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
+
 
         return Collections.singletonList(newPlan);
     }

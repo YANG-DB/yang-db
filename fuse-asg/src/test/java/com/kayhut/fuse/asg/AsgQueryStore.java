@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.HQuant;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -68,18 +69,22 @@ public class AsgQueryStore {
 
     /**
                                                             +----+
-                                                            |    |               +---------+
-                                                            |    | +-+rel(5)+--> |eTyped(6)|
-                                                            |    |               +---------+
-                                                            |    |
-     +----+       +---------+              +---------+      |    |               +---------+
-     |S(0)| +--+  |eTyped(1)| +-+rel(2)+-> |eTyped(3)| +--+ |&(4)| +-+rel(7)+--> |eTyped(8)|
-     +----+       +---------+              +---------+      |    |               +---------+
-                                                            |    |
                                                             |    |               +-------------+
                                                             |    | +-----------+ |ePropGroup(9)|
                                                             |    |               +-------------+
-                                                            +----+
+                                                            |    |
+     +----+       +---------+              +---------+      |    |               +---------+
+     |S(0)| +--+  |eTyped(1)| +-+rel(2)+-> |eTyped(3)| +--+ |&(4)| +-+rel(5)+--> |eTyped(6)|
+     +----+       +---------+       +      +---------+      |    |               +---------+
+                                    |                       |    |
+                                    |                       |    |               +---------+
+                            +-------+--------+              |    | +-+rel(7)+--> |eTyped(8)|
+                            |relPropGroup(10)|              |    |       +       +---------+
+                            +----------------+              +----+       |
+                                                                         |
+                                                                +--------+-------+
+                                                                |relPropGroup(11)|
+                                                                +----------------+
      * @param queryName
      * @param ontologyName
      * @return
@@ -150,6 +155,26 @@ public class AsgQueryStore {
         propGroup.seteNum(9);
         propGroup.seteProps(Arrays.asList(prop1, prop2));
 
+        Constraint constraint3 = new Constraint();
+        constraint3.setOp(ConstraintOp.gt);
+        constraint3.setExpr(10);
+        RelProp relProp1 = new RelProp();
+        relProp1.setCon(constraint3);
+        relProp1.setpType("2");
+        RelPropGroup relPropGroup1 = new RelPropGroup();
+        relPropGroup1.seteNum(10);
+        relPropGroup1.setrProps(Arrays.asList(relProp1));
+
+        Constraint constraint4 = new Constraint();
+        constraint3.setOp(ConstraintOp.lt);
+        constraint3.setExpr(20);
+        RelProp relProp2 = new RelProp();
+        relProp2.setCon(constraint4);
+        relProp2.setpType("2");
+        RelPropGroup relPropGroup2 = new RelPropGroup();
+        relPropGroup2.seteNum(11);
+        relPropGroup2.setrProps(Arrays.asList(relProp2));
+
         AsgEBase<Start> asgStart =
                 AsgEBase.Builder.<Start>get().withEBase(start)
                         .withNext(AsgEBase.Builder.get().withEBase(eTyped)
@@ -163,10 +188,12 @@ public class AsgQueryStore {
                                                         .withNext(AsgEBase.Builder.get().withEBase(rel3)
                                                                 .withNext(AsgEBase.Builder.get().withEBase(concrete)
                                                                 .build())
+                                                                .withB(AsgEBase.Builder.get().withEBase(relPropGroup2).build())
                                                         .build())
                                                         .withNext(AsgEBase.Builder.get().withEBase(propGroup).build())
                                                         .build())
                                                 .build())
+                                        .withB(AsgEBase.Builder.get().withEBase(relPropGroup1).build())
                                         .build())
                                 .build())
                         .build();

@@ -54,6 +54,7 @@ public class StepAdjacentStrategyTest {
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
 
@@ -74,6 +75,7 @@ public class StepAdjacentStrategyTest {
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
@@ -82,6 +84,7 @@ public class StepAdjacentStrategyTest {
         Plan plan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
 
@@ -100,17 +103,20 @@ public class StepAdjacentStrategyTest {
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
                 new GoToEntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 7)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 11)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 8)));
 
         Plan plan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
@@ -126,7 +132,7 @@ public class StepAdjacentStrategyTest {
 
     //region Private Methods
     private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtils.<Start, T>getNextDescendant(asgQuery.getStart(), eNum).get();
+        return AsgQueryUtils.<T>getElement(asgQuery, eNum).get();
     }
     //endregion
 }

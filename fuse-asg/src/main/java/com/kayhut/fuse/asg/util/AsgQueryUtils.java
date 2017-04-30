@@ -65,7 +65,7 @@ public class AsgQueryUtils {
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
-        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getB, predicate, truePredicate);
+        return getElement(asgEBase, AsgEBase::getB, emptyIterableFunction, predicate, truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getBDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
@@ -176,7 +176,7 @@ public class AsgQueryUtils {
     }
 
     public static List<AsgEBase<? extends EBase>> getPath(AsgQuery query, int sourceEnum, int destinationEnum) {
-        Optional<AsgEBase<EBase>> sourceAsgEBase = getNextDescendant(query.getStart(), sourceEnum);
+        Optional<AsgEBase<EBase>> sourceAsgEBase = getElement(query, sourceEnum);
         if (!sourceAsgEBase.isPresent()) {
             return Collections.emptyList();
         }
@@ -184,6 +184,10 @@ public class AsgQueryUtils {
         List<AsgEBase<? extends EBase>> path = getPathToNextDescendant(sourceAsgEBase.get(), destinationEnum);
         if (path.isEmpty()) {
             path = getPathToAncestor(sourceAsgEBase.get(), destinationEnum);
+
+            if (path.isEmpty()) {
+                path = getPathToBDescendant(sourceAsgEBase.get(), destinationEnum);
+            }
         }
 
         return path;

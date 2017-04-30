@@ -53,6 +53,10 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
             return areFilterAndRelationAdjacent(path);
         }
 
+        if (currentPlanOp instanceof GoToEntityOp) {
+            return true;
+        }
+
         if (currentPlanOp instanceof EntityOp) {
             Optional<RelationOp> previousRelationOp = getPreviousOp(compositePlanOp, opIndex, RelationOp.class);
             if (!previousRelationOp.isPresent()) {
@@ -96,7 +100,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
     private <T extends PlanOpBase> Optional<T> getPreviousOp(CompositePlanOpBase compositePlanOp, int opIndex, Class<?> klass) {
         while(opIndex > 0) {
             PlanOpBase planOp = compositePlanOp.getOps().get(--opIndex);
-            if (planOp.getClass().equals(klass)) {
+            if (klass.isAssignableFrom(planOp.getClass())) {
                 return Optional.of((T)planOp);
             }
         }
