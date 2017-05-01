@@ -1,6 +1,7 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.kayhut.fuse.asg.AsgUtils;
+import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
@@ -25,9 +26,10 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
 
     @Override
     public void apply(AsgQuery query) {
-        Map<Integer, AsgEBase> eEntityBases = AsgUtils.searchForAllEntitiesOfType(query.getStart(), EEntityBase.class);
-        eEntityBases.forEach((eNum,entityBase) -> {
-            List<AsgEBase<? extends EBase>> ePropsChildren = AsgUtils.getEPropsNextChildren(entityBase);
+        AsgQueryUtils.getElements(query, EEntityBase.class).forEach(entityBase -> {
+            List<AsgEBase<EProp>> ePropsChildren = AsgQueryUtils.getNextAdjacentDescendants(entityBase,
+                    asgEBase -> asgEBase.geteBase().getClass().equals(EProp.class));
+
             if (ePropsChildren.size() > 0 ){
                 AsgEBase<? extends EBase> ePropAsgEBase = ePropsChildren.get(0);
                 EProp eProp = (EProp)ePropAsgEBase.geteBase();

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.kayhut.fuse.asg.AsgUtils;
+import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
@@ -18,16 +19,20 @@ import java.util.stream.Collectors;
  */
 public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     // Rel with RelProps e.g., Q190, Q10 on V1
+    // AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query) {
-        Map<Integer, AsgEBase> asgRels = AsgUtils.searchForAllEntitiesOfType(query.getStart(), Rel.class);
-        asgRels.forEach((eNum,asgRel) -> {
-            groupRelProps(asgRel);
-        });
+        AsgQueryUtils.<Rel>getElements(query, Rel.class).forEach(this::groupRelProps);
     }
+    //endregion
 
-    private void groupRelProps(AsgEBase asgEBase) {
-        List<AsgEBase<? extends EBase>> relPropsAsgBChildren = AsgUtils.getRelPropsBelowChildren(asgEBase);
+    //region Private Methods
+    private void groupRelProps(AsgEBase<Rel> asgEBase) {
+        List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtils.getBDescendants(
+                asgEBase,
+                (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
+                (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class) ||
+                        asgEBase1.geteBase().getClass().equals(Rel.class));
 
         RelPropGroup rPropGroup = new RelPropGroup();
         AsgEBase<? extends EBase> rPropGroupAsgEbase = new AsgEBase<>(rPropGroup);
