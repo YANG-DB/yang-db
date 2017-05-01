@@ -77,7 +77,7 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
         PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices,constraint,schemaProvider);
 
         CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
-                new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
+                new CompositeSearchAppender(CompositeSearchAppender.Mode.all,
                         new StartVerticesSearchAppender(),
                         new EdgeConstraintSearchAppender(),
                         new PromiseEdgeAggregationAppender(),
