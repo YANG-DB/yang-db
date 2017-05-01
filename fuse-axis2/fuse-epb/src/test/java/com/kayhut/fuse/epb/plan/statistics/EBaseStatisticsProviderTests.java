@@ -43,7 +43,7 @@ public class EBaseStatisticsProviderTests {
         when(graphElementSchemaProvider.getVertexSchema(any())).thenReturn(Optional.of(graphVertexSchema));
 
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
-        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.HistogramStatistics<>(Collections.singletonList(new Statistics.BucketInfo<>(1l, 1l, "a", "z"))));
+        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
         ontology = OntologyTestUtils.createDragonsOntologyShort(new Ontology());
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
     }
