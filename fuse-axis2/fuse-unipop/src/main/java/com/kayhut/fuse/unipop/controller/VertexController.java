@@ -130,7 +130,7 @@ class VertexController implements SearchQuery.SearchController {
                 searchQuery);
 
         //search appender
-        CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
+        CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all,
                 new IndexSearchAppender(),
                 new SizeSearchAppender(this.configuration),
                 new ElementConstraintSearchAppender(),
