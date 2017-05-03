@@ -1,10 +1,7 @@
 package com.kayhut.fuse.stat.Util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.stat.model.configuration.Field;
-import com.kayhut.fuse.stat.model.configuration.HistogramType;
-import com.kayhut.fuse.stat.model.configuration.StatContainer;
-import com.kayhut.fuse.stat.model.configuration.Type;
+import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.result.BucketStatResult;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
@@ -139,6 +136,56 @@ public class StatUtil {
 
     public static String createBucketUniqueId(String indexName, String typeName, String fieldName, String bucketKey, String lowerBound, String upperBound){
         return hashMessage(indexName +typeName + fieldName + bucketKey + lowerBound + upperBound);
+    }
+
+    public static Optional<Field> getFieldByName(StatContainer statContainer, String typeName, String fieldName) {
+        Optional<Field> field = Optional.empty();
+        Optional<Type> typeElement = getTypeConfiguration(statContainer, typeName);
+        if (typeElement.isPresent()) {
+            field = typeElement.get().getFields().stream().filter(f -> f.getField().equals(fieldName)).findFirst();
+        }
+        return field;
+    }
+
+    public static List<Bucket> calculateAlphabeticBuckets(int startCode, int numChars, int prefixLen, int interval) {
+        List<Bucket> buckets = new ArrayList<>();
+
+        int numOfBuckets = (int) Math.ceil(Math.pow(numChars, prefixLen) / interval);
+        for (int i = 0; i < numOfBuckets; i++) {
+            int bucketIdx = i * interval;
+            buckets.add(new Bucket(calcBucketStart(numChars, startCode, prefixLen, bucketIdx),
+                    calcBucketEnd(numChars, startCode, prefixLen, bucketIdx, interval)));
+        }
+
+        //Fix last bucket:
+        //  if the number of combinations is not perfectly divided by the interval, the end of the last bucket will loop back to earlier values.
+        if (numOfBuckets > Math.pow(numChars, prefixLen) / interval) {
+            char[] end = new char[prefixLen];
+            for (int i = 0; i < prefixLen; i++) {
+                end[i] = Character.toChars(startCode + numChars - 1)[0];
+            }
+            buckets.get(buckets.size() - 1).setEnd(String.valueOf(end));
+        }
+
+        return buckets;
+    }
+
+    private static String calcBucketStart(int numChars, int startCode,int prefixLen, int bucketIdx ) {
+        char[] chars = new char[prefixLen];
+        for (int i = 0; i < prefixLen; i++) {
+            int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            chars[i] = Character.toChars(code)[0];
+        }
+        return String.valueOf(chars);
+    }
+
+    private static String calcBucketEnd(int numChars, int startCode,int prefixLen, int bucketIdx, int interval) {
+        char[] chars = new char[prefixLen];
+        for (int i = 0; i < prefixLen; i++) {
+            int code = startCode + (Math.floorDiv(bucketIdx + interval - 1, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            chars[i] = Character.toChars(code)[0];
+        }
+        return String.valueOf(chars);
     }
 
    //Create a MD5 hash of a given message. Used for creating unique document IDs.
