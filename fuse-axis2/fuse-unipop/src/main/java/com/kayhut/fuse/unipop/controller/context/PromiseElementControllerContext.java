@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * Created by User on 27/03/2017.
  */
-public class PromiseElementControllerContext {
+public class PromiseElementControllerContext implements SizeAppenderContext{
 
     //region Constructors
     public PromiseElementControllerContext(
