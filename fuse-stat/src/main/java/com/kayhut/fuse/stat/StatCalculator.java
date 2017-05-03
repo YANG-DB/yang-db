@@ -6,12 +6,12 @@ import com.kayhut.fuse.stat.es.ClientProvider;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
 import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.result.BucketStatResult;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.transport.TransportClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.*;
 
 
@@ -21,6 +21,8 @@ import java.util.*;
 public class StatCalculator {
 
     public static void main(String[] args) throws Exception {
+
+        Logger logger = org.slf4j.LoggerFactory.getLogger(StatCalculator.class);
 
         Configuration configuration = new StatConfiguration("statistics.properties").getInstance();
 
@@ -41,7 +43,8 @@ public class StatCalculator {
                     for (String typeName: types){
                         Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, typeName);
                         if(typeConfiguration.isPresent()){
-                            BuildHistogramForNumericField(configuration, dataClient, statContainer, indexName, typeName);
+                            BuildHistogramForNumericFields(configuration, logger, dataClient, statContainer, indexName, typeName);
+                            BuildHistogramForManualFields(configuration, logger, dataClient, statContainer, indexName, typeName);
                         }
                     }
                 }
@@ -54,11 +57,10 @@ public class StatCalculator {
 //        EsUtil.showTypeFieldsNames(dataClient,"game","football");
     }
 
-    private static void BuildHistogramForNumericField(Configuration configuration, TransportClient dataClient, StatContainer statContainer, String indexName, String typeName) {
+    private static void BuildHistogramForNumericFields(Configuration configuration, Logger logger, TransportClient dataClient, StatContainer statContainer, String indexName, String typeName) {
         try {
             Optional<List<Field>> fieldsWithNumericHistogram = StatUtil.getFieldsWithNumericHistogramOfType(statContainer, typeName);
             if (fieldsWithNumericHistogram.isPresent()){
-                List<BucketStatResult> numericBuckets = new ArrayList<>();
                 for(Field field : fieldsWithNumericHistogram.get())
                 {
                     String fieldName = field.getField();
@@ -66,14 +68,13 @@ public class StatCalculator {
                     long min = Long.parseLong(histogramNumeric.getMin());
                     long max = Long.parseLong(histogramNumeric.getMin());
                     long interval = Long.parseLong(histogramNumeric.getInterval());
-                    numericBuckets = EsUtil.getNumericHistogram(dataClient, indexName, typeName, fieldName, min, max, interval);
+                    List<BucketStatResult> buckets = EsUtil.getNumericHistogramResults(dataClient, indexName, typeName, fieldName, min, max, interval);
+                    PopulateBuckets(configuration, buckets);
                 }
-
-                PopulateBuckets(configuration, numericBuckets);
-
             }
         }
         catch (Exception e) {
+            logger.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -94,19 +95,22 @@ public class StatCalculator {
                 ).populate();
     }
 
-    private static void BuildHistogramForStringField(TransportClient esClient, StatContainer statContainer, String indexName, String typeName) {
-        Optional<List<Field>> fieldsWithNumericHistogram = StatUtil.getFieldsWithNumericHistogramOfType(statContainer, typeName);
-        if (fieldsWithNumericHistogram.isPresent()){
-            for(Field field : fieldsWithNumericHistogram.get())
-            {
-                String fieldName = field.getField();
-                HistogramNumeric histogramNumeric = ((HistogramNumeric)field.getHistogram());
-                long min = Long.parseLong(histogramNumeric.getMin());
-                long max = Long.parseLong(histogramNumeric.getMin());
-                long interval = Long.parseLong(histogramNumeric.getInterval());
+    private static void BuildHistogramForManualFields(Configuration configuration, Logger logger,  TransportClient esClient, StatContainer statContainer, String indexName, String typeName) {
+        try {
+            Optional<List<Field>> fieldsWithManualHistogram = StatUtil.getFieldsWithManualHistogramOfType(statContainer, typeName);
+            if (fieldsWithManualHistogram.isPresent()){
 
-                EsUtil.getNumericHistogram(esClient,indexName,typeName,fieldName,min,max,interval);
+                for(Field field : fieldsWithManualHistogram.get())
+                {
+                    String fieldName = field.getField();
+                    HistogramManual histogramManual = ((HistogramManual)field.getHistogram());
+                    List<BucketStatResult> buckets = EsUtil.getManualHistogramResults(esClient,indexName,typeName,fieldName,histogramManual.getDataType(),histogramManual.getBuckets());
+                    PopulateBuckets(configuration, buckets);
+                }
             }
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 

@@ -28,7 +28,7 @@ public class StatContainerTest {
                         new Bucket("abc", "dzz"),
                         new Bucket("efg", "hij"),
                         new Bucket("klm", "xyz")
-                ))
+                )).withDataType("string")
                 .build();
 
 

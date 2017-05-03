@@ -115,6 +115,10 @@ public class StatUtil {
         return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.string);
     }
 
+    public static Optional<List<Field>> getFieldsWithManualHistogramOfType(StatContainer statContainer, String typeName){
+        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.manual);
+    }
+
     public static Iterable<Map<String, Object>> createBuckets(List<BucketStatResult> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
         for (BucketStatResult bucketStatResult : bucketStatResults) {

@@ -28,6 +28,7 @@
         "histogram":
         {
           "histogramType": "manual",
+          "dataType":"string",
           "buckets":[
             {
               "start":"abc",

@@ -1,0 +1,42 @@
+{
+  "mappings": [{
+    "indices": ["index1", "index2"],
+    "types": ["dragon"]
+  }],
+  "types": [{
+    "type": "dragon",
+    "fields": [
+      {
+        "field": "address",
+        "histogram":
+        {
+          "histogramType": "string",
+          "prefixSize": "2",
+          "interval":"3"
+        }
+      },
+      {
+        "field": "name",
+        "histogram":
+        {
+          "histogramType": "manual",
+          "dataType":"string",
+          "buckets":[
+            {
+              "start":"a",
+              "end": "d"
+            },
+            {
+              "start":"e",
+              "end": "g"
+            },
+            {
+              "start":"h",
+              "end": "z"
+            }
+          ]
+        }
+      }
+    ]
+  }]
+}

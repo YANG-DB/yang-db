@@ -19,13 +19,24 @@ public class HistogramManual extends Histogram{
         this.buckets = buckets;
     }
 
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
     //region Fields
     private List<Bucket> buckets;
+    private String dataType;
     //endregion
 
-    //region Builder
+
+    //region Fields
     public static final class HistogramManualBuilder {
         private List<Bucket> buckets;
+        private String dataType;
 
         private HistogramManualBuilder() {
         }
@@ -39,13 +50,21 @@ public class HistogramManual extends Histogram{
             return this;
         }
 
+        public HistogramManualBuilder withDataType(String dataType) {
+            this.dataType = dataType;
+            return this;
+        }
+
         public HistogramManual build() {
             HistogramManual histogramManual = new HistogramManual();
             histogramManual.setBuckets(buckets);
+            histogramManual.setDataType(dataType);
             return histogramManual;
         }
     }
     //endregion
+
+
 
 
 }
