@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -13,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -25,7 +23,6 @@ import static org.mockito.Mockito.when;
  * Created by liorp on 4/27/2017.
  */
 public class EBaseStatisticsProviderTests {
-    ObjectMapper mapper = new ObjectMapper();
 
     GraphElementSchemaProvider graphElementSchemaProvider;
     GraphVertexSchema graphVertexSchema;

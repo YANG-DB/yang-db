@@ -1,12 +1,15 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
+import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -33,7 +36,14 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
         visitedNodes.add(asgNode);
         if(asgNode.geteBase() instanceof EEntityBase){
             EntityOp op = new EntityOp((AsgEBase<EEntityBase>) asgNode);
-            plans.add(new Plan(op));
+            List<AsgEBase<EPropGroup>> epropGroup = AsgQueryUtils.getNextAdjacentDescendants(asgNode, p -> p.geteBase() instanceof EPropGroup);
+            Plan plan = new Plan(op);
+            plans.add(plan);
+            if(!epropGroup.isEmpty()){
+                EntityFilterOp filterOp = new EntityFilterOp();
+                epropGroup.get(0);
+                plan.withOp(filterOp);
+            }
         }
         if(asgNode.getNext() != null) {
             for (AsgEBase<? extends EBase> next : asgNode.getNext()) {
