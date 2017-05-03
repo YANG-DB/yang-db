@@ -20,14 +20,62 @@ public class HistogramTests {
         histogram = new Statistics.HistogramStatistics<>(buckets);
 
         buckets.add(new Statistics.BucketInfo<>(1L, 1L, "a", "b" ));
-        buckets.add(new Statistics.BucketInfo<>(1L,1L,"ba", "z"));
+        buckets.add(new Statistics.BucketInfo<>(1L,1L,"bb", "z"));
     }
 
     @Test
     public void testFindExistingValue(){
-        Optional<Statistics.BucketInfo<String>> aaa = histogram.findBucketContaining("aaa");
-        Assert.assertTrue(aaa.isPresent());
+        Optional<Statistics.BucketInfo<String>> aaaBucket = histogram.findBucketContaining("aaa");
+        Assert.assertTrue(aaaBucket.isPresent());
+        Assert.assertEquals(aaaBucket.get().getLowerBound(), "a");
+        Assert.assertEquals(aaaBucket.get().getHigherBound(), "b");
     }
 
+    @Test
+    public void testFindAbove(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("aaa", true);
+        Assert.assertEquals(2, bucketsAbove.size());
+    }
 
+    @Test
+    public void testFindAbovePrecise(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("b", true);
+        Assert.assertEquals(2, bucketsAbove.size());
+    }
+
+    @Test
+    public void testFindAboveNonInclusive(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("ba", false);
+        Assert.assertEquals(1, bucketsAbove.size());
+    }
+
+    @Test
+    public void testFindAboveNonInclusive2(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("b", false);
+        Assert.assertEquals(1, bucketsAbove.size());
+    }
+
+    @Test
+    public void testFindBelow(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsBelow("ccc", true);
+        Assert.assertEquals(2, bucketsAbove.size());
+    }
+
+    @Test
+    public void testFindBelowPrecise(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsBelow("bb", true);
+        Assert.assertEquals(2, bucketsAbove.size());
+    }
+
+    @Test
+    public void testFindBelowNonInclusive(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("ba", false);
+        Assert.assertEquals(1, bucketsAbove.size());
+    }
+
+    @Test
+    public void testFindBelowNonInclusive2(){
+        List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("bb", false);
+        Assert.assertEquals(1, bucketsAbove.size());
+    }
 }

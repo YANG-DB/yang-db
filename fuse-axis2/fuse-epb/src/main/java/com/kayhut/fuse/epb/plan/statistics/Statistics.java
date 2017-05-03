@@ -94,17 +94,17 @@ public interface Statistics {
             return Optional.empty();
         }
 
-        public List<BucketInfo<T>> findBucketsAbove(T value){
+        public List<BucketInfo<T>> findBucketsAbove(T value, boolean inclusive){
             int i = 0;
-            while(i < buckets.size() && buckets.get(i).getHigherBound().compareTo(value)<0 ){
+            while(i < buckets.size() && ((buckets.get(i).getHigherBound().compareTo(value)<0 && inclusive) || (buckets.get(i).getHigherBound().compareTo(value)<=0 && !inclusive)) ){
                 i++;
             }
             return buckets.subList(i, buckets.size());
         }
 
-        public List<BucketInfo<T>> findBucketsBelow(T value){
+        public List<BucketInfo<T>> findBucketsBelow(T value, boolean inclusive){
             int i = buckets.size()-1;
-            while(i >=0 && buckets.get(i).getLowerBound().compareTo(value) > 0){
+            while(i >=0 && ((buckets.get(i).getLowerBound().compareTo(value) > 0 && inclusive) || (buckets.get(i).getLowerBound().compareTo(value) >= 0 && !inclusive))){
                 i--;
             }
             return buckets.subList(0, i+1);

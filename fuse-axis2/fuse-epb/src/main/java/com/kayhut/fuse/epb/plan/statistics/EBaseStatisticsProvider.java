@@ -1,8 +1,10 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.google.common.collect.Iterables;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
+import com.kayhut.fuse.model.ontology.PrimitiveType;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
@@ -35,7 +37,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     static {
         supportedOps.add(ConstraintOp.eq);
-        supportedOps.add(ConstraintOp.ne);
         supportedOps.add(ConstraintOp.ge);
         supportedOps.add(ConstraintOp.gt);
         supportedOps.add(ConstraintOp.le);
@@ -173,9 +174,9 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             return Optional.empty();
         }
 
-        switch(graphElementPropertySchema.getType()){
-            case "string":
-                return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, relevantPartitions, String.class);
+        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, graphElementPropertySchema.getType());
+        if(primitiveType.isPresent()) {
+            return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, relevantPartitions, primitiveType.get().getJavaType());
         }
         return Optional.empty();
     }
@@ -194,32 +195,91 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         switch(constraintOp){
             case eq:
                 Optional<Statistics.BucketInfo<T>> bucketContaining = histogramStatistics.findBucketContaining(value);
-                if(bucketContaining.isPresent()){
-                    cardinality = new Statistics.Cardinality(bucketContaining.get().getTotal() / bucketContaining.get().getCardinality(),1);
-                }else{
-                    cardinality = new Statistics.Cardinality(0,0);
-                }
-                break;
-            case ne:
+                cardinality = bucketContaining.map(tBucketInfo -> new Statistics.Cardinality(tBucketInfo.getTotal() / tBucketInfo.getCardinality(), 1)).
+                        orElseGet(() -> new Statistics.Cardinality(0, 0));
                 break;
             case gt:
-                break;
+                List<Statistics.BucketInfo<T>> bucketsAbove = histogramStatistics.findBucketsAbove(value, false);
+                return estimateGreaterThan(bucketsAbove, value, false);
             case ge:
-                break;
+                bucketsAbove = histogramStatistics.findBucketsAbove(value, true);
+                return estimateGreaterThan(bucketsAbove, value, true);
             case lt:
-                break;
+                List<Statistics.BucketInfo<T>> bucketsBelow = histogramStatistics.findBucketsBelow(value, false);
+                return estimateLessThan(bucketsBelow, value, false);
             case le:
-                break;
+                bucketsBelow = histogramStatistics.findBucketsBelow(value, true);
+                return estimateLessThan(bucketsBelow, value, true);
 
         }
         return cardinality;
+    }
+
+    // Currently lt and lte have the same costs
+    // Also, in case we have a non numeric/date value, we take a pessimistic estimate of the bucket containing the given value (entire bucket, not relative part)
+    private <T extends Comparable<T>> Statistics.Cardinality estimateLessThan(List<Statistics.BucketInfo<T>> bucketsBelow, T value, boolean inclusive) {
+        Statistics.BucketInfo<T> lastBucket = Iterables.getLast(bucketsBelow);
+        if(lastBucket.isValueInRange(value)){
+            double partialBucket = 1.0;
+            if(value instanceof Long){
+                Long start = (Long)lastBucket.getLowerBound();
+                Long end = (Long) lastBucket.getHigherBound();
+                Long v = (Long) value;
+                partialBucket = ((double) (v - start)) / (end - start);
+            }
+            if(value instanceof Double){
+                Double start = (Double) lastBucket.getLowerBound();
+                Double end = (Double) lastBucket.getHigherBound();
+                Double v = (Double) value;
+                partialBucket = ((v - start)) / (end - start);
+            }
+            if(value instanceof Date){
+                Date start = (Date)lastBucket.getLowerBound();
+                Date end = (Date) lastBucket.getHigherBound();
+                Date v = (Date) value;
+                partialBucket = ((double)(v.getTime() - start.getTime())) / (end.getTime() - start.getTime());
+
+            }
+            Statistics.Cardinality cardinality = mergeBucketsCardinality(bucketsBelow.subList(0, bucketsBelow.size() - 1));
+            return new Statistics.Cardinality(cardinality.getTotal() + lastBucket.getTotal() * partialBucket, cardinality.getCardinality() + lastBucket.getCardinality()*partialBucket);
+        }
+        return mergeBucketsCardinality(bucketsBelow);
+    }
+
+    private <T extends Comparable<T>> Statistics.Cardinality estimateGreaterThan(List<Statistics.BucketInfo<T>> bucketsAbove, T value, boolean inclusive) {
+        Statistics.BucketInfo<T> firstBucket = bucketsAbove.get(0);
+        if(firstBucket.isValueInRange(value)){
+            double partialBucket = 1.0;
+            if(value instanceof Long){
+                Long start = (Long)firstBucket.getLowerBound();
+                Long end = (Long) firstBucket.getHigherBound();
+                Long v = (Long) value;
+                partialBucket = ((double) (end - v)) / (end - start);
+            }
+            if(value instanceof Double){
+                Double start = (Double) firstBucket.getLowerBound();
+                Double end = (Double) firstBucket.getHigherBound();
+                Double v = (Double) value;
+                partialBucket = ((end - v)) / (end - start);
+            }
+            if(value instanceof Date){
+                Date start = (Date)firstBucket.getLowerBound();
+                Date end = (Date) firstBucket.getHigherBound();
+                Date v = (Date) value;
+                partialBucket = ((double)(end.getTime() - v.getTime())) / (end.getTime() - start.getTime());
+
+            }
+            Statistics.Cardinality cardinality = mergeBucketsCardinality(bucketsAbove.subList(1, bucketsAbove.size()));
+            return new Statistics.Cardinality(cardinality.getTotal() + firstBucket.getTotal() * partialBucket, cardinality.getCardinality() + firstBucket.getCardinality()*partialBucket);
+        }
+        return mergeBucketsCardinality(bucketsAbove);
     }
 
     private List<IndexPartition> findRelevantTimeSeriesPartitions(List<IndexPartition> indexPartitions, EPropGroup entityFilter) {
         //todo check if should use db prop name
         TimeSeriesIndexPartition firstPartition = (TimeSeriesIndexPartition) indexPartitions.get(0);
         EProp timeCondition = null;
-        for (EProp eProp:entityFilter.geteProps()){
+        for (EProp eProp : entityFilter.geteProps()){
             if(eProp.getpType().equals(firstPartition.getTimeField())){
                 timeCondition = eProp;
                 break;
@@ -240,5 +300,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     }
 
+    private <T extends Comparable<T>> Statistics.Cardinality mergeBucketsCardinality(List<Statistics.BucketInfo<T>> buckets){
+        Statistics.Cardinality cardinality = new Statistics.Cardinality(0,0);
+        for(Statistics.BucketInfo<T> bucketInfo : buckets){
+            cardinality = (Statistics.Cardinality) cardinality.merge(bucketInfo.getCardinalityObject());
+        }
+        return cardinality;
+    }
 
 }
