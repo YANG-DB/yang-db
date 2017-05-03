@@ -5,19 +5,17 @@ import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantBase;
 import javaslang.collection.Stream;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -36,15 +34,32 @@ public class StepAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery
             return Collections.emptyList();
         }
 
+        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation.get(), RelPropGroup.class);
+
         Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getAncestor(nextRelation.get(), EEntityBase.class);
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
 
-        Plan newPlan = plan.get();
-        if (newPlan.getOps().get(newPlan.getOps().size() - 1).geteNum() != fromEntity.get().geteBase().geteNum()) {
-            newPlan = newPlan.withOp(new EntityOp(fromEntity.get()));
+        Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
+        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
+        if (toEntityQuant.isPresent()) {
+            toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
         }
 
-        newPlan = newPlan.withOp(new RelationOp(nextRelation.get())).withOp(new EntityOp(toEntity.get()));
+        Plan newPlan = plan.get();
+        if (getLastEntityOp(newPlan).geteNum() != fromEntity.get().geteNum()) {
+            newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
+        }
+
+        newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
+        if (nextRelationPropGroup.isPresent()) {
+            newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
+        }
+
+        newPlan = newPlan.withOp(new EntityOp(toEntity.get()));
+        if (toEntityPropGroup.isPresent()) {
+            newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
+        }
+
 
         return Collections.singletonList(newPlan);
     }
@@ -80,9 +95,9 @@ public class StepAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery
         Set<Integer> markedElements = markEntitiesAndRelations(plan);
         EntityOp lastEntityOp = getLastEntityOp(plan);
 
-        Optional<AsgEBase<Rel>> nextRelation = getNextUnmarkedRelation(lastEntityOp.getEntity(), markedElements);
+        Optional<AsgEBase<Rel>> nextRelation = getNextUnmarkedRelation(lastEntityOp.getAsgEBase(), markedElements);
         if (!nextRelation.isPresent()) {
-            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtils.getAncestor(lastEntityOp.getEntity(), EEntityBase.class);
+            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtils.getAncestor(lastEntityOp.getAsgEBase(), EEntityBase.class);
             while(parentEntity.isPresent()) {
                 nextRelation = getNextUnmarkedRelation(parentEntity.get(), markedElements);
                 if (nextRelation.isPresent()) {
