@@ -2,6 +2,7 @@ package com.kayhut.fuse.stat.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.Util.StatUtil;
+import com.kayhut.fuse.stat.model.configuration.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;

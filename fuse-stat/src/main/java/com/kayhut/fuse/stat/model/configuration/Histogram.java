@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model;
+package com.kayhut.fuse.stat.model.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Histogram {
+public abstract class Histogram {
 
     public Histogram() {
     }
@@ -25,10 +25,6 @@ public class Histogram {
     public Histogram(HistogramType histogramType) {
         this.histogramType = histogramType;
     }
-
-//    public void setHistogramType(HistogramType histogramType) {
-//        this.histogramType = histogramType;
-//    }
 
     public HistogramType getHistogramType() {
         return histogramType;

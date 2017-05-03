@@ -1,11 +1,13 @@
 package com.kayhut.fuse.stat.Util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.stat.model.Field;
-import com.kayhut.fuse.stat.model.HistogramType;
-import com.kayhut.fuse.stat.model.StatContainer;
-import com.kayhut.fuse.stat.model.Type;
+import com.kayhut.fuse.stat.model.configuration.Field;
+import com.kayhut.fuse.stat.model.configuration.HistogramType;
+import com.kayhut.fuse.stat.model.configuration.StatContainer;
+import com.kayhut.fuse.stat.model.configuration.Type;
+import com.kayhut.fuse.stat.model.result.BucketStatResult;
 import javaslang.collection.Stream;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -19,6 +21,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.common.*;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
@@ -27,11 +30,13 @@ import org.elasticsearch.common.unit.TimeValue;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
-
-import static java.util.Optional.ofNullable;
+import java.util.Base64;
 
 /**
  * Created by benishue on 30-Apr-17.
@@ -59,7 +64,7 @@ public class StatUtil {
             return resultObj;
     }
 
-    public static TransportClient getClient(Configuration configuration) throws UnknownHostException {
+    public static TransportClient getDataClient(Configuration configuration) throws UnknownHostException {
         String clusterName = configuration.getString("es.cluster.name");
         int transportPort = configuration.getInt("es.client.transport.port");
         String[] hosts = configuration.getStringArray("es.nodes.hosts");
@@ -106,83 +111,60 @@ public class StatUtil {
         return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.numeric);
     }
 
-    public static void bulkIndexing(TransportClient client, String filePath, String index, String type) throws IOException {
-        BulkProcessor bulkProcessor = BulkProcessor.builder(
-                client,
-                new BulkProcessor.Listener() {
-                    @Override
-                    public void beforeBulk(long executionId,
-                                           BulkRequest request) {  }
-
-                    @Override
-                    public void afterBulk(long executionId,
-                                          BulkRequest request,
-                                          BulkResponse response) {  }
-
-                    @Override
-                    public void afterBulk(long executionId,
-                                          BulkRequest request,
-                                          Throwable failure) {  }
-                })
-                .setBulkActions(100)
-                .setBulkSize(new ByteSizeValue(1, ByteSizeUnit.MB))
-                .setFlushInterval(TimeValue.timeValueSeconds(5))
-                .setConcurrentRequests(1)
-                .setBackoffPolicy(
-                        BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(100), 3))
-                .build();
-
-        File file = FileUtils.getFile(filePath);
-
-        LineIterator it = FileUtils.lineIterator(file, "UTF-8");
-        try {
-            int i = 1;
-            while (it.hasNext()) {
-                String line = it.nextLine();
-                bulkProcessor.add((IndexRequest) new IndexRequest(index, type, String.valueOf(i))
-                        .source(line));
-                i++;
-            }
-        } finally {
-            it.close();
-        }
-
-        bulkProcessor.close();
-
-
+    public static Optional<List<Field>> getFieldsWithStringHistogramOfType(StatContainer statContainer, String typeName){
+        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.string);
     }
 
-    public static void showTypeFieldsNames(TransportClient esClient, String indexName, String typeName) {
+    public static Iterable<Map<String, Object>> createBuckets(List<BucketStatResult> bucketStatResults) {
+        List<Map<String, Object>> buckets = new ArrayList<>();
+        for (BucketStatResult bucketStatResult : bucketStatResults) {
+            Map<String, Object> bucket = new HashedMap();
+            bucket.put("id", createBucketUniqueId(bucketStatResult.getIndex(),bucketStatResult.getType(),bucketStatResult.getField(),bucketStatResult.getKey(), bucketStatResult.getLowerBound(),bucketStatResult.getUpperBound()));
+            bucket.put("index", bucketStatResult.getIndex());
+            bucket.put("type", bucketStatResult.getType());
+            bucket.put("field", bucketStatResult.getField());
+            bucket.put("bucket", bucketStatResult.getKey());
+            bucket.put("upper_bound", bucketStatResult.getUpperBound());
+            bucket.put("lower_bound", bucketStatResult.getLowerBound());
+            bucket.put("count", bucketStatResult.getCount());
+            bucket.put("cardinality", bucketStatResult.getCardinality());
+            buckets.add(bucket);
+        }
+        return buckets;
+    }
 
-        List<String> fieldList = new ArrayList<String>();
-        ClusterState cs = esClient.admin().cluster().prepareState().setIndices(indexName).execute().actionGet().getState();
-        IndexMetaData imd = cs.getMetaData().index(indexName);
-        MappingMetaData mdd = imd.mapping(typeName);
-        Map<String, Object> map = null;
+    public static String createBucketUniqueId(String indexName, String typeName, String fieldName, String bucketKey, String lowerBound, String upperBound){
+        return hashMessage(indexName +typeName + fieldName + bucketKey + lowerBound + upperBound);
+    }
+
+   //Create a MD5 hash of a given message. Used for creating unique document IDs.
+    public static String hashMessage(String message) {
         try {
-            map = mdd.getSourceAsMap();
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] bucketDescriptionBytes = message.getBytes("UTF8");
+            byte[] bucketHash = digest.digest(bucketDescriptionBytes);
+
+            return org.elasticsearch.common.Base64.encodeBytes(bucketHash, org.elasticsearch.common.Base64.URL_SAFE).replaceAll("\\s", "");
+
+        } catch (NoSuchAlgorithmException e) {
+
+//            logger.error("Could not hash the message: {}", message);
+//            logger.error("The hash algorithm used is not supported. Stack trace follows.", e);
+
+            return null;
+        } catch (UnsupportedEncodingException e) {
+
+//            logger.error("Could not hash the message: {}", message);
+//            logger.error("The character encoding used is not supported. Stack trace follows.", e);
+
+            return null;
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-        fieldList = getList("", map);
-        System.out.println("Field List:");
-        for (String field : fieldList) {
-            System.out.println(field);
+
+//            logger.error("Could not hash the message: {}", message);
+//            logger.error("A problem occured when encoding as URL safe hash. Stack trace follows.", e);
+
+            return null;
         }
     }
 
-    private static List<String> getList(String fieldName, Map<String, Object> mapProperties) {
-        List<String> fieldList = new ArrayList<String>();
-        Map<String, Object> map = (Map<String, Object>) mapProperties.get("properties");
-        Set<String> keys = map.keySet();
-        for (String key : keys) {
-            if (((Map<String, Object>) map.get(key)).containsKey("type")) {
-                fieldList.add(fieldName + "" + key);
-            } else {
-                List<String> tempList = getList(fieldName + "" + key + ".", (Map<String, Object>) map.get(key));
-                fieldList.addAll(tempList);
-            }
-        }
-        return fieldList;
-    }
 }
