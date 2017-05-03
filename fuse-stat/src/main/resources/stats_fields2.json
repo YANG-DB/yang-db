@@ -12,7 +12,7 @@
         {
           "histogramType": "string",
           "prefixSize": "2",
-          "interval":"3"
+          "interval":"3",
           "firstCharCode":"97",
           "numOfChars":"26"
         }
