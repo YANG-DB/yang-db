@@ -19,8 +19,10 @@
         "histogram":
         {
           "histogramType": "string",
-          "prefixSize": "2",
-          "interval":"3"
+          "prefixSize": "3",
+          "interval":"10",
+          "firstCharCode":"97",
+          "numOfChars":"26"
         }
       },
       {

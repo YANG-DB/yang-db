@@ -114,6 +114,23 @@ public class StatCalculator {
         }
     }
 
+    private static List<Bucket> buildHistogramForStringField(StatContainer statContainer, String typeName, String fieldName) {
+
+        Optional<Field> field = StatUtil.getFieldByName(statContainer, typeName, fieldName);
+
+        if(!field.isPresent() || field.get().getHistogram().getHistogramType() != HistogramType.string) {
+            throw new RuntimeException("Buckets calculation for field " + fieldName + " in type " + typeName + " failed. ");
+        }
+
+        Field f  = field.get();
+        HistogramString histogram = (HistogramString) f.getHistogram();
+        List<Bucket> buckets = StatUtil.calculateAlphabeticBuckets(Integer.valueOf(histogram.getFirstCharCode()),
+                Integer.valueOf(histogram.getNumOfChars()),
+                Integer.valueOf(histogram.getPrefixSize()),
+                Integer.valueOf(histogram.getInterval()));
+
+        return buckets;
+    }
 
 }
 
