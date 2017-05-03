@@ -2,10 +2,7 @@ package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
-import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,16 +26,17 @@ public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.Plan
     @Override
     public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
         PlanOpBase planOp = compositePlanOp.getOps().get(opIndex);
-        if (!(planOp instanceof GoToEntityOp)) {
-            return true;
+        if (planOp instanceof GoToEntityOp) {
+            if (!this.entityEnums.contains(planOp.geteNum())) {
+                return false;
+            }
         }
 
-        if (!this.entityEnums.contains(planOp.geteNum())){
+        if (planOp instanceof EntityOp) {
             this.entityEnums.add(planOp.geteNum());
-            return true;
         }
 
-        return false;
+        return true;
     }
     //endregion
 

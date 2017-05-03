@@ -1,10 +1,10 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Streams;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.unipop.structure.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import javaslang.collection.Stream;
 
 import java.util.*;
 
@@ -45,9 +45,9 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
         if (!edgeSchemas.isPresent())
             return Optional.empty();
 
-        Optional<GraphEdgeSchema> graphEdgeSchema = Streams.stream(edgeSchemas.get()).filter(edgeSchema -> edgeSchema.getType().equals(edgeType) &&
+        Optional<GraphEdgeSchema> graphEdgeSchema = Stream.ofAll(edgeSchemas.get()).find(edgeSchema -> edgeSchema.getType().equals(edgeType) &&
                 edgeSchema.getSource().get().getType().get().equals(sourceVertexType.get()) &&
-                edgeSchema.getDestination().get().getType().get().equals(destinationVertexType.get())).findFirst();
+                edgeSchema.getDestination().get().getType().get().equals(destinationVertexType.get())).getOption().toJavaOptional();
 
         if (!graphEdgeSchema.isPresent())
             return Optional.empty();
