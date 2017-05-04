@@ -129,9 +129,9 @@ public class NoRedundantRelationOpValidatorTests {
 
     //region Fields
     private PlanValidator<Plan, AsgQuery> validator = new ChainedPlanValidator(
-            new CompositePlanOpValidator(Arrays.asList(
-                    new NoRedundantRelationOpValidator()
-            ), CompositePlanOpValidator.Mode.all));
+            new CompositePlanOpValidator(
+                    CompositePlanOpValidator.Mode.all,
+                    new NoRedundantRelationOpValidator()));
 
     //endregion
 }

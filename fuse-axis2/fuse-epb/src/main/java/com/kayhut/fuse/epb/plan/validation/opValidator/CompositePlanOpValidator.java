@@ -16,9 +16,14 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
     }
 
     //region Constructors
-    public CompositePlanOpValidator(Iterable<ChainedPlanValidator.PlanOpValidator> planOpValidators, Mode mode) {
-        this.planOpValidators = planOpValidators;
+    public CompositePlanOpValidator(Mode mode, ChainedPlanValidator.PlanOpValidator...planOpValidators) {
         this.mode = mode;
+        this.planOpValidators = Stream.of(planOpValidators).toJavaList();
+    }
+
+    public CompositePlanOpValidator(Mode mode, Iterable<ChainedPlanValidator.PlanOpValidator> planOpValidators) {
+        this.mode = mode;
+        this.planOpValidators = Stream.ofAll(planOpValidators).toJavaList();
     }
     //endregion
 
