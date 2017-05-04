@@ -4,7 +4,10 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -43,9 +46,31 @@ public class AsgQueryUtils {
         return getElement(asgEBase, emptyIterableFunction, AsgEBase::getNext, predicate, adjacentDfsPredicate.apply(asgEBase));
     }
 
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, adjacentDfsPredicate.apply(asgEBase));
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
         return getNextAdjacentDescendant(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
+        return getNextAdjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass,int hopes) {
+        int count = 0;
+        Optional<AsgEBase<S>> element = getNextAdjacentDescendant(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+        while (!element.isPresent() && count < hopes && !asgEBase.getNext().isEmpty()) {
+            AsgEBase<? extends EBase> next = asgEBase.getNext().get(0);
+            element = getNextAdjacentDescendant(next, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                    notThisPredicateFunction.apply(next).test(asgEBase1));
+            count++;
+        }
+        return element;
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentDescendant(AsgEBase<T> asgEBase, int eNum) {

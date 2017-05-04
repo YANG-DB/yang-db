@@ -114,7 +114,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             planOpWithCosts = new ArrayList<>();
         }
 
-        double lambda = tuple2._1;
+        double lambda = tuple2._1();
         planOpWithCosts.forEach(element-> {
             if(element.getOpBase().get(0) instanceof EntityOp) {
                 element.push(element.peek()*lambda);
@@ -202,12 +202,12 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         //redundant
         //C1_e
-        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getAsgEBase().geteBase(), direction).getCardinality()._1;
+        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getAsgEBase().geteBase(), direction).getCardinality();
         //C_2e
-        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality()._1;
+        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
         //relation
-        double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality()._1;
-        double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality()._1;
+        double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality();
+        double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality();
         //get min
         double edgeEstimation = Collections.min(Arrays.asList(C3_v, C3_filter, C1_e, C2_e, edgeEstimation_N1));
         //cost if zero since the real cost is residing on the adjacent filter (rel filter)
@@ -215,14 +215,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         //get entity one statistics calculated in prior step
 
-        double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getAsgEBase().geteBase()).getCardinality()._1;
+        double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getAsgEBase().geteBase()).getCardinality();
         double filterTowCard = entityTwoCard;
         if (filterTwoOp.getAsgEBase() != null) {
-            filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(),filterTwoOp.getAsgEBase().geteBase()).getCardinality()._1;
+            filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(),filterTwoOp.getAsgEBase().geteBase()).getCardinality();
         }
 
         //node redundand stats: C_2e
-        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(rel.getAsgEBase().geteBase(),entityTwoOp.getAsgEBase().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality()._1;
+        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(rel.getAsgEBase().geteBase(),entityTwoOp.getAsgEBase().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
 
         //node 2 cardinality estimation
         double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTowCard, edgeEstimation));
@@ -250,10 +250,10 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         //set entity type on this kaka
         filterOp.setEntity(entityOp.getAsgEBase());
         //calculate
-        double entityTotal = statisticsProvider.getNodeStatistics(entityOp.getAsgEBase().geteBase()).getCardinality()._1;
+        double entityTotal = statisticsProvider.getNodeStatistics(entityOp.getAsgEBase().geteBase()).getCardinality();
         double filterTotal = entityTotal;
         if (filterOp.getAsgEBase() != null) {
-            filterTotal = statisticsProvider.getNodeFilterStatistics(entityOp.getAsgEBase().geteBase(),filterOp.getAsgEBase().geteBase()).getCardinality()._1;
+            filterTotal = statisticsProvider.getNodeFilterStatistics(entityOp.getAsgEBase().geteBase(),filterOp.getAsgEBase().geteBase()).getCardinality();
         }
 
         double min = Math.min(entityTotal, filterTotal);

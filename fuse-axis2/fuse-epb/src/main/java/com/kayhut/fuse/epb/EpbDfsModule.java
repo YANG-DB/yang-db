@@ -8,7 +8,9 @@ import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.cost.CostEstimator;
 import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.dfs.StepAdjacentStrategy;
+import com.kayhut.fuse.epb.plan.extenders.dfs.StepAncestorAdjacentStrategy;
+import com.kayhut.fuse.epb.plan.extenders.dfs.StepDescendantAdjacentStrategy;
+import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -33,7 +35,8 @@ public class EpbDfsModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
                 .toInstance(
                         new CompositePlanExtensionStrategy<>(
-                                new StepAdjacentStrategy()));
+                                new StepDescendantAdjacentStrategy(),
+                                new StepAncestorAdjacentStrategy()));
 
         binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                 .annotatedWith(Names.named("GlobalPruningStrategy"))
@@ -42,5 +45,7 @@ public class EpbDfsModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                 .annotatedWith(Names.named("LocalPruningStrategy"))
                 .toInstance(new NoPruningPruneStrategy<>());
+
+        binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){}).to(M1PlanValidator.class).asEagerSingleton();
     }
 }
