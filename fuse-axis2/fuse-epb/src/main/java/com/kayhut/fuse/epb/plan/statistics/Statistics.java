@@ -81,7 +81,7 @@ public interface Statistics {
             int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
                 if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
                     return -1;
-                if (o1.getLowerBound().compareTo(o2.getHigherBound()) > 0)
+                if (o1.getLowerBound().compareTo(o2.getHigherBound()) >= 0)
                     return 1;
                 return 0;
             });
@@ -93,7 +93,7 @@ public interface Statistics {
 
         public List<BucketInfo<T>> findBucketsAbove(T value, boolean inclusive){
             int i = 0;
-            while(i < buckets.size() && ((buckets.get(i).getHigherBound().compareTo(value)<0 && inclusive) || (buckets.get(i).getHigherBound().compareTo(value)<=0 && !inclusive)) ){
+            while(i < buckets.size() && buckets.get(i).getHigherBound().compareTo(value)<=0 ){
                 i++;
             }
             return buckets.subList(i, buckets.size());

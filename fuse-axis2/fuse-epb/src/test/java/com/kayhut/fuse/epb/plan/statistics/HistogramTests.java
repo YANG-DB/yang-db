@@ -46,7 +46,7 @@ public class HistogramTests {
     @Test
     public void testFindAbovePrecise(){
         List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("b", true);
-        Assert.assertEquals(2, bucketsAbove.size());
+        Assert.assertEquals(1, bucketsAbove.size());
     }
 
     @Test
