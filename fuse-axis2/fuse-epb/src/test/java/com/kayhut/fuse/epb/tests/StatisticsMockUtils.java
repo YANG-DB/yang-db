@@ -26,7 +26,6 @@ public class StatisticsMockUtils {
     static StatisticsProvider build(Map<String, Map<Integer, Double>> statistics, long maxCardinalityNode, long maxCardinalityEdge) {
         StatisticsProvider mock = Mockito.mock(StatisticsProvider.class);
 
-
         //mock statistics provider
         when(mock.getNodeFilterStatistics(any(), any())).thenAnswer(invocationOnMock -> {
             EEntityBase item = (EEntityBase) invocationOnMock.getArguments()[0];
@@ -47,24 +46,24 @@ public class StatisticsMockUtils {
             }
 
             double total = factor * cost;
-            return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>((long)total, (long)total, "a", "z")));
+            return new Statistics.Cardinality(total, total);
         });
 
         when(mock.getNodeStatistics(any())).thenAnswer(invocationOnMock -> {
             Object argument = invocationOnMock.getArguments()[0];
 
             if (argument instanceof EConcrete)
-                return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(1l, 1l, "a", "z")));
+                return new Statistics.Cardinality(1,1);
 
             if (argument instanceof EUntyped)
-                return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(maxCardinalityNode, maxCardinalityNode, "a", "z")));
+                return new Statistics.Cardinality(maxCardinalityNode, maxCardinalityNode);
 
             if (argument instanceof ETyped) {
                 long cost = statistics.get(PlanMockUtils.NODE_STATISTICS).get(((ETyped) argument).geteType()).longValue();
-                return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(cost, cost, "a", "z")));
+                return new Statistics.Cardinality(cost, cost);
             }
             //default
-            return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(1l, 1l, "a", "z")));
+            return new Statistics.Cardinality(1, 1);
 
 
         });
@@ -77,25 +76,25 @@ public class StatisticsMockUtils {
             int id = Integer.valueOf(relProps.get(0).getpType());
             double factor = statistics.get(PlanMockUtils.EDGE_FILTER_STATISTICS).get(id);
 
-            if (item instanceof Rel) {
+            if (item != null) {
                 long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(item.getrType()).longValue();
                 double total = factor * cost;
-                return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>((long)total, (long)total, "a", "z")));
+                return new Statistics.Cardinality(total, total);
             }
 
-            return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(1l, 1l, "a", "z")));
+            return new Statistics.Cardinality(1, 1);
         });
 
         when(mock.getEdgeStatistics(any())).thenAnswer(invocationOnMock -> {
             Rel item = (Rel) invocationOnMock.getArguments()[0];
 
-            if (item instanceof Rel) {
+            if (item != null) {
                 long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(item.getrType()).longValue();
-                return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(cost, cost, "a", "z")));
+                return new Statistics.Cardinality(cost, cost);
             }
 
             //default
-            return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(1l, 1l, "a", "z")));
+            return new Statistics.Cardinality(1, 1);
 
 
         });
@@ -109,7 +108,7 @@ public class StatisticsMockUtils {
 
 
             long cost = statistics.get(PlanMockUtils.NODE_STATISTICS).get(etype.geteType()).longValue();
-            return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(cost, cost, "a", "z")));
+            return new Statistics.Cardinality(cost, cost);
         });
 
 
@@ -122,7 +121,7 @@ public class StatisticsMockUtils {
 
 
             long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(rel.getrType()).longValue();
-            return new Statistics.HistogramStatistics(Collections.singletonList(new Statistics.BucketInfo<>(cost, cost, "a", "z")));
+            return new Statistics.Cardinality(cost, cost);
         });
 
 

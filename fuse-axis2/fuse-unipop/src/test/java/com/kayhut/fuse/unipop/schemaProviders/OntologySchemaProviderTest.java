@@ -64,6 +64,16 @@ public class OntologySchemaProviderTest {
         Optional<Iterable<GraphEdgeSchema>> edgeSchemas = ontologySchemaProvider.getEdgeSchemas("Fire");
         assertEquals(Lists.newArrayList(edgeSchemas.get()).size(), 1);
     }
+
+    @Test
+    public void vertexPropertiesTest(){
+        Ontology ontology = getOntology();
+        OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
+        GraphVertexSchema person = ontologySchemaProvider.getVertexSchema("Person").get();
+        GraphElementPropertySchema name = person.getProperty("name").get();
+        Assert.assertEquals(name.getName(), "name");
+    }
+
     //ednregion
 
     //region Private Methods
@@ -92,8 +102,10 @@ public class OntologySchemaProviderTest {
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
+                    Property nameProp = new Property();
+                    nameProp.setName("name");
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(1).withName("Person").build());
+                            .withEType(1).withName("Person").withProperties(Collections.singletonList(nameProp)).build());
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(2).withName("Dragon").build());
                     return entityTypes;
