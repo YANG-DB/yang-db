@@ -2,6 +2,7 @@ package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
@@ -14,10 +15,15 @@ import java.util.List;
 public interface GraphStatisticsProvider {
     Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema);
     Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema, List<IndexPartition> relevantPartitions);
+    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
+    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<IndexPartition> relevantPartitions);
 
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphVertexSchema graphVertexSchema,
                                                                                       List<IndexPartition> relevantPartitions,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       ConstraintOp constraintOp, T value);
-
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphEdgeSchema graphEdgeSchema,
+                                                                                      List<IndexPartition> relevantPartitions,
+                                                                                      GraphElementPropertySchema graphElementPropertySchema,
+                                                                                      ConstraintOp constraintOp, T value);
 }
