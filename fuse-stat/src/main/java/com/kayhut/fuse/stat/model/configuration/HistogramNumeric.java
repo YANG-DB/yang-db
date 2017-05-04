@@ -25,25 +25,25 @@ public class HistogramNumeric extends Histogram {
         this.max = max;
     }
 
-    public String getInterval() {
-        return interval;
+    public String getNumOfBins() {
+        return numOfBins;
     }
 
-    public void setInterval(String interval) {
-        this.interval = interval;
+    public void setNumOfBins(String numOfBins) {
+        this.numOfBins = numOfBins;
     }
 
     //region Fields
     private String min;
     private String max;
-    private String interval;
+    private String numOfBins;
     //endregion
 
     //region Builder
     public static final class HistogramNumericBuilder {
         private String min;
         private String max;
-        private String interval;
+        private String numOfBins;
 
         private HistogramNumericBuilder() {
             super();
@@ -63,8 +63,8 @@ public class HistogramNumeric extends Histogram {
             return this;
         }
 
-        public HistogramNumericBuilder withInterval(String interval) {
-            this.interval = interval;
+        public HistogramNumericBuilder withNumOfBins(String interval) {
+            this.numOfBins = interval;
             return this;
         }
 
@@ -72,7 +72,7 @@ public class HistogramNumeric extends Histogram {
             HistogramNumeric histogramNumeric = new HistogramNumeric();
             histogramNumeric.setMin(min);
             histogramNumeric.setMax(max);
-            histogramNumeric.setInterval(interval);
+            histogramNumeric.setNumOfBins(numOfBins);
             return histogramNumeric;
         }
     }

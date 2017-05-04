@@ -15,13 +15,11 @@ import java.util.Arrays;
 public class StatContainerTest {
     @Test
     public void testStatModel() throws Exception {
-
-
         HistogramNumeric histogramDragonAge = HistogramNumeric.HistogramNumericBuilder.aHistogramNumeric()
-                .withMin("10").withMax("100").withInterval("10").build();
+                .withMin("10").withMax("100").withNumOfBins("10").build();
         HistogramString histogramDragonName = HistogramString.HistogramStringBuilder.aHistogramString()
-                .withPrefixSize("2")
-                .withInterval("3").build();
+                .withPrefixSize("3")
+                .withInterval("10").withNumOfChars("26").withFirstCharCode("97").build();
 
         HistogramManual histogramDragonAddress = HistogramManual.HistogramManualBuilder.aHistogramManual()
                 .withBuckets(Arrays.asList(
@@ -51,10 +49,7 @@ public class StatContainerTest {
         ObjectMapper mapper = new ObjectMapper();
         String statActualJson = mapper.writeValueAsString(statContainer);
         System.out.println(statActualJson);
-        String statExpectedJson = StatUtil.readJsonToString("stats_fields.json");
-
-
-
+        String statExpectedJson = StatUtil.readJsonToString("src/test/resources/stats_fields_test.json");
 
         JSONAssert.assertEquals(statExpectedJson, statActualJson, false);
 
@@ -62,7 +57,4 @@ public class StatContainerTest {
         Assert.assertNotNull(resultObj);
 
     }
-
-
-
 }

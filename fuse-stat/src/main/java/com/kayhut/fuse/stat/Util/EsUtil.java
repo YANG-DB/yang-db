@@ -4,22 +4,26 @@ import com.kayhut.fuse.stat.model.configuration.Bucket;
 import com.kayhut.fuse.stat.model.result.BucketStatResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filters.Filters;
 import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
@@ -51,49 +55,10 @@ public class EsUtil {
                                                                     String typeName,
                                                                     String fieldName,
                                                                     long min, long max,
-                                                                    long interval){
+                                                                    long numOfBins){
 
-        List<BucketStatResult> bucketStatResults = new ArrayList<>();
-
-        String aggName = buildAggName(indexName,typeName,fieldName);
-        SearchResponse sr =  client.prepareSearch(indexName)
-                .setTypes(typeName)
-                .addAggregation(AggregationBuilders.histogram(aggName)
-                        .field(fieldName)
-                        .interval(interval)
-                        .minDocCount(0)
-                        .extendedBounds(min, max)
-                        .subAggregation(AggregationBuilders.extendedStats(AGG_EXTENDED_STATS).field(fieldName))
-                        .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName))
-                )
-                .execute().actionGet();
-
-
-        Histogram histogram = sr.getAggregations().get(aggName);
-
-
-        // For each entry
-        for (Histogram.Bucket entry : histogram.getBuckets()) {
-            Number key = (Number) entry.getKey();   // Key
-            long docCount = entry.getDocCount();    // Doc count
-            InternalExtendedStats extendedStats = entry.getAggregations().get(AGG_EXTENDED_STATS);
-            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
-            BucketStatResult bucketStatResult = new BucketStatResult(indexName, typeName, fieldName,
-                    key.toString(),
-                    Long.toString(min),
-                    Long.toString(max),
-                    extendedStats.getCount(),
-                    extendedStats.getSum(),
-                    extendedStats.getSumOfSquares(),
-                    extendedStats.getAvg(),
-                    extendedStats.getMin(),
-                    extendedStats.getMax(),
-                    extendedStats.getVariance(),
-                    extendedStats.getStdDeviation(),
-                    cardinality.getValue());
-
-            bucketStatResults.add(bucketStatResult);
-        }
+        List<Bucket> buckets =  StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
+        List<BucketStatResult> bucketStatResults = getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
 
         return bucketStatResults;
     }
@@ -143,35 +108,91 @@ public class EsUtil {
         }
 
         if (dataType.equals("numeric")) {
-            RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(fieldName);
-            buckets.forEach(bucket -> {
-                Long start = Long.parseLong(bucket.getStart());
-                Long end = Long.parseLong(bucket.getEnd());
-                rangesAggregationBuilder.addRange(start, end);
-            });
+            bucketStatResults = getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
+        }
+        return bucketStatResults;
+    }
 
-            SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
-                    .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
-                    .execute().actionGet();
+    private static List<BucketStatResult> getNumericBucketsStatResults(Client client, String indexName, String typeName, String fieldName, List<Bucket> buckets) {
+        List<BucketStatResult> bucketStatResults = new ArrayList<>();
+        String aggName = buildAggName(indexName,typeName,fieldName);
 
-            Range agg = sr.getAggregations().get(aggName);
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
+                .setTypes(typeName);
 
-            for (Range.Bucket entry : agg.getBuckets()) {
-                String key = entry.getKeyAsString();             // Range as key
-                Number from = (Number) entry.getFrom();          // Bucket from
-                Number to = (Number) entry.getTo();              // Bucket to
-                long docCount = entry.getDocCount();    // Doc count
+        RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(fieldName);
+        buckets.forEach(bucket -> {
+            Long start = Long.parseLong(bucket.getStart());
+            Long end = Long.parseLong(bucket.getEnd());
+            rangesAggregationBuilder.addRange(start, end);
+        });
 
-                InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
-                BucketStatResult bucketStatResult = new BucketStatResult(indexName, typeName, fieldName,
-                        key,
-                        from.toString(),
-                        to.toString(),
-                        docCount,
-                        cardinality.getValue());
+        SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
+                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
+                .execute().actionGet();
 
-                bucketStatResults.add(bucketStatResult);
-            }
+        Range agg = sr.getAggregations().get(aggName);
+
+        for (Range.Bucket entry : agg.getBuckets()) {
+            String key = entry.getKeyAsString();             // Range as key
+            Number from = (Number) entry.getFrom();          // Bucket from
+            Number to = (Number) entry.getTo();              // Bucket to
+            long docCount = entry.getDocCount();    // Doc count
+
+            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
+            BucketStatResult bucketStatResult = new BucketStatResult(indexName, typeName, fieldName,
+                    key,
+                    from.toString(),
+                    to.toString(),
+                    docCount,
+                    cardinality.getValue());
+
+            bucketStatResults.add(bucketStatResult);
+        }
+
+        return bucketStatResults;
+    }
+
+    public static List<BucketStatResult> getStringHistogramResults(TransportClient client,
+                                                                   String indexName,
+                                                                   String typeName,
+                                                                   String fieldName,
+                                                                   List<Bucket> buckets){
+
+        List<BucketStatResult> bucketStatResults = new ArrayList<>();
+
+        String aggName = buildAggName(indexName,typeName,fieldName);
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
+                .setTypes(typeName);
+
+
+        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
+        buckets.forEach(bucket -> {
+            String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
+            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.rangeQuery(fieldName).from(bucket.getStart()).to(bucket.getEnd()));
+        });
+
+        SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
+                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
+                .execute().actionGet();
+
+        Filters aggregation = sr.getAggregations().get(aggName);
+
+        for (Filters.Bucket entry : aggregation.getBuckets()) {
+            String key = entry.getKeyAsString();            // bucket key
+            long docCount = entry.getDocCount();            // Doc count
+            String start = key.split("_")[0];          // Bucket start
+            String end = key.split("_")[1];              // Bucket end
+            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
+
+            BucketStatResult bucketStatResult = new BucketStatResult(indexName, typeName, fieldName,
+                    key,
+                    start,
+                    end,
+                    docCount,
+                    cardinality.getValue());
+
+            bucketStatResults.add(bucketStatResult);
         }
         return bucketStatResults;
     }
@@ -258,5 +279,34 @@ public class EsUtil {
             }
         }
         return fieldList;
+    }
+
+    public static boolean checkIfEsIndexExists(Client client, String index) {
+
+        IndexMetaData indexMetaData = client.admin().cluster()
+                .state(Requests.clusterStateRequest())
+                .actionGet()
+                .getState()
+                .getMetaData()
+                .index(index);
+
+        return (indexMetaData != null);
+
+    }
+
+    public static boolean checkIfEsTypeExists(Client client,String index, String type) {
+        ClusterStateResponse resp =
+                client.admin().cluster().prepareState().execute().actionGet();
+        ImmutableOpenMap<String, MappingMetaData> mappings = resp.getState().metaData().index(index).getMappings();
+        if (mappings.containsKey(type)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkIfEsDocExists(Client client,String index, String type, String docId) {
+        // Check if a document exists
+        GetResponse response = client.prepareGet(index, type, docId).setRefresh(true).execute().actionGet();
+        return response.isExists();
     }
 }

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.es;
+package com.kayhut.fuse.stat.es.client;
 
 import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.transport.TransportClient;

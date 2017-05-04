@@ -6,34 +6,22 @@ import com.kayhut.fuse.stat.model.result.BucketStatResult;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
-import org.elasticsearch.action.bulk.BackoffPolicy;
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
+import org.apache.commons.math3.random.EmpiricalDistribution;
+import org.apache.commons.math3.random.RandomGenerator;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.ClusterState;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.common.*;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.unit.ByteSizeUnit;
-import org.elasticsearch.common.unit.ByteSizeValue;
-import org.elasticsearch.common.unit.TimeValue;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.Base64;
 
 /**
  * Created by benishue on 30-Apr-17.
@@ -41,24 +29,27 @@ import java.util.Base64;
 public class StatUtil {
 
     public static String readJsonToString(String jsonRelativePath) throws Exception {
-        String result = "";
-        ClassLoader classLoader = StatUtil.class.getClassLoader();
+        String contents = "";
         try {
-            result = IOUtils.toString(classLoader.getResourceAsStream(jsonRelativePath));
+            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return result;
+        return contents;
     }
 
-    public static Optional<StatContainer> getStatConfigurationObject(String statJson) {
+    public static Optional<StatContainer> getStatConfigurationObject(Configuration configuration) {
         Optional<StatContainer> resultObj = Optional.empty();
         try {
+            String statConfigurationFilePath = configuration.getString("statistics.configuration.file");
+            String statJson = readJsonToString(statConfigurationFilePath);
             resultObj = Optional.of(new ObjectMapper().readValue(statJson, StatContainer.class));
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-            return resultObj;
+        return resultObj;
     }
 
     public static TransportClient getDataClient(Configuration configuration) throws UnknownHostException {
@@ -116,11 +107,12 @@ public class StatUtil {
         return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.manual);
     }
 
-    public static Iterable<Map<String, Object>> createBuckets(List<BucketStatResult> bucketStatResults) {
+    public static Iterable<Map<String, Object>> prepareStatDocs(List<BucketStatResult> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
         for (BucketStatResult bucketStatResult : bucketStatResults) {
             Map<String, Object> bucket = new HashedMap();
-            bucket.put("id", createBucketUniqueId(bucketStatResult.getIndex(),bucketStatResult.getType(),bucketStatResult.getField(),bucketStatResult.getKey(), bucketStatResult.getLowerBound(),bucketStatResult.getUpperBound()));
+            String bucketId = createBucketUniqueId(bucketStatResult.getIndex(),bucketStatResult.getType(),bucketStatResult.getField(), bucketStatResult.getLowerBound(),bucketStatResult.getUpperBound());
+            bucket.put("id", bucketId);
             bucket.put("index", bucketStatResult.getIndex());
             bucket.put("type", bucketStatResult.getType());
             bucket.put("field", bucketStatResult.getField());
@@ -134,8 +126,8 @@ public class StatUtil {
         return buckets;
     }
 
-    public static String createBucketUniqueId(String indexName, String typeName, String fieldName, String bucketKey, String lowerBound, String upperBound){
-        return hashMessage(indexName +typeName + fieldName + bucketKey + lowerBound + upperBound);
+    public static String createBucketUniqueId(String indexName, String typeName, String fieldName, String lowerBound, String upperBound){
+        return hashString(indexName +typeName + fieldName + lowerBound + upperBound);
     }
 
     public static Optional<Field> getFieldByName(StatContainer statContainer, String typeName, String fieldName) {
@@ -189,7 +181,7 @@ public class StatUtil {
     }
 
    //Create a MD5 hash of a given message. Used for creating unique document IDs.
-    public static String hashMessage(String message) {
+    public static String hashString(String message) {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             byte[] bucketDescriptionBytes = message.getBytes("UTF8");
@@ -218,4 +210,19 @@ public class StatUtil {
         }
     }
 
+    public static List<Bucket> createNumericBuckets(long min, long max, int numOfBins) {
+        List<Bucket> buckets = new ArrayList<>();
+        double[] bucketsData = new double[numOfBins];
+        for (int i = 0; i < numOfBins; i++){
+            bucketsData[i] = min + i * (max - min) / (numOfBins - 1);
+        }
+
+        for (int i = 0; i < bucketsData.length -1; i++){
+            int start = (int)bucketsData[i];
+            int end = (int)bucketsData[i+1];
+            Bucket bucket = new Bucket(Integer.toString(start), Integer.toString(end));
+            buckets.add(bucket);
+        }
+        return buckets;
+    }
 }
