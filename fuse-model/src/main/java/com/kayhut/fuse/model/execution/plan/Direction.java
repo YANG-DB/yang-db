@@ -16,6 +16,10 @@ public enum Direction {
         return in == this ? out : in;
     }
 
+    public static Rel.Direction reverse(Rel.Direction dir) {
+        return of(dir).reverse().to();
+    }
+
     public static Direction of(Rel.Direction dir) {
         switch (dir) {
             case L:
