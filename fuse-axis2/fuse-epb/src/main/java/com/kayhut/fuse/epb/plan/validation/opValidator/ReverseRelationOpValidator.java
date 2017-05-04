@@ -64,9 +64,9 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
 
         List<AsgEBase<EBase>> elements = AsgQueryUtils.getElements(query, asgEBase -> entityAndRelationEnums.contains(asgEBase.geteNum()));
 
-        boolean isReversed = EEntityBase.class.isAssignableFrom(elements.get(0).geteBase().getClass());
+        boolean isReversed = Rel.class.isAssignableFrom(elements.get(0).geteBase().getClass());
 
-        return isReversed ? ((Rel)(elements.get(1).geteBase())).getDir() != asgRelation.geteBase().getDir() :
+        return isReversed ? ((Rel)(elements.get(0).geteBase())).getDir() != asgRelation.geteBase().getDir() :
                 ((Rel)(elements.get(1).geteBase())).getDir() == asgRelation.geteBase().getDir();
     }
     //endregion
