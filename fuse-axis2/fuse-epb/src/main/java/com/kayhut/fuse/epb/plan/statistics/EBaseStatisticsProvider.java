@@ -11,8 +11,6 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -27,6 +25,8 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import static com.kayhut.fuse.asg.util.AsgQueryUtils.getVertexTypes;
 
 /**
  * Created by liorp on 4/26/2017.
@@ -43,6 +43,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         supportedOps.add(ConstraintOp.gt);
         supportedOps.add(ConstraintOp.le);
         supportedOps.add(ConstraintOp.lt);
+        supportedOps.add(ConstraintOp.ne);
     }
 
 
@@ -59,7 +60,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             return bucketInfos.get(0).getCardinalityObject();
         }
 
-        List<String> vertexTypes = getVertexTypes(entity);
+        List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
         Statistics.Cardinality entityStats = getVertexStatistics(vertexTypes.get(0));
 
         for (int i = 1; i < vertexTypes.size(); i++) {
@@ -77,7 +78,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
             return bucketInfos.get(0).getCardinalityObject();
         }
-        List<String> vertexTypes = getVertexTypes(entity);
+        List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
         Statistics.Cardinality entityStats = estimateVertexPropertyGroup(vertexTypes.get(0), entityFilter);
 
         for (int i = 1; i < vertexTypes.size(); i++) {
@@ -89,16 +90,16 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.Cardinality getEdgeStatistics(Rel rel) {
-        GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType()), Optional.empty(), Optional.empty()).get();
+        GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
         return getEdgeStatistics(edgeSchema);
     }
 
     @Override
     public Statistics.Cardinality getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType()), Optional.empty(), Optional.empty()).get();
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
         List<IndexPartition> indexPartitions = StreamSupport.stream(graphEdgeSchema.getIndexPartitions().spliterator(),false).collect(Collectors.toList());
         List<IndexPartition> relevantPartitions = new ArrayList<>(indexPartitions);
-        if(indexPartitions.size() > 0 && indexPartitions.get(0) instanceof TimeSeriesIndexPartition){
+        if(!indexPartitions.isEmpty() && indexPartitions.get(0) instanceof TimeSeriesIndexPartition){
             relevantPartitions = findRelevantTimeSeriesPartitions(indexPartitions, relFilter);
         }
 
@@ -132,7 +133,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public long getGlobalSelectivity(Rel rel, EBase entity, Direction direction) {
+    public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
         return 0;
     }
 
@@ -152,23 +153,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return graphStatisticsProvider.getVertexCardinality(graphVertexSchema, relevantPartitions);
     }
 
-    private List<String> getVertexTypes(EEntityBase entity) {
-        List<String> vertexTypes = null;
-        if (entity instanceof EUntyped) {
-            EUntyped eUntyped = (EUntyped) entity;
-            if (eUntyped.getvTypes().size() > 0) {
-                vertexTypes = eUntyped.getvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList());
-            } else {
-                vertexTypes = StreamSupport.stream(graphElementSchemaProvider.getVertexTypes().spliterator(), false).collect(Collectors.toList());
-                if (eUntyped.getNvTypes().size() > 0) {
-                    vertexTypes.removeAll(eUntyped.getNvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList()));
-                }
-            }
-        } else if (entity instanceof ETyped) {
-            vertexTypes = Collections.singletonList(OntologyUtil.getEntityTypeNameById(ontology, ((ETyped) entity).geteType()));
-        }
-        return vertexTypes;
-    }
 
     private Statistics.Cardinality estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
         GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
@@ -182,18 +166,22 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.Cardinality minVertexCardinality = null;
         for(EProp eProp : entityFilter.geteProps()){
-            GraphElementPropertySchema graphElementPropertySchema = graphVertexSchema.getProperty(eProp.getpType()).get();
-            Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema, eProp.getCon(), relevantPartitions);
-            if(minVertexCardinality == null){
-                if(conditionCardinality.isPresent())
-                    minVertexCardinality = conditionCardinality.get();
-                else{
-                    minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantPartitions);
+            Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(eProp.getpType());
+            if(graphElementPropertySchema.isPresent()) {
+                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantPartitions);
+                if (minVertexCardinality == null) {
+                    if (conditionCardinality.isPresent())
+                        minVertexCardinality = conditionCardinality.get();
+                    else {
+                        minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantPartitions);
+                    }
+                } else {
+                    if (conditionCardinality.isPresent() && minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
+                        minVertexCardinality = conditionCardinality.get();
                 }
-            }
-            else{
-                if(conditionCardinality.isPresent() &&  minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
-                    minVertexCardinality = conditionCardinality.get();
+            }else{
+                // If a property does not exist on the vertex, we return 0 cardinality (again, assuming AND behavior)
+                return new Statistics.Cardinality(0,0);
             }
         }
         return minVertexCardinality;
@@ -270,6 +258,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             case le:
                 bucketsBelow = histogramStatistics.findBucketsBelow(value, true);
                 return estimateLessThan(bucketsBelow, value, true);
+            case ne:
+                // Pessimistic estimate that a not equals condition is almost the same as the entire distribution
+                // given that we throw a single value
+                return mergeBucketsCardinality(histogramStatistics.getBuckets());
 
         }
         return cardinality;

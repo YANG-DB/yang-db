@@ -7,13 +7,9 @@ import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.Step;
-import org.apache.tinkerpop.gremlin.process.traversal.step.filter.AndStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
-import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +25,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
         Optional<String> edgeLabel = getEdgeLabel(context.getEdgeConstraint());
 
         if(edgeLabel.isPresent()) {
-            Optional<GraphEdgeSchema> edgeSchema = context.getSchema().getEdgeSchema(edgeLabel.get(), Optional.empty(), Optional.empty());
+            Optional<GraphEdgeSchema> edgeSchema = context.getSchema().getEdgeSchema(edgeLabel.get());
             if(edgeSchema.isPresent()) {
                 searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchema.get().getIndexPartitions()));
             }

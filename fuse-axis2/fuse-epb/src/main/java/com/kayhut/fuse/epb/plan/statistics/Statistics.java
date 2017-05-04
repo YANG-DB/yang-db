@@ -78,17 +78,14 @@ public interface Statistics {
 
         public Optional<BucketInfo<T>> findBucketContaining(T value){
             BucketInfo<T> dummyInfo = new BucketInfo<T>(0L,0L,value, value);
-            int searchResult = Collections.binarySearch(buckets, dummyInfo, new Comparator<BucketInfo<T>>() {
-                @Override
-                public int compare(BucketInfo<T> o1, BucketInfo<T> o2) {
-                    if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
-                        return -1;
-                    if (o1.getLowerBound().compareTo(o2.getHigherBound()) > 0)
-                        return 1;
-                    return 0;
-                }
+            int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
+                if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
+                    return -1;
+                if (o1.getLowerBound().compareTo(o2.getHigherBound()) > 0)
+                    return 1;
+                return 0;
             });
-            if(searchResult != -1){
+            if(searchResult >= 0){
                 return Optional.of(buckets.get(searchResult));
             }
             return Optional.empty();

@@ -16,7 +16,7 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
     }
 
     @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String type, Optional<String> sourceType, Optional<String> destinationType) {
+    public Optional<GraphEdgeSchema> getEdgeSchema(String type) {
         return Optional.empty();
     }
 

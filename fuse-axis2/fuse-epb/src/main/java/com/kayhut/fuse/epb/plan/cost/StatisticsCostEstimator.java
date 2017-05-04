@@ -198,7 +198,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         //edge estimate =>
         Direction direction = Direction.of(rel.getAsgEBase().geteBase().getDir());
-        double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(rel.getAsgEBase().geteBase(),entityOneOp.getAsgEBase().geteBase(),direction);
+        double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(rel.getAsgEBase().geteBase(),
+                relFilterOp.getAsgEBase().geteBase() ,
+                entityOneOp.getAsgEBase().geteBase(), direction);
 
         //redundant
         //C1_e

@@ -2,14 +2,12 @@ package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.google.common.base.Strings;
 import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.unipop.structure.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.map;
 
 /**
  * Created by benishue on 22-Mar-17.
@@ -36,9 +34,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     @Override
     public Optional<GraphEdgeSchema> getEdgeSchema(
-            String edgeType,
-            Optional<String> sourceVertexType,
-            Optional<String> destinationVertexType) {
+            String edgeType) {
 
         if (Strings.isNullOrEmpty(edgeType)) {
             return Optional.empty();
@@ -48,14 +44,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
         if (!edgeSchemas.isPresent())
             return Optional.empty();
 
-        Optional<GraphEdgeSchema> graphEdgeSchema = Stream.ofAll(edgeSchemas.get()).find(edgeSchema -> edgeSchema.getType().equals(edgeType) &&
-                edgeSchema.getSource().get().getType().get().equals(sourceVertexType.get()) &&
-                edgeSchema.getDestination().get().getType().get().equals(destinationVertexType.get())).getOption().toJavaOptional();
-
-        if (!graphEdgeSchema.isPresent())
-            return Optional.empty();
-
-        return graphEdgeSchema;
+        return Stream.ofAll(edgeSchemas.get()).find(edgeSchema -> edgeSchema.getType().equals(edgeType)).toJavaOptional() ;
     }
 
     @Override

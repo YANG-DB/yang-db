@@ -11,7 +11,6 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.mockito.Mockito;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -125,7 +124,7 @@ public class StatisticsMockUtils {
         });
 
 
-        when(mock.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> 10);
+        when(mock.getGlobalSelectivity(any(), any(), any(), any())).thenAnswer(invocationOnMock -> 10);
 
         return mock;
     }

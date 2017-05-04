@@ -32,6 +32,12 @@ public class HistogramTests {
     }
 
     @Test
+    public void testFindNonExistingValue(){
+        Optional<Statistics.BucketInfo<String>> aaaBucket = histogram.findBucketContaining("ba");
+        Assert.assertFalse(aaaBucket.isPresent());
+    }
+
+    @Test
     public void testFindAbove(){
         List<Statistics.BucketInfo<String>> bucketsAbove = histogram.findBucketsAbove("aaa", true);
         Assert.assertEquals(2, bucketsAbove.size());

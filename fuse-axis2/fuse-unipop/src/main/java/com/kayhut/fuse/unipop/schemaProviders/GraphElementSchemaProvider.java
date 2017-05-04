@@ -7,7 +7,7 @@ import java.util.Optional;
  */
 public interface GraphElementSchemaProvider {
     Optional<GraphVertexSchema> getVertexSchema(String type);
-    Optional<GraphEdgeSchema> getEdgeSchema(String type, Optional<String> sourceType, Optional<String> destinationType);
+    Optional<GraphEdgeSchema> getEdgeSchema(String type);
     Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String type);
 
     Iterable<String> getVertexTypes();

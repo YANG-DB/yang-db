@@ -2,14 +2,8 @@ package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
-import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -45,7 +39,7 @@ public class OntologySchemaProviderTest {
     public void getEdgeSchema() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire", Optional.of("Dragon"), Optional.of("Person")).get();
+        GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
         assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getType().get(), "Person");
 
         assertEquals(1, Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions()).size());
