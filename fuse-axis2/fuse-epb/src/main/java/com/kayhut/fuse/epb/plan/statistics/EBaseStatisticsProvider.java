@@ -15,7 +15,9 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
@@ -86,13 +88,37 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public Statistics.Cardinality getEdgeStatistics(Rel item) {
-        return null;
+    public Statistics.Cardinality getEdgeStatistics(Rel rel) {
+        GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType()), Optional.empty(), Optional.empty()).get();
+        return getEdgeStatistics(edgeSchema);
     }
 
     @Override
-    public Statistics.Cardinality getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter) {
-        return null;
+    public Statistics.Cardinality getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType()), Optional.empty(), Optional.empty()).get();
+        List<IndexPartition> indexPartitions = StreamSupport.stream(graphEdgeSchema.getIndexPartitions().spliterator(),false).collect(Collectors.toList());
+        List<IndexPartition> relevantPartitions = new ArrayList<>(indexPartitions);
+        if(indexPartitions.size() > 0 && indexPartitions.get(0) instanceof TimeSeriesIndexPartition){
+            relevantPartitions = findRelevantTimeSeriesPartitions(indexPartitions, relFilter);
+        }
+
+        Statistics.Cardinality minVertexCardinality = null;
+        for(RelProp relProp : relFilter.getrProps()){
+            GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(relProp.getpType()).get();
+            Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantPartitions);
+            if(minVertexCardinality == null){
+                if(conditionCardinality.isPresent())
+                    minVertexCardinality = conditionCardinality.get();
+                else{
+                    minVertexCardinality = getEdgeStatistics(graphEdgeSchema, relevantPartitions);
+                }
+            }
+            else{
+                if(conditionCardinality.isPresent() &&  minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
+                    minVertexCardinality = conditionCardinality.get();
+            }
+        }
+        return minVertexCardinality;
     }
 
     @Override
@@ -108,6 +134,14 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     @Override
     public long getGlobalSelectivity(Rel rel, EBase entity, Direction direction) {
         return 0;
+    }
+
+    private Statistics.Cardinality getEdgeStatistics(GraphEdgeSchema edgeSchema) {
+        return graphStatisticsProvider.getEdgeCardinality(edgeSchema);
+    }
+
+    private Statistics.Cardinality getEdgeStatistics(GraphEdgeSchema edgeSchema, List<IndexPartition> relevantPartitions) {
+        return graphStatisticsProvider.getEdgeCardinality(edgeSchema, relevantPartitions);
     }
 
     private Statistics.Cardinality getVertexStatistics(String vertexType) {
@@ -181,10 +215,36 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return Optional.empty();
     }
 
+    private Optional<Statistics.Cardinality> getConditionCardinality(GraphEdgeSchema graphEdgeSchema,
+                                                                     GraphElementPropertySchema graphElementPropertySchema,
+                                                                     Constraint constraint,
+                                                                     List<IndexPartition> relevantPartitions) {
+
+        if(!supportedOps.contains(constraint.getOp())){
+            return Optional.empty();
+        }
+
+        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, graphElementPropertySchema.getType());
+        if(primitiveType.isPresent()) {
+            return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, relevantPartitions, primitiveType.get().getJavaType());
+        }
+        return Optional.empty();
+    }
+
     private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphVertexSchema graphVertexSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraint, List<IndexPartition> relevantPartitions, Class<T> tp) {
         if(tp.isInstance(constraint.getExpr())){
             T expr = (T) constraint.getExpr();
             Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphVertexSchema, relevantPartitions, graphElementPropertySchema, constraint.getOp(), expr);
+            return Optional.of(estimateCardinality(histogramStatistics, expr, constraint.getOp()));
+        }
+        return Optional.empty();
+    }
+
+    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphEdgeSchema graphEdgeSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraint, List<IndexPartition> relevantPartitions, Class<T> tp) {
+        if(tp.isInstance(constraint.getExpr())){
+            T expr = (T) constraint.getExpr();
+
+            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphEdgeSchema, relevantPartitions, graphElementPropertySchema, constraint.getOp(), expr);
             return Optional.of(estimateCardinality(histogramStatistics, expr, constraint.getOp()));
         }
         return Optional.empty();
@@ -282,6 +342,31 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         for (EProp eProp : entityFilter.geteProps()){
             if(eProp.getpType().equals(firstPartition.getTimeField())){
                 timeCondition = eProp;
+                break;
+            }
+        }
+
+        if(timeCondition == null)
+            return indexPartitions;
+
+        List<IndexPartition> relevantPartitions = new ArrayList<>(indexPartitions);
+
+        for(IndexPartition indexPartition : indexPartitions){
+            TimeSeriesIndexPartition timeSeriesIndexPartition = (TimeSeriesIndexPartition) indexPartition;
+            //todo remove non relevant partitions
+        }
+
+        return relevantPartitions;
+
+    }
+
+    private List<IndexPartition> findRelevantTimeSeriesPartitions(List<IndexPartition> indexPartitions, RelPropGroup relPropGroup) {
+        //todo check if should use db prop name
+        TimeSeriesIndexPartition firstPartition = (TimeSeriesIndexPartition) indexPartitions.get(0);
+        RelProp timeCondition = null;
+        for (RelProp relProp : relPropGroup.getrProps()){
+            if(relProp.getpType().equals(firstPartition.getTimeField())){
+                timeCondition = relProp;
                 break;
             }
         }
