@@ -27,11 +27,11 @@ public class EntityType {
         this.name = name;
     }
 
-    public List<Property> getProperties() {
+    public List<Integer> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<Property> properties) {
+    public void setProperties(List<Integer> properties) {
         this.properties = properties;
     }
 
@@ -43,15 +43,6 @@ public class EntityType {
         this.display = display;
     }
 
-    @JsonProperty("DBeName")
-    public String getDBeName() {
-        return DBeName;
-    }
-    @JsonProperty("DBeName")
-    public void setDBeName(String DBeName) {
-        this.DBeName = DBeName;
-    }
-
     @Override
     public String toString()
     {
@@ -60,18 +51,16 @@ public class EntityType {
 
     //region Fields
     private int eType;
-    private String DBeName;
     private String name;
-    private List<Property> properties;
+    private List<Integer> properties;
     private List<String> display;
     //endregion
 
     //region Builder
     public static final class EntityTypeBuilder {
         private int eType;
-        private String DBeName;
         private String name;
-        private List<Property> properties;
+        private List<Integer> properties;
         private List<String> display;
 
         private EntityTypeBuilder() {
@@ -86,17 +75,12 @@ public class EntityType {
             return this;
         }
 
-        public EntityTypeBuilder withDBeName(String DBeName) {
-            this.DBeName = DBeName;
-            return this;
-        }
-
         public EntityTypeBuilder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public EntityTypeBuilder withProperties(List<Property> properties) {
+        public EntityTypeBuilder withProperties(List<Integer> properties) {
             this.properties = properties;
             return this;
         }
@@ -108,7 +92,6 @@ public class EntityType {
 
         public EntityType build() {
             EntityType entityType = new EntityType();
-            entityType.setDBeName(DBeName);
             entityType.setName(name);
             entityType.setProperties(properties);
             entityType.setDisplay(display);

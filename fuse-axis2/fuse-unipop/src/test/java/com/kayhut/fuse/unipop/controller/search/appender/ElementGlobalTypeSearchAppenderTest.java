@@ -12,17 +12,14 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.unipop.query.search.SearchQuery;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -81,7 +78,7 @@ public class ElementGlobalTypeSearchAppenderTest {
             seteTypeA(2);
             seteTypeB(1);
         }});
-        RelationshipType fireRelationshipType = RelationshipType.RelationshipTypeBuilder.aRelationshipType()
+        RelationshipType fireRelationshipType = RelationshipType.Builder.get()
                 .withRType(1).withName("Fire").withEPairs(ePairs).build();
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {

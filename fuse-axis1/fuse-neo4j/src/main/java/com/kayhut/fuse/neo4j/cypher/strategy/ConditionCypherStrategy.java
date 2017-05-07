@@ -88,9 +88,9 @@ public class ConditionCypherStrategy extends CypherStrategy {
             AsgEBase p = parents.poll();
 
             if (asgNode.geteBase() instanceof EProp && p.geteBase() instanceof ETyped) {
-                return OntologyUtil.getProperty(ont, ((ETyped) p.geteBase()).geteType(), pType);
+                return OntologyUtil.getProperty(ont, Integer.parseInt(pType));
             } else if (asgNode.geteBase() instanceof RelProp && p.geteBase() instanceof Rel) {
-                return OntologyUtil.getRelationshipProperty(ont, ((Rel) p.geteBase()).getrType(), pType);
+                return OntologyUtil.getProperty(ont, Integer.parseInt(pType));
             } else {
                 parents.addAll(p.getParents());
             }

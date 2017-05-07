@@ -38,6 +38,14 @@ public class Ontology {
         return entityTypes;
     }
 
+    public List<Property> getProperties() {
+        return this.properties;
+    }
+
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
+    }
+
     public void setEntityTypes(List<EntityType> entityTypes) {
         this.entityTypes = entityTypes;
     }
@@ -86,6 +94,7 @@ public class Ontology {
     private String ont;
     private List<EntityType> entityTypes;
     private List<RelationshipType> relationshipTypes;
+    private List<Property> properties;
     private List<EnumeratedType> enumeratedTypes;
     private List<CompositeType> compositeTypes;
     private List<PrimitiveType> primitiveTypes;
@@ -97,6 +106,7 @@ public class Ontology {
         private String ont;
         private List<EntityType> entityTypes;
         private List<RelationshipType> relationshipTypes;
+        private List<Property> properties;
         private List<EnumeratedType> enumeratedTypes;
         private List<CompositeType> compositeTypes;
 
@@ -132,6 +142,11 @@ public class Ontology {
             return this;
         }
 
+        public OntologyBuilder withProperties(List<Property> properties) {
+            this.properties = properties;
+            return this;
+        }
+
         public Ontology build() {
             Ontology ontology = new Ontology();
             ontology.setOnt(ont);
@@ -139,6 +154,7 @@ public class Ontology {
             ontology.setRelationshipTypes(relationshipTypes);
             ontology.setEnumeratedTypes(enumeratedTypes);
             ontology.setCompositeTypes(compositeTypes);
+            ontology.setProperties(properties);
             return ontology;
         }
     }

@@ -94,7 +94,7 @@ public class EBaseStatisticsProviderTests {
         });*/
         when(indexProvider.getIndexPartitionByLabel(any(), any())).thenReturn(() -> new LinkedList<>());
 
-        ontology = OntologyTestUtils.createDragonsOntologyShort(new Ontology());
+        ontology = OntologyTestUtils.createDragonsOntologyShort();
         graphElementSchemaProvider = new OntologySchemaProvider(indexProvider, ontology);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
@@ -105,6 +105,7 @@ public class EBaseStatisticsProviderTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Long.class))).thenReturn(new Statistics.HistogramStatistics<>(longBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
     }
 

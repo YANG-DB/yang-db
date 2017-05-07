@@ -90,20 +90,27 @@ public class OntologySchemaProviderTest {
             seteTypeA(2);
             seteTypeB(1);
         }});
-        RelationshipType fireRelationshipType = RelationshipType.RelationshipTypeBuilder.aRelationshipType()
+
+        RelationshipType fireRelationshipType = RelationshipType.Builder.get()
                 .withRType(1).withName("Fire").withEPairs(ePairs).build();
+
+        Property nameProp = new Property();
+        nameProp.setName("name");
+        nameProp.setpType(1);
+
+        when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
+
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
-                    Property nameProp = new Property();
-                    nameProp.setName("name");
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(1).withName("Person").withProperties(Collections.singletonList(nameProp)).build());
+                            .withEType(1).withName("Person").withProperties(Collections.singletonList(nameProp.getpType())).build());
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(2).withName("Dragon").build());
                     return entityTypes;
                 }
         );
+
         when(ontology.getRelationshipTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<RelationshipType> relTypes = new ArrayList<>();

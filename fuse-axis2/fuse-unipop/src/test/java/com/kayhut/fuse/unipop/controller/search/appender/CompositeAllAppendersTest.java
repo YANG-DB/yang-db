@@ -6,8 +6,6 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.*;
-import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
@@ -229,7 +227,7 @@ public class CompositeAllAppendersTest {
             seteTypeA(2);
             seteTypeB(1);
         }});
-        RelationshipType fireRelationshipType = RelationshipType.RelationshipTypeBuilder.aRelationshipType()
+        RelationshipType fireRelationshipType = RelationshipType.Builder.get()
                 .withRType(1).withName("Fire").withEPairs(ePairs).build();
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {

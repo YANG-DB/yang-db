@@ -1,7 +1,6 @@
 package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -43,30 +42,12 @@ public class Property {
         this.report = report;
     }
 
-    public String getHeight() {
-        return height;
-    }
-
-    public void setHeight(String height) {
-        this.height = height;
-    }
-
     public String getUnits() {
         return units;
     }
 
     public void setUnits(String units) {
         this.units = units;
-    }
-
-    @JsonProperty("DBpName")
-    public String getDBpName() {
-        return DBpName;
-    }
-
-    @JsonProperty("DBpName")
-    public void setDBpName(String DBpName) {
-        this.DBpName = DBpName;
     }
 
     @Override
@@ -79,60 +60,46 @@ public class Property {
     private int pType;
     private String name;
     private String type;
-    private String DBpName;
     private List<String> report;
-    private String height;
     private String units;
     //endregion
 
     //region Builder
-    public static final class PropertyBuilder {
+    public static final class Builder {
         private int pType;
         private String name;
         private String type;
-        private String DBrName;
         private List<String> report;
-        private String height;
         private String units;
 
-        private PropertyBuilder() {
+        private Builder() {
         }
 
-        public static PropertyBuilder aProperty() {
-            return new PropertyBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public PropertyBuilder withPType(int pType) {
+        public Builder withPType(int pType) {
             this.pType = pType;
             return this;
         }
 
-        public PropertyBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public PropertyBuilder withType(String type) {
+        public Builder withType(String type) {
             this.type = type;
             return this;
         }
 
-        public PropertyBuilder withDBrName(String DBrName) {
-            this.DBrName = DBrName;
-            return this;
-        }
-
-        public PropertyBuilder withReport(List<String> report) {
+        public Builder withReport(List<String> report) {
             this.report = report;
             return this;
         }
 
-        public PropertyBuilder withHeight(String height) {
-            this.height = height;
-            return this;
-        }
-
-        public PropertyBuilder withUnits(String units) {
+        public Builder withUnits(String units) {
             this.units = units;
             return this;
         }
@@ -141,9 +108,7 @@ public class Property {
             Property property = new Property();
             property.setName(name);
             property.setType(type);
-            property.setDBpName(DBrName);
             property.setReport(report);
-            property.setHeight(height);
             property.setUnits(units);
             property.pType = this.pType;
             return property;

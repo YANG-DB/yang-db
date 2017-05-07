@@ -344,7 +344,7 @@ public class GremlinTranslationAppenderEngineTest {
         when(ontology.getRelationshipTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<RelationshipType> relTypes = new ArrayList<>();
-                    relTypes.add(RelationshipType.RelationshipTypeBuilder.aRelationshipType()
+                    relTypes.add(RelationshipType.Builder.get()
                             .withRType(1).withName("Fire").build());
                     return  relTypes;
                 }

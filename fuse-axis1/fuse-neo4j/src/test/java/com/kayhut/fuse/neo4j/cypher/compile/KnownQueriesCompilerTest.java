@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
@@ -22,11 +23,12 @@ public class KnownQueriesCompilerTest {
 
     @Before
     public void setUp() throws Exception {
-        ontology = loadOntology("dragons.json");
+        //ontology = loadOntology("dragons.json");
         asgQuery = new RecTwoPassAsgQuerySupplier(loadQuery("Q003-1.json")).get();
     }
 
     @Test
+    @Ignore
     public void shouldCompileV1Q3() {
 
         String cypher = CypherCompiler.compile(asgQuery, ontology);
