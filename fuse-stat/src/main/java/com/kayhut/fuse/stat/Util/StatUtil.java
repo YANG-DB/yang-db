@@ -1,37 +1,27 @@
 package com.kayhut.fuse.stat.Util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.stat.model.Field;
-import com.kayhut.fuse.stat.model.HistogramType;
-import com.kayhut.fuse.stat.model.StatContainer;
-import com.kayhut.fuse.stat.model.Type;
+import com.kayhut.fuse.stat.model.configuration.*;
+import com.kayhut.fuse.stat.model.result.BucketStatResult;
 import javaslang.collection.Stream;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
-import org.elasticsearch.action.bulk.BackoffPolicy;
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.index.IndexRequest;
+import org.apache.commons.math3.random.EmpiricalDistribution;
+import org.apache.commons.math3.random.RandomGenerator;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.ClusterState;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
-import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.unit.ByteSizeUnit;
-import org.elasticsearch.common.unit.ByteSizeValue;
-import org.elasticsearch.common.unit.TimeValue;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
-
-import static java.util.Optional.ofNullable;
 
 /**
  * Created by benishue on 30-Apr-17.
@@ -39,27 +29,30 @@ import static java.util.Optional.ofNullable;
 public class StatUtil {
 
     public static String readJsonToString(String jsonRelativePath) throws Exception {
-        String result = "";
-        ClassLoader classLoader = StatUtil.class.getClassLoader();
+        String contents = "";
         try {
-            result = IOUtils.toString(classLoader.getResourceAsStream(jsonRelativePath));
+            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return result;
+        return contents;
     }
 
-    public static Optional<StatContainer> getStatConfigurationObject(String statJson) {
+    public static Optional<StatContainer> getStatConfigurationObject(Configuration configuration) {
         Optional<StatContainer> resultObj = Optional.empty();
         try {
+            String statConfigurationFilePath = configuration.getString("statistics.configuration.file");
+            String statJson = readJsonToString(statConfigurationFilePath);
             resultObj = Optional.of(new ObjectMapper().readValue(statJson, StatContainer.class));
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-            return resultObj;
+        return resultObj;
     }
 
-    public static TransportClient getClient(Configuration configuration) throws UnknownHostException {
+    public static TransportClient getDataClient(Configuration configuration) throws UnknownHostException {
         String clusterName = configuration.getString("es.cluster.name");
         int transportPort = configuration.getInt("es.client.transport.port");
         String[] hosts = configuration.getStringArray("es.nodes.hosts");
@@ -106,83 +99,129 @@ public class StatUtil {
         return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.numeric);
     }
 
-    public static void bulkIndexing(TransportClient client, String filePath, String index, String type) throws IOException {
-        BulkProcessor bulkProcessor = BulkProcessor.builder(
-                client,
-                new BulkProcessor.Listener() {
-                    @Override
-                    public void beforeBulk(long executionId,
-                                           BulkRequest request) {  }
-
-                    @Override
-                    public void afterBulk(long executionId,
-                                          BulkRequest request,
-                                          BulkResponse response) {  }
-
-                    @Override
-                    public void afterBulk(long executionId,
-                                          BulkRequest request,
-                                          Throwable failure) {  }
-                })
-                .setBulkActions(100)
-                .setBulkSize(new ByteSizeValue(1, ByteSizeUnit.MB))
-                .setFlushInterval(TimeValue.timeValueSeconds(5))
-                .setConcurrentRequests(1)
-                .setBackoffPolicy(
-                        BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(100), 3))
-                .build();
-
-        File file = FileUtils.getFile(filePath);
-
-        LineIterator it = FileUtils.lineIterator(file, "UTF-8");
-        try {
-            int i = 1;
-            while (it.hasNext()) {
-                String line = it.nextLine();
-                bulkProcessor.add((IndexRequest) new IndexRequest(index, type, String.valueOf(i))
-                        .source(line));
-                i++;
-            }
-        } finally {
-            it.close();
-        }
-
-        bulkProcessor.close();
-
-
+    public static Optional<List<Field>> getFieldsWithStringHistogramOfType(StatContainer statContainer, String typeName){
+        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.string);
     }
 
-    public static void showTypeFieldsNames(TransportClient esClient, String indexName, String typeName) {
+    public static Optional<List<Field>> getFieldsWithManualHistogramOfType(StatContainer statContainer, String typeName){
+        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.manual);
+    }
 
-        List<String> fieldList = new ArrayList<String>();
-        ClusterState cs = esClient.admin().cluster().prepareState().setIndices(indexName).execute().actionGet().getState();
-        IndexMetaData imd = cs.getMetaData().index(indexName);
-        MappingMetaData mdd = imd.mapping(typeName);
-        Map<String, Object> map = null;
+    public static Iterable<Map<String, Object>> prepareStatDocs(List<BucketStatResult> bucketStatResults) {
+        List<Map<String, Object>> buckets = new ArrayList<>();
+        for (BucketStatResult bucketStatResult : bucketStatResults) {
+            Map<String, Object> bucket = new HashedMap();
+            String bucketId = createBucketUniqueId(bucketStatResult.getIndex(),bucketStatResult.getType(),bucketStatResult.getField(), bucketStatResult.getLowerBound(),bucketStatResult.getUpperBound());
+            bucket.put("id", bucketId);
+            bucket.put("index", bucketStatResult.getIndex());
+            bucket.put("type", bucketStatResult.getType());
+            bucket.put("field", bucketStatResult.getField());
+            bucket.put("upper_bound", bucketStatResult.getUpperBound());
+            bucket.put("lower_bound", bucketStatResult.getLowerBound());
+            bucket.put("count", bucketStatResult.getCount());
+            bucket.put("cardinality", bucketStatResult.getCardinality());
+            buckets.add(bucket);
+        }
+        return buckets;
+    }
+
+    public static String createBucketUniqueId(String indexName, String typeName, String fieldName, String lowerBound, String upperBound){
+        return hashString(indexName + typeName + fieldName + lowerBound + upperBound);
+    }
+
+    public static Optional<Field> getFieldByName(StatContainer statContainer, String typeName, String fieldName) {
+        Optional<Field> field = Optional.empty();
+        Optional<Type> typeElement = getTypeConfiguration(statContainer, typeName);
+        if (typeElement.isPresent()) {
+            field = typeElement.get().getFields().stream().filter(f -> f.getField().equals(fieldName)).findFirst();
+        }
+        return field;
+    }
+
+    public static List<Bucket> calculateAlphabeticBuckets(int startCode, int numChars, int prefixLen, int interval) {
+        List<Bucket> buckets = new ArrayList<>();
+
+        int numOfBuckets = (int) Math.ceil(Math.pow(numChars, prefixLen) / interval);
+        for (int i = 0; i < numOfBuckets; i++) {
+            int bucketIdx = i * interval;
+            buckets.add(new Bucket(calcBucketStart(numChars, startCode, prefixLen, bucketIdx),
+                    calcBucketEnd(numChars, startCode, prefixLen, bucketIdx, interval)));
+        }
+
+        //Fix last bucket:
+        //  if the number of combinations is not perfectly divided by the interval, the end of the last bucket will loop back to earlier values.
+        if (numOfBuckets > Math.pow(numChars, prefixLen) / interval) {
+            char[] end = new char[prefixLen];
+            for (int i = 0; i < prefixLen; i++) {
+                end[i] = Character.toChars(startCode + numChars - 1)[0];
+            }
+            buckets.get(buckets.size() - 1).setEnd(String.valueOf(end));
+        }
+
+        return buckets;
+    }
+
+    private static String calcBucketStart(int numChars, int startCode, int prefixLen, int bucketIdx ) {
+        char[] chars = new char[prefixLen];
+        for (int i = 0; i < prefixLen; i++) {
+            int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            chars[i] = Character.toChars(code)[0];
+        }
+        return String.valueOf(chars);
+    }
+
+    private static String calcBucketEnd(int numChars, int startCode,int prefixLen, int bucketIdx, int interval) {
+        char[] chars = new char[prefixLen];
+        for (int i = 0; i < prefixLen; i++) {
+            int code = startCode + (Math.floorDiv(bucketIdx + interval - 1, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            chars[i] = Character.toChars(code)[0];
+        }
+        return String.valueOf(chars);
+    }
+
+   //Create a MD5 hash of a given message. Used for creating unique document IDs.
+    public static String hashString(String message) {
         try {
-            map = mdd.getSourceAsMap();
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            byte[] bucketDescriptionBytes = message.getBytes("UTF8");
+            byte[] bucketHash = digest.digest(bucketDescriptionBytes);
+
+            return org.elasticsearch.common.Base64.encodeBytes(bucketHash, org.elasticsearch.common.Base64.URL_SAFE).replaceAll("\\s", "");
+
+        } catch (NoSuchAlgorithmException e) {
+
+//            logger.error("Could not hash the message: {}", message);
+//            logger.error("The hash algorithm used is not supported. Stack trace follows.", e);
+
+            return null;
+        } catch (UnsupportedEncodingException e) {
+
+//            logger.error("Could not hash the message: {}", message);
+//            logger.error("The character encoding used is not supported. Stack trace follows.", e);
+
+            return null;
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-        fieldList = getList("", map);
-        System.out.println("Field List:");
-        for (String field : fieldList) {
-            System.out.println(field);
+
+//            logger.error("Could not hash the message: {}", message);
+//            logger.error("A problem occured when encoding as URL safe hash. Stack trace follows.", e);
+
+            return null;
         }
     }
 
-    private static List<String> getList(String fieldName, Map<String, Object> mapProperties) {
-        List<String> fieldList = new ArrayList<String>();
-        Map<String, Object> map = (Map<String, Object>) mapProperties.get("properties");
-        Set<String> keys = map.keySet();
-        for (String key : keys) {
-            if (((Map<String, Object>) map.get(key)).containsKey("type")) {
-                fieldList.add(fieldName + "" + key);
-            } else {
-                List<String> tempList = getList(fieldName + "" + key + ".", (Map<String, Object>) map.get(key));
-                fieldList.addAll(tempList);
-            }
+    public static List<Bucket> createNumericBuckets(long min, long max, int numOfBins) {
+        List<Bucket> buckets = new ArrayList<>();
+        double[] bucketsData = new double[numOfBins];
+        for (int i = 0; i < numOfBins; i++){
+            bucketsData[i] = min + i * (max - min) / (numOfBins - 1);
         }
-        return fieldList;
+
+        for (int i = 0; i < bucketsData.length -1; i++){
+            int start = (int)bucketsData[i];
+            int end = (int)bucketsData[i+1];
+            Bucket bucket = new Bucket(Integer.toString(start), Integer.toString(end));
+            buckets.add(bucket);
+        }
+        return buckets;
     }
 }

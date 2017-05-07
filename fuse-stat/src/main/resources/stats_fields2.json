@@ -5,44 +5,36 @@
   }],
   "types": [{
     "type": "dragon",
-    "fields": [{
-      "field": "age",
-      "histogram": {
-        "histogramType": "numeric",
-        "min": "10",
-        "max": "100",
-        "numOfBins": "10"
-      }
-    },
+    "fields": [
       {
-        "field": "name",
+        "field": "address",
         "histogram":
         {
           "histogramType": "string",
-          "prefixSize": "3",
-          "interval":"10",
+          "prefixSize": "2",
+          "interval":"3",
           "firstCharCode":"97",
           "numOfChars":"26"
         }
       },
       {
-        "field": "address",
+        "field": "name",
         "histogram":
         {
           "histogramType": "manual",
           "dataType":"string",
           "buckets":[
             {
-              "start":"abc",
-              "end": "dzz"
+              "start":"a",
+              "end": "d"
             },
             {
-              "start":"efg",
-              "end": "hij"
+              "start":"e",
+              "end": "g"
             },
             {
-              "start":"klm",
-              "end": "xyz"
+              "start":"h",
+              "end": "z"
             }
           ]
         }

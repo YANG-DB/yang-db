@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model;
+package com.kayhut.fuse.stat.model.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model;
+package com.kayhut.fuse.stat.model.configuration;
 
 /**
  * Created by benishue on 30-Apr-17.
@@ -25,15 +25,35 @@ public class HistogramString extends Histogram {
         this.prefixSize = prefixSize;
     }
 
+    public String getFirstCharCode() {
+        return firstCharCode;
+    }
+
+    public void setFirstCharCode(String firstCharCode) {
+        this.firstCharCode = firstCharCode;
+    }
+
+    public String getNumOfChars() {
+        return numOfChars;
+    }
+
+    public void setNumOfChars(String numOfChars) {
+        this.numOfChars = numOfChars;
+    }
+
     //region Fields
     private String interval;
     private String prefixSize;
+    private String firstCharCode;
+    private String numOfChars;
     //endregion
 
     //region Builder
     public static final class HistogramStringBuilder {
         private String interval;
         private String prefixSize;
+        private String firstCharCode;
+        private String numOfChars;
 
         private HistogramStringBuilder() {
         }
@@ -52,10 +72,22 @@ public class HistogramString extends Histogram {
             return this;
         }
 
+        public HistogramStringBuilder withFirstCharCode(String firstCharCode) {
+            this.firstCharCode = firstCharCode;
+            return this;
+        }
+
+        public HistogramStringBuilder withNumOfChars(String numOfChars) {
+            this.numOfChars = numOfChars;
+            return this;
+        }
+
         public HistogramString build() {
             HistogramString histogramString = new HistogramString();
             histogramString.setInterval(interval);
             histogramString.setPrefixSize(prefixSize);
+            histogramString.setFirstCharCode(firstCharCode);
+            histogramString.setNumOfChars(numOfChars);
             return histogramString;
         }
     }

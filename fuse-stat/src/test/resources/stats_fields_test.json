@@ -5,7 +5,8 @@
   }],
   "types": [{
     "type": "dragon",
-    "fields": [{
+    "fields": [
+      {
       "field": "age",
       "histogram": {
         "histogramType": "numeric",
@@ -13,7 +14,7 @@
         "max": "100",
         "numOfBins": "10"
       }
-    },
+      },
       {
         "field": "name",
         "histogram":

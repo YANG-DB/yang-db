@@ -9,7 +9,6 @@ import javaslang.collection.Stream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.map;
 
 /**
  * Created by benishue on 22-Mar-17.
