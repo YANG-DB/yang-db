@@ -62,7 +62,7 @@ public class EntityOpPostRelTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOpBase()).thenAnswer(invocationOnMock -> entityOp);
+        when(context.getPlanOp()).thenAnswer(invocationOnMock -> entityOp);
 
 
         EntityOpPostRelTranslationStrategy entityOpPostRelTranslationStrategy = new EntityOpPostRelTranslationStrategy();
