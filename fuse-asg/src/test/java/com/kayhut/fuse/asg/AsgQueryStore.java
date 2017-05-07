@@ -8,7 +8,10 @@ import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.HQuant;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -21,7 +24,18 @@ import java.util.List;
  * Created by Roman on 25/04/2017.
  */
 public class AsgQueryStore {
-    public static AsgQuery startXeTypedXrelXeTypedXXX(String queryName, String ontologyName) {
+
+    /**
+
+     +----+       +---------+               +---------+
+     |S(0)| +--+  |eTyped(1)| +--rel(2)+--> |eTyped(3)|
+     +----+       +---------+               +---------+
+
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         Start start = new Start();
         start.seteNum(0);
 
@@ -53,7 +67,29 @@ public class AsgQueryStore {
         return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
     }
 
-    public static AsgQuery startXeTypedXrelXeTypedXQuant1XrelXunTypedX_relXconcreteXXXXXX(String queryName, String ontologyName) {
+    /**
+                                                            +----+
+                                                            |    |               +-------------+
+                                                            |    | +-----------+ |ePropGroup(9)|
+                                                            |    |               +-------------+
+                                                            |    |
+     +----+       +---------+              +---------+      |    |               +---------+
+     |S(0)| +--+  |eTyped(1)| +-+rel(2)+-> |eTyped(3)| +--+ |&(4)| +-+rel(5)+--> |eTyped(6)|
+     +----+       +---------+       +      +---------+      |    |               +---------+
+                                    |                       |    |
+                                    |                       |    |               +---------+
+                            +-------+--------+              |    | +-+rel(7)+--> |eTyped(8)|
+                            |relPropGroup(10)|              |    |       +       +---------+
+                            +----------------+              +----+       |
+                                                                         |
+                                                                +--------+-------+
+                                                                |relPropGroup(11)|
+                                                                +----------------+
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         Start start = new Start();
         start.seteNum(0);
 
@@ -97,6 +133,48 @@ public class AsgQueryStore {
         concrete.seteNum(8);
         concrete.seteTag("D");
 
+        Constraint constraint1 = new Constraint();
+        constraint1.setOp(ConstraintOp.eq);
+        constraint1.setExpr("value1");
+
+        EProp prop1 = new EProp();
+        prop1.setpType("1");
+        prop1.setCon(constraint1);
+        prop1.seteNum(9);
+
+        Constraint constraint2 = new Constraint();
+        constraint1.setOp(ConstraintOp.eq);
+        constraint1.setExpr("value2");
+
+        EProp prop2 = new EProp();
+        prop2.setpType("2");
+        prop2.setCon(constraint2);
+        prop2.seteNum(10);
+
+        EPropGroup propGroup = new EPropGroup();
+        propGroup.seteNum(9);
+        propGroup.seteProps(Arrays.asList(prop1, prop2));
+
+        Constraint constraint3 = new Constraint();
+        constraint3.setOp(ConstraintOp.gt);
+        constraint3.setExpr(10);
+        RelProp relProp1 = new RelProp();
+        relProp1.setCon(constraint3);
+        relProp1.setpType("2");
+        RelPropGroup relPropGroup1 = new RelPropGroup();
+        relPropGroup1.seteNum(10);
+        relPropGroup1.setrProps(Arrays.asList(relProp1));
+
+        Constraint constraint4 = new Constraint();
+        constraint3.setOp(ConstraintOp.lt);
+        constraint3.setExpr(20);
+        RelProp relProp2 = new RelProp();
+        relProp2.setCon(constraint4);
+        relProp2.setpType("2");
+        RelPropGroup relPropGroup2 = new RelPropGroup();
+        relPropGroup2.seteNum(11);
+        relPropGroup2.setrProps(Arrays.asList(relProp2));
+
         AsgEBase<Start> asgStart =
                 AsgEBase.Builder.<Start>get().withEBase(start)
                         .withNext(AsgEBase.Builder.get().withEBase(eTyped)
@@ -105,14 +183,17 @@ public class AsgQueryStore {
                                                 .withNext(AsgEBase.Builder.get().withEBase(quant1)
                                                         .withNext(AsgEBase.Builder.get().withEBase(rel2)
                                                                 .withNext(AsgEBase.Builder.get().withEBase(untyped)
-                                                                        .build())
-                                                                .build())
-                                                        .withNext(AsgEBase.Builder.get().withEBase(rel3)
-                                                                .withNext(AsgEBase.Builder.get().withEBase(concrete)
-                                                                        .build())
                                                                 .build())
                                                         .build())
+                                                        .withNext(AsgEBase.Builder.get().withEBase(rel3)
+                                                                .withNext(AsgEBase.Builder.get().withEBase(concrete)
+                                                                .build())
+                                                                .withB(AsgEBase.Builder.get().withEBase(relPropGroup2).build())
+                                                        .build())
+                                                        .withNext(AsgEBase.Builder.get().withEBase(propGroup).build())
+                                                        .build())
                                                 .build())
+                                        .withB(AsgEBase.Builder.get().withEBase(relPropGroup1).build())
                                         .build())
                                 .build())
                         .build();
@@ -127,30 +208,10 @@ public class AsgQueryStore {
         query.setName("Q188");
         List<EBase> elements = new ArrayList<EBase>();
 
-        /*
-        {
-          "eNum": 0,
-          "type": "Start",
-          "next": 1
-        }
-         */
-
         Start start  = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
-
-        /*
-        {
-            "eNum": 1,
-            "type": "EConcrete",
-            "eTag": "A",
-            "eID": "1234",
-            "eType": 2,
-            "eName": "Balerion",
-            "next": 2
-        }
-        */
 
         EConcrete eConcrete = new EConcrete();
         eConcrete.seteNum(1);
@@ -161,17 +222,6 @@ public class AsgQueryStore {
         eConcrete.setNext(2);
         elements.add(eConcrete);
 
-        /*
-        {
-            "eNum": 2,
-            "type": "Rel",
-            "rType": 3,
-            "dir": "R",
-            "next": 3,
-            "b": 4
-        }
-        */
-
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(3);
@@ -180,34 +230,11 @@ public class AsgQueryStore {
         rel.setB(4);
         elements.add(rel);
 
-        /*
-        {
-            "eNum": 3,
-            "type": "ETyped",
-            "eTag": "B",
-            "eType": 2
-        }
-        */
-
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
         eTyped.seteType(2);
         elements.add(eTyped);
-
-        /*
-        {
-            "eNum": 4,
-            "type": "RelProp",
-            "pType": "1",
-            "pTag": "1",
-            "con": {
-                "op": "gt",
-               "expr": "1010-01-01T00:00:00.000"
-            },
-            "b": 5
-        }
-        */
 
         Constraint conRelProp1 = new Constraint();
         conRelProp1.setOp(ConstraintOp.gt);
@@ -220,19 +247,6 @@ public class AsgQueryStore {
         relProp1.setCon(conRelProp1);
         relProp1.setB(5);
         elements.add(relProp1);
-
-        /*
-        {
-            "eNum": 5,
-            "type": "RelProp",
-            "pType": "2",
-            "pTag": "2",
-            "con": {
-                "op": "lt",
-                "expr": "10"
-            }
-        }
-        */
 
         Constraint conRelProp2 = new Constraint();
         conRelProp2.setOp(ConstraintOp.lt);
@@ -259,30 +273,10 @@ public class AsgQueryStore {
         query.setName("Q187");
         List<EBase> elements = new ArrayList<EBase>();
 
-        /*
-        {
-          "eNum": 0,
-          "type": "Start",
-          "next": 1
-        }
-         */
-
         Start start  = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
-
-        /*
-        {
-            "eNum": 1,
-            "type": "EConcrete",
-            "eTag": "A",
-            "eID": "1234",
-            "eType": 2,
-            "eName": "Balerion",
-            "next": 2
-        }
-        */
 
         EConcrete eConcrete = new EConcrete();
         eConcrete.seteNum(1);
@@ -293,17 +287,6 @@ public class AsgQueryStore {
         eConcrete.setNext(2);
         elements.add(eConcrete);
 
-        /*
-        {
-            "eNum": 2,
-            "type": "Rel",
-            "rType": 3,
-            "dir": "R",
-            "next": 3,
-            "b": 4
-        }
-        */
-
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(3);
@@ -312,51 +295,17 @@ public class AsgQueryStore {
         rel.setB(4);
         elements.add(rel);
 
-        /*
-        {
-            "eNum": 3,
-            "type": "ETyped",
-            "eTag": "B",
-            "eType": 2
-        }
-        */
-
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
         eTyped.seteType(2);
         elements.add(eTyped);
 
-        /*
-        {
-            "eNum": 4,
-            "type": "HQuant",
-            "qType": "all",
-            "b": [
-                5,
-                6
-              ]
-        }
-        */
-
         HQuant hQuant = new HQuant();
         hQuant.seteNum(4);
         hQuant.setqType(QuantType.all);
         hQuant.setB(Arrays.asList(5,6));
         elements.add(hQuant);
-
-        /*
-        {
-            "eNum": 5,
-            "type": "RelProp",
-            "pType": "1",
-            "pTag": "1",
-            "con": {
-                "op": "gt",
-                "expr": "1010-01-01T00:00:00.000"
-            }
-        }
-       */
 
         Constraint conRelProp1 = new Constraint();
         conRelProp1.setOp(ConstraintOp.gt);
@@ -368,19 +317,6 @@ public class AsgQueryStore {
         relProp1.setpTag("1");
         relProp1.setCon(conRelProp1);
         elements.add(relProp1);
-
-        /*
-        {
-          "eNum": 6,
-          "type": "RelProp",
-          "pType": "2",
-          "pTag": "2",
-          "con": {
-            "op": "lt",
-            "expr": "10"
-          }
-        }
-        */
 
         Constraint conRelProp2 = new Constraint();
         conRelProp2.setOp(ConstraintOp.lt);

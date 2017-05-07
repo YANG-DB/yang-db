@@ -1,6 +1,5 @@
 package com.kayhut.fuse.model.asgQuery;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.query.EBase;
 
@@ -20,11 +19,8 @@ public class AsgEBase<T extends EBase>{
         private T eBase;
         private List<AsgEBase<? extends EBase>> next;
         private List<AsgEBase<? extends EBase>> b;
-        @JsonIgnore
-        private transient List<AsgEBase<? extends EBase>> parent;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         public static <S extends EBase> Builder<S> get() {
             return new Builder<>();
@@ -71,8 +67,7 @@ public class AsgEBase<T extends EBase>{
     //endregion
 
     //region Constructors
-    public AsgEBase() {
-    }
+    public AsgEBase() {}
 
     public AsgEBase(T eBase,
                     List<AsgEBase<? extends EBase>> next,
@@ -149,7 +144,7 @@ public class AsgEBase<T extends EBase>{
     //region Override Methods
     @Override
     public String toString() {
-        return "{ " + eBase.getClass().getSimpleName() + " : " + eBase.geteNum() + " }";
+        return "Asg(" + this.eBase.toString() + ")";
     }
     //endregion
 

@@ -44,8 +44,8 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
         Ontology ontology = context.getOntology();
         PlanUtil planUtil = new PlanUtil();
         if(planUtil.isFirst(plan.getOps(),planOpBase)) {
-            EEntityBase eEntityBase = ((EntityOp) planOpBase).getEntity().geteBase();
-            String entityETag = ((EntityOp)planOpBase).getEntity().geteBase().geteTag();
+            EEntityBase eEntityBase = ((EntityOp) planOpBase).getAsgEBase().geteBase();
+            String entityETag = ((EntityOp)planOpBase).getAsgEBase().geteBase().geteTag();
 
             //Creating the Graph
             traversal = graph.traversal().V();

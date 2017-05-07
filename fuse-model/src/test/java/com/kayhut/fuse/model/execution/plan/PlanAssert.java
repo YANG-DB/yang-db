@@ -44,16 +44,16 @@ public class PlanAssert {
 
         Assert.assertTrue(expectedEntityOp != null && actualEntityOp != null);
         Assert.assertTrue(expectedEntityOp.geteNum() == actualEntityOp.geteNum());
-        Assert.assertTrue(expectedEntityOp.getEntity().geteBase().geteTag().equals(actualEntityOp.getEntity().geteBase().geteTag()));
-        Assert.assertTrue(expectedEntityOp.getEntity().geteBase().geteNum() == actualEntityOp.getEntity().geteBase().geteNum());
-        Assert.assertTrue(expectedEntityOp.getEntity().geteBase().getClass().equals(actualEntityOp.getEntity().geteBase().getClass()));
+        Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().geteTag().equals(actualEntityOp.getAsgEBase().geteBase().geteTag()));
+        Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().geteNum() == actualEntityOp.getAsgEBase().geteBase().geteNum());
+        Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().getClass().equals(actualEntityOp.getAsgEBase().geteBase().getClass()));
 
-        if (expectedEntityOp.getEntity().geteBase() instanceof EConcrete) {
-            QueryAssert.assertEquals((EConcrete)expectedEntityOp.getEntity().geteBase(), (EConcrete)actualEntityOp.getEntity().geteBase());
-        } else if (expectedEntityOp.getEntity().geteBase() instanceof ETyped) {
-            QueryAssert.assertEquals((ETyped)expectedEntityOp.getEntity().geteBase(), (ETyped)actualEntityOp.getEntity().geteBase());
-        } else if (expectedEntityOp.getEntity().geteBase() instanceof EUntyped) {
-            QueryAssert.assertEquals((EUntyped)expectedEntityOp.getEntity().geteBase(), (EUntyped)actualEntityOp.getEntity().geteBase());
+        if (expectedEntityOp.getAsgEBase().geteBase() instanceof EConcrete) {
+            QueryAssert.assertEquals((EConcrete)expectedEntityOp.getAsgEBase().geteBase(), (EConcrete)actualEntityOp.getAsgEBase().geteBase());
+        } else if (expectedEntityOp.getAsgEBase().geteBase() instanceof ETyped) {
+            QueryAssert.assertEquals((ETyped)expectedEntityOp.getAsgEBase().geteBase(), (ETyped)actualEntityOp.getAsgEBase().geteBase());
+        } else if (expectedEntityOp.getAsgEBase().geteBase() instanceof EUntyped) {
+            QueryAssert.assertEquals((EUntyped)expectedEntityOp.getAsgEBase().geteBase(), (EUntyped)actualEntityOp.getAsgEBase().geteBase());
         }
     }
 
@@ -64,8 +64,8 @@ public class PlanAssert {
 
         Assert.assertTrue(expectedRelationOp != null && actualRelationOp != null);
         Assert.assertTrue(expectedRelationOp.geteNum() == actualRelationOp.geteNum());
-        Assert.assertTrue(expectedRelationOp.getRelation().geteNum() == actualRelationOp.getRelation().geteNum());
+        Assert.assertTrue(expectedRelationOp.getAsgEBase().geteNum() == actualRelationOp.getAsgEBase().geteNum());
 
-        QueryAssert.assertEquals(expectedRelationOp.getRelation().geteBase(), actualRelationOp.getRelation().geteBase());
+        QueryAssert.assertEquals(expectedRelationOp.getAsgEBase().geteBase(), actualRelationOp.getAsgEBase().geteBase());
     }
 }

@@ -114,7 +114,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             planOpWithCosts = new ArrayList<>();
         }
 
-        double lambda = tuple2._1;
+        double lambda = tuple2._1();
         planOpWithCosts.forEach(element-> {
             if(element.getOpBase().get(0) instanceof EntityOp) {
                 element.push(element.peek()*lambda);
@@ -154,9 +154,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         }
 
         EntityFilterOp filterOp = (EntityFilterOp) map.get(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER);
-        filterOp.setEntity(entityOp.getEntity());
+        filterOp.setEntity(entityOp.getAsgEBase());
 
-        PlanOpWithCost<Cost> entityLatestOp = planPlanDetailedCostPlanWithCost.getCost().getPlanOpByEntity(entityOp.getEntity().geteBase()).get();
+        PlanOpWithCost<Cost> entityLatestOp = planPlanDetailedCostPlanWithCost.getCost().getPlanOpByEntity(entityOp.getAsgEBase().geteBase()).get();
         return new Tuple2<>(1d,Collections.singletonList(new PlanOpWithCost<>(new Cost(0, (long)Math.ceil(entityLatestOp.peek())),entityLatestOp.peek(), entityOp, filterOp)));
 
     }
@@ -170,7 +170,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         EntityFilterOp filterOneOp = (EntityFilterOp) map.get(OPTIONAL_ENTITY_ONE_FILTER);
         //set entity type on this kaka
-        filterOneOp.setEntity(entityOneOp.getEntity());
+        filterOneOp.setEntity(entityOneOp.getAsgEBase());
 
         //relation
         RelationOp rel = (RelationOp) map.get(RELATION);
@@ -180,7 +180,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         }
         RelationFilterOp relFilterOp = (RelationFilterOp) map.get(OPTIONAL_REL_FILTER);
         //set entity type on this kaka
-        relFilterOp.setRel(rel.getRelation());
+        relFilterOp.setRel(rel.getAsgEBase());
 
         //entity
         EntityOp entityTwoOp = (EntityOp) map.get(ENTITY_TWO);
@@ -190,24 +190,24 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         EntityFilterOp filterTwoOp = (EntityFilterOp) map.get(OPTIONAL_ENTITY_TWO_FILTER);
         //set entity type on this kaka
-        filterTwoOp.setEntity(entityTwoOp.getEntity());
+        filterTwoOp.setEntity(entityTwoOp.getAsgEBase());
 
         //calculate
         //get node 1 cost from existing cost with plan
         Cost entityOneCost = previousCost.getCost().getOpCost(entityOneOp).get();
 
         //edge estimate =>
-        Direction direction = Direction.of(rel.getRelation().geteBase().getDir());
-        double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(rel.getRelation().geteBase(),entityOneOp.getEntity().geteBase(),direction);
+        Direction direction = Direction.of(rel.getAsgEBase().geteBase().getDir());
+        double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(rel.getAsgEBase().geteBase(),entityOneOp.getAsgEBase().geteBase(),direction);
 
         //redundant
         //C1_e
-        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getEprop().geteBase(), direction).getCardinality()._1;
+        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getAsgEBase().geteBase(), direction).getCardinality();
         //C_2e
-        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getEprop().geteBase(), direction.reverse()).getCardinality()._1;
+        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
         //relation
-        double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality()._1;
-        double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getRelProp().geteBase()).getCardinality()._1;
+        double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality();
+        double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality();
         //get min
         double edgeEstimation = Collections.min(Arrays.asList(C3_v, C3_filter, C1_e, C2_e, edgeEstimation_N1));
         //cost if zero since the real cost is residing on the adjacent filter (rel filter)
@@ -215,14 +215,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         //get entity one statistics calculated in prior step
 
-        double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getEntity().geteBase()).getCardinality()._1;
+        double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getAsgEBase().geteBase()).getCardinality();
         double filterTowCard = entityTwoCard;
-        if (filterTwoOp.getEprop() != null) {
-            filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getEntity().geteBase(),filterTwoOp.getEprop().geteBase()).getCardinality()._1;
+        if (filterTwoOp.getAsgEBase() != null) {
+            filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(),filterTwoOp.getAsgEBase().geteBase()).getCardinality();
         }
 
         //node redundand stats: C_2e
-        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(rel.getRelation().geteBase(),entityTwoOp.getEntity().geteBase(), filterTwoOp.getEprop().geteBase(), direction.reverse()).getCardinality()._1;
+        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(rel.getAsgEBase().geteBase(),entityTwoOp.getAsgEBase().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
 
         //node 2 cardinality estimation
         double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTowCard, edgeEstimation));
@@ -248,12 +248,12 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         EntityFilterOp filterOp = (EntityFilterOp) map.get(OPTIONAL_ENTITY_ONLY_FILTER);
         //set entity type on this kaka
-        filterOp.setEntity(entityOp.getEntity());
+        filterOp.setEntity(entityOp.getAsgEBase());
         //calculate
-        double entityTotal = statisticsProvider.getNodeStatistics(entityOp.getEntity().geteBase()).getCardinality()._1;
+        double entityTotal = statisticsProvider.getNodeStatistics(entityOp.getAsgEBase().geteBase()).getCardinality();
         double filterTotal = entityTotal;
-        if (filterOp.getEprop() != null) {
-            filterTotal = statisticsProvider.getNodeFilterStatistics(entityOp.getEntity().geteBase(),filterOp.getEprop().geteBase()).getCardinality()._1;
+        if (filterOp.getAsgEBase() != null) {
+            filterTotal = statisticsProvider.getNodeFilterStatistics(entityOp.getAsgEBase().geteBase(),filterOp.getAsgEBase().geteBase()).getCardinality();
         }
 
         double min = Math.min(entityTotal, filterTotal);

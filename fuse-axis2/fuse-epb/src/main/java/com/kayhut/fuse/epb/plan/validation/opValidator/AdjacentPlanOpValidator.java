@@ -1,6 +1,7 @@
-package com.kayhut.fuse.epb.plan.validation;
+package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -8,7 +9,9 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -50,6 +53,10 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
             return areFilterAndRelationAdjacent(path);
         }
 
+        if (currentPlanOp instanceof GoToEntityOp) {
+            return true;
+        }
+
         if (currentPlanOp instanceof EntityOp) {
             Optional<RelationOp> previousRelationOp = getPreviousOp(compositePlanOp, opIndex, RelationOp.class);
             if (!previousRelationOp.isPresent()) {
@@ -70,19 +77,19 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
             return areEntityAndRelationAdjacent(path);
         }
 
-        return false;
+        return true;
     }
     //endregion
 
     //region Private Methods
     private boolean areFilterAndEntityAdjacent(List<AsgEBase<? extends EBase>> path) {
         return Stream.ofAll(path).count(asgEBase -> EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()) ||
-                EProp.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
+                EPropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
     }
 
     private boolean areFilterAndRelationAdjacent(List<AsgEBase<? extends EBase>> path) {
         return Stream.ofAll(path).count(asgEBase -> Rel.class.isAssignableFrom(asgEBase.geteBase().getClass()) ||
-                RelProp.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
+                RelPropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
     }
 
     private boolean areEntityAndRelationAdjacent(List<AsgEBase<? extends EBase>> path) {
@@ -93,7 +100,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
     private <T extends PlanOpBase> Optional<T> getPreviousOp(CompositePlanOpBase compositePlanOp, int opIndex, Class<?> klass) {
         while(opIndex > 0) {
             PlanOpBase planOp = compositePlanOp.getOps().get(--opIndex);
-            if (planOp.getClass().equals(klass)) {
+            if (klass.isAssignableFrom(planOp.getClass())) {
                 return Optional.of((T)planOp);
             }
         }

@@ -43,7 +43,7 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
         Optional<PlanOpBase> next = planUtil.getNext(plan.getOps(),planOpBase);
 
         if(planOpBase instanceof RelationOp) {
-            Rel rel = ((RelationOp) planOpBase).getRelation().geteBase();
+            Rel rel = ((RelationOp) planOpBase).getAsgEBase().geteBase();
             String rTypeName = OntologyUtil.getRelationTypeNameById(ontology, rel.getrType());
             traversal.outE("promise").has("constraint", P.eq(Constraint.by(__.and(
                    __.has("label",P.eq(rTypeName)),
@@ -57,10 +57,10 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
         StringBuilder relLabel = new StringBuilder();
 
         if (prev.isPresent())
-            relLabel.append(((EntityOp)prev.get()).getEntity().geteBase().geteTag());
+            relLabel.append(((EntityOp)prev.get()).getAsgEBase().geteBase().geteTag());
         relLabel.append("-->");
         if (next.isPresent())
-            relLabel.append(((EntityOp)next.get()).getEntity().geteBase().geteTag());
+            relLabel.append(((EntityOp)next.get()).getAsgEBase().geteBase().geteTag());
 
         return relLabel.toString();
     }

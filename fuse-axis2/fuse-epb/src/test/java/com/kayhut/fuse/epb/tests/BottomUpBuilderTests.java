@@ -6,7 +6,7 @@ import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
-import com.kayhut.fuse.epb.plan.validation.SiblingOnlyPlanValidator;
+import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -162,7 +162,7 @@ public class BottomUpBuilderTests {
                 new AllDirectionsPlanExtensionStrategy());
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
-        PlanValidator<Plan, AsgQuery> validator = new SiblingOnlyPlanValidator();
+        PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
 
         CostEstimator<Plan, PlanDetailedCost> costEstimator = new DummyCostEstimator<>(new PlanDetailedCost());
 

@@ -4,7 +4,10 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -14,7 +17,7 @@ import java.util.function.Predicate;
 public class AsgQueryUtils {
     //region Public Methods
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
-        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate);
+        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
@@ -27,7 +30,7 @@ public class AsgQueryUtils {
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
-        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getNext, predicate);
+        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getNext, predicate, truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
@@ -39,16 +42,55 @@ public class AsgQueryUtils {
         return getNextDescendant(asgEBase, enumPredicateFunction.apply(eNum));
     }
 
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getNext, predicate, adjacentDfsPredicate.apply(asgEBase));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, adjacentDfsPredicate.apply(asgEBase));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
+        return getNextAdjacentDescendant(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
+        return getNextAdjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass,int hopes) {
+        int count = 0;
+        Optional<AsgEBase<S>> element = getNextAdjacentDescendant(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+        while (!element.isPresent() && count < hopes && !asgEBase.getNext().isEmpty()) {
+            AsgEBase<? extends EBase> next = asgEBase.getNext().get(0);
+            element = getNextAdjacentDescendant(next, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                    notThisPredicateFunction.apply(next).test(asgEBase1));
+            count++;
+        }
+        return element;
+    }
+
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAdjacentDescendant(AsgEBase<T> asgEBase, int eNum) {
+        return getNextAdjacentDescendant(asgEBase, enumPredicateFunction.apply(eNum));
+    }
+
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> getNextDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate, Predicate<AsgEBase> dfsPredicate) {
         return getElements(asgEBase, emptyIterableFunction, AsgEBase::getNext, elementPredicate, dfsPredicate, Collections.emptyList());
     }
 
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> getNextAdjacentDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate) {
-        return getElements(asgEBase, emptyIterableFunction, AsgEBase::getNext, elementPredicate, adjacentDfsPredicate.apply(asgEBase), Collections.emptyList());
+        return getNextDescendants(asgEBase, elementPredicate, adjacentDfsPredicate.apply(asgEBase));
+    }
+
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> getNextAdjacentDescendants(AsgEBase<T> asgEBase, Class<?> klass) {
+        return getNextDescendants(asgEBase, classPredicateFunction.apply(klass), adjacentDfsPredicate.apply(asgEBase));
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
-        return getElement(asgEBase, emptyIterableFunction, AsgEBase::getB, predicate);
+        return getElement(asgEBase, AsgEBase::getB, emptyIterableFunction, predicate, truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getBDescendant(AsgEBase<T> asgEBase, Class<?> klass) {
@@ -65,7 +107,7 @@ public class AsgQueryUtils {
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getDecendantBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate){
-        return getElement(asgEBase, AsgEBase::getB, AsgEBase::getNext, predicate);
+        return getElement(asgEBase, AsgEBase::getB, AsgEBase::getNext, predicate, truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getDecendantBDescendant(AsgEBase<T> asgEBase, Class<?> klass){
@@ -77,7 +119,7 @@ public class AsgQueryUtils {
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestorBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate){
-        return getElement(asgEBase, AsgEBase::getB, AsgEBase::getParents, predicate);
+        return getElement(asgEBase, AsgEBase::getB, AsgEBase::getParents, predicate, truePredicate);
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestorBDescendant(AsgEBase<T> asgEBase, Class<?> klass){
@@ -90,7 +132,7 @@ public class AsgQueryUtils {
     }
 
     public static <T extends EBase> Optional<AsgEBase<T>> getElement(AsgQuery query, Predicate<AsgEBase> predicate) {
-        return getElement(query.getStart(), AsgEBase::getB, AsgEBase::getNext, predicate);
+        return getElement(query.getStart(), AsgEBase::getB, AsgEBase::getNext, predicate, truePredicate);
     }
 
     public static <T extends EBase> Optional<AsgEBase<T>> getElement(AsgQuery query, Class<?> klass) {
@@ -159,7 +201,7 @@ public class AsgQueryUtils {
     }
 
     public static List<AsgEBase<? extends EBase>> getPath(AsgQuery query, int sourceEnum, int destinationEnum) {
-        Optional<AsgEBase<EBase>> sourceAsgEBase = getNextDescendant(query.getStart(), sourceEnum);
+        Optional<AsgEBase<EBase>> sourceAsgEBase = getElement(query, sourceEnum);
         if (!sourceAsgEBase.isPresent()) {
             return Collections.emptyList();
         }
@@ -167,6 +209,10 @@ public class AsgQueryUtils {
         List<AsgEBase<? extends EBase>> path = getPathToNextDescendant(sourceAsgEBase.get(), destinationEnum);
         if (path.isEmpty()) {
             path = getPathToAncestor(sourceAsgEBase.get(), destinationEnum);
+
+            if (path.isEmpty()) {
+                path = getPathToBDescendant(sourceAsgEBase.get(), destinationEnum);
+            }
         }
 
         return path;
@@ -178,23 +224,28 @@ public class AsgQueryUtils {
             AsgEBase<T> asgEBase,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
             Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
-            Predicate<AsgEBase> predicate) {
+            Predicate<AsgEBase> predicate,
+            Predicate<AsgEBase> dfsPredicate) {
 
         if (predicate.test(asgEBase)) {
             return Optional.of((AsgEBase<S>) asgEBase);
         }
 
-        for (AsgEBase<? extends EBase> elementAsgEBase : vElementProvider.apply(asgEBase)) {
-            Optional<AsgEBase<EBase>> recResult = getElement(elementAsgEBase, hElementProvider, vElementProvider, predicate);
-            if (recResult.isPresent()) {
-                return Optional.of((AsgEBase<S>) recResult.get());
+        if (dfsPredicate.test(asgEBase)) {
+            for (AsgEBase<? extends EBase> elementAsgEBase : vElementProvider.apply(asgEBase)) {
+                Optional<AsgEBase<EBase>> recResult = getElement(elementAsgEBase, hElementProvider, vElementProvider, predicate, dfsPredicate);
+                if (recResult.isPresent()) {
+                    return Optional.of((AsgEBase<S>) recResult.get());
+                }
             }
         }
 
-        for (AsgEBase<? extends EBase> elementAsgEBase : hElementProvider.apply(asgEBase)) {
-            Optional<AsgEBase<EBase>> recResult = getElement(elementAsgEBase, hElementProvider, vElementProvider, predicate);
-            if (recResult.isPresent()) {
-                return Optional.of((AsgEBase<S>) recResult.get());
+        if (dfsPredicate.test(asgEBase)) {
+            for (AsgEBase<? extends EBase> elementAsgEBase : hElementProvider.apply(asgEBase)) {
+                Optional<AsgEBase<EBase>> recResult = getElement(elementAsgEBase, hElementProvider, vElementProvider, predicate, dfsPredicate);
+                if (recResult.isPresent()) {
+                    return Optional.of((AsgEBase<S>) recResult.get());
+                }
             }
         }
 

@@ -53,6 +53,10 @@ public class Plan extends CompositePlanOpBase{
     public static boolean contains(Plan plan,PlanOpBase op) {
         return plan.getOps().stream().anyMatch(p->p.equals(op));
     }
+
+    public static Plan compose(Plan plan,PlanOpBase op) {
+        return plan.withOp(op);
+    }
 }
 
 
