@@ -22,8 +22,8 @@ import static org.mockito.Mockito.mock;
 public class StatCalculatorTest {
 
 
-    private static TransportClient dataClient;
-    private static TransportClient statClient;
+    static TransportClient dataClient;
+    static TransportClient statClient;
     static ElasticInMemoryIndex elasticInMemoryIndex;
     static Configuration configuration;
     static String CONFIGURATION_FILE_PATH = "statistics.test.properties";
