@@ -116,37 +116,38 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<GraphElementPropertySchema> getProperties() {
-                return entityType.getProperties().stream().map(prop -> new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return prop.getName();
-                    }
+                return Stream.ofAll(entityType.getProperties())
+                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .map(property -> (GraphElementPropertySchema)new GraphElementPropertySchema() {
+                                @Override
+                                public String getName() {
+                                    return property.getName();
+                                }
 
-                    @Override
-                    public String getType() {
-                        return prop.getType();
-                    }
-                }).collect(Collectors.toList());
+                                @Override
+                                public String getType() {
+                                    return property.getType();
+                                }
+                            }).toJavaList();
             }
 
             @Override
             public Optional<GraphElementPropertySchema> getProperty(String name) {
-                Optional<Property> firstProperty = entityType.getProperties().stream().filter(property -> property.getName().equals(name)).findFirst();
-                if(firstProperty.isPresent()){
-                    return Optional.of(new GraphElementPropertySchema() {
-                        @Override
-                        public String getName() {
-                            return firstProperty.get().getName();
-                        }
+                return Stream.ofAll(entityType.getProperties())
+                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .filter(property -> property.getName().equals(name))
+                        .toJavaOptional()
+                        .map(property -> new GraphElementPropertySchema() {
+                            @Override
+                            public String getName() {
+                                return property.getName();
+                            }
 
-                        @Override
-                        public String getType() {
-                            return firstProperty.get().getType();
-                        }
-                    });
-                }else{
-                    return Optional.empty();
-                }
+                            @Override
+                            public String getType() {
+                                return property.getType();
+                            }
+                        });
             }
         });
     }
@@ -216,37 +217,40 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public Iterable<GraphElementPropertySchema> getProperties() {
-                return relationshipType.getProperties().stream().map(prop -> new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return prop.getName();
-                    }
+                return Stream.ofAll(relationshipType.getProperties())
+                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .map(property -> (GraphElementPropertySchema) new GraphElementPropertySchema() {
+                            @Override
+                            public String getName() {
+                                return property.getName();
+                            }
 
-                    @Override
-                    public String getType() {
-                        return prop.getType();
-                    }
-                }).collect(Collectors.toList());
+                            @Override
+                            public String getType() {
+                                return property.getType();
+
+                            }
+                        }).toJavaList();
             }
 
             @Override
             public Optional<GraphElementPropertySchema> getProperty(String name) {
-                Optional<Property> firstProperty = relationshipType.getProperties().stream().filter(property -> property.getName().equals(name)).findFirst();
-                if(firstProperty.isPresent()){
-                    return Optional.of(new GraphElementPropertySchema() {
-                        @Override
-                        public String getName() {
-                            return firstProperty.get().getName();
-                        }
+                return Stream.ofAll(relationshipType.getProperties())
+                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .filter(property -> property.getName().equals(name))
+                        .toJavaOptional()
+                        .map(property -> (GraphElementPropertySchema) new GraphElementPropertySchema() {
+                            @Override
+                            public String getName() {
+                                return property.getName();
+                            }
 
-                        @Override
-                        public String getType() {
-                            return firstProperty.get().getType();
-                        }
-                    });
-                }else{
-                    return Optional.empty();
-                }
+                            @Override
+                            public String getType() {
+                                return property.getType();
+
+                            }
+                        });
             }
         });
     }

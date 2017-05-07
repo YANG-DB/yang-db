@@ -54,11 +54,11 @@ public class RelationshipType {
         this.ePairs = ePairs;
     }
 
-    public List<Property> getProperties() {
+    public List<Integer> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<Property> properties) {
+    public void setProperties(List<Integer> properties) {
         this.properties = properties;
     }
 
@@ -74,51 +74,51 @@ public class RelationshipType {
     private boolean directional;
     private String DBrName;
     private List<EPair> ePairs;
-    private List<Property> properties;
+    private List<Integer> properties;
     //endregion
 
     //region Builder
-    public static final class RelationshipTypeBuilder {
+    public static final class Builder {
         private int rType;
         private String name;
         private boolean directional;
         private String DBrName;
         private List<EPair> ePairs;
-        private List<Property> properties;
+        private List<Integer> properties;
 
-        private RelationshipTypeBuilder() {
+        private Builder() {
         }
 
-        public static RelationshipTypeBuilder aRelationshipType() {
-            return new RelationshipTypeBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public RelationshipTypeBuilder withRType(int rType) {
+        public Builder withRType(int rType) {
             this.rType = rType;
             return this;
         }
 
-        public RelationshipTypeBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public RelationshipTypeBuilder withDirectional(boolean directional) {
+        public Builder withDirectional(boolean directional) {
             this.directional = directional;
             return this;
         }
 
-        public RelationshipTypeBuilder withDBrName(String DBrName) {
+        public Builder withDBrName(String DBrName) {
             this.DBrName = DBrName;
             return this;
         }
 
-        public RelationshipTypeBuilder withEPairs(List<EPair> ePairs) {
+        public Builder withEPairs(List<EPair> ePairs) {
             this.ePairs = ePairs;
             return this;
         }
 
-        public RelationshipTypeBuilder withProperties(List<Property> properties) {
+        public Builder withProperties(List<Integer> properties) {
             this.properties = properties;
             return this;
         }

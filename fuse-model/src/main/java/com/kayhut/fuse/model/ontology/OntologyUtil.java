@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.ontology;
 
+import javaslang.collection.Stream;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -7,9 +9,9 @@ import java.util.stream.Collectors;
 /**
  * Created by benishue on 12-Mar-17.
  */
-public interface OntologyUtil {
+public class OntologyUtil {
 
-    static int getEntityTypeIdByName(Ontology ontology,String name) {
+    public static int getEntityTypeIdByName(Ontology ontology,String name) {
         Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()
                 .filter(entityType -> entityType.getName() == null)
                 .findFirst();
@@ -23,7 +25,7 @@ public interface OntologyUtil {
         return entityTypeId;
     }
 
-    static String getEntityTypeNameById(Ontology ontology, int eTypeId){
+    public static String getEntityTypeNameById(Ontology ontology, int eTypeId){
         Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()
                 .filter(entityType -> entityType.geteType() == eTypeId)
                 .findFirst();
@@ -37,7 +39,7 @@ public interface OntologyUtil {
         return entityTypeName;
     }
 
-    static String getRelationTypeNameById(Ontology ontology, int rTypeId){
+   public static String getRelationTypeNameById(Ontology ontology, int rTypeId){
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()
                 .filter(relationshipType-> relationshipType.getrType() == rTypeId)
                 .findFirst();
@@ -51,7 +53,7 @@ public interface OntologyUtil {
         return relationTypeName;
     }
 
-    static Optional<String> getEntityLabel(Ontology ontology,int eType) {
+    public static Optional<String> getEntityLabel(Ontology ontology, int eType) {
         for(EntityType e : ontology.getEntityTypes()) {
             if(e.geteType() == eType) {
                 return Optional.of(e.getName());
@@ -60,7 +62,7 @@ public interface OntologyUtil {
         return Optional.empty();
     }
 
-    static Optional<List<String>> getAllEntityLabels(Ontology ontology) {
+    public static Optional<List<String>> getAllEntityLabels(Ontology ontology) {
         List<String> entityLabels = ontology.getEntityTypes().stream().map(p -> p.getName()).collect(Collectors.toList());
         if (entityLabels.size() != 0)
             return Optional.of(entityLabels);
@@ -68,7 +70,7 @@ public interface OntologyUtil {
             return Optional.empty();
     }
 
-    static Optional<List<String>> getAllRelationshipTypeLabels(Ontology ontology) {
+    public static Optional<List<String>> getAllRelationshipTypeLabels(Ontology ontology) {
         List<String> relationshipTypeLabels = ontology.getRelationshipTypes().stream().map(p -> p.getName()).collect(Collectors.toList());
         if (relationshipTypeLabels.size() != 0)
             return Optional.of(relationshipTypeLabels);
@@ -76,7 +78,7 @@ public interface OntologyUtil {
             return Optional.empty();
     }
 
-    static Optional<String> getRelationLabel(Ontology ontology, int rType) {
+    public static Optional<String> getRelationLabel(Ontology ontology, int rType) {
         for(RelationshipType r : ontology.getRelationshipTypes()) {
             if(r.getrType() == rType) {
                 return Optional.of(r.getName());
@@ -85,7 +87,7 @@ public interface OntologyUtil {
         return Optional.empty();
     }
 
-    static Optional<Property> getProperty(Ontology ontology, int eType, String pType) {
+    /*static Optional<Property> getProperty(Ontology ontology, int eType, String pType) {
         Optional<EntityType> entityType = ontology.getEntityTypes()
                 .stream().filter(entityType1 -> entityType1.geteType() == eType).findFirst();
         if (!entityType.isPresent())
@@ -101,9 +103,9 @@ public interface OntologyUtil {
                 return p;
         }
         return Optional.empty();
-    }
+    }*/
 
-    static Optional<Property> getRelationshipProperty(Ontology ontology, int rType, String pType) {
+    /*static Optional<Property> getRelationshipProperty(Ontology ontology, int rType, String pType) {
         Optional<RelationshipType> relationType = ontology.getRelationshipTypes()
                 .stream().filter(relationshipType -> relationshipType.getrType() == rType).findFirst();
         if (!relationType.isPresent())
@@ -120,19 +122,15 @@ public interface OntologyUtil {
                 return p;
         }
         return Optional.empty();
+    }*/
+
+    public static Optional<Property> getProperty(Ontology ontology, int pType) {
+        return Stream.ofAll(ontology.getProperties())
+                .filter(property -> property.getpType() == pType)
+                .toJavaOptional();
     }
 
-    static Optional<Property> getProperty(String pType, List<Property> properties) {
-        int pTypeInteger = Integer.valueOf(pType);
-        for (Property p : properties) {
-            if (p.getpType() == pTypeInteger) {
-                return Optional.of(p);
-            }
-        }
-        return Optional.empty();
-    }
-
-    static Optional<Property> getCompositeProperty(Ontology ontology, String pType, List<Property> properties) {
+    /*static Optional<Property> getCompositeProperty(Ontology ontology, String pType, List<Property> properties) {
         String[] typesTree = pType.split("\\.");
 
         if (typesTree.length>1) {
@@ -146,9 +144,9 @@ public interface OntologyUtil {
             }
         }
         return Optional.empty();
-    }
+    }*/
 
-    static Optional<RelationshipType> getRelationshipType(Ontology ontology,String name) {
+    public static Optional<RelationshipType> getRelationshipType(Ontology ontology, String name) {
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()
                 .filter(relationshipType-> relationshipType.getName().equals(name))
                 .findFirst();
@@ -176,7 +174,7 @@ public interface OntologyUtil {
         return Optional.of(compositeType);
     }
 
-    static Optional<PrimitiveType> getPrimitiveType(Ontology ontology, String pType){
+    public static Optional<PrimitiveType> getPrimitiveType(Ontology ontology, String pType){
         Optional<PrimitiveType> primitiveTypeMatch = ontology.getPrimitiveTypes().stream().
                             filter(primitiveType -> primitiveType.getType().equals(pType)).
                             findFirst();

@@ -41,7 +41,7 @@ public class EBaseStatisticsProviderTests {
 
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
-        ontology = OntologyTestUtils.createDragonsOntologyShort(new Ontology());
+        ontology = OntologyTestUtils.createDragonsOntologyShort();
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
     }
 

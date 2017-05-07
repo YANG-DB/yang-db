@@ -1,133 +1,5 @@
 {
   "ont": "Dragons",
-  "entityTypes": [
-    {
-      "eType": 1,
-      "name": "Person",
-      "properties": [
-        {
-          "pType": 1,
-          "name": "first name",
-          "type": "string",
-          "report": [
-            "raw"
-          ]
-        },
-        {
-          "pType": 2,
-          "name": "last name",
-          "type": "string",
-          "report": [
-            "raw"
-          ]
-        },
-        {
-          "pType": 3,
-          "name": "gender",
-          "type": "TYPE_Gender"
-        },
-        {
-          "pType": 4,
-          "name": "birth date",
-          "type": "date",
-          "report": [
-            "raw"
-          ]
-        },
-        {
-          "pType": 5,
-          "name": "death date",
-          "type": "date"
-        },
-        {
-          "pType": 6,
-          "name": "height",
-          "type": "int",
-          "units": "cm",
-          "report": [
-            "raw"
-          ]
-        }
-      ],
-      "display": [
-        "%1 %2",
-        "%4",
-        "%6"
-      ]
-    },
-    {
-      "eType": 2,
-      "name": "Dragon",
-      "properties": [
-        {
-          "pType": 1,
-          "name": "name",
-          "type": "string",
-          "report": [
-            "raw"
-          ]
-        }
-      ],
-      "display": [
-        "name: %1"
-      ]
-    }
-  ],
-  "relationshipTypes": [
-    {
-      "rType": 1,
-      "name": "own",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 2
-        }
-      ],
-      "properties": [
-        {
-          "pType": 1,
-          "name": "since",
-          "type": "date",
-          "report": [
-            "min",
-            "max"
-          ]
-        },
-        {
-          "pType": 2,
-          "name": "till",
-          "type": "date",
-          "report": [
-            "min",
-            "max"
-          ]
-        }
-      ]
-    },
-    {
-      "rType": 2,
-      "name": "fires at",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 2,
-          "eTypeB": 2
-        }
-      ],
-      "properties": [
-        {
-          "pType": 1,
-          "name": "time",
-          "type": "datetime",
-          "report": [
-            "min",
-            "max"
-          ]
-        }
-      ]
-    }
-  ],
   "enumeratedTypes": [
     {
       "eType": "TYPE_Gender",
@@ -144,6 +16,114 @@
           "val": 3,
           "name": "Other"
         }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": 1,
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "pType": 2,
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "pType": 3,
+      "name": "gender",
+      "type": "TYPE_Gender"
+    },
+    {
+      "pType": 4,
+      "name": "birthDate",
+      "type": "date"
+    },
+    {
+      "pType": 5,
+      "name": "deathDate",
+      "type": "date"
+    },
+    {
+      "pType": 6,
+      "name": "height",
+      "type": "int",
+      "units": "cm"
+    },
+    {
+      "pType": 7,
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": 8,
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": 9,
+      "name": "endDate",
+      "type": "date"
+    }
+  ],
+  "entityTypes": [
+    {
+      "eType": 1,
+      "name": "Person",
+      "properties": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "eType": 2,
+      "name": "Dragon",
+      "properties": [
+        7
+      ]
+    },
+    {
+      "eType": 4,
+      "name": "Guild",
+      "properties": [
+        7
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": 1,
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        8,
+        9
+      ]
+    },
+    {
+      "rType": 2,
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        8,
+        9
       ]
     }
   ]

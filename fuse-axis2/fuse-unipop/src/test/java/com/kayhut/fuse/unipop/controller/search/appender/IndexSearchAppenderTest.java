@@ -1,23 +1,19 @@
 package com.kayhut.fuse.unipop.controller.search.appender;
 
-import com.google.common.collect.Iterators;
 import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
-import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.unipop.query.search.SearchQuery;
 
 import java.util.*;
@@ -130,7 +126,7 @@ public class IndexSearchAppenderTest {
             seteTypeA(2);
             seteTypeB(1);
         }});
-        RelationshipType fireRelationshipType = RelationshipType.RelationshipTypeBuilder.aRelationshipType()
+        RelationshipType fireRelationshipType = RelationshipType.Builder.get()
                 .withRType(1).withName("Fire").withEPairs(ePairs).build();
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
