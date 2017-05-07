@@ -57,6 +57,15 @@ public class Plan extends CompositePlanOpBase{
     public static Plan compose(Plan plan,PlanOpBase op) {
         return plan.withOp(op);
     }
+
+    public static Plan compose(Plan plan,Plan append) {
+        Plan newPlan = plan;
+        List<PlanOpBase> ops = append.getOps();
+        for (PlanOpBase op : ops) {
+            newPlan = Plan.compose(plan,op);
+        }
+        return newPlan;
+    }
 }
 
 

@@ -20,7 +20,7 @@ import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDesc
 /**
  * Created by Roman on 23/04/2017.
  */
-public class StepDescendantAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery> {
+public class StepAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery> {
     //region PlanExtensionStrategy Implementation
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {

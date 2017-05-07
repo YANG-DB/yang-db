@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.extenders.dfs;
+package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;

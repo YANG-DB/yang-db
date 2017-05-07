@@ -28,8 +28,17 @@ public class AsgQueryUtils {
         return getElement(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, truePredicate);
     }
 
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> getAncestors(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return getElements(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, truePredicate, Collections.emptyList());
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
         return getAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+    }
+
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> getAncestors(AsgEBase<T> asgEBase, Class<?> klass) {
+        return getAncestors(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
     }
 

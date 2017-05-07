@@ -2,6 +2,7 @@ package com.kayhut.fuse.epb.plan.extenders.dfs;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.epb.plan.extenders.StepAncestorAdjacentStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -76,7 +77,6 @@ public class StepAncestorAdjacentStrategyTest {
     }
 
     @Test
-
     public void test_simpleQuery2_secondPlan() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         AsgEBase<Rel> relation = getAsgEBaseByEnum(asgQuery, 7);
