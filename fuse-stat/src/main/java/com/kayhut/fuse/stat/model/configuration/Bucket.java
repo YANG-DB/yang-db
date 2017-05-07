@@ -5,6 +5,7 @@ package com.kayhut.fuse.stat.model.configuration;
  */
 public class Bucket {
 
+    //region Ctrs
     public Bucket() {
     }
 
@@ -12,7 +13,9 @@ public class Bucket {
         this.start = start;
         this.end = end;
     }
+    //endregion
 
+    //region Getters & Setters
     public String getStart() {
         return start;
     }
@@ -28,6 +31,7 @@ public class Bucket {
     public void setEnd(String end) {
         this.end = end;
     }
+    //endregion
 
     //region Fields
     private String start;

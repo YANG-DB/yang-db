@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class StatContainer {
 
+    //region Getters & Setters
     public List<Mapping> getMappings() {
         return mappings;
     }
@@ -22,6 +23,7 @@ public class StatContainer {
     public void setTypes(List<Type> types) {
         this.types = types;
     }
+    //endregion
 
     //region Fields
     private List<Mapping> mappings;
@@ -58,6 +60,5 @@ public class StatContainer {
         }
     }
     //endregion
-
 
 }

@@ -54,7 +54,7 @@ public class EsUtil {
                                                                     String indexName,
                                                                     String typeName,
                                                                     String fieldName,
-                                                                    long min, long max,
+                                                                    double min, double max,
                                                                     long numOfBins){
 
         List<Bucket> buckets =  StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));

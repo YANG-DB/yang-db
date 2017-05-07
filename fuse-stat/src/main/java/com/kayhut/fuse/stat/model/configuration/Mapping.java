@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class Mapping {
 
+    //region Ctrs
     public Mapping() {
     }
 
@@ -14,7 +15,9 @@ public class Mapping {
         this.indices = indices;
         this.types = types;
     }
+    //endregion
 
+    //region Getters & Setters
     public List<String> getIndices() {
         return indices;
     }
@@ -30,6 +33,7 @@ public class Mapping {
     public void setTypes(List<String> types) {
         this.types = types;
     }
+    //endregion
 
     //region Fields
     private List<String> indices;
@@ -66,7 +70,5 @@ public class Mapping {
         }
     }
     //endregion
-
-
 
 }

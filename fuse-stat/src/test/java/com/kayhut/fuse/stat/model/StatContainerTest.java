@@ -16,7 +16,7 @@ public class StatContainerTest {
     @Test
     public void testStatModel() throws Exception {
         HistogramNumeric histogramDragonAge = HistogramNumeric.HistogramNumericBuilder.aHistogramNumeric()
-                .withMin("10").withMax("100").withNumOfBins("10").build();
+                .withMin(10).withMax(100).withNumOfBins(10).build();
         HistogramString histogramDragonName = HistogramString.HistogramStringBuilder.aHistogramString()
                 .withPrefixSize("3")
                 .withInterval("10").withNumOfChars("26").withFirstCharCode("97").build();

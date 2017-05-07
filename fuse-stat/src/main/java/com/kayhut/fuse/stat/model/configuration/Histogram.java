@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class Histogram {
 
+    //region Ctrs
     public Histogram() {
     }
 
@@ -29,6 +30,7 @@ public abstract class Histogram {
     public HistogramType getHistogramType() {
         return histogramType;
     }
+    //endregion
 
     //region Fields
     private HistogramType histogramType;

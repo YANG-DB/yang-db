@@ -10,9 +10,9 @@
       "field": "age",
       "histogram": {
         "histogramType": "numeric",
-        "min": "10",
-        "max": "100",
-        "numOfBins": "10"
+        "min": 10,
+        "max": 100,
+        "numOfBins": 10
       }
       },
       {

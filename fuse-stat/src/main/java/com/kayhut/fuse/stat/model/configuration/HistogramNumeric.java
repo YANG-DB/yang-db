@@ -5,45 +5,49 @@ package com.kayhut.fuse.stat.model.configuration;
  */
 public class HistogramNumeric extends Histogram {
 
+    //region Ctrs
     public HistogramNumeric() {
         super(HistogramType.numeric);
     }
+    //endregion
 
-    public String getMin() {
+    //region Getters & Setters
+    public double getMin() {
         return min;
     }
 
-    public void setMin(String min) {
+    public void setMin(double min) {
         this.min = min;
     }
 
-    public String getMax() {
+    public double getMax() {
         return max;
     }
 
-    public void setMax(String max) {
+    public void setMax(double max) {
         this.max = max;
     }
 
-    public String getNumOfBins() {
+    public int getNumOfBins() {
         return numOfBins;
     }
 
-    public void setNumOfBins(String numOfBins) {
+    public void setNumOfBins(int numOfBins) {
         this.numOfBins = numOfBins;
     }
+    //endregion
 
     //region Fields
-    private String min;
-    private String max;
-    private String numOfBins;
+    private double min;
+    private double max;
+    private int numOfBins;
     //endregion
 
     //region Builder
     public static final class HistogramNumericBuilder {
-        private String min;
-        private String max;
-        private String numOfBins;
+        private double min;
+        private double max;
+        private int numOfBins;
 
         private HistogramNumericBuilder() {
             super();
@@ -53,18 +57,18 @@ public class HistogramNumeric extends Histogram {
             return new HistogramNumericBuilder();
         }
 
-        public HistogramNumericBuilder withMin(String min) {
+        public HistogramNumericBuilder withMin(double min) {
             this.min = min;
             return this;
         }
 
-        public HistogramNumericBuilder withMax(String max) {
+        public HistogramNumericBuilder withMax(double max) {
             this.max = max;
             return this;
         }
 
-        public HistogramNumericBuilder withNumOfBins(String interval) {
-            this.numOfBins = interval;
+        public HistogramNumericBuilder withNumOfBins(int numOfBins) {
+            this.numOfBins = numOfBins;
             return this;
         }
 

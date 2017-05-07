@@ -209,7 +209,7 @@ public class StatUtil {
         }
     }
 
-    public static List<Bucket> createNumericBuckets(long min, long max, int numOfBins) {
+    public static List<Bucket> createNumericBuckets(double min, double max, int numOfBins) {
         List<Bucket> buckets = new ArrayList<>();
         double[] bucketsData = new double[numOfBins];
         for (int i = 0; i < numOfBins; i++){

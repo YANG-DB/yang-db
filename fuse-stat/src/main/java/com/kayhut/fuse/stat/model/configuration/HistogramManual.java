@@ -7,9 +7,13 @@ import java.util.List;
  */
 public class HistogramManual extends Histogram{
 
+    //region Ctrs
     public HistogramManual() {
         super(HistogramType.manual);
     }
+    //endregion
+
+    //region Getters & Setters
 
     public List<Bucket> getBuckets() {
         return buckets;
@@ -26,14 +30,14 @@ public class HistogramManual extends Histogram{
     public void setDataType(String dataType) {
         this.dataType = dataType;
     }
+    //endregion
 
     //region Fields
     private List<Bucket> buckets;
     private String dataType;
     //endregion
 
-
-    //region Fields
+    //region Builder
     public static final class HistogramManualBuilder {
         private List<Bucket> buckets;
         private String dataType;
@@ -63,8 +67,4 @@ public class HistogramManual extends Histogram{
         }
     }
     //endregion
-
-
-
-
 }

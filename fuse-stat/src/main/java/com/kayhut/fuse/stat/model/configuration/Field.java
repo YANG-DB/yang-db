@@ -5,6 +5,7 @@ package com.kayhut.fuse.stat.model.configuration;
  */
 public class Field {
 
+    //region Ctrs
     public Field() {
     }
 
@@ -12,7 +13,9 @@ public class Field {
         this.field = field;
         this.histogram = histogram;
     }
+    //endregion
 
+    //region Getters & Setters
     public String getField() {
         return field;
     }
@@ -28,9 +31,9 @@ public class Field {
     public void setHistogram(Histogram histogram) {
         this.histogram = histogram;
     }
+    //endregion
 
     //region Fields
-
     //The name of the field for which statistics are being calculated
     private String field;
     //histogram buckets defenition

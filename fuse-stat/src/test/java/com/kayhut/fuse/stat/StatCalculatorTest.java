@@ -33,7 +33,7 @@ public class StatCalculatorTest {
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
         //Check if Stat index created
         String statIndexName = "stat";
-        String statTypeName = "buckets";
+        String statTypeName = "bucket";
         String dataIndexName1 = "index1" ;
         String dataIndexName2 = "index2" ;
         String dataTypeName1 = "dragon";

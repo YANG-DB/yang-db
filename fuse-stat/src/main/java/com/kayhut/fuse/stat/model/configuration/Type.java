@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class Type {
 
+    //region Ctrs
     public Type() {
     }
 
@@ -16,7 +17,9 @@ public class Type {
         this.type = type;
         this.fields = fields;
     }
+    //endregion
 
+    //region Getters & Setters
     @JsonProperty("type")
     public String getType() {
         return type;
@@ -36,12 +39,11 @@ public class Type {
     public void setFields(List<Field> fields) {
         this.fields = fields;
     }
-
+    //endregion
 
     //region Fields
     private String type;
     private List<Field> fields;
     //endregion
-
 
 }

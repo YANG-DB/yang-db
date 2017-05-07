@@ -6,7 +6,6 @@ package com.kayhut.fuse.stat.model.result;
 public class BucketStatResult extends ExtendedStatResult {
 
     //region Ctors
-
     public BucketStatResult() {
     }
 

@@ -5,10 +5,13 @@ package com.kayhut.fuse.stat.model.configuration;
  */
 public class HistogramString extends Histogram {
 
+    //region Ctrs
     public HistogramString() {
         super(HistogramType.string);
     }
+    //endregion
 
+    //region Getters & Setters
     public String getInterval() {
         return interval;
     }
@@ -40,6 +43,7 @@ public class HistogramString extends Histogram {
     public void setNumOfChars(String numOfChars) {
         this.numOfChars = numOfChars;
     }
+    //endregion
 
     //region Fields
     private String interval;
