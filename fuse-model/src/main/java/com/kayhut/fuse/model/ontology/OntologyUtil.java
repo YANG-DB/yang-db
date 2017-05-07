@@ -11,7 +11,7 @@ public interface OntologyUtil {
 
     static int getEntityTypeIdByName(Ontology ontology,String name) {
         Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()
-                .filter(entityType -> entityType.getName() == null)
+                .filter(entityType -> entityType.getName().equals(name))
                 .findFirst();
         int entityTypeId ;
         if (entityTypeMatch.isPresent()) {

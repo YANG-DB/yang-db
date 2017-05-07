@@ -27,7 +27,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
         if(edgeLabel.isPresent()) {
             Optional<GraphEdgeSchema> edgeSchema = context.getSchema().getEdgeSchema(edgeLabel.get());
             if(edgeSchema.isPresent()) {
-                searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchema.get().getIndexPartitions()));
+                searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchema.get().getIndexPartition()));
             }
         }
         return true;
@@ -65,9 +65,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
         return Optional.empty();
     }
 
-    private List<String> getEdgeSchemasIndices(Iterable<IndexPartition> indexPartitions) {
-        List<String> indices = new ArrayList<>();
-        indexPartitions.forEach(indexPartition -> indices.addAll(Lists.newArrayList(indexPartition.getIndices())));
-        return indices;
+    private List<String> getEdgeSchemasIndices(IndexPartition indexPartition) {
+        return Lists.newArrayList(indexPartition.getIndices());
     }
 }

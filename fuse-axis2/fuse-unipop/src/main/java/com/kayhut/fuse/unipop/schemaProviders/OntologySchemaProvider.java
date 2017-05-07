@@ -100,8 +100,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             }
 
             @Override
-            public Iterable<IndexPartition> getIndexPartitions() {
-                return indexProvider.getIndexPartitionsByLabel(vertexType, ElementType.vertex);
+            public IndexPartition getIndexPartition() {
+                return indexProvider.getIndexPartitionByLabel(vertexType, ElementType.vertex);
             }
 
             @Override
@@ -200,8 +200,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             }
 
             @Override
-            public Iterable<IndexPartition> getIndexPartitions() {
-                return indexProvider.getIndexPartitionsByLabel(edgeType, ElementType.edge);
+            public IndexPartition getIndexPartition() {
+                return indexProvider.getIndexPartitionByLabel(edgeType, ElementType.edge);
             }
 
             @Override

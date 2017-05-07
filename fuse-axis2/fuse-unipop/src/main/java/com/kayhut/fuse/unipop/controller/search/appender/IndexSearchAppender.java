@@ -87,21 +87,15 @@ public class IndexSearchAppender implements SearchAppender<PromiseElementControl
         ArrayList<String> indices = Lists.newArrayList();
         edgeSchemas.forEach(graphEdgeSchema ->
         {
-            Iterable<IndexPartition> indexPartitions = graphEdgeSchema.getIndexPartitions();
-            indexPartitions.forEach(indexPartition -> {
-                indices.addAll(Lists.newArrayList(indexPartition.getIndices()));
-            });
+            IndexPartition indexPartition = graphEdgeSchema.getIndexPartition();
+            indices.addAll(Lists.newArrayList(indexPartition.getIndices()));
         });
         return indices;
     }
 
     private List<String> getVertexSchemasIndices(Optional<GraphVertexSchema> vertexSchema) {
-        ArrayList<String> indices = Lists.newArrayList();
-        Iterable<IndexPartition> indexPartitions = vertexSchema.get().getIndexPartitions();
-        indexPartitions.forEach(indexPartition -> {
-            indices.addAll(Lists.newArrayList(indexPartition.getIndices()));
-        });
-        return indices;
+        IndexPartition indexPartition = vertexSchema.get().getIndexPartition();
+        return Lists.newArrayList(indexPartition.getIndices());
     }
 
     //endregion

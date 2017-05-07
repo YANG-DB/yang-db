@@ -109,7 +109,7 @@ public class PromiseEdgeTest{
         IndexPartition indexPartition = mock(IndexPartition.class);
         when(indexPartition.getIndices()).thenReturn(Arrays.asList("v1"));
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
-        when(edgeSchema.getIndexPartitions()).thenReturn(Arrays.asList(indexPartition));
+        when(edgeSchema.getIndexPartition()).thenReturn(indexPartition);
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 

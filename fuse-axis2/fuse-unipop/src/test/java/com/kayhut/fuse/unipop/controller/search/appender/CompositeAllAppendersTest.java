@@ -206,15 +206,15 @@ public class CompositeAllAppendersTest {
         return new OntologySchemaProvider((label, elementType) -> {
             if (elementType == ElementType.vertex) {
                 if (label.equals("Dragon")){
-                    return Collections.singletonList(() -> Arrays.asList("dragonIndex1", "dragonIndex2"));
+                    return () -> Arrays.asList("dragonIndex1", "dragonIndex2");
                 }
                 else if(label.equals("Person")){
-                    return Collections.singletonList(() -> Arrays.asList("personIndex1"));
+                    return () -> Arrays.asList("personIndex1");
                 }
                 //Default
-                return Collections.singletonList(() -> Arrays.asList("vertexIndex1", "vertexIndex2"));
+                return () -> Arrays.asList("vertexIndex1", "vertexIndex2");
             } else if (elementType == ElementType.edge) {
-                return Collections.singletonList(() -> Arrays.asList("edgeIndex1", "edgeIndex2"));
+                return () -> Arrays.asList("edgeIndex1", "edgeIndex2");
             } else {
                 // must fail
                 Assert.assertTrue(false);

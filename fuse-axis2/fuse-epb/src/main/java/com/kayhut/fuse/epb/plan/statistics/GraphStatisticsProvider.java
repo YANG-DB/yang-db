@@ -14,16 +14,16 @@ import java.util.List;
  */
 public interface GraphStatisticsProvider {
     Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema);
-    Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema, List<IndexPartition> relevantPartitions);
+    Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices);
     Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
-    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<IndexPartition> relevantPartitions);
+    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
 
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphVertexSchema graphVertexSchema,
-                                                                                      List<IndexPartition> relevantPartitions,
+                                                                                      List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       ConstraintOp constraintOp, T value);
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphEdgeSchema graphEdgeSchema,
-                                                                                      List<IndexPartition> relevantPartitions,
+                                                                                      List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       ConstraintOp constraintOp, T value);
 }

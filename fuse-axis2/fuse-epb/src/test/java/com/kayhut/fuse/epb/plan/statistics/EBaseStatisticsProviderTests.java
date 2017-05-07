@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -15,14 +14,14 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.locks.Condition;
-import java.util.stream.Collectors;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
@@ -37,6 +36,9 @@ public class EBaseStatisticsProviderTests {
     Ontology ontology;
     EBaseStatisticsProvider statisticsProvider;
     PhysicalIndexProvider indexProvider;
+    private static String INDEX_FORMAT = "idx-%s";
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH");
+
 
     @Before
     public void setUp() throws Exception {
@@ -58,7 +60,38 @@ public class EBaseStatisticsProviderTests {
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "m", "z"));
 
         indexProvider = Mockito.mock(PhysicalIndexProvider.class);
-        when(indexProvider.getIndexPartitionsByLabel(any(),any())).thenReturn(new ArrayList<>());
+        /*when(indexProvider.getIndexPartitionByLabel(any(),any())).thenReturn(new TimeSeriesIndexPartition() {
+            @Override
+            public String getDateFormat() {
+                return null;
+            }
+
+            @Override
+            public String getIndexPrefix() {
+                return null;
+            }
+
+            @Override
+            public String getIndexFormat() {
+                return null;
+            }
+
+            @Override
+            public String getTimeField() {
+                return null;
+            }
+
+            @Override
+            public String getIndexName(Date date) {
+                return null;
+            }
+
+            @Override
+            public Iterable<String> getIndices() {
+                return Arrays.asList(DATE_FORMAT.format(new Date()), DATE_FORMAT.format(new Date(now - 60 * 60 * 1000)));
+            }
+        });*/
+        when(indexProvider.getIndexPartitionByLabel(any(), any())).thenReturn(() -> new LinkedList<>());
 
         ontology = OntologyTestUtils.createDragonsOntologyShort(new Ontology());
         graphElementSchemaProvider = new OntologySchemaProvider(indexProvider, ontology);
@@ -99,7 +132,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("time");
+        prop.setpType("1");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
@@ -119,7 +152,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("time");
+        prop.setpType("1");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.gt);
@@ -138,7 +171,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("time");
+        prop.setpType("1");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.ge);
@@ -157,7 +190,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("time");
+        prop.setpType("1");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.lt);
@@ -176,7 +209,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("time");
+        prop.setpType("1");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.le);
@@ -204,7 +237,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("birth date");
+        prop.setpType("4");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.eq);
         con.setExpr(new Date());
@@ -224,7 +257,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("first name");
+        prop.setpType("1");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.eq);
         con.setExpr("abc");
@@ -244,7 +277,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("first name");
+        prop.setpType("1");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.ge);
         con.setExpr("abc");
@@ -264,7 +297,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("first name");
+        prop.setpType("1");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.ge);
         con.setExpr("m");
@@ -284,14 +317,14 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("birth date");
+        prop.setpType("4");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.eq);
         con.setExpr(new Date());
         prop.setCon(con);
         props.add(prop);
         prop = new EProp();
-        prop.setpType("height");
+        prop.setpType("6");
         con = new Constraint();
         con.setOp(ConstraintOp.eq);
         con.setExpr(10L);
@@ -312,7 +345,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("height");
+        prop.setpType("6");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.eq);
         con.setExpr(10L);
@@ -333,7 +366,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("height");
+        prop.setpType("6");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.ne);
         con.setExpr(10L);
@@ -354,7 +387,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("height");
+        prop.setpType("6");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.gt);
         con.setExpr(10L);
@@ -375,7 +408,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("height");
+        prop.setpType("6");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.ge);
         con.setExpr(10L);
@@ -396,7 +429,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("height");
+        prop.setpType("6");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.lt);
         con.setExpr(10L);
@@ -417,7 +450,7 @@ public class EBaseStatisticsProviderTests {
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("height");
+        prop.setpType("6");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.le);
         con.setExpr(10L);
@@ -443,11 +476,11 @@ public class EBaseStatisticsProviderTests {
     @Test
     public void eUnTypedDateFilterEqHistogramTest() {
         EUntyped eUntyped = new EUntyped();
-        eUntyped.setvTypes(Arrays.asList(1,2));
+        eUntyped.setvTypes(Arrays.asList(1));
         EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
         EProp prop = new EProp();
-        prop.setpType("birth date");
+        prop.setpType("4");
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.eq);
         con.setExpr(new Date());
