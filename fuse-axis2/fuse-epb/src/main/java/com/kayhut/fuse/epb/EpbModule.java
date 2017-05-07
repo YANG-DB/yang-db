@@ -10,11 +10,10 @@ import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
-import com.kayhut.fuse.epb.plan.validation.SiblingOnlyPlanValidator;
+import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.typesafe.config.Config;
 import org.jooby.Env;
@@ -47,8 +46,7 @@ public class EpbModule extends ModuleBase {
                 .annotatedWith(Names.named("LocalPruningStrategy"))
                 .toInstance(new NoPruningPruneStrategy<>());
 
-        binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})
-                .toInstance(new SiblingOnlyPlanValidator());
+        binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){}).to(M1PlanValidator.class).asEagerSingleton();
 
     }
 }

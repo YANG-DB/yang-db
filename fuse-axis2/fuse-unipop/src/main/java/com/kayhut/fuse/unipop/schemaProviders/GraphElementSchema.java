@@ -17,5 +17,8 @@ public interface GraphElementSchema {
 
     Iterable<IndexPartition> getIndexPartitions();
 
+    Iterable<GraphElementPropertySchema> getProperties();
+
+    Optional<GraphElementPropertySchema> getProperty(String name);
 
 }

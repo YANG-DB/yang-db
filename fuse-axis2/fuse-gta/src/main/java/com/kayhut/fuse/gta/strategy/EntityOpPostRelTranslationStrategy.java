@@ -42,7 +42,7 @@ public class EntityOpPostRelTranslationStrategy implements TranslationStrategy {
 
         //EntityOp Post RelOp
         if(currentPlanOpBase instanceof EntityOp && prev.get() instanceof RelationOp) {
-            EEntityBase eEntityBase = ((EntityOp) currentPlanOpBase).getEntity().geteBase();
+            EEntityBase eEntityBase = ((EntityOp) currentPlanOpBase).getAsgEBase().geteBase();
 
             traversal.otherV();
 

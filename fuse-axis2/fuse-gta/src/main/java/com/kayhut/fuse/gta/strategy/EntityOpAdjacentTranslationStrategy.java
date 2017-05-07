@@ -26,7 +26,7 @@ public class EntityOpAdjacentTranslationStrategy implements TranslationStrategy 
             return traversal;
 
         if(currentPlanOpBase instanceof EntityOp && prev.get() instanceof EntityOp) {
-            traversal.select(((EntityOp) currentPlanOpBase).getEntity().geteBase().geteTag());
+            traversal.select(((EntityOp) currentPlanOpBase).getAsgEBase().geteBase().geteTag());
         }
 
         return traversal;

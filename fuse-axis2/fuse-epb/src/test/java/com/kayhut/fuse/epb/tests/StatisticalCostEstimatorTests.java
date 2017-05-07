@@ -109,7 +109,7 @@ public class StatisticalCostEstimatorTests {
 
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
-        entityOp.setEntity(new AsgEBase<>(new EConcrete()));
+        entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY, entityOp);
         Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = estimator.calculate(map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
         List<PlanOpWithCost<Cost>> costs = tuple2._2;
@@ -155,7 +155,7 @@ public class StatisticalCostEstimatorTests {
     public void estimateSimpleAndPattern() throws Exception {
         PlanMockBuilder builder = mock().entity(TYPED, 100,4).rel(out,5,100).entity(TYPED, 100,6).startNewPlan();
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.planWithCost(100, 0);
-        builder.entity(((EntityOp)oldPlan.getPlan().getOps().get(0)).getEntity().geteBase(), 100,4);
+        builder.entity(((EntityOp)oldPlan.getPlan().getOps().get(0)).getAsgEBase().geteBase(), 100,4);
         StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(builder.statistics(),Integer.MAX_VALUE,Integer.MAX_VALUE));
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), Optional.of(oldPlan));
         Assert.assertEquals(4, StreamSupport.stream(estimate.getCost().getOpCosts().spliterator(), false).count());
@@ -171,7 +171,7 @@ public class StatisticalCostEstimatorTests {
     public void estimateEntityOnlyPattern() throws Exception {
         StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(Collections.emptyMap(),Integer.MAX_VALUE,Integer.MAX_VALUE));
         EntityOp entityOp = new EntityOp();
-        entityOp.setEntity(new AsgEBase<>(new EConcrete()));
+        entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
 
         Plan plan = new Plan().withOp(entityOp);
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, Optional.empty());
