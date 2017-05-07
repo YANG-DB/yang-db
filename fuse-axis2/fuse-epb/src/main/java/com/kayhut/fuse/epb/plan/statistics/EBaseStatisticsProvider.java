@@ -3,10 +3,7 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.execution.plan.Direction;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
-import com.kayhut.fuse.model.ontology.PrimitiveType;
-import com.kayhut.fuse.model.ontology.Property;
+import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
@@ -47,7 +44,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         supportedOps.add(ConstraintOp.lt);
         supportedOps.add(ConstraintOp.ne);
     }
-
 
     public EBaseStatisticsProvider(GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology, GraphStatisticsProvider graphStatisticsProvider) {
         this.graphElementSchemaProvider = graphElementSchemaProvider;
@@ -108,8 +104,9 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         Statistics.Cardinality minVertexCardinality = null;
         for(RelProp relProp : relFilter.getrProps()){
-            GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(OntologyUtil.getRelationshipProperty(ontology, rel.getrType(),relProp.getpType()).get().getName()).get();
-            Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices);
+            Property property = OntologyUtil.getRelationshipProperty(ontology, rel.getrType(), relProp.getpType()).get();
+            GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
+            Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
             if(minVertexCardinality == null){
                 if(conditionCardinality.isPresent())
                     minVertexCardinality = conditionCardinality.get();
@@ -169,9 +166,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.Cardinality minVertexCardinality = null;
         for(EProp eProp : entityFilter.geteProps()){
-            Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(OntologyUtil.getProperty(ontology, eType, eProp.getpType()).get().getName());
+            Property property = OntologyUtil.getProperty(ontology, eType, eProp.getpType()).get();
+            Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
-                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantPartitions);
+
+                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantPartitions, property.getType());
                 if (minVertexCardinality == null) {
                     if (conditionCardinality.isPresent())
                         minVertexCardinality = conditionCardinality.get();
@@ -193,15 +192,22 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private Optional<Statistics.Cardinality> getConditionCardinality(GraphVertexSchema graphVertexSchema,
                                                                      GraphElementPropertySchema graphElementPropertySchema,
                                                                      Constraint constraint,
-                                                                     List<String> relevantIndices) {
+                                                                     List<String> relevantIndices,
+                                                                     String pType) {
 
         if(!supportedOps.contains(constraint.getOp())){
             return Optional.empty();
         }
 
-        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, graphElementPropertySchema.getType());
+        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, pType);
         if(primitiveType.isPresent()) {
-            return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, relevantIndices, primitiveType.get().getJavaType());
+            return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint.getOp(), constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
+        }else{
+            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ontology, graphElementPropertySchema.getType());
+            if(enumeratedType.isPresent()) {
+                Value value = (Value) constraint.getExpr();
+                return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint.getOp(), value.getName(), relevantIndices, String.class);
+            }
         }
         return Optional.empty();
     }
@@ -209,34 +215,41 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private Optional<Statistics.Cardinality> getConditionCardinality(GraphEdgeSchema graphEdgeSchema,
                                                                      GraphElementPropertySchema graphElementPropertySchema,
                                                                      Constraint constraint,
-                                                                     List<String> relevantIndices) {
+                                                                     List<String> relevantIndices,
+                                                                     String pType) {
 
         if(!supportedOps.contains(constraint.getOp())){
             return Optional.empty();
         }
 
-        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, graphElementPropertySchema.getType());
+        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, pType);
         if(primitiveType.isPresent()) {
-            return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, relevantIndices, primitiveType.get().getJavaType());
+            return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint.getOp(), constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
+        }else{
+            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ontology, graphElementPropertySchema.getType());
+            if(enumeratedType.isPresent()) {
+                Value value = (Value) constraint.getExpr();
+                return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint.getOp(), value.getName(), relevantIndices, String.class);
+            }
         }
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphVertexSchema graphVertexSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraint, List<String> relevantIndices, Class<T> tp) {
-        if(tp.isInstance(constraint.getExpr())){
-            T expr = (T) constraint.getExpr();
-            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphVertexSchema, relevantIndices, graphElementPropertySchema, constraint.getOp(), expr);
-            return Optional.of(estimateCardinality(histogramStatistics, expr, constraint.getOp()));
+    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphVertexSchema graphVertexSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
+        if(tp.isInstance(expression)){
+            T expr = (T) expression;
+            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphVertexSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
+            return Optional.of(estimateCardinality(histogramStatistics, expr, constraintOp));
         }
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphEdgeSchema graphEdgeSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraint, List<String> relevantIndices, Class<T> tp) {
-        if(tp.isInstance(constraint.getExpr())){
-            T expr = (T) constraint.getExpr();
+    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphEdgeSchema graphEdgeSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
+        if(tp.isInstance(expression)){
+            T expr = (T) expression;
 
-            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphEdgeSchema, relevantIndices, graphElementPropertySchema, constraint.getOp(), expr);
-            return Optional.of(estimateCardinality(histogramStatistics, expr, constraint.getOp()));
+            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphEdgeSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
+            return Optional.of(estimateCardinality(histogramStatistics, expr, constraintOp));
         }
         return Optional.empty();
     }
@@ -373,7 +386,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, int rType,RelPropGroup relPropGroup) {
-        //todo check if should use db prop name
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getrProps()){
 

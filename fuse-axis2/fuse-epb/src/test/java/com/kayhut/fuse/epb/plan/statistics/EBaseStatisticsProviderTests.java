@@ -2,6 +2,7 @@ package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.Value;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
@@ -491,6 +492,30 @@ public class EBaseStatisticsProviderTests {
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eUntyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5d, nodeStatistics.getTotal(), 0.1);
+    }
+
+    @Test
+    public void eTypedEnumeratedFieldTest(){
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("3");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.eq);
+        Value value = new Value();
+        value.setName("male");
+        value.setVal(2);
+        con.setExpr(value);
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(5d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
     }
 
 }

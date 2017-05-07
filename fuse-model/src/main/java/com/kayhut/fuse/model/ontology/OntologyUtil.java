@@ -177,15 +177,13 @@ public interface OntologyUtil {
     }
 
     static Optional<PrimitiveType> getPrimitiveType(Ontology ontology, String pType){
-        Optional<PrimitiveType> primitiveTypeMatch = ontology.getPrimitiveTypes().stream().
+        return ontology.getPrimitiveTypes().stream().
                             filter(primitiveType -> primitiveType.getType().equals(pType)).
                             findFirst();
 
-        if(primitiveTypeMatch.isPresent()){
-            return primitiveTypeMatch;
-        }else{
-            throw new IllegalArgumentException("Not Supported Primitive Type: " + pType);
-        }
     }
 
+    static Optional<EnumeratedType> getEnumeratedType(Ontology ontology, String type) {
+        return ontology.getEnumeratedTypes().stream().filter(e -> e.geteType().equals(type)).findFirst();
+    }
 }
