@@ -116,7 +116,6 @@ public class StatUtil {
             bucket.put("index", bucketStatResult.getIndex());
             bucket.put("type", bucketStatResult.getType());
             bucket.put("field", bucketStatResult.getField());
-            bucket.put("bucket", bucketStatResult.getKey());
             bucket.put("upper_bound", bucketStatResult.getUpperBound());
             bucket.put("lower_bound", bucketStatResult.getLowerBound());
             bucket.put("count", bucketStatResult.getCount());
@@ -127,7 +126,7 @@ public class StatUtil {
     }
 
     public static String createBucketUniqueId(String indexName, String typeName, String fieldName, String lowerBound, String upperBound){
-        return hashString(indexName +typeName + fieldName + lowerBound + upperBound);
+        return hashString(indexName + typeName + fieldName + lowerBound + upperBound);
     }
 
     public static Optional<Field> getFieldByName(StatContainer statContainer, String typeName, String fieldName) {
@@ -162,7 +161,7 @@ public class StatUtil {
         return buckets;
     }
 
-    private static String calcBucketStart(int numChars, int startCode,int prefixLen, int bucketIdx ) {
+    private static String calcBucketStart(int numChars, int startCode, int prefixLen, int bucketIdx ) {
         char[] chars = new char[prefixLen];
         for (int i = 0; i < prefixLen; i++) {
             int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;

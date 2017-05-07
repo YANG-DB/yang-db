@@ -42,8 +42,8 @@ public class StatCalculator {
                     for (String typeName: types){
                         Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, typeName);
                         if(typeConfiguration.isPresent()){
-                            BuildHistogramForNumericFields(configuration, logger, dataClient, statContainer, indexName, typeName);
-                            BuildHistogramForManualFields(configuration, logger, dataClient, statContainer, indexName, typeName);
+                            buildHistogramForNumericFields(configuration, logger, dataClient, statContainer, indexName, typeName);
+                            buildHistogramForManualFields(configuration, logger, dataClient, statContainer, indexName, typeName);
                             buildHistogramForStringFields(configuration, logger, dataClient, statContainer, indexName, typeName);
                         }
                     }
@@ -57,7 +57,7 @@ public class StatCalculator {
 //        EsUtil.showTypeFieldsNames(dataClient,"game","football");
     }
 
-    private static void BuildHistogramForNumericFields(Configuration configuration, Logger logger, TransportClient dataClient, StatContainer statContainer, String indexName, String typeName) {
+    private static void buildHistogramForNumericFields(Configuration configuration, Logger logger, TransportClient dataClient, StatContainer statContainer, String indexName, String typeName) {
         try {
             Optional<List<Field>> fieldsWithNumericHistogram = StatUtil.getFieldsWithNumericHistogramOfType(statContainer, typeName);
             if (fieldsWithNumericHistogram.isPresent()){
@@ -79,7 +79,7 @@ public class StatCalculator {
         }
     }
 
-    private static void BuildHistogramForManualFields(Configuration configuration, Logger logger,  TransportClient esClient, StatContainer statContainer, String indexName, String typeName) {
+    private static void buildHistogramForManualFields(Configuration configuration, Logger logger, TransportClient esClient, StatContainer statContainer, String indexName, String typeName) {
         try {
             Optional<List<Field>> fieldsWithManualHistogram = StatUtil.getFieldsWithManualHistogramOfType(statContainer, typeName);
             if (fieldsWithManualHistogram.isPresent()){

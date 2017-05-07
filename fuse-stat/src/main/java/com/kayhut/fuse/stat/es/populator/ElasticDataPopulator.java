@@ -33,15 +33,6 @@ public class ElasticDataPopulator implements DataPopulator {
         this.provider = provider;
     }
 
-    private void indexDocument(HashMap<String, Object> doc) {
-        IndexRequestBuilder indexRequestBuilder = documentIndexRequest(doc);
-        IndexResponse indexResponse = indexRequestBuilder.execute()
-                .actionGet();
-        if(indexResponse.getShardInfo().getFailures().length != 0){
-            throw new IllegalArgumentException("Inserting doc failed, doc = " + doc);
-        }
-    }
-
     private IndexRequestBuilder documentIndexRequest(Map<String, Object> doc){
         IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
                 .setIndex(this.indexName)
