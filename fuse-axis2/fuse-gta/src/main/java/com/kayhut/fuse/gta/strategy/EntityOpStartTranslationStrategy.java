@@ -15,7 +15,6 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -40,7 +39,7 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
     @Override
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
         Plan plan = context.getPlan();
-        PlanOpBase planOpBase = context.getPlanOpBase();
+        PlanOpBase planOpBase = context.getPlanOp();
         Ontology ontology = context.getOntology();
         PlanUtil planUtil = new PlanUtil();
         if(planUtil.isFirst(plan.getOps(),planOpBase)) {

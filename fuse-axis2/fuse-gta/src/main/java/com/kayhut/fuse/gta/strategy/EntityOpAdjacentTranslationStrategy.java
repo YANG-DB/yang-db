@@ -19,7 +19,7 @@ public class EntityOpAdjacentTranslationStrategy implements TranslationStrategy 
     @Override
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
         Plan plan = context.getPlan();
-        PlanOpBase currentPlanOpBase = context.getPlanOpBase();
+        PlanOpBase currentPlanOpBase = context.getPlanOp();
         PlanUtil planUtil = new PlanUtil();
         Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(), currentPlanOpBase);
         if(!prev.isPresent())

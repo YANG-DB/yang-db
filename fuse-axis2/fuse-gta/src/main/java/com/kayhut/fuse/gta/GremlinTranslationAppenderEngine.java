@@ -5,8 +5,6 @@ import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
 import com.kayhut.fuse.gta.translation.SimplePlanOpTranslator;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;

@@ -32,7 +32,7 @@ public class EntityOpPostRelTranslationStrategy implements TranslationStrategy {
     @Override
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
         Plan plan = context.getPlan();
-        PlanOpBase currentPlanOpBase = context.getPlanOpBase();
+        PlanOpBase currentPlanOpBase = context.getPlanOp();
         Ontology ontology = context.getOntology();
         PlanUtil planUtil = new PlanUtil();
         Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(), currentPlanOpBase);

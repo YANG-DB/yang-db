@@ -9,13 +9,13 @@ import com.kayhut.fuse.model.ontology.Ontology;
  */
 public class TranslationStrategyContext {
 
-    public TranslationStrategyContext(PlanOpBase planOpBase, Plan plan, Ontology ontology) {
-        this.planOpBase = planOpBase;
+    public TranslationStrategyContext(PlanOpBase planOp, Plan plan, Ontology ontology) {
+        this.planOpBase = planOp;
         this.plan = plan;
         this.ontology = ontology;
     }
 
-    public PlanOpBase getPlanOpBase() {
+    public PlanOpBase getPlanOp() {
         return planOpBase;
     }
 

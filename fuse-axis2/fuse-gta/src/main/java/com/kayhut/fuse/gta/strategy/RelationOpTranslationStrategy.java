@@ -35,7 +35,7 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
     @Override
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
         Plan plan = context.getPlan();
-        PlanOpBase planOpBase = context.getPlanOpBase();
+        PlanOpBase planOpBase = context.getPlanOp();
         Ontology ontology = context.getOntology();
 
         PlanUtil planUtil = new PlanUtil();
