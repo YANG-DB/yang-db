@@ -64,14 +64,14 @@ public class StatCalculatorTest {
 
         elasticInMemoryIndex = new ElasticInMemoryIndex();
 
+        Thread.sleep(4000);
+
         new ElasticDataPopulator(
                 dataClient,
                 "index1",
                 "dragon",
                 "id",
                 () -> createDragons(1000)).populate();
-
-        Thread.sleep(4000);
 
         new ElasticDataPopulator(
                 dataClient,
