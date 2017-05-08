@@ -20,10 +20,10 @@
         "histogram":
         {
           "histogramType": "string",
-          "prefixSize": "3",
-          "interval":"10",
+          "prefixSize": 3,
+          "interval":10,
           "firstCharCode":"97",
-          "numOfChars":"26"
+          "numOfChars":26
         }
       },
       {
@@ -44,6 +44,35 @@
             {
               "start":"klm",
               "end": "xyz"
+            }
+          ]
+        }
+      },
+      {
+        "field": "color",
+        "histogram":
+        {
+          "histogramType": "composite",
+          "dataType": "string",
+          "autoBuckets":{
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval":10,
+            "firstCharCode":"97",
+            "numOfChars":26
+          },
+          "manualBuckets":[
+            {
+              "start":"00",
+              "end": "11"
+            },
+            {
+              "start":"22",
+              "end": "33"
+            },
+            {
+              "start":"44",
+              "end": "55"
             }
           ]
         }

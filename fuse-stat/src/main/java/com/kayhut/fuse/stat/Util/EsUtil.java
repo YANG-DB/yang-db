@@ -1,7 +1,7 @@
 package com.kayhut.fuse.stat.Util;
 
 import com.kayhut.fuse.stat.model.configuration.Bucket;
-import com.kayhut.fuse.stat.model.result.BucketStatResult;
+import com.kayhut.fuse.stat.model.result.StringStatResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
@@ -9,6 +9,7 @@ import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -27,11 +28,9 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.filters.Filters;
 import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
 import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
-import org.elasticsearch.search.aggregations.metrics.stats.extended.InternalExtendedStats;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class EsUtil {
     public static final String AGG_EXTENDED_STATS = "extended_stats";
     public static final String AGG_CARDINALITY = "cardinality";
 
-    public static List<BucketStatResult> getNumericHistogramResults(TransportClient client,
+    public static List<StringStatResult> getNumericHistogramResults(TransportClient client,
                                                                     String indexName,
                                                                     String typeName,
                                                                     String fieldName,
@@ -58,19 +57,19 @@ public class EsUtil {
                                                                     long numOfBins){
 
         List<Bucket> buckets =  StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
-        List<BucketStatResult> bucketStatResults = getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
+        List<StringStatResult> bucketStatResults = getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
 
         return bucketStatResults;
     }
 
-    public static List<BucketStatResult> getManualHistogramResults(TransportClient client,
+    public static List<StringStatResult> getManualHistogramResults(TransportClient client,
                                                                    String indexName,
                                                                    String typeName,
                                                                    String fieldName,
                                                                    String dataType,
                                                                    List<Bucket> buckets){
 
-        List<BucketStatResult> bucketStatResults = new ArrayList<>();
+        List<StringStatResult> bucketStatResults = new ArrayList<>();
 
         String aggName = buildAggName(indexName,typeName,fieldName);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
@@ -96,7 +95,7 @@ public class EsUtil {
                 String end = key.split("_")[1];              // Bucket end
                 InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
 
-                BucketStatResult bucketStatResult = new BucketStatResult(indexName, typeName, fieldName,
+                StringStatResult bucketStatResult = new StringStatResult(indexName, typeName, fieldName,
                         key,
                         start,
                         end,
@@ -113,8 +112,8 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    private static List<BucketStatResult> getNumericBucketsStatResults(Client client, String indexName, String typeName, String fieldName, List<Bucket> buckets) {
-        List<BucketStatResult> bucketStatResults = new ArrayList<>();
+    private static List<StringStatResult> getNumericBucketsStatResults(Client client, String indexName, String typeName, String fieldName, List<Bucket> buckets) {
+        List<StringStatResult> bucketStatResults = new ArrayList<>();
         String aggName = buildAggName(indexName,typeName,fieldName);
 
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
@@ -140,7 +139,7 @@ public class EsUtil {
             long docCount = entry.getDocCount();    // Doc count
 
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
-            BucketStatResult bucketStatResult = new BucketStatResult(indexName, typeName, fieldName,
+            StringStatResult bucketStatResult = new StringStatResult(indexName, typeName, fieldName,
                     key,
                     from.toString(),
                     to.toString(),
@@ -153,13 +152,13 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    public static List<BucketStatResult> getStringHistogramResults(TransportClient client,
+    public static List<StringStatResult> getStringHistogramResults(TransportClient client,
                                                                    String indexName,
                                                                    String typeName,
                                                                    String fieldName,
                                                                    List<Bucket> buckets){
 
-        List<BucketStatResult> bucketStatResults = new ArrayList<>();
+        List<StringStatResult> bucketStatResults = new ArrayList<>();
 
         String aggName = buildAggName(indexName,typeName,fieldName);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
@@ -185,7 +184,7 @@ public class EsUtil {
             String end = key.split("_")[1];              // Bucket end
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
 
-            BucketStatResult bucketStatResult = new BucketStatResult(indexName, typeName, fieldName,
+            StringStatResult bucketStatResult = new StringStatResult(indexName, typeName, fieldName,
                     key,
                     start,
                     end,
@@ -308,5 +307,13 @@ public class EsUtil {
         // Check if a document exists
         GetResponse response = client.prepareGet(index, type, docId).setRefresh(true).execute().actionGet();
         return response.isExists();
+    }
+
+    public static Optional<Map<String, Object>> getDocumentById(Client client, String indexName, String documentType, String id) {
+        GetResponse r = client.get((new GetRequest(indexName, documentType, id))).actionGet();
+        if (r != null && r.isExists()) {
+            return Optional.ofNullable(r.getSourceAsMap());
+        }
+        return Optional.empty();
     }
 }

@@ -6,5 +6,6 @@ package com.kayhut.fuse.stat.model.configuration;
 public enum HistogramType {
         numeric,
         string,
-        manual
+        manual,
+        composite
 }
