@@ -134,7 +134,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("1");
+        prop.setpType("8");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
@@ -154,7 +154,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("1");
+        prop.setpType("8");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.gt);
@@ -173,7 +173,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("1");
+        prop.setpType("8");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.ge);
@@ -192,7 +192,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("1");
+        prop.setpType("8");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.lt);
@@ -211,7 +211,7 @@ public class EBaseStatisticsProviderTests {
         RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
-        prop.setpType("1");
+        prop.setpType("8");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.le);
