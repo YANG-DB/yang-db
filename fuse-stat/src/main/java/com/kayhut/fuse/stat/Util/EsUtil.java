@@ -42,10 +42,6 @@ import java.util.*;
  */
 public class EsUtil {
 
-    public final static String AGG_TERMS = "terms";
-    public final static String AGG_STATS = "stats";
-    public final static String AGG_TERMS_STATS = "termsstats";
-    public static final String AGG_FILTER = "filter";
     public static final String AGG_EXTENDED_STATS = "extended_stats";
     public static final String AGG_CARDINALITY = "cardinality";
 
