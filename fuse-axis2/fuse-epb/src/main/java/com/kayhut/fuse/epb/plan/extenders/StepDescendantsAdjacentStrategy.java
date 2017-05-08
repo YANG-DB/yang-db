@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getLastOpOfType;
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDescendantsUnmarkedOfType;
 
 /**
@@ -49,17 +48,12 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
 
         Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation, RelPropGroup.class);
 
-        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getAncestor(nextRelation, EEntityBase.class);
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getNextDescendant(nextRelation, EEntityBase.class);
 
         Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
         Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
         if (toEntityQuant.isPresent()) {
             toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
-        }
-
-        if (getLastOpOfType(newPlan, EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
-            newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
         newPlan = newPlan.withOp(new RelationOp(nextRelation));

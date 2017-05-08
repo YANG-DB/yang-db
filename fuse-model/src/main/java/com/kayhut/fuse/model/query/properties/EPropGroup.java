@@ -25,4 +25,22 @@ public class EPropGroup  extends EBase {
     //Region Fields
     private List<EProp> eProps;
     //endregion
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        EPropGroup that = (EPropGroup) o;
+
+        return eProps != null ? eProps.equals(that.eProps) : that.eProps == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (eProps != null ? eProps.hashCode() : 0);
+        return result;
+    }
 }

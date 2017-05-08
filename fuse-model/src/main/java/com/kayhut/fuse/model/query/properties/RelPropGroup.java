@@ -25,4 +25,22 @@ public class RelPropGroup  extends EBase {
     //Region Fields
     private List<RelProp> rProps;
     //endregion
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        RelPropGroup that = (RelPropGroup) o;
+
+        return rProps.equals(that.rProps);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + rProps.hashCode();
+        return result;
+    }
 }
