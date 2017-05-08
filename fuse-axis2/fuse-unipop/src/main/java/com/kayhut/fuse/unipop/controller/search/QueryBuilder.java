@@ -1,7 +1,6 @@
 package com.kayhut.fuse.unipop.controller.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.model.query.Query;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
