@@ -2,13 +2,10 @@ package com.kayhut.fuse.stat.Util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.model.configuration.*;
-import com.kayhut.fuse.stat.model.result.BucketStatResult;
+import com.kayhut.fuse.stat.model.result.StringStatResult;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.math3.random.EmpiricalDistribution;
-import org.apache.commons.math3.random.RandomGenerator;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -52,20 +49,6 @@ public class StatUtil {
         return resultObj;
     }
 
-    public static TransportClient getDataClient(Configuration configuration) throws UnknownHostException {
-        String clusterName = configuration.getString("es.cluster.name");
-        int transportPort = configuration.getInt("es.client.transport.port");
-        String[] hosts = configuration.getStringArray("es.nodes.hosts");
-
-        Settings settings = Settings.builder().put("client.transport.sniff", true).put("cluster.name", clusterName).build();
-        TransportClient esClient = TransportClient.builder().settings(settings).build();
-        for(String node: hosts){
-            esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), transportPort));
-        }
-
-        return esClient;
-    }
-
     public static Optional<Type> getTypeConfiguration(StatContainer statContainer, String typeName){
         Optional<Type> typeElement = Optional.empty();
         List<Type> types = Stream.ofAll(statContainer.getTypes()).filter(type -> type.getType().equals(typeName)).toJavaList();
@@ -103,13 +86,17 @@ public class StatUtil {
         return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.string);
     }
 
+    public static Optional<List<Field>> getFieldsWithCompositeHistogramOfType(StatContainer statContainer, String typeName){
+        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.composite);
+    }
+
     public static Optional<List<Field>> getFieldsWithManualHistogramOfType(StatContainer statContainer, String typeName){
         return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.manual);
     }
 
-    public static Iterable<Map<String, Object>> prepareStatDocs(List<BucketStatResult> bucketStatResults) {
+    public static Iterable<Map<String, Object>> prepareStatDocs(List<StringStatResult> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
-        for (BucketStatResult bucketStatResult : bucketStatResults) {
+        for (StringStatResult bucketStatResult : bucketStatResults) {
             Map<String, Object> bucket = new HashedMap();
             String bucketId = createBucketUniqueId(bucketStatResult.getIndex(),bucketStatResult.getType(),bucketStatResult.getField(), bucketStatResult.getLowerBound(),bucketStatResult.getUpperBound());
             bucket.put("id", bucketId);
@@ -118,7 +105,7 @@ public class StatUtil {
             bucket.put("field", bucketStatResult.getField());
             bucket.put("upper_bound", bucketStatResult.getUpperBound());
             bucket.put("lower_bound", bucketStatResult.getLowerBound());
-            bucket.put("count", bucketStatResult.getCount());
+            bucket.put("count", bucketStatResult.getDocCount());
             bucket.put("cardinality", bucketStatResult.getCardinality());
             buckets.add(bucket);
         }

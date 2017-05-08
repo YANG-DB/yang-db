@@ -93,20 +93,13 @@ public class ExtendedStatResult extends StatResult {
 
     //region Fields
     private long count;
-
     private double sum;
-
     private double sumOfSquares;
-
     private double avg;
-
     private double min;
-
     private double max;
-
     private double variance;
-
     private double stdDeviation;
-
     //endregion
+
 }

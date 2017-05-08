@@ -13,7 +13,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(name = "numeric", value = HistogramNumeric.class),
         @JsonSubTypes.Type(name = "string", value = HistogramString.class),
-        @JsonSubTypes.Type(name = "manual", value = HistogramManual.class)
+        @JsonSubTypes.Type(name = "manual", value = HistogramManual.class),
+        @JsonSubTypes.Type(name = "composite", value = HistogramComposite.class)
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)

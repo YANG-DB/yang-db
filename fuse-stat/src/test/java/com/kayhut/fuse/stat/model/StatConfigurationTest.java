@@ -12,14 +12,14 @@ import java.util.Arrays;
 /**
  * Created by benishue on 30-Apr-17.
  */
-public class StatContainerTest {
+public class StatConfigurationTest {
     @Test
     public void testStatModel() throws Exception {
         HistogramNumeric histogramDragonAge = HistogramNumeric.HistogramNumericBuilder.aHistogramNumeric()
                 .withMin(10).withMax(100).withNumOfBins(10).build();
         HistogramString histogramDragonName = HistogramString.HistogramStringBuilder.aHistogramString()
-                .withPrefixSize("3")
-                .withInterval("10").withNumOfChars("26").withFirstCharCode("97").build();
+                .withPrefixSize(3)
+                .withInterval(10).withNumOfChars(26).withFirstCharCode("97").build();
 
         HistogramManual histogramDragonAddress = HistogramManual.HistogramManualBuilder.aHistogramManual()
                 .withBuckets(Arrays.asList(
@@ -29,13 +29,27 @@ public class StatContainerTest {
                 )).withDataType("string")
                 .build();
 
+        HistogramComposite histogramDragonColor = HistogramComposite.HistogramCompositeBuilder.aHistogramComposite()
+                .withManualBuckets(Arrays.asList(
+                        new Bucket("00", "11"),
+                        new Bucket("22", "33"),
+                        new Bucket("44", "55")
+                )).withDataType("string")
+                .withAutoBuckets(HistogramString.HistogramStringBuilder.aHistogramString()
+                .withFirstCharCode("97")
+                .withInterval(10)
+                .withNumOfChars(26)
+                .withPrefixSize(3).build())
+                .build();
+
 
         Field nameField = new Field("name",histogramDragonName);
         Field ageField = new Field("age",histogramDragonAge);
         Field addressField = new Field("address",histogramDragonAddress);
+        Field colorField = new Field("color",histogramDragonColor);
 
 
-        Type typeDragon = new Type("dragon",Arrays.asList(ageField, nameField, addressField));
+        Type typeDragon = new Type("dragon",Arrays.asList(ageField, nameField, addressField, colorField));
 
         Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1","index2"))
                 .withTypes(Arrays.asList("dragon")).build();

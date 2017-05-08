@@ -31,28 +31,47 @@ public class StatCalculatorTest {
     @Test
     public void statCalculatorTest() throws Exception {
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
+
         //Check if Stat index created
         String statIndexName = "stat";
-        String statTypeName = "bucket";
+        String statTypeNumericName = "bucketNumeric";
+        String statTypeStringName = "bucketString";
+
         String dataIndexName1 = "index1" ;
         String dataIndexName2 = "index2" ;
         String dataTypeName1 = "dragon";
-        String dataFieldName1 = "age";
-        String dataFieldName2 = "address";
+        String dataFieldNameAge = "age";
+        String dataFieldNameAddress = "address";
+        String dataFieldNameColor = "color";
+
         assertTrue(EsUtil.checkIfEsIndexExists(statClient, statIndexName ));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeName));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeNumericName));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeStringName));
+
 
         //Check if age stat bucket exists (bucket #1: 10.0-20.0)
-        String docId1 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldName1  + "10.0" + "20.0");
+        String docId1 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameAge  + "10.0" + "20.0");
         assertEquals("vc8XbeyVJ7gfdxmfHSiOCQ==", docId1);
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeName, docId1));
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeNumericName, docId1));
 
         //Check if address bucket exists (bucket #1 "abc" + "dzz")
-        String docId2 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldName2  + "abc" + "dzz");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeName, docId1));
+        String docId2 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameAddress  + "abc" + "dzz");
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId2));
+
+        //Check if color bucket exists (bucket with lower_bound: "grc", upper_bound: "grl")
+        String docId3 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameColor  + "grc" + "grl");
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId3));
+
+        //Check that this bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
+        Optional<Map<String, Object>> doc3Result = EsUtil.getDocumentById(statClient, statIndexName, statTypeStringName, docId3);
+        assertTrue(doc3Result.isPresent());
+        assertEquals(1, (int)doc3Result.get().get("cardinality"));
+
+        //Check that the manual bucket ("00", "11"] exists for the composite histogram
+        String docId4 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameColor  + "00" + "11");
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId4));
 
     }
-
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -61,7 +80,6 @@ public class StatCalculatorTest {
 
         dataClient = ClientProvider.getDataClient(configuration);
         statClient = ClientProvider.getDataClient(configuration);
-
         elasticInMemoryIndex = new ElasticInMemoryIndex();
 
         Thread.sleep(4000);
@@ -86,7 +104,7 @@ public class StatCalculatorTest {
 
     private static Iterable<Map<String, Object>> createDragons(int numDragons) {
         Random r = new Random();
-        List<String> colors = Arrays.asList("red", "green", "yellow", "blue");
+        List<String> colors = Arrays.asList("red", "green", "yellow", "blue", "00" ,"11" ,"22" ,"33" ,"44" ,"55");
         List<Map<String, Object>> dragons = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashedMap();
