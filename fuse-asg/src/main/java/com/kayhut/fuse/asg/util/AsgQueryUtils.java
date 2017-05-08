@@ -217,6 +217,11 @@ public class AsgQueryUtils {
 
         return path;
     }
+
+    public static List<Integer> getEnums(AsgQuery query) {
+        return getValues(query.getStart(), AsgEBase::getB, AsgEBase::getNext, AsgEBase::geteNum,
+                truePredicate, truePredicate, Collections.emptyList());
+    }
     //endregion
 
     //region Private Methods
@@ -260,26 +265,45 @@ public class AsgQueryUtils {
             Predicate<AsgEBase> dfsPredicate,
             List<AsgEBase<T>> elements) {
 
-        List<AsgEBase<T>> newElements = elements;
+        return getValues(
+                asgEBase,
+                vElementProvider,
+                hElementProvider,
+                asgEBase1 -> (AsgEBase<T>)asgEBase1,
+                elementPredicate,
+                dfsPredicate,
+                elements);
+    }
+
+    private static <T> List<T> getValues(
+            AsgEBase<? extends EBase> asgEBase,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
+            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
+            Function<AsgEBase<? extends EBase>, T> valueFunction,
+            Predicate<AsgEBase> elementPredicate,
+            Predicate<AsgEBase> dfsPredicate,
+            List<T> values) {
+
+        List<T> newValues = values;
 
         if (elementPredicate.test(asgEBase)) {
-            newElements = new ArrayList<>(elements);
-            newElements.add((AsgEBase<T>)asgEBase);
+            newValues = new ArrayList<>(values);
+            newValues.add(valueFunction.apply(asgEBase));
         }
 
         if (dfsPredicate.test(asgEBase)) {
             for (AsgEBase<? extends EBase> elementAsgEBase : vElementProvider.apply(asgEBase)) {
-                newElements = getElements(elementAsgEBase, vElementProvider, hElementProvider, elementPredicate, dfsPredicate, newElements);
+                newValues = getValues(elementAsgEBase, vElementProvider, hElementProvider, valueFunction, elementPredicate, dfsPredicate, newValues);
             }
         }
 
         if (dfsPredicate.test(asgEBase)) {
             for (AsgEBase<? extends EBase> elementAsgEBase : hElementProvider.apply(asgEBase)) {
-                newElements = getElements(elementAsgEBase, vElementProvider, hElementProvider, elementPredicate, dfsPredicate, newElements);
+                newValues = getValues(elementAsgEBase, vElementProvider, hElementProvider, valueFunction, elementPredicate, dfsPredicate, newValues);
             }
         }
 
-        return newElements;
+        return newValues;
     }
 
     private static List<AsgEBase<? extends EBase>> getPath(

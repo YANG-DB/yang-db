@@ -1,6 +1,5 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.asg.AsgUtils;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -8,11 +7,11 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import javaslang.collection.Stream;
 
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by benishue on 19-Apr-17.
@@ -27,22 +26,19 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
     @Override
     public void apply(AsgQuery query) {
         AsgQueryUtils.getElements(query, EEntityBase.class).forEach(entityBase -> {
-            List<AsgEBase<EProp>> ePropsChildren = AsgQueryUtils.getNextAdjacentDescendants(entityBase,
-                    asgEBase -> asgEBase.geteBase().getClass().equals(EProp.class));
+            EPropGroup ePropGroup = new EPropGroup();
+            AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
 
-            if (ePropsChildren.size() > 0 ){
-                AsgEBase<? extends EBase> ePropAsgEBase = ePropsChildren.get(0);
-                EProp eProp = (EProp)ePropAsgEBase.geteBase();
-
-                EPropGroup ePropGroup = new EPropGroup();
-                AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
-
-                ePropGroup.seteProps(Arrays.asList(eProp));
-                ePropGroup.seteNum(eProp.geteNum());
-                //Replacing the entityBase with this "new Entity Wrapper"
-                entityBase.addNextChild(ePropGroupAsgEbase);
-                entityBase.removeNextChild(ePropAsgEBase);
+            Optional<AsgEBase<EProp>> asgEProp = AsgQueryUtils.getNextAdjacentDescendant(entityBase, EProp.class);
+            if (asgEProp.isPresent()){
+                ePropGroup.seteProps(Arrays.asList(asgEProp.get().geteBase()));
+                ePropGroup.seteNum(asgEProp.get().geteNum());
+                entityBase.removeNextChild(asgEProp.get());
+            } else {
+                ePropGroup.seteNum(Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get() + 1);
             }
+
+            entityBase.addNextChild(ePropGroupAsgEbase);
         });
 
     }
