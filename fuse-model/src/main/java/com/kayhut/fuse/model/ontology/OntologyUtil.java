@@ -181,7 +181,7 @@ public class OntologyUtil {
 
     }
 
-    static Optional<EnumeratedType> getEnumeratedType(Ontology ontology, String type) {
+    public static Optional<EnumeratedType> getEnumeratedType(Ontology ontology, String type) {
         return ontology.getEnumeratedTypes().stream().filter(e -> e.geteType().equals(type)).findFirst();
     }
 }

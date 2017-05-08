@@ -78,10 +78,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         }
         List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
 
-        Statistics.Cardinality entityStats = estimateVertexPropertyGroup(vertexTypes.get(0), OntologyUtil.getEntityTypeIdByName(ontology, vertexTypes.get(0)),entityFilter);
+        Statistics.Cardinality entityStats = estimateVertexPropertyGroup(vertexTypes.get(0),entityFilter);
 
         for (int i = 1; i < vertexTypes.size(); i++) {
-            entityStats = (Statistics.Cardinality) entityStats.merge( estimateVertexPropertyGroup(vertexTypes.get(i), OntologyUtil.getEntityTypeIdByName(ontology, vertexTypes.get(i)),entityFilter));
+            entityStats = (Statistics.Cardinality) entityStats.merge( estimateVertexPropertyGroup(vertexTypes.get(i), entityFilter));
         }
 
         return entityStats;
@@ -99,12 +99,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         IndexPartition indexPartition = graphEdgeSchema.getIndexPartition();
         List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
         if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition) indexPartition, rel.getrType() ,relFilter);
+            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition) indexPartition ,relFilter);
         }
 
         Statistics.Cardinality minVertexCardinality = null;
         for(RelProp relProp : relFilter.getrProps()){
-            Property property = OntologyUtil.getRelationshipProperty(ontology, rel.getrType(), relProp.getpType()).get();
+            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( relProp.getpType())).get();
             GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
             if(minVertexCardinality == null){
@@ -154,19 +154,19 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
 
-    private Statistics.Cardinality estimateVertexPropertyGroup(String vertexType, int eType,EPropGroup entityFilter) {
+    private Statistics.Cardinality estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
         GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
         IndexPartition indexPartition = graphVertexSchema.getIndexPartition();
         List<String> relevantPartitions = Lists.newArrayList(indexPartition.getIndices());
         if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantPartitions = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition)indexPartition, eType, entityFilter);
+            relevantPartitions = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition)indexPartition, entityFilter);
         }
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.Cardinality minVertexCardinality = null;
         for(EProp eProp : entityFilter.geteProps()){
-            Property property = OntologyUtil.getProperty(ontology, eType, eProp.getpType()).get();
+            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
 
@@ -343,11 +343,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return mergeBucketsCardinality(bucketsAbove);
     }
 
-    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, int eType, EPropGroup entityFilter) {
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, EPropGroup entityFilter) {
         List<EProp> timeConditions = new ArrayList<>();
         for (EProp eProp : entityFilter.geteProps()){
 
-            Property property = OntologyUtil.getProperty(ontology, eType, eProp.getpType()).get();
+            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt(eProp.getpType())).get();
             if(property.getName().equals(indexPartition.getTimeField())){
                 timeConditions.add(eProp);
             }
@@ -359,37 +359,18 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
 
         for(EProp timeCondition : timeConditions) {
-
             String indexName = indexPartition.getIndexName((Date) timeCondition.getCon().getExpr());
-
-            switch(timeCondition.getCon().getOp()){
-                case eq:
-                    relevantIndices.removeIf(idx -> !idx.equals(indexName) );
-                    break;
-                case ne:
-                    relevantIndices.removeIf(idx -> idx.equals(indexName) );
-                    break;
-                case gt:
-                case ge:
-                    relevantIndices.removeIf(idx -> idx.compareTo(indexName) < 0);
-                    break;
-                case lt:
-                case le:
-                    relevantIndices.removeIf(idx -> idx.compareTo(indexName) > 0);
-                    break;
-
-            }
-
+            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
         }
         return relevantIndices;
 
     }
 
-    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, int rType,RelPropGroup relPropGroup) {
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition,RelPropGroup relPropGroup) {
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getrProps()){
 
-            if(OntologyUtil.getProperty(ontology, rType, relProp.getpType()).get().getName().equals(indexPartition.getTimeField())){
+            if(OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType())).get().getName().equals(indexPartition.getTimeField())){
                 timeConditions.add(relProp);
                 break;
             }
@@ -403,28 +384,32 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         for(RelProp timeCondition : timeConditions) {
 
             String indexName = indexPartition.getIndexName((Date) timeCondition.getCon().getExpr());
-
-            switch(timeCondition.getCon().getOp()){
-                case eq:
-                    relevantIndices.removeIf(idx -> !idx.equals(indexName) );
-                    break;
-                case ne:
-                    relevantIndices.removeIf(idx -> idx.equals(indexName) );
-                    break;
-                case gt:
-                case ge:
-                    relevantIndices.removeIf(idx -> idx.compareTo(indexName) < 0);
-                    break;
-                case lt:
-                case le:
-                    relevantIndices.removeIf(idx -> idx.compareTo(indexName) > 0);
-                    break;
-
-            }
-
+            relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
         }
         return relevantIndices;
 
+    }
+
+    private List<String> findIndicesToRemove(Constraint timeCondition, List<String> relevantIndices, String indexName){
+        List<String> indicesToRemove = new ArrayList<>();
+        switch(timeCondition.getOp()){
+            case eq:
+                indicesToRemove.addAll(relevantIndices.stream().filter(idx -> !idx.equals(indexName)).collect(Collectors.toList()));
+                break;
+            case ne:
+                // Do nothing
+                break;
+            case gt:
+            case ge:
+                indicesToRemove.addAll(relevantIndices.stream().filter(idx -> idx.compareTo(indexName) < 0).collect(Collectors.toList()));
+                break;
+            case lt:
+            case le:
+                indicesToRemove.addAll(relevantIndices.stream().filter(idx -> idx.compareTo(indexName) > 0).collect(Collectors.toList()));
+                break;
+
+        }
+        return indicesToRemove;
     }
 
     private <T extends Comparable<T>> Statistics.Cardinality mergeBucketsCardinality(List<Statistics.BucketInfo<T>> buckets){
