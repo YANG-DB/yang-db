@@ -14,7 +14,6 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 /**
  * Created by moti on 2/28/2017.
@@ -166,10 +165,11 @@ public interface SimpleExtenderUtils {
                     if(p.equals(lastEntityOp.getAsgEBase()))
                         return true;
 
-                    Optional ancestor = AsgQueryUtils.getAncestor(p,lastEntityOp.getAsgEBase().geteBase().getClass());
-                    return ancestor.isPresent() && ancestor.get().equals(lastEntityOp.getAsgEBase());
+                    List path = AsgQueryUtils.getPathToAncestor(p, lastEntityOp.getAsgEBase().geteBase().geteNum());
+                    return !path.isEmpty() && path.size()<3;
                 });
     }
+
 
     /**
      * get next Rel type element which was not visited already

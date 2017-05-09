@@ -23,6 +23,18 @@ import java.util.stream.StreamSupport;
  * Created by Roman on 23/04/2017.
  */
 public class AsgQueryUtils {
+
+    public static boolean equals(AsgQuery source, AsgQuery target) {
+        if(!source.getStart().equals(target.getStart()))
+            return false;
+        if(!source.getName().equals(target.getName()))
+            return false;
+        if(!source.getOnt().equals(target.getOnt()))
+            return false;
+
+        return true;
+    }
+
     //region Public Methods
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return getElement(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, truePredicate);
@@ -289,8 +301,8 @@ public class AsgQueryUtils {
 
     private static <T extends EBase> List<AsgEBase<T>> getElements(
             AsgEBase<? extends EBase> asgEBase,
-            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
-            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
+            Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> vElementProvider,
+            Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> hElementProvider,
             Predicate<AsgEBase> elementPredicate,
             Predicate<AsgEBase> dfsPredicate,
             List<AsgEBase<T>> elements) {

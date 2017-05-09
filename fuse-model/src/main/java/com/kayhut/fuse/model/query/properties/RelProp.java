@@ -59,5 +59,13 @@ public class RelProp extends EBase {
     private int b;
     //endregion
 
+    public static RelProp of(String pType,int eNum,Constraint con) {
+        RelProp eProp = new RelProp();
+        eProp.setpType(pType);
+        eProp.setCon(con);
+        eProp.seteNum(eNum);
+        return eProp;
+    }
+
 
 }

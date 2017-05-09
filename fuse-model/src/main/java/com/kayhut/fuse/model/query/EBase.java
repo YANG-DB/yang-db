@@ -67,4 +67,16 @@ public class EBase {
     //region Fields
     private int eNum;
     //endregion
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EBase eBase = (EBase) o;
+
+        return eNum == eBase.eNum;
+    }
+
 }
