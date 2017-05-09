@@ -12,6 +12,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import javaslang.collection.Stream;
@@ -31,9 +32,7 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
     //region TranslationStrategy Implementation
     @Override
     public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        return traversal;
-
-        /*if (!(context.getPlanOp() instanceof EntityFilterOp)) {
+        if (!(context.getPlanOp() instanceof EntityFilterOp)) {
             return traversal;
         }
 
@@ -45,10 +44,12 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
 
         EntityOp entityOp = (EntityOp)previousPlanOp.get();
         if (PlanUtil.isFirst(context.getPlan(), entityOp)) {
+            traversal = appendFirstEntityFilterOp(traversal, entityFilterOp, context.getOntology());
+        } else if (!entityFilterOp.getAsgEBase().geteBase().geteProps().isEmpty()) {
+            traversal = appendEntityFilterOp(traversal, entityFilterOp, context.getOntology());
+        }
 
-        } else {
-
-        }*/
+        return traversal;
     }
     //endregion
 
@@ -61,7 +62,7 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
         EEntityBase eEntityBase = entityFilterOp.getEntity().geteBase();
 
         if (eEntityBase instanceof EConcrete) {
-            traversal.has("promise", P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
+            traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) eEntityBase).geteID())));
         }
         else if (eEntityBase instanceof ETyped) {
             String eTypeName = OntologyUtil.getEntityTypeNameById(ontology,((ETyped) eEntityBase).geteType());
@@ -75,11 +76,30 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
                 constraintTraversal = __.and(Stream.ofAll(epropTraversals).toJavaArray(Traversal.class));
             }
 
-            traversal.has("constraint", P.eq(constraintTraversal));
+            traversal.has(GlobalConstants.HasKeys.CONSTRAINT, P.eq(constraintTraversal));
         }
         else if (eEntityBase instanceof EUntyped) {
             ;
         }
+
+        return traversal;
+    }
+
+    private GraphTraversal appendEntityFilterOp(
+            GraphTraversal traversal,
+            EntityFilterOp entityFilterOp,
+            Ontology ontology) {
+
+        List<Traversal> epropTraversals =
+                Stream.ofAll(entityFilterOp.getAsgEBase().geteBase().geteProps())
+                        .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
+
+        Traversal constraintTraversal = epropTraversals.size() == 1 ?
+                epropTraversals.get(0) :
+                __.and(Stream.ofAll(epropTraversals).toJavaArray(Traversal.class));
+
+        traversal.outE(GlobalConstants.Labels.PROMISE_FILTER)
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal));
 
         return traversal;
     }

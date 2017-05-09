@@ -6,7 +6,7 @@ import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender
 import com.kayhut.fuse.unipop.controller.search.appender.EdgeConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.appender.FilterVerticesSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.appender.SizeSearchAppender;
-import com.kayhut.fuse.unipop.converter.SearchHitPromiseEdgeConverter;
+import com.kayhut.fuse.unipop.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -94,10 +94,10 @@ public class SearchPromiseVertexFilterController implements SearchVertexQuery.Se
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        return convert(searchHits, new SearchHitPromiseEdgeConverter(graph));
+        return convert(searchHits, new SearchHitPromiseFilterEdgeConverter(graph));
     }
 
-    private Iterator<Edge> convert(SearchHitScrollIterable searchHits, SearchHitPromiseEdgeConverter converter) {
+    private Iterator<Edge> convert(SearchHitScrollIterable searchHits, SearchHitPromiseFilterEdgeConverter converter) {
         return Stream.ofAll(searchHits)
                 .map(hit -> converter.convert(hit))
                 .filter(Objects::nonNull).iterator();
