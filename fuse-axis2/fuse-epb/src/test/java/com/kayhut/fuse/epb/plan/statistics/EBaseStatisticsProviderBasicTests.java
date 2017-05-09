@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Value;
 import com.kayhut.fuse.model.query.Constraint;
@@ -62,8 +63,9 @@ public class EBaseStatisticsProviderBasicTests {
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
+        when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(1000l, 1000l));
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
-        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1l, 1l));
+        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000l, 1000l));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Long.class))).thenReturn(new Statistics.HistogramStatistics<>(longBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
@@ -481,5 +483,6 @@ public class EBaseStatisticsProviderBasicTests {
         Assert.assertEquals(5d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
     }
+
 
 }

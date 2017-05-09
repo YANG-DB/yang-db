@@ -109,7 +109,7 @@ public class EBaseStatisticsProviderIndicesTests {
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
-        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1l, 1l));
+        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000l, 1000l));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),isA(Date.class))).thenAnswer(invocationOnMock -> {
             List<String> providedIndices = (List<String>) invocationOnMock.getArgumentAt(1, List.class );
             List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();

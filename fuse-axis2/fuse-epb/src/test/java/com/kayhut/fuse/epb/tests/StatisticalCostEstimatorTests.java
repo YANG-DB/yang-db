@@ -58,8 +58,13 @@ public class StatisticalCostEstimatorTests {
             if(property.equals("lastName")){
                 return Optional.of(new GraphRedundantPropertySchema() {
                     @Override
-                    public String getPropertyName() {
+                    public String getName() {
                         return "lastName";
+                    }
+
+                    @Override
+                    public String getType() {
+                        return "string";
                     }
 
                     @Override

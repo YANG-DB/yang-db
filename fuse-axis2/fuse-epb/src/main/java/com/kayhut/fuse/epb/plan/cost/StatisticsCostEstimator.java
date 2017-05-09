@@ -230,14 +230,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         filterOneOp.setEntity(entityOneOp.getAsgEBase());
 
         //relation
-        RelationOp rel = (RelationOp) map.get(RELATION);
+        RelationOp relationOp = (RelationOp) map.get(RELATION);
 
         if (!map.containsKey(OPTIONAL_REL_FILTER)) {
             map.put(OPTIONAL_REL_FILTER, new RelationFilterOp());
         }
         RelationFilterOp relFilterOp = (RelationFilterOp) map.get(OPTIONAL_REL_FILTER);
         //set entity type on this kaka
-        relFilterOp.setRel(rel.getAsgEBase());
+        relFilterOp.setRel(relationOp.getAsgEBase());
 
         //entity
         EntityOp entityTwoOp = (EntityOp) map.get(ENTITY_TWO);
@@ -254,16 +254,16 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         Cost entityOneCost = previousCost.getCost().getOpCost(entityOneOp).get();
 
         //edge estimate =>
-        Direction direction = Direction.of(rel.getAsgEBase().geteBase().getDir());
-        double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(rel.getAsgEBase().geteBase(),
+        Direction direction = Direction.of(relationOp.getAsgEBase().geteBase().getDir());
+        double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(relationOp.getAsgEBase().geteBase(),
                 relFilterOp.getAsgEBase().geteBase() ,
                 entityOneOp.getAsgEBase().geteBase(), direction);
 
         //redundant
         //C1_e
-        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getAsgEBase().geteBase(), direction).getCardinality();
+        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getAsgEBase().geteBase(), direction).getCardinality();
         //C_2e
-        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
+        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
         //relation
         double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality();
         double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality();
@@ -281,7 +281,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         }
 
         //node redundand stats: C_2e
-        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(rel.getAsgEBase().geteBase(),entityTwoOp.getAsgEBase().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
+        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(relationOp.getAsgEBase().geteBase(),relFilterOp.getAsgEBase().geteBase() ,entityTwoOp.getAsgEBase().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
 
         //node 2 cardinality estimation
         double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTowCard, edgeEstimation));
@@ -292,7 +292,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         double lambda = Math.min(lambdaEdge, lambdaNode);
 
         PlanOpWithCost entityOneOpCost = new PlanOpWithCost<>(entityOneCost, lambda, entityOneOp, filterOneOp);
-        PlanOpWithCost relOpCost = new PlanOpWithCost<>(relCost, edgeEstimation, rel, relFilterOp);
+        PlanOpWithCost relOpCost = new PlanOpWithCost<>(relCost, edgeEstimation, relationOp, relFilterOp);
         PlanOpWithCost entityTwoOpCost = new PlanOpWithCost<>(new Cost(N2, (long) N2), N2, entityTwoOp, filterTwoOp);
 
         return new Tuple2<>(lambda, Arrays.asList(entityOneOpCost, relOpCost, entityTwoOpCost));
