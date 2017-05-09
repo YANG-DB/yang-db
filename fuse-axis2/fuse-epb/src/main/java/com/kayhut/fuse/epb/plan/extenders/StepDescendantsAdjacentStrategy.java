@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDescendantsUnmarkedOfType;
 
@@ -22,6 +23,7 @@ import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDesc
  * Created by Roman on 23/04/2017.
  */
 public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+
     //region PlanExtensionStrategy Implementation
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
@@ -38,7 +40,8 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
 
         Plan newPlan = plan.get();
         for (AsgEBase<Rel> nextRelation : nextRelations) {
-            plans.add(compute(nextRelation,newPlan));
+            plans.add(compute(nextRelation, newPlan));
+            newPlan.log("StepDescendantsAdjacentStrategy:["+Plan.diff(plan.get(),newPlan)+"]", Level.INFO);
         }
 
         return plans;

@@ -2,7 +2,6 @@ package com.kayhut.fuse.asg.strategy;
 
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.AsgUtils;
 import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -19,7 +18,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 

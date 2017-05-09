@@ -13,14 +13,17 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.logging.Level;
 
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getLastOpOfType;
+import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorOfType;
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorUnmarkedOfType;
 
 /**
  * Created by Roman on 23/04/2017.
  */
-public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery> {
+public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+
     //region PlanExtensionStrategy Implementation
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
@@ -28,7 +31,7 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
             return Collections.emptyList();
         }
 
-        Optional<AsgEBase<Rel>> nextRelation = getNextAncestorUnmarkedOfType(plan.get(),Rel.class);
+        Optional<AsgEBase<Rel>> nextRelation = getNextAncestorOfType(plan.get(), Rel.class);
         if (!nextRelation.isPresent()) {
             return Collections.emptyList();
         }
@@ -47,7 +50,7 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
         }
 
         Plan newPlan = plan.get();
-        if (getLastOpOfType(newPlan,EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
+        if (getLastOpOfType(newPlan, EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
@@ -61,7 +64,7 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
-
+        newPlan.log("StepAncestorAdjacentStrategy:[" + Plan.diff(plan.get(),newPlan) + "]", Level.INFO);
         return Collections.singletonList(newPlan);
     }
     //endregion

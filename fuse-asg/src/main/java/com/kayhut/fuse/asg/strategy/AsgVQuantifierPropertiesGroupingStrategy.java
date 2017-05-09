@@ -1,7 +1,5 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.google.common.collect.Ordering;
-import com.kayhut.fuse.asg.AsgUtils;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -9,7 +7,6 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.QuantBase;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
@@ -27,19 +24,22 @@ public class AsgVQuantifierPropertiesGroupingStrategy implements AsgStrategy {
         AsgQueryUtils.<Quant1>getElements(query, Quant1.class).forEach(quant -> {
             if (quant.geteBase().getqType() == QuantType.all) {
 
-                List<AsgEBase<EProp>> ePropsAsgChildren = AsgQueryUtils.getNextAdjacentDescendants(quant,
-                        asgEBase -> asgEBase.geteBase().getClass().equals(EProp.class));
-
-                List<EProp> eProps = Stream.ofAll(ePropsAsgChildren).map(AsgEBase::geteBase).toJavaList();
-
                 EPropGroup ePropGroup = new EPropGroup();
                 AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
-                ePropGroup.seteProps(eProps);
-                ePropGroup.seteNum(AsgUtils.getMinEnumFromListOfEBase(eProps));
+
+                List<AsgEBase<EProp>> ePropsAsgChildren = AsgQueryUtils.getNextAdjacentDescendants(quant,
+                        asgEBase -> asgEBase.geteBase().getClass().equals(EProp.class));
+                List<EProp> eProps = Stream.ofAll(ePropsAsgChildren).map(AsgEBase::geteBase).toJavaList();
+
+                if (eProps.size() > 0) {
+                    ePropGroup.seteProps(eProps);
+                    ePropGroup.seteNum(Stream.ofAll(eProps).map(EProp::geteNum).min().get());
+                    ePropsAsgChildren.forEach(quant::removeNextChild);
+                } else {
+                    ePropGroup.seteNum(Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get());
+                }
+
                 quant.addNextChild(ePropGroupAsgEbase);
-                ePropsAsgChildren.forEach(asgEBase -> {
-                    quant.removeNextChild(asgEBase);
-                });
               }
             }
         );

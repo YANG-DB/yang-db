@@ -7,13 +7,9 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.HQuant;
-import com.kayhut.fuse.model.query.quant.Quant1;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,16 +92,16 @@ public class AsgQueryStore {
      */
     public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .$(typed(1, "A", 1))
-                    .$(rel(R, 2, 1).$b(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                    .$(typed(2, "B", 3))
-                .$(quant1(4, all))
+                .next(typed(1, "A", 1))
+                    .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                    .next(typed(2, "B", 3))
+                .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
                         , rel(R, 5, 4)
-                                .$n(unTyped("C", 6))
+                                .next(unTyped("C", 6))
                         , rel(R, 7, 5)
-                                .$b(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
-                                .$n(concrete("concrete1", 3, "Concrete1", "D", 8))
+                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
+                                .next(concrete("concrete1", 3, "Concrete1", "D", 8))
                 )
                 .build();
     }
@@ -134,22 +130,22 @@ public class AsgQueryStore {
      */
     public static AsgQuery simpleQuery3(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .$(typed(1, "A", 1))
-                    .$(rel(R, 2, 1).$b(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                    .$(typed(2, "B", 3))
-                .$(quant1(4, all))
+                .next(typed(1, "A", 1))
+                    .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                    .next(typed(2, "B", 3))
+                .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
                         , rel(R, 5, 4)
-                                .$n(unTyped("C", 6)
-                                    .$n(rel(R, 12, 4)
-                                    .$n(typed(4,"G", 13))
+                                .next(unTyped("C", 6)
+                                    .next(rel(R, 12, 4)
+                                    .next(typed(4,"G", 13))
                                     )
                                 )
                         , rel(R, 7, 5)
-                                .$b(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
-                                .$n(concrete("concrete1", 3, "Concrete1", "D", 8)
-                                    .$n(rel(R, 14, 1)
-                                    .$n(typed(1,"F", 15))
+                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
+                                .next(concrete("concrete1", 3, "Concrete1", "D", 8)
+                                    .next(rel(R, 14, 1)
+                                    .next(typed(1,"F", 15))
                                     )
                                 )
                 )
