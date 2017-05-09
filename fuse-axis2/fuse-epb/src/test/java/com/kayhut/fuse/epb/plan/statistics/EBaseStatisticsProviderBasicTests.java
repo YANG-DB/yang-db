@@ -14,14 +14,11 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.mockito.Matchers.any;
@@ -31,15 +28,12 @@ import static org.mockito.Mockito.when;
 /**
  * Created by liorp on 4/27/2017.
  */
-public class EBaseStatisticsProviderTests {
+public class EBaseStatisticsProviderBasicTests {
     GraphElementSchemaProvider graphElementSchemaProvider;
     GraphStatisticsProvider graphStatisticsProvider;
     Ontology ontology;
     EBaseStatisticsProvider statisticsProvider;
     PhysicalIndexProvider indexProvider;
-    private static String INDEX_FORMAT = "idx-%s";
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH");
-
 
     @Before
     public void setUp() throws Exception {
@@ -61,37 +55,6 @@ public class EBaseStatisticsProviderTests {
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "m", "z"));
 
         indexProvider = Mockito.mock(PhysicalIndexProvider.class);
-        /*when(indexProvider.getIndexPartitionByLabel(any(),any())).thenReturn(new TimeSeriesIndexPartition() {
-            @Override
-            public String getDateFormat() {
-                return null;
-            }
-
-            @Override
-            public String getIndexPrefix() {
-                return null;
-            }
-
-            @Override
-            public String getIndexFormat() {
-                return null;
-            }
-
-            @Override
-            public String getTimeField() {
-                return null;
-            }
-
-            @Override
-            public String getIndexName(Date date) {
-                return null;
-            }
-
-            @Override
-            public Iterable<String> getIndices() {
-                return Arrays.asList(DATE_FORMAT.format(new Date()), DATE_FORMAT.format(new Date(now - 60 * 60 * 1000)));
-            }
-        });*/
         when(indexProvider.getIndexPartitionByLabel(any(), any())).thenReturn(() -> new LinkedList<>());
 
         ontology = OntologyTestUtils.createDragonsOntologyShort();
