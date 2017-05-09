@@ -19,6 +19,22 @@ import java.util.Optional;
  */
 public class StepDescendantsAdjacentStrategyTest {
     @Test
+    public void test_simpleQueryGotoSeedPlan() {
+        AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
+        Plan expectedPlan = new Plan(
+                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
+                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+
+        Plan plan = new Plan(new GoToEntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+
+        Assert.assertTrue(extendedPlans.size() == 1);
+        Plan actualPlan = extendedPlans.get(0);
+
+        PlanAssert.assertEquals(expectedPlan, actualPlan);
+    }
+    @Test
     public void test_simpleQuery1_seedPlan() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan expectedPlan = new Plan(

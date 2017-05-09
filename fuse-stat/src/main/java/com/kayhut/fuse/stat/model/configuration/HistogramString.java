@@ -12,19 +12,19 @@ public class HistogramString extends Histogram {
     //endregion
 
     //region Getters & Setters
-    public String getInterval() {
+    public int getInterval() {
         return interval;
     }
 
-    public void setInterval(String interval) {
+    public void setInterval(int interval) {
         this.interval = interval;
     }
 
-    public String getPrefixSize() {
+    public int getPrefixSize() {
         return prefixSize;
     }
 
-    public void setPrefixSize(String prefixSize) {
+    public void setPrefixSize(int prefixSize) {
         this.prefixSize = prefixSize;
     }
 
@@ -36,28 +36,28 @@ public class HistogramString extends Histogram {
         this.firstCharCode = firstCharCode;
     }
 
-    public String getNumOfChars() {
+    public int getNumOfChars() {
         return numOfChars;
     }
 
-    public void setNumOfChars(String numOfChars) {
+    public void setNumOfChars(int numOfChars) {
         this.numOfChars = numOfChars;
     }
     //endregion
 
     //region Fields
-    private String interval;
-    private String prefixSize;
+    private int interval;
+    private int prefixSize;
     private String firstCharCode;
-    private String numOfChars;
+    private int numOfChars;
     //endregion
 
     //region Builder
     public static final class HistogramStringBuilder {
-        private String interval;
-        private String prefixSize;
+        private int interval;
+        private int prefixSize;
         private String firstCharCode;
-        private String numOfChars;
+        private int numOfChars;
 
         private HistogramStringBuilder() {
         }
@@ -66,12 +66,12 @@ public class HistogramString extends Histogram {
             return new HistogramStringBuilder();
         }
 
-        public HistogramStringBuilder withInterval(String interval) {
+        public HistogramStringBuilder withInterval(int interval) {
             this.interval = interval;
             return this;
         }
 
-        public HistogramStringBuilder withPrefixSize(String prefixSize) {
+        public HistogramStringBuilder withPrefixSize(int prefixSize) {
             this.prefixSize = prefixSize;
             return this;
         }
@@ -81,7 +81,7 @@ public class HistogramString extends Histogram {
             return this;
         }
 
-        public HistogramStringBuilder withNumOfChars(String numOfChars) {
+        public HistogramStringBuilder withNumOfChars(int numOfChars) {
             this.numOfChars = numOfChars;
             return this;
         }

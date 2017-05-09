@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getLastOpOfType;
@@ -34,7 +35,13 @@ public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQue
                 .map(op -> (EntityOp) op).collect(Collectors.toList());
 
         for (EntityOp ancestor : ops) {
-            plans.add(plan.get().withOp(new GoToEntityOp(ancestor.getAsgEBase())));
+            Plan newPlan = plan.get().withOp(new GoToEntityOp(ancestor.getAsgEBase()));
+
+            if(!Plan.equals(plan.get(), newPlan)) {
+                newPlan.log("GotoExtensionStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+            }
+
+            plans.add(newPlan);
         }
         return plans;
     }

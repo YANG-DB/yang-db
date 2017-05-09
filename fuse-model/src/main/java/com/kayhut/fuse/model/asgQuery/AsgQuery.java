@@ -141,8 +141,13 @@ public class AsgQuery {
             return this;
         }
 
-        public Builder $(AsgEBase eBase) {
+        public Builder next(AsgEBase eBase) {
             addNextChild(eBase,false);
+            return this;
+        }
+
+        public Builder below(AsgEBase eBase) {
+            addNextB(eBase);
             return this;
         }
 

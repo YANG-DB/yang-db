@@ -40,4 +40,23 @@ public class PlanWithCost<P, C> {
     private P plan;
     private C cost;
     //endregion
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PlanWithCost<?, ?> that = (PlanWithCost<?, ?>) o;
+
+        if (plan != null ? !plan.equals(that.plan) : that.plan != null) return false;
+        return cost != null ? cost.equals(that.cost) : that.cost == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = plan != null ? plan.hashCode() : 0;
+        result = 31 * result + (cost != null ? cost.hashCode() : 0);
+        return result;
+    }
 }

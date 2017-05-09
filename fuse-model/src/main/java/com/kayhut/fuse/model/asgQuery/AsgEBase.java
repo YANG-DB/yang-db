@@ -107,7 +107,7 @@ public class AsgEBase<T extends EBase> {
     //endregion
 
     //region Public Methods
-    public AsgEBase<T> $n(AsgEBase<? extends EBase> asgEBase) {
+    public AsgEBase<T> next(AsgEBase<? extends EBase> asgEBase) {
         addNextChild(asgEBase);
         return this;
     }
@@ -120,7 +120,7 @@ public class AsgEBase<T extends EBase> {
         asgEBase.addToParents(this);
     }
 
-    public AsgEBase<T> $b(AsgEBase<? extends EBase> asgEBase) {
+    public AsgEBase<T> below(AsgEBase<? extends EBase> asgEBase) {
         addBChild(asgEBase);
         return this;
     }

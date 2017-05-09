@@ -7,9 +7,10 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+
 
 /**
  * Created by moti on 2/21/2017.
@@ -42,7 +43,7 @@ public class BottomUpPlanBuilderImpl<P, C, Q> implements PlanSearcher<P, C, Q> {
     @Override
     public Iterable<PlanWithCost<P, C>> build(Q query,  ChoiceCriteria<PlanWithCost<P, C>, Q> choiceCriteria){
         boolean shouldStop = false;
-        List<PlanWithCost<P, C>> currentPlans = new LinkedList<>();
+        Set<PlanWithCost<P, C>> currentPlans = new HashSet<>();
 
         // Generate seed plans (plan is null)
         for(P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)){
@@ -59,9 +60,9 @@ public class BottomUpPlanBuilderImpl<P, C, Q> implements PlanSearcher<P, C, Q> {
         // As long as we have search options, branch the search tree
         while(currentPlans.size() > 0 && !shouldStop)
         {
-            List<PlanWithCost<P, C>> newPlans = new LinkedList<>();
+            Set<PlanWithCost<P, C>> newPlans = new HashSet<>();
             for(PlanWithCost<P, C> partialPlan : currentPlans){
-                List<PlanWithCost<P, C>> planExtensions = new LinkedList<>();
+                Set<PlanWithCost<P, C>> planExtensions = new HashSet<>();
                 for(P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)){
                     if(planValidator.isPlanValid(extendedPlan, query)){
                         PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan));
