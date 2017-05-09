@@ -8,8 +8,16 @@ import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -74,7 +82,13 @@ public interface SimpleExtenderUtils {
     static <C> boolean checkIfPlanIsComplete(Plan plan, AsgQuery query) {
         Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
         Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(plan, queryParts);
-        return partsTuple._2().isEmpty();
+
+        Set<Class<?>> handledClasses = new HashSet<>(Arrays.asList(
+                EConcrete.class, EUntyped.class, ETyped.class, Rel.class, EProp.class,
+                EPropGroup.class, RelProp.class, RelPropGroup.class));
+
+        return Stream.ofAll(partsTuple._2().values()).filter(asgEBase -> handledClasses.contains(asgEBase.geteBase().getClass()))
+                .isEmpty();
     }
 
     static Set<Integer> markEntitiesAndRelations(Plan plan) {

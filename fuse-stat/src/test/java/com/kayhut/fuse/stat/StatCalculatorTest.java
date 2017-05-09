@@ -62,7 +62,7 @@ public class StatCalculatorTest {
         String docId3 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameColor  + "grc" + "grl");
         assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId3));
 
-        //Check that this bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
+        //Check that the bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
         Optional<Map<String, Object>> doc3Result = EsUtil.getDocumentById(statClient, statIndexName, statTypeStringName, docId3);
         assertTrue(doc3Result.isPresent());
         assertEquals(1, (int)doc3Result.get().get("cardinality"));

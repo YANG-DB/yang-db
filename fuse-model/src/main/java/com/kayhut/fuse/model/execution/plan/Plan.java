@@ -20,11 +20,12 @@ public class Plan extends CompositePlanOpBase implements Trace<String>{
     private Plan() {}
 
     public Plan(List<PlanOpBase> ops) {
-        this.ops = new ArrayList<>(ops);
+        super(ops);
     }
+        super(ops);
 
     public Plan(PlanOpBase...ops) {
-        this.ops = new ArrayList<>(Arrays.asList(ops));
+        super(ops);
     }
 
     @Override
