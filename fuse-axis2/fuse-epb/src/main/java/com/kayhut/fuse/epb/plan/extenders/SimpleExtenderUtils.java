@@ -109,7 +109,7 @@ public interface SimpleExtenderUtils {
         T lastEntityOp = null;
         for (int i = plan.getOps().size() - 1; i >= 0; i--) {
             PlanOpBase planOp = plan.getOps().get(i);
-            if (planOp.getClass().equals(clazz)) {
+            if (clazz.isAssignableFrom(planOp.getClass())) {
                 lastEntityOp = (T) planOp;
                 break;
             }
@@ -153,14 +153,12 @@ public interface SimpleExtenderUtils {
      * @return
      */
     static <T extends EBase> List<AsgEBase<T>> getNextDescendantsUnmarkedOfType(Plan plan, Class<T> type) {
-        Set<Integer> markedElements = markEntitiesAndRelations(plan);
 
         EntityOp lastEntityOp = getLastOpOfType(plan, EntityOp.class);
         if(lastEntityOp==null)
             return Collections.emptyList();
 
-        return AsgQueryUtils.getNextDescendants(lastEntityOp.getAsgEBase(),
-                (child) -> type.isAssignableFrom(child.geteBase().getClass()) && !markedElements.contains(child.geteNum()),
+        return AsgQueryUtils.getNextDescendants(lastEntityOp.getAsgEBase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
                 p -> {
                     if(p.equals(lastEntityOp.getAsgEBase()))
                         return true;

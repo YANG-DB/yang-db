@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
+import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
+
 /**
  * Created by moti on 2/27/2017.
  */

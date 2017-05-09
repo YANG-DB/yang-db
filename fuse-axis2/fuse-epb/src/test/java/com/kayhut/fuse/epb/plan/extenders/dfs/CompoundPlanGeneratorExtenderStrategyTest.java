@@ -48,7 +48,7 @@ public class CompoundPlanGeneratorExtenderStrategyTest {
         CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
-        assertEquals(extendedPlans.size(), 6);
+        assertEquals(extendedPlans.size(), 4);
         Plan actualPlan1 = extendedPlans.get(0);
         assertEquals(actualPlan1.getOps().size(), 7);
     }
@@ -68,7 +68,27 @@ public class CompoundPlanGeneratorExtenderStrategyTest {
         CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
-        assertEquals(extendedPlans.size(), 3);
+        assertEquals(extendedPlans.size(), 5);
+        Plan actualPlan1 = extendedPlans.get(0);
+        assertEquals(actualPlan1.getOps().size(), 9);
+    }
+
+    @Test
+    public void test_simpleQuery5ElementsPlan() {
+        AsgQuery asgQuery = AsgQueryStore.simpleQuery3("name", "ont");
+
+        Plan plan = new Plan(
+                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
+                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
+                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
+                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 5)),
+                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+
+        CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+
+        assertEquals(extendedPlans.size(), 6);
         Plan actualPlan1 = extendedPlans.get(0);
         assertEquals(actualPlan1.getOps().size(), 9);
     }

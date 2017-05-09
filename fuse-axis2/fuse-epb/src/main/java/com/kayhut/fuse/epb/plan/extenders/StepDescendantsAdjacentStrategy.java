@@ -41,7 +41,10 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
         Plan newPlan = plan.get();
         for (AsgEBase<Rel> nextRelation : nextRelations) {
             plans.add(compute(nextRelation, newPlan));
-            newPlan.log("StepDescendantsAdjacentStrategy:["+Plan.diff(plan.get(),newPlan)+"]", Level.INFO);
+
+            if(!Plan.equals(plan.get(), newPlan)) {
+                newPlan.log("StepDescendantsAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+            }
         }
 
         return plans;

@@ -36,7 +36,11 @@ public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQue
 
         for (EntityOp ancestor : ops) {
             Plan newPlan = plan.get().withOp(new GoToEntityOp(ancestor.getAsgEBase()));
-            newPlan.log("GotoExtensionStrategy:["+Plan.diff(plan.get(),newPlan)+"]", Level.INFO);
+
+            if(!Plan.equals(plan.get(), newPlan)) {
+                newPlan.log("GotoExtensionStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+            }
+
             plans.add(newPlan);
         }
         return plans;
