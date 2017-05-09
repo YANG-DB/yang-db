@@ -38,9 +38,8 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
         PlanOpBase planOpBase = context.getPlanOp();
         Ontology ontology = context.getOntology();
 
-        PlanUtil planUtil = new PlanUtil();
-        Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(),planOpBase);
-        Optional<PlanOpBase> next = planUtil.getNext(plan.getOps(),planOpBase);
+        Optional<PlanOpBase> prev = PlanUtil.getPrev(plan, planOpBase);
+        Optional<PlanOpBase> next = PlanUtil.getNext(plan, planOpBase);
 
         if(planOpBase instanceof RelationOp) {
             Rel rel = ((RelationOp) planOpBase).getAsgEBase().geteBase();

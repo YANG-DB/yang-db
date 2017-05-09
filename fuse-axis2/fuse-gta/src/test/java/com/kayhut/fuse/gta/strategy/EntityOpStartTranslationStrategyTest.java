@@ -47,9 +47,6 @@ public class EntityOpStartTranslationStrategyTest {
                 }
         );
 
-        PlanUtil planUtil = Mockito.mock(PlanUtil.class);
-        when(planUtil.isFirst(plan.getOps(),planOpBase)).thenAnswer(invocationOnMock -> true);
-
         EntityOpStartTranslationStrategy entityOpStartTranslationStrategy = new EntityOpStartTranslationStrategy(new PromiseGraph());
 
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
@@ -85,9 +82,6 @@ public class EntityOpStartTranslationStrategyTest {
                     return  entityTypes;
                 }
         );
-
-        PlanUtil planUtil = Mockito.mock(PlanUtil.class);
-        when(planUtil.isFirst(plan.getOps(),planOpBase)).thenAnswer(invocationOnMock -> true);
 
         EntityOpStartTranslationStrategy entityOpStartTranslationStrategy = new EntityOpStartTranslationStrategy(new PromiseGraph());
 

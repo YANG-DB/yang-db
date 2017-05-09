@@ -51,20 +51,6 @@ public class RelationOpTranslationStrategyTest {
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> new ArrayList<>(Arrays.asList(entity1, relationOp, entity2)));
 
-
-        PlanUtil planUtil = Mockito.mock(PlanUtil.class);
-        when(planUtil.isFirst(any(),any())).thenAnswer(invocationOnMock -> false);
-        when(planUtil.getPrev(any(),any())).thenAnswer(invocationOnMock -> {
-            if(invocationOnMock.getArgumentAt(0,RelationOp.class).equals(relationOp))
-                return Optional.of(entity1);
-            return Optional.empty();
-        });
-        when(planUtil.getNext(any(),any())).thenAnswer(invocationOnMock -> {
-            if(invocationOnMock.getArgumentAt(0,RelationOp.class).equals(relationOp))
-                return Optional.of(entity2);
-            return Optional.empty();
-        });
-
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {

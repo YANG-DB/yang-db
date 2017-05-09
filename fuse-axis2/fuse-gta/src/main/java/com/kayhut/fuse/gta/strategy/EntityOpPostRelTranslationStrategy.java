@@ -34,8 +34,8 @@ public class EntityOpPostRelTranslationStrategy implements TranslationStrategy {
         Plan plan = context.getPlan();
         PlanOpBase currentPlanOpBase = context.getPlanOp();
         Ontology ontology = context.getOntology();
-        PlanUtil planUtil = new PlanUtil();
-        Optional<PlanOpBase> prev = planUtil.getPrev(plan.getOps(), currentPlanOpBase);
+
+        Optional<PlanOpBase> prev = PlanUtil.getPrev(plan, currentPlanOpBase);
         if(!prev.isPresent()) {
             return traversal;
         }

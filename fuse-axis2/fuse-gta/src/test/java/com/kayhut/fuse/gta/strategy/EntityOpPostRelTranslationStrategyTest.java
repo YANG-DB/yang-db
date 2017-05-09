@@ -41,14 +41,6 @@ public class EntityOpPostRelTranslationStrategyTest {
         Plan plan = Mockito.mock(Plan.class);
         when(plan.getOps()).thenAnswer(invocationOnMock -> Arrays.asList(relationOp, entityOp));
 
-
-        PlanUtil planUtil = Mockito.mock(PlanUtil.class);
-        when(planUtil.getPrev(any(),any())).thenAnswer(invocationOnMock -> {
-            if(invocationOnMock.getArgumentAt(0,EntityOp.class).equals(entityOp))
-                return Optional.of(relationOp);
-            return Optional.empty();
-        });
-
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {

@@ -41,8 +41,7 @@ public class EntityOpStartTranslationStrategy implements TranslationStrategy {
         Plan plan = context.getPlan();
         PlanOpBase planOpBase = context.getPlanOp();
         Ontology ontology = context.getOntology();
-        PlanUtil planUtil = new PlanUtil();
-        if(planUtil.isFirst(plan.getOps(),planOpBase)) {
+        if(PlanUtil.isFirst(plan, planOpBase)) {
             EEntityBase eEntityBase = ((EntityOp) planOpBase).getAsgEBase().geteBase();
             String entityETag = ((EntityOp)planOpBase).getAsgEBase().geteBase().geteTag();
 
