@@ -7,7 +7,6 @@ import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
 import static com.kayhut.fuse.model.Utils.submit;
@@ -40,7 +39,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
         }
 
         AsgQuery query = context.getAsgQuery();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.build(query, new DefaultChoiceCriteria<>());
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         //get first
         PlanWithCost<Plan, PlanDetailedCost> first = plans.iterator().next();
         return submit(bus, context.of(first));

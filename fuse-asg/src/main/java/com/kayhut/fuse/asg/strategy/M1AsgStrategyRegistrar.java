@@ -11,9 +11,9 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
                 new AsgEntityPropertiesGroupingStrategy(),
-                new AsgHQuantifierPropertiesGroupingStrategy(),
-                new AsgVQuantifierPropertiesGroupingStrategy(),
-                new AsgRelPropertiesGroupingStrategy()
+                //new AsgHQuantifierPropertiesGroupingStrategy(),
+                new AsgQuant1PropertiesGroupingStrategy()
+                //new AsgRelPropertiesGroupingStrategy()
         );
     }
     //endregion
