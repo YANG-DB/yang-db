@@ -1,10 +1,10 @@
 package com.kayhut.fuse.model.execution.plan;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -84,6 +84,19 @@ public class Plan extends CompositePlanOpBase implements Trace<String>{
 
     public static String diff(Plan plan, Plan newPlan) {
         return toPattern(newPlan).replace(toPattern(plan),"");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        return equals((Plan)o,this);
+    }
+
+    @Override
+    public int hashCode() {
+        return toPattern().hashCode();
     }
 }
 

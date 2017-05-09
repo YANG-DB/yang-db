@@ -129,15 +129,13 @@ public class BottomUpBuilderTests {
         List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
         planWrappers.forEach(planList::add);
 
-        Assert.assertEquals(2, planList.size());
+        Assert.assertEquals(1, planList.size());
         Assert.assertEquals(3, planList.get(0).getPlan().getOps().size());
-        Assert.assertEquals(3, planList.get(1).getPlan().getOps().size());
 
         AsgEBase firstElement = query.getLeft().getStart().getNext().get(0);
         AsgEBase secondElement = (AsgEBase) firstElement.getNext().get(0);
         AsgEBase thirdElement = (AsgEBase) secondElement.getNext().get(0);
         boolean foundFirstPlan = false;
-        boolean foundSecondPlan = false;
         for(PlanWithCost<Plan, PlanDetailedCost> planWithCost : planList){
             List<PlanOpBase> ops = planWithCost.getPlan().getOps();
 
@@ -150,10 +148,9 @@ public class BottomUpBuilderTests {
             if(firstElement.geteNum() == ops.get(2).geteNum()
                     && secondElement.geteNum() == ops.get(1).geteNum()
                     && thirdElement.geteNum() == ops.get(0).geteNum()) {
-                foundSecondPlan = true;
             }
         }
-        Assert.assertTrue(foundFirstPlan && foundSecondPlan);
+        Assert.assertTrue(foundFirstPlan );
     }
 
     private BottomUpPlanBuilderImpl<Plan, PlanDetailedCost, AsgQuery> createBottomUpPlanBuilder() {

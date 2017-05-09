@@ -1,9 +1,12 @@
 package com.kayhut.fuse.epb.tests;
 
+import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -11,10 +14,7 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +50,7 @@ public interface PlanMockUtils {
     }
 
     class PlanMockBuilder {
+        private AsgQuery asgQuery;
         private Map<Integer, Double> nodeStatistics;
         private Map<Integer, Double> nodeFilterStatistics;
         private Map<Integer, Double> edgeStatistics;
@@ -60,7 +61,12 @@ public interface PlanMockUtils {
         private Plan oldPlan;
 
 
-        private PlanMockBuilder() {
+        private PlanMockBuilder(AsgQuery asgQuery) {
+            this();
+            this.asgQuery = asgQuery;
+        }
+
+        public PlanMockBuilder() {
             //plan
             plan = new Plan();
             //statistics
@@ -69,10 +75,15 @@ public interface PlanMockUtils {
             edgeStatistics = new HashMap<>();
             edgeFilterStatistics = new HashMap<>();
             costs = new HashMap<>();
+
         }
 
         public static PlanMockBuilder mock() {
             return new PlanMockBuilder();
+        }
+
+        public static PlanMockBuilder mock(AsgQuery asgQuery) {
+            return new PlanMockBuilder(asgQuery);
         }
 
         public PlanMockBuilder entity(Type type, long total, int eType) throws Exception {
@@ -91,6 +102,11 @@ public interface PlanMockUtils {
             return this;
         }
 
+        public PlanMockBuilder entity(int num) {
+            plan = plan.withOp(new EntityOp(getAsgEBaseByEnum(asgQuery, num)));
+            return this;
+        }
+
         public PlanMockBuilder entity(EEntityBase instance, long total, int eType) throws Exception {
             EntityOp entityOp = new EntityOp();
             //no type => max nodes return
@@ -103,6 +119,16 @@ public interface PlanMockUtils {
             plan = plan.withOp(entityOp);
             //statistics simulator
             costs.put(entityOp, (double) total);
+            return this;
+        }
+
+        public PlanMockBuilder rel(int num) {
+            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num)));
+            return this;
+        }
+
+        public PlanMockBuilder relFilter(int num) {
+            plan = plan.withOp(new RelationFilterOp(getAsgEBaseByEnum(asgQuery, num)));
             return this;
         }
 
@@ -119,6 +145,11 @@ public interface PlanMockUtils {
             plan = plan.withOp(relationOp);
             //statistics simulator
             costs.put(relationOp, (double) total);
+            return this;
+        }
+
+        public PlanMockBuilder entityFilter(int num) {
+            plan = plan.withOp(new EntityFilterOp(getAsgEBaseByEnum(asgQuery, num)));
             return this;
         }
 
@@ -183,5 +214,16 @@ public interface PlanMockUtils {
             oldPlan = plan;
             return this;
         }
+
+        public PlanMockBuilder goTo(int num) {
+            plan = plan.withOp(new GoToEntityOp(getAsgEBaseByEnum(asgQuery, num)));
+            return this;
+        }
+    }
+
+
+    //region Private Methods
+    static  <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
+        return AsgQueryUtils.<T>getElement(asgQuery, eNum).get();
     }
 }
