@@ -159,7 +159,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     }
 
                     @Override
-                    public Optional<GraphEdgeRedundancy> getEdgeRedundancy() {
+                    public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
                         return Optional.empty();
                     }
                 });
@@ -179,7 +179,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     }
 
                     @Override
-                    public Optional<GraphEdgeRedundancy> getEdgeRedundancy() {
+                    public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
                         return Optional.empty();
                     }
                 });

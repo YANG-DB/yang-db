@@ -69,7 +69,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     }
 
-
     @Override
     public Statistics.Cardinality getNodeFilterStatistics(EEntityBase entity, EPropGroup entityFilter) {
         if (entity instanceof EConcrete) {
