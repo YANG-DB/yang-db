@@ -30,106 +30,11 @@ public class AsgPropsGroupingStrategyTest {
     @Test
     public void simpleCaseGroupTest() throws Exception {
 
-        //region Query Building
-        Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
-        query.setOnt("Dragons");
-        query.setName("Q1");
-        List<EBase> elements = new ArrayList<EBase>();
-
-        /*
-        {
-          "eNum": 0,
-          "type": "Start",
-          "next": 1
-        }
-         */
-
-        Start start  = new Start();
-        start.seteNum(0);
-        start.setNext(1);
-        elements.add(start);
-
-        /* Person
-         {
-          "eNum": 1,
-          "type": "ETyped",
-          "eTag": "A",
-          "eType": 1,
-          "next":2
-        }
-        */
-
-        ETyped eTypedA = new ETyped();
-        eTypedA.seteNum(1);
-        eTypedA.seteTag("A");
-        eTypedA.seteType(1);
-        eTypedA.setNext(2);
-        elements.add(eTypedA);
-
-        /* Owns
-        {
-          "eNum": 2,
-          "type": "Rel",
-          "rType": 1,
-          "dir": "R",
-          "next": 3
-        }
-         */
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setrType(1);
-        rel.setDir(Rel.Direction.R);
-        rel.setNext(3);
-        elements.add(rel);
-
-
-        /* Dragon
-        {
-          "eNum": 3,
-          "type": "ETyped",
-          "eTag": "B",
-          "eType": 2
-        }
-        */
-        ETyped eTypedB = new ETyped();
-        eTypedB.seteNum(3);
-        eTypedB.seteTag("B");
-        eTypedB.seteType(2);
-        eTypedB.setNext(4);
-        elements.add(eTypedB);
-
-        /* The dragon has the Name Entity Property = "dragonA"
-            "type": "EProp",
-            "eNum": 4,
-            "pType": "1.1",
-            "pTag": "1",
-            "con": {
-            "op": "eq",
-            "expr": "dragonA"
-            }
-         */
-
-
-        EProp eProp = new EProp();
-        eProp.seteNum(4);
-        eProp.setpType("1.1");
-        eProp.setpTag("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr("dragonA");
-        eProp.setCon(con);
-        elements.add(eProp);
-
-        query.setElements(elements);
-
-        //endregion
-
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
-        AsgQuery asgQuery = asgSupplier.get();
+        AsgQuery asgQuery = AsgQueryStore.Q1();
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtils.getElement(asgQuery, 4).get();
 
         AsgEntityPropertiesGroupingStrategy asgEntityPropertiesGroupingStrategy = new AsgEntityPropertiesGroupingStrategy();
-        asgEntityPropertiesGroupingStrategy.apply(asgQuery);
+        asgEntityPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
 
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
@@ -295,7 +200,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgEBase<EBase> originalEProp2AsgEbase = AsgQueryUtils.getElement(asgQuery, 6).get();
 
         AsgVQuantifierPropertiesGroupingStrategy asgVQuantifierPropertiesGroupingStrategy = new AsgVQuantifierPropertiesGroupingStrategy();
-        asgVQuantifierPropertiesGroupingStrategy.apply(asgQuery);
+        asgVQuantifierPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
 
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
@@ -443,7 +348,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtils.getElement(asgQuery, 3).get();
 
         AsgVQuantifierPropertiesGroupingStrategy asgVQuantifierPropertiesGroupingStrategy = new AsgVQuantifierPropertiesGroupingStrategy();
-        asgVQuantifierPropertiesGroupingStrategy.apply(asgQuery);
+        asgVQuantifierPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
 
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
@@ -480,7 +385,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtils.getElement(asgQuery, 5).get();
 
         AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
-        asgRelPropertiesGroupingStrategy.apply(asgQuery);
+        asgRelPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
 
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
@@ -509,7 +414,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtils.getElement(asgQuery, 6).get();
 
         AsgHQuantifierPropertiesGroupingStrategy asgHQuantifierPropertiesGroupingStrategy = new AsgHQuantifierPropertiesGroupingStrategy();
-        asgHQuantifierPropertiesGroupingStrategy.apply(asgQuery);
+        asgHQuantifierPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
 
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());

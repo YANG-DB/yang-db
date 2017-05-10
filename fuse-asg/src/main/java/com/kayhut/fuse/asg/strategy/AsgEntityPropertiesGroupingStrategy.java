@@ -17,6 +17,7 @@ import java.util.Optional;
  * Created by benishue on 19-Apr-17.
  */
 public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
+
     /*
     region AsgStrategy Implementation
     The simple case - no Quantifier involved - e.g., Q142 on V1
@@ -24,7 +25,7 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
     */
 
     @Override
-    public void apply(AsgQuery query) {
+    public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtils.getElements(query, EEntityBase.class).forEach(entityBase -> {
             EPropGroup ePropGroup = new EPropGroup();
             AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
@@ -37,10 +38,8 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
             } else {
                 ePropGroup.seteNum(Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get() + 1);
             }
-
             entityBase.addNextChild(ePropGroupAsgEbase);
         });
-
     }
     //endregion
 }

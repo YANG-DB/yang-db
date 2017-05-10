@@ -7,10 +7,13 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.ontology.Ontology;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
 
@@ -22,9 +25,13 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
 
     //region Constructors
     @Inject
-    public SimpleStrategyRegisteredAsgDriver(EventBus eventBus, AsgStrategyRegistrar registrar) {
+    public SimpleStrategyRegisteredAsgDriver(
+            EventBus eventBus,
+            AsgStrategyRegistrar registrar,
+            OntologyProvider ontologyProvider) {
         this.eventBus = eventBus;
         this.eventBus.register(this);
+        this.ontologyProvider = ontologyProvider;
 
         this.strategies = registrar != null ? registrar.register() : Collections.emptyList();
     }
@@ -37,8 +44,16 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
         if(context.getAsgQuery() != null) {
             return context;
         }
+
+        Optional<Ontology> ontology = this.ontologyProvider.get(context.getQuery().getOnt());
+        if (!ontology.isPresent()) {
+            throw new RuntimeException("No ontology provided");
+        }
+
+
+        AsgStrategyContext asgStrategyContext =  new AsgStrategyContext(ontology.get());
         AsgQuery asgQuery = new RecTwoPassAsgQuerySupplier(context.getQuery()).get();
-        Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery));
+        Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery,asgStrategyContext));
         return submit(eventBus, context.of(asgQuery));
     }
     //endregion
@@ -46,5 +61,6 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
     //region Fields
     private EventBus eventBus;
     private Iterable<AsgStrategy> strategies;
+    private OntologyProvider ontologyProvider;
     //endregion
 }

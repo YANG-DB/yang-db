@@ -1,0 +1,291 @@
+{
+  "ont": "Dragons",
+  "properties": [
+    {
+      "pType": 1,
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "pType": 2,
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "pType": 3,
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": 4,
+      "name": "gender",
+      "type": "TYPE_Gender"
+    },
+    {
+      "pType": 5,
+      "name": "birthDate",
+      "type": "date"
+    },
+    {
+      "pType": 6,
+      "name": "deathDate",
+      "type": "date"
+    },
+    {
+      "pType": 7,
+      "name": "height",
+      "type": "int",
+      "units": "cm"
+    },
+    {
+      "pType": 8,
+      "name": "color",
+      "type": "TYPE_HorseColor"
+    },
+    {
+      "pType": 9,
+      "name": "weight",
+      "type": "int",
+      "units": "kg"
+    },
+    {
+      "pType": 10,
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": 11,
+      "name": "endDate",
+      "type": "date"
+    },
+    {
+      "pType": 12,
+      "name": "timestamp",
+      "type": "date"
+    },
+    {
+      "pType": 13,
+      "name": "duration",
+      "type": "int",
+      "units": "min"
+    },
+    {
+      "pType": 14,
+      "name": "mass",
+      "type": "int",
+      "units": "mass"
+    },
+    {
+      "pType": 15,
+      "name": "dateSinceTheBigBang",
+      "type": "date"
+    }
+  ],
+  "entityTypes": [
+    {
+      "eType": 1,
+      "name": "Person",
+      "properties": [
+        1,
+        2,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "eType": 2,
+      "name": "Dragon",
+      "properties": [
+        3
+      ]
+    },
+    {
+      "eType": 3,
+      "name": "Horse",
+      "properties": [
+        3,
+        8,
+        9
+      ]
+    },
+    {
+      "eType": 4,
+      "name": "Guild",
+      "properties": [
+        3
+      ]
+    },
+    {
+      "eType": 5,
+      "name": "Kingdom",
+      "properties": [
+        3
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": 1,
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 2
+        },
+        {
+          "eTypeA": 1,
+          "eTypeB": 3
+        }
+      ],
+      "properties": [
+        10,
+        11
+      ]
+    },
+    {
+      "rType": 2,
+      "name": "fires at",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        12
+      ]
+    },
+    {
+      "rType": 3,
+      "name": "freezes",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        12,
+        13
+      ]
+    },
+    {
+      "rType": 4,
+      "name": "offspringOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 1
+        }
+      ]
+    },
+    {
+      "rType": 5,
+      "name": "knows",
+      "directional": false,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 1
+        }
+      ],
+      "properties": [
+        10
+      ]
+    },
+    {
+      "rType": 6,
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        10,
+        11
+      ]
+    },
+    {
+      "rType": 7,
+      "name": "subjectOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 5
+        }
+      ]
+    },
+    {
+      "rType": 8,
+      "name": "registeredIn",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 4,
+          "eTypeB": 5
+        }
+      ]
+    },
+    {
+      "rType": 9,
+      "name": "originatedIn",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 5
+        },
+        {
+          "eTypeA": 3,
+          "eTypeB": 5
+        }
+      ]
+    }
+  ],
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 1,
+          "name": "Female"
+        },
+        {
+          "val": 2,
+          "name": "Male"
+        },
+        {
+          "val": 3,
+          "name": "Other"
+        }
+      ]
+    },
+    {
+      "eType": "TYPE_HorseColor",
+      "values": [
+        {
+          "val": 1,
+          "name": "Black"
+        },
+        {
+          "val": 2,
+          "name": "White"
+        },
+        {
+          "val": 3,
+          "name": "Brown"
+        }
+      ]
+    }
+  ]
+}

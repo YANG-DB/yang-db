@@ -11,8 +11,6 @@ import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 19-Apr-17.
@@ -20,7 +18,7 @@ import java.util.stream.Collectors;
 public class AsgVQuantifierPropertiesGroupingStrategy implements AsgStrategy {
     // Vertical AND Quantifier with EProps e.g., Q3-2, Q27-2 on V1
     @Override
-    public void apply(AsgQuery query) {
+    public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtils.<Quant1>getElements(query, Quant1.class).forEach(quant -> {
             if (quant.geteBase().getqType() == QuantType.all) {
 
