@@ -27,6 +27,33 @@ public class AsgQueryStore {
 
     /**
 
+     +----+       +---------+
+     |S(0)| +--+  |eTyped(1)|
+     +----+       +---------+
+
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery0(String queryName, String ontologyName) {
+        Start start = new Start();
+        start.seteNum(0);
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteNum(1);
+        eTyped.seteTag("A");
+        eTyped.seteType(1);
+
+        AsgEBase<Start> asgStart =
+                AsgEBase.Builder.<Start>get().withEBase(start)
+                        .withNext(AsgEBase.Builder.get().withEBase(eTyped).build())
+                .build();
+
+        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
+    }
+
+    /**
+
      +----+       +---------+               +---------+
      |S(0)| +--+  |eTyped(1)| +--rel(2)+--> |eTyped(3)|
      +----+       +---------+               +---------+
@@ -143,8 +170,8 @@ public class AsgQueryStore {
         prop1.seteNum(9);
 
         Constraint constraint2 = new Constraint();
-        constraint1.setOp(ConstraintOp.eq);
-        constraint1.setExpr("value2");
+        constraint2.setOp(ConstraintOp.eq);
+        constraint2.setExpr(30);
 
         EProp prop2 = new EProp();
         prop2.setpType("2");

@@ -8,11 +8,14 @@ import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
+import jdk.nashorn.internal.objects.Global;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Optional;
 
@@ -44,9 +47,11 @@ public class RelationOpTranslationStrategy implements TranslationStrategy {
         if(planOpBase instanceof RelationOp) {
             Rel rel = ((RelationOp) planOpBase).getAsgEBase().geteBase();
             String rTypeName = OntologyUtil.getRelationTypeNameById(ontology, rel.getrType());
-            traversal.outE("promise").has("constraint", P.eq(Constraint.by(__.and(
-                   __.has("label",P.eq(rTypeName)),
-                   __.has("direction", P.eq(getTinkerPopDirection(rel.getDir())))
+            traversal.outE(GlobalConstants.Labels.PROMISE)
+                    .has(GlobalConstants.HasKeys.CONSTRAINT,
+                            P.eq(Constraint.by(__.and(
+                                __.has(T.label, P.eq(rTypeName)),
+                                __.has("direction", P.eq(getTinkerPopDirection(rel.getDir())))
             )))).as(createLabelForRelation(prev, next));
         }
         return traversal;
