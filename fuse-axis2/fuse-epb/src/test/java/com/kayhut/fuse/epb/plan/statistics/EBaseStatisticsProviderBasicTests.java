@@ -484,5 +484,167 @@ public class EBaseStatisticsProviderBasicTests {
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
     }
 
+    @Test
+    public void eTypedStringRangeTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ra"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ra", "z"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.inRange);
+        con.setExpr(Arrays.asList("f", "r"));
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringStartsWithTwoBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ga"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ga", "z"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.startsWith);
+        con.setExpr("g");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(20d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringStartsWithSingleBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ga"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ga", "z"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.startsWith);
+        con.setExpr("f");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+    }
+
+    @Test
+    public void eTypedStringStartsWithNoBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "c", "f"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ga"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ga", "z"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.startsWith);
+        con.setExpr("a");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(0d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(0d, nodeStatistics.getCardinality(), 0.1);
+    }
+
+    @Test
+    public void eTypedStringStartsSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.startsWith);
+        con.setExpr("e");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(20d, nodeStatistics.getCardinality(), 0.1);
+        con.setExpr("ed");
+        nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+    }
+
+    @Test
+    public void eTypedStringStartsSingleValueBucketsExactTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.startsWith);
+        con.setExpr("edf");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+    }
 
 }

@@ -20,7 +20,6 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.asg.util.AsgQueryUtils.getVertexTypes;
 
@@ -31,6 +30,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private Ontology ontology;
     private GraphStatisticsProvider graphStatisticsProvider;
+
+    // Supported operators by the cost estimator, used for validation
     private static Set<ConstraintOp> supportedOps = new HashSet<>();
 
     static {
@@ -40,6 +41,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         supportedOps.add(ConstraintOp.le);
         supportedOps.add(ConstraintOp.lt);
         supportedOps.add(ConstraintOp.ne);
+        supportedOps.add(ConstraintOp.inSet);
+        supportedOps.add(ConstraintOp.notInSet);
+        supportedOps.add(ConstraintOp.inRange);
+        supportedOps.add(ConstraintOp.startsWith);
+        supportedOps.add(ConstraintOp.notStartsWith);
     }
 
     public EBaseStatisticsProvider(GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology, GraphStatisticsProvider graphStatisticsProvider) {
@@ -50,11 +56,13 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.Cardinality getNodeStatistics(EEntityBase entity) {
+        // EConcrete == single entity, no querying, assuming the entity exists
         if (entity instanceof EConcrete) {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
             return bucketInfos.get(0).getCardinalityObject();
         }
 
+        // We estimate each vertex type's statistics, and combine all statistics together
         List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
         Statistics.Cardinality entityStats = getVertexStatistics(vertexTypes.get(0));
 
@@ -273,52 +281,114 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphVertexSchema graphVertexSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
-        if(tp.isInstance(expression)){
+    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
+        Statistics.HistogramStatistics<T> histogramStatistics = null;
+        if(tp.isInstance(expression) ){
             T expr = (T) expression;
-            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphVertexSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
-            return Optional.of(estimateCardinality(histogramStatistics, expr, constraintOp));
+            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
+        }
+        else if (expression instanceof List)
+        {
+            List<T> values = (List<T>) expression;
+            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, values);
+        }
+        if(histogramStatistics != null) {
+            return Optional.of(estimateCardinality(histogramStatistics, expression, constraintOp));
         }
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphEdgeSchema graphEdgeSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
-        if(tp.isInstance(expression)){
-            T expr = (T) expression;
-
-            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphEdgeSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
-            return Optional.of(estimateCardinality(histogramStatistics, expr, constraintOp));
-        }
-        return Optional.empty();
-    }
-
-    private <T extends Comparable<T>> Statistics.Cardinality estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, T value, ConstraintOp constraintOp){
+    private <T extends Comparable<T>> Statistics.Cardinality estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, Object value, ConstraintOp constraintOp){
         Statistics.Cardinality cardinality = null;
         switch(constraintOp){
             case eq:
-                Optional<Statistics.BucketInfo<T>> bucketContaining = histogramStatistics.findBucketContaining(value);
-                cardinality = bucketContaining.map(tBucketInfo -> new Statistics.Cardinality(tBucketInfo.getTotal() / tBucketInfo.getCardinality(), 1)).
+                Optional<Statistics.BucketInfo<T>> bucketContaining = histogramStatistics.findBucketContaining((T)value);
+                cardinality = bucketContaining.map(tBucketInfo -> new Statistics.Cardinality(((double)tBucketInfo.getTotal()) / tBucketInfo.getCardinality(), 1)).
                         orElseGet(() -> new Statistics.Cardinality(0, 0));
                 break;
             case gt:
-                List<Statistics.BucketInfo<T>> bucketsAbove = histogramStatistics.findBucketsAbove(value, false);
-                return estimateGreaterThan(bucketsAbove, value, false);
+                List<Statistics.BucketInfo<T>> bucketsAbove = histogramStatistics.findBucketsAbove((T)value, false);
+                return estimateGreaterThan(bucketsAbove, (T)value, false);
             case ge:
-                bucketsAbove = histogramStatistics.findBucketsAbove(value, true);
-                return estimateGreaterThan(bucketsAbove, value, true);
+                bucketsAbove = histogramStatistics.findBucketsAbove((T)value, true);
+                return estimateGreaterThan(bucketsAbove, (T)value, true);
             case lt:
-                List<Statistics.BucketInfo<T>> bucketsBelow = histogramStatistics.findBucketsBelow(value, false);
-                return estimateLessThan(bucketsBelow, value, false);
+                List<Statistics.BucketInfo<T>> bucketsBelow = histogramStatistics.findBucketsBelow((T)value, false);
+                return estimateLessThan(bucketsBelow, (T)value, false);
             case le:
-                bucketsBelow = histogramStatistics.findBucketsBelow(value, true);
-                return estimateLessThan(bucketsBelow, value, true);
+                bucketsBelow = histogramStatistics.findBucketsBelow((T)value, true);
+                return estimateLessThan(bucketsBelow, (T)value, true);
             case ne:
                 // Pessimistic estimate that a not equals condition is almost the same as the entire distribution
                 // given that we throw a single value
                 return mergeBucketsCardinality(histogramStatistics.getBuckets());
+            case inSet:
+                List<T> valueList = (List<T>) value;
+                double total = 0;
+                double count = 0;
+                for(T v : valueList){
+                    bucketContaining = histogramStatistics.findBucketContaining((T)v);
+                    total += ((double)bucketContaining.get().getTotal()) / bucketContaining.get().getCardinality();
+                    count += 1;
+                }
+                return new Statistics.Cardinality(total,count);
+            case notInSet:
+                return mergeBucketsCardinality(histogramStatistics.getBuckets());
+            case inRange:
+                valueList = (List<T>) value;
+                bucketsAbove = histogramStatistics.findBucketsAbove(valueList.get(0), true);
+                bucketsBelow = histogramStatistics.findBucketsBelow(valueList.get(1), true);
+                return estimateRange(bucketsAbove, bucketsBelow, valueList);
+            case startsWith:
+                String stringValue = (String) value;
+                List<Statistics.BucketInfo<String>> startsWithBuckets = findStartsWithBuckets(stringValue, (Statistics.HistogramStatistics<String>) histogramStatistics);
+                return mergeBucketsCardinality(startsWithBuckets);
+            case notStartsWith:
+                break;
 
         }
         return cardinality;
+    }
+
+    private List<Statistics.BucketInfo<String>> findStartsWithBuckets(String stringValue, Statistics.HistogramStatistics<String> histogramStatistics) {
+        List<Statistics.BucketInfo<String>> startsWithBuckets = new ArrayList<>();
+        int i = 0;
+        for(;i<histogramStatistics.getBuckets().size();i++){
+            Statistics.BucketInfo<String> currentBucket = histogramStatistics.getBuckets().get(i);
+            if(currentBucket.getLowerBound().compareTo(stringValue) <= 0 ){
+                if(currentBucket.getHigherBound().compareTo(stringValue) > 0) {
+                    startsWithBuckets.add(currentBucket);
+                    break;
+                }
+                if(currentBucket.getLowerBound().equals(currentBucket.getHigherBound()) && currentBucket.getLowerBound().equals(stringValue)){
+                    startsWithBuckets.add(currentBucket);
+                    break;
+                }
+            }
+
+            if(currentBucket.getLowerBound().compareTo(stringValue) > 0){
+                if(currentBucket.getLowerBound().startsWith(stringValue)){
+                    startsWithBuckets.add(currentBucket);
+                }
+                break;
+            }
+        }
+
+        for(i++;i<histogramStatistics.getBuckets().size();i++){
+            Statistics.BucketInfo<String> currentBucket = histogramStatistics.getBuckets().get(i);
+            if(currentBucket.getLowerBound().startsWith(stringValue))
+                startsWithBuckets.add(currentBucket);
+            else
+                break;
+        }
+
+        return startsWithBuckets;
+    }
+
+    private <T extends Comparable<T>> Statistics.Cardinality estimateRange(List<Statistics.BucketInfo<T>> bucketsAbove, List<Statistics.BucketInfo<T>> bucketsBelow, List<T> valueList) {
+        List<Statistics.BucketInfo<T>> joinedBuckets = new LinkedList<>(bucketsAbove);
+        joinedBuckets.retainAll(bucketsBelow);
+        return mergeBucketsCardinality(joinedBuckets);
     }
 
     // Currently lt and lte have the same costs
