@@ -3,6 +3,7 @@ package com.kayhut.fuse.asg.util;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -221,6 +222,15 @@ public class AsgQueryUtils {
     public static List<Integer> getEnums(AsgQuery query) {
         return getValues(query.getStart(), AsgEBase::getB, AsgEBase::getNext, AsgEBase::geteNum,
                 truePredicate, truePredicate, Collections.emptyList());
+    }
+
+    public static AsgEBase<Rel> reverseRelation(AsgEBase<Rel> relAsgEBase) {
+        Rel reversedRel = new Rel();
+        reversedRel.seteNum(relAsgEBase.geteNum());
+        reversedRel.setrType(relAsgEBase.geteBase().getrType());
+        reversedRel.setDir(relAsgEBase.geteBase().getDir() == Rel.Direction.L ? Rel.Direction.R : Rel.Direction.L);
+
+        return AsgEBase.Builder.<Rel>get().withEBase(reversedRel).build();
     }
     //endregion
 

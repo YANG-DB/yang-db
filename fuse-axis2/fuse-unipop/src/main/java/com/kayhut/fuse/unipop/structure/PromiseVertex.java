@@ -1,6 +1,7 @@
 package com.kayhut.fuse.unipop.structure;
 
 import com.google.common.collect.ImmutableMap;
+import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -16,9 +17,17 @@ import java.util.Optional;
 public class PromiseVertex extends UniVertex {
     //region Constructor
     public PromiseVertex(Promise promise, Optional<Constraint> constraint, UniGraph graph) {
-        super(new HashMap<>(ImmutableMap.of(T.id.getAccessor(), promise.getId(), T.label.getAccessor(), "promise")), graph);
+        super(new MapBuilder<String, Object>().put(T.id.getAccessor(), promise.getId()).get(), graph);
+
         this.promise = promise;
         this.constraint = constraint;
+    }
+    //endregion
+
+    //region Override Methods
+    @Override
+    protected String getDefaultLabel() {
+        return "promise";
     }
     //endregion
 
