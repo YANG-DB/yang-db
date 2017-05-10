@@ -11,7 +11,6 @@ import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -19,6 +18,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -75,11 +75,13 @@ public class EntityFilterOpTranslationStrategyTest {
         when(context.getPlanOp()).thenAnswer(invocationOnMock -> plan.getOps().get(1));
 
         EntityFilterOpTranslationStrategy entityFilterOpTranslationStrategy = new EntityFilterOpTranslationStrategy();
-        GraphTraversal actualTraversal = entityFilterOpTranslationStrategy.apply(context, __.start());
+        GraphTraversal actualTraversal = entityFilterOpTranslationStrategy.apply(context, __.start().has("willBeDeleted", "doesnt matter"));
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                    com.kayhut.fuse.unipop.promise.Constraint.by(
-                        __.and(__.has(T.label, "Person"), __.has("name", "value1"), __.has("age", 30))));
+                        Constraint.by(__.and(
+                                __.has(T.label, "Person"),
+                                __.has("name", "value1"),
+                                __.has("age", 30))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -127,8 +129,9 @@ public class EntityFilterOpTranslationStrategyTest {
         GraphTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
-                        com.kayhut.fuse.unipop.promise.Constraint.by(
-                                __.and(__.has("name", "value1"), __.has("age", 30))));
+                        Constraint.by(__.and(
+                                __.has("name", "value1"),
+                                __.has("age", 30))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

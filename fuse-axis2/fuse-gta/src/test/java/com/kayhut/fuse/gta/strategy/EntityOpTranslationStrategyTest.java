@@ -15,10 +15,12 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -41,12 +43,24 @@ public class EntityOpTranslationStrategyTest {
 
         EntityOpTranslationStrategy entityOpTranslationStrategy = new EntityOpTranslationStrategy(new PromiseGraph());
 
-        TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
-        when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOp()).thenAnswer(invocationOnMock -> plan.getOps().get(0));
+        Ontology ontology = Mockito.mock(Ontology.class);
+        when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
+                {
+                    return Arrays.asList(
+                            EntityType.EntityTypeBuilder.anEntityType()
+                                    .withEType(1).withName("Person").build()
+                    );
+                }
+        );
 
-        GraphTraversal actualTraversal = entityOpTranslationStrategy.apply(context, new DefaultGraphTraversal());
-        GraphTraversal expectedTraversal = new PromiseGraph().traversal().V().as("A");
+        TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
+        when(context.getOntology()).thenReturn(ontology);
+        when(context.getPlan()).thenReturn(plan);
+        when(context.getPlanOp()).thenReturn(plan.getOps().get(0));
+
+        GraphTraversal actualTraversal = entityOpTranslationStrategy.apply(context, __.start());
+        GraphTraversal expectedTraversal = __.start().V().as("A")
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

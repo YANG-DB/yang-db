@@ -1,5 +1,6 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -12,6 +13,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
@@ -20,7 +22,11 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.EmptyStep;
+import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,16 +43,29 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
         }
 
         EntityFilterOp entityFilterOp = (EntityFilterOp)context.getPlanOp();
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.getPrev(context.getPlan(), entityFilterOp);
+        Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(context.getPlan(), entityFilterOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
 
+        if (HasStep.class.isAssignableFrom(traversal.asAdmin().getEndStep().getClass())) {
+            traversal.asAdmin().removeStep(traversal.asAdmin().getSteps().indexOf(traversal.asAdmin().getEndStep()));
+        }
+
         EntityOp entityOp = (EntityOp)previousPlanOp.get();
         if (PlanUtil.isFirst(context.getPlan(), entityOp)) {
-            traversal = appendFirstEntityFilterOp(traversal, entityOp.getAsgEBase().geteBase(), entityFilterOp, context.getOntology());
+            traversal = appendEntityAndPropertyGroup(
+                    traversal,
+                    entityOp.getAsgEBase().geteBase(),
+                    entityFilterOp.getAsgEBase().geteBase(),
+                    context.getOntology());
+
         } else if (!entityFilterOp.getAsgEBase().geteBase().geteProps().isEmpty()) {
-            traversal = appendEntityFilterOp(traversal, entityFilterOp, context.getOntology());
+
+            traversal = appendPropertyGroup(
+                    traversal,
+                    entityFilterOp.getAsgEBase().geteBase(),
+                    context.getOntology());
         }
 
         return traversal;
@@ -54,10 +73,10 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
     //endregion
 
     //region Private Methods
-    private GraphTraversal appendFirstEntityFilterOp(
+    private GraphTraversal appendEntityAndPropertyGroup(
             GraphTraversal traversal,
             EEntityBase entity,
-            EntityFilterOp entityFilterOp,
+            EPropGroup ePropGroup,
             Ontology ontology) {
 
         if (entity instanceof EConcrete) {
@@ -67,7 +86,7 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
             String eTypeName = OntologyUtil.getEntityTypeNameById(ontology,((ETyped) entity).geteType());
             Traversal constraintTraversal = __.has(T.label, P.eq(eTypeName));
             List<Traversal> epropTraversals =
-                    Stream.ofAll(entityFilterOp.getAsgEBase().geteBase().geteProps())
+                    Stream.ofAll(ePropGroup.geteProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
 
             if (!epropTraversals.isEmpty()) {
@@ -84,13 +103,13 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
         return traversal;
     }
 
-    private GraphTraversal appendEntityFilterOp(
+    private GraphTraversal appendPropertyGroup(
             GraphTraversal traversal,
-            EntityFilterOp entityFilterOp,
+            EPropGroup ePropGroup,
             Ontology ontology) {
 
         List<Traversal> epropTraversals =
-                Stream.ofAll(entityFilterOp.getAsgEBase().geteBase().geteProps())
+                Stream.ofAll(ePropGroup.geteProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
 
         Traversal constraintTraversal = epropTraversals.size() == 1 ?
@@ -107,24 +126,7 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
              return __.start();
          }
 
-         return __.has(property.get().getName(), convertConstraintToGremlinPredicate(eProp.getCon()));
-    }
-
-    private P convertConstraintToGremlinPredicate(com.kayhut.fuse.model.query.Constraint constraint){
-        switch (constraint.getOp()) {
-            case eq: return P.eq(constraint.getExpr());
-            case ne: return P.neq(constraint.getExpr());
-            case gt: return P.gt(constraint.getExpr());
-            case lt: return P.lt(constraint.getExpr());
-            case ge: return P.gte(constraint.getExpr());
-            case le: return P.lte(constraint.getExpr());
-            case inRange:
-                Object[] range = (Object[])constraint.getExpr();
-                return P.between(range[0], range[1]);
-            case inSet: return P.within(constraint.getExpr());
-            case notInSet: return P.without(constraint.getExpr());
-            default: throw new RuntimeException("not supported");
-        }
+         return __.has(property.get().getName(), ConverstionUtil.convertConstraint(eProp.getCon()));
     }
     //endregion
 }

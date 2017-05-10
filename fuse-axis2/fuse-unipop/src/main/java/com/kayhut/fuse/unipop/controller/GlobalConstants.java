@@ -7,6 +7,7 @@ public class GlobalConstants {
     public static class HasKeys {
         public static final String PROMISE = "promise";
         public static final String CONSTRAINT = "constraint";
+        public static final String DIRECTION = "direction";
     }
 
     public static class Labels {

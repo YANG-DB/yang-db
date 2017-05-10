@@ -193,8 +193,8 @@ public class AsgQueryStore {
         relPropGroup1.setrProps(Arrays.asList(relProp1));
 
         Constraint constraint4 = new Constraint();
-        constraint3.setOp(ConstraintOp.lt);
-        constraint3.setExpr(20);
+        constraint4.setOp(ConstraintOp.lt);
+        constraint4.setExpr(20);
         RelProp relProp2 = new RelProp();
         relProp2.setCon(constraint4);
         relProp2.setpType("2");
