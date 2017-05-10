@@ -34,15 +34,15 @@ import java.util.Optional;
 public class RelationOpTranslationStrategy implements TranslationStrategy {
     //region TranslationStrategy Implementation
     @Override
-    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        if (!(context.getPlanOp() instanceof RelationOp)) {
+    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+        if (!(planOp instanceof RelationOp)) {
             return traversal;
         }
 
-        Optional<EntityOp> prev = PlanUtil.getPrev(context.getPlan(), context.getPlanOp(), EntityOp.class);
-        Optional<EntityOp> next = PlanUtil.getNext(context.getPlan(), context.getPlanOp(), EntityOp.class);
+        Optional<EntityOp> prev = PlanUtil.getPrev(context.getPlan(), planOp, EntityOp.class);
+        Optional<EntityOp> next = PlanUtil.getNext(context.getPlan(), planOp, EntityOp.class);
 
-        Rel rel = ((RelationOp) context.getPlanOp()).getAsgEBase().geteBase();
+        Rel rel = ((RelationOp)planOp).getAsgEBase().geteBase();
         String rTypeName = OntologyUtil.getRelationTypeNameById(context.getOntology(), rel.getrType());
         return traversal.outE(GlobalConstants.Labels.PROMISE)
                 .as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), next.get().getAsgEBase().geteBase()))

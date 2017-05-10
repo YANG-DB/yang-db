@@ -29,12 +29,12 @@ import java.util.Optional;
 public class RelationFilterOpTranslationStrategy implements TranslationStrategy {
     //region TranslationStrategy Implementation
     @Override
-    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        if (!(context.getPlanOp() instanceof RelationFilterOp)) {
+    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+        if (!(planOp instanceof RelationFilterOp)) {
             return traversal;
         }
 
-        RelationFilterOp relationFilterOp = (RelationFilterOp) context.getPlanOp();
+        RelationFilterOp relationFilterOp = (RelationFilterOp)planOp;
         Optional<RelationOp> relationOp = PlanUtil.getAdjacentPrev(context.getPlan(), relationFilterOp);
         if (!relationOp.isPresent()) {
             return traversal;

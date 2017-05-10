@@ -35,12 +35,12 @@ public class EntityOpTranslationStrategy implements TranslationStrategy {
 
     //region TranslationStrategy Implementation
     @Override
-    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        if (!(context.getPlanOp() instanceof EntityOp)) {
+    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+        if (!(planOp instanceof EntityOp)) {
             return traversal;
         }
 
-        EntityOp entityOp = (EntityOp)context.getPlanOp();
+        EntityOp entityOp = (EntityOp)planOp;
 
         if (PlanUtil.isFirst(context.getPlan(), entityOp)) {
             traversal = graph.traversal().V().as(entityOp.getAsgEBase().geteBase().geteTag());
@@ -58,7 +58,7 @@ public class EntityOpTranslationStrategy implements TranslationStrategy {
             }
 
         } else {
-            Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(context.getPlan(), context.getPlanOp());
+            Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(context.getPlan(), planOp);
             if (previousPlanOp.isPresent() && previousPlanOp.get() instanceof RelationOp) {
                 return traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
             }

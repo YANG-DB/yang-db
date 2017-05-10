@@ -8,17 +8,14 @@ import com.kayhut.fuse.model.ontology.Ontology;
  * Created by benishue on 12-Mar-17.
  */
 public class TranslationStrategyContext {
-
-    public TranslationStrategyContext(PlanOpBase planOp, Plan plan, Ontology ontology) {
-        this.planOpBase = planOp;
+    //region Constructors
+    public TranslationStrategyContext(Plan plan, Ontology ontology) {
         this.plan = plan;
         this.ontology = ontology;
     }
+    //endregion
 
-    public PlanOpBase getPlanOp() {
-        return planOpBase;
-    }
-
+    //region Properties
     public Plan getPlan() {
         return plan;
     }
@@ -26,9 +23,9 @@ public class TranslationStrategyContext {
     public Ontology getOntology() {
         return ontology;
     }
+    //endregion
 
     //region Fields
-    private PlanOpBase planOpBase;
     private Plan plan;
     private Ontology ontology;
     //endregion

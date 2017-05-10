@@ -37,12 +37,12 @@ import java.util.Optional;
 public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
     //region TranslationStrategy Implementation
     @Override
-    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        if (!(context.getPlanOp() instanceof EntityFilterOp)) {
+    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+        if (!(planOp instanceof EntityFilterOp)) {
             return traversal;
         }
 
-        EntityFilterOp entityFilterOp = (EntityFilterOp)context.getPlanOp();
+        EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
         Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(context.getPlan(), entityFilterOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
