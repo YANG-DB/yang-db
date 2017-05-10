@@ -17,8 +17,28 @@ public class TraversalConstraint extends TraversalPromise implements Constraint 
     }
     //endregion
 
+    //region Override Methods
     @Override
     public String toString() {
         return "Constraint.by(" + this.getTraversal().toString() + ")";
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) {
+            return false;
+        }
+
+        if (!(other instanceof TraversalConstraint)) {
+            return false;
+        }
+
+        return this.getTraversal().equals(((TraversalConstraint)other).getTraversal());
+    }
+
+    @Override
+    public int hashCode() {
+        return getTraversal().hashCode();
+    }
+    //endregion
 }

@@ -50,7 +50,7 @@ public class ReverseRelationOpValidatorTests {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()))
+                new RelationOp(AsgQueryUtils.reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()))
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -61,7 +61,7 @@ public class ReverseRelationOpValidatorTests {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
+                new RelationOp(AsgQueryUtils.reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
@@ -86,21 +86,10 @@ public class ReverseRelationOpValidatorTests {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()))
+                new RelationOp(AsgQueryUtils.reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()))
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
-    }
-    //endregion
-
-    //region Private Methods
-    private AsgEBase<Rel> reverseRelation(AsgEBase<Rel> relAsgEBase) {
-        Rel reversedRel = new Rel();
-        reversedRel.seteNum(relAsgEBase.geteNum());
-        reversedRel.setrType(relAsgEBase.geteBase().getrType());
-        reversedRel.setDir(relAsgEBase.geteBase().getDir() == Rel.Direction.L ? Rel.Direction.R : Rel.Direction.L);
-
-        return AsgEBase.Builder.<Rel>get().withEBase(reversedRel).build();
     }
     //endregion
 

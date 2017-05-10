@@ -24,9 +24,8 @@ public class SimplePlanOpTranslator {
     public SimplePlanOpTranslator(UniGraph promiseGraph) {
         this.map = new HashMap<>();
 
-        this.map.put(EntityOp.class, Arrays.asList(
-                new EntityOpStartTranslationStrategy(promiseGraph),
-                new EntityOpPostRelTranslationStrategy()
+        this.map.put(EntityOp.class, Collections.singletonList(
+                new EntityOpTranslationStrategy(promiseGraph)
         ));
 
         this.map.put(GoToEntityOp.class, Collections.singletonList(
