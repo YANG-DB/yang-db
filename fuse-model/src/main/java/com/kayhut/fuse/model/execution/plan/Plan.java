@@ -16,11 +16,11 @@ public class Plan extends CompositePlanOpBase{
     private Plan() {}
 
     public Plan(List<PlanOpBase> ops) {
-        this.ops = new ArrayList<>(ops);
+        super(ops);
     }
 
     public Plan(PlanOpBase...ops) {
-        this.ops = new ArrayList<>(Arrays.asList(ops));
+        super(ops);
     }
 
     @Override
@@ -28,22 +28,6 @@ public class Plan extends CompositePlanOpBase{
     public int geteNum() {
         return 0;
     }
-    //endregion
-
-    //region Properties
-    public Plan withOp(PlanOpBase op) {
-        Plan newPlan = new Plan(this.getOps());
-        newPlan.getOps().add(op);
-        return newPlan;
-    }
-
-    public List<PlanOpBase> getOps() {
-        return this.ops;
-    }
-    //endregion
-
-    //region Fields
-    private List<PlanOpBase> ops;
     //endregion
 
     public String toPattern() {

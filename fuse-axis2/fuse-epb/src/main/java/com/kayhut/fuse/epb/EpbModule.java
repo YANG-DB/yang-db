@@ -27,7 +27,7 @@ public class EpbModule extends ModuleBase {
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
         binder.bind(SimpleEpbDriver.class).asEagerSingleton();
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                .to(new TypeLiteral<BottomUpPlanBuilderImpl<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
+                .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
 
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost>>(){})
                 .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
@@ -45,6 +45,14 @@ public class EpbModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                 .annotatedWith(Names.named("LocalPruningStrategy"))
                 .toInstance(new NoPruningPruneStrategy<>());
+
+        binder.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>(){})
+                .annotatedWith(Names.named("GlobalPlanSelector"))
+                .toInstance(new AllCompletePlanSelector<>());
+
+        binder.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>(){})
+                .annotatedWith(Names.named("LocalPlanSelector"))
+                .toInstance(new AllCompletePlanSelector<>());
 
         binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){}).to(M1PlanValidator.class).asEagerSingleton();
 

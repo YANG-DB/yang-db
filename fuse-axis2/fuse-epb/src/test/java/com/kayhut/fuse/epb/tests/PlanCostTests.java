@@ -56,7 +56,7 @@ public class PlanCostTests {
 
     @Test
     public void planCostEConcreteTest(){
-        AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(new EConcrete()).build();
+        AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(new EConcrete()).search();
         Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).cost, 0.0);
     }
 
@@ -64,7 +64,7 @@ public class PlanCostTests {
     public void planCostEUntypedTest(){
         EUntyped eBase = new EUntyped();
         eBase.setvTypes(Collections.singletonList(1));
-        AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(eBase).build();
+        AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(eBase).search();
         Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).cost, 0.0);
     }
 
@@ -72,7 +72,7 @@ public class PlanCostTests {
     public void planCostETypedTest(){
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(eTyped).build();
+        AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(eTyped).search();
         Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).cost, 0.0);
     }*/
 }

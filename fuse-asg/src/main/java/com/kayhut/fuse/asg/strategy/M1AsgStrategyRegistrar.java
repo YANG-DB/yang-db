@@ -12,7 +12,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
         return Arrays.asList(
                 new AsgEntityPropertiesGroupingStrategy(),
                 new AsgHQuantifierPropertiesGroupingStrategy(),
-                new AsgVQuantifierPropertiesGroupingStrategy(),
+                new AsgQuant1PropertiesGroupingStrategy(),
                 new AsgRelPropertiesGroupingStrategy()
         );
     }
