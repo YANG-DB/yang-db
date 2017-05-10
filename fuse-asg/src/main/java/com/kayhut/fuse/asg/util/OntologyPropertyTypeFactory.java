@@ -2,7 +2,6 @@ package com.kayhut.fuse.asg.util;
 
 import com.kayhut.fuse.model.ontology.Property;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
