@@ -8,7 +8,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 public class AsgDummyStrategy implements AsgStrategy {
     //region AsgStrategy Implementation
     @Override
-    public void apply(AsgQuery query) {
+    public void apply(AsgQuery query, AsgStrategyContext context) {
 
     }
     //endregion

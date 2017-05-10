@@ -12,6 +12,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RelationshipType {
 
+    //region Getters & Setters
     public int getrType() {
         return rType;
     }
@@ -61,6 +62,7 @@ public class RelationshipType {
     public void setProperties(List<Integer> properties) {
         this.properties = properties;
     }
+    //endregion
 
     @Override
     public String toString()
@@ -135,7 +137,5 @@ public class RelationshipType {
         }
     }
     //endregion
-
-
 
 }

@@ -8,6 +8,22 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Constraint {
 
+    //region Ctrs
+    public Constraint() {
+    }
+
+    public Constraint(ConstraintOp op, Object expr) {
+        this.op = op;
+        this.expr = expr;
+    }
+
+    public Constraint(ConstraintOp op, Object expr, String iType) {
+        this.op = op;
+        this.expr = expr;
+        this.iType = iType;
+    }
+    //endregion
+
     //region Properties
     public ConstraintOp getOp() {
         return op;
