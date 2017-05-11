@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class PageCreationOperationContext extends OperationContextBase<PageCreationOperationContext>{
     public interface Processor {
-        PageCreationOperationContext process(PageCreationOperationContext context) throws IOException;
+        PageCreationOperationContext process(PageCreationOperationContext context) throws Exception;
     }
 
     //region Constructors

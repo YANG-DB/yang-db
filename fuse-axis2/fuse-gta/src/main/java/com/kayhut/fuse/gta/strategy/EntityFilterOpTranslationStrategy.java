@@ -2,8 +2,10 @@ package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
 import com.kayhut.fuse.gta.translation.PlanUtil;
+import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
@@ -23,10 +25,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.EmptyStep;
-import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,16 +33,16 @@ import java.util.Optional;
 /**
  * Created by Roman on 09/05/2017.
  */
-public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
-    //region TranslationStrategy Implementation
+public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrategy {
+    //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         if (!(planOp instanceof EntityFilterOp)) {
             return traversal;
         }
 
         EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(context.getPlan(), entityFilterOp);
+        Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(plan, entityFilterOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
@@ -53,7 +52,7 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
         }
 
         EntityOp entityOp = (EntityOp)previousPlanOp.get();
-        if (PlanUtil.isFirst(context.getPlan(), entityOp)) {
+        if (PlanUtil.isFirst(plan, entityOp)) {
             traversal = appendEntityAndPropertyGroup(
                     traversal,
                     entityOp.getAsgEBase().geteBase(),

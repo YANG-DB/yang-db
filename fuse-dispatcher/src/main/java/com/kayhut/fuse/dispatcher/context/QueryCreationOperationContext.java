@@ -15,7 +15,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
 
 
     public interface Processor {
-        QueryCreationOperationContext process(QueryCreationOperationContext context);
+        QueryCreationOperationContext process(QueryCreationOperationContext context) throws Exception;
     }
 
     //region constructors

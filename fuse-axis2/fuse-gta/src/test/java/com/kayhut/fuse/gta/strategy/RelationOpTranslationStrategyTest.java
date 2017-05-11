@@ -2,6 +2,7 @@ package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
@@ -59,12 +60,11 @@ public class RelationOpTranslationStrategyTest {
                 }
         );
 
-        TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
+        TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
-        when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
 
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan.getOps().get(1), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start().outE(GlobalConstants.Labels.PROMISE).as("A-->B")
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
@@ -105,12 +105,11 @@ public class RelationOpTranslationStrategyTest {
                 }
         );
 
-        TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
+        TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
-        when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
 
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan.getOps().get(1), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start().outE(GlobalConstants.Labels.PROMISE).as("B-->A")
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
