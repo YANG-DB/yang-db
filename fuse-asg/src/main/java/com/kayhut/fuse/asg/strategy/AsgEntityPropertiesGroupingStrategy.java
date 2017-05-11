@@ -7,9 +7,13 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.quant.HQuant;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -24,7 +28,7 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
     */
 
     @Override
-    public void apply(AsgQuery query) {
+    public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtils.getElements(query, EEntityBase.class).forEach(entityBase -> {
             EPropGroup ePropGroup = new EPropGroup();
             AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
@@ -34,11 +38,29 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
                 ePropGroup.seteProps(Arrays.asList(asgEProp.get().geteBase()));
                 ePropGroup.seteNum(asgEProp.get().geteNum());
                 entityBase.removeNextChild(asgEProp.get());
+                entityBase.addNextChild(ePropGroupAsgEbase);
             } else {
-                ePropGroup.seteNum(Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get() + 1);
-            }
+                int maxEnum = Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get();
 
-            entityBase.addNextChild(ePropGroupAsgEbase);
+                if (entityBase.getNext().isEmpty()) {
+                    ePropGroup.seteNum(maxEnum + 1);
+                    entityBase.addNextChild(ePropGroupAsgEbase);
+                } else {
+                    Quant1 quant1 = new Quant1();
+                    quant1.seteNum(maxEnum + 1);
+                    quant1.setqType(QuantType.all);
+                    AsgEBase<Quant1> asgQuant1 = new AsgEBase<>(quant1);
+
+                    ePropGroup.seteNum(maxEnum + 2);
+
+                    asgQuant1.addNextChild(ePropGroupAsgEbase);
+                    new ArrayList<>(entityBase.getNext()).forEach(nextAsgEbase -> {
+                        entityBase.removeNextChild(nextAsgEbase);
+                        asgQuant1.addNextChild(nextAsgEbase);
+                    });
+                    entityBase.addNextChild(asgQuant1);
+                }
+            }
         });
 
     }

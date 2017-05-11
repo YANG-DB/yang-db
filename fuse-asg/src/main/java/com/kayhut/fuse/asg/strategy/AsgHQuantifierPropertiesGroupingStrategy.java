@@ -17,7 +17,7 @@ import java.util.*;
 public class AsgHQuantifierPropertiesGroupingStrategy implements AsgStrategy {
     // Horizontal Quantifier with Bs below
     @Override
-    public void apply(AsgQuery query) {
+    public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtils.getElements(query, HQuant.class).forEach(hQuant -> {
             for (AsgEBase<? extends EBase> asgEBase : new ArrayList<>(hQuant.getB())) {
 

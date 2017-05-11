@@ -1,30 +1,30 @@
 package com.kayhut.fuse.model.execution.plan;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.log.Trace;
+import javaslang.Tuple2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
 import static com.kayhut.fuse.model.Utils.pattern;
+import static com.kayhut.fuse.model.Utils.simplePattern;
 
 /**
  * Created by User on 22/02/2017.
  */
-public class Plan extends CompositePlanOpBase implements Trace<String>{
-    private Trace<String> trace = Trace.build();
+public class Plan extends CompositePlanOpBase implements Trace<String> {
+    private Trace<String> trace = Trace.build(Plan.class.getSimpleName());
 
     //region Constructors
     private Plan() {}
 
     public Plan(List<PlanOpBase> ops) {
-        this.ops = new ArrayList<>(ops);
+        super(ops);
     }
 
     public Plan(PlanOpBase...ops) {
-        this.ops = new ArrayList<>(Arrays.asList(ops));
+        super(ops);
     }
 
     @Override
@@ -42,20 +42,19 @@ public class Plan extends CompositePlanOpBase implements Trace<String>{
         return newPlan;
     }
 
-    public List<PlanOpBase> getOps() {
-        return this.ops;
-    }
     //endregion
 
-    //region Fields
-    private List<PlanOpBase> ops;
     //endregion
 
     public String toPattern() {
         return toPattern(this);
     }
 
-    public static String toPattern(Plan plan) {
+    public static String toSimplePattern(Plan plan) {
+        return simplePattern(plan.getOps());
+    }
+
+    public static String toPattern(CompositePlanOpBase plan) {
         return pattern(plan.getOps());
     }
 
@@ -74,16 +73,21 @@ public class Plan extends CompositePlanOpBase implements Trace<String>{
     }
 
     @Override
-    public List<String> getLogs(Level level) {
+    public List<Tuple2<String,String>> getLogs(Level level) {
         return trace.getLogs(level);
     }
 
+    @Override
+    public String who() {
+        return trace.who();
+    }
+
     public static boolean equals(Plan plan, Plan newPlan) {
-        return toPattern(newPlan).compareTo(toPattern(plan))==0;
+        return toSimplePattern(newPlan).compareTo(toSimplePattern(plan))==0;
     }
 
     public static String diff(Plan plan, Plan newPlan) {
-        return toPattern(newPlan).replace(toPattern(plan),"");
+        return toSimplePattern(newPlan).replace(toSimplePattern(plan),"");
     }
 
     @Override

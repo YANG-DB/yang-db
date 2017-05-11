@@ -139,10 +139,12 @@ public class AsgEBase<T extends EBase> {
 
     public void removeNextChild(AsgEBase<? extends EBase> asgEBase) {
         this.next.remove(asgEBase);
+        asgEBase.parent.remove(this);
     }
 
     public void removeBChild(AsgEBase<? extends EBase> asgEBase) {
         this.b.remove(asgEBase);
+        asgEBase.parent.remove(this);
     }
     //endregion
 

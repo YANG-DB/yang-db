@@ -127,6 +127,11 @@ public interface PlanMockUtils {
             return this;
         }
 
+        public PlanMockBuilder rel(int num,Rel.Direction direction) {
+            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num),direction));
+            return this;
+        }
+
         public PlanMockBuilder relFilter(int num) {
             plan = plan.withOp(new RelationFilterOp(getAsgEBaseByEnum(asgQuery, num)));
             return this;

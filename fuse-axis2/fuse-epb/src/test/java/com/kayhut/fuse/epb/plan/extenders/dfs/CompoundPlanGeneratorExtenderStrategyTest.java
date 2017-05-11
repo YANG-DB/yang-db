@@ -20,6 +20,20 @@ import static org.junit.Assert.assertEquals;
 public class CompoundPlanGeneratorExtenderStrategyTest {
 
     @Test
+    public void test_simpleQuery0seedPlan() {
+        AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
+
+        CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.empty(), asgQuery)).toJavaList();
+
+        assertEquals(extendedPlans.size(), 4);
+        PlanAssert.assertEquals(mock(asgQuery).entity(1).plan(), extendedPlans.get(0));
+        PlanAssert.assertEquals(mock(asgQuery).entity(3).entityFilter(9).plan(), extendedPlans.get(1));
+        PlanAssert.assertEquals(mock(asgQuery).entity(6).plan(), extendedPlans.get(2));
+        PlanAssert.assertEquals(mock(asgQuery).entity(8).plan(), extendedPlans.get(3));
+    }
+
+    @Test
     public void test_simpleQuery1seedPlan() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
 

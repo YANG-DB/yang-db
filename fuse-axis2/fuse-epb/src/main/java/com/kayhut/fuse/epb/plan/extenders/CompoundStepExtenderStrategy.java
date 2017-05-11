@@ -14,6 +14,8 @@ import java.util.Optional;
  * Created by liorp on 5/9/2017.
  * <p>
  * Compound (a special composite use case)
+ * * InitialPlanGeneratorExtensionStrategy ( empty plan extender)
+ *
  * * ancestorStrategy
  * * descendantStrategy
  * * chainStrategy
@@ -27,8 +29,10 @@ public class CompoundStepExtenderStrategy implements PlanExtensionStrategy<Plan,
     private StepAncestorAdjacentStrategy ancestorStrategy;
     private StepDescendantsAdjacentStrategy descendantStrategy;
     private ChainPlanExtensionStrategy chainStrategy;
+    private InitialPlanGeneratorExtensionStrategy seedStrategy;
 
     public CompoundStepExtenderStrategy() {
+        seedStrategy = new InitialPlanGeneratorExtensionStrategy();
         ancestorStrategy = new StepAncestorAdjacentStrategy();
         descendantStrategy = new StepDescendantsAdjacentStrategy();
         chainStrategy = new ChainPlanExtensionStrategy(new GotoExtensionStrategy(),
@@ -38,7 +42,7 @@ public class CompoundStepExtenderStrategy implements PlanExtensionStrategy<Plan,
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         if (!plan.isPresent()) {
-            return Collections.emptyList();
+            return seedStrategy.extendPlan(plan,query);
         }
 
         List<Plan> plans = new ArrayList<>();

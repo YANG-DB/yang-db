@@ -25,36 +25,29 @@ public class PlanUtilTest {
 
     @Test
     public void isFirst() throws Exception {
-        List<PlanOpBase> ops = planOf2.getOps();
         PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
         PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
-        PlanUtil planUtil = new PlanUtil();
-        assertTrue(planUtil.isFirst(ops,planOpBaseFirst));
-        assertFalse(planUtil.isFirst(ops,planOpBaseSecond));
+        assertTrue(PlanUtil.isFirst(planOf2, planOpBaseFirst));
+        assertFalse(PlanUtil.isFirst(planOf2, planOpBaseSecond));
     }
 
     @Test
     public void getNext() throws Exception {
-
-        List<PlanOpBase> ops = planOf2.getOps();
         PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
         PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
-        PlanUtil planUtil = new PlanUtil();
-        assertEquals(planOpBaseSecond,planUtil.getNext(ops, planOpBaseFirst).get());
-        assertNotEquals(planOpBaseFirst,planUtil.getNext(ops, planOpBaseSecond).get());
+        assertEquals(planOpBaseSecond, PlanUtil.getAdjacentNext(planOf2, planOpBaseFirst).get());
+        assertNotEquals(planOpBaseFirst, PlanUtil.getAdjacentNext(planOf2, planOpBaseSecond).get());
     }
 
     @Test
     public void getPrev() throws Exception {
-        List<PlanOpBase> ops = planOf2.getOps();
         PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
         PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
-        PlanUtil planUtil = new PlanUtil();
-        assertTrue(!planUtil.getPrev(ops,planOpBaseFirst).isPresent());
-        assertEquals(planOpBaseFirst,planUtil.getPrev(ops,planOpBaseSecond).get());
+        assertTrue(!PlanUtil.getAdjacentPrev(planOf2, planOpBaseFirst).isPresent());
+        assertEquals(planOpBaseFirst, PlanUtil.getAdjacentPrev(planOf2, planOpBaseSecond).get());
     }
 
 

@@ -18,7 +18,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     // Rel with RelProps e.g., Q190, Q10 on V1
     // AsgStrategy Implementation
     @Override
-    public void apply(AsgQuery query) {
+    public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtils.<Rel>getElements(query, Rel.class).forEach(relAsgEBase -> groupRelProps(query, relAsgEBase));
     }
     //endregion

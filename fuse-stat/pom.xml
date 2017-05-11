@@ -93,7 +93,6 @@
     </dependencies>
 
 
-
     <build>
         <finalName>fuse-stat</finalName>
         <plugins>
@@ -108,8 +107,6 @@
             </plugin>
         </plugins>
     </build>
-
-
 
 
 </project>
