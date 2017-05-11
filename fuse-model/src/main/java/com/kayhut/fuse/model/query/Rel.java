@@ -14,8 +14,17 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> {
         R,
         L,
         RL;
+    }
 
+    public Rel() {}
 
+    public Rel(int eNum, int rType, Direction dir, String wrapper, int next, int b) {
+        super(eNum);
+        this.rType = rType;
+        this.dir = dir;
+        this.wrapper = wrapper;
+        this.next = next;
+        this.b = b;
     }
 
     public int getrType() {
@@ -58,7 +67,12 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> {
         this.b = b;
     }
 
-   //region Fields
+    @Override
+    public Rel clone() {
+        return new Rel(geteNum(),getrType(),getDir(),getWrapper(),getNext(),getB());
+    }
+
+    //region Fields
     private int rType;
     private Direction dir;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
