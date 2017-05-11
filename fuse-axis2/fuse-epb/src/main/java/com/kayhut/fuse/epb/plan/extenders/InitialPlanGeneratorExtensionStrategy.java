@@ -7,15 +7,15 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+
+import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
 
 /**
  * Created by moti on 2/27/2017.
@@ -34,6 +34,7 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
                 Plan newPlan = new Plan(op);
                 if(epropGroup.isPresent()) {
                     newPlan = Plan.compose(newPlan,new EntityFilterOp(epropGroup.get()));
+                    newPlan.log("InitialPlanGeneratorExtensionStrategy:[empty->"+newPlan.getOps().size()+"]", Level.INFO);
                 }
                 plans.add(newPlan);
             });

@@ -11,7 +11,6 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.mockito.Mockito;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -112,12 +111,12 @@ public class StatisticsMockUtils {
         });
 
 
-        when(mock.getRedundantEdgeStatistics(any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
+        when(mock.getRedundantEdgeStatistics(any(),any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
             Rel rel = (Rel) invocationOnMock.getArguments()[0];
             //todo - implement smart
-            Typed etype = (Typed) invocationOnMock.getArguments()[1];
-            EPropGroup ePropGroup = (EPropGroup) invocationOnMock.getArguments()[2];
-            Direction dir = (Direction) invocationOnMock.getArguments()[3];
+            Typed etype = (Typed) invocationOnMock.getArguments()[2];
+            EPropGroup ePropGroup = (EPropGroup) invocationOnMock.getArguments()[3];
+            Direction dir = (Direction) invocationOnMock.getArguments()[4];
 
 
             long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(rel.getrType()).longValue();
@@ -125,7 +124,7 @@ public class StatisticsMockUtils {
         });
 
 
-        when(mock.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> 10);
+        when(mock.getGlobalSelectivity(any(), any(), any(), any())).thenAnswer(invocationOnMock -> 10);
 
         return mock;
     }

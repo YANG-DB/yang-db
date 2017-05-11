@@ -3,8 +3,6 @@ package com.kayhut.fuse.epb.plan.validation;
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.epb.plan.PlanValidator;
-import com.kayhut.fuse.epb.plan.validation.opValidator.AdjacentPlanOpValidator;
-import com.kayhut.fuse.epb.plan.validation.opValidator.CompositePlanOpValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -15,7 +13,9 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.logging.Level;
+
+import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 
 /**
  * Created by Roman on 04/05/2017.
@@ -138,6 +138,7 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
         );
 
+        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
     }
 
@@ -154,6 +155,7 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
         );
 
+        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
     }
 
@@ -168,8 +170,9 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get())
         );
-
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        boolean planValid = validator.isPlanValid(plan, asgQuery);
+        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
+        Assert.assertTrue(planValid);
     }
 
     @Test
@@ -186,7 +189,9 @@ public class M1PlanValidatorTests {
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        boolean planValid = validator.isPlanValid(plan, asgQuery);
+        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
+        Assert.assertTrue(planValid);
     }
 
     @Test
@@ -306,6 +311,23 @@ public class M1PlanValidatorTests {
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+    }
+
+    @Test
+    public void testValidPlanEntityOp_1_RelationOp_2_RelationFilterOp_10_EntityOp_3_EntityFilterOp_9_RelationOp_7_RelationFilterOp_11_EntityOp_8_GoToEntityOp_3_RelationOp_5_EntityOp_6() {
+        AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
+        Plan plan = mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).plan();
+        boolean planValid = validator.isPlanValid(plan, asgQuery);
+        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
+        Assert.assertTrue(planValid);
+    }
+    @Test
+    public void testValidPlanEntityOp_3_EntityFilterOp_9_RelationOp_7_RelationFilterOp_11_EntityOp_8_GoToEntityOp_3_RelationOp_5_EntityOp_6_GoToEntityOp_3_RelationOp_2_RelationFilterOp_10_EntityOp_1() {
+        AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
+        Plan plan = mock(asgQuery).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).goTo(3).rel(2,Rel.Direction.L).relFilter(10).entity(1).plan();
+        boolean planValid = validator.isPlanValid(plan, asgQuery);
+        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
+        Assert.assertTrue(planValid);
     }
 
     @Test

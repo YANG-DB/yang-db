@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.query.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.query.EBase;
 
 /**
@@ -9,7 +10,7 @@ import com.kayhut.fuse.model.query.EBase;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EAgg extends EBase {
+public class EAgg extends EBase implements Next<Integer> {
 
     public String geteTag() {
         return eTag;
@@ -35,11 +36,11 @@ public class EAgg extends EBase {
         this.eName = eName;
     }
 
-    public int getNext() {
+    public Integer getNext() {
         return next;
     }
 
-    public void setNext(int next) {
+    public void setNext(Integer next) {
         this.next = next;
     }
 
@@ -52,4 +53,28 @@ public class EAgg extends EBase {
     private	int	next;
     //endregion
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        EAgg eAgg = (EAgg) o;
+
+        if (next != eAgg.next) return false;
+        if (!eTag.equals(eAgg.eTag)) return false;
+        if (!fName.equals(eAgg.fName)) return false;
+        return eName.equals(eAgg.eName);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + eTag.hashCode();
+        result = 31 * result + fName.hashCode();
+        result = 31 * result + eName.hashCode();
+        result = 31 * result + next;
+        return result;
+    }
 }

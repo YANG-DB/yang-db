@@ -27,11 +27,11 @@ public class EUntyped extends EEntityBase {
         this.nvTypes = nvTypes;
     }
 
-    public int getNext() {
+    public Integer getNext() {
         return next;
     }
 
-    public void setNext(int next) {
+    public void setNext(Integer next) {
         this.next = next;
     }
 
@@ -42,4 +42,26 @@ public class EUntyped extends EEntityBase {
     private	int	next;
     //endregion
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        EUntyped eUntyped = (EUntyped) o;
+
+        if (next != eUntyped.next) return false;
+        if (vTypes != null ? !vTypes.equals(eUntyped.vTypes) : eUntyped.vTypes != null) return false;
+        return nvTypes != null ? nvTypes.equals(eUntyped.nvTypes) : eUntyped.nvTypes == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (vTypes != null ? vTypes.hashCode() : 0);
+        result = 31 * result + (nvTypes != null ? nvTypes.hashCode() : 0);
+        result = 31 * result + next;
+        return result;
+    }
 }

@@ -56,4 +56,12 @@ public class Constraint {
     private String iType;
     //endregion
 
+    public static Constraint of(ConstraintOp op,Object exp) {
+        Constraint constraint = new Constraint();
+        constraint.setExpr(exp);
+        constraint.setOp(op);
+        return constraint;
+    }
+
+
 }

@@ -105,8 +105,8 @@ public interface SimpleExtenderUtils {
     }
 
     static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAncestorUnmarkedOfType(Class<? extends EBase> type,
-                                                                                                    AsgEBase<T> asgEBase,
-                                                                                                    Set<Integer> markedElements) {
+                                                                                                  AsgEBase<T> asgEBase,
+                                                                                                  Set<Integer> markedElements) {
         return AsgQueryUtils.getAncestor(asgEBase,
                 (child) -> type.isAssignableFrom(child.geteBase().getClass()) &&
                         !markedElements.contains(child.geteNum()));
@@ -119,11 +119,11 @@ public interface SimpleExtenderUtils {
      * @param plan
      * @return
      */
-    static <T extends AsgEBasePlanOp<EEntityBase>> T getLastOpOfType(Plan plan,Class<T> clazz) {
+    static <T extends AsgEBasePlanOp<EEntityBase>> T getLastOpOfType(Plan plan, Class<T> clazz) {
         T lastEntityOp = null;
         for (int i = plan.getOps().size() - 1; i >= 0; i--) {
             PlanOpBase planOp = plan.getOps().get(i);
-            if (planOp.getClass().equals(clazz)) {
+            if (clazz.isAssignableFrom(planOp.getClass())) {
                 lastEntityOp = (T) planOp;
                 break;
             }
@@ -140,13 +140,15 @@ public interface SimpleExtenderUtils {
      */
     static <T extends EBase> Optional<AsgEBase<T>> getNextDescendantUnmarkedOfType(Plan plan, Class<T> type) {
         Set<Integer> markedElements = markEntitiesAndRelations(plan);
-        EntityOp lastEntityOp = getLastOpOfType(plan,EntityOp.class);
+        EntityOp lastEntityOp = getLastOpOfType(plan, EntityOp.class);
+        if(lastEntityOp==null)
+            return Optional.empty();
 
-        Optional<AsgEBase<T>> nextRelation = getNextDescendantUnmarkedOfType(type,lastEntityOp.getAsgEBase(), markedElements);
+        Optional<AsgEBase<T>> nextRelation = getNextDescendantUnmarkedOfType(type, lastEntityOp.getAsgEBase(), markedElements);
         if (!nextRelation.isPresent()) {
             Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtils.getAncestor(lastEntityOp.getAsgEBase(), EEntityBase.class);
             while (parentEntity.isPresent()) {
-                nextRelation = getNextDescendantUnmarkedOfType(type,parentEntity.get(), markedElements);
+                nextRelation = getNextDescendantUnmarkedOfType(type, parentEntity.get(), markedElements);
                 if (nextRelation.isPresent()) {
                     break;
                 }
@@ -157,6 +159,30 @@ public interface SimpleExtenderUtils {
 
         return nextRelation;
     }
+
+    /**
+     * get next Rel type element which was not visited already
+     *
+     * @param plan
+     * @return
+     */
+    static <T extends EBase> List<AsgEBase<T>> getNextDescendantsUnmarkedOfType(Plan plan, Class<T> type) {
+
+        EntityOp lastEntityOp = getLastOpOfType(plan, EntityOp.class);
+        if(lastEntityOp==null)
+            return Collections.emptyList();
+
+        return AsgQueryUtils.getNextDescendants(lastEntityOp.getAsgEBase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
+                p -> {
+                    if(p.equals(lastEntityOp.getAsgEBase()))
+                        return true;
+
+                    List path = AsgQueryUtils.getPathToAncestor(p, lastEntityOp.getAsgEBase().geteBase().geteNum());
+                    return !path.isEmpty() && path.size()<3;
+                });
+    }
+
+
     /**
      * get next Rel type element which was not visited already
      *
@@ -165,22 +191,19 @@ public interface SimpleExtenderUtils {
      */
     static <T extends EBase> Optional<AsgEBase<T>> getNextAncestorUnmarkedOfType(Plan plan, Class<T> type) {
         Set<Integer> markedElements = markEntitiesAndRelations(plan);
-        EntityOp lastEntityOp = getLastOpOfType(plan,EntityOp.class);
+        EntityOp lastEntityOp = getLastOpOfType(plan, EntityOp.class);
+        return getNextAncestorUnmarkedOfType(type, lastEntityOp.getAsgEBase(), markedElements);
+    }
 
-        Optional<AsgEBase<T>> nextRelation = getNextAncestorUnmarkedOfType(type,lastEntityOp.getAsgEBase(), markedElements);
-        if (!nextRelation.isPresent()) {
-            Optional<AsgEBase<EEntityBase>> childEntity = AsgQueryUtils.getNextDescendant(lastEntityOp.getAsgEBase(), EEntityBase.class);
-            while (childEntity.isPresent()) {
-                nextRelation = getNextAncestorUnmarkedOfType(type,childEntity.get(), markedElements);
-                if (nextRelation.isPresent()) {
-                    break;
-                }
-
-                childEntity = AsgQueryUtils.getNextDescendant(childEntity.get(), EEntityBase.class);
-            }
-        }
-
-        return nextRelation;
+    /**
+     * get next Rel type element which was not visited already
+     *
+     * @param plan
+     * @return
+     */
+    static <T extends EBase> Optional<AsgEBase<T>> getNextAncestorOfType(Plan plan, Class<T> type) {
+        EntityOp lastEntityOp = getLastOpOfType(plan, EntityOp.class);
+        return getNextAncestorUnmarkedOfType(type, lastEntityOp.getAsgEBase(), Collections.EMPTY_SET);
     }
 }
 

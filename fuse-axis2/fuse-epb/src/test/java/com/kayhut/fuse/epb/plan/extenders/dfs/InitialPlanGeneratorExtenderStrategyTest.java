@@ -49,6 +49,21 @@ public class InitialPlanGeneratorExtenderStrategyTest {
         assertEquals(extendedPlans.get(3).getOps().size(), 1);
     }
 
+    @Test
+    public void test_simpleQuery3_seedPlan() {
+        AsgQuery asgQuery = AsgQueryStore.simpleQuery3("name", "ont");
+        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorExtensionStrategy().extendPlan(Optional.empty(), asgQuery)).toJavaList();
+
+        assertEquals(extendedPlans.size(),6);
+
+        assertEquals(extendedPlans.get(0).getOps().size(), 1);
+        assertEquals(extendedPlans.get(1).getOps().size(), 2);
+        assertEquals(extendedPlans.get(2).getOps().size(), 1);
+        assertEquals(extendedPlans.get(3).getOps().size(), 1);
+        assertEquals(extendedPlans.get(4).getOps().size(), 1);
+        assertEquals(extendedPlans.get(5).getOps().size(), 1);
+    }
+
 
     //region Private Methods
     private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {

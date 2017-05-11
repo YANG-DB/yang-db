@@ -1,20 +1,12 @@
 package com.kayhut.fuse.unipop;
 
-import com.google.common.collect.Maps;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
 import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
 import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.IdPromise;
-import com.kayhut.fuse.unipop.promise.Promise;
-import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.structure.PromiseEdge;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -24,30 +16,23 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.matchers.Any;
 import org.unipop.query.predicates.PredicatesHolder;
-import org.unipop.query.search.SearchQuery;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -140,9 +125,9 @@ public class SearchPromiseVertexControllerTest {
         IndexPartition indexPartition = mock(IndexPartition.class);
         when(indexPartition.getIndices()).thenReturn(Arrays.asList("v1"));
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
-        when(edgeSchema.getIndexPartitions()).thenReturn(Arrays.asList(indexPartition));
+        when(edgeSchema.getIndexPartition()).thenReturn(indexPartition);
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
-        when(schemaProvider.getEdgeSchema(any(),any(),any())).thenReturn(Optional.of(edgeSchema));
+        when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
         SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, schemaProvider);
 

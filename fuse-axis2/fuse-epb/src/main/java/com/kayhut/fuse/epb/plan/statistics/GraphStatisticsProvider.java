@@ -1,10 +1,10 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 
 import java.util.List;
 
@@ -13,11 +13,17 @@ import java.util.List;
  */
 public interface GraphStatisticsProvider {
     Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema);
-    Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema, List<IndexPartition> relevantPartitions);
+    Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices);
+    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
+    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
 
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphVertexSchema graphVertexSchema,
-                                                                                      List<IndexPartition> relevantPartitions,
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphVertexSchema,
+                                                                                      List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       ConstraintOp constraintOp, T value);
 
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphEdgeSchema,
+                                                                                      List<String> relevantIndices,
+                                                                                      GraphElementPropertySchema graphElementPropertySchema,
+                                                                                      ConstraintOp constraintOp, List<T> values);
 }

@@ -78,17 +78,16 @@ public interface Statistics {
 
         public Optional<BucketInfo<T>> findBucketContaining(T value){
             BucketInfo<T> dummyInfo = new BucketInfo<T>(0L,0L,value, value);
-            int searchResult = Collections.binarySearch(buckets, dummyInfo, new Comparator<BucketInfo<T>>() {
-                @Override
-                public int compare(BucketInfo<T> o1, BucketInfo<T> o2) {
-                    if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
-                        return -1;
-                    if (o1.getLowerBound().compareTo(o2.getHigherBound()) > 0)
-                        return 1;
+            int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
+                if(o1.getLowerBound().equals(o2.getLowerBound()) && o1.getHigherBound().equals(o2.getHigherBound()))
                     return 0;
-                }
+                if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
+                    return -1;
+                if (o1.getLowerBound().compareTo(o2.getHigherBound()) >= 0)
+                    return 1;
+                return 0;
             });
-            if(searchResult != -1){
+            if(searchResult >= 0){
                 return Optional.of(buckets.get(searchResult));
             }
             return Optional.empty();
@@ -96,8 +95,14 @@ public interface Statistics {
 
         public List<BucketInfo<T>> findBucketsAbove(T value, boolean inclusive){
             int i = 0;
-            while(i < buckets.size() && ((buckets.get(i).getHigherBound().compareTo(value)<0 && inclusive) || (buckets.get(i).getHigherBound().compareTo(value)<=0 && !inclusive)) ){
+            BucketInfo<T> currentBucket = buckets.get(i);
+            while(i < buckets.size() && ((currentBucket.getHigherBound().compareTo(value)<=0  && !currentBucket.isSingleValue())||
+                                        (currentBucket.isSingleValue() &&
+                                                ((currentBucket.getHigherBound().compareTo(value) <= 0 && !inclusive)
+                                                || (currentBucket.getHigherBound().compareTo(value) < 0 && inclusive))))){
                 i++;
+                if(i<buckets.size())
+                    currentBucket = buckets.get(i);
             }
             return buckets.subList(i, buckets.size());
         }
@@ -158,6 +163,10 @@ public interface Statistics {
 
         public Cardinality getCardinalityObject(){
             return new Cardinality(total, cardinality);
+        }
+
+        public boolean isSingleValue(){
+            return this.lowerBound.equals(this.higherBound);
         }
 
         private T lowerBound;

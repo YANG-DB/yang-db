@@ -3,6 +3,7 @@ package com.kayhut.fuse.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import org.apache.commons.io.IOUtils;
 
@@ -77,6 +78,12 @@ public interface Utils {
     static String pattern(List<PlanOpBase> pattern) {
         StringJoiner sj = new StringJoiner(":", "", "");
         pattern.forEach(op -> sj.add(op.getClass().getSimpleName()));
+        return sj.toString();
+    }
+
+    static String simplePattern(List<PlanOpBase> pattern) {
+        StringJoiner sj = new StringJoiner(":", "[", "]");
+        pattern.forEach(op -> sj.add(Integer.toString(op.geteNum())));
         return sj.toString();
     }
 
