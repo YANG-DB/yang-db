@@ -42,6 +42,8 @@ public class StepAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery
         Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
         if (toEntityQuant.isPresent()) {
             toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
+        } else {
+            toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), EPropGroup.class);
         }
 
         Plan newPlan = plan.get();
