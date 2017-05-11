@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.Mockito.when;
@@ -60,10 +59,12 @@ public class RelationFilterOpTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOp()).thenAnswer(invocationOnMock -> plan.getOps().get(1));
 
-        RelationFilterOpTranslationStrategy relationFilterOpTranslationStrategy = new RelationFilterOpTranslationStrategy();
-        GraphTraversal actualTraversal = relationFilterOpTranslationStrategy.apply(context, __.start().has("willBeDeleted", "doesnt matter"));
+        RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
+        GraphTraversal actualTraversal = strategy.translate(
+                __.start().has("willBeDeleted", "doesnt matter"),
+                plan.getOps().get(1),
+                context);
 
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
@@ -105,10 +106,12 @@ public class RelationFilterOpTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOp()).thenAnswer(invocationOnMock -> plan.getOps().get(1));
 
-        RelationFilterOpTranslationStrategy relationFilterOpTranslationStrategy = new RelationFilterOpTranslationStrategy();
-        GraphTraversal actualTraversal = relationFilterOpTranslationStrategy.apply(context, __.start().has("willBeDeleted", "doesnt matter"));
+        RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
+        GraphTraversal actualTraversal = strategy.translate(
+                __.start().has("willBeDeleted", "doesnt matter"),
+                plan.getOps().get(1),
+                context);
 
         GraphTraversal expectedTraversal = __.start()
                 .has(GlobalConstants.HasKeys.CONSTRAINT,

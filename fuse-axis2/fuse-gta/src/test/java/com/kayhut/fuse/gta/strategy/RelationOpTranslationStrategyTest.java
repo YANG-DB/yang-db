@@ -2,22 +2,17 @@ package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
-import com.kayhut.fuse.gta.translation.PlanUtil;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
@@ -26,7 +21,6 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -68,10 +62,9 @@ public class RelationOpTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOp()).thenAnswer(invocationOnMock -> plan.getOps().get(1));
 
-        RelationOpTranslationStrategy relationOpTranslationStrategy = new RelationOpTranslationStrategy();
-        GraphTraversal actualTraversal = relationOpTranslationStrategy.apply(context, __.start());
+        RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
+        GraphTraversal actualTraversal = strategy.translate(__.start(), plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start().outE(GlobalConstants.Labels.PROMISE).as("A-->B")
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
@@ -115,10 +108,9 @@ public class RelationOpTranslationStrategyTest {
         TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
         when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
         when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
-        when(context.getPlanOp()).thenAnswer(invocationOnMock -> plan.getOps().get(1));
 
-        RelationOpTranslationStrategy relationOpTranslationStrategy = new RelationOpTranslationStrategy();
-        GraphTraversal actualTraversal = relationOpTranslationStrategy.apply(context, __.start());
+        RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
+        GraphTraversal actualTraversal = strategy.translate(__.start(), plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start().outE(GlobalConstants.Labels.PROMISE).as("B-->A")
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
