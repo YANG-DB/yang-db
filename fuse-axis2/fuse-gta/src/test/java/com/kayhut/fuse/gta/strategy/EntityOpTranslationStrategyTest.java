@@ -2,6 +2,7 @@ package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -35,7 +36,7 @@ public class EntityOpTranslationStrategyTest {
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 1).get())
         );
 
-        EntityOpTranslationStrategy entityOpTranslationStrategy = new EntityOpTranslationStrategy(new PromiseGraph());
+        EntityOpTranslationStrategy entityOpTranslationStrategy = new EntityOpTranslationStrategy();
 
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
@@ -47,11 +48,11 @@ public class EntityOpTranslationStrategyTest {
                 }
         );
 
-        TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
+        TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOntology()).thenReturn(ontology);
-        when(context.getPlan()).thenReturn(plan);
+        when(context.getGraphTraversalSource()).thenReturn(new PromiseGraph().traversal());
 
-        GraphTraversal actualTraversal = entityOpTranslationStrategy.translate(__.start(), plan.getOps().get(0), context);
+        GraphTraversal actualTraversal = entityOpTranslationStrategy.translate(__.start(), plan, plan.getOps().get(0), context);
         GraphTraversal expectedTraversal = __.start().V().as("A")
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")));
 
@@ -67,11 +68,10 @@ public class EntityOpTranslationStrategyTest {
                 new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 3).get())
         );
 
-        TranslationStrategyContext context = Mockito.mock(TranslationStrategyContext.class);
-        when(context.getPlan()).thenAnswer(invocationOnMock -> plan);
+        TranslationContext context = Mockito.mock(TranslationContext.class);
 
-        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(new PromiseGraph());
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan.getOps().get(2), context);
+        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy();
+        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(2), context);
         GraphTraversal expectedTraversal = __.start().otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);

@@ -9,10 +9,10 @@ import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
 import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
-import com.kayhut.fuse.gta.translation.PlanTranslator;
+import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
@@ -31,12 +31,14 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
     public GtaTraversalCursorProcessor(
             EventBus eventBus,
             OntologyProvider provider,
-            PlanTranslator planTranslator,
-            CursorFactory cursorFactory) {
+            PlanTraversalTranslator planTraversalTranslator,
+            CursorFactory cursorFactory,
+            UniGraphProvider uniGraphProvider) {
         this.eventBus = eventBus;
         this.provider = provider;
-        this.planTranslator = planTranslator;
+        this.planTraversalTranslator = planTraversalTranslator;
         this.cursorFactory = cursorFactory;
+        this.uniGraphProvider = uniGraphProvider;
         this.eventBus.register(this);
     }
     //endregion
@@ -44,21 +46,18 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
     //region CursorCreationOperationContext.Processor implementation
     @Override
     @Subscribe
-    public CursorCreationOperationContext process(CursorCreationOperationContext context) {
+    public CursorCreationOperationContext process(CursorCreationOperationContext context) throws Exception {
         if (context.getCursor() != null) {
             return context;
         }
+
         //execute gta plan ==> traversal extraction
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
 
-        Traversal<Element, Path> traversal = null;
-        try {
-            traversal = this.planTranslator.translate(executionPlan.getPlan(), ontology);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+        Traversal<Element, Path> traversal  = this.planTraversalTranslator.translate(
+                executionPlan.getPlan(),
+                new TranslationContext(ontology, uniGraphProvider.getGraph(ontology).traversal()));
 
         //submit
         Cursor cursor = this.cursorFactory.createCursor(new TraversalCursorFactory.TraversalCursorContext(ontology, context.getQueryResource(), traversal));
@@ -70,7 +69,8 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
     //region Fields
     private final EventBus eventBus;
     private OntologyProvider provider;
-    private PlanTranslator planTranslator;
+    private PlanTraversalTranslator planTraversalTranslator;
     private CursorFactory cursorFactory;
+    private UniGraphProvider uniGraphProvider;
     //endregion
 }

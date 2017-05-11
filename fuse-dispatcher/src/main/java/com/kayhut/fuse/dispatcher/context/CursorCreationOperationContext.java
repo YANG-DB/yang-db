@@ -9,7 +9,7 @@ import com.kayhut.fuse.model.transport.CreateCursorRequest;
  */
 public class CursorCreationOperationContext extends OperationContextBase<CursorCreationOperationContext> {
     public interface Processor {
-        CursorCreationOperationContext process(CursorCreationOperationContext context);
+        CursorCreationOperationContext process(CursorCreationOperationContext context) throws Exception;
     }
 
     //region Constructors
