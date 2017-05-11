@@ -63,5 +63,12 @@ public class Constraint {
         return constraint;
     }
 
+    public static Constraint of(ConstraintOp op,Object exp, String iType) {
+        Constraint constraint = new Constraint();
+        constraint.setExpr(exp);
+        constraint.setOp(op);
+        constraint.setiType(iType);
+        return constraint;
+    }
 
 }
