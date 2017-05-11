@@ -42,6 +42,15 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
                 "(?<" + AND_MODE_ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + AND_MODE_OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
         private String pattern;
+        private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
+
+        static {
+            compiledPatterns = new HashMap<>();
+            for(StatisticsCostEstimatorPatterns pattern : StatisticsCostEstimatorPatterns.values()){
+                Pattern compile = Pattern.compile(pattern.pattern());
+                compiledPatterns.put(pattern, compile);
+            }
+        }
 
         StatisticsCostEstimatorPatterns(String pattern) {
             this.pattern = pattern;
@@ -49,6 +58,10 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         public String pattern() {
             return pattern;
+        }
+
+        public Pattern getCompiledPattern(){
+            return compiledPatterns.get(this);
         }
     }
 
@@ -102,7 +115,8 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         String opsString = pattern(step);
         StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
         for (StatisticsCostEstimatorPatterns pattern : supportedPattern) {
-            Pattern compile = Pattern.compile(pattern.pattern());
+            //Pattern compile = Pattern.compile(pattern.pattern());
+            Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
                 Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
