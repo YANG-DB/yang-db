@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 
 import java.util.List;
@@ -16,12 +17,13 @@ public interface GraphStatisticsProvider {
     Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
     Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
 
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphVertexSchema graphVertexSchema,
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphVertexSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       ConstraintOp constraintOp, T value);
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphEdgeSchema graphEdgeSchema,
+
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphEdgeSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
-                                                                                      ConstraintOp constraintOp, T value);
+                                                                                      ConstraintOp constraintOp, List<T> values);
 }

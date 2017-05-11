@@ -79,6 +79,8 @@ public interface Statistics {
         public Optional<BucketInfo<T>> findBucketContaining(T value){
             BucketInfo<T> dummyInfo = new BucketInfo<T>(0L,0L,value, value);
             int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
+                if(o1.getLowerBound().equals(o2.getLowerBound()) && o1.getHigherBound().equals(o2.getHigherBound()))
+                    return 0;
                 if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
                     return -1;
                 if (o1.getLowerBound().compareTo(o2.getHigherBound()) >= 0)
@@ -93,8 +95,14 @@ public interface Statistics {
 
         public List<BucketInfo<T>> findBucketsAbove(T value, boolean inclusive){
             int i = 0;
-            while(i < buckets.size() && buckets.get(i).getHigherBound().compareTo(value)<=0 ){
+            BucketInfo<T> currentBucket = buckets.get(i);
+            while(i < buckets.size() && ((currentBucket.getHigherBound().compareTo(value)<=0  && !currentBucket.isSingleValue())||
+                                        (currentBucket.isSingleValue() &&
+                                                ((currentBucket.getHigherBound().compareTo(value) <= 0 && !inclusive)
+                                                || (currentBucket.getHigherBound().compareTo(value) < 0 && inclusive))))){
                 i++;
+                if(i<buckets.size())
+                    currentBucket = buckets.get(i);
             }
             return buckets.subList(i, buckets.size());
         }
@@ -155,6 +163,10 @@ public interface Statistics {
 
         public Cardinality getCardinalityObject(){
             return new Cardinality(total, cardinality);
+        }
+
+        public boolean isSingleValue(){
+            return this.lowerBound.equals(this.higherBound);
         }
 
         private T lowerBound;

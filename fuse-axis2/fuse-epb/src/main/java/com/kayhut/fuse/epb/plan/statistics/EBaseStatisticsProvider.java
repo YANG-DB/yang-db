@@ -14,16 +14,12 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.asg.util.AsgQueryUtils.getVertexTypes;
 
@@ -34,6 +30,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private Ontology ontology;
     private GraphStatisticsProvider graphStatisticsProvider;
+
+    // Supported operators by the cost estimator, used for validation
     private static Set<ConstraintOp> supportedOps = new HashSet<>();
 
     static {
@@ -43,6 +41,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         supportedOps.add(ConstraintOp.le);
         supportedOps.add(ConstraintOp.lt);
         supportedOps.add(ConstraintOp.ne);
+        supportedOps.add(ConstraintOp.inSet);
+        supportedOps.add(ConstraintOp.notInSet);
+        supportedOps.add(ConstraintOp.inRange);
+        supportedOps.add(ConstraintOp.startsWith);
+        supportedOps.add(ConstraintOp.notStartsWith);
     }
 
     public EBaseStatisticsProvider(GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology, GraphStatisticsProvider graphStatisticsProvider) {
@@ -53,11 +56,13 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.Cardinality getNodeStatistics(EEntityBase entity) {
+        // EConcrete == single entity, no querying, assuming the entity exists
         if (entity instanceof EConcrete) {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
             return bucketInfos.get(0).getCardinalityObject();
         }
 
+        // We estimate each vertex type's statistics, and combine all statistics together
         List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
         Statistics.Cardinality entityStats = getVertexStatistics(vertexTypes.get(0));
 
@@ -68,7 +73,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return entityStats;
 
     }
-
 
     @Override
     public Statistics.Cardinality getNodeFilterStatistics(EEntityBase entity, EPropGroup entityFilter) {
@@ -96,45 +100,70 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     @Override
     public Statistics.Cardinality getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
-        IndexPartition indexPartition = graphEdgeSchema.getIndexPartition();
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
-        if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition) indexPartition ,relFilter);
-        }
+        List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
+        Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
 
-        Statistics.Cardinality minVertexCardinality = null;
         for(RelProp relProp : relFilter.getrProps()){
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( relProp.getpType())).get();
             GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
-            if(minVertexCardinality == null){
-                if(conditionCardinality.isPresent())
-                    minVertexCardinality = conditionCardinality.get();
-                else{
-                    minVertexCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
-                }
-            }
-            else{
-                if(conditionCardinality.isPresent() &&  minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
-                    minVertexCardinality = conditionCardinality.get();
+            if(conditionCardinality.isPresent() &&  minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
+                minEdgeCardinality = conditionCardinality.get();
+
+        }
+        return minEdgeCardinality;
+    }
+
+    @Override
+    public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup, EBase entity, EPropGroup entityFilter, Direction direction) {
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
+        List<String> relevantIndices = getRelevantIndicesForEdge(relPropGroup, graphEdgeSchema);
+
+        Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
+        GraphEdgeSchema.End destination = graphEdgeSchema.getDestination().get();
+        for(EProp eProp : entityFilter.geteProps()){
+            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
+            Optional<GraphRedundantPropertySchema> redundantVertexProperty = destination.getRedundantVertexProperty(property.getName());
+            if(redundantVertexProperty.isPresent()) {
+                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, redundantVertexProperty.get(), eProp.getCon(), relevantIndices, property.getType());
+                if (conditionCardinality.isPresent() && minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
+                    minEdgeCardinality = conditionCardinality.get();
+
             }
         }
-        return minVertexCardinality;
+        return minEdgeCardinality;
+
     }
 
     @Override
-    public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
-        return null;
-    }
+    public Statistics.Cardinality getRedundantNodeStatistics(Rel rel, EEntityBase entity, EPropGroup entityFilter, Direction direction) {
+        if (entity instanceof EConcrete) {
+            List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
+            return bucketInfos.get(0).getCardinalityObject();
+        }
+        List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
 
-    @Override
-    public Statistics.Cardinality getRedundantNodeStatistics(Rel rel, EBase entity, EPropGroup entityFilter, Direction direction) {
-        return null;
+        Statistics.Cardinality entityStats = estimateVertexRedundantPropertyGroup(vertexTypes.get(0),entityFilter,rel);
+
+        for (int i = 1; i < vertexTypes.size(); i++) {
+            entityStats = (Statistics.Cardinality) entityStats.merge( estimateVertexRedundantPropertyGroup(vertexTypes.get(i), entityFilter,rel));
+        }
+
+        return entityStats;
     }
 
     @Override
     public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
         return 0;
+    }
+
+    private List<String> getRelevantIndicesForEdge(RelPropGroup relPropGroup, GraphEdgeSchema graphEdgeSchema) {
+        IndexPartition indexPartition = graphEdgeSchema.getIndexPartition();
+        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
+        if(indexPartition instanceof TimeSeriesIndexPartition){
+            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition) indexPartition ,relPropGroup);
+        }
+        return relevantIndices;
     }
 
     private Statistics.Cardinality getEdgeStatistics(GraphEdgeSchema edgeSchema) {
@@ -156,37 +185,54 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     private Statistics.Cardinality estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
         GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
-        IndexPartition indexPartition = graphVertexSchema.getIndexPartition();
-        List<String> relevantPartitions = Lists.newArrayList(indexPartition.getIndices());
-        if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantPartitions = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition)indexPartition, entityFilter);
-        }
+        List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
-        Statistics.Cardinality minVertexCardinality = null;
+        Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
         for(EProp eProp : entityFilter.geteProps()){
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
+                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
+                if (conditionCardinality.isPresent() && minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
+                    minVertexCardinality = conditionCardinality.get();
 
-                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantPartitions, property.getType());
-                if (minVertexCardinality == null) {
-                    if (conditionCardinality.isPresent())
-                        minVertexCardinality = conditionCardinality.get();
-                    else {
-                        minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantPartitions);
-                    }
-                } else {
-                    if (conditionCardinality.isPresent() && minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
-                        minVertexCardinality = conditionCardinality.get();
-                }
             }else{
                 // If a property does not exist on the vertex, we return 0 cardinality (again, assuming AND behavior)
                 return new Statistics.Cardinality(0,0);
             }
         }
         return minVertexCardinality;
+    }
+
+    private Statistics.Cardinality estimateVertexRedundantPropertyGroup(String vertexType, EPropGroup entityFilter, Rel rel) {
+        GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
+        List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
+
+        // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
+        // When we add an OR condition (and a complex condition tree), we need to take a different approach
+        Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
+        for(EProp eProp : entityFilter.geteProps()){
+            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
+            Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
+            if(graphElementPropertySchema.isPresent() && graphEdgeSchema.getDestination().get().getRedundantVertexProperty(graphElementPropertySchema.get().getName()).isPresent()) {
+                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
+                if (conditionCardinality.isPresent() && minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
+                    minVertexCardinality = conditionCardinality.get();
+            }
+        }
+        return minVertexCardinality == null ? new Statistics.Cardinality(0,0): minVertexCardinality;
+    }
+
+    private List<String> getVertexRelevantIndices(EPropGroup entityFilter, GraphVertexSchema graphVertexSchema) {
+        IndexPartition indexPartition = graphVertexSchema.getIndexPartition();
+        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
+        if(indexPartition instanceof TimeSeriesIndexPartition){
+            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition)indexPartition, entityFilter);
+        }
+        return relevantIndices;
     }
 
     private Optional<Statistics.Cardinality> getConditionCardinality(GraphVertexSchema graphVertexSchema,
@@ -235,57 +281,122 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphVertexSchema graphVertexSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
-        if(tp.isInstance(expression)){
+    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
+        Statistics.HistogramStatistics<T> histogramStatistics = null;
+        if(tp.isInstance(expression) ){
             T expr = (T) expression;
-            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphVertexSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
-            return Optional.of(estimateCardinality(histogramStatistics, expr, constraintOp));
+            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
+        }
+        else if (expression instanceof List)
+        {
+            List<T> values = (List<T>) expression;
+            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, values);
+        }
+        if(histogramStatistics != null) {
+            return Optional.of(estimateCardinality(histogramStatistics, expression, constraintOp));
         }
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphEdgeSchema graphEdgeSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
-        if(tp.isInstance(expression)){
-            T expr = (T) expression;
-
-            Statistics.HistogramStatistics<T> histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphEdgeSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
-            return Optional.of(estimateCardinality(histogramStatistics, expr, constraintOp));
-        }
-        return Optional.empty();
-    }
-
-    private <T extends Comparable<T>> Statistics.Cardinality estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, T value, ConstraintOp constraintOp){
+    private <T extends Comparable<T>> Statistics.Cardinality estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, Object value, ConstraintOp constraintOp){
         Statistics.Cardinality cardinality = null;
         switch(constraintOp){
             case eq:
-                Optional<Statistics.BucketInfo<T>> bucketContaining = histogramStatistics.findBucketContaining(value);
-                cardinality = bucketContaining.map(tBucketInfo -> new Statistics.Cardinality(tBucketInfo.getTotal() / tBucketInfo.getCardinality(), 1)).
+                Optional<Statistics.BucketInfo<T>> bucketContaining = histogramStatistics.findBucketContaining((T)value);
+                cardinality = bucketContaining.map(tBucketInfo -> new Statistics.Cardinality(((double)tBucketInfo.getTotal()) / tBucketInfo.getCardinality(), 1)).
                         orElseGet(() -> new Statistics.Cardinality(0, 0));
                 break;
             case gt:
-                List<Statistics.BucketInfo<T>> bucketsAbove = histogramStatistics.findBucketsAbove(value, false);
-                return estimateGreaterThan(bucketsAbove, value, false);
+                List<Statistics.BucketInfo<T>> bucketsAbove = histogramStatistics.findBucketsAbove((T)value, false);
+                return estimateGreaterThan(bucketsAbove, (T)value, false);
             case ge:
-                bucketsAbove = histogramStatistics.findBucketsAbove(value, true);
-                return estimateGreaterThan(bucketsAbove, value, true);
+                bucketsAbove = histogramStatistics.findBucketsAbove((T)value, true);
+                return estimateGreaterThan(bucketsAbove, (T)value, true);
             case lt:
-                List<Statistics.BucketInfo<T>> bucketsBelow = histogramStatistics.findBucketsBelow(value, false);
-                return estimateLessThan(bucketsBelow, value, false);
+                List<Statistics.BucketInfo<T>> bucketsBelow = histogramStatistics.findBucketsBelow((T)value, false);
+                return estimateLessThan(bucketsBelow, (T)value, false);
             case le:
-                bucketsBelow = histogramStatistics.findBucketsBelow(value, true);
-                return estimateLessThan(bucketsBelow, value, true);
+                bucketsBelow = histogramStatistics.findBucketsBelow((T)value, true);
+                return estimateLessThan(bucketsBelow, (T)value, true);
             case ne:
                 // Pessimistic estimate that a not equals condition is almost the same as the entire distribution
                 // given that we throw a single value
                 return mergeBucketsCardinality(histogramStatistics.getBuckets());
+            case inSet:
+                List<T> valueList = (List<T>) value;
+                double total = 0;
+                double count = 0;
+                for(T v : valueList){
+                    bucketContaining = histogramStatistics.findBucketContaining((T)v);
+                    total += ((double)bucketContaining.get().getTotal()) / bucketContaining.get().getCardinality();
+                    count += 1;
+                }
+                return new Statistics.Cardinality(total,count);
+            case notInSet:
+                return mergeBucketsCardinality(histogramStatistics.getBuckets());
+            case inRange:
+                valueList = (List<T>) value;
+                bucketsAbove = histogramStatistics.findBucketsAbove(valueList.get(0), true);
+                bucketsBelow = histogramStatistics.findBucketsBelow(valueList.get(1), true);
+                return estimateRange(bucketsAbove, bucketsBelow, valueList);
+            case startsWith:
+                String stringValue = (String) value;
+                List<Statistics.BucketInfo<String>> startsWithBuckets = findStartsWithBuckets(stringValue, (Statistics.HistogramStatistics<String>) histogramStatistics);
+                return mergeBucketsCardinality(startsWithBuckets);
+            case notStartsWith:
+                break;
 
         }
         return cardinality;
     }
 
+    private List<Statistics.BucketInfo<String>> findStartsWithBuckets(String stringValue, Statistics.HistogramStatistics<String> histogramStatistics) {
+        List<Statistics.BucketInfo<String>> startsWithBuckets = new ArrayList<>();
+        int i = 0;
+        for(;i<histogramStatistics.getBuckets().size();i++){
+            Statistics.BucketInfo<String> currentBucket = histogramStatistics.getBuckets().get(i);
+            if(currentBucket.getLowerBound().compareTo(stringValue) <= 0 ){
+                if(currentBucket.getHigherBound().compareTo(stringValue) > 0) {
+                    startsWithBuckets.add(currentBucket);
+                    break;
+                }
+                if(currentBucket.getLowerBound().equals(currentBucket.getHigherBound()) && currentBucket.getLowerBound().equals(stringValue)){
+                    startsWithBuckets.add(currentBucket);
+                    break;
+                }
+            }
+
+            if(currentBucket.getLowerBound().compareTo(stringValue) > 0){
+                if(currentBucket.getLowerBound().startsWith(stringValue)){
+                    startsWithBuckets.add(currentBucket);
+                }
+                break;
+            }
+        }
+
+        for(i++;i<histogramStatistics.getBuckets().size();i++){
+            Statistics.BucketInfo<String> currentBucket = histogramStatistics.getBuckets().get(i);
+            if(currentBucket.getLowerBound().startsWith(stringValue))
+                startsWithBuckets.add(currentBucket);
+            else
+                break;
+        }
+
+        return startsWithBuckets;
+    }
+
+    private <T extends Comparable<T>> Statistics.Cardinality estimateRange(List<Statistics.BucketInfo<T>> bucketsAbove, List<Statistics.BucketInfo<T>> bucketsBelow, List<T> valueList) {
+        List<Statistics.BucketInfo<T>> joinedBuckets = new LinkedList<>(bucketsAbove);
+        joinedBuckets.retainAll(bucketsBelow);
+        return mergeBucketsCardinality(joinedBuckets);
+    }
+
     // Currently lt and lte have the same costs
     // Also, in case we have a non numeric/date value, we take a pessimistic estimate of the bucket containing the given value (entire bucket, not relative part)
     private <T extends Comparable<T>> Statistics.Cardinality estimateLessThan(List<Statistics.BucketInfo<T>> bucketsBelow, T value, boolean inclusive) {
+        if(bucketsBelow.size() == 0)
+            return new Statistics.Cardinality(0,0);
+
         Statistics.BucketInfo<T> lastBucket = Iterables.getLast(bucketsBelow);
         if(lastBucket.isValueInRange(value)){
             double partialBucket = 1.0;
@@ -315,6 +426,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private <T extends Comparable<T>> Statistics.Cardinality estimateGreaterThan(List<Statistics.BucketInfo<T>> bucketsAbove, T value, boolean inclusive) {
+        if (bucketsAbove.size() == 0)
+            return new Statistics.Cardinality(0,0);
         Statistics.BucketInfo<T> firstBucket = bucketsAbove.get(0);
         if(firstBucket.isValueInRange(value)){
             double partialBucket = 1.0;
@@ -369,7 +482,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition,RelPropGroup relPropGroup) {
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getrProps()){
-
             if(OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType())).get().getName().equals(indexPartition.getTimeField())){
                 timeConditions.add(relProp);
                 break;
