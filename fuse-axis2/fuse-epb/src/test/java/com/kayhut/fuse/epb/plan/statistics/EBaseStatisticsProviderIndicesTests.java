@@ -123,6 +123,19 @@ public class EBaseStatisticsProviderIndicesTests {
             return new Statistics.HistogramStatistics<>(buckets);
         });
 
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),isA(List.class))).thenAnswer(invocationOnMock -> {
+            List<String> providedIndices = (List<String>) invocationOnMock.getArgumentAt(1, List.class );
+            List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
+            if(providedIndices.contains(indices.get(0))){
+                buckets.addAll(firstDateBuckets);
+            }
+
+            if(providedIndices.contains(indices.get(1))){
+                buckets.addAll(secondDateBuckets);
+            }
+            return new Statistics.HistogramStatistics<>(buckets);
+        });
+
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),isA(String.class))).thenAnswer(invocationOnMock -> {
             List<String> providedIndices = (List<String>) invocationOnMock.getArgumentAt(1, List.class );
 
@@ -171,6 +184,28 @@ public class EBaseStatisticsProviderIndicesTests {
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(250, nodeStatistics.getTotal(), 0.1);
     }
+
+    @Test
+    public void eRelDateRangeFilterSingleIndexHistogramTest() {
+        Rel rel = new Rel();
+        rel.setrType(2);
+        RelPropGroup relFilter = new RelPropGroup();
+
+        RelProp prop = new RelProp();
+        prop.setpType("8");
+        Constraint constraint = new Constraint();
+        constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
+        constraint.setOp(ConstraintOp.inRange);
+        constraint.setiType("[]");
+        prop.setCon(constraint);
+        relFilter.setrProps(Collections.singletonList(prop));
+
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(500/120d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10/120d, nodeStatistics.getCardinality(), 0.1);
+    }
+
 
     @Test
     public void eRelStringGtFilterHistogramTest() {

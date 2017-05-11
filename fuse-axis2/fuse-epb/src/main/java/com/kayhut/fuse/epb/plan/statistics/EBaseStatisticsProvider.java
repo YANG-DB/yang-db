@@ -338,16 +338,27 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 valueList = (List<T>) value;
                 bucketsAbove = histogramStatistics.findBucketsAbove(valueList.get(0), constraint.getiType().startsWith("["));
                 bucketsBelow = histogramStatistics.findBucketsBelow(valueList.get(1), constraint.getiType().endsWith("]"));
-                return estimateRange(bucketsAbove, bucketsBelow, valueList);
+                return estimateRange(bucketsAbove, bucketsBelow, valueList, constraint.getiType());
             case startsWith:
                 String stringValue = (String) value;
                 List<Statistics.BucketInfo<String>> startsWithBuckets = findStartsWithBuckets(stringValue, (Statistics.HistogramStatistics<String>) histogramStatistics);
                 return mergeBucketsCardinality(startsWithBuckets);
             case notStartsWith:
-                break;
-
+                stringValue = (String) value;
+                List<Statistics.BucketInfo<String>> notStartsWithBuckets = findNotStartsWithBuckets(stringValue, (Statistics.HistogramStatistics<String>) histogramStatistics);
+                return mergeBucketsCardinality(notStartsWithBuckets);
         }
         return cardinality;
+    }
+
+    private List<Statistics.BucketInfo<String>> findNotStartsWithBuckets(String stringValue, Statistics.HistogramStatistics<String> histogramStatistics) {
+        List<Statistics.BucketInfo<String>> notStartsWithBuckets = new ArrayList<>();
+        for(Statistics.BucketInfo<String> bucket : histogramStatistics.getBuckets()){
+            if(!bucket.isValueInRange(stringValue) && !bucket.getLowerBound().startsWith(stringValue)){
+                notStartsWithBuckets.add(bucket);
+            }
+        }
+        return notStartsWithBuckets;
     }
 
     private List<Statistics.BucketInfo<String>> findStartsWithBuckets(String stringValue, Statistics.HistogramStatistics<String> histogramStatistics) {
@@ -385,9 +396,16 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return startsWithBuckets;
     }
 
-    private <T extends Comparable<T>> Statistics.Cardinality estimateRange(List<Statistics.BucketInfo<T>> bucketsAbove, List<Statistics.BucketInfo<T>> bucketsBelow, List<T> valueList) {
+    private <T extends Comparable<T>> Statistics.Cardinality estimateRange(List<Statistics.BucketInfo<T>> bucketsAbove, List<Statistics.BucketInfo<T>> bucketsBelow, List<T> valueList, String iType) {
         List<Statistics.BucketInfo<T>> joinedBuckets = new LinkedList<>(bucketsAbove);
         joinedBuckets.retainAll(bucketsBelow);
+        if(joinedBuckets.size() > 0){
+            Statistics.Cardinality cardinality = estimateGreaterThan(joinedBuckets, valueList.get(0), iType.startsWith("["));
+            Statistics.Cardinality greaterCardinality = estimateLessThan(joinedBuckets.subList(joinedBuckets.size() - 1, joinedBuckets.size()), valueList.get(1), iType.endsWith("]"));
+            Statistics.BucketInfo<T> last = Iterables.getLast(joinedBuckets);
+            return new Statistics.Cardinality(cardinality.getTotal() + greaterCardinality.getTotal() - last.getTotal(),  cardinality.getCardinality() + greaterCardinality.getCardinality() - last.getCardinality());
+
+        }
         return mergeBucketsCardinality(joinedBuckets);
     }
 
@@ -462,7 +480,13 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt(eProp.getpType())).get();
             if(property.getName().equals(indexPartition.getTimeField())){
-                timeConditions.add(eProp);
+                if(eProp.getCon().getOp().equals(ConstraintOp.inRange)){
+                    List<Date> values = (List<Date>)eProp.getCon().getExpr();
+                    timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
+                    timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
+                }else {
+                    timeConditions.add(eProp);
+                }
             }
         }
 
@@ -483,8 +507,14 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getrProps()){
             if(OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType())).get().getName().equals(indexPartition.getTimeField())){
-                timeConditions.add(relProp);
-                break;
+
+                if(relProp.getCon().getOp().equals(ConstraintOp.inRange)){
+                    List<Date> values = (List<Date>)relProp.getCon().getExpr();
+                    timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
+                    timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
+                }else {
+                    timeConditions.add(relProp);
+                }
             }
         }
 
