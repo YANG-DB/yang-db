@@ -394,6 +394,9 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     // Currently lt and lte have the same costs
     // Also, in case we have a non numeric/date value, we take a pessimistic estimate of the bucket containing the given value (entire bucket, not relative part)
     private <T extends Comparable<T>> Statistics.Cardinality estimateLessThan(List<Statistics.BucketInfo<T>> bucketsBelow, T value, boolean inclusive) {
+        if(bucketsBelow.size() == 0)
+            return new Statistics.Cardinality(0,0);
+
         Statistics.BucketInfo<T> lastBucket = Iterables.getLast(bucketsBelow);
         if(lastBucket.isValueInRange(value)){
             double partialBucket = 1.0;
@@ -423,6 +426,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private <T extends Comparable<T>> Statistics.Cardinality estimateGreaterThan(List<Statistics.BucketInfo<T>> bucketsAbove, T value, boolean inclusive) {
+        if (bucketsAbove.size() == 0)
+            return new Statistics.Cardinality(0,0);
         Statistics.BucketInfo<T> firstBucket = bucketsAbove.get(0);
         if(firstBucket.isValueInRange(value)){
             double partialBucket = 1.0;
