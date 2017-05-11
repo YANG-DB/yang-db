@@ -541,6 +541,87 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
+    public void eTypedStringLeSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.le);
+        con.setExpr("edf");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringLtSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.lt);
+        con.setExpr("edf");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringGtSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.gt);
+        con.setExpr("edf");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
+    }
+
+
+    @Test
     public void eTypedStringRangeTest(){
         List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
@@ -683,7 +764,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -702,5 +783,4 @@ public class EBaseStatisticsProviderBasicTests {
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
     }
-
 }

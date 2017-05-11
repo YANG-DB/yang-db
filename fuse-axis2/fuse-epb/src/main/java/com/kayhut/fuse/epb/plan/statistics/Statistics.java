@@ -109,8 +109,11 @@ public interface Statistics {
 
         public List<BucketInfo<T>> findBucketsBelow(T value, boolean inclusive){
             int i = buckets.size()-1;
-            while(i >=0 && ((buckets.get(i).getLowerBound().compareTo(value) > 0 && inclusive) || (buckets.get(i).getLowerBound().compareTo(value) >= 0 && !inclusive))){
+            BucketInfo<T> currentBucket = buckets.get(i);
+            while(i >=0 && ((currentBucket.getLowerBound().compareTo(value) > 0 && inclusive) || (currentBucket.getLowerBound().compareTo(value) >= 0 && !inclusive))){
                 i--;
+                if(i >= 0)
+                    currentBucket = buckets.get(i);
             }
             return buckets.subList(0, i+1);
         }
@@ -152,6 +155,8 @@ public interface Statistics {
 
         //lower bound - inclusive, higher bound - non-inclusive
         public boolean isValueInRange(T value) {
+            if(isSingleValue() && lowerBound.equals(value))
+                return true;
             if (higherBound != null && value.compareTo(higherBound) >= 0) {
                 return false;
             }
