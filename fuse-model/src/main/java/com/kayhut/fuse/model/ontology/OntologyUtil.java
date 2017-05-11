@@ -39,7 +39,7 @@ public class OntologyUtil {
         return entityTypeName;
     }
 
-   public static String getRelationTypeNameById(Ontology ontology, int rTypeId){
+    public static String getRelationTypeNameById(Ontology ontology, int rTypeId){
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()
                 .filter(relationshipType-> relationshipType.getrType() == rTypeId)
                 .findFirst();

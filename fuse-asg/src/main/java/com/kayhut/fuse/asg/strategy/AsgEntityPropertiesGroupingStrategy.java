@@ -28,7 +28,7 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
     */
 
     @Override
-    public void apply(AsgQuery query) {
+    public void apply(AsgQuery query, AsgStrategyContext context) {
         AsgQueryUtils.getElements(query, EEntityBase.class).forEach(entityBase -> {
             EPropGroup ePropGroup = new EPropGroup();
             AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);

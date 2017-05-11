@@ -28,10 +28,38 @@ import static com.kayhut.fuse.model.query.quant.QuantType.all;
 public class AsgQueryStore {
 
     /**
-     * +----+       +---------+               +---------+
-     * |S(0)| +--+  |eTyped(1)| +--rel(2)+--> |eTyped(3)|
-     * +----+       +---------+               +---------+
-     *
+
+     +----+       +---------+
+     |S(0)| +--+  |eTyped(1)|
+     +----+       +---------+
+
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery0(String queryName, String ontologyName) {
+        Start start = new Start();
+        start.seteNum(0);
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteNum(1);
+        eTyped.seteTag("A");
+        eTyped.seteType(1);
+
+        AsgEBase<Start> asgStart =
+                AsgEBase.Builder.<Start>get().withEBase(start)
+                        .withNext(AsgEBase.Builder.get().withEBase(eTyped).build())
+                .build();
+
+        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
+    }
+
+    /**
+
+     +----+       +---------+               +---------+
+     |S(0)| +--+  |eTyped(1)| +--rel(2)+--> |eTyped(3)|
+     +----+       +---------+               +---------+
+
      * @param queryName
      * @param ontologyName
      * @return

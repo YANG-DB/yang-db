@@ -37,10 +37,10 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
             Terms layer2 = (Terms) b.getAggregations().asMap().get(PromiseEdgeConstants.DEST_AGGREGATION_LAYER);
             layer2.getBuckets().forEach(innerBucket -> {
                 String destId = innerBucket.getKeyAsString();
-                PromiseVertex destVertex = new PromiseVertex(Promise.as(destId),Optional.empty(),graph);
+                PromiseVertex destVertex = new PromiseVertex(Promise.as(destId), Optional.empty(), graph);
                 Map<String,Object> propMap = new HashMap<>();
-                propMap.put(PromiseEdgeConstants.PROMISE_EDGE_COUNT_PROP,innerBucket.getDocCount());
-                PromiseEdge promiseEdge = new PromiseEdge(null,sourceVertex,destVertex,propMap,graph);
+                propMap.put(PromiseEdgeConstants.PROMISE_EDGE_COUNT_PROP, innerBucket.getDocCount());
+                PromiseEdge promiseEdge = new PromiseEdge(sourceVertex, destVertex, propMap, graph);
                 edges.add(promiseEdge);
             });
         });

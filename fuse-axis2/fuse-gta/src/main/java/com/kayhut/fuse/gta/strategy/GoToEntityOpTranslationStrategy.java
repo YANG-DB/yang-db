@@ -15,9 +15,9 @@ import java.util.Optional;
 public class GoToEntityOpTranslationStrategy implements TranslationStrategy {
     //region TranslationStrategy Implementation
     @Override
-    public GraphTraversal apply(TranslationStrategyContext context, GraphTraversal traversal) {
-        if (context.getPlanOp() instanceof GoToEntityOp) {
-            traversal.select(((GoToEntityOp) context.getPlanOp()).getAsgEBase().geteBase().geteTag());
+    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+        if (planOp instanceof GoToEntityOp) {
+            traversal.select(((GoToEntityOp)planOp).getAsgEBase().geteBase().geteTag());
         }
 
         return traversal;
