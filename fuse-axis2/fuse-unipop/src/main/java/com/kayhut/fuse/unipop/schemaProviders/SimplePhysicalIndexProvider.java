@@ -18,10 +18,10 @@ public class SimplePhysicalIndexProvider implements PhysicalIndexProvider {
 
     //region PhysicalIndexProvider Implementation
     @Override
-    public Iterable<IndexPartition> getIndexPartitionsByLabel(String label, ElementType elementType) {
+    public IndexPartition getIndexPartitionByLabel(String label, ElementType elementType) {
         switch (elementType) {
-            case edge: return Arrays.asList(() -> Arrays.asList(this.edgeIndexName));
-            case vertex: return Arrays.asList(() -> Arrays.asList(this.vertexIndexName));
+            case edge: return () -> Arrays.asList(this.edgeIndexName);
+            case vertex: return () -> Arrays.asList(this.vertexIndexName);
             default: return null;
         }
     }

@@ -26,10 +26,9 @@ public class OntologySchemaProviderTest {
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
 
         assertEquals(vertexPersonSchema.getType(), "Person");
-        assertEquals(1, Stream.ofAll(vertexPersonSchema.getIndexPartitions()).size());
-        assertEquals(2, Stream.ofAll(Stream.ofAll(vertexPersonSchema.getIndexPartitions()).get(0).getIndices()).size());
+        assertEquals(2, Stream.ofAll(vertexPersonSchema.getIndexPartition().getIndices()).size());
 
-        Iterable<String> indices = Stream.ofAll(Stream.ofAll(vertexPersonSchema.getIndexPartitions()).get(0).getIndices());
+        Iterable<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartition().getIndices());
 
         assertEquals("vertexIndex1", Stream.ofAll(indices).get(0));
         assertEquals("vertexIndex2", Stream.ofAll(indices).get(1));
@@ -39,13 +38,13 @@ public class OntologySchemaProviderTest {
     public void getEdgeSchema() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire", Optional.of("Dragon"), Optional.of("Person")).get();
+        GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
         assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getType().get(), "Person");
 
-        assertEquals(1, Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions()).size());
-        assertEquals(2, Stream.ofAll(Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions()).get(0).getIndices()).size());
 
-        Iterable<String> indices = Stream.ofAll(Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions()).get(0).getIndices());
+        assertEquals(2, Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartition().getIndices()).size());
+
+        Iterable<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartition().getIndices());
 
         assertEquals("edgeIndex1", Stream.ofAll(indices).get(0));
         assertEquals("edgeIndex2", Stream.ofAll(indices).get(1));
@@ -74,9 +73,9 @@ public class OntologySchemaProviderTest {
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider((label, elementType) -> {
             if (elementType == ElementType.vertex) {
-                return Collections.singletonList(() -> Arrays.asList("vertexIndex1", "vertexIndex2"));
+                return () -> Arrays.<String>asList("vertexIndex1", "vertexIndex2");
             } else if (elementType == ElementType.edge) {
-                return Collections.singletonList(() -> Arrays.asList("edgeIndex1", "edgeIndex2"));
+                return () -> Arrays.<String>asList("edgeIndex1", "edgeIndex2");
             } else {
                 // must fail
                 Assert.assertTrue(false);

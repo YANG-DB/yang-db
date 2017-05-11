@@ -9,6 +9,8 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -24,15 +26,37 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
+import static com.kayhut.fuse.model.query.Constraint.of;
+import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by Roman on 10/05/2017.
  */
 public class RelationFilterOpTranslationStrategyTest {
+    static AsgQuery simpleQuery2(String queryName, String ontologyName) {
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, "A", 1))
+                .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(gt, 10)))))
+                .next(typed(2, "B", 3))
+                .next(quant1(4, all))
+                .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("2", 9, of(eq, 30)))
+                        , rel(R, 5, 4)
+                                .next(unTyped("C", 6))
+                        , rel(R, 7, 5)
+                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
+                                .next(concrete("concrete1", 3, "Concrete1", "D", 8))
+                )
+                .build();
+    }
+
     @Test
     public void test_rel2_filter10() {
-        AsgQuery query = AsgQueryStore.simpleQuery2("name", "ontName");
+        AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
                 new RelationOp(AsgQueryUtils.<Rel>getElement(query, 2).get()),
                 new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(query, 10).get())
@@ -79,7 +103,7 @@ public class RelationFilterOpTranslationStrategyTest {
 
     @Test
     public void test_reversed_rel2_filter10() {
-        AsgQuery query = AsgQueryStore.simpleQuery2("name", "ontName");
+        AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
                 new RelationOp(AsgQueryUtils.reverseRelation(AsgQueryUtils.<Rel>getElement(query, 2).get())),
                 new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(query, 10).get())

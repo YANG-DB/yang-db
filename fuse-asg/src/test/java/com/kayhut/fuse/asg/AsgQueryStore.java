@@ -7,235 +7,34 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.HQuant;
-import com.kayhut.fuse.model.query.quant.Quant1;
-import com.kayhut.fuse.model.query.quant.QuantType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
+import static com.kayhut.fuse.model.query.Constraint.of;
+import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 /**
  * Created by Roman on 25/04/2017.
  */
 public class AsgQueryStore {
 
-    /**
-
-     +----+       +---------+
-     |S(0)| +--+  |eTyped(1)|
-     +----+       +---------+
-
-     * @param queryName
-     * @param ontologyName
-     * @return
-     */
-    public static AsgQuery simpleQuery0(String queryName, String ontologyName) {
-        Start start = new Start();
-        start.seteNum(0);
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteNum(1);
-        eTyped.seteTag("A");
-        eTyped.seteType(1);
-
-        AsgEBase<Start> asgStart =
-                AsgEBase.Builder.<Start>get().withEBase(start)
-                        .withNext(AsgEBase.Builder.get().withEBase(eTyped).build())
-                .build();
-
-        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
-    }
-
-    /**
-
-     +----+       +---------+               +---------+
-     |S(0)| +--+  |eTyped(1)| +--rel(2)+--> |eTyped(3)|
-     +----+       +---------+               +---------+
-
-     * @param queryName
-     * @param ontologyName
-     * @return
-     */
-    public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
-        Start start = new Start();
-        start.seteNum(0);
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteNum(1);
-        eTyped.seteTag("A");
-        eTyped.seteType(1);
-
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setDir(Rel.Direction.R);
-        rel.setrType(1);
-
-        ETyped eTyped2 = new ETyped();
-        eTyped2.seteNum(3);
-        eTyped2.seteTag("B");
-        eTyped2.seteType(2);
-
-        AsgEBase<Start> asgStart =
-                AsgEBase.Builder.<Start>get().withEBase(start)
-                        .withNext(AsgEBase.Builder.get().withEBase(eTyped)
-                                .withNext(AsgEBase.Builder.get().withEBase(rel)
-                                        .withNext(AsgEBase.Builder.get().withEBase(eTyped2)
-                                                .build())
-                                        .build())
-                                .build())
-                        .build();
-
-        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
-    }
-
-    /**
-                                                            +----+
-                                                            |    |               +-------------+
-                                                            |    | +-----------+ |ePropGroup(9)|
-                                                            |    |               +-------------+
-                                                            |    |
-     +----+       +---------+              +---------+      |    |               +---------+
-     |S(0)| +--+  |eTyped(1)| +-+rel(2)+-> |eTyped(3)| +--+ |&(4)| +-+rel(5)+--> |eTyped(6)|
-     +----+       +---------+       +      +---------+      |    |               +---------+
-                                    |                       |    |
-                                    |                       |    |               +---------+
-                            +-------+--------+              |    | +-+rel(7)+--> |eTyped(8)|
-                            |relPropGroup(10)|              |    |       +       +---------+
-                            +----------------+              +----+       |
-                                                                         |
-                                                                +--------+-------+
-                                                                |relPropGroup(11)|
-                                                                +----------------+
-     * @param queryName
-     * @param ontologyName
-     * @return
-     */
-    public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
-        Start start = new Start();
-        start.seteNum(0);
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteNum(1);
-        eTyped.seteTag("A");
-        eTyped.seteType(1);
-
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setDir(Rel.Direction.R);
-        rel.setrType(1);
-
-        ETyped eTyped2 = new ETyped();
-        eTyped2.seteNum(3);
-        eTyped2.seteTag("B");
-        eTyped2.seteType(2);
-
-        Quant1 quant1 = new Quant1();
-        quant1.seteNum(4);
-        quant1.setqType(QuantType.all);
-
-        Rel rel2 = new Rel();
-        rel2.seteNum(5);
-        rel2.setDir(Rel.Direction.R);
-        rel2.setrType(4);
-
-        EUntyped untyped = new EUntyped();
-        untyped.seteNum(6);
-        untyped.seteTag("C");
-
-        Rel rel3 = new Rel();
-        rel3.seteNum(7);
-        rel3.setDir(Rel.Direction.R);
-        rel3.setrType(5);
-
-        EConcrete concrete = new EConcrete();
-        concrete.seteID("concrete1");
-        concrete.seteName("Concrete1");
-        concrete.seteType(3);
-        concrete.seteNum(8);
-        concrete.seteTag("D");
-
-        Constraint constraint1 = new Constraint();
-        constraint1.setOp(ConstraintOp.eq);
-        constraint1.setExpr("value1");
-
-        EProp prop1 = new EProp();
-        prop1.setpType("1");
-        prop1.setCon(constraint1);
-        prop1.seteNum(9);
-
-        Constraint constraint2 = new Constraint();
-        constraint2.setOp(ConstraintOp.eq);
-        constraint2.setExpr(30);
-
-        EProp prop2 = new EProp();
-        prop2.setpType("2");
-        prop2.setCon(constraint2);
-        prop2.seteNum(10);
-
-        EPropGroup propGroup = new EPropGroup();
-        propGroup.seteNum(9);
-        propGroup.seteProps(Arrays.asList(prop1, prop2));
-
-        Constraint constraint3 = new Constraint();
-        constraint3.setOp(ConstraintOp.gt);
-        constraint3.setExpr(10);
-        RelProp relProp1 = new RelProp();
-        relProp1.setCon(constraint3);
-        relProp1.setpType("2");
-        RelPropGroup relPropGroup1 = new RelPropGroup();
-        relPropGroup1.seteNum(10);
-        relPropGroup1.setrProps(Arrays.asList(relProp1));
-
-        Constraint constraint4 = new Constraint();
-        constraint4.setOp(ConstraintOp.lt);
-        constraint4.setExpr(20);
-        RelProp relProp2 = new RelProp();
-        relProp2.setCon(constraint4);
-        relProp2.setpType("2");
-        RelPropGroup relPropGroup2 = new RelPropGroup();
-        relPropGroup2.seteNum(11);
-        relPropGroup2.setrProps(Arrays.asList(relProp2));
-
-        AsgEBase<Start> asgStart =
-                AsgEBase.Builder.<Start>get().withEBase(start)
-                        .withNext(AsgEBase.Builder.get().withEBase(eTyped)
-                                .withNext(AsgEBase.Builder.get().withEBase(rel)
-                                        .withNext(AsgEBase.Builder.get().withEBase(eTyped2)
-                                                .withNext(AsgEBase.Builder.get().withEBase(quant1)
-                                                        .withNext(AsgEBase.Builder.get().withEBase(rel2)
-                                                                .withNext(AsgEBase.Builder.get().withEBase(untyped)
-                                                                .build())
-                                                        .build())
-                                                        .withNext(AsgEBase.Builder.get().withEBase(rel3)
-                                                                .withNext(AsgEBase.Builder.get().withEBase(concrete)
-                                                                .build())
-                                                                .withB(AsgEBase.Builder.get().withEBase(relPropGroup2).build())
-                                                        .build())
-                                                        .withNext(AsgEBase.Builder.get().withEBase(propGroup).build())
-                                                        .build())
-                                                .build())
-                                        .withB(AsgEBase.Builder.get().withEBase(relPropGroup1).build())
-                                        .build())
-                                .build())
-                        .build();
-
-        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
-    }
-
-    public static AsgQuery Q1(){
+    public static AsgQuery Q1() {
         //region Query Building
         Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
         query.setOnt("Dragons");
         query.setName("Q1");
         List<EBase> elements = new ArrayList<EBase>();
 
-        /*
+       /*
         {
           "eNum": 0,
           "type": "Start",
@@ -243,12 +42,12 @@ public class AsgQueryStore {
         }
          */
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
 
-        /* Person
+       /* Person
          {
           "eNum": 1,
           "type": "ETyped",
@@ -265,7 +64,7 @@ public class AsgQueryStore {
         eTypedA.setNext(2);
         elements.add(eTypedA);
 
-        /* Owns
+       /* Owns
         {
           "eNum": 2,
           "type": "Rel",
@@ -282,7 +81,7 @@ public class AsgQueryStore {
         elements.add(rel);
 
 
-        /* Dragon
+       /* Dragon
         {
           "eNum": 3,
           "type": "ETyped",
@@ -297,7 +96,7 @@ public class AsgQueryStore {
         eTypedB.setNext(4);
         elements.add(eTypedB);
 
-        /* The dragon has the Name Entity Property = "dragonA"
+       /* The dragon has the Name Entity Property = "dragonA"
             "type": "EProp",
             "eNum": 4,
             "pType": "1.1",
@@ -325,17 +124,171 @@ public class AsgQueryStore {
 
         Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
         AsgQuery asgQuery = asgSupplier.get();
-        return  asgQuery;
+        return asgQuery;
     }
 
-    public static AsgQuery Q188_V1(){
+    /**
+     * +----+       +---------+
+     * |S(0)| +--+  |eTyped(1)|
+     * +----+       +---------+
+     *
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery0(String queryName, String ontologyName) {
+        Start start = new Start();
+        start.seteNum(0);
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteNum(1);
+        eTyped.seteTag("A");
+        eTyped.seteType(1);
+
+        AsgEBase<Start> asgStart =
+                AsgEBase.Builder.<Start>get().withEBase(start)
+                        .withNext(AsgEBase.Builder.get().withEBase(eTyped).build())
+                        .build();
+
+        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
+    }
+
+    /**
+     * +----+       +---------+               +---------+
+     * |S(0)| +--+  |eTyped(1)| +--rel(2)+--> |eTyped(3)|
+     * +----+       +---------+               +---------+
+     *
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
+        Start start = new Start();
+        start.seteNum(0);
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteNum(1);
+        eTyped.seteTag("A");
+        eTyped.seteType(1);
+
+        Rel rel = new Rel();
+        rel.seteNum(2);
+        rel.setDir(R);
+        rel.setrType(1);
+
+        ETyped eTyped2 = new ETyped();
+        eTyped2.seteNum(3);
+        eTyped2.seteTag("B");
+        eTyped2.seteType(2);
+
+        AsgEBase<Start> asgStart =
+                AsgEBase.Builder.<Start>get().withEBase(start)
+                        .withNext(AsgEBase.Builder.get().withEBase(eTyped)
+                                .withNext(AsgEBase.Builder.get().withEBase(rel)
+                                        .withNext(AsgEBase.Builder.get().withEBase(eTyped2)
+                                                .build())
+                                        .build())
+                                .build())
+                        .build();
+
+        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
+    }
+
+    /**
+     * +----+
+     * |    |               +-------------+
+     * |    | +-----------+ |ePropGroup(9)|
+     * |    |               +-------------+
+     * |    |
+     * +----+       +---------+              +---------+      |    |               +---------+
+     * |S(0)| +--+  |eTyped(1)| +-+rel(2)+-> |eTyped(3)| +--+ |&(4)| +-+rel(5)+--> |eTyped(6)|
+     * +----+       +---------+       +      +---------+      |    |               +---------+
+     * |                       |    |
+     * |                       |    |               +---------+
+     * +-------+--------+              |    | +-+rel(7)+--> |eTyped(8)|
+     * |relPropGroup(10)|              |    |       +       +---------+
+     * +----------------+              +----+       |
+     * |
+     * +--------+-------+
+     * |relPropGroup(11)|
+     * +----------------+
+     *
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, "A", 1))
+                .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                .next(typed(2, "B", 3))
+                .next(quant1(4, all))
+                .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
+                        , rel(R, 5, 4)
+                                .next(unTyped("C", 6))
+                        , rel(R, 7, 5)
+                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
+                                .next(concrete("concrete1", 3, "Concrete1", "D", 8))
+                )
+                .build();
+    }
+
+    /**
+     * +----+
+     * |    |               +-------------+
+     * |    | +-----------+ |ePropGroup(9)|
+     * |    |               +-------------+
+     * |    |
+     * +----+       +---------+              +---------+      |    |               +---------+               +----------+
+     * |S(0)| +--+  |eTyped(1)| +-+rel(2)+-> |eTyped(3)| +--+ |&(4)| +-+rel(5)+--> |eTyped(6)| +-+rel(12)+-->|eTyped(13)|
+     * +----+       +---------+       +      +---------+      |    |               +---------+               +----------+
+     * |                       |    |
+     * |                       |    |               +---------+               +----------+
+     * +-------+--------+              |    | +-+rel(7)+--> |eTyped(8)| +-+rel(14)+-->|eTyped(15)|
+     * |relPropGroup(10)|              |    |       +       +---------+               +----------+
+     * +----------------+              +----+       |
+     * |
+     * +--------+-------+
+     * |relPropGroup(11)|
+     * +----------------+
+     *
+     * @param queryName
+     * @param ontologyName
+     * @return
+     */
+    public static AsgQuery simpleQuery3(String queryName, String ontologyName) {
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, "A", 1))
+                .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                .next(typed(2, "B", 3))
+                .next(quant1(4, all))
+                .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
+                        , rel(R, 5, 4)
+                                .next(unTyped("C", 6)
+                                        .next(rel(R, 12, 4)
+                                                .next(typed(4, "G", 13))
+                                        )
+                                )
+                        , rel(R, 7, 5)
+                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
+                                .next(concrete("concrete1", 3, "Concrete1", "D", 8)
+                                        .next(rel(R, 14, 1)
+                                                .next(typed(1, "F", 15))
+                                        )
+                                )
+                )
+                .build();
+    }
+
+
+    public static AsgQuery Q188_V1() {
         //region Query Building
         Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
         query.setOnt("Dragons");
         query.setName("Q188");
         List<EBase> elements = new ArrayList<EBase>();
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -352,7 +305,7 @@ public class AsgQueryStore {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(3);
-        rel.setDir(Rel.Direction.R);
+        rel.setDir(R);
         rel.setNext(3);
         rel.setB(4);
         elements.add(rel);
@@ -364,7 +317,7 @@ public class AsgQueryStore {
         elements.add(eTyped);
 
         Constraint conRelProp1 = new Constraint();
-        conRelProp1.setOp(ConstraintOp.gt);
+        conRelProp1.setOp(gt);
         conRelProp1.setExpr("1010-01-01T00:00:00.000");
 
         RelProp relProp1 = new RelProp();
@@ -390,17 +343,17 @@ public class AsgQueryStore {
 
         Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
         AsgQuery asgQuery = asgSupplier.get();
-        return  asgQuery;
+        return asgQuery;
     }
 
-    public static AsgQuery Q187_V1(){
+    public static AsgQuery Q187_V1() {
         //region Query Building
         Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
         query.setOnt("Dragons");
         query.setName("Q187");
         List<EBase> elements = new ArrayList<EBase>();
 
-        Start start  = new Start();
+        Start start = new Start();
         start.seteNum(0);
         start.setNext(1);
         elements.add(start);
@@ -417,7 +370,7 @@ public class AsgQueryStore {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setrType(3);
-        rel.setDir(Rel.Direction.R);
+        rel.setDir(R);
         rel.setNext(3);
         rel.setB(4);
         elements.add(rel);
@@ -430,12 +383,12 @@ public class AsgQueryStore {
 
         HQuant hQuant = new HQuant();
         hQuant.seteNum(4);
-        hQuant.setqType(QuantType.all);
-        hQuant.setB(Arrays.asList(5,6));
+        hQuant.setqType(all);
+        hQuant.setB(Arrays.asList(5, 6));
         elements.add(hQuant);
 
         Constraint conRelProp1 = new Constraint();
-        conRelProp1.setOp(ConstraintOp.gt);
+        conRelProp1.setOp(gt);
         conRelProp1.setExpr("1010-01-01T00:00:00.000");
 
         RelProp relProp1 = new RelProp();
@@ -461,7 +414,7 @@ public class AsgQueryStore {
 
         Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
         AsgQuery asgQuery = asgSupplier.get();
-        return  asgQuery;
+        return asgQuery;
     }
 }
 

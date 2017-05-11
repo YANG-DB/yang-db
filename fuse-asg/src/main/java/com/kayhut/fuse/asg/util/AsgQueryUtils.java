@@ -2,8 +2,14 @@ package com.kayhut.fuse.asg.util;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,18 +17,41 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by Roman on 23/04/2017.
  */
 public class AsgQueryUtils {
+
+    public static boolean equals(AsgQuery source, AsgQuery target) {
+        if(!source.getStart().equals(target.getStart()))
+            return false;
+        if(!source.getName().equals(target.getName()))
+            return false;
+        if(!source.getOnt().equals(target.getOnt()))
+            return false;
+
+        return true;
+    }
+
     //region Public Methods
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return getElement(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, truePredicate);
     }
 
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> getAncestors(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+        return getElements(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, truePredicate, Collections.emptyList());
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
         return getAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+                notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
+    }
+
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> getAncestors(AsgEBase<T> asgEBase, Class<?> klass) {
+        return getAncestors(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
     }
 
@@ -267,10 +296,28 @@ public class AsgQueryUtils {
         return Optional.empty();
     }
 
+    public static List<String> getVertexTypes(EEntityBase entity, Ontology ontology, Iterable<String> vertexTypes) {
+        List<String> _vertexTypes = Stream.ofAll(vertexTypes).toJavaList();
+        if (entity instanceof EUntyped) {
+            EUntyped eUntyped = (EUntyped) entity;
+            if (eUntyped.getvTypes().size() > 0) {
+                _vertexTypes = eUntyped.getvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList());
+            } else {
+                _vertexTypes = StreamSupport.stream(vertexTypes.spliterator(), false).collect(Collectors.toList());
+                if (eUntyped.getNvTypes().size() > 0) {
+                    _vertexTypes.removeAll(eUntyped.getNvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList()));
+                }
+            }
+        } else if (entity instanceof ETyped) {
+            _vertexTypes = Collections.singletonList(OntologyUtil.getEntityTypeNameById(ontology, ((ETyped) entity).geteType()));
+        }
+        return _vertexTypes;
+    }
+
     private static <T extends EBase> List<AsgEBase<T>> getElements(
             AsgEBase<? extends EBase> asgEBase,
-            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> vElementProvider,
-            Function<AsgEBase<? extends EBase>, Iterable<AsgEBase<? extends EBase>>> hElementProvider,
+            Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> vElementProvider,
+            Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> hElementProvider,
             Predicate<AsgEBase> elementPredicate,
             Predicate<AsgEBase> dfsPredicate,
             List<AsgEBase<T>> elements) {

@@ -2,7 +2,6 @@ package com.kayhut.fuse.asg.util;
 
 import com.kayhut.fuse.model.ontology.Property;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,10 +13,10 @@ public class OntologyPropertyTypeFactory {
     public OntologyPropertyTypeFactory() {
         this.map = new HashMap<>() ;
         this.map.put("string", (exp) -> String.valueOf(exp));
-        this.map.put("int", (exp) -> ((Integer) exp).intValue());
+        this.map.put("int", (exp) -> (new Long((Integer) exp)).longValue());
         this.map.put("float", (exp) ->  ((Double) exp).doubleValue());
         this.map.put("double", (exp) ->  ((Double) exp).doubleValue());
-        this.map.put("date", (exp) -> new Date((Long) exp));
+        this.map.put("date", (exp) -> new Date(Long.parseLong(exp.toString()) )); //Supporting both conversion from Int & Long To Date
     }
     //endregion
 

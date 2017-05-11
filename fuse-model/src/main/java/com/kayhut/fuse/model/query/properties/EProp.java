@@ -51,4 +51,36 @@ public class EProp extends EBase {
     private String f;
     //endregion
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        EProp eProp = (EProp) o;
+
+        if (!pType.equals(eProp.pType)) return false;
+        if (!pTag.equals(eProp.pTag)) return false;
+        if (!con.equals(eProp.con)) return false;
+        return f != null ? f.equals(eProp.f) : eProp.f == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + pType.hashCode();
+        result = 31 * result + pTag.hashCode();
+        result = 31 * result + con.hashCode();
+        result = 31 * result + (f != null ? f.hashCode() : 0);
+        return result;
+    }
+
+    public static EProp of(String pType, int eNum, Constraint con) {
+        EProp eProp = new EProp();
+        eProp.setpType(pType);
+        eProp.setCon(con);
+        eProp.seteNum(eNum);
+        return eProp;
+    }
 }

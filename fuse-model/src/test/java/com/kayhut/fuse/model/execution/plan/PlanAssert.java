@@ -27,7 +27,7 @@ public class PlanAssert {
             }
 
             Assert.assertTrue(expectedPlanOp != null && actualPlanOp != null);
-            Assert.assertTrue(expectedPlanOp.getClass().equals(actualPlanOp.getClass()));
+            Assert.assertTrue(expectedPlanOp.getClass().isAssignableFrom(actualPlanOp.getClass()));
 
             if (expectedPlanOp instanceof EntityOp) {
                 assertEquals((EntityOp)expectedPlanOp, (EntityOp)actualPlanOp);

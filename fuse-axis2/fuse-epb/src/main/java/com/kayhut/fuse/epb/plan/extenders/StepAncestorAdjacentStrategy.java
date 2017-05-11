@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.extenders.dfs;
+package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
@@ -13,14 +13,17 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.logging.Level;
 
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getLastOpOfType;
-import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDescendantUnmarkedOfType;
+import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorOfType;
+import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorUnmarkedOfType;
 
 /**
  * Created by Roman on 23/04/2017.
  */
-public class StepDescendantAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery> {
+public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+
     //region PlanExtensionStrategy Implementation
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
@@ -28,15 +31,17 @@ public class StepDescendantAdjacentStrategy implements PlanExtensionStrategy<Pla
             return Collections.emptyList();
         }
 
-        Optional<AsgEBase<Rel>> nextRelation = getNextDescendantUnmarkedOfType(plan.get(),Rel.class);
+        Optional<AsgEBase<Rel>> nextRelation = getNextAncestorOfType(plan.get(), Rel.class);
         if (!nextRelation.isPresent()) {
             return Collections.emptyList();
         }
-
+        //reverse direction
+        nextRelation.get().geteBase().setDir(Direction.reverse(nextRelation.get().geteBase().getDir()));
+        //
         Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation.get(), RelPropGroup.class);
 
-        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getAncestor(nextRelation.get(), EEntityBase.class);
-        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getAncestor(nextRelation.get(), EEntityBase.class);
 
         Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
         Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
@@ -45,7 +50,7 @@ public class StepDescendantAdjacentStrategy implements PlanExtensionStrategy<Pla
         }
 
         Plan newPlan = plan.get();
-        if (getLastOpOfType(newPlan,EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
+        if (getLastOpOfType(newPlan, EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
@@ -59,7 +64,9 @@ public class StepDescendantAdjacentStrategy implements PlanExtensionStrategy<Pla
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
-
+        if(!Plan.equals(plan.get(), newPlan)) {
+            newPlan.log("StepAncestorAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+        }
         return Collections.singletonList(newPlan);
     }
     //endregion

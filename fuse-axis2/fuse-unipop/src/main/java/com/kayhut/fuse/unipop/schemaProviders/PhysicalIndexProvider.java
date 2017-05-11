@@ -8,5 +8,5 @@ import com.kayhut.fuse.unipop.structure.*;
  * Created by benishue on 23-Mar-17.
  */
 public interface PhysicalIndexProvider {
-    Iterable<IndexPartition> getIndexPartitionsByLabel(String label, ElementType elementType);
+    IndexPartition getIndexPartitionByLabel(String label, ElementType elementType);
 }

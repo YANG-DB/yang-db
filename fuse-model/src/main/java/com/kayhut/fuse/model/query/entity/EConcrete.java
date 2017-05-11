@@ -32,11 +32,11 @@ public class EConcrete extends EEntityBase implements Typed{
         this.eName = eName;
     }
 
-    public int getNext() {
+    public Integer getNext() {
         return next;
     }
 
-    public void setNext(int next) {
+    public void setNext(Integer next) {
         this.next = next;
     }
 
@@ -49,4 +49,27 @@ public class EConcrete extends EEntityBase implements Typed{
     //endregion
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        EConcrete eConcrete = (EConcrete) o;
+
+        if (eType != eConcrete.eType) return false;
+        if (next != eConcrete.next) return false;
+        if (!eID.equals(eConcrete.eID)) return false;
+        return eName.equals(eConcrete.eName);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + eID.hashCode();
+        result = 31 * result + eType;
+        result = 31 * result + eName.hashCode();
+        result = 31 * result + next;
+        return result;
+    }
 }

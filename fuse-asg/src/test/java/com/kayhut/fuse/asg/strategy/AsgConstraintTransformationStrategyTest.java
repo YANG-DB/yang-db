@@ -30,7 +30,7 @@ public class AsgConstraintTransformationStrategyTest {
 
     Ontology ontology;
     @Test
-    public void asgConstraintTransformationStrategyEPropsTest() throws Exception {
+    public void asgConstraintTransformationStrategyEPropsLongToDateTest() throws Exception {
         AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
 
         //Setting The EProp expression as a date represented by Long value
@@ -38,9 +38,7 @@ public class AsgConstraintTransformationStrategyTest {
         eProp.setpType("15"); //this is a date field - Input is long - epoch time
         eProp.getCon().setExpr(123456L); //Epoch time as Long
 
-
         assertThat(eProp.getCon().getExpr(), instanceOf(Long.class));
-
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
         AsgConstraintTransformationStrategy asgConstraintTransformationStrategy = new AsgConstraintTransformationStrategy();
@@ -49,12 +47,51 @@ public class AsgConstraintTransformationStrategyTest {
         asgConstraintTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
         Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(Date.class));
-
-
     }
 
     @Test
-    public void asgConstraintTransformationStrategyRelPropsTest() throws Exception {
+    public void asgConstraintTransformationStrategyEPropsIntToDateTest() throws Exception {
+        AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
+
+        //Setting The EProp expression as a date represented by Long value
+        EProp eProp = (EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase();
+        eProp.setpType("15"); //this is a date field - Input is long - epoch time
+        eProp.getCon().setExpr(123456); //Epoch time as Long
+
+        assertThat(eProp.getCon().getExpr(), instanceOf(int.class));
+
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgConstraintTransformationStrategy asgConstraintTransformationStrategy = new AsgConstraintTransformationStrategy();
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        asgConstraintTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
+        Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
+        assertThat(expr, instanceOf(Date.class));
+    }
+
+    @Test
+    public void asgConstraintTransformationStrategyEPropsIntToLongTest() throws Exception {
+        AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
+
+        //Setting The EProp expression as an int
+        EProp eProp = (EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase();
+        eProp.setpType("7"); //this is an int field
+        eProp.getCon().setExpr(99);
+
+        assertThat(eProp.getCon().getExpr(), instanceOf(Integer.class));
+
+
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgConstraintTransformationStrategy asgConstraintTransformationStrategy = new AsgConstraintTransformationStrategy();
+
+        //Applying the Strategy on the Eprop with the Epoch time
+        asgConstraintTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
+        Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
+        assertThat(expr, instanceOf(long.class));
+    }
+
+    @Test
+    public void asgConstraintTransformationStrategyRelPropsLongToDateTest() throws Exception {
         AsgQuery asgQueryWithRelProps = AsgQueryStore.Q188_V1();
         AsgQuery asgQueryWithRelPropsOriginal = AsgQueryStore.Q188_V1();
 

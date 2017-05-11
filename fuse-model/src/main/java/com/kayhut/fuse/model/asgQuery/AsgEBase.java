@@ -12,7 +12,7 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class AsgEBase<T extends EBase>{
+public class AsgEBase<T extends EBase> {
 
     //region Builder
     public static final class Builder<T extends EBase> {
@@ -20,7 +20,8 @@ public class AsgEBase<T extends EBase>{
         private List<AsgEBase<? extends EBase>> next;
         private List<AsgEBase<? extends EBase>> b;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public static <S extends EBase> Builder<S> get() {
             return new Builder<>();
@@ -28,11 +29,6 @@ public class AsgEBase<T extends EBase>{
 
         public Builder<T> withEBase(T eBase) {
             this.eBase = eBase;
-            return this;
-        }
-
-        public Builder<T> withNext(List<AsgEBase<? extends EBase>> next) {
-            this.next = next;
             return this;
         }
 
@@ -59,15 +55,16 @@ public class AsgEBase<T extends EBase>{
 
         public AsgEBase<T> build() {
             AsgEBase<T> asg = new AsgEBase(this.eBase);
-            if(this.next != null) this.next.forEach(asg::addNextChild);
-            if(this.b != null) this.b.forEach(asg::addBChild);
+            if (this.next != null) this.next.forEach(asg::addNextChild);
+            if (this.b != null) this.b.forEach(asg::addBChild);
             return asg;
         }
     }
     //endregion
 
     //region Constructors
-    public AsgEBase() {}
+    public AsgEBase() {
+    }
 
     public AsgEBase(T eBase,
                     List<AsgEBase<? extends EBase>> next,
@@ -110,8 +107,12 @@ public class AsgEBase<T extends EBase>{
     //endregion
 
     //region Public Methods
-    public void addNextChild(AsgEBase<? extends EBase> asgEBase)
-    {
+    public AsgEBase<T> next(AsgEBase<? extends EBase> asgEBase) {
+        addNextChild(asgEBase);
+        return this;
+    }
+
+    public void addNextChild(AsgEBase<? extends EBase> asgEBase) {
         if (!this.next.contains(asgEBase)) {
             this.next.add(asgEBase);
         }
@@ -119,8 +120,12 @@ public class AsgEBase<T extends EBase>{
         asgEBase.addToParents(this);
     }
 
-    public void addBChild(AsgEBase<? extends EBase> asgEBase)
-    {
+    public AsgEBase<T> below(AsgEBase<? extends EBase> asgEBase) {
+        addBChild(asgEBase);
+        return this;
+    }
+
+    public void addBChild(AsgEBase<? extends EBase> asgEBase) {
         if (!this.b.contains(asgEBase)) {
             this.b.add(asgEBase);
         }
@@ -142,6 +147,27 @@ public class AsgEBase<T extends EBase>{
         asgEBase.parent.remove(this);
     }
     //endregion
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AsgEBase<?> asgEBase = (AsgEBase<?>) o;
+
+        if (!eBase.equals(asgEBase.eBase)) return false;
+        if (!next.equals(asgEBase.next)) return false;
+        return b.equals(asgEBase.b);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = eBase.hashCode();
+        result = 31 * result + next.hashCode();
+        result = 31 * result + b.hashCode();
+        return result;
+    }
 
     //region Override Methods
     @Override

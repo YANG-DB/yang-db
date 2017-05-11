@@ -2,18 +2,29 @@ package com.kayhut.fuse.model.query;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kayhut.fuse.model.Below;
+import com.kayhut.fuse.model.Next;
 
 /**
  * Created by user on 16-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Rel extends EBase {
+public class Rel extends EBase implements Next<Integer>, Below<Integer> {
     public enum Direction {
         R,
         L,
         RL;
+    }
 
+    public Rel() {}
 
+    public Rel(int eNum, int rType, Direction dir, String wrapper, int next, int b) {
+        super(eNum);
+        this.rType = rType;
+        this.dir = dir;
+        this.wrapper = wrapper;
+        this.next = next;
+        this.b = b;
     }
 
     public int getrType() {
@@ -40,23 +51,28 @@ public class Rel extends EBase {
         this.wrapper = wrapper;
     }
 
-    public int getNext() {
+    public Integer getNext() {
         return next;
     }
 
-    public void setNext(int next) {
+    public void setNext(Integer next) {
         this.next = next;
     }
 
-    public int getB() {
+    public Integer getB() {
         return b;
     }
 
-    public void setB(int b) {
+    public void setB(Integer b) {
         this.b = b;
     }
 
-   //region Fields
+    @Override
+    public Rel clone() {
+        return new Rel(geteNum(),getrType(),getDir(),getWrapper(),getNext(),getB());
+    }
+
+    //region Fields
     private int rType;
     private Direction dir;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -67,4 +83,30 @@ public class Rel extends EBase {
     private int b;
     //endregion
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Rel rel = (Rel) o;
+
+        if (rType != rel.rType) return false;
+        if (next != rel.next) return false;
+        if (b != rel.b) return false;
+        if (dir != rel.dir) return false;
+        return wrapper != null ? wrapper.equals(rel.wrapper) : rel.wrapper == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + rType;
+        result = 31 * result + dir.hashCode();
+        result = 31 * result + (wrapper != null ? wrapper.hashCode() : 0);
+        result = 31 * result + next;
+        result = 31 * result + b;
+        return result;
+    }
 }
