@@ -16,7 +16,7 @@ public class OntologyPropertyTypeFactory {
         this.map.put("int", (exp) -> (new Long((Integer) exp)).longValue());
         this.map.put("float", (exp) ->  ((Double) exp).doubleValue());
         this.map.put("double", (exp) ->  ((Double) exp).doubleValue());
-        this.map.put("date", (exp) -> new Date(Long.parseLong(exp.toString()) )); //Supporting both conversion from Int & Long To Date
+        this.map.put("date", (exp) -> ((exp instanceof Long || exp instanceof Integer) ? new Date(Long.parseLong(exp.toString())) : exp)); //Supporting both conversion from Int & Long To Date
     }
     //endregion
 
