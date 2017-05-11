@@ -77,7 +77,7 @@ public interface Utils {
 
     static String pattern(List<PlanOpBase> pattern) {
         StringJoiner sj = new StringJoiner(":", "", "");
-        pattern.forEach(op -> sj.add(op.getClass().getSimpleName()).add(Integer.toString(op.geteNum())));
+        pattern.forEach(op -> sj.add(op.getClass().getSimpleName()));
         return sj.toString();
     }
 

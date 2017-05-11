@@ -83,11 +83,11 @@ public class Plan extends CompositePlanOpBase implements Trace<String> {
     }
 
     public static boolean equals(Plan plan, Plan newPlan) {
-        return toPattern(newPlan).compareTo(toPattern(plan))==0;
+        return toSimplePattern(newPlan).compareTo(toSimplePattern(plan))==0;
     }
 
     public static String diff(Plan plan, Plan newPlan) {
-        return toPattern(newPlan).replace(toPattern(plan),"");
+        return toSimplePattern(newPlan).replace(toSimplePattern(plan),"");
     }
 
     @Override

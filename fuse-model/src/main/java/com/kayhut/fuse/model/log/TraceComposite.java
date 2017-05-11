@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.log;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -18,6 +19,7 @@ public interface TraceComposite<T> extends Trace<T> {
         //todo check different log levels
         return empty();
     }
+
 
     static TraceComposite empty() {
         return EMPTY1.instance;

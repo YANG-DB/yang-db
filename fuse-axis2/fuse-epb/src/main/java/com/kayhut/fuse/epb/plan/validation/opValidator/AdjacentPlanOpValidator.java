@@ -26,12 +26,6 @@ import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
 public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValidator {
     private Trace<String> trace = Trace.build(AdjacentPlanOpValidator.class.getSimpleName());
 
-    //region ChainedPlanValidator.PlanOpValidator Implementation
-    @Override
-    public void reset() {
-
-    }
-
     @Override
     public void log(String event, Level level) {
         trace.log(event,level);
@@ -45,6 +39,12 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
     @Override
     public String who() {
         return trace.who();
+    }
+
+    //region ChainedPlanValidator.PlanOpValidator Implementation
+    @Override
+    public void reset() {
+
     }
 
     @Override

@@ -4,6 +4,7 @@ import javaslang.Tuple2;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -19,6 +20,11 @@ public interface Trace<T> {
 
     static Trace empty() {
         return EMPTY.instance;
+    }
+
+    static StringJoiner asString(Trace t, Level level, StringJoiner joiner) {
+        t.getLogs(level).forEach(p->joiner.add(p.toString()));
+        return joiner;
     }
 
     static <T> Trace<T> build(String who) {

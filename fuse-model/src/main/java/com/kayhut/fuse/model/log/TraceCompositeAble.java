@@ -21,10 +21,13 @@ public class TraceCompositeAble<T> extends TraceAble<T> implements TraceComposit
 
     @Override
     public List<Tuple2<String,T>> getLogs(Level level) {
-        return traces.stream().map(t -> t.getLogs(level))
+        List<Tuple2<String, T>> logs = super.getLogs(level);
+        List<Tuple2<String, T>> collect = traces.stream().map(t -> t.getLogs(level))
                 .filter(log -> !log.isEmpty())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
+        logs.addAll(collect);
+        return logs;
     }
 
     @Override
