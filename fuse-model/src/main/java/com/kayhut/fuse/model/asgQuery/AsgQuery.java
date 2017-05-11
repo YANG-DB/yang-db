@@ -22,6 +22,9 @@ import java.util.Arrays;
  */
 public class AsgQuery {
 
+
+    //region Getters & Setters
+
     public String getOnt() {
         return ont;
     }
@@ -46,8 +49,16 @@ public class AsgQuery {
         this.start = start;
     }
 
+    //endregion
+
+    //region Fields
+    private String ont;
+    private String name;
+    private AsgEBase<Start> start;
+    //endregion
+
+    //region Builders
     public static final class AsgQueryBuilder {
-        //region Fields
         private String ont;
         private String name;
         private AsgEBase start;
@@ -82,13 +93,6 @@ public class AsgQuery {
             return asgQuery;
         }
     }
-
-    //region Fields
-    private String ont;
-    private String name;
-    private AsgEBase<Start> start;
-    //endregion
-
 
     public static class Builder {
 
@@ -216,4 +220,6 @@ public class AsgQuery {
         }
 
     }
+    //endregion
+
 }

@@ -2,16 +2,16 @@ package com.kayhut.fuse.asg.strategy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.asg.AsgQueryStore;
+import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintTransformationStrategy;
+import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 

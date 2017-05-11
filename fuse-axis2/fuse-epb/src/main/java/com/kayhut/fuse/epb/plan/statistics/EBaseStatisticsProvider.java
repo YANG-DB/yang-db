@@ -182,7 +182,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return graphStatisticsProvider.getVertexCardinality(graphVertexSchema, relevantIndices);
     }
 
-
     private Statistics.Cardinality estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
         GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
         List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);

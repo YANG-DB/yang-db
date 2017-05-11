@@ -1,5 +1,7 @@
-package com.kayhut.fuse.asg.strategy;
+package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 
+import com.kayhut.fuse.asg.strategy.AsgStrategy;
+import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -36,8 +38,7 @@ public class AsgConstraintTransformationStrategy implements AsgStrategy {
     //region Private Methods
 
     private void applyExpressionTransformation(AsgStrategyContext context, EBase eBase, Class klass) {
-        if (klass == EProp.class)
-        {
+        if (klass == EProp.class){
             EProp eProp = (EProp) eBase;
             Optional<Property> property = OntologyUtil.getProperty(context.getOntology(), Integer.parseInt(eProp.getpType()));
             if (property.isPresent()) {
@@ -45,8 +46,7 @@ public class AsgConstraintTransformationStrategy implements AsgStrategy {
                 eProp.setCon(newCon);
             }
         }
-        if (klass == RelProp.class)
-        {
+        if (klass == RelProp.class) {
             RelProp relProp = (RelProp) eBase;
             Optional<Property> property = OntologyUtil.getProperty(context.getOntology(), Integer.parseInt(relProp.getpType()));
             if (property.isPresent()) {
