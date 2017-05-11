@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
@@ -20,10 +21,10 @@ public interface GraphStatisticsProvider {
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphVertexSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
-                                                                                      ConstraintOp constraintOp, T value);
+                                                                                      Constraint constraint, T value);
 
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphEdgeSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
-                                                                                      ConstraintOp constraintOp, List<T> values);
+                                                                                      Constraint constraint, List<T> values);
 }

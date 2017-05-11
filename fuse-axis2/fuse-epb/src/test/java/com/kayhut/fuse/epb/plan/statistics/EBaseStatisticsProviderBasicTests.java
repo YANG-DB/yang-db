@@ -638,6 +638,35 @@ public class EBaseStatisticsProviderBasicTests {
         Constraint con = new Constraint();
         con.setOp(ConstraintOp.inRange);
         con.setExpr(Arrays.asList("f", "r"));
+        con.setiType("[]");
+        prop.setCon(con);
+        props.add(prop);
+        propGroup.seteProps(props);
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringRangeExclusiveTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "r"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ra", "z"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        ArrayList<EProp> props = new ArrayList<>();
+        EProp prop = new EProp();
+        prop.setpType("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.inRange);
+        con.setExpr(Arrays.asList("f", "ra"));
+        con.setiType("[)");
         prop.setCon(con);
         props.add(prop);
         propGroup.seteProps(props);

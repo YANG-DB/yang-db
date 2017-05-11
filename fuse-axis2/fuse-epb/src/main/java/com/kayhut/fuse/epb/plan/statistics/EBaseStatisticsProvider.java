@@ -247,12 +247,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, pType);
         if(primitiveType.isPresent()) {
-            return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint.getOp(), constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
+            return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
         }else{
             Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ontology, graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 Value value = (Value) constraint.getExpr();
-                return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint.getOp(), value.getName(), relevantIndices, String.class);
+                return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
             }
         }
         return Optional.empty();
@@ -270,18 +270,18 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, pType);
         if(primitiveType.isPresent()) {
-            return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint.getOp(), constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
+            return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
         }else{
             Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ontology, graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 Value value = (Value) constraint.getExpr();
-                return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint.getOp(), value.getName(), relevantIndices, String.class);
+                return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
             }
         }
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, ConstraintOp constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
+    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
         Statistics.HistogramStatistics<T> histogramStatistics = null;
         if(tp.isInstance(expression) ){
             T expr = (T) expression;
@@ -298,9 +298,9 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Statistics.Cardinality estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, Object value, ConstraintOp constraintOp){
+    private <T extends Comparable<T>> Statistics.Cardinality estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, Object value, Constraint constraint){
         Statistics.Cardinality cardinality = null;
-        switch(constraintOp){
+        switch(constraint.getOp()){
             case eq:
                 Optional<Statistics.BucketInfo<T>> bucketContaining = histogramStatistics.findBucketContaining((T)value);
                 cardinality = bucketContaining.map(tBucketInfo -> new Statistics.Cardinality(((double)tBucketInfo.getTotal()) / tBucketInfo.getCardinality(), 1)).
@@ -336,8 +336,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 return mergeBucketsCardinality(histogramStatistics.getBuckets());
             case inRange:
                 valueList = (List<T>) value;
-                bucketsAbove = histogramStatistics.findBucketsAbove(valueList.get(0), true);
-                bucketsBelow = histogramStatistics.findBucketsBelow(valueList.get(1), true);
+                bucketsAbove = histogramStatistics.findBucketsAbove(valueList.get(0), constraint.getiType().startsWith("["));
+                bucketsBelow = histogramStatistics.findBucketsBelow(valueList.get(1), constraint.getiType().endsWith("]"));
                 return estimateRange(bucketsAbove, bucketsBelow, valueList);
             case startsWith:
                 String stringValue = (String) value;
