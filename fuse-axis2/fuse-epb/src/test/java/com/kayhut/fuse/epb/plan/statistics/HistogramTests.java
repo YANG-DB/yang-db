@@ -88,8 +88,8 @@ public class HistogramTests {
     @Test
     public void combineHistogramSimpleTest(){
         Statistics.HistogramStatistics<String> histogram1 = new Statistics.HistogramStatistics<>(
-                        Arrays.asList(new Statistics.BucketInfo<String>(100l,10l,"a","m"),
-                                      new Statistics.BucketInfo<String>(50l,15l,"m","z")));
+                        Arrays.asList(new Statistics.BucketInfo<>(100l, 10l, "a", "m"),
+                                new Statistics.BucketInfo<>(50l, 15l, "m", "z")));
         Statistics.HistogramStatistics<String> mergedHistogram = Statistics.HistogramStatistics.combine(Arrays.asList(histogram1, histogram1));
 
         Assert.assertNotNull(mergedHistogram);
@@ -107,8 +107,8 @@ public class HistogramTests {
     @Test
     public void combineHistogramSingleValueTest(){
         Statistics.HistogramStatistics<String> histogram1 = new Statistics.HistogramStatistics<>(
-                Arrays.asList(new Statistics.BucketInfo<String>(100l,1l,"a","a"),
-                        new Statistics.BucketInfo<String>(50l,1l,"b","b")));
+                Arrays.asList(new Statistics.BucketInfo<>(100l, 1l, "a", "a"),
+                        new Statistics.BucketInfo<>(50l, 1l, "b", "b")));
         Statistics.HistogramStatistics<String> mergedHistogram = Statistics.HistogramStatistics.combine(Arrays.asList(histogram1, histogram1));
 
         Assert.assertNotNull(mergedHistogram);
@@ -126,15 +126,15 @@ public class HistogramTests {
     @Test
     public void combineHistogramComplexTest(){
         Statistics.HistogramStatistics<String> histogram1 = new Statistics.HistogramStatistics<>(
-                Arrays.asList(new Statistics.BucketInfo<String>(100l,1l,"a","a"),
-                        new Statistics.BucketInfo<String>(50l,10l,"b","e"),
-                        new Statistics.BucketInfo<String>(50l,10l,"e","f"),
-                        new Statistics.BucketInfo<String>(100l,1l,"g","g")));
+                Arrays.asList(new Statistics.BucketInfo<>(100l, 1l, "a", "a"),
+                        new Statistics.BucketInfo<>(50l, 10l, "b", "e"),
+                        new Statistics.BucketInfo<>(50l, 10l, "e", "f"),
+                        new Statistics.BucketInfo<>(100l, 1l, "g", "g")));
         Statistics.HistogramStatistics<String> histogram2 = new Statistics.HistogramStatistics<>(
                 Arrays.asList(
-                        new Statistics.BucketInfo<String>(50l,10l,"b","e"),
-                        new Statistics.BucketInfo<String>(100l,1l,"g","g"),
-                        new Statistics.BucketInfo<String>(100l,20l,"h","i")));
+                        new Statistics.BucketInfo<>(50l, 10l, "b", "e"),
+                        new Statistics.BucketInfo<>(100l, 1l, "g", "g"),
+                        new Statistics.BucketInfo<>(100l, 20l, "h", "i")));
         Statistics.HistogramStatistics<String> mergedHistogram = Statistics.HistogramStatistics.combine(Arrays.asList(histogram1, histogram2));
 
         Assert.assertNotNull(mergedHistogram);
