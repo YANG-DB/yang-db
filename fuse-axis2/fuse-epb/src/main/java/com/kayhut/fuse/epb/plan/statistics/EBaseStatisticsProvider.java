@@ -321,7 +321,13 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             case ne:
                 // Pessimistic estimate that a not equals condition is almost the same as the entire distribution
                 // given that we throw a single value
-                return mergeBucketsCardinality(histogramStatistics.getBuckets());
+                bucketContaining = histogramStatistics.findBucketContaining((T) value);
+                List<Statistics.BucketInfo<T>> bucketInfos = histogramStatistics.getBuckets();
+                // If the bucket that contains the value is a single value bucket - we throw it
+                if(bucketContaining.isPresent() && bucketContaining.get().isSingleValue()){
+                    bucketInfos.remove(bucketContaining.get());
+                }
+                return mergeBucketsCardinality(bucketInfos);
             case inSet:
                 List<T> valueList = (List<T>) value;
                 double total = 0;
@@ -333,7 +339,16 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 }
                 return new Statistics.Cardinality(total,count);
             case notInSet:
-                return mergeBucketsCardinality(histogramStatistics.getBuckets());
+                valueList = (List<T>) value;
+                bucketInfos = histogramStatistics.getBuckets();
+
+                for(T v : valueList){
+                    bucketContaining = histogramStatistics.findBucketContaining((T)v);
+                    if(bucketContaining.isPresent() && bucketContaining.get().isSingleValue()){
+                        bucketInfos.remove(bucketContaining.get());
+                    }
+                }
+                return mergeBucketsCardinality(bucketInfos);
             case inRange:
                 valueList = (List<T>) value;
                 bucketsAbove = histogramStatistics.findBucketsAbove(valueList.get(0), constraint.getiType().startsWith("["));

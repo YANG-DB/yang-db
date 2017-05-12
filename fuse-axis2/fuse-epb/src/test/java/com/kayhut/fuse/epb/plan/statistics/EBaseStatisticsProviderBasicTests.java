@@ -437,6 +437,47 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
+    public void eTypedStringNeSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.ne, "edf"));
+        propGroup.seteProps(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringNotInSetSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EPropGroup propGroup = new EPropGroup();
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.notInSet, Arrays.asList("edf", "abc")));
+        propGroup.seteProps(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+
+    @Test
     public void eTypedStringGtSingleValueBucketsTest(){
         List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
