@@ -492,15 +492,29 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, EPropGroup entityFilter) {
         List<EProp> timeConditions = new ArrayList<>();
         for (EProp eProp : entityFilter.geteProps()){
-
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt(eProp.getpType())).get();
             if(property.getName().equals(indexPartition.getTimeField())){
-                if(eProp.getCon().getOp().equals(ConstraintOp.inRange)){
-                    List<Date> values = (List<Date>)eProp.getCon().getExpr();
-                    timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
-                    timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
-                }else {
-                    timeConditions.add(eProp);
+                switch(eProp.getCon().getOp()){
+                    case inRange:
+                        List<Date> values = (List<Date>)eProp.getCon().getExpr();
+                        timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
+                        timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
+                        break;
+                    case inSet:
+                        values = (List<Date>)eProp.getCon().getExpr();
+                        for(Date value : values){
+                            timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(ConstraintOp.eq, value)));
+                        }
+                        break;
+                    case notInSet:
+                        values = (List<Date>)eProp.getCon().getExpr();
+                        for(Date value : values){
+                            timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(ConstraintOp.ne, value)));
+                        }
+                        break;
+                    default:
+                        timeConditions.add(eProp);
+                        break;
                 }
             }
         }
@@ -523,12 +537,27 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         for (RelProp relProp : relPropGroup.getrProps()){
             if(OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType())).get().getName().equals(indexPartition.getTimeField())){
 
-                if(relProp.getCon().getOp().equals(ConstraintOp.inRange)){
-                    List<Date> values = (List<Date>)relProp.getCon().getExpr();
-                    timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
-                    timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
-                }else {
-                    timeConditions.add(relProp);
+                switch(relProp.getCon().getOp()){
+                    case inRange:
+                        List<Date> values = (List<Date>)relProp.getCon().getExpr();
+                        timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
+                        timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
+                        break;
+                    case inSet:
+                        values = (List<Date>)relProp.getCon().getExpr();
+                        for(Date value : values){
+                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(ConstraintOp.eq, value)));
+                        }
+                        break;
+                    case notInSet:
+                        values = (List<Date>)relProp.getCon().getExpr();
+                        for(Date value : values){
+                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(ConstraintOp.ne, value)));
+                        }
+                        break;
+                    default:
+                        timeConditions.add(relProp);
+                        break;
                 }
             }
         }
@@ -554,7 +583,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 indicesToRemove.addAll(relevantIndices.stream().filter(idx -> !idx.equals(indexName)).collect(Collectors.toList()));
                 break;
             case ne:
-                // Do nothing
+                // Do nothing, under the assumption that an index contains more than one value (range)
                 break;
             case gt:
             case ge:
