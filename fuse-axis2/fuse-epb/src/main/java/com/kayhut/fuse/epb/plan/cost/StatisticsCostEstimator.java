@@ -133,7 +133,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         for(EProp eprop : entityFilter.getAsgEBase().geteBase().geteProps()){
             Optional<GraphRedundantPropertySchema> redundantVertexProperty = graphEdgeSchema.getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, Integer.parseInt(eprop.getpType())).get().getName());
             if(redundantVertexProperty.isPresent()){
-                RedundantRelProp redundantProp = new RedundantRelProp(redundantVertexProperty.get().getPropertyRedundantName());
+                PushdownRelProp redundantProp = new PushdownRelProp(redundantVertexProperty.get().getPropertyRedundantName());
                 redundantProp.setCon(eprop.getCon());
                 relProps.add(redundantProp);
             }else{

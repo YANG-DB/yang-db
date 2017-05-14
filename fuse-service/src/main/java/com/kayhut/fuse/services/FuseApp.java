@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import org.jooby.Jooby;
+import org.jooby.Result;
 import org.jooby.Results;
 import org.jooby.Status;
 import org.jooby.json.Jackson;
@@ -21,10 +22,36 @@ import java.util.Optional;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class FuseApp extends Jooby {
+
+
+    private static Result HOME = Results
+            .ok(
+                    "<!doctype html>\n" +
+                            "<html lang=\"en\">\n" +
+                            "<head>\n" +
+                            "  <title>Fuse API</title>\n" +
+                            "</head>\n" +
+                            "<body>\n" +
+                            "<h1>Fuse API</h1>\n" +
+                            "<ul>\n" +
+                            "<li>Resource Url: <a href=\"/fuse\">fuse</a></li>\n" +
+                            "<li>Health Url: <a href=\"/fuse/healthUrl\">healthUrl</a></li>\n" +
+                            "<li>Query Store Url: <a href=\"/fuse/query\">queryStoreUrl</a></li>\n" +
+                            "<li>Search Store Url: <a href=\"/fuse/search\">searchStoreUrl</a></li>\n" +
+                            "<li>Catalog Store Url: <a href=\"/fuse/catalog\">catalogStoreUrl</a></li>\n" +
+                            "</ul>\n" +
+                            "<p>More at <a href=\"http://sheker.com\">" +
+                            "Sheker</a>\n" +
+                            "</body>\n" +
+                            "</html>")
+            .type("html");
+
     //region Consructors
     public FuseApp(AppUrlSupplier urlSupplier) {
+
         use(new Scanner());
         use(new Jackson());
+        get("/", () -> HOME);
 
         registerCors(urlSupplier);
         registerFuseApiDescription(urlSupplier);
@@ -34,6 +61,7 @@ public class FuseApp extends Jooby {
         registerCursorApi(urlSupplier);
         registerPageApi(urlSupplier);
         registerSearchApi(urlSupplier);
+
     }
     //endregion
 
@@ -82,6 +110,8 @@ public class FuseApp extends Jooby {
                         urlSupplier.queryStoreUrl(),
                         "/fuse/search",
                         "/fuse/catalog"));
+
+
     }
 
     private void registerHealthApi(AppUrlSupplier urlSupplier) {
@@ -89,6 +119,7 @@ public class FuseApp extends Jooby {
         use("/fuse/health")
                 /** check health */
                 .get(() -> "Alive And Well...");
+
     }
 
     private void registerCatalogApi(AppUrlSupplier urlSupplier) {
@@ -99,6 +130,8 @@ public class FuseApp extends Jooby {
                     ContentResponse response = catalogCtrl().get(req.param("id").value());
                     return Results.with(response, response.status());
                 });
+
+
     }
 
     private void registerQueryApi(AppUrlSupplier urlSupplier) {
@@ -134,6 +167,8 @@ public class FuseApp extends Jooby {
                     //temporary fix for jason serialization of object graphs
                     return Results.with(JsonWriter.objectToJson(response), response.status());
                 });
+
+
     }
 
     private void registerCursorApi(AppUrlSupplier urlSupplier) {
@@ -202,6 +237,8 @@ public class FuseApp extends Jooby {
                     ContentResponse search = searchCtrl().search(req.body(CreateQueryRequest.class));
                     return Results.with(search, search.status());
                 });
+
+
     }
     //endregion
 

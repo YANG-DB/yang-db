@@ -2,6 +2,7 @@ package com.kayhut.fuse.dispatcher.driver;
 
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class SimpleOntologyProvider implements OntologyProvider {
     public SimpleOntologyProvider() throws IOException {
         ontologyMap = new HashMap<>();
         Ontology ontology = asObject(readJsonFile("catalog/"+DRAGONS), Ontology.class);
+        ontology = OntologyFinalizer.finalize(ontology);
         ontologyMap.put(DRAGONS, ontology);
     }
 

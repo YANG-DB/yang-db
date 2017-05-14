@@ -39,6 +39,9 @@ public enum ConstraintOp {
     @JsonProperty("in range")
     inRange,
 
+    @JsonProperty("not in range")
+    notInRange,
+
     @JsonProperty("contains")
     contains,
 

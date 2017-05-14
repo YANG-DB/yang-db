@@ -1,8 +1,9 @@
-package com.kayhut.fuse.asg.strategy;
+package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintTransformationStrategy;
+import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
+import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintTypeTransformationStrategy;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -26,7 +27,7 @@ import static org.junit.Assert.*;
 /**
  * Created by benishue on 09-May-17.
  */
-public class AsgConstraintTransformationStrategyTest {
+public class AsgConstraintTypeTransformationStrategyTest {
 
     Ontology ontology;
     @Test
@@ -41,10 +42,10 @@ public class AsgConstraintTransformationStrategyTest {
         assertThat(eProp.getCon().getExpr(), instanceOf(Long.class));
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
-        AsgConstraintTransformationStrategy asgConstraintTransformationStrategy = new AsgConstraintTransformationStrategy();
+        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
-        asgConstraintTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
+        asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
         Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(Date.class));
     }
@@ -61,10 +62,10 @@ public class AsgConstraintTransformationStrategyTest {
         assertThat(eProp.getCon().getExpr(), instanceOf(int.class));
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
-        AsgConstraintTransformationStrategy asgConstraintTransformationStrategy = new AsgConstraintTransformationStrategy();
+        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
-        asgConstraintTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
+        asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
         Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(Date.class));
     }
@@ -82,10 +83,10 @@ public class AsgConstraintTransformationStrategyTest {
 
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
-        AsgConstraintTransformationStrategy asgConstraintTransformationStrategy = new AsgConstraintTransformationStrategy();
+        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
-        asgConstraintTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
+        asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
         Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(long.class));
     }
@@ -122,10 +123,10 @@ public class AsgConstraintTransformationStrategyTest {
         //endregion
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
-        AsgConstraintTransformationStrategy asgConstraintTransformationStrategy = new AsgConstraintTransformationStrategy();
+        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the RelProp #1 with the Epoch time
-        asgConstraintTransformationStrategy.apply(asgQueryWithRelProps, asgStrategyContext);
+        asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelProps, asgStrategyContext);
         Object expr1 = ((RelProp) AsgQueryUtils.getElement(asgQueryWithRelProps, 4).get().geteBase()).getCon().getExpr();
         Object expr2 = ((RelProp) AsgQueryUtils.getElement(asgQueryWithRelProps, 5).get().geteBase()).getCon().getExpr();
         assertThat(expr1, instanceOf(Date.class));
@@ -145,7 +146,7 @@ public class AsgConstraintTransformationStrategyTest {
         assertNotNull(newRelPropGroupAsgEbase);
 
         //Applying again the Constraint Transformation Strategy
-        asgConstraintTransformationStrategy.apply(asgQueryWithRelPropsOriginal, asgStrategyContext);
+        asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelPropsOriginal, asgStrategyContext);
         expr1 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(1).getCon().getExpr();
         assertThat(expr1, instanceOf(Date.class));
