@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.strategy;
 
-import com.kayhut.fuse.gta.translation.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;

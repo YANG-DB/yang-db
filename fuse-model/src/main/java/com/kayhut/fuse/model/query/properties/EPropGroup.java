@@ -43,4 +43,12 @@ public class EPropGroup  extends EBase {
         result = 31 * result + (eProps != null ? eProps.hashCode() : 0);
         return result;
     }
+
+    public EPropGroup clone() {
+        ArrayList<EProp> eProps = new ArrayList<>(geteProps());
+        EPropGroup group = new EPropGroup();
+        group.seteProps(eProps);
+        group.seteNum(geteNum());
+        return group;
+    }
 }

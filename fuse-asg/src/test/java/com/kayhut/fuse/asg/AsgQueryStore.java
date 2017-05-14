@@ -280,6 +280,14 @@ public class AsgQueryStore {
                 .build();
     }
 
+    public static AsgQuery queryWithEtypedAndEconcrete(String queryName, String ontologyName){
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, "A", 1))
+                .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                .next(concrete("123", 2, "B", "tag",3))
+                .build();
+    }
+
 
     public static AsgQuery Q188_V1() {
         //region Query Building
