@@ -27,7 +27,122 @@ public class OntologyTest {
     @Test
     public void testShortOntologySerialization() throws IOException, JSONException {
         String ontologyActualJSON = mapper.writeValueAsString(ontologyShortObj);
-        String ontologyExpectedJSONString = "{\"ont\":\"Dragons\",\"enumeratedTypes\":[{\"eType\":\"TYPE_Gender\",\"values\":[{\"val\":1,\"name\":\"Female\"},{\"val\":2,\"name\":\"Male\"},{\"val\":3,\"name\":\"Other\"}]}],\"properties\":[{\"pType\":1,\"name\":\"firstName\",\"type\":\"string\"},{\"pType\":2,\"name\":\"lastName\",\"type\":\"string\"},{\"pType\":3,\"name\":\"gender\",\"type\":\"TYPE_Gender\"},{\"pType\":4,\"name\":\"birthDate\",\"type\":\"date\"},{\"pType\":5,\"name\":\"deathDate\",\"type\":\"date\"},{\"pType\":6,\"name\":\"height\",\"type\":\"int\",\"units\":\"cm\"},{\"pType\":7,\"name\":\"name\",\"type\":\"string\"},{\"pType\":8,\"name\":\"startDate\",\"type\":\"date\"},{\"pType\":9,\"name\":\"endDate\",\"type\":\"date\"}],\"entityTypes\":[{\"eType\":1,\"name\":\"Person\",\"properties\":[1,2,3,4,5,6]},{\"eType\":2,\"name\":\"Dragon\",\"properties\":[7]},{\"eType\":4,\"name\":\"Guild\",\"properties\":[7]}],\"relationshipTypes\":[{\"rType\":1,\"name\":\"own\",\"directional\":true,\"ePairs\":[{\"eTypeA\":1,\"eTypeB\":2}],\"properties\":[8,9]},{\"rType\":2,\"name\":\"memberOf\",\"directional\":true,\"ePairs\":[{\"eTypeA\":1,\"eTypeB\":4}],\"properties\":[8,9]}]}";
+        String ontologyExpectedJSONString = "{\n" +
+                "\t\"ont\": \"Dragons\",\n" +
+                "\t\"enumeratedTypes\": [{\n" +
+                "\t\t\"eType\": \"TYPE_Gender\",\n" +
+                "\t\t\"values\": [{\n" +
+                "\t\t\t\"val\": 1,\n" +
+                "\t\t\t\"name\": \"Female\"\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"val\": 2,\n" +
+                "\t\t\t\"name\": \"Male\"\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"val\": 3,\n" +
+                "\t\t\t\"name\": \"Other\"\n" +
+                "\t\t}]\n" +
+                "\t}],\n" +
+                "\t\"properties\": [{\n" +
+                "\t\t\"pType\": 1,\n" +
+                "\t\t\"name\": \"firstName\",\n" +
+                "\t\t\"type\": \"string\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 2,\n" +
+                "\t\t\"name\": \"lastName\",\n" +
+                "\t\t\"type\": \"string\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 3,\n" +
+                "\t\t\"name\": \"gender\",\n" +
+                "\t\t\"type\": \"TYPE_Gender\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 4,\n" +
+                "\t\t\"name\": \"birthDate\",\n" +
+                "\t\t\"type\": \"date\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 5,\n" +
+                "\t\t\"name\": \"deathDate\",\n" +
+                "\t\t\"type\": \"date\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 6,\n" +
+                "\t\t\"name\": \"height\",\n" +
+                "\t\t\"type\": \"int\",\n" +
+                "\t\t\"units\": \"cm\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 7,\n" +
+                "\t\t\"name\": \"name\",\n" +
+                "\t\t\"type\": \"string\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 8,\n" +
+                "\t\t\"name\": \"startDate\",\n" +
+                "\t\t\"type\": \"date\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 9,\n" +
+                "\t\t\"name\": \"endDate\",\n" +
+                "\t\t\"type\": \"date\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 2147483646,\n" +
+                "\t\t\"name\": \"type\",\n" +
+                "\t\t\"type\": \"string\"\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"pType\": 2147483647,\n" +
+                "\t\t\"name\": \"id\",\n" +
+                "\t\t\"type\": \"string\"\n" +
+                "\t}],\n" +
+                "\t\"entityTypes\": [{\n" +
+                "\t\t\"eType\": 1,\n" +
+                "\t\t\"name\": \"Person\",\n" +
+                "\t\t\"properties\": [1,\n" +
+                "\t\t2,\n" +
+                "\t\t3,\n" +
+                "\t\t4,\n" +
+                "\t\t5,\n" +
+                "\t\t6]\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"eType\": 2,\n" +
+                "\t\t\"name\": \"Dragon\",\n" +
+                "\t\t\"properties\": [7]\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"eType\": 4,\n" +
+                "\t\t\"name\": \"Guild\",\n" +
+                "\t\t\"properties\": [7]\n" +
+                "\t}],\n" +
+                "\t\"relationshipTypes\": [{\n" +
+                "\t\t\"rType\": 1,\n" +
+                "\t\t\"name\": \"own\",\n" +
+                "\t\t\"directional\": true,\n" +
+                "\t\t\"ePairs\": [{\n" +
+                "\t\t\t\"eTypeA\": 1,\n" +
+                "\t\t\t\"eTypeB\": 2\n" +
+                "\t\t}],\n" +
+                "\t\t\"properties\": [8,\n" +
+                "\t\t9]\n" +
+                "\t},\n" +
+                "\t{\n" +
+                "\t\t\"rType\": 2,\n" +
+                "\t\t\"name\": \"memberOf\",\n" +
+                "\t\t\"directional\": true,\n" +
+                "\t\t\"ePairs\": [{\n" +
+                "\t\t\t\"eTypeA\": 1,\n" +
+                "\t\t\t\"eTypeB\": 4\n" +
+                "\t\t}],\n" +
+                "\t\t\"properties\": [8,\n" +
+                "\t\t9]\n" +
+                "\t}]\n" +
+                "}";
         System.out.println("ontologyExpectedJSONString:" + ontologyExpectedJSONString);
         System.out.println("ontologyActualJSON:" + ontologyActualJSON);
         JSONAssert.assertEquals(ontologyExpectedJSONString, ontologyActualJSON, false);
