@@ -44,7 +44,7 @@ public class EBaseStatisticsProviderIndicesTests {
     @Before
     public void setUp() throws Exception {
         List<Statistics.BucketInfo<Date>> secondDateBuckets = new ArrayList<>();
-        nowTime  = System.currentTimeMillis();
+        nowTime  = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").parse("2017-01-01-10-30-00").getTime();
         secondDateBuckets.add(new Statistics.BucketInfo<>(500l,10l,new Date(nowTime -1000*60),new Date(nowTime +1000*60)));
         List<Statistics.BucketInfo<Date>> firstDateBuckets = new ArrayList<>();
         firstDateBuckets.add(new Statistics.BucketInfo<>(10l,5l,new Date(nowTime -2*1000*60*60),new Date(nowTime -2*1000*59*60)));
@@ -206,6 +206,46 @@ public class EBaseStatisticsProviderIndicesTests {
         Assert.assertEquals(10/120d, nodeStatistics.getCardinality(), 0.1);
     }
 
+    @Test
+    public void eRelDateInSetFilterSingleIndexHistogramTest() {
+        Rel rel = new Rel();
+        rel.setrType(2);
+        RelPropGroup relFilter = new RelPropGroup();
+
+        RelProp prop = new RelProp();
+        prop.setpType("8");
+        Constraint constraint = new Constraint();
+        constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
+        constraint.setOp(ConstraintOp.inSet);
+        prop.setCon(constraint);
+        relFilter.setrProps(Collections.singletonList(prop));
+
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
+    }
+
+
+    @Test
+    public void eRelDateNotInSetFilterSingleIndexHistogramTest() {
+        Rel rel = new Rel();
+        rel.setrType(2);
+        RelPropGroup relFilter = new RelPropGroup();
+
+        RelProp prop = new RelProp();
+        prop.setpType("8");
+        Constraint constraint = new Constraint();
+        constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
+        constraint.setOp(ConstraintOp.notInSet);
+        prop.setCon(constraint);
+        relFilter.setrProps(Collections.singletonList(prop));
+
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(510d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(15, nodeStatistics.getCardinality(), 0.1);
+    }
 
     @Test
     public void eRelStringGtFilterHistogramTest() {
@@ -251,4 +291,29 @@ public class EBaseStatisticsProviderIndicesTests {
         Assert.assertEquals(50, nodeStatistics.getTotal(), 0.1);
     }
 
+    @Test
+    public void eRelStringGtFilterWithDateRangeFilterHistogramTest() {
+        Rel rel = new Rel();
+        rel.setrType(2);
+        RelPropGroup relFilter = new RelPropGroup();
+
+        RelProp dateProp = new RelProp();
+        dateProp.setpType("8");
+        Constraint constraint = new Constraint();
+        constraint.setExpr(Arrays.asList(new Date(nowTime-60*1000),new Date(nowTime+60*1000)));
+        constraint.setOp(ConstraintOp.inRange);
+        constraint.setiType("[]");
+        dateProp.setCon(constraint);
+        RelProp stringProp = new RelProp();
+        stringProp.setpType("1");
+        constraint = new Constraint();
+        constraint.setExpr("abc");
+        constraint.setOp(ConstraintOp.gt);
+        stringProp.setCon(constraint);
+        relFilter.setrProps(Arrays.asList(dateProp,stringProp));
+
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50, nodeStatistics.getTotal(), 0.1);
+    }
 }
