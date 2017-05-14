@@ -2,18 +2,14 @@ package com.kayhut.fuse.stat.Util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.model.configuration.*;
+import com.kayhut.fuse.stat.model.configuration.histogram.HistogramType;
 import com.kayhut.fuse.stat.model.result.StringStatResult;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
