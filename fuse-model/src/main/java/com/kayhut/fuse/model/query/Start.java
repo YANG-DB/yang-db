@@ -9,30 +9,15 @@ import com.kayhut.fuse.model.Next;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Start extends EBase implements Next<Integer> {
-
-    public Integer getNext() {
-        return next;
-    }
-
-    public void setNext(Integer next) {
+    //region Constructors
+    public Start() {}
+    public Start(int eNum, int next) {
+        super(eNum);
         this.next = next;
     }
-
-    public int getB() {
-        return b;
-    }
-
-    public void setB(int b) {
-        this.b = b;
-    }
-
-    //region Fields
-    private int next;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private int b;
     //endregion
 
-
+    //region Override Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,4 +37,29 @@ public class Start extends EBase implements Next<Integer> {
         result = 31 * result + b;
         return result;
     }
+    //endregion
+
+    //region Properties
+    public Integer getNext() {
+        return next;
+    }
+
+    public void setNext(Integer next) {
+        this.next = next;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public void setB(int b) {
+        this.b = b;
+    }
+    //endregion
+
+    //region Fields
+    private int next;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private int b;
+    //endregion
 }

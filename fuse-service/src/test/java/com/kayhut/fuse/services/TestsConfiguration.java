@@ -36,6 +36,7 @@ public class TestsConfiguration {
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.PageTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.QueryTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SingleEntityTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.EntityRelationEntityTest.class);
     }
     //endregion
 

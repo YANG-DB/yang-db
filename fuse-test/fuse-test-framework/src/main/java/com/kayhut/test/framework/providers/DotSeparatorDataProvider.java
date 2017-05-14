@@ -18,7 +18,7 @@ public class DotSeparatorDataProvider implements GenericDataProvider {
     }
 
     @Override
-    public Iterable<Map<String, Object>> getDocuments() throws IOException {
+    public Iterable<Map<String, Object>> getDocuments() throws Exception {
         return Stream.ofAll(innerProvider.getDocuments()).map(doc -> {
             List<String> compositeKeys = Stream.ofAll(doc.keySet()).filter(key -> key.contains(".")).toJavaList();
 

@@ -152,7 +152,8 @@ public class EntityFilterOpTranslationStrategyTest {
                 .has(GlobalConstants.HasKeys.CONSTRAINT,
                         Constraint.by(__.and(
                                 __.has("name", "value1"),
-                                __.has("age", 30))));
+                                __.has("age", 30))))
+                .otherV();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

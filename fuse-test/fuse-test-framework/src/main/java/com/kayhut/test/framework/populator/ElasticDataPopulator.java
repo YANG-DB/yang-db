@@ -55,7 +55,7 @@ public class ElasticDataPopulator implements DataPopulator {
     }
 
     @Override
-    public void populate() throws IOException {
+    public void populate() throws Exception {
         int currentBulkSize = 0;
 
         BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();

@@ -6,6 +6,7 @@ import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
 import com.kayhut.fuse.executor.uniGraphProvider.ElasticUniGraphProvider;
+import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
@@ -36,8 +37,7 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(Client.class).toInstance(createClient(elasticGraphConfiguration));
 
         binder.bind(UniGraphProvider.class).to(ElasticUniGraphProvider.class).asEagerSingleton();
-
-        binder.bind(PhysicalIndexProvider.class).toInstance(createPhysicalIndex(conf));
+        binder.bind(PhysicalIndexProviderFactory.class).toInstance(createPhysicalIndexProviderFactory(conf));
     }
     //endregion
 
@@ -68,8 +68,8 @@ public class ExecutorModule extends ModuleBase {
         return configuration;
     }
 
-    private PhysicalIndexProvider createPhysicalIndex(Config conf) {
-        return new SimplePhysicalIndexProvider(conf.getString("fuse.vertex_index_name"), conf.getString("fuse.edge_index_name"));
+    private PhysicalIndexProviderFactory createPhysicalIndexProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        return (PhysicalIndexProviderFactory)(Class.forName(conf.getString("fuse.physical_index_provider_factory_class")).newInstance());
     }
     //endregion
 }
