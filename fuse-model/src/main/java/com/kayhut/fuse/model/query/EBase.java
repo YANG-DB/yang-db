@@ -48,17 +48,11 @@ import com.kayhut.fuse.model.query.quant.Quant2;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EBase {
-
+    //region Constructros
     public EBase() {}
 
     public EBase(int eNum) {
         this.eNum = eNum;
-    }
-
-    //region Override Methods
-    @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "(" + this.geteNum() + ")";
     }
     //endregion
 
@@ -70,12 +64,9 @@ public class EBase {
     public void seteNum(int eNum) {
         this.eNum = eNum;
     }
-
-    //region Fields
-    private int eNum;
     //endregion
 
-
+    //region Override Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,5 +80,15 @@ public class EBase {
     public EBase clone() {
         return new EBase(eNum);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "(" + this.geteNum() + ")";
+    }
+    //endregion
+
+    //region Fields
+    private int eNum;
+    //endregion
 
 }

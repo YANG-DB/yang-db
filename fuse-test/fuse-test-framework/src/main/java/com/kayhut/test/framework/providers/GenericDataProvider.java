@@ -1,6 +1,7 @@
 package com.kayhut.test.framework.providers;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -10,5 +11,5 @@ import java.util.stream.Stream;
  */
 public interface GenericDataProvider {
 
-    Iterable<Map<String, Object>> getDocuments() throws IOException;
+    Iterable<Map<String, Object>> getDocuments() throws Exception;
 }

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model.configuration;
+package com.kayhut.fuse.stat.model.configuration.histogram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

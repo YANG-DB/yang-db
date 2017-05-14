@@ -110,10 +110,9 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().size(),2);
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().size(),3);
         //first eProp is the old eprop filter condition (non pushdown)
         assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
-
         Optional<RelProp> idRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getrProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.id")).findFirst();
         Assert.assertTrue(idRelProp.isPresent());

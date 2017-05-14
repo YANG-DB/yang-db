@@ -24,17 +24,8 @@ public class ELog extends EEntityBase {
         this.eName = eName;
     }
 
-    public Integer getNext() {
-        return next;
-    }
-
-    public void setNext(Integer next) {
-        this.next = next;
-    }
-
     //region Fields
     private	String fName;
     private	String eName;
-    private	int	next;
     //endregion
 }
