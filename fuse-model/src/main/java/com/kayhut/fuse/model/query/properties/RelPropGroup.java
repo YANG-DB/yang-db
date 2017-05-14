@@ -43,4 +43,13 @@ public class RelPropGroup  extends EBase {
         result = 31 * result + rProps.hashCode();
         return result;
     }
+
+    @Override
+    public RelPropGroup clone() {
+        RelPropGroup propGroup = new RelPropGroup();
+        propGroup.seteNum(geteNum());
+        propGroup.setrProps(new ArrayList<>(getrProps()));
+        return propGroup;
+
+    }
 }

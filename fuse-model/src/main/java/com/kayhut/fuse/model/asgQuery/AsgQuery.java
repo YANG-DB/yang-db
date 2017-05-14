@@ -15,6 +15,7 @@ import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -202,7 +203,7 @@ public class AsgQuery {
         public static AsgEBase<EPropGroup> eProp(int eNum, EProp... props) {
             EPropGroup group = new EPropGroup();
             group.seteNum(eNum);
-            group.seteProps(Arrays.asList(props));
+            group.seteProps(new ArrayList<>(Arrays.asList(props)));
 
             return new AsgEBase<>(group);
         }
@@ -210,7 +211,7 @@ public class AsgQuery {
         public static AsgEBase<RelPropGroup> relProp(int eNum, RelProp ... props) {
             RelPropGroup relPropGroup = new RelPropGroup();
             relPropGroup.seteNum(eNum);
-            relPropGroup.setrProps(Arrays.asList(props));
+            relPropGroup.setrProps(new ArrayList<>(Arrays.asList(props)));
 
             return new AsgEBase<>(relPropGroup);
         }
