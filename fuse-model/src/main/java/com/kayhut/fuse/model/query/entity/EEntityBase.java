@@ -26,8 +26,12 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         if (!super.equals(o)) return false;
 
         EEntityBase that = (EEntityBase) o;
-
-        if (!eTag.equals(that.eTag)) return false;
+        if(eTag == null){
+            if(that.eTag != null )
+                return false;
+        }else {
+            if (!eTag.equals(that.eTag)) return false;
+        }
         if (next != that.next) return false;
         return b == that.b;
     }

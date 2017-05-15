@@ -121,57 +121,11 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             if (matcher.find()) {
                 Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
                 Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = calculate(map, pattern, previousCost);
-                if(pattern == StatisticsCostEstimatorPatterns.FULL_STEP){
-                    tuple2 = splitRedundantPropertyConditions(tuple2);
-                }
                 newPlan = buildNewPlan(tuple2, previousCost);
                 break;
             }
         }
         return newPlan;
-    }
-
-    private Tuple2<Double, List<PlanOpWithCost<Cost>>> splitRedundantPropertyConditions(Tuple2<Double, List<PlanOpWithCost<Cost>>> planCostAndOps) {
-        if(planCostAndOps._2.size() != 3){
-            return planCostAndOps;
-        }
-
-        List<PlanOpWithCost<Cost>> planOpWithCosts = planCostAndOps._2();
-        PlanOpWithCost<Cost> relationOps = planOpWithCosts.get(1);
-        PlanOpWithCost<Cost> entityOps = planOpWithCosts.get(2);
-        RelationFilterOp relFilter = (RelationFilterOp)relationOps.getOpBase().get(1);
-        EntityFilterOp entityFilter = (EntityFilterOp) entityOps.getOpBase().get(1);
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, relFilter.getRel().geteBase().getrType())).get();
-        List<EProp> entityProps = new ArrayList<>();
-        List<RelProp> relProps = new ArrayList<>(relFilter.getAsgEBase().geteBase().getrProps());
-        for(EProp eprop : entityFilter.getAsgEBase().geteBase().geteProps()){
-            Optional<GraphRedundantPropertySchema> redundantVertexProperty = graphEdgeSchema.getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, Integer.parseInt(eprop.getpType())).get().getName());
-            if(redundantVertexProperty.isPresent()){
-                PushdownRelProp redundantProp = new PushdownRelProp(redundantVertexProperty.get().getPropertyRedundantName());
-                redundantProp.setCon(eprop.getCon());
-                relProps.add(redundantProp);
-            }else{
-                entityProps.add(eprop);
-            }
-        }
-
-        List<PlanOpWithCost<Cost>> newPlanOpWithCosts = new ArrayList<>();
-        newPlanOpWithCosts.add(planOpWithCosts.get(0));
-        RelPropGroup newRelPropGroup = new RelPropGroup();
-        newRelPropGroup.setrProps(relProps);
-        RelationFilterOp newRelationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(newRelPropGroup).build());
-        newRelationFilterOp.setRel(relFilter.getRel());
-        PlanOpWithCost<Cost> newRelationOps = new PlanOpWithCost<Cost>(relationOps.getCost(), relationOps.peek(), relationOps.getOpBase().get(0),newRelationFilterOp);
-        newPlanOpWithCosts.add(newRelationOps);
-
-        EPropGroup newEpropGroup = new EPropGroup();
-        newEpropGroup.seteProps(entityProps);
-        EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(newEpropGroup).build());
-        newEntityFilterOp.setEntity(entityFilter.getEntity());
-        PlanOpWithCost<Cost> newEntityOps = new PlanOpWithCost<Cost>(entityOps.getCost(), entityOps.peek(), entityOps.getOpBase().get(0), newEntityFilterOp);
-        newPlanOpWithCosts.add(newEntityOps);
-
-        return new Tuple2<>(planCostAndOps._1(), newPlanOpWithCosts);
     }
 
     private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(Tuple2<Double,List<PlanOpWithCost<Cost>>> tuple2, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {

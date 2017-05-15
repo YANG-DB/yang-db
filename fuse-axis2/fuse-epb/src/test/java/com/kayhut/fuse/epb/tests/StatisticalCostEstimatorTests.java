@@ -200,42 +200,6 @@ public class StatisticalCostEstimatorTests {
     }
 
     @Test
-    public void splitConditionTest() throws Exception {
-        PlanMockBuilder builder = mock().entity(TYPED, 100, 4).entityFilter(0.2,"filter1".hashCode()).startNewPlan().rel(out, 1, 100).relFilter(0.6,"filter2".hashCode()).entity(CONCRETE, 1, 5).entityFilter(1,2);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(builder.statistics(),Integer.MAX_VALUE,Integer.MAX_VALUE), graphElementSchemaProvider, ontology);
-
-        Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.planWithCost(50, 250));
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost);
-
-        Assert.assertNotNull(estimate);
-        Assert.assertEquals(estimate.getPlan().getOps().size(),6);
-        RelationFilterOp relationFilterOp = (RelationFilterOp) estimate.getPlan().getOps().get(3);
-        EntityFilterOp entityFilterOp = (EntityFilterOp) estimate.getPlan().getOps().get(5);
-        Assert.assertEquals(0,entityFilterOp.getAsgEBase().geteBase().geteProps().size());
-        Assert.assertEquals(2,relationFilterOp.getAsgEBase().geteBase().getrProps().size());
-        Assert.assertTrue(relationFilterOp.getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
-        PushdownRelProp pushdownRelProp = (PushdownRelProp) relationFilterOp.getAsgEBase().geteBase().getrProps().get(1);
-        Assert.assertEquals("entityB.lastName", pushdownRelProp.getPushdownPropName());
-    }
-
-    @Test
-    public void noSplitConditionTest() throws Exception {
-        PlanMockBuilder builder = mock().entity(TYPED, 100, 4).entityFilter(0.2,"filter1".hashCode()).startNewPlan().rel(out, 1, 100).relFilter(0.6,"filter2".hashCode()).entity(CONCRETE, 1, 5).entityFilter(1,1);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(build(builder.statistics(),Integer.MAX_VALUE,Integer.MAX_VALUE), graphElementSchemaProvider, ontology);
-
-        Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.planWithCost(50, 250));
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost);
-
-        Assert.assertNotNull(estimate);
-        Assert.assertEquals(estimate.getPlan().getOps().size(),6);
-        RelationFilterOp relationFilterOp = (RelationFilterOp) estimate.getPlan().getOps().get(3);
-        EntityFilterOp entityFilterOp = (EntityFilterOp) estimate.getPlan().getOps().get(5);
-        Assert.assertEquals(1,entityFilterOp.getAsgEBase().geteBase().geteProps().size());
-        Assert.assertEquals(1,relationFilterOp.getAsgEBase().geteBase().getrProps().size());
-
-    }
-
-    @Test
     public void estimateSimpleAndPattern() throws Exception {
         PlanMockBuilder builder = mock().entity(TYPED, 100,4).rel(out,5,100).entity(TYPED, 100,6).startNewPlan();
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.planWithCost(100, 0);
