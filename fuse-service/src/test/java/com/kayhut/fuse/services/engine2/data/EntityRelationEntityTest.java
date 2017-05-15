@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
@@ -11,15 +10,22 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
+import com.kayhut.fuse.unipop.promise.Constraint;
+import com.kayhut.fuse.unipop.promise.Promise;
+import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
@@ -68,8 +74,6 @@ public class EntityRelationEntityTest {
                 idField,
                 () -> createDragons(10)).populate();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
                 "fire20170511",
@@ -110,7 +114,7 @@ public class EntityRelationEntityTest {
 
     //region Tests
     @Test
-    public void test_dragon_fire_dragon() throws IOException, InterruptedException {
+    public void test_Dragon_Fire_Dragon() throws Exception {
         Query query = Query.QueryBuilder.aQuery().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -121,7 +125,7 @@ public class EntityRelationEntityTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1);
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
@@ -130,8 +134,10 @@ public class EntityRelationEntityTest {
             }
         }
 
-        QueryResult queryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        int x = 5;
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        QueryResult expectedQueryResult = queryResult_Dragons_Fire_Dragon(10);
+
+        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult);
     }
     //endregion
 
@@ -202,11 +208,57 @@ public class EntityRelationEntityTest {
 
         return fireEdges;
     }
+
+    protected static QueryResult queryResult_Dragons_Fire_Dragon(int numDragons) throws Exception {
+        QueryResult.Builder builder = QueryResult.Builder.instance();
+        PromiseEdgeIdProvider edgeIdProvider = new PromiseEdgeIdProvider(
+                Optional.of(Constraint.by(
+                        __.and(
+                            __.has(T.label, "Fire"),
+                            __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT)))));
+
+        for(int i = 0 ; i < numDragons ; i++) {
+            for (int j = 0; j < i; j++) {
+                Entity entityA = Entity.Builder.instance()
+                        .withEID("d" + i)
+                        .withETag(Collections.singletonList("A"))
+                        .withEType($ont.eType$("Dragon"))
+                        .build();
+
+                Entity entityB = Entity.Builder.instance()
+                        .withEID("d" + j)
+                        .withETag(Collections.singletonList("B"))
+                        .withEType($ont.eType$("Dragon"))
+                        .build();
+
+                Relationship relationship = Relationship.Builder.instance()
+                        .withRID(edgeIdProvider.get(GlobalConstants.Labels.PROMISE,
+                                new PromiseVertex(Promise.as(entityA.geteID()), Optional.empty(), null),
+                                new PromiseVertex(Promise.as(entityB.geteID()), Optional.empty(), null),
+                                null))
+                        .withDirectional(true)
+                        .withEID1(entityA.geteID())
+                        .withEID2(entityB.geteID())
+                        .withETag1(entityA.geteTag().get(0))
+                        .withETag2(entityB.geteTag().get(0))
+                        .withRType($ont.rType$("Fire"))
+                        .build();
+
+                builder.withAssignment(Assignment.Builder.instance()
+                        .withEntity(entityA)
+                        .withEntity(entityB)
+                        .withRelationship(relationship).build());
+            }
+        }
+
+        return builder.build();
+    }
     //endregion
 
     //region Fields
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static FuseClient fuseClient;
     private static Ontology.Accessor $ont;
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     //endregion
 }

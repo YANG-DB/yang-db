@@ -14,6 +14,13 @@ import java.util.Set;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Entity {
+    //region Constructors
+    public Entity() {
+        this.properties = Collections.emptyList();
+        this.attachedProperties = Collections.emptyList();
+    }
+    //endregion
+
     //region Properties
     public List<String> geteTag() {
         return eTag;
@@ -89,7 +96,7 @@ public class Entity {
         //endregion
 
         //region Static
-        public static Builder anEntity() {
+        public static Builder instance() {
             return new Builder();
         }
         //endregion

@@ -3,6 +3,8 @@ package com.kayhut.fuse.unipop.controller;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
+import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -62,21 +64,26 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
             constraint = Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
         }
 
-        return queryPromiseEdges(searchVertexQuery.getVertices(), constraint);
+        try {
+            return queryPromiseEdges(searchVertexQuery.getVertices(), constraint);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyIterator();
+        }
     }
     //endregion
 
     //region Private Methods
-    private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) {
+    private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) throws Exception {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices,constraint,schemaProvider);
+        PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices, constraint, schemaProvider);
 
         CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
-                new CompositeSearchAppender(CompositeSearchAppender.Mode.all,
+                new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         new StartVerticesSearchAppender(),
-                        new EdgeConstraintSearchAppender(),
+                        SearchAppenderUtil.wrap(new EdgeConstraintSearchAppender()),
                         new PromiseEdgeAggregationAppender(),
                         new PromiseEdgeIndexAppender());
 
@@ -88,24 +95,10 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
         SearchResponse response = searchRequest.execute().actionGet();
 
         //convert result
-        return convert(response);
+        AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(graph, new PromiseEdgeIdProvider(constraint));
+        return converter.convert(response.getAggregations().asMap());
 
     }
-
-    private Iterator<Edge> convert(SearchResponse response) {
-
-        if( response == null ) {
-            throw new RuntimeException("Null response received");
-        }
-
-        Aggregation agg = response.getAggregations().asMap().get(GlobalConstants.EdgeSchema.SOURCE);
-
-        AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(graph);
-
-        return converter.convert(agg);
-
-    }
-
     //endregion
 
     //region Fields

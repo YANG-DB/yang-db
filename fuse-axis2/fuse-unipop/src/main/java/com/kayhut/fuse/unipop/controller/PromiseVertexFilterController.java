@@ -6,6 +6,8 @@ import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender
 import com.kayhut.fuse.unipop.controller.search.appender.EdgeConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.appender.FilterVerticesSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.appender.SizeSearchAppender;
+import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
+import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -17,6 +19,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
@@ -78,15 +81,14 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexFilterControllerContext context = new PromiseVertexFilterControllerContext(vertices,
-                                                                                                constraint,
-                                                                                                schemaProvider,
-                                                                                                searchVertexQuery);
+        PromiseVertexFilterControllerContext context =
+                new PromiseVertexFilterControllerContext(vertices, constraint, schemaProvider, searchVertexQuery);
 
-        CompositeSearchAppender appender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all,
-                new FilterVerticesSearchAppender(),
-                new EdgeConstraintSearchAppender(),
-                new SizeSearchAppender(configuration));
+        CompositeSearchAppender<PromiseVertexFilterControllerContext> appender =
+                new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
+                    new FilterVerticesSearchAppender(),
+                    SearchAppenderUtil.wrap(new SizeSearchAppender(configuration)),
+                    SearchAppenderUtil.wrap(new EdgeConstraintSearchAppender()));
 
         appender.append(searchBuilder, context);
 
@@ -99,12 +101,9 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        return convert(searchHits, new SearchHitPromiseFilterEdgeConverter(graph));
-    }
-
-    private Iterator<Edge> convert(SearchHitScrollIterable searchHits, SearchHitPromiseFilterEdgeConverter converter) {
+        ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
         return Stream.ofAll(searchHits)
-                .map(hit -> converter.convert(hit))
+                .map(converter::convert)
                 .filter(Objects::nonNull).iterator();
     }
     //endregion

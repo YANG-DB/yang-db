@@ -1,6 +1,6 @@
 package com.kayhut.fuse.unipop.controller;
 
-import com.kayhut.fuse.unipop.controller.utils.CollectionUtils;
+import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -38,7 +38,7 @@ public abstract class PromiseVertexControllerBase implements SearchVertexQuery.S
             return Collections.emptyList();
         }
 
-        List<String> requestedEdgeLabels = CollectionUtils.listFromObjectValue(labelHasContainer.get().getValue());
+        List<String> requestedEdgeLabels = CollectionUtil.listFromObjectValue(labelHasContainer.get().getValue());
         return Stream.ofAll(requestedEdgeLabels).filter(label -> this.supportedEdgeLabels.contains(label)).toJavaList();
     }
 

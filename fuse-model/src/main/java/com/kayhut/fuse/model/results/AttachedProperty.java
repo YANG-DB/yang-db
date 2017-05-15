@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class AttachedProperty {
 
+    //region Properties
     public void setPName (String pName)
     {
         this.pName = pName;
@@ -40,12 +41,15 @@ public class AttachedProperty {
     public void setTag(String tag) {
         this.tag = tag;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public String toString()
     {
         return "AttachedProperty [pName = "+pName+", value = "+value+"]";
     }
+    //endregion
 
     //region Fields
     private String pName;

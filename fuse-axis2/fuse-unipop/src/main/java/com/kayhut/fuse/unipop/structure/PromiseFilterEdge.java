@@ -1,5 +1,8 @@
 package com.kayhut.fuse.unipop.structure;
 
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.structure.UniEdge;
 import org.unipop.structure.UniGraph;
@@ -13,14 +16,18 @@ public class PromiseFilterEdge extends UniEdge {
 
     //region Constructor
     public PromiseFilterEdge(Vertex v,  UniGraph graph) {
-        super(Collections.emptyMap(), v, v, graph);
+        super(new MapBuilder<String, Object>()
+                        .put(T.id.getAccessor(), GlobalConstants.Labels.PROMISE_FILTER + v.id()).get(),
+                v,
+                v,
+                graph);
     }
     //endregion
 
     //region Override Methods
     @Override
     protected String getDefaultLabel() {
-        return "promiseFilter";
+        return GlobalConstants.Labels.PROMISE_FILTER;
     }
 
     @Override

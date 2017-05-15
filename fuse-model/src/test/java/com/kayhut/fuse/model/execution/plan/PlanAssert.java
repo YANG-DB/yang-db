@@ -11,6 +11,12 @@ import org.junit.Assert;
  */
 public class PlanAssert {
     public static void assertEquals(CompositePlanOpBase expectedCompositePlanOp, CompositePlanOpBase actualCompositePlanOp) {
+        if (expectedCompositePlanOp == null) {
+            Assert.assertTrue(actualCompositePlanOp == null);
+        }
+
+        Assert.assertTrue(expectedCompositePlanOp != null && actualCompositePlanOp != null);
+
         if (expectedCompositePlanOp.getOps() == null) {
             Assert.assertTrue(actualCompositePlanOp.getOps() == null);
         }

@@ -2,8 +2,7 @@ package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
-import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
-import com.kayhut.fuse.unipop.controller.utils.TraversalValuesByKeyProvider;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.structure.T;
