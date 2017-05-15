@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -66,7 +66,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 return false;
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtils.getPath(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
             return areFilterAndEntityAdjacent(path, compositePlanOp);
         }
 
@@ -77,7 +77,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
 
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtils.getPath(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
             return areFilterAndRelationAdjacent(path, compositePlanOp);
         }
 
@@ -88,7 +88,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 return false;
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtils.getPath(query, currentPlanOp.geteNum(), previousRelationOp.get().geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousRelationOp.get().geteNum());
             return areEntityAndRelationAdjacent(path, compositePlanOp);
         }
 
@@ -99,7 +99,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 return false;
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtils.getPath(query, currentPlanOp.geteNum(), previousEntityOp.get().geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousEntityOp.get().geteNum());
             return areEntityAndRelationAdjacent(path, compositePlanOp);
         }
 

@@ -5,11 +5,8 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.Node;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
 
 import static com.kayhut.test.framework.TestUtil.deleteFolder;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
@@ -17,7 +14,7 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 /**
  * Created by moti on 3/19/2017.
  */
-public class ElasticInMemoryIndex implements AutoCloseable{
+public class ElasticEmbeddedNode implements AutoCloseable{
     //region Members
     private final int httpPort;
     private final int httpTransportPort;
@@ -28,22 +25,24 @@ public class ElasticInMemoryIndex implements AutoCloseable{
     //endregion
 
     //region Constructors
-    public ElasticInMemoryIndex() throws Exception {
-        this("target/es", 9200, 9300, "fuse.test_elastic", (client) -> {});
+    public ElasticEmbeddedNode() throws Exception {
+        this("target/es", 9200, 9300, "fuse.test_elastic");
     }
 
-    public ElasticInMemoryIndex(ElasticIndexConfigurer configurer) throws Exception {
-        this();
-        configure(configurer);
+    public ElasticEmbeddedNode(ElasticIndexConfigurer...configurers) throws Exception {
+        this("target/es", 9200, 9300, "fuse.test_elastic", configurers);
     }
 
-    public ElasticInMemoryIndex(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer configurer) throws Exception {
+    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer...configurers) throws Exception {
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.httpTransportPort = httpTransportPort;
         this.nodeName = nodeName;
         prepare();
-        configure(configurer);
+
+        for(ElasticIndexConfigurer configurer : configurers) {
+            configurer.configure(this.getClient());
+        }
     }
 
     //endregion
@@ -82,10 +81,6 @@ public class ElasticInMemoryIndex implements AutoCloseable{
 
         deleteFolder(esWorkingDir);
         //System.clearProperty("mapper.allow_dots_in_name");
-    }
-
-    private void configure(ElasticIndexConfigurer configurer) {
-        configurer.configure(this.getClient());
     }
 
     private void prepare() throws Exception {

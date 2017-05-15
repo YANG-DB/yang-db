@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
  * Created by benishue on 12-Mar-17.
  */
 public class OntologyUtil {
-
     public static int getEntityTypeIdByName(Ontology ontology,String name) {
         Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()
                 .filter(entityType -> entityType.getName().equals(name))

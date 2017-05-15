@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -26,7 +26,7 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -36,7 +36,7 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -46,8 +46,8 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -57,8 +57,8 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()))
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()))
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -68,9 +68,9 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_entity3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -80,9 +80,9 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3_rel2_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -92,8 +92,8 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3_filter9() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -103,10 +103,10 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_rel5() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -116,12 +116,12 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_filter10_entity3_filter9_rel5() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -131,11 +131,11 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3_rel2_entity1_goto3_rel5() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new GoToEntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())
         );
 
         validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
@@ -146,13 +146,13 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3_filter9_rel2_filter10_entity1_goto3_rel5() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new GoToEntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())
         );
 
         validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
@@ -163,12 +163,12 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3_rel2_entity1_goto3_rel5_entity6() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new GoToEntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get())
         );
         boolean planValid = validator.isPlanValid(plan, asgQuery);
         validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
@@ -179,14 +179,14 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity3_filter9_rel2_filter10_entity1_goto3_rel5_entity6() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new GoToEntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get())
         );
 
         boolean planValid = validator.isPlanValid(plan, asgQuery);
@@ -198,11 +198,11 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_rel5_entity6() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -212,13 +212,13 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_filter10_entity3_filter9_rel5_entity6() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -228,11 +228,11 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity6_rel5_entity3_rel2_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -242,13 +242,13 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity6_rel5_entity3_filter9_rel2_filter10_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -258,10 +258,10 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_rel7() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 7).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 7).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -271,12 +271,12 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_filter10_entity3_filter9_rel7() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 7).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 7).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -286,11 +286,11 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_rel7_entity8() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 7).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 8).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 7).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 8).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -300,14 +300,14 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity1_rel2_filter10_entity3_filter9_rel7_filter11_entity8() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 7).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 11).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 8).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 7).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 11).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 8).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -334,11 +334,11 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity8_rel7_entity3_rel2_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 8).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 7).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 8).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 7).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -348,14 +348,14 @@ public class M1PlanValidatorTests {
     public void testValidPlan_entity8_rel7_filter11_entity3_filter9_rel2_filter10_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 8).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 7).get())),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 11).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 8).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 7).get())),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 11).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -367,8 +367,8 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_entity3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -378,8 +378,8 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity3_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -389,7 +389,7 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -399,9 +399,9 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2_entity6() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -411,9 +411,9 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity6_rel2_entity1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -423,8 +423,8 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_filter9() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -434,8 +434,8 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_filter10() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -445,9 +445,9 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2_filter9() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -457,9 +457,9 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_filter9_filter10() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(asgQuery, 10).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -469,9 +469,9 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -481,10 +481,10 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2_entity3_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -494,11 +494,11 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2_entity3_rel5_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -508,11 +508,11 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2_entity3_rel5_rel5() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -522,10 +522,10 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity6_rel5_entity3_rel5() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -535,11 +535,11 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity6_rel5_entity3_rel2_rel5() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 6).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 5).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -549,8 +549,8 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_goto3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new GoToEntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -560,9 +560,9 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2_goto3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()),
-                new GoToEntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -572,8 +572,8 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity3_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -583,8 +583,8 @@ public class M1PlanValidatorTests {
     public void testInvalidPlan_entity1_rel2() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(reverseRelation(AsgQueryUtils.<Rel>getElement(asgQuery, 2).get()))
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
+                new RelationOp(reverseRelation(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()))
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));

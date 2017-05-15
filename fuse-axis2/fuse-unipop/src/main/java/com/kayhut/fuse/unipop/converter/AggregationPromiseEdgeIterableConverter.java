@@ -1,13 +1,11 @@
 package com.kayhut.fuse.unipop.converter;
 
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
-import com.kayhut.fuse.unipop.promise.IdPromise;
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.unipop.structure.UniGraph;
 
@@ -34,12 +32,12 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
         layer1.getBuckets().forEach(b -> {
             String sourceId = b.getKeyAsString();
             PromiseVertex sourceVertex = new PromiseVertex(Promise.as(sourceId),Optional.empty(),graph);
-            Terms layer2 = (Terms) b.getAggregations().asMap().get(PromiseEdgeConstants.DEST_AGGREGATION_LAYER);
+            Terms layer2 = (Terms) b.getAggregations().asMap().get(GlobalConstants.EdgeSchema.DEST);
             layer2.getBuckets().forEach(innerBucket -> {
                 String destId = innerBucket.getKeyAsString();
                 PromiseVertex destVertex = new PromiseVertex(Promise.as(destId), Optional.empty(), graph);
                 Map<String,Object> propMap = new HashMap<>();
-                propMap.put(PromiseEdgeConstants.PROMISE_EDGE_COUNT_PROP, innerBucket.getDocCount());
+                propMap.put(GlobalConstants.HasKeys.COUNT, innerBucket.getDocCount());
                 PromiseEdge promiseEdge = new PromiseEdge(sourceVertex, destVertex, propMap, graph);
                 edges.add(promiseEdge);
             });

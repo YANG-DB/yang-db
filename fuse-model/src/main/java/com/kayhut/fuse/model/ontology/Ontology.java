@@ -2,11 +2,13 @@ package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javaslang.collection.Stream;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -159,6 +161,96 @@ public class Ontology {
         }
     }
 
+    //endregion
+
+    //region Accessor
+    public static class Accessor {
+        //region Constructors
+        public Accessor(Ontology ontology) {
+            this.ontology = ontology;
+        }
+        //endregion
+
+        //region Public Methods
+        public String name() {
+            return this.ontology.getOnt();
+        }
+
+        public Optional<EntityType> $entity(int eType) {
+            return Stream.ofAll(ontology.getEntityTypes())
+                    .filter(entityType -> entityType.geteType() == eType)
+                    .toJavaOptional();
+        }
+
+        public EntityType $entity$(int eType) {
+            return $entity(eType).get();
+        }
+
+        public Optional<EntityType> entity(String entityName) {
+            return Stream.ofAll(ontology.getEntityTypes())
+                    .filter(entityType -> entityType.getName().equals(entityName))
+                    .toJavaOptional();
+        }
+
+        public EntityType entity$(String entityName) {
+            return entity(entityName).get();
+        }
+
+        public Optional<Integer> eType(String entityName) {
+            return Stream.ofAll(ontology.getEntityTypes())
+                    .filter(entityType -> entityType.getName().equals(entityName))
+                    .map(EntityType::geteType)
+                    .toJavaOptional();
+        }
+
+        public int eType$(String entityName) {
+            return eType(entityName).get();
+        }
+
+        public Optional<RelationshipType> $relation(int rType) {
+            return Stream.ofAll(ontology.getRelationshipTypes())
+                    .filter(relationshipType -> relationshipType.getrType() == rType)
+                    .toJavaOptional();
+        }
+
+        public RelationshipType $relation$(int rType) {
+            return $relation(rType).get();
+        }
+
+        public Optional<RelationshipType> relation(String relationName) {
+            return Stream.ofAll(ontology.getRelationshipTypes())
+                    .filter(relationshipType -> relationshipType.getName().equals(relationName))
+                    .toJavaOptional();
+        }
+
+        public RelationshipType relation$(String relationName) {
+            return relation(relationName).get();
+        }
+
+        public Optional<Integer> rType(String relationName) {
+            return Stream.ofAll(ontology.getRelationshipTypes())
+                    .filter(relationshipType -> relationshipType.getName().equals(relationName))
+                    .map(RelationshipType::getrType)
+                    .toJavaOptional();
+        }
+
+        public Integer rType$(String relationName) {
+            return rType(relationName).get();
+        }
+
+        public List<EntityType> entities() {
+            return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
+        }
+
+        public List<RelationshipType> relations() {
+            return Stream.ofAll(ontology.getRelationshipTypes()).toJavaList();
+        }
+        //endregion
+
+        //region Fields
+        private Ontology ontology;
+        //endregion
+    }
     //endregion
 
 }

@@ -3,15 +3,14 @@ package com.kayhut.fuse.unipop.controller.search.appender;
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
+import org.apache.tinkerpop.gremlin.structure.T;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +57,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
         for (HasContainer hasContainer :
                 hasContainers
                 ) {
-            if (hasContainer.getKey().equals(PromiseEdgeConstants.EDGE_LABEL_CONSTRAINT_KEY)) {
+            if (hasContainer.getKey().equals(T.label.getAccessor())) {
                 return Optional.of((String) hasContainer.getPredicate().getValue());
             }
         }

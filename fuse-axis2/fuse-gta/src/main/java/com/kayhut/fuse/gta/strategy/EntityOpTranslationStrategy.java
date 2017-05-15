@@ -1,11 +1,10 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
-import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -13,7 +12,6 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
-import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -21,7 +19,6 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Created by Roman on 10/05/2017.

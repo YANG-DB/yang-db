@@ -3,7 +3,7 @@ package com.kayhut.fuse.stat;
 import com.kayhut.fuse.stat.Util.EsUtil;
 import com.kayhut.fuse.stat.Util.StatUtil;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
-import com.kayhut.test.framework.index.ElasticInMemoryIndex;
+import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
@@ -24,7 +24,7 @@ public class StatCalculatorTest {
 
     static TransportClient dataClient;
     static TransportClient statClient;
-    static ElasticInMemoryIndex elasticInMemoryIndex;
+    static ElasticEmbeddedNode elasticEmbeddedNode;
     static Configuration configuration;
     static String CONFIGURATION_FILE_PATH = "statistics.test.properties";
 
@@ -80,7 +80,7 @@ public class StatCalculatorTest {
 
         dataClient = ClientProvider.getDataClient(configuration);
         statClient = ClientProvider.getDataClient(configuration);
-        elasticInMemoryIndex = new ElasticInMemoryIndex();
+        elasticEmbeddedNode = new ElasticEmbeddedNode();
 
         Thread.sleep(4000);
 

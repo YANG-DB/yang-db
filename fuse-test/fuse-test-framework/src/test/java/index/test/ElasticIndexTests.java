@@ -1,12 +1,10 @@
 package index.test;
 
-import com.kayhut.test.framework.index.ElasticInMemoryIndex;
+import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import com.kayhut.test.framework.providers.FileCsvDataProvider;
 import com.kayhut.test.framework.providers.FileJsonDataProvider;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.scenario.DragonScenarioFolderElasticPopulator;
-import javaslang.Tuple2;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -14,9 +12,6 @@ import org.elasticsearch.search.SearchHits;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +27,7 @@ public class ElasticIndexTests {
         String indexName = "index";
         String type = "docType";
         FileJsonDataProvider provider = new FileJsonDataProvider(docsFile);
-        try (ElasticInMemoryIndex index = new ElasticInMemoryIndex()){
+        try (ElasticEmbeddedNode index = new ElasticEmbeddedNode()){
             TransportClient indexClient = index.getClient();
             ElasticDataPopulator populator = new ElasticDataPopulator(indexClient, indexName, type, "id", provider);
             populator.populate();
@@ -47,7 +42,7 @@ public class ElasticIndexTests {
     public void testDragons() throws Exception {
         String indexName = "scenario_index";
         MappingFileElasticConfigurer configurer = new MappingFileElasticConfigurer(indexName, mappingFile);
-        try (ElasticInMemoryIndex index = new ElasticInMemoryIndex(configurer)){
+        try (ElasticEmbeddedNode index = new ElasticEmbeddedNode(configurer)){
             TransportClient client = index.getClient();
             DragonScenarioFolderElasticPopulator populator = new DragonScenarioFolderElasticPopulator(client, loadFolder, indexName);
             populator.populate();
@@ -114,7 +109,7 @@ public class ElasticIndexTests {
     public void testHierarchy() throws Exception {
         String indexName = "scenario_index";
         MappingFileElasticConfigurer configurer = new MappingFileElasticConfigurer(indexName, mappingFile);
-        try (ElasticInMemoryIndex index = new ElasticInMemoryIndex(configurer)) {
+        try (ElasticEmbeddedNode index = new ElasticEmbeddedNode(configurer)) {
             TransportClient client = index.getClient();
             DragonScenarioFolderElasticPopulator populator = new DragonScenarioFolderElasticPopulator(client, loadFolder, indexName);
             populator.populate();

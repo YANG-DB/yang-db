@@ -11,7 +11,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Relationship {
-
+    //region Properties
     public String getrID() {
         return rID;
     }
@@ -52,6 +52,22 @@ public class Relationship {
         this.eID1 = eID1;
     }
 
+    public String geteTag1() {
+        return eTag1;
+    }
+
+    public void seteTag1(String eTag1) {
+        this.eTag1 = eTag1;
+    }
+
+    public String geteTag2() {
+        return eTag2;
+    }
+
+    public void seteTag2(String eTag2) {
+        this.eTag2 = eTag2;
+    }
+
     public String geteID2() {
         return eID2;
     }
@@ -75,12 +91,15 @@ public class Relationship {
     public void setAttachedProperties(List<AttachedProperty> attachedProperties) {
         this.attachedProperties = attachedProperties;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public String toString()
     {
         return "Relationship [eID1 = "+eID1+", rType = "+rType+", attachedProperties = "+attachedProperties+", eID2 = "+eID2+", directional = "+directional+", agg = "+agg+", properties = "+properties+", rID = "+rID+"]";
     }
+    //endregion
 
     //region Fields
     private String rID;
@@ -89,64 +108,72 @@ public class Relationship {
     private boolean directional;
     private String eID1;
     private String eID2;
+    private String eTag1;
+    private String eTag2;
     private List<Property> properties;
     private List<AttachedProperty> attachedProperties;
     //endregion
 
 
-    public static final class RelationshipBuilder {
-        private String rID;
-        private boolean agg;
-        private int rType;
-        private boolean directional;
-        private String eID1;
-        private String eID2;
-        private List<Property> properties;
-        private List<AttachedProperty> attachedProperties;
-
-        private RelationshipBuilder() {
+    public static final class Builder {
+        //region Constructors
+        private Builder() {
         }
+        //endregion
 
-        public static RelationshipBuilder aRelationship() {
-            return new RelationshipBuilder();
+        //region Static
+        public static Builder aRelationship() {
+            return new Builder();
         }
+        //endregion
 
-        public RelationshipBuilder withRID(String rID) {
+        //region Public Methods
+        public Builder withRID(String rID) {
             this.rID = rID;
             return this;
         }
 
-        public RelationshipBuilder withAgg(boolean agg) {
+        public Builder withAgg(boolean agg) {
             this.agg = agg;
             return this;
         }
 
-        public RelationshipBuilder withRType(int rType) {
+        public Builder withRType(int rType) {
             this.rType = rType;
             return this;
         }
 
-        public RelationshipBuilder withDirectional(boolean directional) {
+        public Builder withDirectional(boolean directional) {
             this.directional = directional;
             return this;
         }
 
-        public RelationshipBuilder withEID1(String eID1) {
+        public Builder withEID1(String eID1) {
             this.eID1 = eID1;
             return this;
         }
 
-        public RelationshipBuilder withEID2(String eID2) {
+        public Builder withEID2(String eID2) {
             this.eID2 = eID2;
             return this;
         }
 
-        public RelationshipBuilder withProperties(List<Property> properties) {
+        public Builder withETag1(String eTag1) {
+            this.eTag1 = eTag1;
+            return this;
+        }
+
+        public Builder withETag2(String eTag2) {
+            this.eTag2 = eTag2;
+            return this;
+        }
+
+        public Builder withProperties(List<Property> properties) {
             this.properties = properties;
             return this;
         }
 
-        public RelationshipBuilder withAttachedProperties(List<AttachedProperty> attachedProperties) {
+        public Builder withAttachedProperties(List<AttachedProperty> attachedProperties) {
             this.attachedProperties = attachedProperties;
             return this;
         }
@@ -161,8 +188,24 @@ public class Relationship {
             relationship.rID = this.rID;
             relationship.rType = this.rType;
             relationship.eID2 = this.eID2;
+            relationship.eTag1 = this.eTag1;
+            relationship.eTag2 = this.eTag2;
             return relationship;
         }
+        //endregion
+
+        //region Fields
+        private String rID;
+        private boolean agg;
+        private int rType;
+        private boolean directional;
+        private String eID1;
+        private String eID2;
+        private String eTag1;
+        private String eTag2;
+        private List<Property> properties;
+        private List<AttachedProperty> attachedProperties;
+        //endregion
     }
 
 

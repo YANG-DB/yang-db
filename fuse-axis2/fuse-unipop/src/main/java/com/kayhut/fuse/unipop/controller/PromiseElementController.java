@@ -17,9 +17,9 @@ import java.util.Map;
  *
  * g.V() OR g.E() ==> edge controller
  */
-public class SearchPromiseElementController implements SearchQuery.SearchController {
+public class PromiseElementController implements SearchQuery.SearchController {
     //region Constructors
-    public SearchPromiseElementController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseElementController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
         this.innerControllers = new HashMap<>();
         this.innerControllers.put(Vertex.class, new VertexController(client,configuration,graph,schemaProvider));
         this.innerControllers.put(Edge.class, new EdgeController(client,configuration,graph,schemaProvider));

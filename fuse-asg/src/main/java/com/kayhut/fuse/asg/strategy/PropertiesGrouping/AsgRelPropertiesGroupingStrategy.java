@@ -2,7 +2,7 @@ package com.kayhut.fuse.asg.strategy.PropertiesGrouping;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
@@ -21,7 +21,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     // AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        AsgQueryUtils.<Rel>getElements(query, Rel.class).forEach(relAsgEBase -> groupRelProps(query, relAsgEBase));
+        AsgQueryUtil.<Rel>getElements(query, Rel.class).forEach(relAsgEBase -> groupRelProps(query, relAsgEBase));
     }
     //endregion
 
@@ -30,7 +30,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
         RelPropGroup rPropGroup = new RelPropGroup();
         AsgEBase<? extends EBase> rPropGroupAsgEbase = new AsgEBase<>(rPropGroup);
 
-        List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtils.getBDescendants(
+        List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtil.getBDescendants(
                 asgEBase,
                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class) ||
@@ -42,7 +42,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
             rPropGroup.seteNum(Stream.ofAll(rProps).map(RelProp::geteNum).min().get());
             relPropsAsgBChildren.forEach(asgEBase::removeBChild);
         } else {
-            rPropGroup.seteNum(Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get() + 1);
+            rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get() + 1);
         }
 
         asgEBase.addBChild(rPropGroupAsgEbase);

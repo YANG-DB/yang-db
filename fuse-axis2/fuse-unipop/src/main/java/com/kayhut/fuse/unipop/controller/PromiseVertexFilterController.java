@@ -20,10 +20,7 @@ import org.elasticsearch.client.Client;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by Elad on 4/27/2017.
@@ -32,10 +29,12 @@ import java.util.Optional;
  * The controller starts with promise-vertices, filter these vertices
  * and build promise-edges containing the result vertices as end vertices.
  */
-public class SearchPromiseVertexFilterController implements SearchVertexQuery.SearchVertexController {
+public class PromiseVertexFilterController extends PromiseVertexControllerBase {
 
     //region Constructors
-    public SearchPromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+        super(Collections.singletonList(GlobalConstants.Labels.PROMISE_FILTER));
+
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
@@ -43,8 +42,13 @@ public class SearchPromiseVertexFilterController implements SearchVertexQuery.Se
     }
 
     //endregion
+
+    //region PromiseVertexControllerBase Implementation
     @Override
-    public Iterator<Edge> search(SearchVertexQuery searchVertexQuery) {
+    protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
+        if (Stream.ofAll(edgeLabels).isEmpty()) {
+            return Collections.emptyIterator();
+        }
 
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices to start with");
@@ -66,9 +70,10 @@ public class SearchPromiseVertexFilterController implements SearchVertexQuery.Se
         }
 
         return filterPromiseVertices(searchVertexQuery.getVertices(), constraint, searchVertexQuery);
-
     }
+    //endregion
 
+    //region Private Methods
     private Iterator<Edge> filterPromiseVertices(List<Vertex> vertices, Optional<TraversalConstraint> constraint, SearchVertexQuery searchVertexQuery) {
 
         SearchBuilder searchBuilder = new SearchBuilder();
@@ -102,6 +107,7 @@ public class SearchPromiseVertexFilterController implements SearchVertexQuery.Se
                 .map(hit -> converter.convert(hit))
                 .filter(Objects::nonNull).iterator();
     }
+    //endregion
 
     //region Fields
     private UniGraph graph;

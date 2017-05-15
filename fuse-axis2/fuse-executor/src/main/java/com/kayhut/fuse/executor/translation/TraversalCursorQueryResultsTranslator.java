@@ -1,9 +1,13 @@
 package com.kayhut.fuse.executor.translation;
 
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.results.Assignment;
@@ -18,7 +22,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.kayhut.fuse.model.results.QueryResult.QueryResultBuilder.aQueryResult;
@@ -43,18 +47,28 @@ public interface TraversalCursorQueryResultsTranslator {
 
     static Assignment toAssignment(TraversalCursorFactory.TraversalCursorContext context, Path path) {
         Assignment.AssignmentBuilder builder = Assignment.AssignmentBuilder.anAssignment();
-        context.getQueryResource().getQuery().getElements().forEach(element-> {
-            if(element instanceof ETyped) {
-                builder.withEntity(toEntity(path, (ETyped) element));
-            }
-            if(element instanceof EConcrete) {
-                builder.withEntity(toEntity(path, (EConcrete) element));
-            }
-            if(element instanceof EUntyped) {
-                builder.withEntity(toEntity(context, path, (EUntyped) element));
-            }
-            if(element instanceof Rel) {
-                builder.withRelationship(toRelationship(path, (Rel) element));
+        context.getQueryResource().getExecutionPlan().getPlan().getOps().forEach(planOp -> {
+            if (planOp instanceof EntityOp) {
+                EEntityBase entity = ((EntityOp)planOp).getAsgEBase().geteBase();
+
+                if(entity instanceof EConcrete) {
+                    builder.withEntity(toEntity(path, (EConcrete) entity));
+                } else if(entity instanceof ETyped) {
+                    builder.withEntity(toEntity(path, (ETyped) entity));
+                } else if(entity instanceof EUntyped) {
+                    builder.withEntity(toEntity(context, path, (EUntyped) entity));
+                }
+            } else if (planOp instanceof RelationOp) {
+                RelationOp relationOp = (RelationOp)planOp;
+                Optional<EntityOp> prevEntityOp =
+                        PlanUtil.getPrev(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                Optional<EntityOp> nextEntityOp =
+                        PlanUtil.getNext(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+
+                builder.withRelationship(toRelationship(path,
+                        prevEntityOp.get().getAsgEBase().geteBase(),
+                        relationOp.getAsgEBase().geteBase(),
+                        nextEntityOp.get().getAsgEBase().geteBase()));
             }
         });
 
@@ -79,20 +93,34 @@ public interface TraversalCursorQueryResultsTranslator {
     }
 
     static Entity toEntity(String eId,int eType, String eTag ) {
-        Entity.EntityBuilder builder = Entity.EntityBuilder.anEntity();
+        Entity.Builder builder = Entity.Builder.anEntity();
         builder.withEID(eId);
         builder.withEType(eType);
         builder.withETag(Collections.singletonList(eTag));
         return builder.build();
     }
 
-    static Relationship toRelationship(Path path, Rel element) {
-        Relationship.RelationshipBuilder builder = Relationship.RelationshipBuilder.aRelationship();
-        PromiseEdge edge = path.get(element.getrType());
-        builder.withRID(edge.inVertex().id().toString()+"->"+edge.outVertex().id().toString());
-        builder.withEID1(edge.inVertex().id().toString());
-        builder.withEID2(edge.outVertex().id().toString());
-        builder.withRType(element.getrType());
+    static Relationship toRelationship(Path path, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
+        Relationship.Builder builder = Relationship.Builder.aRelationship();
+        PromiseEdge edge = path.get(prevEntity.geteTag() + "-->" + nextEntity.geteTag());
+        builder.withRID(edge.id().toString());
+        builder.withRType(rel.getrType());
+
+        switch (rel.getDir()) {
+            case R:
+                builder.withEID1(edge.outVertex().id().toString());
+                builder.withEID2(edge.inVertex().id().toString());
+                builder.withETag1(prevEntity.geteTag());
+                builder.withETag2(nextEntity.geteTag());
+                break;
+
+            case L:
+                builder.withEID1(edge.inVertex().id().toString());
+                builder.withEID2(edge.outVertex().id().toString());
+                builder.withETag1(nextEntity.geteTag());
+                builder.withETag2(prevEntity.geteTag());
+        }
+
         return builder.build();
     }
 

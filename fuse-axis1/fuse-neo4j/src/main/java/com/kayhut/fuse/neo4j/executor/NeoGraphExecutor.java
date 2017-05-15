@@ -44,7 +44,7 @@ abstract class NeoGraphUtils{
                             props.add(prop);
                         });
 
-                        Entity entity = Entity.EntityBuilder.anEntity()
+                        Entity entity = Entity.Builder.anEntity()
                                 .withETag(Iterators.asList(n.asNode().labels().iterator()))
                                 .withProperties(props).build();
                         entities.add(entity);
@@ -59,7 +59,7 @@ abstract class NeoGraphUtils{
                             props.add(prop);
                         });
 
-                        Relationship rel = Relationship.RelationshipBuilder.aRelationship()
+                        Relationship rel = Relationship.Builder.aRelationship()
                                 .withAgg(false)
                                 .withRID(String.valueOf(r.asRelationship().id()))
                                 .withDirectional(true)
