@@ -16,6 +16,7 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> {
         RL;
     }
 
+    //region Constructors
     public Rel() {}
 
     public Rel(int eNum, int rType, Direction dir, String wrapper, int next, int b) {
@@ -26,7 +27,9 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> {
         this.next = next;
         this.b = b;
     }
+    //endregion
 
+    //region Properties
     public int getrType() {
         return rType;
     }
@@ -66,11 +69,14 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> {
     public void setB(Integer b) {
         this.b = b;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public Rel clone() {
         return new Rel(geteNum(),getrType(),getDir(),getWrapper(),getNext(),getB());
     }
+    //endregion
 
     //region Fields
     private int rType;

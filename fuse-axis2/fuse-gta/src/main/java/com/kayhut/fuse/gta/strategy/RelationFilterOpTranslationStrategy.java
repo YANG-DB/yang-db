@@ -1,7 +1,8 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
-import com.kayhut.fuse.gta.translation.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
+import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
@@ -26,16 +27,16 @@ import java.util.Optional;
 /**
  * Created by Roman on 09/05/2017.
  */
-public class RelationFilterOpTranslationStrategy implements TranslationStrategy {
-    //region TranslationStrategy Implementation
+public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStrategy {
+    //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         if (!(planOp instanceof RelationFilterOp)) {
             return traversal;
         }
 
         RelationFilterOp relationFilterOp = (RelationFilterOp)planOp;
-        Optional<RelationOp> relationOp = PlanUtil.getAdjacentPrev(context.getPlan(), relationFilterOp);
+        Optional<RelationOp> relationOp = PlanUtil.getAdjacentPrev(plan, relationFilterOp);
         if (!relationOp.isPresent()) {
             return traversal;
         }

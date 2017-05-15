@@ -1,4 +1,6 @@
-package com.kayhut.fuse.stat.model.configuration;
+package com.kayhut.fuse.stat.model.configuration.histogram;
+
+import com.kayhut.fuse.stat.model.configuration.Bucket;
 
 import java.util.List;
 

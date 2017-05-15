@@ -9,7 +9,17 @@ import com.kayhut.fuse.model.Below;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ETyped extends EEntityBase implements Typed , Below<Integer> {
+public class ETyped extends EEntityBase implements Typed {
+    //region Constructors
+    public ETyped() {}
+
+    public ETyped(int eNum, String eTag, int eType, int next, int b) {
+        super(eNum, eTag, next, b);
+        this.eType = eType;
+    }
+    //endregion
+
+    //region Properties
     public int geteType() {
         return eType;
     }
@@ -17,51 +27,26 @@ public class ETyped extends EEntityBase implements Typed , Below<Integer> {
     public void seteType(int eType) {
         this.eType = eType;
     }
-
-    public Integer getNext() {
-        return next;
-    }
-
-    public void setNext(Integer next) {
-        this.next = next;
-    }
-
-    public Integer getB() {
-        return b;
-    }
-
-    public void setB(Integer b) {
-        this.b = b;
-    }
-
-    //region Fields
-    private int	eType;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private	int next;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private	int b;
     //endregion
 
-
+    //region Override Methods
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-
         ETyped eTyped = (ETyped) o;
 
-        if (eType != eTyped.eType) return false;
-        if (next != eTyped.next) return false;
-        return b == eTyped.b;
+        return eType == eTyped.eType;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
         result = 31 * result + eType;
-        result = 31 * result + next;
-        result = 31 * result + b;
         return result;
     }
+    //endregion
+
+    //region Fields
+    private int	eType;
+    //endregion
 }

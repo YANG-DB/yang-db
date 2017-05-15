@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResult;
@@ -16,6 +17,7 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
+import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticInMemoryIndex;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.collections.map.HashedMap;
@@ -40,21 +42,21 @@ public class SingleEntityTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        String indexName = "vertices";
-        String typeName = "Dragon";
+        fuseClient = new FuseClient("/fuse");
+
         String idField = "id";
 
         elasticInMemoryIndex = new ElasticInMemoryIndex();
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
-                indexName,
+                "person",
                 "Person",
                 idField,
                 () -> createPeople(10)).populate();
 
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
-                indexName,
+                "dragon",
                 "Dragon",
                 idField,
                 () -> createDragons(10)).populate();
@@ -155,18 +157,19 @@ public class SingleEntityTest {
             Optional<Collection<String>> expectedIds
     ) throws IOException, InterruptedException {
 
-        QueryResourceInfo queryResourceInfo = postQuery(createSimpleEntityQuery(queryName, ontologyName, eType));
-        CursorResourceInfo cursorResourceInfo = postCursor(queryResourceInfo.getCursorStoreUrl());
-        PageResourceInfo pageResourceInfo = postPage(cursorResourceInfo.getPageStoreUrl(), requestedPageSize);
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), createSimpleEntityQuery(queryName, ontologyName, eType));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), requestedPageSize);
 
         while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = getPage(pageResourceInfo.getResourceUrl());
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
             if (!pageResourceInfo.isAvailable()) {
                 Thread.sleep(100);
             }
         }
 
-        QueryResult pageData = getPageData(pageResourceInfo.getDataUrl());
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         Assert.assertEquals(requestedPageSize, pageResourceInfo.getRequestedPageSize());
         Assert.assertEquals(actualPageSize, pageResourceInfo.getActualPageSize());
@@ -196,14 +199,15 @@ public class SingleEntityTest {
             Collection<String> expectedIds
     ) throws IOException, InterruptedException {
 
-        QueryResourceInfo queryResourceInfo = postQuery(createSimpleEntityQuery(queryName, ontologyName, eType));
-        CursorResourceInfo cursorResourceInfo = postCursor(queryResourceInfo.getCursorStoreUrl());
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), createSimpleEntityQuery(queryName, ontologyName, eType));
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
 
         Set<String> ids = new HashSet<>();
         for(int i = 0 ; i < (10 / pageSize) ; i++) {
-            PageResourceInfo pageResourceInfo = postPage(cursorResourceInfo.getPageStoreUrl(), pageSize);
+            PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), pageSize);
             while (!pageResourceInfo.isAvailable()) {
-                pageResourceInfo = getPage(pageResourceInfo.getResourceUrl());
+                pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
                 if (!pageResourceInfo.isAvailable()) {
                     Thread.sleep(100);
                 }
@@ -212,7 +216,7 @@ public class SingleEntityTest {
             Assert.assertTrue(pageResourceInfo.getRequestedPageSize() == pageSize);
             Assert.assertTrue(pageResourceInfo.getActualPageSize() == pageSize);
 
-            QueryResult pageData = getPageData(pageResourceInfo.getDataUrl());
+            QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
             Assert.assertTrue(pageData.getAssignments().size() == pageSize);
             pageData.getAssignments().forEach(assignment -> {
                 Assert.assertTrue(assignment.getEntities().size() == 1);
@@ -227,8 +231,8 @@ public class SingleEntityTest {
         Assert.assertTrue(ids.size() == expectedIds.size());
         Assert.assertTrue(ids.containsAll(expectedIds));
 
-        PageResourceInfo pageResourceInfo = postPage(cursorResourceInfo.getPageStoreUrl(), pageSize);
-        QueryResult pageData = getPageData(pageResourceInfo.getDataUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), pageSize);
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         Assert.assertTrue(pageResourceInfo.getRequestedPageSize() == pageSize);
         Assert.assertTrue(pageResourceInfo.getActualPageSize() == 0);
@@ -254,62 +258,11 @@ public class SingleEntityTest {
                 .build();
     }
 
-    protected QueryResourceInfo postQuery(Query query) throws IOException {
-        CreateQueryRequest request = new CreateQueryRequest();
-        request.setId("1");
-        request.setName("test");
-        request.setQuery(query);
-        return new ObjectMapper().readValue(unwrap(postRequest(this.appUrlSupplier.queryStoreUrl(), request)), QueryResourceInfo.class);
-    }
-
-    protected CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
-        CreateCursorRequest request = new CreateCursorRequest();
-        request.setCursorType(CreateCursorRequest.CursorType.paths);
-
-        return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, request)), CursorResourceInfo.class);
-    }
-
-    protected PageResourceInfo postPage(String pageStoreUrl, int pageSize) throws IOException {
-        CreatePageRequest request = new CreatePageRequest();
-        request.setPageSize(pageSize);
-
-        return new ObjectMapper().readValue(unwrap(postRequest(pageStoreUrl, request)), PageResourceInfo.class);
-    }
-
-    protected PageResourceInfo getPage(String pageUrl) throws IOException {
-        return new ObjectMapper().readValue(unwrap(getRequest(pageUrl)), PageResourceInfo.class);
-    }
-
-    protected QueryResult getPageData(String pageDataUrl) throws IOException {
-        return new ObjectMapper().readValue(unwrap(getRequest(pageDataUrl)), QueryResult.class);
-    }
-
-    protected String postRequest(String url, Object body) throws IOException {
-        return given().contentType("application/json")
-                .body(body)
-                .post(url)
-                .thenReturn()
-                .print();
-    }
-
-    protected String getRequest(String url) {
-        return given().contentType("application/json")
-                .get(url)
-                .thenReturn()
-                .print();
-    }
-
-    protected String unwrap(String response) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> responseMap = mapper.readValue(response, new TypeReference<Map<String, Object>>(){});
-        return mapper.writeValueAsString(responseMap.get("data"));
-    }
-
     protected static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();
         for(int i = 0 ; i < numPeople ; i++) {
-            Map<String, Object> person = new HashedMap();
-            person.put("id", "p" + Integer.toString(i));
+            Map<String, Object> person = new HashMap<>();
+            person.put("id", "p" + i);
             person.put("name", "person" + i);
             people.add(person);
         }
@@ -319,8 +272,8 @@ public class SingleEntityTest {
     protected static Iterable<Map<String, Object>> createDragons(int numDragons) {
         List<Map<String, Object>> dragons = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
-            Map<String, Object> dragon = new HashedMap();
-            dragon.put("id", "d" + Integer.toString(i));
+            Map<String, Object> dragon = new HashMap<>();
+            dragon.put("id", "d" + i);
             dragon.put("name", "dragon" + i);
             dragons.add(dragon);
         }
@@ -330,6 +283,6 @@ public class SingleEntityTest {
 
     //region Fields
     private static ElasticInMemoryIndex elasticInMemoryIndex;
-    private AppUrlSupplier appUrlSupplier = new DefaultAppUrlSupplier("/fuse");
+    private static FuseClient fuseClient;
     //endregion
 }

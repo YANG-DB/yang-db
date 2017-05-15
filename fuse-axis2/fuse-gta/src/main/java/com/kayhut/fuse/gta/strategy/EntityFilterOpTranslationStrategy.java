@@ -1,9 +1,13 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
-import com.kayhut.fuse.gta.translation.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
+import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
+
+import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
@@ -17,33 +21,33 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
+import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.EmptyStep;
-import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by Roman on 09/05/2017.
  */
-public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
-    //region TranslationStrategy Implementation
+public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrategy {
+    //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         if (!(planOp instanceof EntityFilterOp)) {
             return traversal;
         }
 
         EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(context.getPlan(), entityFilterOp);
+        Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(plan, entityFilterOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
@@ -52,8 +56,16 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
             traversal.asAdmin().removeStep(traversal.asAdmin().getSteps().indexOf(traversal.asAdmin().getEndStep()));
         }
 
+        if (VertexStep.class.isAssignableFrom(traversal.asAdmin().getEndStep().getClass())) {
+            VertexStep vertexStep = (VertexStep)traversal.asAdmin().getEndStep();
+            if (vertexStep.getEdgeLabels() != null && vertexStep.getEdgeLabels().length == 1 &&
+                    vertexStep.getEdgeLabels()[0].equals(GlobalConstants.Labels.PROMISE_FILTER)) {
+                traversal.asAdmin().removeStep(traversal.asAdmin().getSteps().indexOf(traversal.asAdmin().getEndStep()));
+            }
+        }
+
         EntityOp entityOp = (EntityOp)previousPlanOp.get();
-        if (PlanUtil.isFirst(context.getPlan(), entityOp)) {
+        if (PlanUtil.isFirst(plan, entityOp)) {
             traversal = appendEntityAndPropertyGroup(
                     traversal,
                     entityOp.getAsgEBase().geteBase(),
@@ -82,9 +94,15 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
         if (entity instanceof EConcrete) {
             traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
         }
-        else if (entity instanceof ETyped) {
-            String eTypeName = OntologyUtil.getEntityTypeNameById(ontology,((ETyped) entity).geteType());
-            Traversal constraintTraversal = __.has(T.label, P.eq(eTypeName));
+        else if (entity instanceof ETyped || entity instanceof EUntyped) {
+            List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ontology, entity);
+            Traversal constraintTraversal = __.has(T.label, P.eq(GlobalConstants.Labels.NONE));
+            if (eTypeNames.size() == 1) {
+                constraintTraversal = __.has(T.label, P.eq(eTypeNames.get(0)));
+            } else if (eTypeNames.size() > 1) {
+                constraintTraversal = __.has(T.label, P.within(eTypeNames));
+            }
+
             List<Traversal> epropTraversals =
                     Stream.ofAll(ePropGroup.geteProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
@@ -95,9 +113,6 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
             }
 
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal));
-        }
-        else if (entity instanceof EUntyped) {
-            ;
         }
 
         return traversal;
@@ -117,7 +132,8 @@ public class EntityFilterOpTranslationStrategy implements TranslationStrategy {
                 __.and(Stream.ofAll(epropTraversals).toJavaArray(Traversal.class));
 
         return traversal.outE(GlobalConstants.Labels.PROMISE_FILTER)
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal));
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal))
+                .otherV();
     }
 
     private Traversal convertEPropToTraversal(EProp eProp, Ontology ontology) {

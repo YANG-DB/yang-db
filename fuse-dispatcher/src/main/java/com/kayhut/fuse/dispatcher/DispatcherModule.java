@@ -12,7 +12,6 @@ import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.typesafe.config.Config;
 import org.jooby.Env;
-import org.jooby.Jooby;
 
 import static com.kayhut.fuse.model.Utils.baseUrl;
 

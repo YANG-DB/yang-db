@@ -104,7 +104,7 @@ public class OntologyTestUtils {
         //endregion
 
         ontologyShortObj.setRelationshipTypes(relationshipTypes);
-        return ontologyShortObj;
+        return OntologyFinalizer.finalize(ontologyShortObj);
     }
 
 }

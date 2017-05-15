@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model.configuration;
+package com.kayhut.fuse.stat.model.configuration.histogram;
 
 /**
  * Created by benishue on 30-Apr-17.
@@ -96,6 +96,5 @@ public class HistogramString extends Histogram {
         }
     }
     //endregion
-
 
 }

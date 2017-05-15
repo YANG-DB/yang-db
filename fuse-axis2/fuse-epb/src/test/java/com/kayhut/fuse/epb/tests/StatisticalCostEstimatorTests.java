@@ -9,20 +9,14 @@ import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.entity.EConcrete;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.RedundantRelProp;
-import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import javaslang.Tuple2;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -219,9 +213,9 @@ public class StatisticalCostEstimatorTests {
         EntityFilterOp entityFilterOp = (EntityFilterOp) estimate.getPlan().getOps().get(5);
         Assert.assertEquals(0,entityFilterOp.getAsgEBase().geteBase().geteProps().size());
         Assert.assertEquals(2,relationFilterOp.getAsgEBase().geteBase().getrProps().size());
-        Assert.assertTrue(relationFilterOp.getAsgEBase().geteBase().getrProps().get(1) instanceof RedundantRelProp);
-        RedundantRelProp redundantRelProp = (RedundantRelProp) relationFilterOp.getAsgEBase().geteBase().getrProps().get(1);
-        Assert.assertEquals("entityB.lastName",redundantRelProp.getRedundantPropName());
+        Assert.assertTrue(relationFilterOp.getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
+        PushdownRelProp pushdownRelProp = (PushdownRelProp) relationFilterOp.getAsgEBase().geteBase().getrProps().get(1);
+        Assert.assertEquals("entityB.lastName", pushdownRelProp.getPushdownPropName());
     }
 
     @Test

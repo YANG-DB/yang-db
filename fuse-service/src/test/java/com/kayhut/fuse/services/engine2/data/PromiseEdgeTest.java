@@ -122,7 +122,7 @@ public class PromiseEdgeTest{
     }
 
     @Test
-    public void testPromiseFilterEdge() throws IOException {
+    public void testPromiseFilterEdge() throws Exception {
 
         //add old purple dragon
         String purpleDragonId = "d11";

@@ -37,7 +37,7 @@ public class Neo4jGenericPopulationTests {
     }
 
     @Test
-    public void testLoadNodes() throws IOException {
+    public void testLoadNodes() throws Exception {
         FileJsonDataProvider provider = new FileJsonDataProvider(docsFile);
         Neo4jGenericNodeDataPopulator populator = new Neo4jGenericNodeDataPopulator(graphDatabaseService, provider, "Temp");
         populator.populate();

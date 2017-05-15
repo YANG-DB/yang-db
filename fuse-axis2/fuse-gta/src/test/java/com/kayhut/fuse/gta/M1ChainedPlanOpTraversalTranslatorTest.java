@@ -1,10 +1,15 @@
 package com.kayhut.fuse.gta;
 
 import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
-import com.kayhut.fuse.gta.translation.M1PlanTranslator;
-import com.kayhut.fuse.gta.translation.PlanTranslator;
+import com.kayhut.fuse.gta.strategy.M1PlanOpTranslationStrategy;
+import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
+import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
+import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
@@ -18,11 +23,12 @@ import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,18 +40,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by benishue on 13-Mar-17.
+ * Created by Roman on 14/05/2017.
  */
-public class M1PlanTranslatorTest {
+public class M1ChainedPlanOpTraversalTranslatorTest {
     UniGraphProvider uniGraphProvider;
+    PlanTraversalTranslator translator;
 
     @Before
     public void setUp() throws Exception {
+        translator = new ChainedPlanOpTraversalTranslator(new M1PlanOpTranslationStrategy());
         UniGraph uniGraph = mock(UniGraph.class);
         when(uniGraph.traversal()).thenReturn(new GraphTraversalSource(uniGraph));
         this.uniGraphProvider = mock(UniGraphProvider.class);
@@ -56,16 +63,15 @@ public class M1PlanTranslatorTest {
     public void test_concrete_rel_untyped() throws Exception {
         Plan plan = create_Con_Rel_Unt_PathQuery();
         Ontology ontology = getOntology();
-        PlanTranslator translator = new M1PlanTranslator(this.uniGraphProvider);
-        Traversal actualTraversal = translator.translate(plan, ontology);
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
-                new PromiseGraph().traversal().V().as("A")
-                .has(GlobalConstants.HasKeys.PROMISE, Promise.as("12345678"))
-                .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                .otherV().as("B")
-                .path();
+                __.start().V().as("A")
+                        .has(GlobalConstants.HasKeys.PROMISE, Promise.as("12345678"))
+                        .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
+                        .otherV().as("B")
+                        .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -74,8 +80,7 @@ public class M1PlanTranslatorTest {
     public void test_concrete_rel_typed() throws Exception {
         Plan plan = create_Con_Rel_Typ_PathQuery();
         Ontology ontology = getOntology();
-        PlanTranslator translator = new M1PlanTranslator(this.uniGraphProvider);
-        Traversal actualTraversal = translator.translate(plan, ontology);
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
@@ -92,8 +97,7 @@ public class M1PlanTranslatorTest {
     public void test_typed_rel_concrete() throws Exception {
         Plan plan = create_Typ_Rel_Con_PathQuery();
         Ontology ontology = getOntology();
-        PlanTranslator translator = new M1PlanTranslator(this.uniGraphProvider);
-        Traversal actualTraversal = translator.translate(plan, ontology);
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("B")
@@ -110,8 +114,7 @@ public class M1PlanTranslatorTest {
     public void test_typed_rel_typed() throws Exception {
         Plan plan = create_Typ_Rel_Typ_PathQuery();
         Ontology ontology = getOntology();
-        PlanTranslator translator = new M1PlanTranslator(this.uniGraphProvider);
-        Traversal actualTraversal = translator.translate(plan, ontology);
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
@@ -130,8 +133,7 @@ public class M1PlanTranslatorTest {
     public void test_concrete_rel_typed_rel_untyped() throws Exception {
         Plan plan = create_Con_Rel_Typ_Rel_Unt_PathQuery();
         Ontology ontology = getOntology();
-        PlanTranslator translator = new M1PlanTranslator(this.uniGraphProvider);
-        Traversal actualTraversal = translator.translate(plan, ontology);
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")

@@ -28,7 +28,7 @@ public class Neo4jGenericNodeDataPopulator implements DataPopulator{
     }
 
     @Override
-    public void populate() throws IOException {
+    public void populate() throws Exception {
         Iterable<Map<String, Object>> documents = dataProvider.getDocuments();
         Transaction transaction = graphDatabaseService.beginTx();
         int count = 0;

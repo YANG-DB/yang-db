@@ -15,12 +15,16 @@ import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
  * Created by benishue on 23-Feb-17.
  */
 public class AsgQuery {
+
+
+    //region Getters & Setters
 
     public String getOnt() {
         return ont;
@@ -46,8 +50,16 @@ public class AsgQuery {
         this.start = start;
     }
 
+    //endregion
+
+    //region Fields
+    private String ont;
+    private String name;
+    private AsgEBase<Start> start;
+    //endregion
+
+    //region Builders
     public static final class AsgQueryBuilder {
-        //region Fields
         private String ont;
         private String name;
         private AsgEBase start;
@@ -82,13 +94,6 @@ public class AsgQuery {
             return asgQuery;
         }
     }
-
-    //region Fields
-    private String ont;
-    private String name;
-    private AsgEBase<Start> start;
-    //endregion
-
 
     public static class Builder {
 
@@ -198,7 +203,7 @@ public class AsgQuery {
         public static AsgEBase<EPropGroup> eProp(int eNum, EProp... props) {
             EPropGroup group = new EPropGroup();
             group.seteNum(eNum);
-            group.seteProps(Arrays.asList(props));
+            group.seteProps(new ArrayList<>(Arrays.asList(props)));
 
             return new AsgEBase<>(group);
         }
@@ -206,7 +211,7 @@ public class AsgQuery {
         public static AsgEBase<RelPropGroup> relProp(int eNum, RelProp ... props) {
             RelPropGroup relPropGroup = new RelPropGroup();
             relPropGroup.seteNum(eNum);
-            relPropGroup.setrProps(Arrays.asList(props));
+            relPropGroup.setrProps(new ArrayList<>(Arrays.asList(props)));
 
             return new AsgEBase<>(relPropGroup);
         }
@@ -216,4 +221,6 @@ public class AsgQuery {
         }
 
     }
+    //endregion
+
 }

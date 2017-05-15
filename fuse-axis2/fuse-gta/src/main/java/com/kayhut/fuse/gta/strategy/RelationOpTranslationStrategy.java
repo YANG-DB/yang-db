@@ -1,13 +1,13 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
-import com.kayhut.fuse.gta.translation.PlanUtil;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
-import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
@@ -15,7 +15,6 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Optional;
@@ -31,16 +30,16 @@ import java.util.Optional;
  *                  .as(source(<EEntityBase.Etag>)-->target(<EEntityBase.Etag></EEntityBase.Etag>))  // A-->B
  *
  */
-public class RelationOpTranslationStrategy implements TranslationStrategy {
-    //region TranslationStrategy Implementation
+public class RelationOpTranslationStrategy implements PlanOpTranslationStrategy {
+    //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, PlanOpBase planOp, TranslationStrategyContext context) {
+    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         if (!(planOp instanceof RelationOp)) {
             return traversal;
         }
 
-        Optional<EntityOp> prev = PlanUtil.getPrev(context.getPlan(), planOp, EntityOp.class);
-        Optional<EntityOp> next = PlanUtil.getNext(context.getPlan(), planOp, EntityOp.class);
+        Optional<EntityOp> prev = PlanUtil.getPrev(plan, planOp, EntityOp.class);
+        Optional<EntityOp> next = PlanUtil.getNext(plan, planOp, EntityOp.class);
 
         Rel rel = ((RelationOp)planOp).getAsgEBase().geteBase();
         String rTypeName = OntologyUtil.getRelationTypeNameById(context.getOntology(), rel.getrType());

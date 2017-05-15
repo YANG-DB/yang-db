@@ -25,7 +25,7 @@ public class DragonScenarioFolderElasticPopulator implements DataPopulator {
     }
 
     @Override
-    public void populate() throws IOException {
+    public void populate() throws Exception {
         loadFile(DragonScenarioConversionConstants.DRAGONS_FILE, DragonScenarioConversionConstants.DRAGON_FILE_SCHEMA, "dragon", "id");
         loadFile(DragonScenarioConversionConstants.HORSES_FILE, DragonScenarioConversionConstants.HORSE_FILE_SCHEMA, "horse", "id");
         loadFile(DragonScenarioConversionConstants.PERSON_FILE, DragonScenarioConversionConstants.PERSON_FILE_SCHEMA, "person", "id");
@@ -44,7 +44,7 @@ public class DragonScenarioFolderElasticPopulator implements DataPopulator {
         loadFile(DragonScenarioConversionConstants.PERSON_SUBJECT_OF_FILE, DragonScenarioConversionConstants.PERSON_SUBJECT_OF_ELASTIC_SCHEMA, "subject_of", "");
     }
 
-    private void loadFile(String fileName, CsvSchema schema, String type, String idField) throws IOException {
+    private void loadFile(String fileName, CsvSchema schema, String type, String idField) throws Exception {
         FileCsvDataProvider csvDataProvider = new FileCsvDataProvider(Paths.get(dataFolder, fileName).toString(),schema);
         DotSeparatorDataProvider dotSeparatorDataProvider = new DotSeparatorDataProvider(csvDataProvider);
         ElasticDataPopulator elasticDataPopulator = new ElasticDataPopulator(client, indexName, type, idField, dotSeparatorDataProvider);

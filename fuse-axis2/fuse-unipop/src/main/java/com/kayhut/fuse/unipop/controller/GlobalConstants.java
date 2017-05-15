@@ -13,5 +13,6 @@ public class GlobalConstants {
     public static class Labels {
         public static final String PROMISE = "promise";
         public static final String PROMISE_FILTER = "promiseFilter";
+        public static final String NONE = "_none_";
     }
 }
