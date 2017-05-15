@@ -48,7 +48,7 @@ public interface StatisticsProvider {
      * @param direction
      * @return
      */
-    Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,EBase entity, EPropGroup entityFilter, Direction direction);
+    Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,Direction direction);
 
     /**
      *
@@ -58,7 +58,7 @@ public interface StatisticsProvider {
      * @param direction
      * @return
      */
-    Statistics.Cardinality getRedundantNodeStatistics(Rel rel, EEntityBase entity, EPropGroup entityFilter, Direction direction);
+    Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup);
 
     /**
      * get avarage number of eadges per node (by label context)

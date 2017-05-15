@@ -10,10 +10,7 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
@@ -115,41 +112,35 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup, EBase entity, EPropGroup entityFilter, Direction direction) {
+    public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup, Direction direction) {
+
+        List<PushdownRelProp> pushdownProps = relPropGroup.getrProps().stream().filter(prop -> prop instanceof PushdownRelProp).
+                                                        map(PushdownRelProp.class::cast).collect(Collectors.toList());
+
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(relPropGroup, graphEdgeSchema);
-
-        Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
         GraphEdgeSchema.End destination = graphEdgeSchema.getDestination().get();
-        for(EProp eProp : entityFilter.geteProps()){
-            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
-            Optional<GraphRedundantPropertySchema> redundantVertexProperty = destination.getRedundantVertexProperty(property.getName());
-            if(redundantVertexProperty.isPresent()) {
-                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, redundantVertexProperty.get(), eProp.getCon(), relevantIndices, property.getType());
-                if (conditionCardinality.isPresent() && minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
-                    minEdgeCardinality = conditionCardinality.get();
+        Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
 
-            }
+        for(PushdownRelProp pushdownRelProp : pushdownProps){
+            Optional<GraphRedundantPropertySchema> pushdownVertexProperty = destination.getRedundantVertexPropertyByPushdownName(pushdownRelProp.getPushdownPropName());
+            Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, pushdownVertexProperty.get(), pushdownRelProp.getCon(), relevantIndices, pushdownVertexProperty.get().getType());
+            if (conditionCardinality.isPresent() && minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
+                minEdgeCardinality = conditionCardinality.get();
         }
         return minEdgeCardinality;
 
     }
 
     @Override
-    public Statistics.Cardinality getRedundantNodeStatistics(Rel rel, EEntityBase entity, EPropGroup entityFilter, Direction direction) {
-        if (entity instanceof EConcrete) {
-            List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
-            return bucketInfos.get(0).getCardinalityObject();
-        }
-        List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
+    public Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
+        List<PushdownRelProp> pushdownProps = relPropGroup.getrProps().stream().filter(prop -> prop instanceof PushdownRelProp).
+                map(PushdownRelProp.class::cast).collect(Collectors.toList());
 
-        Statistics.Cardinality entityStats = estimateVertexRedundantPropertyGroup(vertexTypes.get(0),entityFilter,rel);
+        EPropGroup ePropGroup = new EPropGroup();
+        ePropGroup.seteProps(pushdownProps.stream().map(prop -> EProp.of(prop.getpType(), prop.geteNum(), prop.getCon())).collect(Collectors.toList()));
 
-        for (int i = 1; i < vertexTypes.size(); i++) {
-            entityStats = (Statistics.Cardinality) entityStats.merge( estimateVertexRedundantPropertyGroup(vertexTypes.get(i), entityFilter,rel));
-        }
-
-        return entityStats;
+        return getNodeFilterStatistics(entity, ePropGroup);
     }
 
     @Override

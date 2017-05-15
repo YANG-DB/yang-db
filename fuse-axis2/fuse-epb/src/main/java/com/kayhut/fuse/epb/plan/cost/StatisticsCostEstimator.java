@@ -229,9 +229,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         //redundant
         //C1_e
-        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(), filterOneOp.getEntity().geteBase(), filterOneOp.getAsgEBase().geteBase(), direction).getCardinality();
+        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(),  direction).getCardinality();
         //C_2e
-        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(), filterTwoOp.getEntity().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
+        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
         //relation
         double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality();
         double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality();
@@ -243,16 +243,16 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         //get entity one statistics calculated in prior step
 
         double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getAsgEBase().geteBase()).getCardinality();
-        double filterTowCard = entityTwoCard;
+        double filterTwoCard = entityTwoCard;
         if (filterTwoOp.getAsgEBase() != null) {
-            filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(),filterTwoOp.getAsgEBase().geteBase()).getCardinality();
+            filterTwoCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(),filterTwoOp.getAsgEBase().geteBase()).getCardinality();
         }
 
         //node redundand stats: C_2e
-        double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(relationOp.getAsgEBase().geteBase(),relFilterOp.getAsgEBase().geteBase() ,entityTwoOp.getAsgEBase().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
+        double nodeEstimate_C2_e = statisticsProvider.getRedundantNodeStatistics(entityTwoOp.getAsgEBase().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality();
 
         //node 2 cardinality estimation
-        double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTowCard, edgeEstimation));
+        double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTwoCard, edgeEstimation));
 
         //calculate back propagation weight
         double lambdaEdge = edgeEstimation / edgeEstimation_N1;
