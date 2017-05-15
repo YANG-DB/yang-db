@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.ontology;
 
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import javaslang.collection.Stream;
 
 import java.util.List;
@@ -144,6 +145,10 @@ public class OntologyUtil {
         }
         return Optional.empty();
     }*/
+
+    public static List<Integer> getComplementaryTypes(Ontology ontology, EUntyped eUntyped) {
+        return ontology.getEntityTypes().stream().map(et -> et.geteType()).filter(e -> !eUntyped.getNvTypes().contains(e)).collect(Collectors.toList());
+    }
 
     public static Optional<RelationshipType> getRelationshipType(Ontology ontology, String name) {
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()

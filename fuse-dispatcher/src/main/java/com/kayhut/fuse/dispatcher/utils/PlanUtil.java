@@ -1,6 +1,9 @@
 package com.kayhut.fuse.dispatcher.utils;
 
+import com.google.common.collect.Iterables;
+import com.kayhut.fuse.model.execution.plan.AsgEBasePlanOp;
 import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
+import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 
 import java.util.Optional;
@@ -40,6 +43,19 @@ public class PlanUtil {
 
     public static <T extends PlanOpBase> Optional<T> getPrev(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Class<?> klass) {
         return getPlanOp(compositePlanOp, classPredicateFunction.apply(klass), prevDirection, compositePlanOp.getOps().indexOf(planOp));
+    }
+
+    public static PlanOpBase getLast(Optional<Plan> plan) {
+        return Iterables.getLast(plan.get().getOps());
+    }
+
+    public static <T extends PlanOpBase> T findFirst(Plan plan, Class<T> clazz, Predicate<PlanOpBase> predicate) {
+        return (T) plan.getOps().stream().filter(p -> clazz.isAssignableFrom(p.getClass()) && predicate.test(p)).findFirst().get();
+    }
+
+    public static Plan replace(Plan plan, AsgEBasePlanOp oldOp, AsgEBasePlanOp newOp) {
+        plan.getOps().set(plan.getOps().indexOf(oldOp), newOp);
+        return plan;
     }
     //endregion
 
