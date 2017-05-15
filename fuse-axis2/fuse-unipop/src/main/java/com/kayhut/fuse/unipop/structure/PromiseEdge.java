@@ -1,8 +1,6 @@
 package com.kayhut.fuse.unipop.structure;
 
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
-import org.apache.tinkerpop.gremlin.structure.T;
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.structure.UniEdge;
 import org.unipop.structure.UniGraph;
@@ -28,7 +26,7 @@ public class PromiseEdge extends UniEdge{
 
     @Override
     public String toString() {
-        return String.format(PRINT_FORMAT, outVertex.id(), id, property(PromiseEdgeConstants.PROMISE_EDGE_COUNT_PROP), inVertex.id());
+        return String.format(PRINT_FORMAT, outVertex.id(), id, property(GlobalConstants.HasKeys.COUNT), inVertex.id());
     }
     //endregion
 

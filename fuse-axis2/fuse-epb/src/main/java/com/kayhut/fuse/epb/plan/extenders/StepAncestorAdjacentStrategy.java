@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -38,15 +38,15 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
         //reverse direction
         nextRelation.get().geteBase().setDir(Direction.reverse(nextRelation.get().geteBase().getDir()));
         //
-        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation.get(), RelPropGroup.class);
+        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.getBDescendant(nextRelation.get(), RelPropGroup.class);
 
-        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
-        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getAncestor(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtil.getNextDescendant(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.getAncestor(nextRelation.get(), EEntityBase.class);
 
-        Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
+        Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtil.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
         Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
         if (toEntityQuant.isPresent()) {
-            toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
+            toEntityPropGroup = AsgQueryUtil.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
         }
 
         Plan newPlan = plan.get();

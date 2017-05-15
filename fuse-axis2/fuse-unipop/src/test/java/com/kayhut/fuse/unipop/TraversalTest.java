@@ -2,8 +2,8 @@ package com.kayhut.fuse.unipop;
 
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
-import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
+import com.kayhut.fuse.unipop.controller.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -45,12 +45,12 @@ public class TraversalTest {
     @Test
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX() throws Exception {
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(graph1 -> new ControllerManager() {
+        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
-                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
+                        new PromiseElementController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()));
             }
 
             @Override
@@ -81,12 +81,12 @@ public class TraversalTest {
     @Test
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX_hasXconstraint_Constraint_byX__hasXlabel_dragonXXX() throws Exception {
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(graph1 -> new ControllerManager() {
+        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
-                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
+                        new PromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
+                        new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
             }
 
             @Override

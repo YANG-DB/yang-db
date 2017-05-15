@@ -3,9 +3,8 @@ package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
-import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintTypeTransformationStrategy;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -35,7 +34,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
 
         //Setting The EProp expression as a date represented by Long value
-        EProp eProp = (EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase();
+        EProp eProp = (EProp) AsgQueryUtil.getElement(asgQueryWithEProps, 4).get().geteBase();
         eProp.setpType("15"); //this is a date field - Input is long - epoch time
         eProp.getCon().setExpr(123456L); //Epoch time as Long
 
@@ -46,7 +45,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Applying the Strategy on the Eprop with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
-        Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
+        Object expr = ((EProp) AsgQueryUtil.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(Date.class));
     }
 
@@ -55,7 +54,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
 
         //Setting The EProp expression as a date represented by Long value
-        EProp eProp = (EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase();
+        EProp eProp = (EProp) AsgQueryUtil.getElement(asgQueryWithEProps, 4).get().geteBase();
         eProp.setpType("15"); //this is a date field - Input is long - epoch time
         eProp.getCon().setExpr(123456); //Epoch time as Long
 
@@ -66,7 +65,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Applying the Strategy on the Eprop with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
-        Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
+        Object expr = ((EProp) AsgQueryUtil.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(Date.class));
     }
 
@@ -75,7 +74,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
 
         //Setting The EProp expression as an int
-        EProp eProp = (EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase();
+        EProp eProp = (EProp) AsgQueryUtil.getElement(asgQueryWithEProps, 4).get().geteBase();
         eProp.setpType("7"); //this is an int field
         eProp.getCon().setExpr(99);
 
@@ -87,7 +86,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Applying the Strategy on the Eprop with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
-        Object expr = ((EProp) AsgQueryUtils.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
+        Object expr = ((EProp) AsgQueryUtil.getElement(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(long.class));
     }
 
@@ -98,25 +97,25 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //region Preparing the Properties for the AsgQuery
         //Setting The RelProp (enum #4) expression as a date represented by Long value
-        RelProp rProp1 = (RelProp) AsgQueryUtils.getElement(asgQueryWithRelProps, 4).get().geteBase();
+        RelProp rProp1 = (RelProp) AsgQueryUtil.getElement(asgQueryWithRelProps, 4).get().geteBase();
         rProp1.setpType("15"); //this is a date field - Input is long type - epoch time
         rProp1.getCon().setExpr(123456L); //Epoch time as Long
         assertThat(rProp1.getCon().getExpr(), instanceOf(Long.class));
 
         //Setting The RelProp (enum #5) expression as a date represented by Long value
-        RelProp rProp2 = (RelProp) AsgQueryUtils.getElement(asgQueryWithRelProps, 5).get().geteBase();
+        RelProp rProp2 = (RelProp) AsgQueryUtil.getElement(asgQueryWithRelProps, 5).get().geteBase();
         rProp2.setpType("15"); //this is a date field - Input is long type - epoch time
         rProp2.getCon().setExpr(5555L); //Epoch time as Long
         assertThat(rProp2.getCon().getExpr(), instanceOf(Long.class));
 
 
 
-        RelProp rProp3 = (RelProp) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 5).get().geteBase();
+        RelProp rProp3 = (RelProp) AsgQueryUtil.getElement(asgQueryWithRelPropsOriginal, 5).get().geteBase();
         rProp3.setpType("15"); //this is a date field - Input is long type - epoch time
         rProp3.getCon().setExpr(5555L); //Epoch time as Long
         assertThat(rProp3.getCon().getExpr(), instanceOf(Long.class));
 
-        RelProp rProp4 = (RelProp) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase();
+        RelProp rProp4 = (RelProp) AsgQueryUtil.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase();
         rProp4.setpType("15"); //this is a date field - Input is long type - epoch time
         rProp4.getCon().setExpr(123456L); //Epoch time as Long
         assertThat(rProp4.getCon().getExpr(), instanceOf(Long.class));
@@ -127,8 +126,8 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Applying the Strategy on the RelProp #1 with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelProps, asgStrategyContext);
-        Object expr1 = ((RelProp) AsgQueryUtils.getElement(asgQueryWithRelProps, 4).get().geteBase()).getCon().getExpr();
-        Object expr2 = ((RelProp) AsgQueryUtils.getElement(asgQueryWithRelProps, 5).get().geteBase()).getCon().getExpr();
+        Object expr1 = ((RelProp) AsgQueryUtil.getElement(asgQueryWithRelProps, 4).get().geteBase()).getCon().getExpr();
+        Object expr2 = ((RelProp) AsgQueryUtil.getElement(asgQueryWithRelProps, 5).get().geteBase()).getCon().getExpr();
         assertThat(expr1, instanceOf(Date.class));
         assertThat(expr2, instanceOf(Date.class));
 
@@ -136,19 +135,19 @@ public class AsgConstraintTypeTransformationStrategyTest {
         //We want to be sure that the order of strategies is not affecting the final result
         AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
         asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext());
-        expr1 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(0).getCon().getExpr();
-        expr2 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(1).getCon().getExpr();
+        expr1 = ((RelPropGroup) AsgQueryUtil.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(0).getCon().getExpr();
+        expr2 = ((RelPropGroup) AsgQueryUtil.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(1).getCon().getExpr();
         assertThat(expr1, instanceOf(Long.class));
         assertThat(expr2, instanceOf(Long.class));
 
         //Checking the RelProps grouping mechanism
-        AsgEBase<EBase> newRelPropGroupAsgEbase = AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get();
+        AsgEBase<EBase> newRelPropGroupAsgEbase = AsgQueryUtil.getElement(asgQueryWithRelPropsOriginal, 4).get();
         assertNotNull(newRelPropGroupAsgEbase);
 
         //Applying again the Constraint Transformation Strategy
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelPropsOriginal, asgStrategyContext);
-        expr1 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(0).getCon().getExpr();
-        expr2 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(1).getCon().getExpr();
+        expr1 = ((RelPropGroup) AsgQueryUtil.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(0).getCon().getExpr();
+        expr2 = ((RelPropGroup) AsgQueryUtil.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(1).getCon().getExpr();
         assertThat(expr1, instanceOf(Date.class));
         assertThat(expr2, instanceOf(Date.class));
 

@@ -1,14 +1,7 @@
 package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 
-import com.kayhut.fuse.asg.strategy.AsgStrategy;
-import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
-import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
-import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -16,7 +9,6 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import javaslang.collection.Stream;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -25,10 +17,10 @@ import java.util.stream.Collectors;
 public abstract class AsgConstraintTransformationBase {
 
     public List<EProp> getEprops(AsgQuery query) {
-        List<EProp> eProps = Stream.ofAll(AsgQueryUtils.getElements(query, EProp.class))
+        List<EProp> eProps = Stream.ofAll(AsgQueryUtil.getElements(query, EProp.class))
                 .map(eBaseAsgEBase -> (EProp)eBaseAsgEBase.geteBase()).toJavaList();
 
-        List<EPropGroup> ePropsGroup = Stream.ofAll(AsgQueryUtils.getElements(query, EPropGroup.class))
+        List<EPropGroup> ePropsGroup = Stream.ofAll(AsgQueryUtil.getElements(query, EPropGroup.class))
                 .map(ePropGroup -> ((EPropGroup)ePropGroup.geteBase())).toJavaList();
         List<EProp> eProps2 = Stream.ofAll(ePropsGroup).flatMap(EPropGroup::geteProps).toJavaList();
 
@@ -36,9 +28,9 @@ public abstract class AsgConstraintTransformationBase {
     }
 
     public List<RelProp> getRelProps(AsgQuery query) {
-        List<RelProp> relProps = Stream.ofAll(AsgQueryUtils.getElements(query, RelProp.class))
+        List<RelProp> relProps = Stream.ofAll(AsgQueryUtil.getElements(query, RelProp.class))
                 .map(eBaseAsgEBase -> (RelProp)eBaseAsgEBase.geteBase()).toJavaList();
-        List<RelPropGroup> relPropsGroup = Stream.ofAll(AsgQueryUtils.getElements(query, RelPropGroup.class))
+        List<RelPropGroup> relPropsGroup = Stream.ofAll(AsgQueryUtil.getElements(query, RelPropGroup.class))
                 .map(relPropGroup -> ((RelPropGroup)relPropGroup.geteBase())).toJavaList();
         List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getrProps).toJavaList();
 

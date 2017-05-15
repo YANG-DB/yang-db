@@ -10,12 +10,7 @@ public class ElasticGraphConfiguration extends BaseConfiguration {
     public ElasticGraphConfiguration() {}
 
     public ElasticGraphConfiguration(final Configuration configuration) {
-        configuration.getKeys().forEachRemaining(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                addProperty(s, configuration.getProperty(s));
-            }
-        });
+        configuration.getKeys().forEachRemaining(key -> addProperty(key, configuration.getProperty(key)));
     }
     //endregion
 

@@ -4,12 +4,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
-import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
+import com.kayhut.fuse.unipop.controller.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.PromiseVertexController;
+import com.kayhut.fuse.unipop.controller.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
 import org.elasticsearch.client.Client;
+import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.process.strategyregistrar.StandardStrategyProvider;
 import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.ControllerManagerFactory;
@@ -21,15 +22,17 @@ import java.util.Set;
 /**
  * Created by Roman on 06/04/2017.
  */
-public class ElasticUniGraphProvider implements UniGraphProvider {
+public class M1ElasticUniGraphProvider implements UniGraphProvider {
     //region Constructors
     @Inject
-    public ElasticUniGraphProvider(
+    public M1ElasticUniGraphProvider(
             Client client,
-            ElasticGraphConfiguration configuration,
+            ElasticGraphConfiguration elasticGraphConfiguration,
+            UniGraphConfiguration uniGraphConfiguration,
             PhysicalIndexProviderFactory physicalIndexProviderFactory) {
         this.client = client;
-        this.configuration = configuration;
+        this.elasticGraphConfiguration = elasticGraphConfiguration;
+        this.uniGraphConfiguration = uniGraphConfiguration;
         this.physicalIndexProviderFactory = physicalIndexProviderFactory;
     }
     //endregion
@@ -37,7 +40,7 @@ public class ElasticUniGraphProvider implements UniGraphProvider {
     @Override
     public UniGraph getGraph(Ontology ontology) throws Exception {
         GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(this.physicalIndexProviderFactory.get(ontology), ontology);
-        return new UniGraph(controllerManagerFactory(schemaProvider), new StandardStrategyProvider());
+        return new UniGraph(this.uniGraphConfiguration, controllerManagerFactory(schemaProvider), new StandardStrategyProvider());
     }
 
     //region Private Methods
@@ -50,8 +53,10 @@ public class ElasticUniGraphProvider implements UniGraphProvider {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new SearchPromiseElementController(client, configuration, uniGraph, schemaProvider),
-                        new SearchPromiseVertexController(client, configuration, uniGraph, schemaProvider));
+                        new PromiseElementController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                        new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                        new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider)
+                );
             }
 
             @Override
@@ -63,7 +68,8 @@ public class ElasticUniGraphProvider implements UniGraphProvider {
 
     //region Fields
     private final Client client;
-    private final ElasticGraphConfiguration configuration;
+    private final ElasticGraphConfiguration elasticGraphConfiguration;
+    private final UniGraphConfiguration uniGraphConfiguration;
     private final PhysicalIndexProviderFactory physicalIndexProviderFactory;
     //endregion
 }

@@ -2,15 +2,12 @@ package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.ModuleBase;
-import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
-import com.kayhut.fuse.executor.uniGraphProvider.ElasticUniGraphProvider;
+import com.kayhut.fuse.executor.uniGraphProvider.M1ElasticUniGraphProvider;
 import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
-import com.kayhut.fuse.unipop.schemaProviders.SimplePhysicalIndexProvider;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
@@ -18,7 +15,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.jooby.Env;
-import org.jooby.Jooby;
+import org.unipop.configuration.UniGraphConfiguration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -33,10 +30,14 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(CursorFactory.class).to(TraversalCursorFactory.class).asEagerSingleton();
 
         ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
+        UniGraphConfiguration uniGraphConfiguration = createUniGraphConfiguration(conf);
+
         binder.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
+        binder.bind(UniGraphConfiguration.class).toInstance(uniGraphConfiguration);
+
         binder.bind(Client.class).toInstance(createClient(elasticGraphConfiguration));
 
-        binder.bind(UniGraphProvider.class).to(ElasticUniGraphProvider.class).asEagerSingleton();
+        binder.bind(UniGraphProvider.class).to(M1ElasticUniGraphProvider.class).asEagerSingleton();
         binder.bind(PhysicalIndexProviderFactory.class).toInstance(createPhysicalIndexProviderFactory(conf));
     }
     //endregion
@@ -65,6 +66,14 @@ public class ExecutorModule extends ModuleBase {
         configuration.setElasticGraphMaxSearchSize(conf.getLong("elasticsearch.max_search_size"));
         configuration.setElasticGraphScrollSize(conf.getInt("elasticsearch.scroll_size"));
         configuration.setElasticGraphScrollTime(conf.getInt("elasticsearch.scroll_time"));
+        return configuration;
+    }
+
+    private UniGraphConfiguration createUniGraphConfiguration(Config conf) {
+        UniGraphConfiguration configuration = new UniGraphConfiguration();
+        configuration.setBulkMax(conf.getInt("unipop.bulk.max"));
+        configuration.setBulkStart(conf.getInt("unipop.bulk.start"));
+        configuration.setBulkMultiplier(conf.getInt("unipop.bulk.multiplier"));
         return configuration;
     }
 

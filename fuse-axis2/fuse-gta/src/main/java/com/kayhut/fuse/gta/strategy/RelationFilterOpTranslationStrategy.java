@@ -1,7 +1,7 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
-import com.kayhut.fuse.gta.translation.PlanUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;

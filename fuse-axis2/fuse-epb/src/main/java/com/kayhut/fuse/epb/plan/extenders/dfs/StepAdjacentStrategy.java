@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -33,17 +33,17 @@ public class StepAdjacentStrategy implements PlanExtensionStrategy<Plan,AsgQuery
             return Collections.emptyList();
         }
 
-        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation.get(), RelPropGroup.class);
+        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.getBDescendant(nextRelation.get(), RelPropGroup.class);
 
-        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getAncestor(nextRelation.get(), EEntityBase.class);
-        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtil.getAncestor(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.getNextDescendant(nextRelation.get(), EEntityBase.class);
 
-        Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
+        Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtil.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
         Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
         if (toEntityQuant.isPresent()) {
-            toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
+            toEntityPropGroup = AsgQueryUtil.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
         } else {
-            toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), EPropGroup.class);
+            toEntityPropGroup = AsgQueryUtil.getNextAdjacentDescendant(toEntity.get(), EPropGroup.class);
         }
 
         Plan newPlan = plan.get();

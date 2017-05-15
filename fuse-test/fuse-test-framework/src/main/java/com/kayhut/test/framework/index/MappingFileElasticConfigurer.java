@@ -17,11 +17,10 @@ public class MappingFileElasticConfigurer extends MappingElasticConfigurer {
     //region Constructors
     public MappingFileElasticConfigurer(String indexName, String mappingsFile) throws IOException {
         super(indexName, new ObjectMapper().readValue(new File(mappingsFile), new TypeReference<Map<String, Object>>(){}));
-        this.indexName = indexName;
     }
-    //endregion
 
-    //region Fields
-    private String indexName;
+    public MappingFileElasticConfigurer(Iterable<String> indices, String mappingsFile) throws IOException {
+        super(indices, new ObjectMapper().readValue(new File(mappingsFile), new TypeReference<Map<String, Object>>(){}));
+    }
     //endregion
 }

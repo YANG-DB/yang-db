@@ -3,16 +3,10 @@ package com.kayhut.fuse.unipop.controller;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
-import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -25,15 +19,16 @@ import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by User on 16/03/2017.
  */
-public class SearchPromiseVertexController implements SearchVertexQuery.SearchVertexController {
+public class PromiseVertexController extends PromiseVertexControllerBase {
 
     //region Constructors
-    public SearchPromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+        super(Collections.singletonList(GlobalConstants.Labels.PROMISE));
+
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
@@ -41,19 +36,22 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
     }
     //endregion
 
-    //region SearchVertexQuery.SearchVertexController Implementation
+    //region PromiseVertexControllerBase Implementation
     @Override
-    public Iterator<Edge> search(SearchVertexQuery searchVertexQuery) {
+    protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
+        if (Stream.ofAll(edgeLabels).isEmpty()) {
+            return Collections.emptyIterator();
+        }
 
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices to start with");
         }
 
         List<HasContainer> constraintHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
-                                                           .filter(hasContainer -> hasContainer.getKey()
-                                                                                               .toLowerCase()
-                                                                                               .equals(GlobalConstants.HasKeys.CONSTRAINT))
-                                                            .toJavaList();
+                .filter(hasContainer -> hasContainer.getKey()
+                        .toLowerCase()
+                        .equals(GlobalConstants.HasKeys.CONSTRAINT))
+                .toJavaList();
 
         if (constraintHasContainers.size() > 1){
             throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
@@ -65,7 +63,6 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
         }
 
         return queryPromiseEdges(searchVertexQuery.getVertices(), constraint);
-
     }
     //endregion
 
@@ -101,7 +98,7 @@ public class SearchPromiseVertexController implements SearchVertexQuery.SearchVe
             throw new RuntimeException("Null response received");
         }
 
-        Aggregation agg = response.getAggregations().asMap().get(PromiseEdgeConstants.SOURCE_AGGREGATION_LAYER);
+        Aggregation agg = response.getAggregations().asMap().get(GlobalConstants.EdgeSchema.SOURCE);
 
         AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(graph);
 

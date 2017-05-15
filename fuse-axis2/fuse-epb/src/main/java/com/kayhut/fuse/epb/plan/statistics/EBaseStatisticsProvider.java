@@ -2,6 +2,8 @@ package com.kayhut.fuse.epb.plan.statistics;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Constraint;
@@ -21,7 +23,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.asg.util.AsgQueryUtils.getVertexTypes;
+import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.*;
 
 /**
  * Created by liorp on 4/26/2017.

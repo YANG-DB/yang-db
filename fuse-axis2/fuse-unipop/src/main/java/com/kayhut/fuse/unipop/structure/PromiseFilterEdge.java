@@ -1,12 +1,10 @@
 package com.kayhut.fuse.unipop.structure;
 
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.structure.UniEdge;
 import org.unipop.structure.UniGraph;
 
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Created by Roman on 5/9/2017.

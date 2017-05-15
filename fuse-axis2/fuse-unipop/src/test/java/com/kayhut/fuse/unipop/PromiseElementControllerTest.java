@@ -1,7 +1,7 @@
 package com.kayhut.fuse.unipop;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
+import com.kayhut.fuse.unipop.controller.PromiseElementController;
 import com.kayhut.fuse.unipop.promise.*;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
@@ -11,7 +11,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,7 +31,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by User on 19/03/2017.
  */
-public class SearchPromiseElementControllerTest {
+public class PromiseElementControllerTest {
     Client client;
     ElasticGraphConfiguration configuration;
 
@@ -53,7 +52,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -80,7 +79,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -110,7 +109,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
@@ -146,7 +145,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
@@ -182,7 +181,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -212,7 +211,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -247,7 +246,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
@@ -286,7 +285,7 @@ public class SearchPromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);

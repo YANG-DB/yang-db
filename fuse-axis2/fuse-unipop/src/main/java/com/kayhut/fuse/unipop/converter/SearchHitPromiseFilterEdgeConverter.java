@@ -1,18 +1,12 @@
 package com.kayhut.fuse.unipop.converter;
 
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import com.kayhut.fuse.unipop.promise.Promise;
-import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseFilterEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHitField;
 import org.unipop.structure.UniGraph;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**

@@ -2,9 +2,9 @@ package com.kayhut.fuse.model.results;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by benishue on 21-Feb-17.
@@ -45,25 +45,32 @@ public class Assignment extends QueryResult {
     //endregion
 
     public static final class AssignmentBuilder {
-        private List<Entity> entities;
-        private List<Relationship> relationships;
-
+        //region Constructors
         private AssignmentBuilder() {
-            entities = new ArrayList<>();
+            entities = new HashMap<>();
             relationships = new ArrayList<>();
         }
+        //endregion
 
+        //region Static
         public static AssignmentBuilder anAssignment() {
             return new AssignmentBuilder();
         }
+        //endregion
 
+        //region Public Methods
         public AssignmentBuilder withEntity(Entity entity) {
-            entities.add(entity);
+            Entity entityToMerge = this.entities.get(entity.hashCode());
+            if (entityToMerge != null) {
+                entity = Entity.Builder.anEntity().withEntity(entity).withEntity(entityToMerge).build();
+            }
+
+            entities.put(entity.hashCode(), entity);
             return this;
         }
 
         public AssignmentBuilder withEntities(List<Entity> entities) {
-            this.entities = entities;
+            entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
             return this;
         }
 
@@ -79,10 +86,16 @@ public class Assignment extends QueryResult {
 
         public Assignment build() {
             Assignment assignment = new Assignment();
-            assignment.setEntities(entities);
+            assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
             assignment.setRelationships(relationships);
             return assignment;
         }
+        //endregion
+
+        //region Fields
+        private Map<Integer, Entity> entities;
+        private List<Relationship> relationships;
+        //endregion
     }
 
 

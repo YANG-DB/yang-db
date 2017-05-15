@@ -1,9 +1,9 @@
 package com.kayhut.fuse.unipop.controller.search.appender;
 
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
 import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -34,7 +34,7 @@ public class StartVerticesSearchAppender implements SearchAppender<PromiseVertex
     }
 
     private Traversal buildStartVerticesConstraint(List<Vertex> vertices) {
-        return __.has(PromiseEdgeConstants.EDGE_SOURCE_ID_FIELD, P.within(Stream.ofAll(vertices).map(vertex -> vertex.id()).toJavaList()));
+        return __.has(GlobalConstants.EdgeSchema.SOURCE_ID, P.within(Stream.ofAll(vertices).map(vertex -> vertex.id()).toJavaList()));
     }
 
 }

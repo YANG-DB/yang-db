@@ -1,7 +1,8 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -14,12 +15,15 @@ import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.test.framework.index.ElasticInMemoryIndex;
+import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
+import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.apache.commons.collections.map.HashedMap;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,19 +42,27 @@ public class EntityRelationEntityTest {
     @BeforeClass
     public static void setup() throws Exception {
         fuseClient = new FuseClient("/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/ontology/Dragons"));
 
         String idField = "id";
 
-        elasticInMemoryIndex = new ElasticInMemoryIndex();
+        elasticEmbeddedNode = new ElasticEmbeddedNode(
+                new MappingFileElasticConfigurer("person", new File("./src/test/resources/mappings/person.mapping.json").getAbsolutePath()),
+                new MappingFileElasticConfigurer("dragon", new File("./src/test/resources/mappings/dragon.mapping.json").getAbsolutePath()),
+                new MappingFileElasticConfigurer(Arrays.asList("fire20170511", "fire20170512", "fire20170513"),
+                        new File("./src/test/resources/mappings/fire.mapping.json").getAbsolutePath())
+        );
+
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "person",
                 "Person",
                 idField,
                 () -> createPeople(10)).populate();
 
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "dragon",
                 "Dragon",
                 idField,
@@ -59,21 +71,21 @@ public class EntityRelationEntityTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "fire20170511",
                 "Fire",
                 idField,
                 () -> createDragonFireDragonEdges(sdf.parse("2017-05-11"), 1200000, 10)).populate(); // date interval is 20 min
 
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "fire20170512",
                 "Fire",
                 idField,
                 () -> createDragonFireDragonEdges(sdf.parse("2017-05-12"), 600000, 10)).populate(); // date interval is 10 min
 
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "fire20170513",
                 "Fire",
                 idField,
@@ -83,6 +95,14 @@ public class EntityRelationEntityTest {
         Thread.sleep(2000);
     }
 
+    @AfterClass
+    public static void cleanup() throws Exception {
+        if (elasticEmbeddedNode != null) {
+            elasticEmbeddedNode.close();
+            Thread.sleep(2000);
+        }
+    }
+
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
@@ -90,10 +110,12 @@ public class EntityRelationEntityTest {
 
     //region Tests
     @Test
-    @Ignore
     public void test_dragon_fire_dragon() throws IOException, InterruptedException {
-        Query query = Query.QueryBuilder.aQuery().withName("name").withOnt("Dragons").withElements(Arrays.asList(
-                new Start(0, 1), new ETyped(1, "A", 1, 2, 0), new Rel(2, 1, Rel.Direction.R, null, 3, 0), new ETyped(3, "B", 1, 0, 0)
+        Query query = Query.QueryBuilder.aQuery().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
+                new Rel(2, $ont.rType$("Fire"), Rel.Direction.R, null, 3, 0),
+                new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -108,12 +130,12 @@ public class EntityRelationEntityTest {
             }
         }
 
+        QueryResult queryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
     //endregion
 
     //region Protected Methods
-
     protected static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();
         for(int i = 0 ; i < numPeople ; i++) {
@@ -136,6 +158,7 @@ public class EntityRelationEntityTest {
         return dragons;
     }
 
+
     protected static Iterable<Map<String, Object>> createDragonFireDragonEdges(Date startingDate, long dateInterval, int numDragons) throws ParseException {
         List<Map<String, Object>> fireEdges = new ArrayList<>();
 
@@ -146,12 +169,12 @@ public class EntityRelationEntityTest {
                 Map<String, Object> fireEdge = new HashMap<>();
                 fireEdge.put("id", "fire" + counter++);
                 fireEdge.put("timestamp", currentDate);
-                fireEdge.put("direction", "out");
+                fireEdge.put("direction", Direction.OUT);
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", "fire" + counter++);
                 fireEdgeDual.put("timestamp", currentDate);
-                fireEdgeDual.put("direction", "in");
+                fireEdgeDual.put("direction", Direction.IN);
 
                 Map<String, Object> entityAI = new HashMap<>();
                 entityAI.put("id", "d" + i);
@@ -182,7 +205,8 @@ public class EntityRelationEntityTest {
     //endregion
 
     //region Fields
-    private static ElasticInMemoryIndex elasticInMemoryIndex;
+    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static FuseClient fuseClient;
+    private static Ontology.Accessor $ont;
     //endregion
 }

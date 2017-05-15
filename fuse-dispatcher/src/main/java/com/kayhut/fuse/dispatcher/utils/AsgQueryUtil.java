@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.util;
+package com.kayhut.fuse.dispatcher.utils;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * Created by Roman on 23/04/2017.
+ * Created by Roman on 15/05/2017.
  */
-public class AsgQueryUtils {
+public class AsgQueryUtil {
 
     public static boolean equals(AsgQuery source, AsgQuery target) {
         if(!source.getStart().equals(target.getStart()))
