@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.log.Trace;
 import javaslang.Tuple2;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static com.kayhut.fuse.model.Utils.pattern;
@@ -102,6 +103,11 @@ public class Plan extends CompositePlanOpBase implements Trace<String> {
     public int hashCode() {
         return toPattern().hashCode();
     }
+
+    public static Plan clone(Plan plan) {
+        return new Plan(plan.getOps());
+    }
+
 }
 
 

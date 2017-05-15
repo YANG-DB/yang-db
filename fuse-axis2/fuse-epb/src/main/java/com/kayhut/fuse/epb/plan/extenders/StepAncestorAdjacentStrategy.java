@@ -40,7 +40,6 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
         //
         Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation.get(), RelPropGroup.class);
 
-        Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getAncestor(nextRelation.get(), EEntityBase.class);
 
         Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtils.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
@@ -49,16 +48,13 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
             toEntityPropGroup = AsgQueryUtils.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
         }
 
-        Plan newPlan = plan.get();
-        if (getLastOpOfType(newPlan, EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
-            newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
-        }
-
+        Plan newPlan = Plan.clone(plan.get());
+        //current step on plan is the "from" entity whether is entity or filter op
         newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
         if (nextRelationPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
         }
-
+        //to entity step
         newPlan = newPlan.withOp(new EntityOp(toEntity.get()));
         if (toEntityPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
