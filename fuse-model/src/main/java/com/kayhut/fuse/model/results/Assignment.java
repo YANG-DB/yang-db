@@ -11,8 +11,9 @@ import java.util.*;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Assignment extends QueryResult {
+public class Assignment {
 
+    //region Properties
     public List<Relationship> getRelationships ()
     {
         return relationships;
@@ -32,54 +33,57 @@ public class Assignment extends QueryResult {
     {
         this.entities = entities;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public String toString()
     {
-        return "Assignment [relationships = "+relationships+", entities = "+entities+"]";
+        return "Assignment [relationships = " + relationships + ", entities = " + entities + "]";
     }
+    //endregion
 
     //region Fields
     private List<Entity> entities;
     private List<Relationship> relationships;
     //endregion
 
-    public static final class AssignmentBuilder {
+    public static final class Builder {
         //region Constructors
-        private AssignmentBuilder() {
+        private Builder() {
             entities = new HashMap<>();
             relationships = new ArrayList<>();
         }
         //endregion
 
         //region Static
-        public static AssignmentBuilder anAssignment() {
-            return new AssignmentBuilder();
+        public static Builder instance() {
+            return new Builder();
         }
         //endregion
 
         //region Public Methods
-        public AssignmentBuilder withEntity(Entity entity) {
+        public Builder withEntity(Entity entity) {
             Entity entityToMerge = this.entities.get(entity.hashCode());
             if (entityToMerge != null) {
-                entity = Entity.Builder.anEntity().withEntity(entity).withEntity(entityToMerge).build();
+                entity = Entity.Builder.instance().withEntity(entity).withEntity(entityToMerge).build();
             }
 
             entities.put(entity.hashCode(), entity);
             return this;
         }
 
-        public AssignmentBuilder withEntities(List<Entity> entities) {
+        public Builder withEntities(List<Entity> entities) {
             entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
             return this;
         }
 
-        public AssignmentBuilder withRelationship(Relationship relationship) {
+        public Builder withRelationship(Relationship relationship) {
             this.relationships.add(relationship);
             return this;
         }
 
-        public AssignmentBuilder withRelationships(List<Relationship> relationships) {
+        public Builder withRelationships(List<Relationship> relationships) {
             this.relationships = relationships;
             return this;
         }

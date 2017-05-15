@@ -18,11 +18,10 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
-import static com.kayhut.fuse.model.results.QueryResult.QueryResultBuilder.aQueryResult;
+import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 
 /**
  * Created by User on 08/03/2017.
@@ -102,7 +101,7 @@ public class Neo4jOperationContextProcessor implements
         QueryResult result = cursor.getNextResults(context.getPageSize());
 
         if (result == null) {
-            result = aQueryResult().build();
+            result = instance().build();
         }
 
         return submit(eventBus, context.of(new PageResource(context.getPageId(), result, context.getPageSize())));

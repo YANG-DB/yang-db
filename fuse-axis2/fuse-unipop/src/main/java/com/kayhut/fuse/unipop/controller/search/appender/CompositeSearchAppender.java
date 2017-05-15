@@ -13,6 +13,7 @@ public class CompositeSearchAppender<TContext> implements SearchAppender<TContex
     }
 
     //region Constructors
+    @SafeVarargs
     public CompositeSearchAppender(Mode mode, SearchAppender<TContext>...searchAppenders) {
         this(mode, Stream.of(searchAppenders));
     }

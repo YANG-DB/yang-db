@@ -3,7 +3,7 @@ package com.kayhut.fuse.unipop.controller.search.appender;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;

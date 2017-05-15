@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Property {
 
+    //region Properties
     public int getpType() {
         return pType;
     }
@@ -33,12 +34,15 @@ public class Property {
     public void setValue(Object value) {
         this.value = value;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public String toString()
     {
         return "Property [agg = "+agg+", value = "+value+", pType = "+pType+"]";
     }
+    //endregion
 
     //region Fields
     private int pType;

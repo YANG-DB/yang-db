@@ -2,7 +2,7 @@ package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
-import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 
 /**
  * Created by User on 27/03/2017.

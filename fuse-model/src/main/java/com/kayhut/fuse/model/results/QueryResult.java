@@ -46,29 +46,29 @@ public class QueryResult {
     private List<Assignment> assignments;
     //endregion
 
-    public static final class QueryResultBuilder {
+    public static final class Builder {
         private Query pattern;
         private List<Assignment> assignments;
 
-        private QueryResultBuilder() {
+        private Builder() {
             assignments = new ArrayList<>();
         }
 
-        public static QueryResultBuilder aQueryResult() {
-            return new QueryResultBuilder();
+        public static Builder instance() {
+            return new Builder();
         }
 
-        public QueryResultBuilder withPattern(Query pattern) {
+        public Builder withPattern(Query pattern) {
             this.pattern = pattern;
             return this;
         }
 
-        public QueryResultBuilder withAssignment(Assignment assignments) {
+        public Builder withAssignment(Assignment assignments) {
             this.assignments.add(assignments);
             return this;
         }
 
-        public QueryResultBuilder withAssignments(List<Assignment> assignments) {
+        public Builder withAssignments(List<Assignment> assignments) {
             this.assignments = assignments;
             return this;
         }
