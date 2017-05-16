@@ -58,11 +58,8 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
         }
 
         List<HasContainer> constraintHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
-                .filter(hasContainer -> hasContainer.getKey()
-                        .toLowerCase()
-                        .equals(GlobalConstants.HasKeys.CONSTRAINT))
+                .filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
                 .toJavaList();
-
         if (constraintHasContainers.size() > 1){
             throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
         }

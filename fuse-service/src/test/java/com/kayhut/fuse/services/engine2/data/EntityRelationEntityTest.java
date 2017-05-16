@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
@@ -27,18 +28,18 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 
 /**
@@ -136,13 +137,251 @@ public class EntityRelationEntityTest {
     //region Tests
     @Test
     public void test_Dragon_Fire_Dragon() throws Exception {
-        Query query = Query.QueryBuilder.aQuery().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
                 new Rel(2, $ont.rType$("Fire"), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
         )).build();
 
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, Rel.Direction.R, allAssignments));
+    }
+
+    @Test
+    public void test_Dragon_Fire_d1() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d1", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d2() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d2", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d3() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d3", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d4() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d4", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d5() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d5", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d6() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d6", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d7() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d7", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d8() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d8", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_Fire_d9() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d9", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d0_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d0", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d1_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d1", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d2_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d2", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d3_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d3", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d4_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d4", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d5_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d5", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d6_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d6", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d7_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d7", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d8_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d8", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_d9_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d9", Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_Dragon() throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
+                new Rel(2, $ont.rType$("Fire"), Rel.Direction.L, null, 3, 0),
+                new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
+        )).build();
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, Rel.Direction.L, allAssignments));
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d1() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d1", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d2() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d2", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d3() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d3", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d4() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d4", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d5() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d5", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d6() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d6", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d7() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d7", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d8() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d8", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_d9() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("d9", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d0_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d0", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d1_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d1", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d2_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d2", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d3_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d3", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d4_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d4", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d5_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d5", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d6_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d6", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d7_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d7", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d8_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d8", Rel.Direction.L);
+    }
+
+    @Test
+    public void test_d9_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("d9", Rel.Direction.L);
+    }
+    //endregion
+
+    //region Protected Methods
+    protected static void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
+                new Rel(2, $ont.rType$("Fire"), direction, null, 3, 0),
+                new EConcrete(3, "B", $ont.eType$("Dragon"), eId, eId, 0, 0)
+        )).build();
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, direction,
+                assignment -> !Stream.ofAll(assignment.getEntities())
+                        .filter(entity -> entity.geteTag().contains("B"))
+                        .filter(entity -> entity.geteID().equals(eId))
+                        .isEmpty()));
+    }
+
+    protected static void test_ConcreteDragon_Fire_Dragon(String eId, Rel.Direction direction) throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new EConcrete(1, "A", $ont.eType$("Dragon"), eId, eId, 2, 0),
+                new Rel(2, $ont.rType$("Fire"), direction, null, 3, 0),
+                new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
+        )).build();
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, direction,
+                assignment -> !Stream.ofAll(assignment.getEntities())
+                        .filter(entity -> entity.geteTag().contains("A"))
+                        .filter(entity -> entity.geteID().equals(eId))
+                        .isEmpty()));
+    }
+
+    protected static void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -156,13 +395,9 @@ public class EntityRelationEntityTest {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResult expectedQueryResult = queryResult_Dragons_Fire_Dragon(10);
-
         QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult);
     }
-    //endregion
 
-    //region Protected Methods
     protected static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();
         for(int i = 0 ; i < numPeople ; i++) {
@@ -249,33 +484,53 @@ public class EntityRelationEntityTest {
                         .addProperty("id", new Property(Type.string, Index.not_analyzed))
                         .addProperty("type", new Property(Type.string, Index.not_analyzed)));
     }
+    //endregion
 
-    protected static QueryResult queryResult_Dragons_Fire_Dragon(int numDragons) throws Exception {
+    //region QueryResults
+    protected static QueryResult queryResult_Dragons_Fire_Dragon(
+            int numDragons,
+            Rel.Direction direction,
+            Predicate<Assignment> assignmentPredicate) throws Exception {
+
+        String eTag1 = direction == Rel.Direction.R ? "A" : "B";
+        String eTag2 = direction == Rel.Direction.R ? "B" : "A";
+
         QueryResult.Builder builder = QueryResult.Builder.instance();
         PromiseEdgeIdProvider edgeIdProvider = new PromiseEdgeIdProvider(
                 Optional.of(Constraint.by(
                         __.and(
-                            __.has(T.label, "Fire"),
-                            __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT)))));
+                                __.has(T.label, "Fire"),
+                                __.has(GlobalConstants.HasKeys.DIRECTION,
+                                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN)))));
 
         for(int i = 0 ; i < numDragons ; i++) {
             for (int j = 0; j < i; j++) {
                 Entity entityA = Entity.Builder.instance()
                         .withEID("d" + i)
-                        .withETag(Collections.singletonList("A"))
+                        .withETag(Collections.singletonList(eTag1))
                         .withEType($ont.eType$("Dragon"))
                         .build();
 
                 Entity entityB = Entity.Builder.instance()
                         .withEID("d" + j)
-                        .withETag(Collections.singletonList("B"))
+                        .withETag(Collections.singletonList(eTag2))
                         .withEType($ont.eType$("Dragon"))
                         .build();
 
                 Relationship relationship = Relationship.Builder.instance()
                         .withRID(edgeIdProvider.get(GlobalConstants.Labels.PROMISE,
-                                new PromiseVertex(Promise.as(entityA.geteID()), Optional.empty(), null),
-                                new PromiseVertex(Promise.as(entityB.geteID()), Optional.empty(), null),
+                                new PromiseVertex(
+                                        Promise.as(direction == Rel.Direction.R ?
+                                               entityA.geteID() :
+                                               entityB.geteID()),
+                                        Optional.empty(),
+                                        null),
+                                new PromiseVertex(
+                                        Promise.as(direction == Rel.Direction.R ?
+                                               entityB.geteID() :
+                                               entityA.geteID()),
+                                        Optional.empty(),
+                                        null),
                                 null))
                         .withDirectional(true)
                         .withEID1(entityA.geteID())
@@ -285,15 +540,21 @@ public class EntityRelationEntityTest {
                         .withRType($ont.rType$("Fire"))
                         .build();
 
-                builder.withAssignment(Assignment.Builder.instance()
-                        .withEntity(entityA)
-                        .withEntity(entityB)
-                        .withRelationship(relationship).build());
+                Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB)
+                        .withRelationship(relationship).build();
+
+                if (assignmentPredicate.test(assignment)) {
+                    builder.withAssignment(assignment);
+                }
             }
         }
 
         return builder.build();
     }
+    //endregion
+
+    //region Predicates
+    public static Predicate<Assignment> allAssignments = assignment -> true;
     //endregion
 
     //region Fields

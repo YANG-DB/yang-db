@@ -246,7 +246,7 @@ public class SingleEntityTest {
         eTyped.seteTag("A");
         eTyped.seteNum(1);
 
-        return Query.QueryBuilder.aQuery()
+        return Query.Builder.instance()
                 .withName(queryName)
                 .withOnt(ontologyName)
                 .withElements(Arrays.asList(start, eTyped))

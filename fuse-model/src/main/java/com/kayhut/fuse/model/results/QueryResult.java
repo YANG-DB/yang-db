@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,8 +14,13 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QueryResult {
-    QueryResult() {}
+    //region Constructors
+    public QueryResult() {
+        this.assignments = Collections.emptyList();
+    }
+    //endregion
 
+    //region Properties
     public Query getPattern ()
     {
         return pattern;
@@ -34,12 +40,15 @@ public class QueryResult {
     {
         this.assignments = assignments;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public String toString()
     {
         return "QueryResult [pattern = "+pattern+", assignments = "+assignments+"]";
     }
+    //endregion
 
     //region Fields
     private Query pattern;
@@ -47,17 +56,19 @@ public class QueryResult {
     //endregion
 
     public static final class Builder {
-        private Query pattern;
-        private List<Assignment> assignments;
-
+        //region Constructors
         private Builder() {
             assignments = new ArrayList<>();
         }
+        //endregion
 
+        //region Static
         public static Builder instance() {
             return new Builder();
         }
+        //endregion
 
+        //region Public Methods
         public Builder withPattern(Query pattern) {
             this.pattern = pattern;
             return this;
@@ -79,6 +90,12 @@ public class QueryResult {
             queryResult.setAssignments(assignments);
             return queryResult;
         }
+        //endregion
+
+        //region Fields
+        private Query pattern;
+        private List<Assignment> assignments;
+        //endregion
     }
 
 

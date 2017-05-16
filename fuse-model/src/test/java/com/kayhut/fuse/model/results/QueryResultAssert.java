@@ -19,7 +19,7 @@ public class QueryResultAssert {
         assertIfBothNull(expected.getAssignments(), actual.getAssignments());
         assertIfBothNotNull(expected.getAssignments(), actual.getAssignments());
 
-        Assert.assertTrue(expected.getAssignments().size() == actual.getAssignments().size());
+        Assert.assertEquals(expected.getAssignments().size(), actual.getAssignments().size());
 
         List<Assignment> expectedAssignments = Stream.ofAll(expected.getAssignments())
                 .sortBy(Assignment::toString).toJavaList();
@@ -38,6 +38,8 @@ public class QueryResultAssert {
         assertIfBothNull(expected.getEntities(), actual.getEntities());
         assertIfBothNotNull(expected.getEntities(), actual.getEntities());
 
+        Assert.assertEquals(expected.getEntities().size(), actual.getEntities().size());
+
         List<Entity> expectedEntities = Stream.ofAll(expected.getEntities())
                 .sortBy(Entity::geteID).toJavaList();
         List<Entity> actualEntities = Stream.ofAll(actual.getEntities())
@@ -49,6 +51,8 @@ public class QueryResultAssert {
 
         assertIfBothNull(expected.getRelationships(), actual.getRelationships());
         assertIfBothNotNull(expected.getRelationships(), actual.getRelationships());
+
+        Assert.assertEquals(expected.getRelationships().size(), actual.getRelationships().size());
 
         List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
                 .sortBy(Relationship::getrID).toJavaList();
@@ -72,6 +76,8 @@ public class QueryResultAssert {
         assertIfBothNull(expected.getProperties(), actual.getProperties());
         assertIfBothNotNull(expected.getProperties(), actual.getProperties());
 
+        Assert.assertEquals(expected.getProperties().size(), actual.getProperties().size());
+
         List<Property> expectedProperties = Stream.ofAll(expected.getProperties())
                 .sortBy(Property::getpType).toJavaList();
         List<Property> actualProperties = Stream.ofAll(actual.getProperties())
@@ -83,6 +89,8 @@ public class QueryResultAssert {
 
         assertIfBothNull(expected.getAttachedProperties(), actual.getAttachedProperties());
         assertIfBothNotNull(expected.getAttachedProperties(), actual.getAttachedProperties());
+
+        Assert.assertEquals(expected.getAttachedProperties().size(), actual.getAttachedProperties().size());
 
         List<AttachedProperty> expectedAttachedProperties = Stream.ofAll(expected.getAttachedProperties())
                 .sortBy(AttachedProperty::getpName).toJavaList();
@@ -126,6 +134,8 @@ public class QueryResultAssert {
         assertIfBothNull(expected.getProperties(), actual.getProperties());
         assertIfBothNotNull(expected.getProperties(), actual.getProperties());
 
+        Assert.assertEquals(expected.getProperties().size(), actual.getProperties().size());
+
         List<Property> expectedProperties = Stream.ofAll(expected.getProperties())
                 .sortBy(Property::getpType).toJavaList();
         List<Property> actualProperties = Stream.ofAll(actual.getProperties())
@@ -137,6 +147,8 @@ public class QueryResultAssert {
 
         assertIfBothNull(expected.getAttachedProperties(), actual.getAttachedProperties());
         assertIfBothNotNull(expected.getAttachedProperties(), actual.getAttachedProperties());
+
+        Assert.assertEquals(expected.getAttachedProperties().size(), actual.getAttachedProperties().size());
 
         List<AttachedProperty> expectedAttachedProperties = Stream.ofAll(expected.getAttachedProperties())
                 .sortBy(AttachedProperty::getpName).toJavaList();
