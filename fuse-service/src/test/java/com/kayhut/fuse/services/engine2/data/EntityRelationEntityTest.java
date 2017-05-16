@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
@@ -14,6 +15,12 @@ import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.test.framework.index.Mappings;
+import com.kayhut.test.framework.index.Mappings.Mapping;
+import com.kayhut.test.framework.index.Mappings.Mapping.Property;
+import com.kayhut.test.framework.index.Mappings.Mapping.Property.Index;
+import com.kayhut.test.framework.index.Mappings.Mapping.Property.Type;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -22,7 +29,6 @@ import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.apache.http.client.entity.EntityBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -30,10 +36,10 @@ import org.jooby.test.JoobyRule;
 import org.junit.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 
 /**
  * Created by Roman on 11/05/2017.
@@ -47,6 +53,22 @@ public class EntityRelationEntityTest {
 
     @BeforeClass
     public static void setup() throws Exception {
+        Mappings mappings = new Mappings()
+                .addMapping("type1", new Mapping()
+                    .addProperty("prop1", new Property(Type.string, Index.not_analyzed))
+                    .addProperty("prop2", new Property(Type.integer))
+                    .addProperty("prop3", new Property()
+                        .addProperty("prop4", new Property(Type.string, Index.analyzed))
+                        .addProperty("prop5", new Property(Type.string, Index.not_analyzed))
+                        .addProperty("prop6", new Property(Type.date))
+                        .addProperty("prop7", new Property(Type.integer))))
+                .addMapping("type2", new Mapping()
+                    .addProperty("prop9", new Property(Type.string, Index.not_analyzed)));
+
+        String a = new ObjectMapper().writeValueAsString(mappings);
+        int x = 5;
+
+
         fuseClient = new FuseClient("/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/ontology/Dragons"));
@@ -54,11 +76,10 @@ public class EntityRelationEntityTest {
         String idField = "id";
 
         elasticEmbeddedNode = new ElasticEmbeddedNode(
-                new MappingFileElasticConfigurer("person", new File("./src/test/resources/mappings/person.mapping.json").getAbsolutePath()),
-                new MappingFileElasticConfigurer("dragon", new File("./src/test/resources/mappings/dragon.mapping.json").getAbsolutePath()),
-                new MappingFileElasticConfigurer(Arrays.asList("fire20170511", "fire20170512", "fire20170513"),
-                        new File("./src/test/resources/mappings/fire.mapping.json").getAbsolutePath())
-        );
+                new MappingElasticConfigurer("person", new Mappings().addMapping("Person", getPersonMapping())),
+                new MappingElasticConfigurer("dragon", new Mappings().addMapping("Dragon", getDragonMapping())),
+                new MappingElasticConfigurer(Arrays.asList("fire20170511", "fire20170512", "fire20170513"),
+                        new Mappings().addMapping("Fire", getFireMapping())));
 
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
@@ -153,6 +174,10 @@ public class EntityRelationEntityTest {
         return people;
     }
 
+    protected static Mapping getPersonMapping() {
+        return new Mapping().addProperty("name", new Property(Type.string, Index.not_analyzed));
+    }
+
     protected static Iterable<Map<String, Object>> createDragons(int numDragons) {
         List<Map<String, Object>> dragons = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
@@ -162,6 +187,10 @@ public class EntityRelationEntityTest {
             dragons.add(dragon);
         }
         return dragons;
+    }
+
+    protected static Mapping getDragonMapping() {
+        return new Mapping().addProperty("name", new Property(Type.string, Index.not_analyzed));
     }
 
 
@@ -207,6 +236,18 @@ public class EntityRelationEntityTest {
         }
 
         return fireEdges;
+    }
+
+    protected static Mapping getFireMapping() {
+        return new Mapping()
+                .addProperty("timestamp", new Property(Type.date))
+                .addProperty("direction", new Property(Type.string, Index.not_analyzed))
+                .addProperty("entityA", new Property()
+                    .addProperty("id", new Property(Type.string, Index.not_analyzed))
+                    .addProperty("type", new Property(Type.string, Index.not_analyzed)))
+                .addProperty("entityB", new Property()
+                        .addProperty("id", new Property(Type.string, Index.not_analyzed))
+                        .addProperty("type", new Property(Type.string, Index.not_analyzed)));
     }
 
     protected static QueryResult queryResult_Dragons_Fire_Dragon(int numDragons) throws Exception {

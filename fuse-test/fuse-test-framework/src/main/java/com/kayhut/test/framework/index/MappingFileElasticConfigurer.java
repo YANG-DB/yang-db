@@ -16,11 +16,11 @@ import java.util.Map;
 public class MappingFileElasticConfigurer extends MappingElasticConfigurer {
     //region Constructors
     public MappingFileElasticConfigurer(String indexName, String mappingsFile) throws IOException {
-        super(indexName, new ObjectMapper().readValue(new File(mappingsFile), new TypeReference<Map<String, Object>>(){}));
+        super(indexName, (Map<String, Object>) new ObjectMapper().readValue(new File(mappingsFile), new TypeReference<Map<String, Object>>(){}));
     }
 
     public MappingFileElasticConfigurer(Iterable<String> indices, String mappingsFile) throws IOException {
-        super(indices, new ObjectMapper().readValue(new File(mappingsFile), new TypeReference<Map<String, Object>>(){}));
+        super(indices, (Map<String, Object>) new ObjectMapper().readValue(new File(mappingsFile), new TypeReference<Map<String, Object>>(){}));
     }
     //endregion
 }

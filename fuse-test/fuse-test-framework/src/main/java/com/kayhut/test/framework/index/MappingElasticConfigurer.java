@@ -1,5 +1,6 @@
 package com.kayhut.test.framework.index;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
@@ -23,6 +24,16 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
     public MappingElasticConfigurer(Iterable<String> indices, Map<String, Object> mappings) {
         this.indices = Stream.ofAll(indices).toJavaSet();
         this.mappings = mappings;
+    }
+
+    public MappingElasticConfigurer(String index, Mappings mappings) throws IOException {
+        this(Collections.singletonList(index), mappings);
+    }
+
+    public MappingElasticConfigurer(Iterable<String> indices, Mappings mappings) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        this.mappings = mapper.readValue(mapper.writeValueAsString(mappings), new TypeReference<Map<String, Object>>(){});
+        this.indices = Stream.ofAll(indices).toJavaSet();
     }
     //endregion
 
