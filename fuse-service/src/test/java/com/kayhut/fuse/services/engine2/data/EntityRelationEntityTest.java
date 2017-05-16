@@ -2,12 +2,15 @@ package com.kayhut.fuse.services.engine2.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -16,6 +19,7 @@ import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.index.Mappings.Mapping;
@@ -30,6 +34,7 @@ import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -40,6 +45,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Predicate;
+
+import static com.kayhut.fuse.model.query.Constraint.*;
 
 
 /**
@@ -144,7 +151,13 @@ public class EntityRelationEntityTest {
                 new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
         )).build();
 
-        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, Rel.Direction.R, allAssignments));
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                Rel.Direction.R,
+                Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
+                allAssignments));
     }
 
     @Test
@@ -251,7 +264,13 @@ public class EntityRelationEntityTest {
                 new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
         )).build();
 
-        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, Rel.Direction.L, allAssignments));
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                Rel.Direction.L,
+                Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.has(GlobalConstants.HasKeys.DIRECTION, Direction.IN))),
+                allAssignments));
     }
 
     @Test
@@ -348,6 +367,47 @@ public class EntityRelationEntityTest {
     public void test_d9_FiredBy_Dragon() throws Exception {
         test_ConcreteDragon_Fire_Dragon("d9", Rel.Direction.L);
     }
+
+    @Test
+    public void test_Dragon_Fire_temperature_eq_1000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.eq, 1000);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_le_1000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.le, 1000);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_lt_1000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.lt, 1000);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_gt_1000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.gt, 1000);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_ge_1000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.ge, 1000);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_ne_1000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.ne, 1000);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_inSet_1000_1100_1200_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inSet, new int[] { 1000, 1100, 1200});
+    }
+
+    @Test
+    @Ignore
+    public void test_Dragon_Fire_temperature_not_inSet_1000_1100_1200_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInSet, new int[] { 1000, 1100, 1200});
+    }
     //endregion
 
     //region Protected Methods
@@ -359,7 +419,13 @@ public class EntityRelationEntityTest {
                 new EConcrete(3, "B", $ont.eType$("Dragon"), eId, eId, 0, 0)
         )).build();
 
-        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, direction,
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                direction,
+                Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.has(GlobalConstants.HasKeys.DIRECTION,
+                                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .filter(entity -> entity.geteID().equals(eId))
@@ -374,10 +440,39 @@ public class EntityRelationEntityTest {
                 new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
         )).build();
 
-        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(10, direction,
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                direction,
+                Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.has(GlobalConstants.HasKeys.DIRECTION,
+                                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("A"))
                         .filter(entity -> entity.geteID().equals(eId))
+                        .isEmpty()));
+    }
+
+    protected static void test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp op, Object value) throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
+                new Rel(2, $ont.rType$("Fire"), Rel.Direction.R, null, 4, 3),
+                new RelProp(3, $ont.pType$("temperature").toString(), of(op, value), 0),
+                new ETyped(4, "B", $ont.eType$("Dragon"), 0, 0)
+        )).build();
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                Rel.Direction.R,
+                Constraint.by(__.and(
+                        __.has(T.label, "Fire"),
+                        __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT),
+                        __.has("temperature", ConverstionUtil.convertConstraint(of(op, value))))),
+                assignment -> !Stream.ofAll(assignment.getEntities())
+                        .filter(entity -> entity.geteTag().contains("B"))
+                        .map(entity -> Integer.parseInt(entity.geteID().substring(1)))
+                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value)).test(1000 + 100 * intId))
                         .isEmpty()));
     }
 
@@ -440,6 +535,7 @@ public class EntityRelationEntityTest {
                 fireEdge.put("id", "fire" + counter++);
                 fireEdge.put("timestamp", currentDate);
                 fireEdge.put("direction", Direction.OUT);
+                fireEdge.put("temperature", 1000 + j * 100);
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", "fire" + counter++);
@@ -477,6 +573,7 @@ public class EntityRelationEntityTest {
         return new Mapping()
                 .addProperty("timestamp", new Property(Type.date))
                 .addProperty("direction", new Property(Type.string, Index.not_analyzed))
+                .addProperty("temperature", new Property(Type.integer))
                 .addProperty("entityA", new Property()
                     .addProperty("id", new Property(Type.string, Index.not_analyzed))
                     .addProperty("type", new Property(Type.string, Index.not_analyzed)))
@@ -490,18 +587,14 @@ public class EntityRelationEntityTest {
     protected static QueryResult queryResult_Dragons_Fire_Dragon(
             int numDragons,
             Rel.Direction direction,
+            TraversalConstraint constraint,
             Predicate<Assignment> assignmentPredicate) throws Exception {
 
         String eTag1 = direction == Rel.Direction.R ? "A" : "B";
         String eTag2 = direction == Rel.Direction.R ? "B" : "A";
 
         QueryResult.Builder builder = QueryResult.Builder.instance();
-        PromiseEdgeIdProvider edgeIdProvider = new PromiseEdgeIdProvider(
-                Optional.of(Constraint.by(
-                        __.and(
-                                __.has(T.label, "Fire"),
-                                __.has(GlobalConstants.HasKeys.DIRECTION,
-                                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN)))));
+        PromiseEdgeIdProvider edgeIdProvider = new PromiseEdgeIdProvider(Optional.of(constraint));
 
         for(int i = 0 ; i < numDragons ; i++) {
             for (int j = 0; j < i; j++) {

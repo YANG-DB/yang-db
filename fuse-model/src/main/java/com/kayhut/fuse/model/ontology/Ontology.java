@@ -238,6 +238,37 @@ public class Ontology {
             return rType(relationName).get();
         }
 
+        public Optional<Property> $property(int pType) {
+            return Stream.ofAll(ontology.getProperties())
+                    .filter(property -> property.getpType() == pType)
+                    .toJavaOptional();
+        }
+
+        public Property $property$(int pType) {
+            return $property(pType).get();
+        }
+
+        public Optional<Property> property(String propertyName) {
+            return Stream.ofAll(ontology.getProperties())
+                    .filter(property -> property.getName().equals(propertyName))
+                    .toJavaOptional();
+        }
+
+        public Property property$(String propertyName) {
+            return property(propertyName).get();
+        }
+
+        public Optional<Integer> pType(String propertyName) {
+            return Stream.ofAll(ontology.getProperties())
+                    .filter(property -> property.getName().equals(propertyName))
+                    .map(Property::getpType)
+                    .toJavaOptional();
+        }
+
+        public Integer pType$(String propertyName) {
+            return pType(propertyName).get();
+        }
+
         public List<EntityType> entities() {
             return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
         }

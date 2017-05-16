@@ -67,6 +67,11 @@
       "type": "date"
     },
     {
+      "pType": 11,
+      "name": "temperature",
+      "type": "int"
+    },
+    {
       "pType": 2147483646,
       "name": "type",
       "type": "string"
@@ -126,7 +131,7 @@
         "eTypeA": 2,
         "eTypeB": 2
       }],
-      "properties": [10]
+      "properties": [10, 11]
     }
   ]
 }
