@@ -104,7 +104,7 @@ public class StatisticsMockUtils {
         });
 
         when(mock.getRedundantNodeStatistics(any(), any())).thenAnswer(invocationOnMock -> {
-            Typed etype= (Typed) invocationOnMock.getArguments()[0];
+            Typed.eTyped etype= (Typed.eTyped) invocationOnMock.getArguments()[0];
             //todo - implement smart
             //Typed etype = (Typed) invocationOnMock.getArguments()[1];
             //EProp eprop = (EProp) invocationOnMock.getArguments()[2];

@@ -103,8 +103,8 @@ public class PlanUtil {
         return Collections.emptyList();
     }
 
-    public static PlanOpBase getLast(Optional<Plan> plan) {
-        return Iterables.getLast(plan.get().getOps());
+    public static PlanOpBase getLast(Plan plan) {
+        return Iterables.getLast(plan.getOps());
     }
 
     public static <T extends PlanOpBase> T findFirst(Plan plan,Class<T> clazz,Predicate<PlanOpBase> predicate) {

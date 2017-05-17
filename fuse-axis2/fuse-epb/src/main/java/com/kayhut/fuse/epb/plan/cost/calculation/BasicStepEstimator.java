@@ -5,10 +5,13 @@ import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.query.properties.*;
-import javaslang.Tuple2;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
@@ -23,7 +26,7 @@ public class BasicStepEstimator implements StepEstimator {
         this.alpha = alpha;
     }
 
-    public Tuple2<Double, List<PlanOpWithCost<Cost>>> calculate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns pattern, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public StepEstimatorResult calculate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns pattern, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         switch (pattern) {
             case FULL_STEP:
                 return calculateFullStep(statisticsProvider, map, previousCost.get());
@@ -35,7 +38,7 @@ public class BasicStepEstimator implements StepEstimator {
         throw new RuntimeException("No Appropriate pattern found [" + pattern + "]");
     }
 
-    private Tuple2<Double, List<PlanOpWithCost<Cost>>> calculateAndStep(Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> planPlanDetailedCostPlanWithCost) {
+    private StepEstimatorResult calculateAndStep(Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> planPlanDetailedCostPlanWithCost) {
         EntityOp entityOp = (EntityOp) map.get(AND_MODE_ENTITY_TWO);
         if (!map.containsKey(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER)) {
             map.put(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER, new EntityFilterOp());
@@ -45,7 +48,7 @@ public class BasicStepEstimator implements StepEstimator {
         filterOp.setEntity(entityOp.getAsgEBase());
 
         PlanOpWithCost<Cost> entityLatestOp = planPlanDetailedCostPlanWithCost.getCost().getPlanOpByEntity(entityOp.getAsgEBase().geteBase()).get();
-        return new Tuple2<>(1d, Collections.singletonList(new PlanOpWithCost<>(new Cost(0, (long) Math.ceil(entityLatestOp.peek())), entityLatestOp.peek(), entityOp, filterOp)));
+        return StepEstimatorResult.of(1d, new PlanOpWithCost<>(new Cost(0, (long) Math.ceil(entityLatestOp.peek())), entityLatestOp.peek(), entityOp, filterOp));
 
     }
 
@@ -76,7 +79,7 @@ public class BasicStepEstimator implements StepEstimator {
      * @param previousCost
      * @return
      */
-    private Tuple2<Double, List<PlanOpWithCost<Cost>>> calculateFullStep(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> previousCost) {
+    private StepEstimatorResult calculateFullStep(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> previousCost) {
         //entity one
         EntityOp entityOneOp = (EntityOp) map.get(ENTITY_ONE);
         if (!map.containsKey(OPTIONAL_ENTITY_ONE_FILTER)) {
@@ -125,7 +128,10 @@ public class BasicStepEstimator implements StepEstimator {
 
         EPropGroup clone = filterOneOp.getAsgEBase().geteBase().clone();
         List<RelProp> pushdownProps = new LinkedList<>();
-        List<RelProp> collect = relFilterOp.getAsgEBase().geteBase().getProps().stream().filter(f -> f instanceof PushdownRelProp).collect(Collectors.toList());
+        List<RelProp> collect = relFilterOp.getAsgEBase().geteBase().getProps().stream().filter(f -> ( f instanceof PushdownRelProp) &&
+                (!f.getpType().equals(Integer.toString(OntologyFinalizer.ID_FIELD_P_TYPE)) &&
+                (!f.getpType().equals(Integer.toString(OntologyFinalizer.TYPE_FIELD_P_TYPE)))))
+                .collect(Collectors.toList());
         collect.forEach(p -> {
             pushdownProps.add(p);
             clone.getProps().add(EProp.of(p.getpType(), p.geteNum(), p.getCon()));
@@ -146,20 +152,20 @@ public class BasicStepEstimator implements StepEstimator {
         double lambdaEdge = R / R2;
         double lambdaNode = N2 / N2_2;
         // lambda = (R/R1)*(N2/N2-1)
-        double lambda = Math.min(lambdaEdge, lambdaNode);
+        double lambda = lambdaEdge * lambdaNode;
 
         //cost if zero since the real cost is residing on the adjacent filter (rel filter)
         Cost relCost = new Cost(R, (long) R);
 
-        PlanOpWithCost entityOneOpCost = new PlanOpWithCost<>(entityOneCost, lambda, entityOneOp, filterOneOp);
-        PlanOpWithCost relOpCost = new PlanOpWithCost<>(relCost, R, relationOp, relFilterOp);
-        PlanOpWithCost entityTwoOpCost = new PlanOpWithCost<>(new Cost(N2, (long) N2), N2, entityTwoOp, filterTwoOp);
+        PlanOpWithCost<Cost> entityOneOpCost = new PlanOpWithCost<>(entityOneCost, lambda, entityOneOp, filterOneOp);
+        PlanOpWithCost<Cost> relOpCost = new PlanOpWithCost<>(relCost, R, relationOp, relFilterOp);
+        PlanOpWithCost<Cost> entityTwoOpCost = new PlanOpWithCost<>(new Cost(N2, (long) N2), N2, entityTwoOp, filterTwoOp);
 
-        return new Tuple2<>(lambda, Arrays.asList(entityOneOpCost, relOpCost, entityTwoOpCost));
+        return StepEstimatorResult.of(lambda, entityOneOpCost, relOpCost, entityTwoOpCost);
         //return new StepEstimator(edgeEstimation,N2,lambda);
     }
 
-    private Tuple2<Double, List<PlanOpWithCost<Cost>>> calculateSingleNodeStep(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map) {
+    private StepEstimatorResult calculateSingleNodeStep(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map) {
         EntityOp entityOp = (EntityOp) map.get(ENTITY_ONLY);
         if (!map.containsKey(OPTIONAL_ENTITY_ONLY_FILTER)) {
             map.put(OPTIONAL_ENTITY_ONLY_FILTER, new EntityFilterOp());
@@ -176,7 +182,7 @@ public class BasicStepEstimator implements StepEstimator {
         }
 
         double min = Math.min(entityTotal, filterTotal);
-        return new Tuple2<>(1d, Collections.singletonList(new PlanOpWithCost<>(new Cost(min, min), min, entityOp, filterOp)));
+        return StepEstimatorResult.of(1d, new PlanOpWithCost<>(new Cost(min, min), min, entityOp, filterOp));
     }
 
 }

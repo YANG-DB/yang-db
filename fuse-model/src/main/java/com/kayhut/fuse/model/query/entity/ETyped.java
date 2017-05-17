@@ -9,7 +9,7 @@ import com.kayhut.fuse.model.Below;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ETyped extends EEntityBase implements Typed {
+public class ETyped extends EEntityBase implements Typed.eTyped {
     //region Constructors
     public ETyped() {}
 

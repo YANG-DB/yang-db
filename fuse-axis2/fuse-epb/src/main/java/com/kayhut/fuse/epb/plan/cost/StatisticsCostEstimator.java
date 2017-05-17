@@ -9,7 +9,6 @@ import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import javaslang.Tuple2;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -119,16 +118,15 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
                 Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
-//                Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = calculate(map, pattern, previousCost);
-                Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = estimator.calculate(statisticsProvider,map, pattern, previousCost);
-                newPlan = buildNewPlan(tuple2, previousCost);
+                StepEstimator.StepEstimatorResult result = estimator.calculate(statisticsProvider, map, pattern, previousCost);
+                newPlan = buildNewPlan(result, previousCost);
                 break;
             }
         }
         return newPlan;
     }
 
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(Tuple2<Double,List<PlanOpWithCost<Cost>>> tuple2, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         AtomicReference<Cost> completePlanCost = new AtomicReference<>();
         List<PlanOpWithCost<Cost>> planOpWithCosts;
         if (previousCost.isPresent()) {
@@ -139,14 +137,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             planOpWithCosts = new ArrayList<>();
         }
 
-        double lambda = tuple2._1();
+        double lambda = result.lambda();
         planOpWithCosts.forEach(element-> {
             if(element.getOpBase().get(0) instanceof EntityOp) {
                 element.push(element.peek()*lambda);
             }
         });
 
-        List<PlanOpWithCost<Cost>> costs = tuple2._2;
+        List<PlanOpWithCost<Cost>> costs = result.planOpWithCosts();
         costs.forEach(c -> {
             //add new step into plan
             if (!previousCost.isPresent() || !contains(previousCost.get().getPlan(), c.getOpBase().get(0))) {

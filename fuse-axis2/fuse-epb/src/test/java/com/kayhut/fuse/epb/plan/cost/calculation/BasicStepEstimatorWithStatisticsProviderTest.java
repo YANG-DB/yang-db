@@ -21,12 +21,9 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
-import javaslang.Tuple2;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -107,8 +104,8 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY, entityOp);
-        Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = estimator.calculate(provider,map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
-        List<PlanOpWithCost<Cost>> costs = tuple2._2;
+        StepEstimator.StepEstimatorResult calculate = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
+        List<PlanOpWithCost<Cost>> costs = calculate.planOpWithCosts();
 
         Assert.assertNotNull(costs);
         Assert.assertEquals(costs.size(),1);
@@ -119,7 +116,7 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
     }
 
     @Test
-    public void calculateFullStep() throws Exception {
+    public void calculateFullStepNotNull() throws Exception {
         BasicStepEstimator estimator = new BasicStepEstimator(1);
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, 4)
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
@@ -136,8 +133,8 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_TWO, plan.getOps().get(numOps-2));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
-        Tuple2<Double, List<PlanOpWithCost<Cost>>> cost = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
-        Assert.assertNotNull(cost);
+        StepEstimator.StepEstimatorResult calculate = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
+        Assert.assertNotNull(calculate);
     }
 
     private GraphStatisticsProvider getStatisticsProvider(PlanMockUtils.PlanMockBuilder builder) {

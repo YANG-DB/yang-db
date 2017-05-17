@@ -63,7 +63,7 @@ public interface PlanMockUtils {
 
         private Plan plan;
         private Plan oldPlan;
-
+        private int enumIndex;
 
         private PlanMockBuilder(AsgQuery asgQuery) {
             this();
@@ -91,12 +91,14 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder entity(Type type, long total, int eType) throws Exception {
+            int eNum = enumIndex++;
             EntityOp entityOp = new EntityOp();
             EEntityBase instance = type.type.newInstance();
+            instance.seteNum(eNum);
             //no type => max nodes return
             nodeStatistics.put(eType, Double.MAX_VALUE);
             if (eType > 0) {
-                ((Typed) instance).seteType(eType);
+                ((Typed.eTyped) instance).seteType(eType);
                 nodeStatistics.put(eType, (double) total);
             }
             entityOp.setAsgEBase(new AsgEBase<>(instance));
@@ -116,7 +118,7 @@ public interface PlanMockUtils {
             //no type => max nodes return
             nodeStatistics.put(eType, Double.MAX_VALUE);
             if (eType > 0) {
-                ((Typed) instance).seteType(eType);
+                ((Typed.eTyped) instance).seteType(eType);
                 nodeStatistics.put(eType, (double) total);
             }
             entityOp.setAsgEBase(new AsgEBase<>(instance));
@@ -131,8 +133,8 @@ public interface PlanMockUtils {
             return this;
         }
 
-        public PlanMockBuilder rel(int num,Rel.Direction direction) {
-            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num),direction));
+        public PlanMockBuilder rel(int num, Rel.Direction direction) {
+            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num), direction));
             return this;
         }
 
@@ -163,24 +165,27 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder entityFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
-            EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType,eNum,constraint)));
+            EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType, eNum, constraint)));
             EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
-
+            EntityOp last = (EntityOp) PlanUtil.getLast(plan);
             plan = plan.withOp(filterOp);
-            nodeFilterStatistics.put(eNum,factor);
+            nodeFilterStatistics.put(eNum, factor);
             //statistics simulator
             costs.put(filterOp, 0d);
+            costs.put(last,costs.get(last)*factor);
             return this;
         }
 
-        public PlanMockBuilder relFilter(double factor,int eNum, String pType, Constraint constraint) throws Exception {
-            RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(pType,eNum,constraint)));
+        public PlanMockBuilder relFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
+            RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(pType, eNum, constraint)));
             RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relPropGroup));
 
+            RelationOp last = (RelationOp) PlanUtil.getLast(plan);
             plan = plan.withOp(relationFilterOp);
-            edgeFilterStatistics.put(eNum,factor);
+            edgeFilterStatistics.put(eNum, factor );
             //statistics simulator
             costs.put(relationFilterOp, factor);
+            costs.put(last,costs.get(last)*factor);
             return this;
         }
 
@@ -203,12 +208,12 @@ public interface PlanMockUtils {
             return costs;
         }
 
-        public Map<String, Map<Integer,Double>> statistics() {
-            Map<String, Map<Integer,Double>> map = new HashMap<>();
-            map.put(EDGE_FILTER_STATISTICS,edgeFilterStatistics);
-            map.put(EDGE_STATISTICS,edgeStatistics);
-            map.put(NODE_FILTER_STATISTICS,nodeFilterStatistics);
-            map.put(NODE_STATISTICS,nodeStatistics);
+        public Map<String, Map<Integer, Double>> statistics() {
+            Map<String, Map<Integer, Double>> map = new HashMap<>();
+            map.put(EDGE_FILTER_STATISTICS, edgeFilterStatistics);
+            map.put(EDGE_STATISTICS, edgeStatistics);
+            map.put(NODE_FILTER_STATISTICS, nodeFilterStatistics);
+            map.put(NODE_STATISTICS, nodeStatistics);
             return map;
         }
 
@@ -225,7 +230,7 @@ public interface PlanMockUtils {
 
 
     //region Private Methods
-    static  <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
+    static <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
         return AsgQueryUtils.<T>getElement(asgQuery, eNum).get();
     }
 }

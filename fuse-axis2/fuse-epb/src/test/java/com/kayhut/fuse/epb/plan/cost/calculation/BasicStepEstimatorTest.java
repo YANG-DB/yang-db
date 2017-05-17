@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
@@ -76,7 +75,6 @@ public class BasicStepEstimatorTest {
         ontology = OntologyTestUtils.createDragonsOntologyShort();
     }
 
-
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
         BasicStepEstimator estimator = new BasicStepEstimator(1);
@@ -86,8 +84,8 @@ public class BasicStepEstimatorTest {
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY, entityOp);
-        Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = estimator.calculate(provider,map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
-        List<PlanOpWithCost<Cost>> costs = tuple2._2;
+        StepEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
+        List<PlanOpWithCost<Cost>> costs = result.planOpWithCosts();
 
         Assert.assertNotNull(costs);
         Assert.assertEquals(costs.size(),1);
@@ -102,8 +100,8 @@ public class BasicStepEstimatorTest {
         BasicStepEstimator estimator = new BasicStepEstimator(1);
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, 4)
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
-                .rel(out, 1, 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
-                .entity(CONCRETE, 1, 5).entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
+                .rel(out, 1, 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
+                .entity(TYPED, 50, 5).entityFilter(0.1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.planWithCost(50, 250);
         Plan plan = builder.plan();
         StatisticsProvider provider = build(builder.statistics(), 1000);
@@ -116,8 +114,11 @@ public class BasicStepEstimatorTest {
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_TWO, plan.getOps().get(numOps-2));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
-        Tuple2<Double, List<PlanOpWithCost<Cost>>> cost = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
-        Assert.assertNotNull(cost);
+        StepEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
+        Assert.assertEquals(result.planOpWithCosts().get(0).getCost().cost,20,0.1);
+        Assert.assertEquals(result.planOpWithCosts().get(1).getCost().cost,200,0.1);
+        Assert.assertEquals(result.planOpWithCosts().get(2).getCost().cost,20,0.1);
+        Assert.assertEquals(result.lambda(),0.2,0.1);//lambda
     }
 
 }
