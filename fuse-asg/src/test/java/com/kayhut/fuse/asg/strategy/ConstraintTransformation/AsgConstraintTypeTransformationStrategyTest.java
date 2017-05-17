@@ -3,7 +3,6 @@ package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
-import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintTypeTransformationStrategy;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -22,7 +21,8 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by benishue on 09-May-17.
@@ -136,8 +136,8 @@ public class AsgConstraintTypeTransformationStrategyTest {
         //We want to be sure that the order of strategies is not affecting the final result
         AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
         asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext());
-        expr1 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(0).getCon().getExpr();
-        expr2 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(1).getCon().getExpr();
+        expr1 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
+        expr2 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();
         assertThat(expr1, instanceOf(Long.class));
         assertThat(expr2, instanceOf(Long.class));
 
@@ -147,8 +147,8 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Applying again the Constraint Transformation Strategy
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelPropsOriginal, asgStrategyContext);
-        expr1 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(0).getCon().getExpr();
-        expr2 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getrProps().get(1).getCon().getExpr();
+        expr1 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
+        expr2 = ((RelPropGroup) AsgQueryUtils.getElement(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();
         assertThat(expr1, instanceOf(Date.class));
         assertThat(expr2, instanceOf(Date.class));
 

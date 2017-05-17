@@ -1,14 +1,9 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
-import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
-
 import com.kayhut.fuse.gta.translation.TranslationContext;
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
@@ -21,7 +16,6 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -33,7 +27,6 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Created by Roman on 09/05/2017.
@@ -72,7 +65,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
                     entityFilterOp.getAsgEBase().geteBase(),
                     context.getOntology());
 
-        } else if (!entityFilterOp.getAsgEBase().geteBase().geteProps().isEmpty()) {
+        } else if (!entityFilterOp.getAsgEBase().geteBase().getProps().isEmpty()) {
 
             traversal = appendPropertyGroup(
                     traversal,
@@ -104,7 +97,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
             }
 
             List<Traversal> epropTraversals =
-                    Stream.ofAll(ePropGroup.geteProps())
+                    Stream.ofAll(ePropGroup.getProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
 
             if (!epropTraversals.isEmpty()) {
@@ -124,7 +117,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
             Ontology ontology) {
 
         List<Traversal> epropTraversals =
-                Stream.ofAll(ePropGroup.geteProps())
+                Stream.ofAll(ePropGroup.getProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
 
         Traversal constraintTraversal = epropTraversals.size() == 1 ?

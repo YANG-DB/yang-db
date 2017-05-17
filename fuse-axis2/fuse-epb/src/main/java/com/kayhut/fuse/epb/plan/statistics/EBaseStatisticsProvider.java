@@ -100,7 +100,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
 
-        for(RelProp relProp : relFilter.getrProps()){
+        for(RelProp relProp : relFilter.getProps()){
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( relProp.getpType())).get();
             GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
@@ -114,7 +114,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     @Override
     public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup, Direction direction) {
 
-        List<PushdownRelProp> pushdownProps = relPropGroup.getrProps().stream().filter(prop -> prop instanceof PushdownRelProp).
+        List<PushdownRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof PushdownRelProp).
                                                         map(PushdownRelProp.class::cast).collect(Collectors.toList());
 
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
@@ -134,12 +134,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
-        List<PushdownRelProp> pushdownProps = relPropGroup.getrProps().stream().filter(prop -> prop instanceof PushdownRelProp).
+        List<PushdownRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof PushdownRelProp).
                 map(PushdownRelProp.class::cast).collect(Collectors.toList());
 
-        EPropGroup ePropGroup = new EPropGroup();
-        ePropGroup.seteProps(pushdownProps.stream().map(prop -> EProp.of(prop.getpType(), prop.geteNum(), prop.getCon())).collect(Collectors.toList()));
-
+        EPropGroup ePropGroup = new EPropGroup(pushdownProps.stream().map(prop -> EProp.of(prop.getpType(), prop.geteNum(), prop.getCon())).collect(Collectors.toList()));
         return getNodeFilterStatistics(entity, ePropGroup);
     }
 
@@ -180,7 +178,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
-        for(EProp eProp : entityFilter.geteProps()){
+        for(EProp eProp : entityFilter.getProps()){
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
@@ -204,7 +202,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
-        for(EProp eProp : entityFilter.geteProps()){
+        for(EProp eProp : entityFilter.getProps()){
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent() && graphEdgeSchema.getDestination().get().getRedundantVertexProperty(graphElementPropertySchema.get().getName()).isPresent()) {
@@ -481,7 +479,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, EPropGroup entityFilter) {
         List<EProp> timeConditions = new ArrayList<>();
-        for (EProp eProp : entityFilter.geteProps()){
+        for (EProp eProp : entityFilter.getProps()){
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt(eProp.getpType())).get();
             if(property.getName().equals(indexPartition.getTimeField())){
                 switch(eProp.getCon().getOp()){
@@ -524,7 +522,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition,RelPropGroup relPropGroup) {
         List<RelProp> timeConditions = new ArrayList<>();
-        for (RelProp relProp : relPropGroup.getrProps()){
+        for (RelProp relProp : relPropGroup.getProps()){
             if(OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType())).get().getName().equals(indexPartition.getTimeField())){
 
                 switch(relProp.getCon().getOp()){

@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
@@ -14,7 +15,10 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -158,30 +162,23 @@ public interface PlanMockUtils {
             return this;
         }
 
-        public PlanMockBuilder entityFilter(double factor, int id) throws Exception {
-
-            EPropGroup ePropGroup = new EPropGroup();
-            EProp eProp = new EProp();
-            eProp.setpType(String.valueOf(id));
-            ePropGroup.seteProps(Collections.singletonList(eProp));
+        public PlanMockBuilder entityFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
+            EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType,eNum,constraint)));
             EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
 
             plan = plan.withOp(filterOp);
-            nodeFilterStatistics.put(id,factor);
+            nodeFilterStatistics.put(eNum,factor);
             //statistics simulator
-            costs.put(filterOp, factor);
+            costs.put(filterOp, 0d);
             return this;
         }
 
-        public PlanMockBuilder relFilter(double factor, int id) throws Exception {
-            RelPropGroup relPropGroup = new RelPropGroup();
-            RelProp relProp = new RelProp();
-            relProp.setpType(String.valueOf(id));
-            relPropGroup.setrProps(Collections.singletonList(relProp));
+        public PlanMockBuilder relFilter(double factor,int eNum, String pType, Constraint constraint) throws Exception {
+            RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(pType,eNum,constraint)));
             RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relPropGroup));
 
             plan = plan.withOp(relationFilterOp);
-            edgeFilterStatistics.put(id,factor);
+            edgeFilterStatistics.put(eNum,factor);
             //statistics simulator
             costs.put(relationFilterOp, factor);
             return this;

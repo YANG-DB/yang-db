@@ -7,13 +7,14 @@ import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.PushdownRelProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.*;
 
@@ -182,7 +183,6 @@ public class EBaseStatisticsProviderRedundantTests {
     public void nonRedundantEdgePropTest(){
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
         prop.setpType("8");
@@ -191,7 +191,7 @@ public class EBaseStatisticsProviderRedundantTests {
         constraint.setOp(ConstraintOp.eq);
         prop.setCon(constraint);
 
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantEdgeStatistics(rel, relFilter, Direction.out);
         Assert.assertNotNull(redundantEdgeStatistics);
         Assert.assertEquals(1000, redundantEdgeStatistics.getTotal(), 0.1);
@@ -201,11 +201,10 @@ public class EBaseStatisticsProviderRedundantTests {
     public void redundantEdgePropTest(){
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.eq, new Date()));
         PushdownRelProp pushdownRelProp = PushdownRelProp.of("EntityB.firstName", "1", 0, Constraint.of(ConstraintOp.ge, "abc"));
-        relFilter.setrProps(Arrays.asList(prop, pushdownRelProp));
+        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
         Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantEdgeStatistics(rel, relFilter, Direction.out);
         Assert.assertNotNull(redundantEdgeStatistics);
         Assert.assertEquals(100l, redundantEdgeStatistics.getTotal(), 0.1);
@@ -216,7 +215,6 @@ public class EBaseStatisticsProviderRedundantTests {
     public void redundantNodePropTest(){
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
         RelProp prop = new RelProp();
         prop.setpType("8");
         Constraint constraint = new Constraint();
@@ -225,7 +223,7 @@ public class EBaseStatisticsProviderRedundantTests {
         prop.setCon(constraint);
         PushdownRelProp pushdownRelProp = PushdownRelProp.of("EntityB.firstName", "2", 0, Constraint.of(ConstraintOp.ge, "abc"));
 
-        relFilter.setrProps(Arrays.asList(prop, pushdownRelProp));
+        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(4);
@@ -233,7 +231,7 @@ public class EBaseStatisticsProviderRedundantTests {
 
         Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantNodeStatistics(eTyped, relFilter);
         Assert.assertNotNull(redundantEdgeStatistics);
-        Assert.assertEquals(100l, redundantEdgeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(200l, redundantEdgeStatistics.getTotal(), 0.1);
     }
 
 }

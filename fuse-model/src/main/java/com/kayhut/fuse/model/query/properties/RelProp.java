@@ -8,32 +8,7 @@ import com.kayhut.fuse.model.query.EBase;
  * Created by benishue on 17/02/2017.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class RelProp extends EBase {
-
-
-    public String getpType() {
-        return pType;
-    }
-
-    public void setpType(String pType) {
-        this.pType = pType;
-    }
-
-    public String getpTag() {
-        return pTag;
-    }
-
-    public void setpTag(String pTag) {
-        this.pTag = pTag;
-    }
-
-    public Constraint getCon() {
-        return con;
-    }
-
-    public void setCon(Constraint con) {
-        this.con = con;
-    }
+public class RelProp extends BaseProp {
 
     public int getB() {
         return b;
@@ -43,19 +18,6 @@ public class RelProp extends EBase {
         this.b = b;
     }
 
-    public String getF() {
-        return f;
-    }
-
-    public void setF(String f) {
-        this.f = f;
-    }
-
-    //region Fields
-    private String pType;
-    private String f;
-    private String pTag;
-    private Constraint con;
     private int b;
     //endregion
 
@@ -66,6 +28,5 @@ public class RelProp extends EBase {
         eProp.seteNum(eNum);
         return eProp;
     }
-
 
 }

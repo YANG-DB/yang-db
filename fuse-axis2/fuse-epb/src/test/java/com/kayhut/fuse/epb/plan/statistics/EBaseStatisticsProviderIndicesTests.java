@@ -170,7 +170,6 @@ public class EBaseStatisticsProviderIndicesTests {
     public void eRelDateGtFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
         prop.setpType("8");
@@ -178,7 +177,7 @@ public class EBaseStatisticsProviderIndicesTests {
         constraint.setExpr(new Date(nowTime));
         constraint.setOp(ConstraintOp.gt);
         prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -189,7 +188,6 @@ public class EBaseStatisticsProviderIndicesTests {
     public void eRelDateRangeFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
         prop.setpType("8");
@@ -198,7 +196,7 @@ public class EBaseStatisticsProviderIndicesTests {
         constraint.setOp(ConstraintOp.inRange);
         constraint.setiType("[]");
         prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -210,7 +208,6 @@ public class EBaseStatisticsProviderIndicesTests {
     public void eRelDateInSetFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
         prop.setpType("8");
@@ -218,7 +215,7 @@ public class EBaseStatisticsProviderIndicesTests {
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.inSet);
         prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -231,7 +228,6 @@ public class EBaseStatisticsProviderIndicesTests {
     public void eRelDateNotInSetFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
         prop.setpType("8");
@@ -239,7 +235,7 @@ public class EBaseStatisticsProviderIndicesTests {
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.notInSet);
         prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -251,7 +247,6 @@ public class EBaseStatisticsProviderIndicesTests {
     public void eRelStringGtFilterHistogramTest() {
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp prop = new RelProp();
         prop.setpType("1");
@@ -259,7 +254,7 @@ public class EBaseStatisticsProviderIndicesTests {
         constraint.setExpr("abc");
         constraint.setOp(ConstraintOp.gt);
         prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -270,7 +265,6 @@ public class EBaseStatisticsProviderIndicesTests {
     public void eRelStringGtFilterWithDateFilterHistogramTest() {
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp dateProp = new RelProp();
         dateProp.setpType("8");
@@ -284,7 +278,7 @@ public class EBaseStatisticsProviderIndicesTests {
         constraint.setExpr("abc");
         constraint.setOp(ConstraintOp.gt);
         stringProp.setCon(constraint);
-        relFilter.setrProps(Arrays.asList(dateProp,stringProp));
+        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(dateProp,stringProp));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -295,7 +289,6 @@ public class EBaseStatisticsProviderIndicesTests {
     public void eRelStringGtFilterWithDateRangeFilterHistogramTest() {
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
 
         RelProp dateProp = new RelProp();
         dateProp.setpType("8");
@@ -310,7 +303,7 @@ public class EBaseStatisticsProviderIndicesTests {
         constraint.setExpr("abc");
         constraint.setOp(ConstraintOp.gt);
         stringProp.setCon(constraint);
-        relFilter.setrProps(Arrays.asList(dateProp,stringProp));
+        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(dateProp,stringProp));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);

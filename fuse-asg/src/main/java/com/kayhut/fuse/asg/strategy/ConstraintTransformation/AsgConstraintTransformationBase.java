@@ -30,7 +30,7 @@ public abstract class AsgConstraintTransformationBase {
 
         List<EPropGroup> ePropsGroup = Stream.ofAll(AsgQueryUtils.getElements(query, EPropGroup.class))
                 .map(ePropGroup -> ((EPropGroup)ePropGroup.geteBase())).toJavaList();
-        List<EProp> eProps2 = Stream.ofAll(ePropsGroup).flatMap(EPropGroup::geteProps).toJavaList();
+        List<EProp> eProps2 = Stream.ofAll(ePropsGroup).flatMap(EPropGroup::getProps).toJavaList();
 
         return java.util.stream.Stream.concat(eProps.stream(), eProps2.stream()).collect(Collectors.toList());
     }
@@ -40,7 +40,7 @@ public abstract class AsgConstraintTransformationBase {
                 .map(eBaseAsgEBase -> (RelProp)eBaseAsgEBase.geteBase()).toJavaList();
         List<RelPropGroup> relPropsGroup = Stream.ofAll(AsgQueryUtils.getElements(query, RelPropGroup.class))
                 .map(relPropGroup -> ((RelPropGroup)relPropGroup.geteBase())).toJavaList();
-        List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getrProps).toJavaList();
+        List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getProps).toJavaList();
 
         return java.util.stream.Stream.concat(relProps.stream(), relProps2.stream()).collect(Collectors.toList());
     }

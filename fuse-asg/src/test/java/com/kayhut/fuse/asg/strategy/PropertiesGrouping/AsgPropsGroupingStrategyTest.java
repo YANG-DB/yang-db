@@ -1,12 +1,9 @@
 package com.kayhut.fuse.asg.strategy.PropertiesGrouping;
+
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgEntityPropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgHQuantifierPropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgQuant1PropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -18,9 +15,11 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static org.junit.Assert.*;
 /**
  * Created by benishue on 24-Apr-17.
@@ -83,8 +82,8 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(3, newEPropGroupAsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newEPropGroupAsgEbase.getNext().size());
         assertEquals(originalEPropAsgEbase.geteNum(), newEPropGroupAsgEbase.geteNum());
-        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().contains(originalEPropAsgEbase.geteBase()));
-        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().size() == 1);
+        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEPropAsgEbase.geteBase()));
+        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).getProps().size() == 1);
     }
     // Query with an AND Quantifier where all his children are Eprop Type -  e.g., Q27 - 2
     @Test
@@ -163,10 +162,10 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(4, newEPropGroupAsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newEPropGroupAsgEbase.getNext().size());
         //Checking that our EPropGroup Contains the original EProps
-        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().contains(originalEProp1AsgEbase.geteBase()));
-        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().contains(originalEProp2AsgEbase.geteBase()));
+        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEProp1AsgEbase.geteBase()));
+        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEProp2AsgEbase.geteBase()));
         //eProp List of size = 2 in EPropGroup element
-        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().size() == 2);
+        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).getProps().size() == 2);
         assertEquals(AsgQueryUtils.getElement(asgQuery,4).get().getNext().get(0).geteNum(), newEPropGroupAsgEbase.geteNum());
     }
     @Test
@@ -230,9 +229,9 @@ public class AsgPropsGroupingStrategyTest {
         //AND Quantifier eNum = 2
         assertEquals(2, newEPropGroupAsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newEPropGroupAsgEbase.getNext().size());
-        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().contains(originalEPropAsgEbase.geteBase()));
+        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).getProps().contains(originalEPropAsgEbase.geteBase()));
         //eProp List of size = 2 in EPropGroup
-        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).geteProps().size() == 1);
+        assertTrue(((EPropGroup)newEPropGroupAsgEbase.geteBase()).getProps().size() == 1);
         //AND Quantifier eNum = 2 has 2 children: 1 Eprop and 1 ETyped(enum=5)
         List<AsgEBase<? extends EBase>> nextChildren = AsgQueryUtils.getElement(asgQuery, 2).get().getNext();
         AsgEBase<EBase> rel4AsgEBase = AsgQueryUtils.getElement(asgQuery, 4).get();
@@ -259,8 +258,8 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(2, newRelPropGroupAsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newRelPropGroupAsgEbase.getB().size());
         //Checking that our RelPropGroup Contains the original EProps
-        assertTrue(((RelPropGroup)newRelPropGroupAsgEbase.geteBase()).getrProps().contains(originalRelProp1AsgEbase.geteBase()));
-        assertTrue(((RelPropGroup)newRelPropGroupAsgEbase.geteBase()).getrProps().contains(originalRelProp2AsgEbase.geteBase()));
+        assertTrue(((RelPropGroup)newRelPropGroupAsgEbase.geteBase()).getProps().contains(originalRelProp1AsgEbase.geteBase()));
+        assertTrue(((RelPropGroup)newRelPropGroupAsgEbase.geteBase()).getProps().contains(originalRelProp2AsgEbase.geteBase()));
     }
     @Test
     public void hQuantifierWithRelPropsGroupingTest() throws Exception{
@@ -288,7 +287,7 @@ public class AsgPropsGroupingStrategyTest {
         assertEquals(4, newRelPropGroup2AsgEbase.getParents().get(0).geteNum());
         assertEquals(0, newRelPropGroup2AsgEbase.getB().size());
         //Checking that our RelPropGroup Contains the original EProps
-        assertTrue(((RelPropGroup)newRelPropGroup1AsgEbase.geteBase()).getrProps().contains(originalRelProp1AsgEbase.geteBase()));
-        assertTrue(((RelPropGroup)newRelPropGroup2AsgEbase.geteBase()).getrProps().contains(originalRelProp2AsgEbase.geteBase()));
+        assertTrue(((RelPropGroup)newRelPropGroup1AsgEbase.geteBase()).getProps().contains(originalRelProp1AsgEbase.geteBase()));
+        assertTrue(((RelPropGroup)newRelPropGroup2AsgEbase.geteBase()).getProps().contains(originalRelProp2AsgEbase.geteBase()));
     }
 }

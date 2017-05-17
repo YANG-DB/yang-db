@@ -5,7 +5,6 @@ import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
@@ -27,8 +26,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
 
     //region Private Methods
     private void groupRelProps(AsgQuery query, AsgEBase<Rel> asgEBase) {
-        RelPropGroup rPropGroup = new RelPropGroup();
-        AsgEBase<? extends EBase> rPropGroupAsgEbase = new AsgEBase<>(rPropGroup);
+        RelPropGroup rPropGroup;
 
         List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtils.getBDescendants(
                 asgEBase,
@@ -37,15 +35,15 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
                         asgEBase1.geteBase().getClass().equals(Rel.class));
 
         List<RelProp> rProps = Stream.ofAll(relPropsAsgBChildren).map(AsgEBase::geteBase).toJavaList();
-        if (rProps.size() > 0 ){
-            rPropGroup.setrProps(rProps);
+        if (rProps.size() > 0) {
+            rPropGroup = new RelPropGroup(rProps);
             rPropGroup.seteNum(Stream.ofAll(rProps).map(RelProp::geteNum).min().get());
             relPropsAsgBChildren.forEach(asgEBase::removeBChild);
         } else {
+            rPropGroup = new RelPropGroup();
             rPropGroup.seteNum(Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get() + 1);
         }
-
-        asgEBase.addBChild(rPropGroupAsgEbase);
+        asgEBase.addBChild(new AsgEBase<>(rPropGroup));
     }
     //endregion
 }

@@ -63,7 +63,7 @@ public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStr
             Ontology ontology) {
 
         String relationTypeName = OntologyUtil.getRelationTypeNameById(ontology, rel.getrType());
-        List<Traversal> traversals = Stream.ofAll(relPropGroup.getrProps())
+        List<Traversal> traversals = Stream.ofAll(relPropGroup.getProps())
                 .map(relProp -> convertRelPropToTraversal(relProp, ontology))
                 .toJavaList();
 

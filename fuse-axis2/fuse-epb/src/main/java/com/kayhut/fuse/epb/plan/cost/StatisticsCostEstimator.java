@@ -2,17 +2,13 @@ package com.kayhut.fuse.epb.plan.cost;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
-import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import javaslang.Tuple2;
 
 import java.lang.reflect.Method;
@@ -25,6 +21,7 @@ import java.util.stream.Collectors;
 import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
 import static com.kayhut.fuse.model.Utils.pattern;
 import static com.kayhut.fuse.model.execution.plan.Plan.contains;
+import static com.kayhut.fuse.model.execution.plan.PlanUtil.extractNewStep;
 
 /**
  * Created by moti on 01/04/2017.
@@ -97,12 +94,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     private StatisticsProvider statisticsProvider;
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private Ontology ontology;
+    private StepEstimator estimator;
 
     @Inject
-    public StatisticsCostEstimator(StatisticsProvider statisticsProvider, GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology) {
+    public StatisticsCostEstimator(StatisticsProvider statisticsProvider, GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology, StepEstimator estimator) {
         this.statisticsProvider = statisticsProvider;
         this.graphElementSchemaProvider = graphElementSchemaProvider;
         this.ontology = ontology;
+        this.estimator = estimator;
     }
 
     @Override
@@ -110,7 +109,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
         List<PlanOpBase> step = plan.getOps();
         if (previousCost.isPresent()) {
-            step = extractNewSteps(plan);
+            step = extractNewStep(plan);
         }
         String opsString = pattern(step);
         StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
@@ -120,7 +119,8 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
                 Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
-                Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = calculate(map, pattern, previousCost);
+//                Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = calculate(map, pattern, previousCost);
+                Tuple2<Double, List<PlanOpWithCost<Cost>>> tuple2 = estimator.calculate(statisticsProvider,map, pattern, previousCost);
                 newPlan = buildNewPlan(tuple2, previousCost);
                 break;
             }
@@ -160,133 +160,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         return new PlanWithCost<>(newPlan, newCost);
     }
 
-    public Tuple2<Double,List<PlanOpWithCost<Cost>>> calculate(Map<StatisticsCostEstimatorNames, PlanOpBase> map, StatisticsCostEstimatorPatterns pattern, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
-        switch (pattern) {
-            case FULL_STEP:
-                return calculateFullStep(map, previousCost.get());
-            case SINGLE_MODE:
-                return calculateSingleNodeStep(map);
-            case AND_MODE:
-                return calculateAndStep(map, previousCost.get());
-        }
-        throw new RuntimeException("No Appropriate pattern found [" + pattern + "]");
-    }
-
-    private Tuple2<Double, List<PlanOpWithCost<Cost>>> calculateAndStep(Map<StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> planPlanDetailedCostPlanWithCost) {
-        EntityOp entityOp = (EntityOp) map.get(AND_MODE_ENTITY_TWO);
-        if (!map.containsKey(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER)) {
-            map.put(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER, new EntityFilterOp());
-        }
-
-        EntityFilterOp filterOp = (EntityFilterOp) map.get(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER);
-        filterOp.setEntity(entityOp.getAsgEBase());
-
-        PlanOpWithCost<Cost> entityLatestOp = planPlanDetailedCostPlanWithCost.getCost().getPlanOpByEntity(entityOp.getAsgEBase().geteBase()).get();
-        return new Tuple2<>(1d,Collections.singletonList(new PlanOpWithCost<>(new Cost(0, (long)Math.ceil(entityLatestOp.peek())),entityLatestOp.peek(), entityOp, filterOp)));
-
-    }
-
-    private Tuple2<Double,List<PlanOpWithCost<Cost>>> calculateFullStep(Map<StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> previousCost) {
-        //entity one
-        EntityOp entityOneOp = (EntityOp) map.get(ENTITY_ONE);
-        if (!map.containsKey(OPTIONAL_ENTITY_ONE_FILTER)) {
-            map.put(OPTIONAL_ENTITY_ONE_FILTER, new EntityFilterOp());
-        }
-
-        EntityFilterOp filterOneOp = (EntityFilterOp) map.get(OPTIONAL_ENTITY_ONE_FILTER);
-        //set entity type on this kaka
-        filterOneOp.setEntity(entityOneOp.getAsgEBase());
-
-        //relation
-        RelationOp relationOp = (RelationOp) map.get(RELATION);
-
-        if (!map.containsKey(OPTIONAL_REL_FILTER)) {
-            map.put(OPTIONAL_REL_FILTER, new RelationFilterOp());
-        }
-        RelationFilterOp relFilterOp = (RelationFilterOp) map.get(OPTIONAL_REL_FILTER);
-        //set entity type on this kaka
-        relFilterOp.setRel(relationOp.getAsgEBase());
-
-        //entity
-        EntityOp entityTwoOp = (EntityOp) map.get(ENTITY_TWO);
-        if (!map.containsKey(OPTIONAL_ENTITY_TWO_FILTER)) {
-            map.put(OPTIONAL_ENTITY_TWO_FILTER, new EntityFilterOp());
-        }
-
-        EntityFilterOp filterTwoOp = (EntityFilterOp) map.get(OPTIONAL_ENTITY_TWO_FILTER);
-        //set entity type on this kaka
-        filterTwoOp.setEntity(entityTwoOp.getAsgEBase());
-
-        //calculate
-        //get node 1 cost from existing cost with plan
-        Cost entityOneCost = previousCost.getCost().getOpCost(entityOneOp).get();
-
-        //edge estimate =>
-        Direction direction = Direction.of(relationOp.getAsgEBase().geteBase().getDir());
-        double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(relationOp.getAsgEBase().geteBase(),
-                relFilterOp.getAsgEBase().geteBase() ,
-                entityOneOp.getAsgEBase().geteBase(), direction);
-
-        //redundant
-        //C1_e
-        double C1_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(),  direction).getCardinality();
-        //C_2e
-        double C2_e = statisticsProvider.getRedundantEdgeStatistics(relFilterOp.getRel().geteBase(), relFilterOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
-        //relation
-        double C3_v = statisticsProvider.getEdgeStatistics(relFilterOp.getRel().geteBase()).getCardinality();
-        double C3_filter = statisticsProvider.getEdgeFilterStatistics(relFilterOp.getRel().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality();
-        //get min
-        double edgeEstimation = Collections.min(Arrays.asList(C3_v, C3_filter, C1_e, C2_e, edgeEstimation_N1));
-        //cost if zero since the real cost is residing on the adjacent filter (rel filter)
-        Cost relCost = new Cost(edgeEstimation, (long) edgeEstimation);
-
-        //get entity one statistics calculated in prior step
-
-        double entityTwoCard = statisticsProvider.getNodeStatistics(entityTwoOp.getAsgEBase().geteBase()).getCardinality();
-        double filterTwoCard = entityTwoCard;
-        if (filterTwoOp.getAsgEBase() != null) {
-            filterTwoCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(),filterTwoOp.getAsgEBase().geteBase()).getCardinality();
-        }
-
-        //node redundand stats: C_2e
-        double nodeEstimate_C2_e = statisticsProvider.getRedundantNodeStatistics(entityTwoOp.getAsgEBase().geteBase(),relFilterOp.getAsgEBase().geteBase()).getCardinality();
-
-        //node 2 cardinality estimation
-        double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTwoCard, edgeEstimation));
-
-        //calculate back propagation weight
-        double lambdaEdge = edgeEstimation / edgeEstimation_N1;
-        double lambdaNode = N2 / nodeEstimate_C2_e;
-        double lambda = Math.min(lambdaEdge, lambdaNode);
-
-        PlanOpWithCost entityOneOpCost = new PlanOpWithCost<>(entityOneCost, lambda, entityOneOp, filterOneOp);
-        PlanOpWithCost relOpCost = new PlanOpWithCost<>(relCost, edgeEstimation, relationOp, relFilterOp);
-        PlanOpWithCost entityTwoOpCost = new PlanOpWithCost<>(new Cost(N2, (long) N2), N2, entityTwoOp, filterTwoOp);
-
-        return new Tuple2<>(lambda, Arrays.asList(entityOneOpCost, relOpCost, entityTwoOpCost));
-        //return new StepEstimator(edgeEstimation,N2,lambda);
-    }
-
-    private Tuple2<Double,List<PlanOpWithCost<Cost>>> calculateSingleNodeStep(Map<StatisticsCostEstimatorNames, PlanOpBase> map) {
-        EntityOp entityOp = (EntityOp) map.get(ENTITY_ONLY);
-        if (!map.containsKey(OPTIONAL_ENTITY_ONLY_FILTER)) {
-            map.put(OPTIONAL_ENTITY_ONLY_FILTER, new EntityFilterOp());
-        }
-
-        EntityFilterOp filterOp = (EntityFilterOp) map.get(OPTIONAL_ENTITY_ONLY_FILTER);
-        //set entity type on this kaka
-        filterOp.setEntity(entityOp.getAsgEBase());
-        //calculate
-        double entityTotal = statisticsProvider.getNodeStatistics(entityOp.getAsgEBase().geteBase()).getCardinality();
-        double filterTotal = entityTotal;
-        if (filterOp.getAsgEBase() != null) {
-            filterTotal = statisticsProvider.getNodeFilterStatistics(entityOp.getAsgEBase().geteBase(),filterOp.getAsgEBase().geteBase()).getCardinality();
-        }
-
-        double min = Math.min(entityTotal, filterTotal);
-        return new Tuple2<>(1d,Collections.singletonList(new PlanOpWithCost<>(new Cost(min, min), min, entityOp, filterOp)));
-    }
-
     private Map<StatisticsCostEstimatorNames, PlanOpBase> extractStep(List<PlanOpBase> step, Map<String, Integer> groups, Matcher matcher) {
         Map<StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
         TreeSet<Map.Entry<String, Integer>> entries = new TreeSet<>(Comparator.comparingInt(Map.Entry::getValue));
@@ -306,28 +179,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         return Arrays.stream(values()).map(v -> matcher.group(v.value())).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    /**
-     * extract step from the end of the current plan
-     *
-     * @param current
-     * @return
-     */
-    private List<PlanOpBase> extractNewSteps(Plan current) {
-        List<PlanOpBase> newPlan = new ArrayList<>();
-        List<PlanOpBase> ops = current.getOps();
-        int entityCounter = 0;
-        int i = ops.size() - 1;
-        while (i >= 0 && entityCounter < 2) {
-            if (ops.get(i).getClass().equals(EntityOp.class)) {
-                entityCounter++;
-            }
-            newPlan.add(0, ops.get(i));
-            i--;
-        }
-        if (entityCounter > 0)
-            return newPlan;
-        return Collections.emptyList();
-    }
 
     public static StatisticsCostEstimatorPatterns[] getSupportedPattern() {
         return StatisticsCostEstimatorPatterns.values();

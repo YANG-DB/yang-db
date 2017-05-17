@@ -2,6 +2,9 @@ package com.kayhut.fuse.model.execution.plan;
 
 import com.google.common.collect.Iterables;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,6 +79,29 @@ public class PlanUtil {
             klass -> planOp -> klass.isAssignableFrom(planOp.getClass());
 
     private static Predicate<PlanOpBase> truePredicate = planOp -> true;
+
+    /**
+     * extract step from the end of the current plan
+     *
+     * @param current
+     * @return
+     */
+    public static List<PlanOpBase> extractNewStep(Plan current) {
+        List<PlanOpBase> newPlan = new ArrayList<>();
+        List<PlanOpBase> ops = current.getOps();
+        int entityCounter = 0;
+        int i = ops.size() - 1;
+        while (i >= 0 && entityCounter < 2) {
+            if (EntityOp.class.isAssignableFrom(ops.get(i).getClass())) {
+                entityCounter++;
+            }
+            newPlan.add(0, ops.get(i));
+            i--;
+        }
+        if (entityCounter > 0)
+            return newPlan;
+        return Collections.emptyList();
+    }
 
     public static PlanOpBase getLast(Optional<Plan> plan) {
         return Iterables.getLast(plan.get().getOps());

@@ -81,16 +81,16 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),EntityFilterOp.class,p->true).getAsgEBase().geteBase().geteProps().size(),1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().size(),3);
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),EntityFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),1);
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),3);
         //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(2) instanceof PushdownRelProp);
+        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
+        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(2) instanceof PushdownRelProp);
 
-        Optional<RelProp> firstNameRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getrProps().stream().
+        Optional<RelProp> firstNameRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.firstName")).findFirst();
         Assert.assertTrue(firstNameRelProp.isPresent());
-        Optional<RelProp> typeRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getrProps().stream().
+        Optional<RelProp> typeRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.type")).findFirst();
         Assert.assertTrue(typeRelProp.isPresent());
         Assert.assertEquals("Dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));
@@ -110,10 +110,10 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().size(),3);
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),3);
         //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
-        Optional<RelProp> idRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getrProps().stream().
+        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
+        Optional<RelProp> idRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.id")).findFirst();
         Assert.assertTrue(idRelProp.isPresent());
         Assert.assertEquals("123",idRelProp.get().getCon().getExpr());

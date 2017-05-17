@@ -36,7 +36,7 @@ public class PlanDetailedCost {
     }
 
     public Optional<PlanOpWithCost<Cost>> getPlanOpCost(PlanOpBase op) {
-        return StreamSupport.stream(getOpCosts().spliterator(), false).filter(p->p.getOpBase().equals(op)).findFirst();
+        return StreamSupport.stream(getOpCosts().spliterator(), false).filter(p->p.getOpBase().contains(op)).findFirst();
     }
 
     public Optional<Cost> getOpCost(PlanOpBase planOpBase){
