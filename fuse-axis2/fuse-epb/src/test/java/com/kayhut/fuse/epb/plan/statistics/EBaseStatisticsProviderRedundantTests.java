@@ -177,40 +177,7 @@ public class EBaseStatisticsProviderRedundantTests {
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(500,50));
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
     }
-
-
-    @Test
-    public void nonRedundantEdgePropTest(){
-        Rel rel = new Rel();
-        rel.setrType(2);
-
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.eq);
-        prop.setCon(constraint);
-
-        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantEdgeStatistics(rel, relFilter, Direction.out);
-        Assert.assertNotNull(redundantEdgeStatistics);
-        Assert.assertEquals(1000, redundantEdgeStatistics.getTotal(), 0.1);
-    }
-
-    @Test
-    public void redundantEdgePropTest(){
-        Rel rel = new Rel();
-        rel.setrType(2);
-
-        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.eq, new Date()));
-        PushdownRelProp pushdownRelProp = PushdownRelProp.of("EntityB.firstName", "1", 0, Constraint.of(ConstraintOp.ge, "abc"));
-        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
-        Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantEdgeStatistics(rel, relFilter, Direction.out);
-        Assert.assertNotNull(redundantEdgeStatistics);
-        Assert.assertEquals(100l, redundantEdgeStatistics.getTotal(), 0.1);
-    }
-
-
+    
     @Test
     public void redundantNodePropTest(){
         Rel rel = new Rel();

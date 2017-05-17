@@ -48,7 +48,7 @@ public interface StatisticsProvider {
      * @param direction
      * @return
      */
-    Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,Direction direction);
+    //Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,Direction direction);
 
     /**
      *

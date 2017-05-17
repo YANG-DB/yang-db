@@ -111,8 +111,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return minEdgeCardinality;
     }
 
-    @Override
-    public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup, Direction direction) {
+//    @Override
+    /*public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup, Direction direction) {
 
         List<PushdownRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof PushdownRelProp).
                                                         map(PushdownRelProp.class::cast).collect(Collectors.toList());
@@ -130,7 +130,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         }
         return minEdgeCardinality;
 
-    }
+    }*/
 
     @Override
     public Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
