@@ -21,6 +21,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
         this.vertexTypes = new HashSet<>(OntologyUtil.getAllEntityLabels(ontology).get());
         this.edgeTypes = new HashSet<>(OntologyUtil.getAllRelationshipTypeLabels(ontology).get());
     }
+
+    public OntologySchemaProvider(PhysicalIndexProvider indexProvider, Ontology ontology, OntologyGraphLayoutProvider graphLayoutProvider) {
+        this(indexProvider, ontology);
+        this.graphLayoutProvider = graphLayoutProvider;
+    }
     //endregion
 
     //region GraphElementSchemaProvider implementation
@@ -185,12 +190,21 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
                     @Override
                     public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
-                        return Optional.empty();
+                        if(graphLayoutProvider != null){
+                            return graphLayoutProvider.getRedundantVertexProperty(edgeType, property);
+                        }else {
+                            return Optional.empty();
+                        }
                     }
+
 
                     @Override
                     public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property) {
-                        return Optional.empty();
+                        if(graphLayoutProvider != null){
+                            return graphLayoutProvider.getRedundantVertexPropertyByPushdownName(edgeType, property);
+                        }else {
+                            return Optional.empty();
+                        }
                     }
                 });
             }
@@ -261,5 +275,6 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     protected Set<String> vertexTypes;
     protected Set<String> edgeTypes;
     protected Ontology ontology;
+    protected OntologyGraphLayoutProvider graphLayoutProvider = null;
     //endregion
 }
