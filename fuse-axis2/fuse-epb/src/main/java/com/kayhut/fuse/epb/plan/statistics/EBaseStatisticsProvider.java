@@ -143,7 +143,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
-        return 0;
+
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
+        List<String> relevantIndices = getRelevantIndicesForEdge(filter, graphEdgeSchema);
+        return graphStatisticsProvider.getGlobalSelectivity(graphEdgeSchema, relevantIndices);
     }
 
     private List<String> getRelevantIndicesForEdge(RelPropGroup relPropGroup, GraphEdgeSchema graphEdgeSchema) {

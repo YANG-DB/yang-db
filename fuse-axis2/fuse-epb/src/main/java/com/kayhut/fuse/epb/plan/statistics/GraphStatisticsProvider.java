@@ -27,4 +27,7 @@ public interface GraphStatisticsProvider {
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       Constraint constraint, List<T> values);
+
+    long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
+
 }
