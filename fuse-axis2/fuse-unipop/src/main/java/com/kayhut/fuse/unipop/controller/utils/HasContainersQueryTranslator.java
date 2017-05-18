@@ -4,6 +4,7 @@ import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.elasticsearch.common.geo.ShapeRelation;
@@ -33,6 +34,10 @@ public class HasContainersQueryTranslator {
 
     //region Public Methods
     public void applyHasContainer(QueryBuilder queryBuilder, HasContainer hasContainer) {
+        /*P cloneP = hasContainer.getPredicate().clone();
+        cloneP.setValue(ConversionUtil.prepareValue(hasContainer.getValue()));
+        hasContainer = new HasContainer(hasContainer.getKey(), cloneP);*/
+
         if (Graph.Hidden.isHidden(hasContainer.getKey())) {
             applyHiddenHasContainer(queryBuilder, hasContainer);
             return;

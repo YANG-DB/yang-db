@@ -12,7 +12,7 @@ public class OntologyPropertyTypeFactory {
     //region Constructor
     public OntologyPropertyTypeFactory() {
         this.map = new HashMap<>() ;
-        this.map.put("string", (exp) -> String.valueOf(exp));
+        this.map.put("string", String::valueOf);
         this.map.put("int", (exp) -> (new Long((Integer) exp)).longValue());
         this.map.put("float", (exp) ->  ((Double) exp).doubleValue());
         this.map.put("double", (exp) ->  ((Double) exp).doubleValue());

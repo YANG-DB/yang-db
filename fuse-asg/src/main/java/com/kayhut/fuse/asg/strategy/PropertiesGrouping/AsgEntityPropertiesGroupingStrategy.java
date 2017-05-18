@@ -30,39 +30,41 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        AsgQueryUtil.getElements(query, EEntityBase.class).forEach(entityBase -> {
-            EPropGroup ePropGroup = new EPropGroup();
-            AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
+        Stream.ofAll(AsgQueryUtil.getElements(query, EEntityBase.class))
+                .filter(asgEBase -> !AsgQueryUtil.getNextAdjacentDescendant(asgEBase, Quant1.class).isPresent())
+                .forEach(entityBase -> {
+                    EPropGroup ePropGroup = new EPropGroup();
+                    AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
 
-            Optional<AsgEBase<EProp>> asgEProp = AsgQueryUtil.getNextAdjacentDescendant(entityBase, EProp.class);
-            if (asgEProp.isPresent()){
-                ePropGroup.seteProps(Arrays.asList(asgEProp.get().geteBase()));
-                ePropGroup.seteNum(asgEProp.get().geteNum());
-                entityBase.removeNextChild(asgEProp.get());
-                entityBase.addNextChild(ePropGroupAsgEbase);
-            } else {
-                int maxEnum = Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get();
+                    Optional<AsgEBase<EProp>> asgEProp = AsgQueryUtil.getNextAdjacentDescendant(entityBase, EProp.class);
+                    if (asgEProp.isPresent()) {
+                        ePropGroup.seteProps(Arrays.asList(asgEProp.get().geteBase()));
+                        ePropGroup.seteNum(asgEProp.get().geteNum());
+                        entityBase.removeNextChild(asgEProp.get());
+                        entityBase.addNextChild(ePropGroupAsgEbase);
+                    } else {
+                        int maxEnum = Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get();
 
-                if (entityBase.getNext().isEmpty()) {
-                    ePropGroup.seteNum(maxEnum + 1);
-                    entityBase.addNextChild(ePropGroupAsgEbase);
-                } else {
-                    Quant1 quant1 = new Quant1();
-                    quant1.seteNum(maxEnum + 1);
-                    quant1.setqType(QuantType.all);
-                    AsgEBase<Quant1> asgQuant1 = new AsgEBase<>(quant1);
+                        if (entityBase.getNext().isEmpty()) {
+                            ePropGroup.seteNum(maxEnum + 1);
+                            entityBase.addNextChild(ePropGroupAsgEbase);
+                        } else {
+                            Quant1 quant1 = new Quant1();
+                            quant1.seteNum(maxEnum + 1);
+                            quant1.setqType(QuantType.all);
+                            AsgEBase<Quant1> asgQuant1 = new AsgEBase<>(quant1);
 
-                    ePropGroup.seteNum(maxEnum + 2);
+                            ePropGroup.seteNum(maxEnum + 2);
 
-                    asgQuant1.addNextChild(ePropGroupAsgEbase);
-                    new ArrayList<>(entityBase.getNext()).forEach(nextAsgEbase -> {
-                        entityBase.removeNextChild(nextAsgEbase);
-                        asgQuant1.addNextChild(nextAsgEbase);
-                    });
-                    entityBase.addNextChild(asgQuant1);
-                }
-            }
-        });
+                            asgQuant1.addNextChild(ePropGroupAsgEbase);
+                            new ArrayList<>(entityBase.getNext()).forEach(nextAsgEbase -> {
+                                entityBase.removeNextChild(nextAsgEbase);
+                                asgQuant1.addNextChild(nextAsgEbase);
+                            });
+                            entityBase.addNextChild(asgQuant1);
+                        }
+                    }
+                });
 
     }
     //endregion

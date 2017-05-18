@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.quant.HQuant;
 import javaslang.collection.Stream;
 
 import java.util.List;
@@ -21,7 +22,9 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     // AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        AsgQueryUtil.<Rel>getElements(query, Rel.class).forEach(relAsgEBase -> groupRelProps(query, relAsgEBase));
+        Stream.ofAll(AsgQueryUtil.<Rel>getElements(query, Rel.class))
+                .filter(asgEBase -> !AsgQueryUtil.getBDescendant(asgEBase, HQuant.class).isPresent())
+                .forEach(asgEBase -> groupRelProps(query, asgEBase));
     }
     //endregion
 

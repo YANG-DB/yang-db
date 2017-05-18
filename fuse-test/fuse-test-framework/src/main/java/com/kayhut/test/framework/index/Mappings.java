@@ -36,6 +36,11 @@ public class Mappings {
                 this(type);
                 this.index = index;
             }
+
+            public Property(Type type, String format) {
+                this(type);
+                this.format = format;
+            }
             //endregion
 
             //region Public Methods
@@ -56,6 +61,11 @@ public class Mappings {
                 return index;
             }
 
+            @JsonInclude(JsonInclude.Include.NON_NULL)
+            public String getFormat() {
+                return this.format;
+            }
+
             @JsonInclude(JsonInclude.Include.NON_EMPTY)
             public Map<String, Property> getProperties() {
                 return this.properties;
@@ -65,6 +75,7 @@ public class Mappings {
             //region Fields
             private Type type;
             private Index index;
+            private String format;
             private Map<String, Property> properties;
             //endregion
         }

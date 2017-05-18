@@ -10,7 +10,10 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -38,12 +41,15 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.kayhut.fuse.model.query.Constraint.*;
@@ -61,22 +67,6 @@ public class EntityRelationEntityTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Mappings mappings = new Mappings()
-                .addMapping("type1", new Mapping()
-                    .addProperty("prop1", new Property(Type.string, Index.not_analyzed))
-                    .addProperty("prop2", new Property(Type.integer))
-                    .addProperty("prop3", new Property()
-                        .addProperty("prop4", new Property(Type.string, Index.analyzed))
-                        .addProperty("prop5", new Property(Type.string, Index.not_analyzed))
-                        .addProperty("prop6", new Property(Type.date))
-                        .addProperty("prop7", new Property(Type.integer))))
-                .addMapping("type2", new Mapping()
-                    .addProperty("prop9", new Property(Type.string, Index.not_analyzed)));
-
-        String a = new ObjectMapper().writeValueAsString(mappings);
-        int x = 5;
-
-
         fuseClient = new FuseClient("/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/ontology/Dragons"));
@@ -88,6 +78,13 @@ public class EntityRelationEntityTest {
                 new MappingElasticConfigurer("dragon", new Mappings().addMapping("Dragon", getDragonMapping())),
                 new MappingElasticConfigurer(Arrays.asList("fire20170511", "fire20170512", "fire20170513"),
                         new Mappings().addMapping("Fire", getFireMapping())));
+
+        birthDateValueFunctionFactory = startingDate -> interval -> i -> startingDate + (interval * i);
+        timestampValueFunctionFactory = startingDate -> interval -> i -> startingDate + (interval * i);
+        temperatureValueFunction = i -> 1000 + (100 * i);
+
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
@@ -101,28 +98,41 @@ public class EntityRelationEntityTest {
                 "dragon",
                 "Dragon",
                 idField,
-                () -> createDragons(10)).populate();
+                () -> createDragons(10, birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L)))
+                .populate(); // date interval is ~ 1 month
 
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
                 "fire20170511",
                 "Fire",
                 idField,
-                () -> createDragonFireDragonEdges(sdf.parse("2017-05-11"), 1200000, 10)).populate(); // date interval is 20 min
+                () -> createDragonFireDragonEdges(
+                        10,
+                        timestampValueFunctionFactory.apply(sdf.parse("2017-05-11 00:00:00").getTime()).apply(1200000L),
+                        temperatureValueFunction))
+                .populate(); // date interval is 20 min
 
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
                 "fire20170512",
                 "Fire",
                 idField,
-                () -> createDragonFireDragonEdges(sdf.parse("2017-05-12"), 600000, 10)).populate(); // date interval is 10 min
+                () -> createDragonFireDragonEdges(
+                        10,
+                        timestampValueFunctionFactory.apply(sdf.parse("2017-05-12 00:00:00").getTime()).apply(600000L),
+                        temperatureValueFunction))
+                .populate(); // date interval is 10 min
 
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
                 "fire20170513",
                 "Fire",
                 idField,
-                () -> createDragonFireDragonEdges(sdf.parse("2017-05-13"), 300000, 10)).populate(); // date interval is 5 min
+                () -> createDragonFireDragonEdges(
+                        10,
+                        timestampValueFunctionFactory.apply(sdf.parse("2017-05-13 00:00:00").getTime()).apply(300000L),
+                        temperatureValueFunction))
+                .populate(); // date interval is 5 min
 
 
         Thread.sleep(2000);
@@ -394,24 +404,206 @@ public class EntityRelationEntityTest {
     }
 
     @Test
+    @Ignore
+    public void test_Dragon_Fire_temperature_inRange_1000_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inRange, Arrays.asList(1000, 1500));
+    }
+
+    @Test
+    @Ignore
+    public void test_Dragon_Fire_temperature_notInRange_1000_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInRange, Arrays.asList(1000, 1500));
+    }
+
+    @Test
     public void test_Dragon_Fire_temperature_ne_1000_Dragon() throws Exception {
         test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.ne, 1000);
     }
 
     @Test
     public void test_Dragon_Fire_temperature_inSet_1000_1100_1200_Dragon() throws Exception {
-        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inSet, new int[] { 1000, 1100, 1200});
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inSet, Arrays.asList(1000, 1100, 1200));
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_not_inSet_1000_1100_1200_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInSet, Arrays.asList(1000, 1100, 1200));
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_eq_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.eq, 1500);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_le_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.le, 1500);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_lt_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.lt, 1500);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_gt_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.gt, 1500);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_ge_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.ge, 1500);
     }
 
     @Test
     @Ignore
-    public void test_Dragon_Fire_temperature_not_inSet_1000_1100_1200_Dragon() throws Exception {
-        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInSet, new int[] { 1000, 1100, 1200});
+    public void test_Dragon_Fire_temperature_inRange_1500_2000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inRange, Arrays.asList(1500, 2000));
+    }
+
+    @Test
+    @Ignore
+    public void test_Dragon_Fire_temperature_notInRange_1500_2000_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInRange, Arrays.asList(1500, 2000));
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_ne_1500_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.ne, 1500);
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_inSet_1500_1600_1700_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inSet, Arrays.asList(1500, 1600, 1700));
+    }
+
+    @Test
+    public void test_Dragon_Fire_temperature_not_inSet_1500_1600_1700_Dragon() throws Exception {
+        test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInSet, Arrays.asList(1500, 1600, 1700));
+    }
+
+    @Test
+    public void test_Dragon_birthDate_eq_1980_03_01_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.eq, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_birthDate_gt_1980_03_01_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.gt, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_birthDate_ge_1980_03_01_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.ge, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_birthDate_lt_1980_03_01_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.lt, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_birthDate_le_1980_03_01_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.le, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    @Ignore
+    public void test_Dragon_birthDate_inRange_1980_03_01_05_01_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.inRange,
+                Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-05-01 00:00:00").getTime()));
+    }
+
+    @Test
+    @Ignore
+    public void test_Dragon_birthDate_notInRange_1980_03_01_05_01_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.notInRange,
+                Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-05-01 00:00:00").getTime()));
+    }
+
+    @Test
+    public void test_Dragon_birthDate_inSet_1980_03_01_31_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.inSet,
+                Arrays.asList(
+                        sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-03-31 00:00:00").getTime()));
+    }
+
+    @Test
+    public void test_Dragon_birthDate_notInSet_1980_03_01_31_Fire_Dragon() throws Exception {
+        test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.notInSet,
+                Arrays.asList(
+                        sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-03-31 00:00:00").getTime()));
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_eq_1980_03_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.eq, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_gt_1980_03_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.gt, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_ge_1980_03_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.ge, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_lt_1980_03_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.lt, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_le_1980_03_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.le, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    @Ignore
+    public void test_Dragon_Fire_Dragon_birthDate_inRange_1980_03_01_05_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.inRange,
+                Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-05-01 00:00:00").getTime()));
+    }
+
+    @Test
+    @Ignore
+    public void test_Dragon_Fire_Dragon_birthDate_notInRange_1980_03_01_05_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.notInRange,
+                Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-05-01 00:00:00").getTime()));
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_ne_1980_03_01() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.ne, sdf.parse("1980-03-01 00:00:00").getTime());
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_inSet_1980_03_01_31() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.inSet,
+                Arrays.asList(
+                        sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-03-31 00:00:00").getTime()));
+    }
+
+    @Test
+    public void test_Dragon_Fire_Dragon_birthDate_notInSet_1980_03_01_31() throws Exception {
+        test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.notInSet,
+                Arrays.asList(
+                        sdf.parse("1980-03-01 00:00:00").getTime(),
+                        sdf.parse("1980-03-31 00:00:00").getTime()));
     }
     //endregion
 
     //region Protected Methods
-    protected static void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
+    private static void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -432,7 +624,7 @@ public class EntityRelationEntityTest {
                         .isEmpty()));
     }
 
-    protected static void test_ConcreteDragon_Fire_Dragon(String eId, Rel.Direction direction) throws Exception {
+    private static void test_ConcreteDragon_Fire_Dragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", $ont.eType$("Dragon"), eId, eId, 2, 0),
@@ -453,7 +645,7 @@ public class EntityRelationEntityTest {
                         .isEmpty()));
     }
 
-    protected static void test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp op, Object value) throws Exception {
+    private static void test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp op, Object value) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -472,11 +664,65 @@ public class EntityRelationEntityTest {
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring(1)))
-                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value)).test(1000 + 100 * intId))
+                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                                .test(temperatureValueFunction.apply(intId)))
                         .isEmpty()));
     }
 
-    protected static void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
+    private static void test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp op, Object value) throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                new EProp(3, $ont.pType$("birthDate").toString(), of(op, value)),
+                new Rel(4, $ont.rType$("Fire"), Rel.Direction.R, null, 5, 0),
+                new ETyped(5, "B", $ont.eType$("Dragon"), 0, 0)
+        )).build();
+
+        long startingDate = sdf.parse("1980-01-01 00:00:00").getTime();
+        long interval = 2592000000L;
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                Rel.Direction.R,
+                Constraint.by(__.and(
+                        __.has(T.label, "Fire"),
+                        __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
+                assignment -> !Stream.ofAll(assignment.getEntities())
+                        .filter(entity -> entity.geteTag().contains("A"))
+                        .map(entity -> Integer.parseInt(entity.geteID().substring(1)))
+                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                                .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
+                        .isEmpty()));
+    }
+
+    private static void test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp op, Object value) throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
+                new Rel(2, $ont.rType$("Fire"), Rel.Direction.R, null, 3, 0),
+                new ETyped(3, "B", $ont.eType$("Dragon"), 4, 0),
+                new EProp(4, $ont.pType$("birthDate").toString(), of(op, value))
+        )).build();
+
+        long startingDate = sdf.parse("1980-01-01 00:00:00").getTime();
+        long interval = 2592000000L;
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                Rel.Direction.R,
+                Constraint.by(__.and(
+                        __.has(T.label, "Fire"),
+                        __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
+                assignment -> !Stream.ofAll(assignment.getEntities())
+                        .filter(entity -> entity.geteTag().contains("B"))
+                        .map(entity -> Integer.parseInt(entity.geteID().substring(1)))
+                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                                .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
+                        .isEmpty()));
+    }
+
+    private static void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -493,7 +739,7 @@ public class EntityRelationEntityTest {
         QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult);
     }
 
-    protected static Iterable<Map<String, Object>> createPeople(int numPeople) {
+    private static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();
         for(int i = 0 ; i < numPeople ; i++) {
             Map<String, Object> person = new HashMap<>();
@@ -504,42 +750,51 @@ public class EntityRelationEntityTest {
         return people;
     }
 
-    protected static Mapping getPersonMapping() {
+    private static Mapping getPersonMapping() {
         return new Mapping().addProperty("name", new Property(Type.string, Index.not_analyzed));
     }
 
-    protected static Iterable<Map<String, Object>> createDragons(int numDragons) {
+    private static Iterable<Map<String, Object>> createDragons(
+            int numDragons,
+            Function<Integer, Long> birthDateValueFunction) {
+
         List<Map<String, Object>> dragons = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", "d" + i);
             dragon.put("name", "dragon" + i);
+            dragon.put("birthDate", sdf.format(new Date(birthDateValueFunction.apply(i))));
             dragons.add(dragon);
         }
         return dragons;
     }
 
-    protected static Mapping getDragonMapping() {
-        return new Mapping().addProperty("name", new Property(Type.string, Index.not_analyzed));
+    private static Mapping getDragonMapping() {
+        return new Mapping()
+                .addProperty("name", new Property(Type.string, Index.not_analyzed))
+                .addProperty("birthDate", new Property(Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time"));
     }
 
 
-    protected static Iterable<Map<String, Object>> createDragonFireDragonEdges(Date startingDate, long dateInterval, int numDragons) throws ParseException {
+    private static Iterable<Map<String, Object>> createDragonFireDragonEdges(
+            int numDragons,
+            Function<Integer, Long> timestampValueFunction,
+            Function<Integer, Integer> temperatureValueFunction
+            ) throws ParseException {
         List<Map<String, Object>> fireEdges = new ArrayList<>();
 
-        long currentDate = startingDate.getTime();
         int counter = 0;
         for(int i = 0 ; i < numDragons ; i++) {
             for(int j = 0 ; j < i ; j++) {
                 Map<String, Object> fireEdge = new HashMap<>();
-                fireEdge.put("id", "fire" + counter++);
-                fireEdge.put("timestamp", currentDate);
+                fireEdge.put("id", "fire" + counter);
+                fireEdge.put("timestamp", timestampValueFunction.apply(counter));
                 fireEdge.put("direction", Direction.OUT);
-                fireEdge.put("temperature", 1000 + j * 100);
+                fireEdge.put("temperature", temperatureValueFunction.apply(j));
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
-                fireEdgeDual.put("id", "fire" + counter++);
-                fireEdgeDual.put("timestamp", currentDate);
+                fireEdgeDual.put("id", "fire" + counter + 1);
+                fireEdgeDual.put("timestamp", timestampValueFunction.apply(counter));
                 fireEdgeDual.put("direction", Direction.IN);
 
                 Map<String, Object> entityAI = new HashMap<>();
@@ -562,14 +817,14 @@ public class EntityRelationEntityTest {
 
                 fireEdges.addAll(Arrays.asList(fireEdge, fireEdgeDual));
 
-                currentDate += dateInterval;
+                counter += 2;
             }
         }
 
         return fireEdges;
     }
 
-    protected static Mapping getFireMapping() {
+    private static Mapping getFireMapping() {
         return new Mapping()
                 .addProperty("timestamp", new Property(Type.date))
                 .addProperty("direction", new Property(Type.string, Index.not_analyzed))
@@ -584,7 +839,7 @@ public class EntityRelationEntityTest {
     //endregion
 
     //region QueryResults
-    protected static QueryResult queryResult_Dragons_Fire_Dragon(
+    private static QueryResult queryResult_Dragons_Fire_Dragon(
             int numDragons,
             Rel.Direction direction,
             TraversalConstraint constraint,
@@ -646,14 +901,18 @@ public class EntityRelationEntityTest {
     }
     //endregion
 
-    //region Predicates
-    public static Predicate<Assignment> allAssignments = assignment -> true;
-    //endregion
-
     //region Fields
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static FuseClient fuseClient;
     private static Ontology.Accessor $ont;
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdf;
+
+    private static Function<Long, Function<Long, Function<Integer, Long>>> timestampValueFunctionFactory;
+    private static Function<Long, Function<Long, Function<Integer, Long>>> birthDateValueFunctionFactory;
+    private static Function<Integer, Integer> temperatureValueFunction;
+    //endregion
+
+    //region Predicates
+    private static Predicate<Assignment> allAssignments = assignment -> true;
     //endregion
 }
