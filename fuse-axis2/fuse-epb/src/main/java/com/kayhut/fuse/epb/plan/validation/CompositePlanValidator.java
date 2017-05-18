@@ -36,7 +36,6 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceC
         return trace.who();
     }
 
-
     public enum Mode {
         one,
         all

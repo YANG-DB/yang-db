@@ -194,14 +194,14 @@ public interface PlanMockUtils {
         }
 
 
-        public PlanWithCost<Plan, PlanDetailedCost> planWithCost(long globalCost, long total) {
-            Cost cost = new Cost(globalCost, total);
-            List<PlanOpWithCost<Cost>> collect = oldPlan.getOps().stream().map(element -> new PlanOpWithCost<>(getCost(element), getCost(element).total, element)).collect(Collectors.toList());
+        public PlanWithCost<Plan, PlanDetailedCost> oldPlanWithCost(long globalCost, long total) {
+            Cost cost = new Cost(globalCost );
+            List<PlanOpWithCost<Cost>> collect = oldPlan.getOps().stream().map(element -> new PlanOpWithCost<>(getCost(element), total, element)).collect(Collectors.toList());
             return new PlanWithCost<>(oldPlan, new PlanDetailedCost(cost, collect));
         }
 
         private Cost getCost(PlanOpBase opBase) {
-            return new Cost(costs.getOrDefault(opBase, 1d), costs.getOrDefault(opBase, 1d).longValue());
+            return new Cost(costs.getOrDefault(opBase, 1d));
         }
 
         public Map<PlanOpBase, Double> costs() {
@@ -218,7 +218,7 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder startNewPlan() {
-            oldPlan = plan;
+            oldPlan = new Plan(plan.getOps());
             return this;
         }
 

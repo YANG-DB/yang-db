@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
+import static com.kayhut.fuse.model.Utils.fullPattern;
+
 /**
  * Created by moti on 3/27/2017.
  */
@@ -30,7 +32,12 @@ public class PlanOpWithCost<C> {
         return countEstimates;
     }
 
-    //endregion
+    @Override
+    public String toString() {
+        return fullPattern(getOpBase()) +
+                "[cost=" + cost +"]";
+    }
+//endregion
 
     //region Members
     private C cost;

@@ -15,7 +15,6 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
-import javaslang.Tuple2;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,7 +76,7 @@ public class BasicStepEstimatorTest {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
-        BasicStepEstimator estimator = new BasicStepEstimator(1);
+        BasicStepEstimator estimator = new BasicStepEstimator(1, 0.001);
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
 
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
@@ -97,12 +96,12 @@ public class BasicStepEstimatorTest {
 
     @Test
     public void calculateFullStep() throws Exception {
-        BasicStepEstimator estimator = new BasicStepEstimator(1);
+        BasicStepEstimator estimator = new BasicStepEstimator(1,0.001 );
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, 4)
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, 1, 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
                 .entity(TYPED, 50, 5).entityFilter(0.1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
-        PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.planWithCost(50, 250);
+        PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.oldPlanWithCost(50, 250);
         Plan plan = builder.plan();
         StatisticsProvider provider = build(builder.statistics(), 1000);
 
@@ -116,9 +115,9 @@ public class BasicStepEstimatorTest {
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
         StepEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
         Assert.assertEquals(result.planOpWithCosts().get(0).getCost().cost,20,0.1);
-        Assert.assertEquals(result.planOpWithCosts().get(1).getCost().cost,200,0.1);
-        Assert.assertEquals(result.planOpWithCosts().get(2).getCost().cost,20,0.1);
-        Assert.assertEquals(result.lambda(),0.2,0.1);//lambda
+        Assert.assertEquals(result.planOpWithCosts().get(1).getCost().cost,40.4,0.1);
+        Assert.assertEquals(result.planOpWithCosts().get(2).getCost().cost,40,0.1);
+        Assert.assertEquals(result.lambda(),0.8,0.1);//lambda
     }
 
 }

@@ -133,7 +133,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             completePlanCost.set(previousCost.get().getCost().getGlobalCost());
             planOpWithCosts = Lists.newArrayList(previousCost.get().getCost().getOpCosts());
         } else {
-            completePlanCost.set(new Cost(0, 0));
+            completePlanCost.set(new Cost(0));
             planOpWithCosts = new ArrayList<>();
         }
 
@@ -149,7 +149,8 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             //add new step into plan
             if (!previousCost.isPresent() || !contains(previousCost.get().getPlan(), c.getOpBase().get(0))) {
                 planOpWithCosts.add(c);
-                completePlanCost.set(new Cost(completePlanCost.get().cost + c.getCost().cost, 0));
+                double cost = completePlanCost.get().cost + c.getCost().cost;
+                completePlanCost.set(new Cost(cost ));
             }
         });
 

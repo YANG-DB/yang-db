@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
             entitySeeds.forEach(entity-> {
                 Optional<AsgEBase<EPropGroup>> epropGroup = AsgQueryUtils.getNextAdjacentDescendant(entity, EPropGroup.class, 2);
                 EntityOp op = new EntityOp(entity);
-                Plan newPlan = new Plan(op);
+                Plan newPlan = new Plan(Collections.singletonList(op));
                 if(epropGroup.isPresent()) {
                     newPlan = Plan.compose(newPlan,new EntityFilterOp(epropGroup.get()));
                     newPlan.log("InitialPlanGeneratorExtensionStrategy:[empty->"+newPlan.getOps().size()+"]", Level.INFO);

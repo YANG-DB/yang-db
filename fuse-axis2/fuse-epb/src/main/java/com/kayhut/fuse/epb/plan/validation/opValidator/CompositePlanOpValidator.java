@@ -42,7 +42,6 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
         this.trace.with(trace);
     }
 
-
     //region Constructors
     public CompositePlanOpValidator(Mode mode, ChainedPlanValidator.PlanOpValidator...planOpValidators) {
         this.mode = mode;
