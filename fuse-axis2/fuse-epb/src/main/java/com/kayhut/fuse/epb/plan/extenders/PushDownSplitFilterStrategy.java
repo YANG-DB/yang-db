@@ -1,8 +1,9 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -54,9 +55,9 @@ public class PushDownSplitFilterStrategy implements PlanExtensionStrategy<Plan, 
             return Collections.emptyList();
         }
 
-        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtils.getBDescendant(nextRelation.get(), RelPropGroup.class);
-        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtils.getNextDescendant(nextRelation.get(), EEntityBase.class);
-        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = AsgQueryUtils.getNextDescendant(toEntity.get(), EPropGroup.class);
+        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.getBDescendant(nextRelation.get(), RelPropGroup.class);
+        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.getNextDescendant(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = AsgQueryUtil.getNextDescendant(toEntity.get(), EPropGroup.class);
 
         String relationTypeNameById = OntologyUtil.getRelationTypeNameById(ontology, nextRelation.get().geteBase().getrType());
         Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeNameById);

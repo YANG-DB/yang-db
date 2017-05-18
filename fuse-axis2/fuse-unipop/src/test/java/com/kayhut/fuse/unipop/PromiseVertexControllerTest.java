@@ -1,8 +1,8 @@
 package com.kayhut.fuse.unipop;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
-import com.kayhut.fuse.unipop.controller.utils.PromiseEdgeConstants;
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Roman on 23/04/2017.
  */
-public class SearchPromiseVertexControllerTest {
+public class PromiseVertexControllerTest {
     Client client;
     ElasticGraphConfiguration configuration;
 
@@ -72,8 +72,8 @@ public class SearchPromiseVertexControllerTest {
         when(destLayer.getBuckets()).thenReturn(Arrays.asList(destBucket));
 
         Map map = new HashMap();
-        map.put(PromiseEdgeConstants.SOURCE_AGGREGATION_LAYER,sourceLayer);
-        map.put(PromiseEdgeConstants.DEST_AGGREGATION_LAYER,destLayer);
+        map.put(GlobalConstants.EdgeSchema.SOURCE, sourceLayer);
+        map.put(GlobalConstants.EdgeSchema.DEST, destLayer);
         when(aggregations.asMap()).thenReturn(map);
 
         when(responseMock.getAggregations()).thenReturn(aggregations);
@@ -105,7 +105,9 @@ public class SearchPromiseVertexControllerTest {
         Traversal constraint = __.and(__.has(T.label, "fire"), __.has("direction", "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
-        when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
+        when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(
+                new HasContainer(T.label.getAccessor(), P.within(GlobalConstants.Labels.PROMISE)),
+                new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
         //create vertices to start from
         Vertex startVertex1 = mock(Vertex.class);
@@ -129,14 +131,14 @@ public class SearchPromiseVertexControllerTest {
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
-        SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, schemaProvider);
+        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
         edges.forEach(edge -> System.out.println(edge));
 
         Assert.assertEquals(1, edges.size());
-        Assert.assertEquals(1000L, edges.get(0).property(PromiseEdgeConstants.PROMISE_EDGE_COUNT_PROP).value());
+        Assert.assertEquals(1000L, edges.get(0).property(GlobalConstants.HasKeys.COUNT).value());
 
     }
 }

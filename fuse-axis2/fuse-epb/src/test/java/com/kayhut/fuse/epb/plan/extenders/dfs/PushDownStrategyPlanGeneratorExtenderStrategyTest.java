@@ -1,8 +1,9 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.extenders.PushDownSplitFilterStrategy;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -81,7 +82,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),EntityFilterOp.class,p->true).getAsgEBase().geteBase().geteProps().size(),1);
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),EntityFilterOp.class, p->true).getAsgEBase().geteBase().geteProps().size(),1);
         assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().size(),3);
         //first eProp is the old eprop filter condition (non pushdown)
         assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
@@ -121,7 +122,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
 
     //region Private Methods
     private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtils.<T>getElement(asgQuery, eNum).get();
+        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
     }
     //endregion
 }

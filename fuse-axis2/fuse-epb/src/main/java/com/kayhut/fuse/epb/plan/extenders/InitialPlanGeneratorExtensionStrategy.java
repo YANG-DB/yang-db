@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
-import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
-
 /**
  * Created by moti on 2/27/2017.
  */
@@ -27,9 +25,9 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         List<Plan> plans = new LinkedList<>();
         if(!plan.isPresent()) {
-            List<AsgEBase<EEntityBase>> entitySeeds = AsgQueryUtils.getNextDescendants(query.getStart(), e -> e.geteBase() instanceof EEntityBase, p -> true);
+            List<AsgEBase<EEntityBase>> entitySeeds = AsgQueryUtil.getNextDescendants(query.getStart(), e -> e.geteBase() instanceof EEntityBase, p -> true);
             entitySeeds.forEach(entity-> {
-                Optional<AsgEBase<EPropGroup>> epropGroup = AsgQueryUtils.getNextAdjacentDescendant(entity, EPropGroup.class, 2);
+                Optional<AsgEBase<EPropGroup>> epropGroup = AsgQueryUtil.getNextAdjacentDescendant(entity, EPropGroup.class, 2);
                 EntityOp op = new EntityOp(entity);
                 Plan newPlan = new Plan(op);
                 if(epropGroup.isPresent()) {

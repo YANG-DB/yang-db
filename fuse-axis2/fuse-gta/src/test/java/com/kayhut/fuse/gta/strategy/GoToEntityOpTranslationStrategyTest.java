@@ -1,7 +1,7 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by benishue on 12-Mar-17.
@@ -24,7 +23,7 @@ public class GoToEntityOpTranslationStrategyTest {
     public void test_entity1_rel2_entity3_goto1() throws Exception {
         AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
         Plan plan = new Plan(
-                new GoToEntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 1).get())
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 1).get())
         );
 
         TranslationContext context = Mockito.mock(TranslationContext.class);

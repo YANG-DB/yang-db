@@ -368,9 +368,9 @@ public class QueryBuilder {
         return this;
     }
 
-//    public QueryBuilder wildcard(String fieldName, String wildcard) { return wildcard(null, fieldName, wildcard); }
+//    public Builder wildcard(String fieldName, String wildcard) { return wildcard(null, fieldName, wildcard); }
 //
-//    public QueryBuilder wildcard(String name, String fieldName, String wildcard) {
+//    public Builder wildcard(String name, String fieldName, String wildcard) {
 //        if (this.root == null) {
 //            throw new UnsupportedOperationException("'wildcard' may not appear as first statement");
 //        }
@@ -515,7 +515,7 @@ public class QueryBuilder {
 
     public QueryBuilder queryBuilderFilter(String name, QueryBuilder queryBuilder) {
         if (this.root == null) {
-            throw new UnsupportedOperationException("'queryBuilderFilter' (the filter of a QueryBuilder) may not appear as first statement");
+            throw new UnsupportedOperationException("'queryBuilderFilter' (the filter of a Builder) may not appear as first statement");
         }
 
         if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
@@ -698,7 +698,7 @@ public class QueryBuilder {
     }
 
     // The clone will return a deep clone of the query builder (except leaf values: e.g the Object value in terms composite).
-    // The clone will set the current field to point to the root due to the difficulty in finding the cloned current composite in the clone QueryBuilder.
+    // The clone will set the current field to point to the root due to the difficulty in finding the cloned current composite in the clone Builder.
     @Override
     public QueryBuilder clone() {
         try {

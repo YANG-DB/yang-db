@@ -36,7 +36,7 @@ public class PageTest {
     @ClassRule
     public static JoobyRule createApp() {
         Cursor cursor = mock(Cursor.class);
-        when(cursor.getNextResults(anyInt())).thenReturn(QueryResult.QueryResultBuilder.aQueryResult().build());
+        when(cursor.getNextResults(anyInt())).thenReturn(QueryResult.Builder.instance().build());
 
         CursorFactory cursorFactory = mock(CursorFactory.class);
         when(cursorFactory.createCursor(any())).thenReturn(cursor);

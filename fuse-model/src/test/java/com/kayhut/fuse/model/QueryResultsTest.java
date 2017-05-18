@@ -17,14 +17,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.kayhut.fuse.model.results.QueryResult.QueryResultBuilder.aQueryResult;
+import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 
 /**
  * Created by benishue on 21-Feb-17.
  */
 public class QueryResultsTest {
     private ObjectMapper mapper = new ObjectMapper();
-    private static QueryResult result1Obj = aQueryResult().build();
+    private static QueryResult result1Obj = instance().build();
 
 
     @Test

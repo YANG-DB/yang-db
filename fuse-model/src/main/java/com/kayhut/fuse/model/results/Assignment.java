@@ -2,17 +2,18 @@ package com.kayhut.fuse.model.results;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by benishue on 21-Feb-17.
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Assignment extends QueryResult {
+public class Assignment {
 
+    //region Properties
     public List<Relationship> getRelationships ()
     {
         return relationships;
@@ -32,57 +33,73 @@ public class Assignment extends QueryResult {
     {
         this.entities = entities;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public String toString()
     {
-        return "Assignment [relationships = "+relationships+", entities = "+entities+"]";
+        return "Assignment [relationships = " + relationships + ", entities = " + entities + "]";
     }
+    //endregion
 
     //region Fields
     private List<Entity> entities;
     private List<Relationship> relationships;
     //endregion
 
-    public static final class AssignmentBuilder {
-        private List<Entity> entities;
-        private List<Relationship> relationships;
-
-        private AssignmentBuilder() {
-            entities = new ArrayList<>();
+    public static final class Builder {
+        //region Constructors
+        private Builder() {
+            entities = new HashMap<>();
             relationships = new ArrayList<>();
         }
+        //endregion
 
-        public static AssignmentBuilder anAssignment() {
-            return new AssignmentBuilder();
+        //region Static
+        public static Builder instance() {
+            return new Builder();
         }
+        //endregion
 
-        public AssignmentBuilder withEntity(Entity entity) {
-            entities.add(entity);
+        //region Public Methods
+        public Builder withEntity(Entity entity) {
+            Entity entityToMerge = this.entities.get(entity.hashCode());
+            if (entityToMerge != null) {
+                entity = Entity.Builder.instance().withEntity(entity).withEntity(entityToMerge).build();
+            }
+
+            entities.put(entity.hashCode(), entity);
             return this;
         }
 
-        public AssignmentBuilder withEntities(List<Entity> entities) {
-            this.entities = entities;
+        public Builder withEntities(List<Entity> entities) {
+            entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
             return this;
         }
 
-        public AssignmentBuilder withRelationship(Relationship relationship) {
+        public Builder withRelationship(Relationship relationship) {
             this.relationships.add(relationship);
             return this;
         }
 
-        public AssignmentBuilder withRelationships(List<Relationship> relationships) {
+        public Builder withRelationships(List<Relationship> relationships) {
             this.relationships = relationships;
             return this;
         }
 
         public Assignment build() {
             Assignment assignment = new Assignment();
-            assignment.setEntities(entities);
+            assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
             assignment.setRelationships(relationships);
             return assignment;
         }
+        //endregion
+
+        //region Fields
+        private Map<Integer, Entity> entities;
+        private List<Relationship> relationships;
+        //endregion
     }
 
 

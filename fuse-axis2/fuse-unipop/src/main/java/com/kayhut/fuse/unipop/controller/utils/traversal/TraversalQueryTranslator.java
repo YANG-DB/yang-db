@@ -1,7 +1,7 @@
-package com.kayhut.fuse.unipop.controller.utils;
+package com.kayhut.fuse.unipop.controller.utils.traversal;
 
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
-import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.utils.HasContainersQueryTranslator;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.PropertiesStep;
@@ -34,7 +34,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     }
 
     @Override
-    protected Boolean visitNotStep(NotStep notStep) {
+    protected Boolean visitNotStep(NotStep<?> notStep) {
         int nextSequenceNumber = sequenceSupplier.get();
         String currentLabel = "mustNot_" + nextSequenceNumber;
         queryBuilder.bool().mustNot(currentLabel);
@@ -44,7 +44,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     }
 
     @Override
-    protected Boolean visitOrStep(OrStep orStep) {
+    protected Boolean visitOrStep(OrStep<?> orStep) {
         int nextSequenceNumber = sequenceSupplier.get();
         String currentLabel = "should_" + nextSequenceNumber;
         queryBuilder.bool().should(currentLabel);
@@ -54,7 +54,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     }
 
     @Override
-    protected Boolean visitAndStep(AndStep andStep) {
+    protected Boolean visitAndStep(AndStep<?> andStep) {
         int nextSequenceNumber = sequenceSupplier.get();
         String currentLabel = "must_" + nextSequenceNumber;
         queryBuilder.bool().must(currentLabel);
@@ -64,7 +64,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     }
 
     @Override
-    protected Boolean visitHasStep(HasStep hasStep) {
+    protected Boolean visitHasStep(HasStep<?> hasStep) {
         HasContainersQueryTranslator hasContainersQueryTranslator = new HasContainersQueryTranslator(this.shouldCache);
 
         if (hasStep.getHasContainers().size() == 1) {
@@ -84,9 +84,9 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
     }
 
     @Override
-    protected Boolean visitTraversalFilterStep(TraversalFilterStep traversalFilterStep) {
+    protected Boolean visitTraversalFilterStep(TraversalFilterStep<?> traversalFilterStep) {
         if (traversalFilterStep.getLocalChildren().size() == 1) {
-            Traversal.Admin subTraversal = (Traversal.Admin)traversalFilterStep.getLocalChildren().get(0);
+            Traversal.Admin subTraversal = traversalFilterStep.getLocalChildren().get(0);
             if (subTraversal.getSteps().size() == 1
                     && PropertiesStep.class.isAssignableFrom(subTraversal.getSteps().get(0).getClass())) {
                 PropertiesStep propertiesStep = (PropertiesStep) subTraversal.getSteps().get(0);

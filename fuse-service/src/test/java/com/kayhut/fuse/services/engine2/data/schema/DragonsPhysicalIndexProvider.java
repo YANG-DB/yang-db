@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartiti
 import com.kayhut.fuse.unipop.structure.ElementType;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +26,12 @@ public class DragonsPhysicalIndexProvider implements PhysicalIndexProvider {
     //region PhysicalIndexProvider Implementation
     @Override
     public IndexPartition getIndexPartitionByLabel(String label, ElementType elementType) {
-        return this.indexPartitions.get(label);
+        return this.indexPartitions.getOrDefault(label, emptyIndexPartition);
     }
     //endregion
 
     //region Fields
     private Map<String, IndexPartition> indexPartitions;
+    private IndexPartition emptyIndexPartition = new StaticIndexPartition(Collections.emptyList());
     //endregion
 }

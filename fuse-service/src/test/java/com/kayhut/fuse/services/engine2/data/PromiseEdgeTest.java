@@ -1,13 +1,13 @@
 package com.kayhut.fuse.services.engine2.data;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
-import com.kayhut.fuse.unipop.controller.SearchPromiseVertexFilterController;
+import com.kayhut.fuse.unipop.controller.PromiseVertexController;
+import com.kayhut.fuse.unipop.controller.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.test.framework.index.ElasticInMemoryIndex;
+import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
@@ -24,7 +24,6 @@ import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
-import java.io.IOException;
 import java.util.*;
 
 import static org.mockito.Matchers.any;
@@ -38,7 +37,7 @@ public class PromiseEdgeTest{
 
 
     private static Client client;
-    static ElasticInMemoryIndex elasticInMemoryIndex;
+    static ElasticEmbeddedNode elasticEmbeddedNode;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
 
@@ -48,17 +47,17 @@ public class PromiseEdgeTest{
         String indexName = "v1";
         String idField = "id";
 
-        elasticInMemoryIndex = new ElasticInMemoryIndex();
+        elasticEmbeddedNode = new ElasticEmbeddedNode();
 
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 indexName,
                 "dragon",
                 idField,
                 () -> createDragons(10)).populate();
 
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 indexName,
                 "Fire",
                 idField,
@@ -66,7 +65,7 @@ public class PromiseEdgeTest{
 
         Thread.sleep(2000);
 
-        client = elasticInMemoryIndex.getClient();
+        client = elasticEmbeddedNode.getClient();
 
         configuration = mock(ElasticGraphConfiguration.class);
 
@@ -113,7 +112,7 @@ public class PromiseEdgeTest{
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
-        SearchPromiseVertexController controller = new SearchPromiseVertexController(client, configuration, graph, schemaProvider);
+        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
@@ -127,7 +126,7 @@ public class PromiseEdgeTest{
         //add old purple dragon
         String purpleDragonId = "d11";
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "v1",
                 "dragon",
                 "id",
@@ -170,7 +169,7 @@ public class PromiseEdgeTest{
         when(configuration.getElasticGraphScrollTime()).thenReturn(100);
         when(configuration.getElasticGraphDefaultSearchSize()).thenReturn(100L);
 
-        SearchPromiseVertexFilterController controller = new SearchPromiseVertexFilterController(client, configuration, graph, schemaProvider);
+        PromiseVertexFilterController controller = new PromiseVertexFilterController(client, configuration, graph, schemaProvider);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
@@ -188,7 +187,7 @@ public class PromiseEdgeTest{
     @AfterClass
     public static void cleanup() throws Exception {
 
-        elasticInMemoryIndex.close();
+        elasticEmbeddedNode.close();
         Thread.sleep(2000);
         client.close();
     }

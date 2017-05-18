@@ -19,7 +19,7 @@ public class Bootstrap implements Jooby.Module  {
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
         //register eventBus with service life cycle
-        binder.bind(EventBus.class).toInstance(new EventBus());
+        binder.bind(EventBus.class).toInstance(new EventBus(new GlobalSubscriberExceptionHandler()));
         binder.bind(DeadEventsListener.class).toInstance(new DeadEventsListener());
         //load modules according to configuration
         loadModules(env,conf,binder);

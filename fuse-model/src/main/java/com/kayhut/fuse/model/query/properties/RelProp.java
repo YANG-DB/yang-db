@@ -9,8 +9,20 @@ import com.kayhut.fuse.model.query.EBase;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RelProp extends EBase {
+    //region Constructors
+    public RelProp() {
+        super();
+    }
 
+    public RelProp(int eNum, String pType, Constraint con, int b) {
+        super(eNum);
+        this.pType = pType;
+        this.con = con;
+        this.b = b;
+    }
+    //endregion
 
+    //region Properties
     public String getpType() {
         return pType;
     }
@@ -50,6 +62,7 @@ public class RelProp extends EBase {
     public void setF(String f) {
         this.f = f;
     }
+    //endregion
 
     //region Fields
     private String pType;

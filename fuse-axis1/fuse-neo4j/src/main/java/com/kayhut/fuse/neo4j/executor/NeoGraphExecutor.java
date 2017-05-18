@@ -44,7 +44,7 @@ abstract class NeoGraphUtils{
                             props.add(prop);
                         });
 
-                        Entity entity = Entity.EntityBuilder.anEntity()
+                        Entity entity = Entity.Builder.instance()
                                 .withETag(Iterators.asList(n.asNode().labels().iterator()))
                                 .withProperties(props).build();
                         entities.add(entity);
@@ -59,7 +59,7 @@ abstract class NeoGraphUtils{
                             props.add(prop);
                         });
 
-                        Relationship rel = Relationship.RelationshipBuilder.aRelationship()
+                        Relationship rel = Relationship.Builder.instance()
                                 .withAgg(false)
                                 .withRID(String.valueOf(r.asRelationship().id()))
                                 .withDirectional(true)
@@ -71,7 +71,7 @@ abstract class NeoGraphUtils{
 
                 });
 
-                Assignment assignment = Assignment.AssignmentBuilder.anAssignment()
+                Assignment assignment = Assignment.Builder.instance()
                         .withEntities(entities)
                         .withRelationships(rels)
                         .build();
@@ -81,7 +81,7 @@ abstract class NeoGraphUtils{
             });
             resultTuple2._1.success();
 
-            return QueryResult.QueryResultBuilder.aQueryResult().withAssignments(assignments).build();
+            return QueryResult.Builder.instance().withAssignments(assignments).build();
 
         } catch (Exception e) {
             //throw new RuntimeException(e);

@@ -3,7 +3,7 @@ package com.kayhut.fuse.unipop.controller;
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
-import com.kayhut.fuse.unipop.controller.utils.CollectionUtils;
+import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseVertexConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
@@ -85,7 +85,7 @@ class VertexController implements SearchQuery.SearchController {
         if (promisePredicate.equals(Compare.eq)) {
             promises = Stream.of(promiseHasContainers.get(0).getValue()).map(p -> (Promise) p).toJavaList();
         } else if (promisePredicate.equals(Contains.within)) {
-            promises = CollectionUtils.listFromObjectValue(promiseHasContainers.get(0).getValue());
+            promises = CollectionUtil.listFromObjectValue(promiseHasContainers.get(0).getValue());
         }
 
         Optional<Constraint> constraint = constraintHasConstainers.isEmpty() ?

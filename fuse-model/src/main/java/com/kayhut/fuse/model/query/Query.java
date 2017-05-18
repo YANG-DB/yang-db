@@ -11,7 +11,7 @@ import java.util.List;
  * Created by user on 19-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-@JsonDeserialize(builder=Query.QueryBuilder.class)
+@JsonDeserialize(builder=Query.Builder.class)
 public class Query {
 
     public String getOnt() {
@@ -54,35 +54,35 @@ public class Query {
     //endregion
 
     @JsonPOJOBuilder(buildMethodName = "build", withPrefix = "with")
-    public static final class QueryBuilder {
+    public static final class Builder {
         private String ont;
         private String name;
         private List<EBase> elements;
         private List<List<String>> nonidentical;
 
-        private QueryBuilder() {
+        private Builder() {
         }
 
-        public static QueryBuilder aQuery() {
-            return new QueryBuilder();
+        public static Builder instance() {
+            return new Builder();
         }
 
-        public QueryBuilder withOnt(String ont) {
+        public Builder withOnt(String ont) {
             this.ont = ont;
             return this;
         }
 
-        public QueryBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public QueryBuilder withElements(List<EBase> elements) {
+        public Builder withElements(List<EBase> elements) {
             this.elements = elements;
             return this;
         }
 
-        public QueryBuilder withNonidentical(List<List<String>> nonidentical) {
+        public Builder withNonidentical(List<List<String>> nonidentical) {
             this.nonidentical = nonidentical;
             return this;
         }

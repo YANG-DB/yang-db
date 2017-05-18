@@ -1,24 +1,17 @@
 package com.kayhut.fuse.unipop;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
-import com.kayhut.fuse.unipop.promise.Constraint;
+import com.kayhut.fuse.unipop.controller.PromiseElementController;
 import com.kayhut.fuse.unipop.promise.IdPromise;
-import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.internal.InternalSearchHit;
@@ -42,7 +35,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by User on 19/03/2017.
  */
-public class SearchPromiseElementControllerCompositTest {
+public class PromiseElementControllerCompositTest {
     Client client;
     ElasticGraphConfiguration configuration;
 
@@ -99,7 +92,7 @@ public class SearchPromiseElementControllerCompositTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchPromiseElementController controller = new SearchPromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 10);
