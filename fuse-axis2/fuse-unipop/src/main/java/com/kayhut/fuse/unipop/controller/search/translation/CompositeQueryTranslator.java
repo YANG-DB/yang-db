@@ -20,7 +20,7 @@ public class CompositeQueryTranslator implements PredicateQueryTranslator {
 
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
         for(PredicateQueryTranslator translator : this.translators) {
             queryBuilder = translator.translate(queryBuilder, key, predicate);
         }

@@ -13,7 +13,7 @@ import java.util.Collections;
 public class ContainsQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
         if (predicate == null) {
             return queryBuilder;
         }

@@ -10,7 +10,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 public class CompareQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
         if (predicate == null) {
             return queryBuilder;
         }
@@ -25,7 +25,7 @@ public class CompareQueryTranslator implements PredicateQueryTranslator {
                 queryBuilder.push().term(key, predicate.getValue()).pop();
                 break;
             case neq:
-                queryBuilder.bool().mustNot().push().term(key, predicate.getValue()).pop();
+                queryBuilder.push().bool().mustNot().term(key, predicate.getValue()).pop();
                 break;
             case gt:
                 queryBuilder.push().range(key, key).from(predicate.getValue()).includeLower(false).pop();

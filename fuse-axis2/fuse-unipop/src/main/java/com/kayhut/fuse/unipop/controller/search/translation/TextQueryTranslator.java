@@ -13,7 +13,7 @@ import java.util.List;
 public class TextQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
         if (predicate == null) {
             return queryBuilder;
         }
@@ -35,6 +35,7 @@ public class TextQueryTranslator implements PredicateQueryTranslator {
                     default:
                         queryBuilder.bool().should();
                         prefixes.forEach(prefix -> queryBuilder.push().prefix(key, prefix).pop());
+                        queryBuilder.pop();
                 }
                 break;
 
@@ -49,6 +50,7 @@ public class TextQueryTranslator implements PredicateQueryTranslator {
                     default:
                         queryBuilder.push().bool().should();
                         regexs.forEach(regex ->  queryBuilder.push().regexp(key, regex).pop());
+                        queryBuilder.pop();
                 }
                 break;
         }

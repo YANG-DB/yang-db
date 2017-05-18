@@ -20,7 +20,7 @@ public class HiddenQueryTranslator extends CompositeQueryTranslator {
 
     //region Override Methods
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
         String plainKey = Graph.Hidden.isHidden(key) ? Graph.Hidden.unHide(key) : key;
         String newKey;
 

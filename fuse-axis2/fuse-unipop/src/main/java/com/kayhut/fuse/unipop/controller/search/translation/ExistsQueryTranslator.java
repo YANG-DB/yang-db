@@ -10,7 +10,7 @@ import org.unipop.process.predicate.ExistsP;
 public class ExistsQueryTranslator implements PredicateQueryTranslator {
     //region PredicateQueryTranslator Implementation
     @Override
-    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P predicate) {
+    public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
         if (predicate == null) {
             return queryBuilder;
         }

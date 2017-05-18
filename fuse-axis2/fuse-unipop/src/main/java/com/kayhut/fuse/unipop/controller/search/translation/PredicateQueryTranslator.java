@@ -10,5 +10,5 @@ import java.util.function.Predicate;
  * Created by Roman on 18/05/2017.
  */
 public interface PredicateQueryTranslator {
-    QueryBuilder translate(QueryBuilder queryBuilder, String key, P predicate);
+    QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate);
 }

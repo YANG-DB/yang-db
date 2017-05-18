@@ -11,7 +11,23 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                         new CompareQueryTranslator(),
                         new ContainsQueryTranslator(),
                         new ExistsQueryTranslator(),
-                        new TextQueryTranslator()
+                        new TextQueryTranslator(),
+                        new AndPQueryTranslator(
+                                new HiddenQueryTranslator(
+                                        new CompareQueryTranslator(),
+                                        new ContainsQueryTranslator(),
+                                        new ExistsQueryTranslator(),
+                                        new TextQueryTranslator()
+                                )
+                        ),
+                        new OrPQueryTranslator(
+                                new HiddenQueryTranslator(
+                                        new CompareQueryTranslator(),
+                                        new ContainsQueryTranslator(),
+                                        new ExistsQueryTranslator(),
+                                        new TextQueryTranslator()
+                                )
+                        )
                 )
         );
     }
