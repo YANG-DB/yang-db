@@ -1,7 +1,8 @@
 package com.kayhut.fuse.unipop.controller.utils.traversal;
 
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
-import com.kayhut.fuse.unipop.controller.utils.HasContainersQueryTranslator;
+import com.kayhut.fuse.unipop.controller.search.translation.M1QueryTranslator;
+import com.kayhut.fuse.unipop.controller.search.translation.PredicateQueryTranslator;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.PropertiesStep;
@@ -65,10 +66,12 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
     @Override
     protected Boolean visitHasStep(HasStep<?> hasStep) {
-        HasContainersQueryTranslator hasContainersQueryTranslator = new HasContainersQueryTranslator(this.shouldCache);
+        PredicateQueryTranslator queryTranslator = new M1QueryTranslator();
 
         if (hasStep.getHasContainers().size() == 1) {
-            hasContainersQueryTranslator.applyHasContainer(queryBuilder, (HasContainer)hasStep.getHasContainers().get(0));
+            queryBuilder = queryTranslator.translate(queryBuilder,
+                    hasStep.getHasContainers().get(0).getKey(),
+                    hasStep.getHasContainers().get(0).getPredicate());
         } else {
             int nextSequenceNumber = sequenceSupplier.get();
             String currentLabel = "must_" + nextSequenceNumber;
@@ -76,7 +79,7 @@ public class TraversalQueryTranslator extends TraversalVisitor<Boolean>{
 
             hasStep.getHasContainers().forEach(hasContainer -> {
                 queryBuilder.seek(currentLabel);
-                hasContainersQueryTranslator.applyHasContainer(queryBuilder, (HasContainer) hasContainer);
+                queryBuilder = queryTranslator.translate(queryBuilder, hasContainer.getKey(), hasContainer.getPredicate());
             });
         }
 

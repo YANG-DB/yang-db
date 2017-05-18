@@ -2,6 +2,7 @@ package com.kayhut.fuse.unipop.controller.utils;
 
 import javaslang.collection.Stream;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -9,7 +10,9 @@ import java.util.List;
  */
 public class CollectionUtil {
     public static <T> List<T> listFromObjectValue(Object value) {
-        if (Iterable.class.isAssignableFrom(value.getClass())) {
+        if (value == null) {
+            return Collections.emptyList();
+        } else if (Iterable.class.isAssignableFrom(value.getClass())) {
             return Stream.ofAll((Iterable)value).map(o -> (T)o).toJavaList();
         } else if (value.getClass().isArray()) {
             return Stream.of((T[])value).toJavaList();
