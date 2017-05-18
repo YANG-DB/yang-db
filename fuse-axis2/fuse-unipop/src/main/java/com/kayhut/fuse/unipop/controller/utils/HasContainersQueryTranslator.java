@@ -21,7 +21,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
 /**
  * Created by User on 27/03/2017.
  */
-public class HasContainersQueryTranslator {
+/*public class HasContainersQueryTranslator {
     //region Constructor
     public HasContainersQueryTranslator() {
         this.shouldCache = true;
@@ -34,10 +34,6 @@ public class HasContainersQueryTranslator {
 
     //region Public Methods
     public void applyHasContainer(QueryBuilder queryBuilder, HasContainer hasContainer) {
-        /*P cloneP = hasContainer.getPredicate().clone();
-        cloneP.setValue(ConversionUtil.prepareValue(hasContainer.getValue()));
-        hasContainer = new HasContainer(hasContainer.getKey(), cloneP);*/
-
         if (Graph.Hidden.isHidden(hasContainer.getKey())) {
             applyHiddenHasContainer(queryBuilder, hasContainer);
             return;
@@ -264,3 +260,4 @@ public class HasContainersQueryTranslator {
     private boolean shouldCache;
     //endregion
 }
+*/

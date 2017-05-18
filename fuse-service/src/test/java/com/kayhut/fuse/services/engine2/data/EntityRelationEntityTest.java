@@ -404,13 +404,11 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    @Ignore
     public void test_Dragon_Fire_temperature_inRange_1000_1500_Dragon() throws Exception {
         test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inRange, Arrays.asList(1000, 1500));
     }
 
     @Test
-    @Ignore
     public void test_Dragon_Fire_temperature_notInRange_1000_1500_Dragon() throws Exception {
         test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInRange, Arrays.asList(1000, 1500));
     }
@@ -456,13 +454,11 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    @Ignore
     public void test_Dragon_Fire_temperature_inRange_1500_2000_Dragon() throws Exception {
         test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.inRange, Arrays.asList(1500, 2000));
     }
 
     @Test
-    @Ignore
     public void test_Dragon_Fire_temperature_notInRange_1500_2000_Dragon() throws Exception {
         test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp.notInRange, Arrays.asList(1500, 2000));
     }
@@ -508,7 +504,6 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    @Ignore
     public void test_Dragon_birthDate_inRange_1980_03_01_05_01_Fire_Dragon() throws Exception {
         test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.inRange,
                 Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
@@ -516,7 +511,6 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    @Ignore
     public void test_Dragon_birthDate_notInRange_1980_03_01_05_01_Fire_Dragon() throws Exception {
         test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp.notInRange,
                 Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
@@ -565,7 +559,6 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    @Ignore
     public void test_Dragon_Fire_Dragon_birthDate_inRange_1980_03_01_05_01() throws Exception {
         test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.inRange,
                 Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
@@ -573,7 +566,6 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    @Ignore
     public void test_Dragon_Fire_Dragon_birthDate_notInRange_1980_03_01_05_01() throws Exception {
         test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp.notInRange,
                 Arrays.asList(sdf.parse("1980-03-01 00:00:00").getTime(),
