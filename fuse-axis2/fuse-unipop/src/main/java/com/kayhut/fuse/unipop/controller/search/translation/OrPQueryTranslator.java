@@ -1,6 +1,7 @@
 package com.kayhut.fuse.unipop.controller.search.translation;
 
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.util.AndP;
 import org.apache.tinkerpop.gremlin.process.traversal.util.OrP;
@@ -10,12 +11,20 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.OrP;
  */
 public class OrPQueryTranslator extends CompositeQueryTranslator {
     //region Constructors
-    public OrPQueryTranslator(Iterable<PredicateQueryTranslator> translators) {
-        super(translators);
+    public OrPQueryTranslator(PredicateQueryTranslator...translators) {
+        super(null, translators);
     }
 
-    public OrPQueryTranslator(PredicateQueryTranslator...translators) {
-        super(translators);
+    public OrPQueryTranslator(String name, PredicateQueryTranslator...translators) {
+        super(name, Stream.of(translators).toJavaList());
+    }
+
+    public OrPQueryTranslator(Iterable<PredicateQueryTranslator> translators) {
+        super(null, translators);
+    }
+
+    public OrPQueryTranslator(String name, Iterable<PredicateQueryTranslator> translators) {
+        super(name, translators);
     }
     //endregion
 

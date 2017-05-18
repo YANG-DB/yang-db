@@ -1,5 +1,7 @@
 package com.kayhut.fuse.unipop.controller.search.translation;
 
+import java.util.Collections;
+
 /**
  * Created by Roman on 18/05/2017.
  */
@@ -12,16 +14,14 @@ public class M1QueryTranslator extends CompositeQueryTranslator {
                         new ContainsQueryTranslator(),
                         new ExistsQueryTranslator(),
                         new TextQueryTranslator(),
-                        new AndPQueryTranslator(
-                                new HiddenQueryTranslator(
+                        new CompositeQueryTranslator("CompositeP",
+                                new AndPQueryTranslator(
                                         new CompareQueryTranslator(true),
                                         new ContainsQueryTranslator(),
                                         new ExistsQueryTranslator(),
                                         new TextQueryTranslator()
-                                )
-                        ),
-                        new OrPQueryTranslator(
-                                new HiddenQueryTranslator(
+                                ),
+                                new OrPQueryTranslator(
                                         new CompareQueryTranslator(false),
                                         new ContainsQueryTranslator(),
                                         new ExistsQueryTranslator(),
