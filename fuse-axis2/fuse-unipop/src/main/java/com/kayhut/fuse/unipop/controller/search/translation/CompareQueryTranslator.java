@@ -8,6 +8,16 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
  * Created by Roman on 18/05/2017.
  */
 public class CompareQueryTranslator implements PredicateQueryTranslator {
+    //region Constructors
+    public CompareQueryTranslator() {
+
+    }
+
+    public CompareQueryTranslator(boolean shouldAggregateRange) {
+        this.shouldAggregateRange = shouldAggregateRange;
+    }
+    //endregion
+
     //region PredicateQueryTranslator Implementation
     @Override
     public QueryBuilder translate(QueryBuilder queryBuilder, String key, P<?> predicate) {
@@ -20,6 +30,7 @@ public class CompareQueryTranslator implements PredicateQueryTranslator {
         }
 
         Compare compare = (Compare) predicate.getBiPredicate();
+        String rangeName = shouldAggregateRange ? key : null;
         switch (compare) {
             case eq:
                 queryBuilder.push().term(key, predicate.getValue()).pop();
@@ -28,20 +39,24 @@ public class CompareQueryTranslator implements PredicateQueryTranslator {
                 queryBuilder.push().bool().mustNot().term(key, predicate.getValue()).pop();
                 break;
             case gt:
-                queryBuilder.push().range(key, key).from(predicate.getValue()).includeLower(false).pop();
+                queryBuilder.push().range(rangeName, key).from(predicate.getValue()).includeLower(false).pop();
                 break;
             case gte:
-                queryBuilder.push().range(key, key).from(predicate.getValue()).includeLower(true).pop();
+                queryBuilder.push().range(rangeName, key).from(predicate.getValue()).includeLower(true).pop();
                 break;
             case lt:
-                queryBuilder.push().range(key, key).to(predicate.getValue()).includeUpper(false).pop();
+                queryBuilder.push().range(rangeName, key).to(predicate.getValue()).includeUpper(false).pop();
                 break;
             case lte:
-                queryBuilder.push().range(key, key).to(predicate.getValue()).includeUpper(true).pop();
+                queryBuilder.push().range(rangeName, key).to(predicate.getValue()).includeUpper(true).pop();
                 break;
         }
 
         return queryBuilder;
     }
+    //endregion
+
+    //region Fields
+    private boolean shouldAggregateRange;
     //endregion
 }

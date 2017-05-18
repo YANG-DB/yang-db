@@ -26,7 +26,7 @@ public class OrPQueryTranslator extends CompositeQueryTranslator {
             return queryBuilder;
         }
 
-        if (!(predicate instanceof AndP<?>)) {
+        if (!(predicate instanceof OrP<?>)) {
             return queryBuilder;
         }
 
