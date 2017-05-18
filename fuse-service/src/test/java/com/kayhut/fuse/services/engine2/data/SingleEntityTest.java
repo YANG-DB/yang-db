@@ -57,7 +57,7 @@ public class SingleEntityTest {
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
                 "dragon",
-                "Dragon",
+                "dragon",
                 idField,
                 () -> createDragons(10)).populate();
 

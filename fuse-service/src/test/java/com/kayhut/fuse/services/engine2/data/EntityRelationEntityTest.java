@@ -52,7 +52,7 @@ public class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
                 "dragon",
-                "Dragon",
+                "dragon",
                 idField,
                 () -> createDragons(10)).populate();
 
@@ -155,16 +155,16 @@ public class EntityRelationEntityTest {
 
                 Map<String, Object> entityAI = new HashMap<>();
                 entityAI.put("id", "d" + i);
-                entityAI.put("type", "Dragon");
+                entityAI.put("type", "dragon");
                 Map<String, Object> entityAJ = new HashMap<>();
                 entityAJ.put("id", "d" + j);
-                entityAJ.put("type", "Dragon");
+                entityAJ.put("type", "dragon");
                 Map<String, Object> entityBI = new HashMap<>();
                 entityBI.put("id", "d" + i);
-                entityBI.put("type", "Dragon");
+                entityBI.put("type", "dragon");
                 Map<String, Object> entityBJ = new HashMap<>();
                 entityBJ.put("id", "d" + j);
-                entityBJ.put("type", "Dragon");
+                entityBJ.put("type", "dragon");
 
                 fireEdge.put("entityA", entityAI);
                 fireEdge.put("entityB", entityBJ);

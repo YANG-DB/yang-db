@@ -49,7 +49,7 @@ public class InitEntities {
         //
         int dargonsPopulation = (int)((long) jsonObject.get("TOTAL_NUMBER_OF_DRAGONS")) ;
         for (int idx=0 ; idx < dargonsPopulation; idx++) {
-            dragonList.setList(new Dragon("Dragon",idx));
+            dragonList.setList(new Dragon("dragon",idx));
         }
         
         return dragonList;

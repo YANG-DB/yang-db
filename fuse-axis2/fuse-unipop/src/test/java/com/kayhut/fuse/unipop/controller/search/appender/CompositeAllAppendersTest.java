@@ -119,7 +119,7 @@ public class CompositeAllAppendersTest {
 
         //Since we didn't specify any Label in the constraint, we should get all vertex types.
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}}}}}}",
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"dragon\"]}}}}}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
 
@@ -133,7 +133,7 @@ public class CompositeAllAppendersTest {
 
         //The query should be the same as above
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}}}}}}",
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"dragon\"]}}}}}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
 
@@ -144,7 +144,7 @@ public class CompositeAllAppendersTest {
         Assert.assertTrue(searchBuilder.getIndices().size() == 3);
         Assert.assertTrue(searchBuilder.getIndices().contains("personIndex1"));
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}},{\"bool\":{\"must\":[{\"term\":{\"name\":\"bubu\"}},{\"terms\":{\"color\":[\"brown\",\"red\"]}}]}}]}}}}",
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":[{\"terms\":{\"_type\":[\"Person\",\"dragon\"]}},{\"bool\":{\"must\":[{\"term\":{\"name\":\"bubu\"}},{\"terms\":{\"color\":[\"brown\",\"red\"]}}]}}]}}}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
 
@@ -155,7 +155,7 @@ public class CompositeAllAppendersTest {
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.or(__.has(T.label, "Dragon"), __.has("color", "yarok_bakbuk")));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.or(__.has(T.label, "dragon"), __.has("color", "yarok_bakbuk")));
         SearchQuery searchQuery = mock(SearchQuery.class);
         when(searchQuery.getLimit()).thenReturn(10);
 
@@ -192,7 +192,7 @@ public class CompositeAllAppendersTest {
         Assert.assertEquals(expectedIndicesSet, searchBuilder.getIndices());
 
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"bool\":{\"should\":[{\"term\":{\"_type\":\"Dragon\"}},{\"term\":{\"color\":\"yarok_bakbuk\"}}]}}}}}}",
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"bool\":{\"should\":[{\"term\":{\"_type\":\"dragon\"}},{\"term\":{\"color\":\"yarok_bakbuk\"}}]}}}}}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
 
@@ -203,7 +203,7 @@ public class CompositeAllAppendersTest {
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider((label, elementType) -> {
             if (elementType == ElementType.vertex) {
-                if (label.equals("Dragon")){
+                if (label.equals("dragon")){
                     return () -> Arrays.asList("dragonIndex1", "dragonIndex2");
                 }
                 else if(label.equals("Person")){
@@ -235,7 +235,7 @@ public class CompositeAllAppendersTest {
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(1).withName("Person").build());
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(2).withName("Dragon").build());
+                            .withEType(2).withName("dragon").build());
                     return entityTypes;
                 }
         );

@@ -61,7 +61,7 @@ public interface StatisticsProvider {
     Statistics.Cardinality getRedundantNodeStatistics(Rel rel, EEntityBase entity, EPropGroup entityFilter, Direction direction);
 
     /**
-     * get avarage number of eadges per node (by label context)
+     * get avarage number of eadges per entity (by label context)
      * @return
      */
     long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) ;

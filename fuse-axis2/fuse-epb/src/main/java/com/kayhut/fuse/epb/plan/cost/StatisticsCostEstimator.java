@@ -37,7 +37,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
                 "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
         //option 1
         SINGLE_MODE("^(?<" + ENTITY_ONLY.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_ONLY_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
-        //option 3 And node
+        //option 3 And entity
         AND_MODE("^(?<" + AND_MODE_ENTITY_ONE.value+">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + AND_MODE_OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
                 "(?<" + AND_MODE_ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + AND_MODE_OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
@@ -250,10 +250,10 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         filterTwoOp.setEntity(entityTwoOp.getAsgEBase());
 
         //calculate
-        //get node 1 cost from existing cost with plan
+        //get entity 1 cost from existing cost with plan
         Cost entityOneCost = previousCost.getCost().getOpCost(entityOneOp).get();
 
-        //edge estimate =>
+        //relation estimate =>
         Direction direction = Direction.of(relationOp.getAsgEBase().geteBase().getDir());
         double edgeEstimation_N1 = entityOneCost.total * statisticsProvider.getGlobalSelectivity(relationOp.getAsgEBase().geteBase(),
                 relFilterOp.getAsgEBase().geteBase() ,
@@ -280,10 +280,10 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             filterTowCard = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(),filterTwoOp.getAsgEBase().geteBase()).getCardinality();
         }
 
-        //node redundand stats: C_2e
+        //entity redundand stats: C_2e
         double nodeEstimate_C2_e = statisticsProvider.getRedundantEdgeStatistics(relationOp.getAsgEBase().geteBase(),relFilterOp.getAsgEBase().geteBase() ,entityTwoOp.getAsgEBase().geteBase(), filterTwoOp.getAsgEBase().geteBase(), direction.reverse()).getCardinality();
 
-        //node 2 cardinality estimation
+        //entity 2 cardinality estimation
         double N2 = Collections.min(Arrays.asList(entityTwoCard, filterTowCard, edgeEstimation));
 
         //calculate back propagation weight

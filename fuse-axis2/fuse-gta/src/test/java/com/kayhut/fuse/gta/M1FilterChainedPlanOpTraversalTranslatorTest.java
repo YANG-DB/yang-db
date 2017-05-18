@@ -71,7 +71,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
                 .otherV().as("B")
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "Dragon"))))
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "dragon"))))
                 .otherV()
                 .path();
 
@@ -91,7 +91,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
                         .otherV().as("B")
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "dragon")))
                         .otherV()
                         .path();
 
@@ -106,7 +106,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "dragon")))
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
                         .otherV().as("A")
@@ -133,7 +133,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
                         .otherV().as("B")
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "dragon")))
                         .otherV()
                         .path();
 
@@ -155,7 +155,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
                         .otherV().as("B")
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "dragon")))
                         .otherV()
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->C")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
@@ -163,7 +163,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
                         .otherV().as("C")
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "Dragon"))))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "dragon"))))
                         .otherV()
                         .path();
 
@@ -219,7 +219,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
         ETyped eTyped2 = new ETyped();
         eTyped2.seteNum(3);
         eTyped2.seteTag("B");
-        eTyped2.seteType(2); //Dragon
+        eTyped2.seteType(2); //dragon
         AsgEBase<ETyped> eTypedAsg2 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped2).build();
 
         Rel rel = new Rel();
@@ -418,7 +418,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(1).withName("Person").build());
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(2).withName("Dragon").build());
+                            .withEType(2).withName("dragon").build());
                     return  entityTypes;
                 }
         );

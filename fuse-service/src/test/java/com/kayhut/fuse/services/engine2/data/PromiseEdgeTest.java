@@ -53,7 +53,7 @@ public class PromiseEdgeTest{
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
                 indexName,
-                "Dragon",
+                "dragon",
                 idField,
                 () -> createDragons(10)).populate();
 
@@ -76,7 +76,7 @@ public class PromiseEdgeTest{
     @Test
     public void testPromiseEdges() {
 
-        //basic edge constraint
+        //basic relation constraint
         Traversal constraint = __.and(__.has(T.label, "Fire"), __.has("direction", "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
@@ -85,19 +85,19 @@ public class PromiseEdgeTest{
         //create vertices to start from
         Vertex startVertex1 = mock(Vertex.class);
         when(startVertex1.id()).thenReturn("d1");
-        when(startVertex1.label()).thenReturn("Dragon");
+        when(startVertex1.label()).thenReturn("dragon");
 
         Vertex startVertex2 = mock(Vertex.class);
         when(startVertex2.id()).thenReturn("d2");
-        when(startVertex2.label()).thenReturn("Dragon");
+        when(startVertex2.label()).thenReturn("dragon");
 
         Vertex startVertex6 = mock(Vertex.class);
         when(startVertex6.id()).thenReturn("d6");
-        when(startVertex6.label()).thenReturn("Dragon");
+        when(startVertex6.label()).thenReturn("dragon");
 
         Vertex startVertex8 = mock(Vertex.class);
         when(startVertex8.id()).thenReturn("d8");
-        when(startVertex8.label()).thenReturn("Dragon");
+        when(startVertex8.label()).thenReturn("dragon");
 
         //prepare searchVertexQuery for the controller input
         SearchVertexQuery searchQuery = mock(SearchVertexQuery.class);
@@ -117,7 +117,7 @@ public class PromiseEdgeTest{
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
-        edges.forEach(e -> System.out.println("Promise edge: " + e));
+        edges.forEach(e -> System.out.println("Promise relation: " + e));
 
     }
 
@@ -129,7 +129,7 @@ public class PromiseEdgeTest{
         new ElasticDataPopulator(
                 elasticInMemoryIndex.getClient(),
                 "v1",
-                "Dragon",
+                "dragon",
                 "id",
                 () -> {
                     Map<String, Object> dragon = new HashedMap();
@@ -141,7 +141,7 @@ public class PromiseEdgeTest{
                 }).populate();
 
 
-        //edge constraint - this is the constraint that filters the end vertices of the promise edges
+        //relation constraint - this is the constraint that filters the end vertices of the promise edges
         Traversal constraint = __.and(__.has("color", "purple"), __.has("age", P.gt(10)));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
@@ -153,7 +153,7 @@ public class PromiseEdgeTest{
         for(int i=0; i<13; i++) {
             Vertex v = mock(Vertex.class);
             when(v.id()).thenReturn("d" + i);
-            when(v.label()).thenReturn("Dragon");
+            when(v.label()).thenReturn("dragon");
             startVertices.add(v);
         }
 
@@ -178,8 +178,8 @@ public class PromiseEdgeTest{
         //Assert.assertEquals(1, edges.size());
 
         edges.forEach(e -> {
-            //Verify that the edge's endpoint is the correct vertex
-            System.out.println("Promise Filter edge: " + e);
+            //Verify that the relation's endpoint is the correct vertex
+            System.out.println("Promise Filter relation: " + e);
             Assert.assertEquals("d11", e.inVertex().id());
         });
 

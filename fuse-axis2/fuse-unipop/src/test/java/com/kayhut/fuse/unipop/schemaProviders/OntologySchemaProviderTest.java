@@ -106,7 +106,7 @@ public class OntologySchemaProviderTest {
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(1).withName("Person").withProperties(Collections.singletonList(nameProp.getpType())).build());
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(2).withName("Dragon").build());
+                            .withEType(2).withName("dragon").build());
                     return entityTypes;
                 }
         );

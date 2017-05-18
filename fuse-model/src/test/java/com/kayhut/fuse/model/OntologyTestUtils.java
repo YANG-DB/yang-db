@@ -58,10 +58,10 @@ public class OntologyTestUtils {
         entityTypes.add(entityType1);
         //endregion
 
-        //region EntityType2 = Dragon
+        //region EntityType2 = dragon
         EntityType entityType2 = new EntityType();
         entityType2.seteType(2);
-        entityType2.setName("Dragon");
+        entityType2.setName("dragon");
         entityType2.setProperties(Collections.singletonList(7));
         entityTypes.add(entityType2);
         //endregion

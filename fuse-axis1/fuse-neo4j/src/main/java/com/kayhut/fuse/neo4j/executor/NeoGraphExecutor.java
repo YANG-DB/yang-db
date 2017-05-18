@@ -33,7 +33,7 @@ abstract class NeoGraphUtils{
                 List<Value> valueList = record.values().stream().collect(Collectors.toList());
                 valueList.forEach(value -> {
 
-                    //Each value inside a record is either a node or a relationship
+                    //Each value inside a record is either a entity or a relationship
                     if(value instanceof NodeValue) {
                         NodeValue n = (NodeValue)value;
                         ArrayList<Property> props = new ArrayList<>();

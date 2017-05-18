@@ -18,7 +18,7 @@ public class CypherCompiler {
     static Logger logger = LoggerFactory.getLogger("com.kayhut.fuse.neo4j.cypher.CypherCompiler");
 
     //Traverses a tree of query elements, building the cypher statements along the way.
-    //Each leaf node will contain a complete ready-to-run cypher statement, describing the single path from the root node to this leaf node.
+    //Each leaf entity will contain a complete ready-to-run cypher statement, describing the single path from the root entity to this leaf entity.
     private static void cypherTreeTraverse(Queue<AsgEBase> nodesQueue,
                                            CypherStrategiesFactory strategiesFactory, Ontology ontology) {
 
@@ -26,7 +26,7 @@ public class CypherCompiler {
 
         AsgEBase curNode = nodesQueue.poll();
 
-        //apply the appropriate strategy for this type of node
+        //apply the appropriate strategy for this type of entity
         strategiesFactory.applyStrategy(curNode);
 
         //apply strategies on each below element

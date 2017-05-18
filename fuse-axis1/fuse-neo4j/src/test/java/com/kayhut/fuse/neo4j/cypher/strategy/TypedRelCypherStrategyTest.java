@@ -41,7 +41,7 @@ public class TypedRelCypherStrategyTest {
 
         String cypher = CypherCompiler.compile(asgQuery, ontology);
 
-        assertTrue(cypher.contains("MATCH p0 = (A:Person)-[r1:own]->(B:Dragon)"));
+        assertTrue(cypher.contains("MATCH p0 = (A:Person)-[r1:own]->(B:dragon)"));
 
     }
 

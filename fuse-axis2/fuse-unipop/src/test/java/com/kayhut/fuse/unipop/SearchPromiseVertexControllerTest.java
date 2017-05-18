@@ -101,7 +101,7 @@ public class SearchPromiseVertexControllerTest {
 
         UniGraph graph = mock(UniGraph.class);
 
-        //basic edge constraint
+        //basic relation constraint
         Traversal constraint = __.and(__.has(T.label, "fire"), __.has("direction", "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);

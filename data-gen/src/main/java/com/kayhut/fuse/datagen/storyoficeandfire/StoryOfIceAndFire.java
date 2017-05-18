@@ -153,10 +153,10 @@ public class StoryOfIceAndFire {
         Double growth = ((double)populationGrowth/1000) *dragonPopulation ;
         int add2Population = Math.min(maxGrowth, growth.intValue()) ;
         for (int idx = dragonPopulation ; idx < (dragonPopulation+add2Population) ; idx++) {
-            dlist.setList(new Dragon("Dragon",idx));
+            dlist.setList(new Dragon("dragon",idx));
         }
         
-        System.out.println("Dragon Population : " + String.valueOf(dlist.getListSize()) );
+        System.out.println("dragon Population : " + String.valueOf(dlist.getListSize()) );
         return dlist ;
     }
     

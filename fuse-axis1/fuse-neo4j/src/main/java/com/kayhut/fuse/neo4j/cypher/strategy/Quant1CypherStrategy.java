@@ -60,7 +60,7 @@ public class Quant1CypherStrategy extends CypherStrategy {
                             //open new branch
                             context(child, new CypherCompilationState(curState.getStatement().copy(), curState.getPathTag()));
                         } else if (quant1.getqType().equals(QuantType.all)) {
-                            //open new path starting at the last node
+                            //open new path starting at the last entity
                             String nextPathTag = curState.getStatement().getNextPathTag();
                             CypherStatement updatedStatement = curState.getStatement().appendNode(nextPathTag,
                                                                                     CypherNode.cypherNode().withTag(node.tag));
