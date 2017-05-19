@@ -13,8 +13,8 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by benishue on 04-May-17.
@@ -26,7 +26,7 @@ public class StatCalculatorTest {
     static TransportClient statClient;
     static ElasticEmbeddedNode elasticEmbeddedNode;
     static Configuration configuration;
-    static String CONFIGURATION_FILE_PATH = "statistics.test.properties";
+    static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
 
     @Test
     public void statCalculatorTest() throws Exception {
@@ -127,8 +127,7 @@ public class StatCalculatorTest {
             char c = chars[random.nextInt(chars.length)];
             sb.append(c);
         }
-        String output = sb.toString();
-        return output;
+        return sb.toString();
     }
 
 }

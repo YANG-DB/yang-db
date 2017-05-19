@@ -4,7 +4,6 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,27 +12,22 @@ import java.util.List;
  */
 public class CSVUtil {
 
-    public static void writeCSV(String filePath,  List<String[]> records, char separator, char quoteChar) throws IOException {
-        CSVWriter csvWriter = null;
-        try {
-            FileWriter fileWriter = new FileWriter(filePath, true);
-            //using custom delimiter and quote character
-            csvWriter = new CSVWriter(fileWriter, separator, quoteChar);
+    private CSVUtil() {
+        throw new IllegalAccessError("Utility class");
+    }
+
+    public static void writeCSV(String filePath,  List<String[]> records,
+                                char separator, char quoteChar) throws IOException {
+        FileWriter fileWriter = new FileWriter(filePath, true);
+        //using custom delimiter and quote character
+        try (CSVWriter csvWriter = new CSVWriter(fileWriter, separator, quoteChar)) {
             csvWriter.writeAll(records);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            csvWriter.close();
         }
     }
 
-    public static void appendResult(String[] record, String filePath) {
+    public static void appendResult(String[] record, String filePath) throws IOException {
         ArrayList<String[]> records = new ArrayList<>();
         records.add(record);
-        try {
-            CSVUtil.writeCSV(filePath, records, ',' ,'\"');
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        CSVUtil.writeCSV(filePath, records, ',' ,'\"');
     }
 }

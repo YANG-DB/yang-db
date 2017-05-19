@@ -8,9 +8,11 @@ import org.graphstream.ui.swingViewer.DefaultView;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
+import org.slf4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,7 +27,11 @@ import java.util.stream.Collectors;
  */
 public class GraphstreamHelper {
 
-    public static void drawGraph(Graph g){
+    private GraphstreamHelper() {
+        throw new IllegalAccessError("Utility class");
+    }
+
+    public static void drawGraph(Graph g, Logger logger){
         g.setStrict(false);
         Viewer viewer = new Viewer(g, Viewer.ThreadingModel.GRAPH_IN_GUI_THREAD);
         JFrame myJFrame = new JFrame();
@@ -40,7 +46,7 @@ public class GraphstreamHelper {
         myJFrame.add(slider);
 
         JButton exportButton = new JButton("Export");
-        exportButton.addActionListener(e -> {
+        exportButton.addActionListener((ActionEvent e) -> {
 
 
             JFileChooser fileChooser = new JFileChooser();
@@ -51,9 +57,14 @@ public class GraphstreamHelper {
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 String filePath = fileToSave.getAbsolutePath();
-                exportGraphMLFile(g,filePath);
 
-                System.out.println("GraphML file exported to: " + filePath);
+                try {
+                    exportGraphMLFile(g,filePath);
+                } catch (IOException e1) {
+                    logger.error(e1.getMessage());
+                }
+
+                logger.info("GraphML file exported to: %s", filePath);
             }
 
         });
@@ -94,33 +105,28 @@ public class GraphstreamHelper {
 
     }
 
-    public static void printScaleFreeDataSummary(Graph g, String path){
-        try {
-            Map<Integer, Long> sortedMap = new TreeMap<>(g.getNodeSet().stream().map(node -> node.getOutDegree())
-                    .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())));
+    public static void printScaleFreeDataSummary(Graph g, String path) throws IOException {
+        Map<Integer, Long> sortedMap = new TreeMap<>(g.getNodeSet().stream().map(Node::getOutDegree)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())));
 
-            String filePath = URLDecoder.decode(path + "/ScaleFreeSummary_" + g.getId() + ".csv", "UTF-8");
+        String filePath = URLDecoder.decode(path + "/ScaleFreeSummary_" + g.getId() + ".csv", "UTF-8");
 
-            CSVUtil.appendResult(new String[] { "NumberOfNodes", "Degree" }, filePath);
-            sortedMap.forEach((degree, count) -> {
-                CSVUtil.appendResult(new String[] { count + "", degree + ""},filePath);
-            });
-            System.out.println("\nFile Created Successfully: " + filePath);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        CSVUtil.appendResult(new String[] { "NumberOfNodes", "Degree" }, filePath);
+        sortedMap.forEach((degree, count) -> {
+            try {
+                CSVUtil.appendResult(new String[]{count + "", degree + ""}, filePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        System.out.println("\nFile Created Successfully: " + filePath);
     }
 
-    public static void exportGraphMLFile(Graph graph, String path){
-        try {
-            FileSinkGraphML fileSinkGraphML = new FileSinkGraphML();
-            String decodedPath = URLDecoder.decode(path, "UTF-8");
-            fileSinkGraphML.writeAll(graph, decodedPath + "/" + graph.getId() + ".txt");
-            System.out.println("\nFile Created Successfully: " + decodedPath + "/" +  graph.getId() + ".txt");
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void exportGraphMLFile(Graph graph, String path) throws IOException {
+        FileSinkGraphML fileSinkGraphML = new FileSinkGraphML();
+        String decodedPath = URLDecoder.decode(path, "UTF-8");
+        fileSinkGraphML.writeAll(graph, decodedPath + "/" + graph.getId() + ".txt");
+        System.out.println("\nFile Created Successfully: " + decodedPath + "/" +  graph.getId() + ".txt");
     }
 
 }

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by benishue on 30-Apr-17.
@@ -56,11 +57,11 @@ public class StatConfigurationTest {
         Type typeDragon = new Type("dragon",Arrays.asList(ageField, nameField, addressField, colorField));
 
         Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1","index2"))
-                .withTypes(Arrays.asList("dragon")).build();
+                .withTypes(Collections.singletonList("dragon")).build();
 
         StatContainer statContainer = StatContainer.StatContainerBuilder.aStatContainer()
-                .withMappings(Arrays.asList(mapping))
-                .withTypes(Arrays.asList(typeDragon))
+                .withMappings(Collections.singletonList(mapping))
+                .withTypes(Collections.singletonList(typeDragon))
                 .build();
 
 

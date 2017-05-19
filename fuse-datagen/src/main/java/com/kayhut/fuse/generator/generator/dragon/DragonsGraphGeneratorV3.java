@@ -5,7 +5,7 @@ import com.kayhut.fuse.generator.model.entity.Dragon;
 
 import com.kayhut.fuse.generator.model.relation.RelationBase;
 import com.kayhut.fuse.generator.util.CSVUtil;
-import com.kayhut.fuse.generator.util.RandomGenerator;
+import com.kayhut.fuse.generator.util.RandomUtil;
 import javaslang.Tuple2;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class DragonsGraphGeneratorV3 extends DragonsGraphGeneratorBase {
             CSVUtil.appendResult(dragon.getRecord(), getDragonConfiguration().getDragonsResultsFilePath());
         }
         edgesSet.forEach(tuple -> {
-            int numOfInteractions = RandomGenerator.randomInt(getDragonConfiguration().getMinUniqueInteractions(), getDragonConfiguration().getMaxUniqueInteractions());
+            int numOfInteractions = RandomUtil.randomInt(getDragonConfiguration().getMinUniqueInteractions(), getDragonConfiguration().getMaxUniqueInteractions());
             for (int i = 0; i < numOfInteractions; i++) {
                 RelationBase rel = buildDragonRelation(tuple._1.toString(), tuple._2.toString());
                 String relationsResultsFile = getDragonConfiguration().getDragonsRelationsFilePath().replace(".csv","") + "_" + rel.getRelationType() + ".csv";

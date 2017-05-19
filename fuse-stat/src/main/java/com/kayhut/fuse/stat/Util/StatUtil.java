@@ -21,7 +21,11 @@ import java.util.*;
  */
 public class StatUtil {
 
-    public static String readJsonToString(String jsonRelativePath) throws Exception {
+    private StatUtil() {
+        throw new IllegalAccessError("Utility class");
+    }
+
+    public static String readJsonToString(String jsonRelativePath) {
         String contents = "";
         try {
             contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
@@ -37,8 +41,6 @@ public class StatUtil {
             String statConfigurationFilePath = configuration.getString("statistics.configuration.file");
             String statJson = readJsonToString(statConfigurationFilePath);
             resultObj = Optional.of(new ObjectMapper().readValue(statJson, StatContainer.class));
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,7 +50,7 @@ public class StatUtil {
     public static Optional<Type> getTypeConfiguration(StatContainer statContainer, String typeName){
         Optional<Type> typeElement = Optional.empty();
         List<Type> types = Stream.ofAll(statContainer.getTypes()).filter(type -> type.getType().equals(typeName)).toJavaList();
-        if (types.size()>0)
+        if (!types.isEmpty())
             typeElement = Optional.ofNullable(types.get(0));
         return typeElement;
     }
@@ -58,7 +60,7 @@ public class StatUtil {
         Optional<Type> typeElement = getTypeConfiguration(statContainer,typeName);
         if (typeElement.isPresent()){
             List<Field> fields = Stream.ofAll(typeElement.get().getFields()).filter(field -> field.getField().equals(fieldName)).toJavaList();
-            if (fields.size()>0) {
+            if (!fields.isEmpty()) {
                 fieldElement = Optional.ofNullable(fields.get(0));
             }
         }

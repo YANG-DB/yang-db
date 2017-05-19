@@ -2,7 +2,6 @@ package com.kayhut.fuse.generator.generator.dragon;
 
 import com.github.javafaker.Faker;
 import com.kayhut.fuse.generator.model.entity.Dragon;
-import org.apache.commons.configuration.Configuration;
 
 
 /**
@@ -22,8 +21,8 @@ public class DragonGenerator {
                 .build();
     }
 
-    private Faker faker;
-    private int maxDragonPower;
-    private int minDragonPower;
+    private final Faker faker;
+    private final int maxDragonPower;
+    private final int minDragonPower;
 
 }

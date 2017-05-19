@@ -46,7 +46,6 @@ public class BAGraphGenerator {
     public BufferedWriter outWriter = null;
 
     //public static HashSet<Long> nodesSet;
-    public static boolean[] nodesSet;
     public static ArrayList<Tuple2> edgesSet;
 
     public BAGraphGenerator(int numNodes) throws Exception {
@@ -54,8 +53,7 @@ public class BAGraphGenerator {
         BAGraphGenerator.numNodesFinal = numNodes;
         this.nodesRouletteWheel = new SimpleRWNodeList();
         //this.nodesSet = new HashSet();
-        this.nodesSet = new boolean[numNodes];
-        this.edgesSet = new ArrayList<>();
+        edgesSet = new ArrayList<>();
         switch (samplingMode) {
             case SIMPLE:
                 nodesRouletteWheel = new SimpleRWNodeList();
@@ -176,7 +174,7 @@ public class BAGraphGenerator {
 //                }
 //                FillNodesSet(node1);
 //                FillNodesSet(node2);
-                edgesSet.add(new Tuple2(node1,node2));
+                edgesSet.add(new Tuple2<>(node1,node2));
                 //graphFileWriter.write(node1 + "\t" + node2 + "\n");
             } catch (Exception e) {
                 e.printStackTrace();

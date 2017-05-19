@@ -12,11 +12,11 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by benishue on 16-May-17.
  */
-public class RandomGenerator {
+public class RandomUtil {
 
     private static final Random rand = new Random();
 
-    private RandomGenerator() {
+    private RandomUtil() {
         throw new IllegalAccessError("Utility class");
     }
 

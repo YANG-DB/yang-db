@@ -25,46 +25,51 @@ import java.util.stream.Stream;
  */
 public class StatCalculator {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args)  {
 
         Logger logger = org.slf4j.LoggerFactory.getLogger(StatCalculator.class);
 
         validateNumberOfArguments(args, logger);
 
-        Configuration configuration = new StatConfiguration(args[0]).getInstance();
-        TransportClient dataClient = ClientProvider.getDataClient(configuration);
-        TransportClient statClient = ClientProvider.getStatClient(configuration);
+        TransportClient dataClient = null;
+        TransportClient statClient = null;
+        try {
+            Configuration configuration = new StatConfiguration(args[0]).getInstance();
+            dataClient = ClientProvider.getDataClient(configuration);
+            statClient = ClientProvider.getStatClient(configuration);
 
-        statIndexName = configuration.getString("statistics.index.name");
-        statTypeNumericName = configuration.getString("statistics.type.numeric.name");
-        statTypeStringName = configuration.getString("statistics.type.string.name");
+            statIndexName = configuration.getString("statistics.index.name");
+            statTypeNumericName = configuration.getString("statistics.type.numeric.name");
+            statTypeStringName = configuration.getString("statistics.type.string.name");
 
-        Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
+            Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
 
-        if (statConfiguration.isPresent()) {
-            StatContainer statContainer = statConfiguration.get();
+            if (statConfiguration.isPresent()) {
+                StatContainer statContainer = statConfiguration.get();
 
-            for (Mapping mapping : statContainer.getMappings())
-            {
-                List<String> indices = mapping.getIndices();
-                List<String> types = mapping.getTypes();
-                for(String indexName : indices){
-                    for (String typeName: types){
-                        Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, typeName);
-                        if(typeConfiguration.isPresent()){
-                            buildHistogramForNumericFields(logger, dataClient, statClient, statContainer, indexName, typeName);
-                            buildHistogramForManualFields(logger, dataClient, statClient , statContainer, indexName, typeName);
-                            buildHistogramForStringFields(logger, dataClient, statClient, statContainer, indexName, typeName);
-                            buildHistogramForCompositeFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                for (Mapping mapping : statContainer.getMappings())
+                {
+                    List<String> indices = mapping.getIndices();
+                    List<String> types = mapping.getTypes();
+                    for(String indexName : indices){
+                        for (String typeName: types){
+                            Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, typeName);
+                            if(typeConfiguration.isPresent()){
+                                buildHistogramForNumericFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                                buildHistogramForManualFields(logger, dataClient, statClient , statContainer, indexName, typeName);
+                                buildHistogramForStringFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                                buildHistogramForCompositeFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                            }
                         }
                     }
                 }
             }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        } finally {
+            dataClient.close();
+            statClient.close();
         }
-
-//        EsUtil.bulkIndexingFromFile(dataClient, "C:\\Code\\fuse\\fuse-stat\\src\\main\\resources\\dragons_mock.txt",
-//                "index1","dragon");
-//        EsUtil.showTypeFieldsNames(dataClient,"game","football");
     }
 
     //region Private Methods
@@ -86,7 +91,6 @@ public class StatCalculator {
         }
         catch (Exception e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -101,17 +105,16 @@ public class StatCalculator {
                     HistogramManual histogramManual = ((HistogramManual)field.getHistogram());
                     String dataType = histogramManual.getDataType();
                     List<StringStatResult> buckets = EsUtil.getManualHistogramResults(dataClient,indexName,typeName,fieldName,dataType,histogramManual.getBuckets());
-                    if (dataType.equals("string")) {
+                    if ("string".equals(dataType)) {
                         PopulateBuckets(statIndexName, statTypeStringName, statClient, buckets);
                     }
-                    if (dataType.equals("numeric")) {
+                    if ("numeric".equals(dataType)) {
                         PopulateBuckets(statIndexName, statTypeNumericName, statClient, buckets);
                     }
                 }
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -134,12 +137,11 @@ public class StatCalculator {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
             logger.error(e.getMessage());
         }
     }
 
-    private static void buildHistogramForCompositeFields(Logger logger, TransportClient dataClient, TransportClient statClient, StatContainer statContainer, String indexName, String typeName) {
+    private static void buildHistogramForCompositeFields(Logger logger, TransportClient dataClient, TransportClient statClient, StatContainer statContainer, String indexName, String typeName)  {
         try {
             Optional<List<Field>> fieldsWithCompositeHistogram = StatUtil.getFieldsWithCompositeHistogramOfType(statContainer, typeName);
             if (fieldsWithCompositeHistogram.isPresent()){
@@ -151,7 +153,7 @@ public class StatCalculator {
                     String dataType = histogramComposite.getDataType();
                     List<StringStatResult> manualBuckets = EsUtil.getManualHistogramResults(dataClient, indexName, typeName, fieldName, dataType, histogramComposite.getManualBuckets());
 
-                    if (dataType.equals("string")) {
+                    if ("string".equals(dataType)) {
                         HistogramString subHistogram = (HistogramString) histogramComposite.getAutoBuckets();
                         List<Bucket> stringBuckets = StatUtil.calculateAlphabeticBuckets(
                                 Integer.valueOf(subHistogram.getFirstCharCode()),
@@ -163,7 +165,7 @@ public class StatCalculator {
                         List<StringStatResult> combinedBuckets = Stream.concat(autoBuckets.stream(), manualBuckets.stream()).collect(Collectors.toList());
                         PopulateBuckets(statIndexName, statTypeStringName, statClient, combinedBuckets);
                     }
-                    if (dataType.equals("numeric")) {
+                    if ("numeric".equals(dataType)) {
                         HistogramNumeric subHistogram = (HistogramNumeric) histogramComposite.getAutoBuckets();
                         double min = subHistogram.getMin();
                         double max = subHistogram.getMax();
@@ -177,19 +179,17 @@ public class StatCalculator {
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private static void PopulateBuckets(String statIndexName, String statTypeName, TransportClient statClient, List<StringStatResult> buckets) throws IOException {
 
-        List<StringStatResult> finalBuckets = buckets;
         new ElasticDataPopulator(
                 statClient,
                 statIndexName,
                 statTypeName,
                 "id",
-                () -> StatUtil.prepareStatDocs(finalBuckets)
+                () -> StatUtil.prepareStatDocs(buckets)
         ).populate();
     }
 

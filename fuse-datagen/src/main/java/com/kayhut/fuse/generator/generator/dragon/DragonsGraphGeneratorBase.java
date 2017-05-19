@@ -1,19 +1,14 @@
 package com.kayhut.fuse.generator.generator.dragon;
 
 import com.kayhut.fuse.generator.generator.graph.ScaleFreeModel;
-import com.kayhut.fuse.generator.generator.graph.barbasi.albert.graphstream.BarabasiAlbertGenerator;
 import com.kayhut.fuse.generator.model.entity.Dragon;
 import com.kayhut.fuse.generator.model.enums.RelationType;
-import com.kayhut.fuse.generator.model.graph.NodesEdges;
 import com.kayhut.fuse.generator.model.relation.Fires;
 import com.kayhut.fuse.generator.model.relation.Freezes;
 import com.kayhut.fuse.generator.model.relation.RelationBase;
-import com.kayhut.fuse.generator.util.CSVUtil;
 import com.kayhut.fuse.generator.util.DateUtil;
-import com.kayhut.fuse.generator.util.RandomGenerator;
+import com.kayhut.fuse.generator.util.RandomUtil;
 import org.apache.commons.math3.util.Pair;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.SingleGraph;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,9 +40,9 @@ public abstract class DragonsGraphGeneratorBase {
         ArrayList<Pair<RelationType, Double>> probs = new ArrayList<>(Arrays.asList(new Pair<>(RelationType.FIRES,
                         dragonConfiguration.getFireProbability())
                 , new Pair<>(RelationType.FREEZES, dragonConfiguration.getFreezProbability())));
-        RelationType relationType = RandomGenerator.enumeratedDistribution(probs);
+        RelationType relationType = RandomUtil.enumeratedDistribution(probs);
         String edgeId = sourceId + "_" +targetId;
-        Date date = RandomGenerator.randomDate(dragonConfiguration.getStartDateOfStory(), dragonConfiguration.getEndDateOfStory());
+        Date date = RandomUtil.randomDate(dragonConfiguration.getStartDateOfStory(), dragonConfiguration.getEndDateOfStory());
         RelationBase relationBase = null;
 
         if (relationType == RelationType.FIRES){
@@ -55,7 +50,7 @@ public abstract class DragonsGraphGeneratorBase {
         }
 
         if (relationType == RelationType.FREEZES){
-            Date dateTill = DateUtil.addMinutesToDate(date, RandomGenerator.randomInt(1,dragonConfiguration.getFreezMaxDuraution()));
+            Date dateTill = DateUtil.addMinutesToDate(date, RandomUtil.randomInt(1,dragonConfiguration.getFreezMaxDuraution()));
             relationBase = new Freezes(edgeId, sourceId, targetId, date, dateTill);
         }
         return relationBase;
@@ -77,9 +72,9 @@ public abstract class DragonsGraphGeneratorBase {
     //endregion
 
     //region Fields
-    private DragonConfiguration dragonConfiguration;
-    private ScaleFreeModel model;
-    private DragonGenerator dragonGenerator;
+    private final DragonConfiguration dragonConfiguration;
+    private final ScaleFreeModel model;
+    private final DragonGenerator dragonGenerator;
 
     //endregion
 

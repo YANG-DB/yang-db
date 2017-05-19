@@ -21,7 +21,7 @@ public class DragonConfiguration {
         this.fireProbability = configuration.getDouble("dragon.fireProbability");
         this.freezProbability = configuration.getDouble("dragon.freezProbability");
         this.minUniqueInteractions = configuration.getInt("dragon.minUniqueInteractions");
-        this.maxUniqueInteractions = configuration.getInt("dragon.maxUniqueInteractions");;
+        this.maxUniqueInteractions = configuration.getInt("dragon.maxUniqueInteractions");
         this.freezMaxDuraution = configuration.getInt("dragon.freezMaxDuraution");
         this.maxPower = configuration.getInt("dragon.maxPower");
         this.minPower = configuration.getInt("dragon.minPower");
@@ -83,18 +83,18 @@ public class DragonConfiguration {
     //endregion
 
     //region Fields
-    private int numberOfNodes;
-    private int edgesPerNode;
-    private Date startDateOfStory;
-    private Date endDateOfStory;
-    private int minPower;
-    private int maxPower;
-    private int maxUniqueInteractions;
-    private int minUniqueInteractions;
-    private double freezProbability;
-    private double fireProbability;
-    private int freezMaxDuraution;
-    private String dragonsResultsFilePath;
-    private String dragonsRelationsFilePath;
+    private final int numberOfNodes;
+    private final int edgesPerNode;
+    private final Date startDateOfStory;
+    private final Date endDateOfStory;
+    private final int minPower;
+    private final int maxPower;
+    private final int maxUniqueInteractions;
+    private final int minUniqueInteractions;
+    private final double freezProbability;
+    private final double fireProbability;
+    private final int freezMaxDuraution;
+    private final String dragonsResultsFilePath;
+    private final String dragonsRelationsFilePath;
     //endregion
 }

@@ -3,7 +3,7 @@ package com.kayhut.fuse.generator.generator;
 import com.kayhut.fuse.generator.generator.dragon.DragonConfiguration;
 import com.kayhut.fuse.generator.generator.dragon.DragonGenerator;
 import com.kayhut.fuse.generator.model.entity.Dragon;
-import com.kayhut.fuse.generator.util.DataGenConfiguration;
+import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  */
 public class DragonGeneratorTest {
 
-    static String CONFIGURATION_FILE_PATH = "test.generator.properties";
+    static final String CONFIGURATION_FILE_PATH = "test.generator.properties";
     static Configuration configuration;
 
 

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.util;
+package com.kayhut.fuse.generator.configuration;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;

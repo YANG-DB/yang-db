@@ -9,7 +9,7 @@ import java.util.Random;
  */
 public class PropertiesGenerator {
 
-    static Random rand = new Random();
+    static final Random rand = new Random();
 
     // 50% Chance for each gender
     public static Gender generateGender() {
