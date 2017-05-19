@@ -60,6 +60,19 @@ public class Person extends EntityBase {
     }
     //endregion
 
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", gender=" + gender +
+                ", birthDate=" + birthDate +
+                ", deathDate=" + deathDate +
+                ", height=" + height +
+                '}';
+    }
+
     @Override
     public String[] getRecord() {
         return new String[0];
@@ -72,14 +85,80 @@ public class Person extends EntityBase {
     private Date birthDate ;
     private Date deathDate ;
     private int height ;
-    private boolean isOldestOffspring ;
-    private boolean isAlive ;
-    private int parentId ;
-    private int kingdom_id ;
-    private List<Integer> offspringsIdList ;
-    private String personInfo ;
-    private Date since ;
-    private Date till ;
-    private int birthYear ;
+//    private boolean isOldestOffspring ;
+//    private boolean isAlive ;
+//    private int parentId ;
+//    private int kingdom_id ;
+//    private List<Integer> offspringsIdList ;
+//    private String personInfo ;
+//    private Date since;
+//    private Date till;
+//    private int birthYear ;
     //endregion
+
+
+    public static final class PersonBuilder {
+        private String id;
+        private String firstName ;
+        private String lastName ;
+        private Gender gender ;
+        private Date birthDate ;
+        private Date deathDate ;
+        private int height ;
+
+        private PersonBuilder() {
+        }
+
+        public static PersonBuilder aPerson() {
+            return new PersonBuilder();
+        }
+
+        public PersonBuilder withId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public PersonBuilder withFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public PersonBuilder withLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public PersonBuilder withGender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public PersonBuilder withBirthDate(Date birthDate) {
+            this.birthDate = birthDate;
+            return this;
+        }
+
+        public PersonBuilder withDeathDate(Date deathDate) {
+            this.deathDate = deathDate;
+            return this;
+        }
+
+        public PersonBuilder withHeight(int height) {
+            this.height = height;
+            return this;
+        }
+
+        public Person build() {
+            Person person = new Person();
+            person.setId(id);
+            person.setFirstName(firstName);
+            person.setLastName(lastName);
+            person.setGender(gender);
+            person.setBirthDate(birthDate);
+            person.setDeathDate(deathDate);
+            person.setHeight(height);
+            return person;
+        }
+    }
+
 }

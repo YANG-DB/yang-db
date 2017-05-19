@@ -1,5 +1,6 @@
 package com.kayhut.fuse.generator.generator.dragon;
 
+import com.kayhut.fuse.generator.configuration.DragonConfiguration;
 import com.kayhut.fuse.generator.generator.graph.barbasi.albert.graphstream.BarabasiAlbertGenerator;
 import com.kayhut.fuse.generator.model.entity.Dragon;
 import com.kayhut.fuse.generator.model.graph.NodesEdges;

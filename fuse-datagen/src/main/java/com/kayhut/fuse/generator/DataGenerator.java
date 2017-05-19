@@ -1,7 +1,7 @@
 package com.kayhut.fuse.generator;
 
 import com.google.common.base.Stopwatch;
-import com.kayhut.fuse.generator.generator.dragon.DragonConfiguration;
+import com.kayhut.fuse.generator.configuration.DragonConfiguration;
 import com.kayhut.fuse.generator.generator.dragon.DragonsGraphGeneratorV1;
 import com.kayhut.fuse.generator.generator.dragon.DragonsMaGraphGeneratorV2;
 import com.kayhut.fuse.generator.generator.graph.barbasi.albert.graphstream.GraphstreamHelper;

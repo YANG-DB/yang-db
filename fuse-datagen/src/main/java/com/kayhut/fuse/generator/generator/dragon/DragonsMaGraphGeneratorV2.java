@@ -1,5 +1,6 @@
 package com.kayhut.fuse.generator.generator.dragon;
 
+import com.kayhut.fuse.generator.configuration.DragonConfiguration;
 import com.kayhut.fuse.generator.generator.graph.barbasi.albert.hadian.generators.BAGraphGenerator;
 import com.kayhut.fuse.generator.model.entity.Dragon;
 
@@ -45,6 +46,5 @@ public class DragonsMaGraphGeneratorV2 extends DragonsGraphGeneratorBase {
 
     }
     //endregion
-
 
 }

@@ -69,7 +69,6 @@ public class Horse extends EntityBase {
     private int weight;
     private int maxSpeed;
     private int maxDistance;
-
     //endregion
 
 }

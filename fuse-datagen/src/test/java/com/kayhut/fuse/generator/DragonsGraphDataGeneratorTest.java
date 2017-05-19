@@ -1,7 +1,7 @@
 package com.kayhut.fuse.generator;
 
 import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
-import com.kayhut.fuse.generator.generator.dragon.DragonConfiguration;
+import com.kayhut.fuse.generator.configuration.DragonConfiguration;
 import com.kayhut.fuse.generator.model.enums.RelationType;
 import com.kayhut.fuse.generator.util.CSVUtil;
 import org.apache.commons.configuration.Configuration;

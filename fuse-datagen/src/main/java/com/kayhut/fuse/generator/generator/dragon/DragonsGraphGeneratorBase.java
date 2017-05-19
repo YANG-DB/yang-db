@@ -1,5 +1,7 @@
 package com.kayhut.fuse.generator.generator.dragon;
 
+import com.kayhut.fuse.generator.configuration.DragonConfiguration;
+import com.kayhut.fuse.generator.generator.entity.DragonGenerator;
 import com.kayhut.fuse.generator.generator.graph.ScaleFreeModel;
 import com.kayhut.fuse.generator.model.entity.Dragon;
 import com.kayhut.fuse.generator.model.enums.RelationType;
@@ -31,7 +33,7 @@ public abstract class DragonsGraphGeneratorBase {
 
     //region Private Methods
     protected Dragon buildDragonNode(String id){
-        Dragon dragon = dragonGenerator.generateDragon();
+        Dragon dragon = dragonGenerator.generate();
         dragon.setId(id);
         return dragon;
     }
@@ -75,7 +77,6 @@ public abstract class DragonsGraphGeneratorBase {
     private final DragonConfiguration dragonConfiguration;
     private final ScaleFreeModel model;
     private final DragonGenerator dragonGenerator;
-
     //endregion
 
 }

@@ -8,7 +8,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
  */
 public class DataGenConfiguration {
 
-    private static Configuration configuration;
+    private Configuration configuration;
 
     public DataGenConfiguration(String configPath) {
         configuration = setConfiguration(configPath);

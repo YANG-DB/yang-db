@@ -17,7 +17,7 @@ public class CSVUtil {
     }
 
     public static void writeCSV(String filePath, List<String[]> records,
-                                char separator, char quoteChar) throws IOException {
+                                final char separator, final char quoteChar) throws IOException {
         FileWriter fileWriter = new FileWriter(filePath, true);
         //using custom delimiter and quote character
         try (CSVWriter csvWriter = new CSVWriter(fileWriter, separator, quoteChar)) {
@@ -35,7 +35,7 @@ public class CSVUtil {
         }
     }
 
-    public static List<String[]> readCSV(String filePath, char separator) {
+    public static List<String[]> readCSV(String filePath, final char separator) {
         List<String[]> fileContents = new ArrayList<>();
         try {
             File file = new File(filePath);

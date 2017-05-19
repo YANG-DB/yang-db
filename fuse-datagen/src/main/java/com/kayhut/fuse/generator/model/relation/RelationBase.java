@@ -54,7 +54,7 @@ public abstract class RelationBase {
 
     //endregion
 
-    //region Public Methods
+    //region Abstract Methods
     public abstract String[] getRecord();
     //endregion
 
