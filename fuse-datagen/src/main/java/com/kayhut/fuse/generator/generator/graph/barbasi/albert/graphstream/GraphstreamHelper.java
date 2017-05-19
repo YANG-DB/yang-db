@@ -47,8 +47,6 @@ public class GraphstreamHelper {
 
         JButton exportButton = new JButton("Export");
         exportButton.addActionListener((ActionEvent e) -> {
-
-
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Specify a file to save");
 
@@ -57,13 +55,7 @@ public class GraphstreamHelper {
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 File fileToSave = fileChooser.getSelectedFile();
                 String filePath = fileToSave.getAbsolutePath();
-
-                try {
-                    exportGraphMLFile(g,filePath);
-                } catch (IOException e1) {
-                    logger.error(e1.getMessage());
-                }
-
+                exportGraphMLFile(g,filePath);
                 logger.info("GraphML file exported to: %s", filePath);
             }
 
@@ -109,24 +101,22 @@ public class GraphstreamHelper {
         Map<Integer, Long> sortedMap = new TreeMap<>(g.getNodeSet().stream().map(Node::getOutDegree)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting())));
 
-        String filePath = URLDecoder.decode(path + "/ScaleFreeSummary_" + g.getId() + ".csv", "UTF-8");
+        String filePath = URLDecoder.decode(path + "//ScaleFreeSummary_" + g.getId() + ".csv", "UTF-8");
 
         CSVUtil.appendResult(new String[] { "NumberOfNodes", "Degree" }, filePath);
-        sortedMap.forEach((degree, count) -> {
-            try {
-                CSVUtil.appendResult(new String[]{count + "", degree + ""}, filePath);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        sortedMap.forEach((degree, count) -> CSVUtil.appendResult(new String[]{count + "", degree + ""}, filePath));
         System.out.println("\nFile Created Successfully: " + filePath);
     }
 
-    public static void exportGraphMLFile(Graph graph, String path) throws IOException {
-        FileSinkGraphML fileSinkGraphML = new FileSinkGraphML();
-        String decodedPath = URLDecoder.decode(path, "UTF-8");
-        fileSinkGraphML.writeAll(graph, decodedPath + "/" + graph.getId() + ".txt");
-        System.out.println("\nFile Created Successfully: " + decodedPath + "/" +  graph.getId() + ".txt");
+    public static void exportGraphMLFile(Graph graph, String path){
+        try {
+            FileSinkGraphML fileSinkGraphML = new FileSinkGraphML();
+            String decodedPath = URLDecoder.decode(path, "UTF-8");
+            fileSinkGraphML.writeAll(graph, decodedPath);
+            System.out.println("\nFile Created Successfully: " + decodedPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

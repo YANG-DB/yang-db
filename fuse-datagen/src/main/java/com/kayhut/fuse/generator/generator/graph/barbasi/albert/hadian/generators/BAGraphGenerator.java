@@ -163,7 +163,7 @@ public class BAGraphGenerator {
      * @param node1
      * @param node2
      */
-    public static void writeToGraph(long node1, long node2) {
+    public static void addEdge(long node1, long node2) {
         if (BAGraphGenerator.graphFileWriter != null) {
             try {
 //                if (!nodesSet.contains(node1)) {
@@ -175,7 +175,7 @@ public class BAGraphGenerator {
 //                FillNodesSet(node1);
 //                FillNodesSet(node2);
                 edgesSet.add(new Tuple2<>(node1,node2));
-                //graphFileWriter.write(node1 + "\t" + node2 + "\n");
+                graphFileWriter.write(node1 + "," + node2 + "\n");
             } catch (Exception e) {
                 e.printStackTrace();
                 System.exit(1);
@@ -249,7 +249,6 @@ public class BAGraphGenerator {
 
     public static ArrayList<Tuple2> generateMassiveBAgraph(int numOfNodes, int edgesPerNode, SamplingMode samplingMode, String filePath){
         try {
-
             BAGraphGenerator generator = new BAGraphGenerator(numOfNodes);
             BAGraphGenerator.m = edgesPerNode;
             BAGraphGenerator.samplingMode = samplingMode;

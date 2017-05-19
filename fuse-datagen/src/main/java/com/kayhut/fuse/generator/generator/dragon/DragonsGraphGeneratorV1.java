@@ -29,12 +29,12 @@ public class DragonsGraphGeneratorV1 extends DragonsGraphGeneratorBase{
         gen.addSink(graph);
 
         NodesEdges firstNodesEdges = gen.init();
-        buildNodesEdges(firstNodesEdges);
+        writeNodesEdgesData(firstNodesEdges);
 
         int size = getModel().getNumOfNodes();
         while (size-- > 0) {
             NodesEdges nodesEdges = gen.evolve();
-            buildNodesEdges(nodesEdges);
+            writeNodesEdgesData(nodesEdges);
         }
         gen.end();
 
@@ -43,7 +43,7 @@ public class DragonsGraphGeneratorV1 extends DragonsGraphGeneratorBase{
     //endregion
 
     //region Private Methods
-    private void buildNodesEdges(NodesEdges nodesEdges){
+    private void writeNodesEdgesData(NodesEdges nodesEdges) {
         nodesEdges.getNodes().forEach(node -> {
             Dragon dragon = buildDragonNode(node.getNodeId());
             CSVUtil.appendResult(dragon.getRecord(), getDragonConfiguration().getDragonsResultsFilePath());

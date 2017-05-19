@@ -1,9 +1,9 @@
 package com.kayhut.fuse.generator.util;
 
+import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +16,7 @@ public class CSVUtil {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static void writeCSV(String filePath,  List<String[]> records,
+    public static void writeCSV(String filePath, List<String[]> records,
                                 char separator, char quoteChar) throws IOException {
         FileWriter fileWriter = new FileWriter(filePath, true);
         //using custom delimiter and quote character
@@ -25,9 +25,34 @@ public class CSVUtil {
         }
     }
 
-    public static void appendResult(String[] record, String filePath) throws IOException {
+    public static void appendResult(String[] record, String filePath) {
         ArrayList<String[]> records = new ArrayList<>();
         records.add(record);
-        CSVUtil.writeCSV(filePath, records, ',' ,'\"');
+        try {
+            CSVUtil.writeCSV(filePath, records, ',', '\"');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String[]> readCSV(String filePath, char separator) {
+        List<String[]> fileContents = new ArrayList<>();
+        try {
+            File file = new File(filePath);
+            if (file.exists()) {
+                CSVReader csvReader = new CSVReader(new FileReader(file), separator);
+                String[] line;
+                while ((line = csvReader.readNext()) != null) {
+                    if (line.length > 0) {
+                        fileContents.add(line);
+                    }
+                }
+            } else {
+                throw new FileNotFoundException(String.format("The specified file %sdoes not exist in %s", file.getName(), file.getAbsolutePath()));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileContents;
     }
 }

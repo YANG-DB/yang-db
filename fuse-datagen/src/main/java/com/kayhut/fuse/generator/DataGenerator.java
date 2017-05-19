@@ -1,8 +1,9 @@
 package com.kayhut.fuse.generator;
+
 import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.generator.generator.dragon.DragonConfiguration;
 import com.kayhut.fuse.generator.generator.dragon.DragonsGraphGeneratorV1;
-import com.kayhut.fuse.generator.generator.dragon.DragonsGraphGeneratorV3;
+import com.kayhut.fuse.generator.generator.dragon.DragonsMaGraphGeneratorV2;
 import com.kayhut.fuse.generator.generator.graph.barbasi.albert.graphstream.GraphstreamHelper;
 import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -23,12 +24,12 @@ public class DataGenerator {
         validateNumberOfArguments(args, logger);
         Configuration configuration = new DataGenConfiguration(args[0]).getInstance();
         //GenerateSmallDragonsGraph(logger, configuration, false);
-        generateMassiveDragonsGraph(logger, configuration);
+        //generateMassiveDragonsGraph(logger, configuration);
     }
 
-    private static void generateSmallDragonsGraph(Logger logger,
-                                                  Configuration configuration,
-                                                  boolean drawGraph)  {
+    public static void generateSmallDragonsGraph(Logger logger,
+                                                 Configuration configuration,
+                                                 boolean drawGraph) {
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
             DragonsGraphGeneratorV1 dragonsGraphGeneratorV1 = new DragonsGraphGeneratorV1(new DragonConfiguration(configuration));
@@ -47,15 +48,17 @@ public class DataGenerator {
         }
     }
 
-    private static void generateMassiveDragonsGraph(Logger logger, Configuration configuration) {
-
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        DragonsGraphGeneratorV3 massiveDragonsGraphGenerator = new DragonsGraphGeneratorV3(new DragonConfiguration(configuration));
-        massiveDragonsGraphGenerator.generateDragonsGraph();
-        stopwatch.stop();
-        long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
-        logger.info("Dragons graph V3 generation took (seconds): %d", elapsed);
-
+    public static void generateMassiveDragonsGraph(Logger logger, Configuration configuration) {
+        try {
+            Stopwatch stopwatch = Stopwatch.createStarted();
+            DragonsMaGraphGeneratorV2 massiveDragonsGraphGenerator = new DragonsMaGraphGeneratorV2(new DragonConfiguration(configuration));
+            massiveDragonsGraphGenerator.generateDragonsGraph();
+            stopwatch.stop();
+            long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
+            logger.info("Dragons graph V3 generation took (seconds): %d", elapsed);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 
 
@@ -67,6 +70,7 @@ public class DataGenerator {
             System.exit(-1);
         }
     }
+
     private static String GetExecutionPath() {
         String absolutePath = DataGenerator.class.getProtectionDomain()
                 .getCodeSource().getLocation().getPath();

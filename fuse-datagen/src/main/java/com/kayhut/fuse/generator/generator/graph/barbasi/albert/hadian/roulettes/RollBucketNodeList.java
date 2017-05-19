@@ -35,7 +35,7 @@ public class RollBucketNodeList implements NodesList {
 		//System.out.print("+Node: \t");
 		for(int i = 0; i< BAGraphGenerator.m; i++){
 			groups.get(1).add(i);
-			BAGraphGenerator.writeToGraph(i, BAGraphGenerator.m);
+			BAGraphGenerator.addEdge(i, BAGraphGenerator.m);
 		}
 		groups.get(m).add(m);
 	}
@@ -88,7 +88,7 @@ public class RollBucketNodeList implements NodesList {
 		
 		groups.get(m).add(numNodes);		
 		for(int nodeID : allSelectedNodes)
-			BAGraphGenerator.writeToGraph(nodeID, numNodes);
+			BAGraphGenerator.addEdge(nodeID, numNodes);
 			//System.out.printf("(%d,%d) \t", nodeID, numNodes);
 		//System.out.println();
 		BAGraphGenerator.maintenanceTime += System.nanoTime() - t;

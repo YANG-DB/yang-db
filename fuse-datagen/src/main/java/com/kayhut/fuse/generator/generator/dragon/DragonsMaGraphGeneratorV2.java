@@ -14,10 +14,10 @@ import java.util.ArrayList;
 /**
  * Created by benishue on 18-May-17.
  */
-public class DragonsGraphGeneratorV3 extends DragonsGraphGeneratorBase {
+public class DragonsMaGraphGeneratorV2 extends DragonsGraphGeneratorBase {
 
     //region Ctrs
-    public DragonsGraphGeneratorV3(DragonConfiguration dragonConfiguration) {
+    public DragonsMaGraphGeneratorV2(DragonConfiguration dragonConfiguration) {
         super(dragonConfiguration, "Dragons-Interactions-GraphV3");
     }
     //endregion
@@ -28,7 +28,7 @@ public class DragonsGraphGeneratorV3 extends DragonsGraphGeneratorBase {
                 getModel().getNumOfNodes(),
                 getModel().getEdgesPerNode(),
                 BAGraphGenerator.SamplingMode.ROLL_TREE,
-                "sheker.csv");
+                getDragonConfiguration().getDragonsRelationsFilePath());
 
         for (int i = 0; i < getModel().getNumOfNodes(); i++) {
             Dragon dragon = buildDragonNode(i + "");

@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by benishue on 15-May-17.
  */
-public class DataGeneratorTest {
+public class DragonsGraphDataGeneratorTest {
 
     static String CONFIGURATION_SMALL_FILE_PATH = "test.generator.properties";
     static String CONFIGURATION_MASSIVE_FILE_PATH = "test.generator.massive.properties";

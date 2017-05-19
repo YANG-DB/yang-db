@@ -25,7 +25,7 @@ public class SANodeList implements NodesList {
 		//System.out.print("+Node: \t");
 		for(int i=0; i<m; i++){
 			degrees[i] = 1;
-			BAGraphGenerator.writeToGraph(i, m);
+			BAGraphGenerator.addEdge(i, m);
 			//System.out.printf("(%d,%d)\t", i, m);
 		}
 		//		System.out.println();
@@ -56,7 +56,7 @@ public class SANodeList implements NodesList {
 		
 		degrees[numNodes] += m;	//degree of the current node
 		for(int nodeID : candidateNodes){
-			BAGraphGenerator.writeToGraph(nodeID, numNodes);
+			BAGraphGenerator.addEdge(nodeID, numNodes);
 			//System.out.printf("(%d,%d) \t", nodeID, numNodes);
 			degrees[nodeID]++;
 			maxDeg = Math.max(degrees[nodeID],maxDeg); 

@@ -201,7 +201,7 @@ public class RollTreeNodeList implements NodesList {
 		//insert the new node in the wheel (other nodes are inserted to the wheel inside 'removeNodeAndUpdateGraph'
 		addNode(numNodes,m);		
 		for(int nodeID : allSelectedNodes)
-			BAGraphGenerator.writeToGraph(nodeID, numNodes);
+			BAGraphGenerator.addEdge(nodeID, numNodes);
 		BAGraphGenerator.maintenanceTime += System.nanoTime() - t;
 
 	}
@@ -210,7 +210,7 @@ public class RollTreeNodeList implements NodesList {
 	public void createInitNodes(int m) {
 		for(int i=0; i<m; i++){
 			addNode(i, 1);
-			BAGraphGenerator.writeToGraph( i, BAGraphGenerator.m);
+			BAGraphGenerator.addEdge( i, BAGraphGenerator.m);
 		}
 		addNode(m, m);
 	}

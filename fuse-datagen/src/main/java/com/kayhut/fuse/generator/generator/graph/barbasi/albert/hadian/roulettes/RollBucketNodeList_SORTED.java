@@ -41,7 +41,7 @@ public class RollBucketNodeList_SORTED implements NodesList {
 		// System.out.print("+Node: \t");
 		for(int i = 0; i< BAGraphGenerator.m; i++){
 			groups.get(1).add(i);
-			BAGraphGenerator.writeToGraph(i, BAGraphGenerator.m);
+			BAGraphGenerator.addEdge(i, BAGraphGenerator.m);
 		}
 		groups.get(m).add(m);
 		sortedMinusWeightsMap.put(-1l * m, m);
@@ -95,7 +95,7 @@ public class RollBucketNodeList_SORTED implements NodesList {
 		updateSortedMinusWeightsMap(groups.get(m).size() * m, m, m);
 		groups.get(m).add(numNodes);		
 		for(int nodeID : allSelectedNodes){
-			BAGraphGenerator.writeToGraph(nodeID, numNodes);
+			BAGraphGenerator.addEdge(nodeID, numNodes);
 		}
 		BAGraphGenerator.maintenanceTime += System.nanoTime() - t;
 	}

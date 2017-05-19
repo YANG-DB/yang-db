@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.generator;
+package com.kayhut.fuse.generator;
 
 import com.kayhut.fuse.generator.generator.dragon.DragonConfiguration;
 import com.kayhut.fuse.generator.generator.dragon.DragonGenerator;
