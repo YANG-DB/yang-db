@@ -42,8 +42,13 @@ import java.util.*;
  */
 public class EsUtil {
 
-    public static final String AGG_EXTENDED_STATS = "extended_stats";
-    public static final String AGG_CARDINALITY = "cardinality";
+    private static final String AGG_EXTENDED_STATS = "extended_stats";
+    private static final String AGG_CARDINALITY = "cardinality";
+
+
+    private EsUtil() {
+        throw new IllegalAccessError("Utility class");
+    }
 
     public static List<StringStatResult> getNumericHistogramResults(TransportClient client,
                                                                     String indexName,
@@ -53,9 +58,8 @@ public class EsUtil {
                                                                     long numOfBins){
 
         List<Bucket> buckets =  StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
-        List<StringStatResult> bucketStatResults = getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
 
-        return bucketStatResults;
+        return getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
     }
 
     public static List<StringStatResult> getManualHistogramResults(TransportClient client,
@@ -71,7 +75,7 @@ public class EsUtil {
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
                 .setTypes(typeName);
 
-        if (dataType.equals("string")) {
+        if ("string".equals(dataType)) {
             FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
             buckets.forEach(bucket -> {
                 String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
@@ -102,7 +106,7 @@ public class EsUtil {
             }
         }
 
-        if (dataType.equals("numeric")) {
+        if ("numeric".equals(dataType)) {
             bucketStatResults = getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
         }
         return bucketStatResults;
@@ -202,17 +206,23 @@ public class EsUtil {
                 new BulkProcessor.Listener() {
                     @Override
                     public void beforeBulk(long executionId,
-                                           BulkRequest request) {  }
+                                           BulkRequest request) {
+                        // Do nothing
+                    }
 
                     @Override
                     public void afterBulk(long executionId,
                                           BulkRequest request,
-                                          BulkResponse response) {  }
+                                          BulkResponse response) {
+                        // Do nothing
+                    }
 
                     @Override
                     public void afterBulk(long executionId,
                                           BulkRequest request,
-                                          Throwable failure) {  }
+                                          Throwable failure) {
+                        // Do nothing
+                    }
                 })
                 .setBulkActions(100)
                 .setBulkSize(new ByteSizeValue(1, ByteSizeUnit.MB))
@@ -229,7 +239,7 @@ public class EsUtil {
             int i = 1;
             while (it.hasNext()) {
                 String line = it.nextLine();
-                bulkProcessor.add((IndexRequest) new IndexRequest(index, type, String.valueOf(i))
+                bulkProcessor.add(new IndexRequest(index, type, String.valueOf(i))
                         .source(line));
                 i++;
             }
@@ -242,19 +252,14 @@ public class EsUtil {
 
     }
 
-    public static void showTypeFieldsNames(TransportClient esClient, String indexName, String typeName) {
+    public static void showTypeFieldsNames(TransportClient esClient, String indexName, String typeName) throws IOException {
 
-        List<String> fieldList = new ArrayList<String>();
         ClusterState cs = esClient.admin().cluster().prepareState().setIndices(indexName).execute().actionGet().getState();
         IndexMetaData imd = cs.getMetaData().index(indexName);
         MappingMetaData mdd = imd.mapping(typeName);
         Map<String, Object> map = null;
-        try {
-            map = mdd.getSourceAsMap();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        fieldList = getList("", map);
+        map = mdd.getSourceAsMap();
+        List<String> fieldList = getList("", map);
         System.out.println("Field List:");
         for (String field : fieldList) {
             System.out.println(field);
@@ -262,7 +267,7 @@ public class EsUtil {
     }
 
     private static List<String> getList(String fieldName, Map<String, Object> mapProperties) {
-        List<String> fieldList = new ArrayList<String>();
+        List<String> fieldList = new ArrayList<>();
         Map<String, Object> map = (Map<String, Object>) mapProperties.get("properties");
         Set<String> keys = map.keySet();
         for (String key : keys) {
@@ -293,10 +298,7 @@ public class EsUtil {
         ClusterStateResponse resp =
                 client.admin().cluster().prepareState().execute().actionGet();
         ImmutableOpenMap<String, MappingMetaData> mappings = resp.getState().metaData().index(index).getMappings();
-        if (mappings.containsKey(type)) {
-            return true;
-        }
-        return false;
+        return mappings.containsKey(type);
     }
 
     public static boolean checkIfEsDocExists(Client client,String index, String type, String docId) {
