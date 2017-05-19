@@ -10,8 +10,6 @@ import java.util.Date;
 public class Fires extends RelationBase {
 
     //region Ctrs
-    public Fires() {
-    }
 
     public Fires(String id, String source, String target, Date date) {
         super(id, source, target, RelationType.FIRES);
@@ -32,7 +30,7 @@ public class Fires extends RelationBase {
     //region Public Methods
     @Override
     public String[] getRecord(){
-        return new String[] { this.getId(), this.getSource(), this.getTarget(), this.getDate().getTime() + "" };
+        return new String[] { this.getId(), this.getSource(), this.getTarget(), Long.toString(this.getDate().getTime()) };
     }
     //endregion
 

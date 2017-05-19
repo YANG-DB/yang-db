@@ -10,10 +10,6 @@ import java.util.Date;
 public class Freezes extends RelationBase {
 
     //region Ctrs
-    public Freezes() {
-
-    }
-
     public Freezes(String id, String source, String target, Date since, Date till) {
         super(id, source, target, RelationType.FREEZES);
         this.since = since;
@@ -43,7 +39,7 @@ public class Freezes extends RelationBase {
     //region Public Methods
     @Override
     public String[] getRecord(){
-        return new String[] { this.getId(), this.getSource(), this.getTarget(), this.getSince().getTime() + "" , this.getTill().getTime() + "" };
+        return new String[] { this.getId(), this.getSource(), this.getTarget(), Long.toString(this.getSince().getTime()), Long.toString(this.getTill().getTime()) };
     }
     //endregion
 

@@ -6,8 +6,6 @@ package com.kayhut.fuse.generator.generator.graph;
 public class ScaleFreeModel extends BaseModel {
 
     //region Ctrs
-    public ScaleFreeModel() {
-    }
 
     public ScaleFreeModel(String modelName, int edgesPerNode, boolean exactlyEdgesPerNode, int numOfNodes) {
         super(modelName, numOfNodes);

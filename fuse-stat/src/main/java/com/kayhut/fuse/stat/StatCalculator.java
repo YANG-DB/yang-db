@@ -29,7 +29,8 @@ public class StatCalculator {
 
         Logger logger = org.slf4j.LoggerFactory.getLogger(StatCalculator.class);
 
-        validateNumberOfArguments(args, logger);
+        if (!isValidNumberOfArguments(args, logger))
+            System.exit(1);
 
         TransportClient dataClient = null;
         TransportClient statClient = null;
@@ -67,8 +68,10 @@ public class StatCalculator {
         } catch (Exception e) {
             logger.error(e.getMessage());
         } finally {
-            dataClient.close();
-            statClient.close();
+            if (dataClient!=null)
+                dataClient.close();
+            if (statClient!=null)
+                statClient.close();
         }
     }
 
@@ -193,12 +196,13 @@ public class StatCalculator {
         ).populate();
     }
 
-    private static void validateNumberOfArguments(String[] args, Logger logger) {
+    private static boolean isValidNumberOfArguments(String[] args, Logger logger) {
         if (args.length != NUM_OF_ARGUMENTS) {
-            logger.error("Expected " + NUM_OF_ARGUMENTS + " argument(s): ");
+            logger.error("Expected %d argument(s): ", NUM_OF_ARGUMENTS);
             logger.error("\n\t<path to field configuration file>");
-            System.exit(1);
+            return false;
         }
+        return true;
     }
     //endregion
 

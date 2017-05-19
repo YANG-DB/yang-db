@@ -21,7 +21,8 @@ public class DataGenerator {
 
     public static void main(String[] args) {
         Logger logger = org.slf4j.LoggerFactory.getLogger(DataGenerator.class);
-        validateNumberOfArguments(args, logger);
+        if (!isValidNumberOfArguments(args, logger));
+            System.exit(-1);
         Configuration configuration = new DataGenConfiguration(args[0]).getInstance();
         //GenerateSmallDragonsGraph(logger, configuration, false);
         //generateMassiveDragonsGraph(logger, configuration);
@@ -63,12 +64,13 @@ public class DataGenerator {
 
 
     //region Private Methods
-    private static void validateNumberOfArguments(String[] args, Logger logger) {
+    private static boolean isValidNumberOfArguments(String[] args, Logger logger) {
         if (args.length < MIN_NUM_OF_ARGUMENTS) {
             logger.error("Expected %d argument(s): ", MIN_NUM_OF_ARGUMENTS);
             logger.error("\n\t<path to field configuration file>");
-            System.exit(-1);
+            return false;
         }
+        return true;
     }
 
     private static String GetExecutionPath() {

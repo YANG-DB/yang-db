@@ -6,7 +6,8 @@ package com.kayhut.fuse.generator.model.entity;
 public class Dragon extends EntityBase {
 
     //region Ctrs
-    public Dragon() {
+    private Dragon() {
+        //Used by the Builder
     }
 
     public Dragon(String id, String name) {
@@ -44,7 +45,7 @@ public class Dragon extends EntityBase {
     }
 
     public String[] getRecord(){
-        return new String[] { this.getId(), this.name, this.getPower() + ""};
+        return new String[] { this.getId(), this.name, Integer.toString(this.getPower())};
     }
     //endregion
 
@@ -90,6 +91,5 @@ public class Dragon extends EntityBase {
         }
     }
     //endregion
-
 
 }

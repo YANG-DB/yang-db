@@ -7,6 +7,11 @@ import java.util.Date;
  */
 public class DateUtil {
 
+    private DateUtil() {
+        throw new IllegalAccessError("Utility class");
+    }
+
+
     public static Date addMinutesToDate(Date beforeTime, int minutes){
         final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
         long curTimeInMs = beforeTime.getTime();

@@ -11,6 +11,10 @@ public class PropertiesGenerator {
 
     static final Random rand = new Random();
 
+    private PropertiesGenerator() {
+        throw new IllegalAccessError("Utility class");
+    }
+
     // 50% Chance for each gender
     public static Gender generateGender() {
         return (rand.nextBoolean() ? Gender.MALE : Gender.FEMALE);
