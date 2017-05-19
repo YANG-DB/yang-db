@@ -24,7 +24,7 @@ public abstract class EntityBase {
     }
     //endregion
 
-    //region Public Methods
+    //region Abstract Methods
     public abstract String[] getRecord();
     //endregion
 
