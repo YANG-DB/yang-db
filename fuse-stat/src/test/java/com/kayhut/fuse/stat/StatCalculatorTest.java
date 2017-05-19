@@ -1,7 +1,7 @@
 package com.kayhut.fuse.stat;
 
-import com.kayhut.fuse.stat.Util.EsUtil;
-import com.kayhut.fuse.stat.Util.StatUtil;
+import com.kayhut.fuse.stat.util.EsUtil;
+import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.Util;
+package com.kayhut.fuse.stat.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.model.configuration.*;

@@ -1,7 +1,7 @@
 package com.kayhut.fuse.stat.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.stat.Util.StatUtil;
+import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.configuration.histogram.HistogramComposite;
 import com.kayhut.fuse.stat.model.configuration.histogram.HistogramManual;

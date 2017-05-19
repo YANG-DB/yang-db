@@ -19,7 +19,6 @@ public class CSVUtil {
     public static void writeCSV(String filePath, List<String[]> records,
                                 final char separator, final char quoteChar) throws IOException {
         FileWriter fileWriter = new FileWriter(filePath, true);
-        //using custom delimiter and quote character
         try (CSVWriter csvWriter = new CSVWriter(fileWriter, separator, quoteChar)) {
             csvWriter.writeAll(records);
         }
