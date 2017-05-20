@@ -1,7 +1,7 @@
 package com.kayhut.fuse.generator;
 
 import com.kayhut.fuse.generator.configuration.DragonConfiguration;
-import com.kayhut.fuse.generator.generator.entity.DragonGenerator;
+import com.kayhut.fuse.generator.generator.entity.DragonGeneratorBase;
 import com.kayhut.fuse.generator.model.entity.Dragon;
 import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -21,7 +21,7 @@ public class DragonGeneratorTest {
 
     @Test
     public void generateDragon() throws Exception {
-        DragonGenerator dragonGenerator = new DragonGenerator(new DragonConfiguration(configuration));
+        DragonGeneratorBase dragonGenerator = new DragonGeneratorBase(new DragonConfiguration(configuration));
 
         for (int i= 0 ; i <100 ; i++) {
             Dragon dragonA = dragonGenerator.generate();
@@ -33,7 +33,6 @@ public class DragonGeneratorTest {
     }
     @BeforeClass
     public static void setup() throws Exception {
-
         configuration = new DataGenConfiguration(CONFIGURATION_FILE_PATH).getInstance();
     }
 }

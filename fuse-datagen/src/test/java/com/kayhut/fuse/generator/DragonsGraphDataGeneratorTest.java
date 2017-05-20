@@ -39,7 +39,7 @@ public class DragonsGraphDataGeneratorTest {
         assertTrue(isFileExists(dragonsFilePath));
         List<String[]> dragonsLines = CSVUtil.readCSV(dragonsFilePath, ',');
         assertTrue(dragonsLines.size() > dragonConfiguration.getNumberOfNodes() - 1);
-        assertTrue(dragonsLines.get(0)[0].equals("0")); //[0] = dragon Id
+        assertTrue(dragonsLines.get(0)[0].equals("0")); //[0] = graph Id
         assertTrue(dragonsLines.get(1)[0].equals("1")); // No weird 'Jumps'
     }
 
@@ -53,7 +53,7 @@ public class DragonsGraphDataGeneratorTest {
         assertTrue(isFileExists(dragonsFilePath));
         List<String[]> dragonsLines = CSVUtil.readCSV(dragonsFilePath, ',');
         assertTrue(dragonsLines.size() > dragonConfiguration.getNumberOfNodes() - 1);
-        assertTrue(dragonsLines.get(0)[0].equals("0")); //[0] = dragon Id
+        assertTrue(dragonsLines.get(0)[0].equals("0")); //[0] = graph Id
         assertTrue(dragonsLines.get(1)[0].equals("1")); // No weird 'Jumps'
     }
 
@@ -67,10 +67,10 @@ public class DragonsGraphDataGeneratorTest {
     private static void loadConfigurations(String configurationFilePath) {
         configuration = new DataGenConfiguration(configurationFilePath).getInstance();
         dragonConfiguration = new DragonConfiguration(configuration);
-        dragonsFilePath = dragonConfiguration.getDragonsResultsFilePath();
+        dragonsFilePath = dragonConfiguration.getEntitiesFilePath();
         dragonsFireRelationFilePath = configuration.getString("resultsPath") + "//" + configuration.getString("dragon.dragonsResultsCsvFileName");
-        dragonsFireRelationFilePath = dragonConfiguration.getDragonsRelationsFilePath().replace(".csv","") + "_" + RelationType.FIRES + ".csv";
-        dragonsFreezRelationFilePath = dragonConfiguration.getDragonsRelationsFilePath().replace(".csv","") + "_" + RelationType.FREEZES + ".csv";
+        dragonsFireRelationFilePath = dragonConfiguration.getRelationsFilePath().replace(".csv","") + "_" + RelationType.FIRES + ".csv";
+        dragonsFreezRelationFilePath = dragonConfiguration.getRelationsFilePath().replace(".csv","") + "_" + RelationType.FREEZES + ".csv";
     }
 
     private static boolean isFileExists(String filePath){

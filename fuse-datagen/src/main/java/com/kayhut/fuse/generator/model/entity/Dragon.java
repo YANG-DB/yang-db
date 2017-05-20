@@ -38,7 +38,7 @@ public class Dragon extends EntityBase {
     //region Public Methods
     @Override
     public String toString() {
-        return "dragon{" +
+        return "graph{" +
                 "name='" + name + '\'' +
                 ", power=" + power +
                 '}';

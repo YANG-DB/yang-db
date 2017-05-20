@@ -2,9 +2,8 @@ package com.kayhut.fuse.generator;
 
 import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.generator.configuration.DragonConfiguration;
-import com.kayhut.fuse.generator.generator.dragon.DragonsGraphGeneratorV1;
-import com.kayhut.fuse.generator.generator.dragon.DragonsMaGraphGeneratorV2;
-import com.kayhut.fuse.generator.generator.graph.barbasi.albert.graphstream.GraphstreamHelper;
+import com.kayhut.fuse.generator.generator.graph.DragonsGraphGenerator;
+import com.kayhut.fuse.generator.generator.model.barbasi.albert.graphstream.GraphstreamHelper;
 import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.graphstream.graph.Graph;
@@ -33,11 +32,11 @@ public class DataGenerator {
                                                  boolean drawGraph) {
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            DragonsGraphGeneratorV1 dragonsGraphGeneratorV1 = new DragonsGraphGeneratorV1(new DragonConfiguration(configuration));
-            Graph dragonsInteractionGraph = dragonsGraphGeneratorV1.generateDragonsGraph();
+            DragonsGraphGenerator dragonsGraphGenerator = new DragonsGraphGenerator(new DragonConfiguration(configuration));
+            Graph dragonsInteractionGraph = dragonsGraphGenerator.generateGraph();
             stopwatch.stop();
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
-            logger.info("Dragons graph V1 generation took (seconds): %d", elapsed);
+            logger.info("Dragons model V1 generation took (seconds): %d", elapsed);
 
             GraphstreamHelper.printScaleFreeDataSummary(dragonsInteractionGraph, configuration.getString("resultsPath"));
             if (drawGraph) {
@@ -52,11 +51,11 @@ public class DataGenerator {
     public static void generateMassiveDragonsGraph(Logger logger, Configuration configuration) {
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            DragonsMaGraphGeneratorV2 massiveDragonsGraphGenerator = new DragonsMaGraphGeneratorV2(new DragonConfiguration(configuration));
-            massiveDragonsGraphGenerator.generateDragonsGraph();
+            DragonsGraphGenerator massiveDragonsGraphGenerator = new DragonsGraphGenerator(new DragonConfiguration(configuration));
+            massiveDragonsGraphGenerator.generateMassiveGraph();
             stopwatch.stop();
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
-            logger.info("Dragons graph V3 generation took (seconds): %d", elapsed);
+            logger.info("Dragons model V3 generation took (seconds): %d", elapsed);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }

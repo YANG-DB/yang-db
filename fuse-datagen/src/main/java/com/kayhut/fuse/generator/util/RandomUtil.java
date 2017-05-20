@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+
 /**
  * Created by benishue on 16-May-17.
  */
@@ -115,6 +116,74 @@ public class RandomUtil {
      */
     public static double uniform() {
         return rand.nextDouble();
+    }
+
+    /**
+     * Returns a random integer from a geometric distribution with success
+     * probability <em>p</em>.
+     *
+     * @param  p the parameter of the geometric distribution
+     * @return a random integer from a geometric distribution with success
+     *         probability {@code p}; or {@code Integer.MAX_VALUE} if
+     *         {@code p} is (nearly) equal to {@code 1.0}.
+     * @throws IllegalArgumentException unless {@code p >= 0.0} and {@code p <= 1.0}
+     */
+    public static int geometric(double p) {
+        if (!(p >= 0.0 && p <= 1.0)) {
+            throw new IllegalArgumentException("probability p must be between 0.0 and 1.0");
+        }
+        // using algorithm given by Knuth
+        return (int) Math.ceil(Math.log(uniform()) / Math.log(1.0 - p));
+    }
+
+    /**
+     * Returns a random boolean from a Bernoulli distribution with success
+     * probability <em>p</em>.
+     *
+     * @param  p the probability of returning {@code true}
+     * @return {@code true} with probability {@code p} and
+     *         {@code false} with probability {@code p}
+     * @throws IllegalArgumentException unless {@code 0} &le; {@code p} &le; {@code 1.0}
+     */
+    public static boolean bernoulli(double p) {
+        if (!(p >= 0.0 && p <= 1.0))
+            throw new IllegalArgumentException("probability p must be between 0.0 and 1.0");
+        return uniform() < p;
+    }
+
+    /**
+     * Returns a random boolean from a Bernoulli distribution with success
+     * probability 1/2.
+     *
+     * @return {@code true} with probability 1/2 and
+     *         {@code false} with probability 1/2
+     */
+    public static boolean bernoulli() {
+        return bernoulli(0.5);
+    }
+
+    /**
+     * Returns a random integer from a Poisson distribution with mean &lambda;.
+     *
+     * @param  lambda the mean of the Poisson distribution
+     * @return a random integer from a Poisson distribution with mean {@code lambda}
+     * @throws IllegalArgumentException unless {@code lambda > 0.0} and not infinite
+     */
+    public static int poisson(double lambda) {
+        if (!(lambda > 0.0))
+            throw new IllegalArgumentException("lambda must be positive");
+        if (Double.isInfinite(lambda))
+            throw new IllegalArgumentException("lambda must not be infinite");
+        // using algorithm given by Knuth
+        // see http://en.wikipedia.org/wiki/Poisson_distribution
+        int k = 0;
+        double p = 1.0;
+        double expLambda = Math.exp(-lambda);
+        do {
+            k++;
+            p *= uniform();
+        } while (p >= expLambda);
+        return k-1;
     }
 
 }

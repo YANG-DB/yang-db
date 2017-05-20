@@ -8,16 +8,23 @@ import java.util.Date;
 /**
  * Created by benishue on 18-May-17.
  */
-public class DragonConfiguration {
+public class DragonConfiguration extends EntityConfigurationBase {
 
     //region Ctrs
-    public DragonConfiguration(Configuration configuration) {
-        this.numberOfNodes = configuration.getInt("dragon.numberOfNodes");
-        this.edgesPerNode = configuration.getInt("dragon.edgesPerNode");
-        this.dragonsResultsFilePath = configuration.getString("resultsPath") + "//" + configuration.getString("dragon.dragonsResultsCsvFileName");
-        this.dragonsRelationsFilePath = configuration.getString("resultsPath") + "//" + configuration.getString("dragon.dragonsRelationsCsvFileName");
-        this.startDateOfStory = new Date(configuration.getLong("dragon.startDateOfStory")); //01/01/1900 00:00:00 GMT epoch time in milliseconds
-        this.endDateOfStory = new Date(configuration.getLong("dragon.endDateOfStory")); //01/01/2000 00:00:00 GMT epoch time in milliseconds
+    public DragonConfiguration(final Configuration configuration) {
+        super(
+                configuration.getInt("dragon.numberOfNodes"),
+                configuration.getInt("dragon.edgesPerNode"),
+                configuration.getString("resultsPath") + "//"
+                        + configuration.getString("dragon.dragonsResultsCsvFileName"),
+                configuration.getString("resultsPath") + "//"
+                        + configuration.getString("dragon.dragonsRelationsCsvFileName")
+        );
+
+        //01/01/1900 00:00:00 GMT epoch time in milliseconds
+        this.startDateOfStory = new Date(configuration.getLong("dragon.startDateOfStory"));
+        //01/01/2000 00:00:00 GMT epoch time in milliseconds
+        this.endDateOfStory = new Date(configuration.getLong("dragon.endDateOfStory"));
         this.fireProbability = configuration.getDouble("dragon.fireProbability");
         this.freezProbability = configuration.getDouble("dragon.freezProbability");
         this.minUniqueInteractions = configuration.getInt("dragon.minUniqueInteractions");
@@ -29,14 +36,6 @@ public class DragonConfiguration {
     //endregion
 
     //region Getters
-    public int getNumberOfNodes() {
-        return numberOfNodes;
-    }
-
-    public int getEdgesPerNode() {
-        return edgesPerNode;
-    }
-
     public Date getStartDateOfStory() {
         return startDateOfStory;
     }
@@ -72,19 +71,9 @@ public class DragonConfiguration {
     public int getFreezMaxDuraution() {
         return freezMaxDuraution;
     }
-
-    public String getDragonsResultsFilePath() {
-        return dragonsResultsFilePath;
-    }
-
-    public String getDragonsRelationsFilePath() {
-        return dragonsRelationsFilePath;
-    }
     //endregion
 
     //region Fields
-    private final int numberOfNodes;
-    private final int edgesPerNode;
     private final Date startDateOfStory;
     private final Date endDateOfStory;
     private final int minPower;
@@ -94,7 +83,5 @@ public class DragonConfiguration {
     private final double freezProbability;
     private final double fireProbability;
     private final int freezMaxDuraution;
-    private final String dragonsResultsFilePath;
-    private final String dragonsRelationsFilePath;
     //endregion
 }
