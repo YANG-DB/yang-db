@@ -130,7 +130,7 @@ public class StatCalculator {
                     String fieldName = field.getField();
                     HistogramString histogram = (HistogramString) field.getHistogram();
                     List<Bucket> stringBuckets = StatUtil.calculateAlphabeticBuckets(
-                            Integer.valueOf(histogram.getFirstCharCode()),
+                            Integer.parseInt(histogram.getFirstCharCode()),
                             histogram.getNumOfChars(),
                             histogram.getPrefixSize(),
                             histogram.getInterval());
@@ -159,7 +159,7 @@ public class StatCalculator {
                     if ("string".equals(dataType)) {
                         HistogramString subHistogram = (HistogramString) histogramComposite.getAutoBuckets();
                         List<Bucket> stringBuckets = StatUtil.calculateAlphabeticBuckets(
-                                Integer.valueOf(subHistogram.getFirstCharCode()),
+                                Integer.parseInt(subHistogram.getFirstCharCode()),
                                 subHistogram.getNumOfChars(),
                                 subHistogram.getPrefixSize(),
                                 subHistogram.getInterval());
