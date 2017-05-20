@@ -20,7 +20,7 @@ public class DataGenerator {
 
     public static void main(String[] args) {
         Logger logger = org.slf4j.LoggerFactory.getLogger(DataGenerator.class);
-        if (!isValidNumberOfArguments(args, logger));
+        if (!isValidNumberOfArguments(args, logger))
             System.exit(-1);
         Configuration configuration = new DataGenConfiguration(args[0]).getInstance();
         //GenerateSmallDragonsGraph(logger, configuration, false);
