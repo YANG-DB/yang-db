@@ -34,6 +34,14 @@ public class CSVUtil {
         }
     }
 
+    public static void appendResults(List<String[]> records, String filePath) {
+        try {
+            CSVUtil.writeCSV(filePath, records, ',', '\"');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static List<String[]> readCSV(String filePath, final char separator) {
         List<String[]> fileContents = new ArrayList<>();
         try {
