@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.query.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,8 +14,13 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QueryResult {
-    QueryResult() {}
+    //region Constructors
+    public QueryResult() {
+        this.assignments = Collections.emptyList();
+    }
+    //endregion
 
+    //region Properties
     public Query getPattern ()
     {
         return pattern;
@@ -34,41 +40,46 @@ public class QueryResult {
     {
         this.assignments = assignments;
     }
+    //endregion
 
+    //region Override Methods
     @Override
     public String toString()
     {
         return "QueryResult [pattern = "+pattern+", assignments = "+assignments+"]";
     }
+    //endregion
 
     //region Fields
     private Query pattern;
     private List<Assignment> assignments;
     //endregion
 
-    public static final class QueryResultBuilder {
-        private Query pattern;
-        private List<Assignment> assignments;
-
-        private QueryResultBuilder() {
+    public static final class Builder {
+        //region Constructors
+        private Builder() {
             assignments = new ArrayList<>();
         }
+        //endregion
 
-        public static QueryResultBuilder aQueryResult() {
-            return new QueryResultBuilder();
+        //region Static
+        public static Builder instance() {
+            return new Builder();
         }
+        //endregion
 
-        public QueryResultBuilder withPattern(Query pattern) {
+        //region Public Methods
+        public Builder withPattern(Query pattern) {
             this.pattern = pattern;
             return this;
         }
 
-        public QueryResultBuilder withAssignment(Assignment assignments) {
+        public Builder withAssignment(Assignment assignments) {
             this.assignments.add(assignments);
             return this;
         }
 
-        public QueryResultBuilder withAssignments(List<Assignment> assignments) {
+        public Builder withAssignments(List<Assignment> assignments) {
             this.assignments = assignments;
             return this;
         }
@@ -79,6 +90,12 @@ public class QueryResult {
             queryResult.setAssignments(assignments);
             return queryResult;
         }
+        //endregion
+
+        //region Fields
+        private Query pattern;
+        private List<Assignment> assignments;
+        //endregion
     }
 
 

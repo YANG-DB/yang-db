@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -85,7 +85,7 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
     private boolean areEntityAndRelationReversed(AsgQuery query, AsgEBase<EEntityBase> asgEntity, AsgEBase<Rel> asgRelation) {
         Set<Integer> entityAndRelationEnums = new HashSet<>(Arrays.asList(asgEntity.geteNum(), asgRelation.geteNum()));
 
-        List<AsgEBase<EBase>> elements = AsgQueryUtils.getElements(query, asgEBase -> entityAndRelationEnums.contains(asgEBase.geteNum()));
+        List<AsgEBase<EBase>> elements = AsgQueryUtil.getElements(query, asgEBase -> entityAndRelationEnums.contains(asgEBase.geteNum()));
 
         boolean isReversed = Rel.class.isAssignableFrom(elements.get(0).geteBase().getClass());
 

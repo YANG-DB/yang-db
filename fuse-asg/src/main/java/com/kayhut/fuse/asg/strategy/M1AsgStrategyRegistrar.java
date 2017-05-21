@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintArrayTransformationStrategy;
+import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintIterableTransformationStrategy;
 import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintTypeTransformationStrategy;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgEntityPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgHQuantifierPropertiesGroupingStrategy;
@@ -22,7 +22,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new AsgQuant1PropertiesGroupingStrategy(),
                 new AsgRelPropertiesGroupingStrategy(),
                 new AsgConstraintTypeTransformationStrategy(),
-                new AsgConstraintArrayTransformationStrategy()
+                new AsgConstraintIterableTransformationStrategy()
         );
     }
     //endregion

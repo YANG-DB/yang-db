@@ -1,10 +1,9 @@
 package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.kayhut.fuse.unipop.controller.context.EdgeConstraintContext;
-import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.TraversalQueryTranslator;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 
 import java.util.Optional;

@@ -9,6 +9,15 @@ import com.kayhut.fuse.model.query.EBase;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class BaseProp extends EBase{
+    public BaseProp() {
+
+    }
+
+    public BaseProp(int eNum, String pType, Constraint con) {
+        super(eNum);
+        this.pType = pType;
+        this.con = con;
+    }
 
     public String getpType() {
         return pType;

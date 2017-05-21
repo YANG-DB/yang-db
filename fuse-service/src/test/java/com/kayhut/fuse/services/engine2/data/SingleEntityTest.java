@@ -1,8 +1,5 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
@@ -12,15 +9,11 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.kayhut.fuse.model.transport.CreatePageRequest;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.test.framework.index.ElasticInMemoryIndex;
+import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.apache.commons.collections.map.HashedMap;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
@@ -46,16 +39,16 @@ public class SingleEntityTest {
 
         String idField = "id";
 
-        elasticInMemoryIndex = new ElasticInMemoryIndex();
+        elasticEmbeddedNode = new ElasticEmbeddedNode();
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "person",
                 "Person",
                 idField,
                 () -> createPeople(10)).populate();
 
         new ElasticDataPopulator(
-                elasticInMemoryIndex.getClient(),
+                elasticEmbeddedNode.getClient(),
                 "dragon",
                 "Dragon",
                 idField,
@@ -64,15 +57,17 @@ public class SingleEntityTest {
         Thread.sleep(2000);
     }
 
+    @AfterClass
+    public static void cleanup() throws Exception {
+        if (elasticEmbeddedNode != null) {
+            elasticEmbeddedNode.close();
+            Thread.sleep(2000);
+        }
+    }
+
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
-    }
-
-    @AfterClass
-    public static void cleanup() throws Exception {
-        elasticInMemoryIndex.close();
-        Thread.sleep(2000);
     }
 
     //region TestMethods
@@ -165,7 +160,7 @@ public class SingleEntityTest {
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
             if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
         }
 
@@ -209,7 +204,7 @@ public class SingleEntityTest {
             while (!pageResourceInfo.isAvailable()) {
                 pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
                 if (!pageResourceInfo.isAvailable()) {
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                 }
             }
 
@@ -251,7 +246,7 @@ public class SingleEntityTest {
         eTyped.seteTag("A");
         eTyped.seteNum(1);
 
-        return Query.QueryBuilder.aQuery()
+        return Query.Builder.instance()
                 .withName(queryName)
                 .withOnt(ontologyName)
                 .withElements(Arrays.asList(start, eTyped))
@@ -282,7 +277,7 @@ public class SingleEntityTest {
     //endregion
 
     //region Fields
-    private static ElasticInMemoryIndex elasticInMemoryIndex;
+    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static FuseClient fuseClient;
     //endregion
 }

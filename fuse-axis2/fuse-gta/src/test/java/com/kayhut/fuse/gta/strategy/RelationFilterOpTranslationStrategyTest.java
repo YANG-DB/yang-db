@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.strategy;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -58,8 +58,8 @@ public class RelationFilterOpTranslationStrategyTest {
     public void test_rel2_filter10() {
         AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
-                new RelationOp(AsgQueryUtils.<Rel>getElement(query, 2).get()),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(query, 10).get())
+                new RelationOp(AsgQueryUtil.<Rel>getElement(query, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(query, 10).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);
@@ -105,8 +105,8 @@ public class RelationFilterOpTranslationStrategyTest {
     public void test_reversed_rel2_filter10() {
         AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
-                new RelationOp(AsgQueryUtils.reverseRelation(AsgQueryUtils.<Rel>getElement(query, 2).get())),
-                new RelationFilterOp(AsgQueryUtils.<RelPropGroup>getElement(query, 10).get())
+                new RelationOp(AsgQueryUtil.reverseRelation(AsgQueryUtil.<Rel>getElement(query, 2).get())),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(query, 10).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);

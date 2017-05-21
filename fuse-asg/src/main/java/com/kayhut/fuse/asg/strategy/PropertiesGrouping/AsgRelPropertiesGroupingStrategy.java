@@ -2,12 +2,13 @@ package com.kayhut.fuse.asg.strategy.PropertiesGrouping;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.quant.HQuant;
 import javaslang.collection.Stream;
 
 import java.util.List;
@@ -20,7 +21,9 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     // AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        AsgQueryUtils.<Rel>getElements(query, Rel.class).forEach(relAsgEBase -> groupRelProps(query, relAsgEBase));
+        Stream.ofAll(AsgQueryUtil.<Rel>getElements(query, Rel.class))
+                .filter(asgEBase -> !AsgQueryUtil.getBDescendant(asgEBase, HQuant.class).isPresent())
+                .forEach(asgEBase -> groupRelProps(query, asgEBase));
     }
     //endregion
 
@@ -28,7 +31,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     private void groupRelProps(AsgQuery query, AsgEBase<Rel> asgEBase) {
         RelPropGroup rPropGroup;
 
-        List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtils.getBDescendants(
+        List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtil.getBDescendants(
                 asgEBase,
                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class) ||
@@ -41,7 +44,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
             relPropsAsgBChildren.forEach(asgEBase::removeBChild);
         } else {
             rPropGroup = new RelPropGroup();
-            rPropGroup.seteNum(Stream.ofAll(AsgQueryUtils.getEnums(query)).max().get() + 1);
+            rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get() + 1);
         }
         asgEBase.addBChild(new AsgEBase<>(rPropGroup));
     }

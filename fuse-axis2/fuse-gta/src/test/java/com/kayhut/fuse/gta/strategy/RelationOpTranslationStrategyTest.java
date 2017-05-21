@@ -1,7 +1,7 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -34,9 +34,9 @@ public class RelationOpTranslationStrategyTest {
     public void test_entity1_rel2_entity3() throws Exception {
         AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(query, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(query, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 3).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);
@@ -79,9 +79,9 @@ public class RelationOpTranslationStrategyTest {
     public void test_entity3_rel2_entity1() throws Exception {
         AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 3).get()),
-                new RelationOp(AsgQueryUtils.reverseRelation(AsgQueryUtils.<Rel>getElement(query, 2).get())),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 3).get()),
+                new RelationOp(AsgQueryUtil.reverseRelation(AsgQueryUtil.<Rel>getElement(query, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 1).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);

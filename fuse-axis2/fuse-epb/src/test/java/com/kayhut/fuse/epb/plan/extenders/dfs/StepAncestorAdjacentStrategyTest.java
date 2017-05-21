@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.extenders.StepAncestorAdjacentStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -215,7 +215,7 @@ public class StepAncestorAdjacentStrategyTest {
 
     //region Private Methods
     private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtils.<T>getElement(asgQuery, eNum).get();
+        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
     }
     //endregion
 }

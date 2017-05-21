@@ -17,10 +17,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.dispatcher.utils.PlanUtil.extractNewStep;
 import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
 import static com.kayhut.fuse.model.Utils.pattern;
 import static com.kayhut.fuse.model.execution.plan.Plan.contains;
-import static com.kayhut.fuse.model.execution.plan.PlanUtil.extractNewStep;
 
 /**
  * Created by moti on 01/04/2017.

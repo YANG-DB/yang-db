@@ -1,18 +1,11 @@
 package providers.test;
 
-import com.kayhut.test.framework.index.ElasticInMemoryIndex;
-import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import com.kayhut.test.framework.providers.FileJsonDataProvider;
 import javaslang.collection.Stream;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.search.SearchHits;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

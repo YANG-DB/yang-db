@@ -4,6 +4,7 @@ import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.elasticsearch.common.geo.ShapeRelation;
@@ -20,7 +21,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
 /**
  * Created by User on 27/03/2017.
  */
-public class HasContainersQueryTranslator {
+/*public class HasContainersQueryTranslator {
     //region Constructor
     public HasContainersQueryTranslator() {
         this.shouldCache = true;
@@ -259,3 +260,4 @@ public class HasContainersQueryTranslator {
     private boolean shouldCache;
     //endregion
 }
+*/

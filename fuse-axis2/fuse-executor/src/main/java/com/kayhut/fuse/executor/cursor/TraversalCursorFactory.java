@@ -3,12 +3,34 @@ package com.kayhut.fuse.executor.cursor;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
-import com.kayhut.fuse.executor.translation.TraversalCursorQueryResultsTranslator;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyUtil;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.results.Assignment;
+import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.Relationship;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
+import com.kayhut.fuse.unipop.promise.TraversalConstraint;
+import com.kayhut.fuse.unipop.structure.PromiseEdge;
+import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.T;
+
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 
 /**
  * Created by Roman on 05/04/2017.
@@ -35,14 +57,104 @@ public class TraversalCursorFactory implements CursorFactory {
         //region Cursor Implementation
         @Override
         public QueryResult getNextResults(int numResults) {
-            return TraversalCursorQueryResultsTranslator.translatePath(numResults, context);
+            return toQuery(numResults, context);
         }
         //endregion
 
         //region Properties
-
         public TraversalCursorContext getContext() {
             return context;
+        }
+        //endregion
+
+        //region Private Methods
+        private QueryResult toQuery(int numResults, TraversalCursorFactory.TraversalCursorContext context) {
+            QueryResult.Builder builder = instance();
+            builder.withPattern(context.getQueryResource().getQuery());
+            //build assignments
+            (context.getTraversal().next(numResults)).forEach(path -> {
+                builder.withAssignment(toAssignment(context, path));
+            });
+            return builder.build();
+        }
+
+        private Assignment toAssignment(TraversalCursorFactory.TraversalCursorContext context, Path path) {
+            Assignment.Builder builder = Assignment.Builder.instance();
+            context.getQueryResource().getExecutionPlan().getPlan().getOps().forEach(planOp -> {
+                if (planOp instanceof EntityOp) {
+                    EEntityBase entity = ((EntityOp)planOp).getAsgEBase().geteBase();
+
+                    if(entity instanceof EConcrete) {
+                        builder.withEntity(toEntity(path, (EConcrete) entity));
+                    } else if(entity instanceof ETyped) {
+                        builder.withEntity(toEntity(path, (ETyped) entity));
+                    } else if(entity instanceof EUntyped) {
+                        builder.withEntity(toEntity(context, path, (EUntyped) entity));
+                    }
+                } else if (planOp instanceof RelationOp) {
+                    RelationOp relationOp = (RelationOp)planOp;
+                    Optional<EntityOp> prevEntityOp =
+                            PlanUtil.getPrev(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                    Optional<EntityOp> nextEntityOp =
+                            PlanUtil.getNext(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+
+                    builder.withRelationship(toRelationship(path,
+                            prevEntityOp.get().getAsgEBase().geteBase(),
+                            relationOp.getAsgEBase().geteBase(),
+                            nextEntityOp.get().getAsgEBase().geteBase()));
+                }
+            });
+
+            return builder.build();
+        }
+
+        private Entity toEntity(TraversalCursorFactory.TraversalCursorContext context, Path path, EUntyped element) {
+            PromiseVertex vertex = path.get(element.geteTag());
+            Set key = new TraversalValuesByKeyProvider().getValueByKey(((TraversalConstraint) vertex.getConstraint().get()).getTraversal(), T.label.getAccessor());
+            int eType = OntologyUtil.getEntityTypeIdByName(context.getOntology(), key.iterator().next().toString());
+            return toEntity(vertex.id().toString(),eType,element.geteTag());
+        }
+
+        private Entity toEntity(Path path, EConcrete element) {
+            PromiseVertex vertex = path.get(element.geteTag());
+            return toEntity(vertex.id().toString(),element.geteType(),element.geteTag());
+        }
+
+        private Entity toEntity(Path path, ETyped element) {
+            PromiseVertex vertex = path.get(element.geteTag());
+            return toEntity(vertex.id().toString(),element.geteType(),element.geteTag());
+        }
+
+        private Entity toEntity(String eId,int eType, String eTag ) {
+            Entity.Builder builder = Entity.Builder.instance();
+            builder.withEID(eId);
+            builder.withEType(eType);
+            builder.withETag(Collections.singletonList(eTag));
+            return builder.build();
+        }
+
+        private Relationship toRelationship(Path path, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
+            Relationship.Builder builder = Relationship.Builder.instance();
+            PromiseEdge edge = path.get(prevEntity.geteTag() + "-->" + nextEntity.geteTag());
+            builder.withRID(edge.id().toString());
+            builder.withRType(rel.getrType());
+
+            switch (rel.getDir()) {
+                case R:
+                    builder.withEID1(edge.outVertex().id().toString());
+                    builder.withEID2(edge.inVertex().id().toString());
+                    builder.withETag1(prevEntity.geteTag());
+                    builder.withETag2(nextEntity.geteTag());
+                    break;
+
+                case L:
+                    builder.withEID1(edge.inVertex().id().toString());
+                    builder.withEID2(edge.outVertex().id().toString());
+                    builder.withETag1(nextEntity.geteTag());
+                    builder.withETag2(prevEntity.geteTag());
+            }
+
+            return builder.build();
         }
         //endregion
 

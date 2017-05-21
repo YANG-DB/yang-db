@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -230,7 +231,7 @@ public interface PlanMockUtils {
 
 
     //region Private Methods
-    static <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtils.<T>getElement(asgQuery, eNum).get();
+    static  <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
+        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
     }
 }

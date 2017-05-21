@@ -1,10 +1,8 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.extenders.ChainPlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -28,7 +26,7 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
         Plan startPlan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 0)));
 
 
-        ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy(
+        ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy<Plan, AsgQuery>(
                 (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 1)))
                                              , Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 3)))),
                 (plan, query) -> Collections.singletonList(Plan.compose(plan.get(), new RelationOp(getAsgEBaseByEnum(asgQuery, 5)))),
@@ -50,7 +48,7 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
         Plan startPlan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 0)));
 
 
-        ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy(
+        ChainPlanExtensionStrategy chain =  new ChainPlanExtensionStrategy<Plan, AsgQuery>(
                 (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 1)))
                                              , Plan.compose(plan.get(), new RelationOp(getAsgEBaseByEnum(asgQuery, 3)))),
                 (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 7)))
@@ -69,7 +67,7 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
 
     //region Private Methods
     private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtils.<T>getElement(asgQuery, eNum).get();
+        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
     }
     //endregion
 }

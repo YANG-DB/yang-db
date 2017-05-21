@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.AsgEBasePlanOp;
@@ -99,7 +99,7 @@ public interface SimpleExtenderUtils {
     static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendantUnmarkedOfType(Class<? extends EBase> type,
                                                                                                     AsgEBase<T> asgEBase,
                                                                                                     Set<Integer> markedElements) {
-        return AsgQueryUtils.getNextDescendant(asgEBase,
+        return AsgQueryUtil.getNextDescendant(asgEBase,
                 (child) -> type.isAssignableFrom(child.geteBase().getClass()) &&
                         !markedElements.contains(child.geteNum()));
     }
@@ -107,7 +107,7 @@ public interface SimpleExtenderUtils {
     static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAncestorUnmarkedOfType(Class<? extends EBase> type,
                                                                                                   AsgEBase<T> asgEBase,
                                                                                                   Set<Integer> markedElements) {
-        return AsgQueryUtils.getAncestor(asgEBase,
+        return AsgQueryUtil.getAncestor(asgEBase,
                 (child) -> type.isAssignableFrom(child.geteBase().getClass()) &&
                         !markedElements.contains(child.geteNum()));
     }
@@ -146,14 +146,14 @@ public interface SimpleExtenderUtils {
 
         Optional<AsgEBase<T>> nextRelation = getNextDescendantUnmarkedOfType(type, lastEntityOp.getAsgEBase(), markedElements);
         if (!nextRelation.isPresent()) {
-            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtils.getAncestor(lastEntityOp.getAsgEBase(), EEntityBase.class);
+            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtil.getAncestor(lastEntityOp.getAsgEBase(), EEntityBase.class);
             while (parentEntity.isPresent()) {
                 nextRelation = getNextDescendantUnmarkedOfType(type, parentEntity.get(), markedElements);
                 if (nextRelation.isPresent()) {
                     break;
                 }
 
-                parentEntity = AsgQueryUtils.getAncestor(parentEntity.get(), EEntityBase.class);
+                parentEntity = AsgQueryUtil.getAncestor(parentEntity.get(), EEntityBase.class);
             }
         }
 
@@ -172,12 +172,12 @@ public interface SimpleExtenderUtils {
         if(lastEntityOp==null)
             return Collections.emptyList();
 
-        return AsgQueryUtils.getNextDescendants(lastEntityOp.getAsgEBase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
+        return AsgQueryUtil.getNextDescendants(lastEntityOp.getAsgEBase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
                 p -> {
                     if(p.equals(lastEntityOp.getAsgEBase()))
                         return true;
 
-                    List path = AsgQueryUtils.getPathToAncestor(p, lastEntityOp.getAsgEBase().geteBase().geteNum());
+                    List path = AsgQueryUtil.getPathToAncestor(p, lastEntityOp.getAsgEBase().geteBase().geteNum());
                     return !path.isEmpty() && path.size()<3;
                 });
     }

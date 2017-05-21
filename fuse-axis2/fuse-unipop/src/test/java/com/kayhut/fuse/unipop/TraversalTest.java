@@ -2,8 +2,9 @@ package com.kayhut.fuse.unipop;
 
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.SearchPromiseElementController;
-import com.kayhut.fuse.unipop.controller.SearchPromiseVertexController;
+import com.kayhut.fuse.unipop.controller.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.PromiseVertexController;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHashProvider;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -13,6 +14,8 @@ import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -23,6 +26,7 @@ import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -45,12 +49,12 @@ public class TraversalTest {
     @Test
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX() throws Exception {
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(graph1 -> new ControllerManager() {
+        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
-                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
+                        new PromiseElementController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()));
             }
 
             @Override
@@ -81,12 +85,12 @@ public class TraversalTest {
     @Test
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX_hasXconstraint_Constraint_byX__hasXlabel_dragonXXX() throws Exception {
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(graph1 -> new ControllerManager() {
+        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new SearchPromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
-                        new SearchPromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
+                        new PromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
+                        new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
             }
 
             @Override

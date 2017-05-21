@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.strategy;
 
-import com.kayhut.fuse.asg.util.AsgQueryUtils;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
@@ -61,8 +61,8 @@ public class EntityFilterOpTranslationStrategyTest {
     public void test_entity3_filter9() throws Exception {
         AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(query, 9).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(query, 9).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);
@@ -112,10 +112,10 @@ public class EntityFilterOpTranslationStrategyTest {
     public void test_entity1_rel2_entity3_filter9() {
         AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 1).get()),
-                new RelationOp(AsgQueryUtils.<Rel>getElement(query, 2).get()),
-                new EntityOp(AsgQueryUtils.<EEntityBase>getElement(query, 3).get()),
-                new EntityFilterOp(AsgQueryUtils.<EPropGroup>getElement(query, 9).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>getElement(query, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(query, 9).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);
