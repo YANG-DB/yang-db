@@ -63,16 +63,16 @@ public class AsgQueryUtilTest {
 
     public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, "A", 1))
-                .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(typed(2, "B", 3))
+                .next(typed(1, 1, "A"))
+                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                .next(typed(3, 2, "B"))
                 .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
-                        , rel(R, 5, 4)
-                                .next(unTyped("C", 6))
-                        , rel(R, 7, 5)
+                        , rel(5, 4, R)
+                                .next(unTyped(6, "C"))
+                        , rel(7, 5, R)
                                 .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
-                                .next(concrete("concrete1", 3, "Concrete1", "D", 8))
+                                .next(concrete(8, "concrete1", 3, "Concrete1", "D"))
                 )
                 .build();
     }

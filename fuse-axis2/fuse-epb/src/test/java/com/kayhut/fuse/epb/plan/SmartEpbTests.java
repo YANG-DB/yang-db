@@ -61,7 +61,7 @@ public class SmartEpbTests {
     @Test
     public void testSingleElement(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(PERSON.type, 1)).
+                next(typed(1, PERSON.type)).
                 next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);

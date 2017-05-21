@@ -257,7 +257,7 @@ public class SmartEpbTests2 {
     @Test
     public void testSingleElementNoCondition(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed( PERSON.type, 1)).
+                next(typed(1, PERSON.type)).
                 next(eProp(2)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
@@ -270,7 +270,7 @@ public class SmartEpbTests2 {
     @Test
     public void testSingleElementWithCondition(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(PERSON.type, 1)).
+                next(typed(1, PERSON.type)).
                 next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
@@ -284,10 +284,10 @@ public class SmartEpbTests2 {
     @Ignore
     public void testPathSelectionNoConditions(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(PERSON.type, 1)).
+                next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(Rel.Direction.R, 3, OWN.type).below(relProp(4))).
-                next(typed(DRAGON.type, 5)).
+                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
