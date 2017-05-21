@@ -64,7 +64,8 @@ public class Person extends EntityBase {
     @Override
     public String toString() {
         return "Person{" +
-                "firstName='" + firstName + '\'' +
+                "id='" + getId() + '\'' +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", gender=" + gender +
                 ", birthDate=" + birthDate +
@@ -75,16 +76,18 @@ public class Person extends EntityBase {
 
     @Override
     public String[] getRecord() {
-        return new String[0];
+        return new String[]{this.getId(), this.firstName, this.lastName, this.gender.toString(),
+                Long.toString(this.birthDate.getTime()), Long.toString(this.deathDate.getTime()),
+                Integer.toString(this.height)};
     }
 
     //region Fields
-    private String firstName ;
-    private String lastName ;
-    private Gender gender ;
-    private Date birthDate ;
-    private Date deathDate ;
-    private int height ;
+    private String firstName;
+    private String lastName;
+    private Gender gender;
+    private Date birthDate;
+    private Date deathDate;
+    private int height;
 //    private boolean isOldestOffspring ;
 //    private boolean isAlive ;
 //    private int parentId ;
@@ -99,12 +102,12 @@ public class Person extends EntityBase {
 
     public static final class PersonBuilder {
         private String id;
-        private String firstName ;
-        private String lastName ;
-        private Gender gender ;
-        private Date birthDate ;
-        private Date deathDate ;
-        private int height ;
+        private String firstName;
+        private String lastName;
+        private Gender gender;
+        private Date birthDate;
+        private Date deathDate;
+        private int height;
 
         private PersonBuilder() {
         }

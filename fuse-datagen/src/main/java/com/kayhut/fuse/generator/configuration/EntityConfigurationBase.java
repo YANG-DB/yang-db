@@ -6,8 +6,12 @@ package com.kayhut.fuse.generator.configuration;
  */
 public abstract class EntityConfigurationBase {
 
-
     //region Ctrs
+
+    public EntityConfigurationBase() {
+
+    }
+
     public EntityConfigurationBase(int numberOfNodes,
                                    int edgesPerNode,
                                    String entitiesFilePath,
@@ -39,11 +43,12 @@ public abstract class EntityConfigurationBase {
     //endregion
 
     //region Fields
-    private final int numberOfNodes;
-    private final int edgesPerNode;
-    private final String entitiesFilePath;
-    private final String relationsFilePath;
+    private int numberOfNodes;
+    private int edgesPerNode;
+    private String entitiesFilePath;
+    private String relationsFilePath;
     //endregion
+
 }
 
 

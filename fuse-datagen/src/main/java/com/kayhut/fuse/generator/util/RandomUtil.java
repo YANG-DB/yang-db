@@ -21,42 +21,73 @@ public class RandomUtil {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static List<Double> randomGaussianNumbers(double mean, double sd, int numOfNumbers){
+    public static List<Double> randomGaussianNumbers(double mean, double sd, int numOfNumbers) {
         List<Double> randomNumbers = new ArrayList<>();
-        for (int idx = 1; idx <= numOfNumbers; ++idx){
+        for (int idx = 1; idx <= numOfNumbers; ++idx) {
             randomNumbers.add(getGaussian(mean, sd));
         }
         return randomNumbers;
     }
 
-    public static Double randomGaussianNumber(double mean, double sd){
+    public static Double randomGaussianNumber(double mean, double sd) {
         return getGaussian(mean, sd);
     }
 
-    private static double getGaussian(double mean, double sd){
+    private static double getGaussian(double mean, double sd) {
         return mean + rand.nextGaussian() * sd;
     }
 
-    public static <T> T enumeratedDistribution(List<Pair<T, Double>> probabilities){
+    public static <T> T enumeratedDistribution(List<Pair<T, Double>> probabilities) {
         EnumeratedDistribution<T> distribution = new EnumeratedDistribution<>(probabilities);
         return distribution.sample();
     }
 
-    public static long randomDateInEpoch(Date startDate, Date endDate){
+    public static long randomDateInEpoch(Date startDate, Date endDate) {
         //Date randomDate = new Date(ThreadLocalRandom.nextLong(minDate.getTime(), maxDate.getTime()));
         return ThreadLocalRandom.current().nextLong(startDate.getTime(), endDate.getTime());
     }
 
-    public static Date randomDate(Date startDate, Date endDate){
+    public static Date randomDate(Date startDate, Date endDate) {
         //Date randomDate = new Date(ThreadLocalRandom.nextLong(minDate.getTime(), maxDate.getTime()));
         return (new Date(ThreadLocalRandom.current().nextLong(startDate.getTime(), endDate.getTime())));
+    }
+
+    public static double[] getRandDistArray(int n, double m) {
+        double randArray[] = new double[n];
+        double sum = 0;
+
+        // Generate n random numbers
+        for (int i = 0; i < randArray.length; i++) {
+            randArray[i] = Math.random();
+            sum += randArray[i];
+        }
+
+        // Normalize sum to m
+        for (int i = 0; i < randArray.length; i++) {
+            randArray[i] /= sum;
+            randArray[i] *= m;
+        }
+        return randArray;
+    }
+
+    public static <T> T getRandomElementFromList(List<T> list) {
+        return list.get(rand.nextInt(list.size()));
+    }
+
+    public static <T> T getRandomElementFromArray(T[] array) {
+        return array[rand.nextInt(array.length)];
+    }
+
+    public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
+        int x = rand.nextInt(clazz.getEnumConstants().length);
+        return clazz.getEnumConstants()[x];
     }
 
     /**
      * Returns a random integer uniformly in [a, b].
      *
-     * @param  a the left endpoint
-     * @param  b the right endpoint
+     * @param a the left endpoint
+     * @param b the right endpoint
      * @return a random integer uniformly in [a, b]
      */
     public static int randomInt(int a, int b) {
@@ -69,8 +100,8 @@ public class RandomUtil {
     /**
      * Returns a random integer uniformly in [a, b).
      *
-     * @param  a the left endpoint
-     * @param  b the right endpoint
+     * @param a the left endpoint
+     * @param b the right endpoint
      * @return a random integer uniformly in [a, b)
      * @throws IllegalArgumentException if {@code b <= a}
      * @throws IllegalArgumentException if {@code b - a >= Integer.MAX_VALUE}
@@ -85,8 +116,8 @@ public class RandomUtil {
     /**
      * Returns a random real number uniformly in [a, b).
      *
-     * @param  a the left endpoint
-     * @param  b the right endpoint
+     * @param a the left endpoint
+     * @param b the right endpoint
      * @return a random real number uniformly in [a, b)
      * @throws IllegalArgumentException unless {@code a < b}
      */
@@ -94,7 +125,7 @@ public class RandomUtil {
         if (!(a < b)) {
             throw new IllegalArgumentException("invalid range: [" + a + ", " + b + "]");
         }
-        return a + uniform() * (b-a);
+        return a + uniform() * (b - a);
     }
 
     /**
@@ -122,10 +153,10 @@ public class RandomUtil {
      * Returns a random integer from a geometric distribution with success
      * probability <em>p</em>.
      *
-     * @param  p the parameter of the geometric distribution
+     * @param p the parameter of the geometric distribution
      * @return a random integer from a geometric distribution with success
-     *         probability {@code p}; or {@code Integer.MAX_VALUE} if
-     *         {@code p} is (nearly) equal to {@code 1.0}.
+     * probability {@code p}; or {@code Integer.MAX_VALUE} if
+     * {@code p} is (nearly) equal to {@code 1.0}.
      * @throws IllegalArgumentException unless {@code p >= 0.0} and {@code p <= 1.0}
      */
     public static int geometric(double p) {
@@ -140,9 +171,9 @@ public class RandomUtil {
      * Returns a random boolean from a Bernoulli distribution with success
      * probability <em>p</em>.
      *
-     * @param  p the probability of returning {@code true}
+     * @param p the probability of returning {@code true}
      * @return {@code true} with probability {@code p} and
-     *         {@code false} with probability {@code p}
+     * {@code false} with probability {@code p}
      * @throws IllegalArgumentException unless {@code 0} &le; {@code p} &le; {@code 1.0}
      */
     public static boolean bernoulli(double p) {
@@ -156,7 +187,7 @@ public class RandomUtil {
      * probability 1/2.
      *
      * @return {@code true} with probability 1/2 and
-     *         {@code false} with probability 1/2
+     * {@code false} with probability 1/2
      */
     public static boolean bernoulli() {
         return bernoulli(0.5);
@@ -165,7 +196,7 @@ public class RandomUtil {
     /**
      * Returns a random integer from a Poisson distribution with mean &lambda;.
      *
-     * @param  lambda the mean of the Poisson distribution
+     * @param lambda the mean of the Poisson distribution
      * @return a random integer from a Poisson distribution with mean {@code lambda}
      * @throws IllegalArgumentException unless {@code lambda > 0.0} and not infinite
      */
@@ -183,7 +214,7 @@ public class RandomUtil {
             k++;
             p *= uniform();
         } while (p >= expLambda);
-        return k-1;
+        return k - 1;
     }
 
 }

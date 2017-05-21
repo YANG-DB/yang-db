@@ -2,7 +2,7 @@ package com.kayhut.fuse.generator;
 
 import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
 import com.kayhut.fuse.generator.configuration.PersonConfiguration;
-import com.kayhut.fuse.generator.generator.entity.PersonGeneratorBase;
+import com.kayhut.fuse.generator.data.generation.entity.PersonGenerator;
 import com.kayhut.fuse.generator.model.entity.Person;
 import com.kayhut.fuse.generator.model.enums.Gender;
 import org.apache.commons.configuration.Configuration;
@@ -22,7 +22,7 @@ public class PersonGeneratorTest {
 
     @Test
     public void generatePerson() throws Exception {
-        PersonGeneratorBase personGenerator = new PersonGeneratorBase(new PersonConfiguration(configuration));
+        PersonGenerator personGenerator = new PersonGenerator(new PersonConfiguration(configuration));
 
         for (int i = 0; i < 100; i++) {
             Person personA = personGenerator.generate();
