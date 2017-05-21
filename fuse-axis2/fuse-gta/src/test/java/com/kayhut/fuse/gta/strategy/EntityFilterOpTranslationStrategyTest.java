@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
@@ -41,9 +42,9 @@ public class EntityFilterOpTranslationStrategyTest {
 
     static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, "A", 1))
+                .next(typed(1, 1))
                 .next(rel(R, 2, 1).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(typed(2, "B", 3))
+                .next(typed(2, 3))
                 .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("2", 9, of(eq, 30)))
                         , rel(R, 5, 4)

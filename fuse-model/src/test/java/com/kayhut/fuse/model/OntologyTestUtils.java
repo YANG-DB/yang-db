@@ -1,76 +1,158 @@
 package com.kayhut.fuse.model;
 
 import com.kayhut.fuse.model.ontology.*;
-import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.TYPE_GENDER;
+import static java.util.Collections.singletonList;
 
 /**
  * Created by liorp on 4/27/2017.
  */
 public class OntologyTestUtils {
 
+    public static final String DATE = "date";
+    public static final String INT = "int";
+    public static final String STRING = "string";
+    public static final String CM = "cm";
+
+    public static final RelationType OWN = new RelationType("own", 1);
+    public static final RelationType MEMBER_OF = new RelationType("memberOf", 2);
+
+
+    public static Property FIRST_NAME = new Property("firstName", STRING, 1);
+    public static Property LAST_NAME = new Property("lastName", STRING, 2);
+    public static Property GENDER = new Property("gender", Gender.TYPE_GENDER, 3);
+    public static Property BIRTH_DATE = new Property("birthDate", STRING, 4);
+    public static Property DEATH_DATE = new Property("deathDate", STRING, 5);
+    public static Property HEIGHT = new Property("height", INT, 6);
+    public static Property NAME = new Property("name", STRING, 7);
+
+    public static Property START_DATE = new Property("startDate", DATE, 8);
+    public static Property END_DATE = new Property("endDate", DATE, 9);
+
+    public static class RelationType {
+        public RelationType(String name, int type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        public String name;
+        public int type;
+    }
+
+    public static class RelationshipTypeOf extends RelationshipType {
+        private List<Property> propertiesOf;
+
+        public RelationshipTypeOf(String name, int type, boolean dir) {
+            super(name, type, dir);
+        }
+
+        public RelationshipTypeOf withEPairs(List<EPair> pairs) {
+            this.setePairs(pairs);
+            return this;
+        }
+
+        public RelationshipTypeOf withProperties(List<Property> properties) {
+            this.propertiesOf = properties;
+            return this;
+        }
+
+        public List<Integer> getProperties() {
+            super.getProperties().addAll(propertiesOf.stream().map(p -> p.type).collect(Collectors.toList()));
+            return super.getProperties();
+        }
+
+    }
+
+    public static class Property {
+        public String name;
+        public String className;
+        public int type;
+
+        public Property(String name, String className, int type) {
+            this.name = name;
+            this.className = className;
+            this.type = type;
+        }
+    }
+
+    public static class DRAGON {
+        public static String name = "Dragon";
+        public static int type = 2;
+        public static List<Property> propertyList = Arrays.asList(NAME);
+
+    }
+
+    public static class GUILD {
+        public static String name = "Guild";
+        public static int type = 4;
+        public static List<Property> propertyList = Arrays.asList(NAME);
+
+    }
+
+    public static class PERSON {
+        public static String name = "Person";
+        public static int type = 1;
+
+
+        public static List<Property> propertyList = Arrays.asList(FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, DEATH_DATE, HEIGHT, NAME);
+
+        public static List<RelationshipTypeOf> relationshipList = Arrays.asList(
+                new RelationshipTypeOf(OWN.name, OWN.type, true)
+                        .withEPairs(singletonList(new EPair(PERSON.type, DRAGON.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)),
+                new RelationshipTypeOf(MEMBER_OF.name, MEMBER_OF.type, true)
+                        .withEPairs(singletonList(new EPair(PERSON.type, GUILD.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE))
+        );
+
+    }
+
+
     public static Ontology createDragonsOntologyShort() {
         Ontology ontologyShortObj = new Ontology();
         ontologyShortObj.setOnt("Dragons");
         List<EntityType> entityTypes = new ArrayList<>();
-
-        //region enumeratedTypes
-        List<EnumeratedType> enumeratedTypes = new ArrayList<>();
-
-        EnumeratedType enumeratedType1 = new EnumeratedType() {{
-            seteType("TYPE_Gender");
-            setValues(Arrays.asList(new Value() {{
-                setName("Female");
-                setVal(1);
-            }}, new Value() {{
-                setName("Male");
-                setVal(2);
-            }}, new Value() {{
-                setName("Other");
-                setVal(3);
-            }}));
-        }};
-
-        enumeratedTypes.add(enumeratedType1);
-        ontologyShortObj.setEnumeratedTypes(enumeratedTypes);
+        ontologyShortObj.setEnumeratedTypes(singletonList(EnumeratedType.from(TYPE_GENDER, Gender.values())));
         //endregion
 
         ontologyShortObj.setProperties(Arrays.asList(
-                Property.Builder.get().withPType(1).withName("firstName").withType("string").build(),
-                Property.Builder.get().withPType(2).withName("lastName").withType("string").build(),
-                Property.Builder.get().withPType(3).withName("gender").withType("TYPE_Gender").build(),
-                Property.Builder.get().withPType(4).withName("birthDate").withType("date").build(),
-                Property.Builder.get().withPType(5).withName("deathDate").withType("date").build(),
-                Property.Builder.get().withPType(6).withName("height").withType("int").withUnits("cm").build(),
-                Property.Builder.get().withPType(7).withName("name").withType("string").build(),
-                Property.Builder.get().withPType(8).withName("startDate").withType("date").build(),
-                Property.Builder.get().withPType(9).withName("endDate").withType("date").build()));
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(1).withName(FIRST_NAME.name).withType(STRING).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(2).withName(LAST_NAME.name).withType(STRING).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(3).withName(GENDER.name).withType(TYPE_GENDER).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(4).withName(BIRTH_DATE.name).withType(DATE).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(5).withName(DEATH_DATE.name).withType(DATE).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(6).withName(HEIGHT.name).withType(INT).withUnits(CM).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(7).withName(NAME.name).withType(STRING).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(8).withName(START_DATE.name).withType(DATE).build(),
+                com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(9).withName(END_DATE.name).withType(DATE).build()));
 
         //region EntityType1 = Person
         EntityType entityType1 = new EntityType();
-        entityType1.seteType(1);
-        entityType1.setName("Person");
-        entityType1.setProperties(Arrays.asList(1, 2, 3, 4, 5, 6));
+        entityType1.seteType(PERSON.type);
+        entityType1.setName(PERSON.name);
+        entityType1.setProperties(PERSON.propertyList.stream().map(p -> p.type).collect(Collectors.toList()));
         entityTypes.add(entityType1);
         //endregion
 
         //region EntityType2 = Dragon
         EntityType entityType2 = new EntityType();
-        entityType2.seteType(2);
-        entityType2.setName("Dragon");
-        entityType2.setProperties(Collections.singletonList(7));
+        entityType2.seteType(DRAGON.type);
+        entityType2.setName(DRAGON.name);
+        entityType2.setProperties(DRAGON.propertyList.stream().map(p -> p.type).collect(Collectors.toList()));
         entityTypes.add(entityType2);
         //endregion
 
         //region EntityType2 = Guild
         EntityType entityType4 = new EntityType();
-        entityType4.seteType(4);
-        entityType4.setName("Guild");
-        entityType4.setProperties(Collections.singletonList(7));
+        entityType4.seteType(GUILD.type);
+        entityType4.setName(GUILD.name);
+        entityType4.setProperties(GUILD.propertyList.stream().map(p -> p.type).collect(Collectors.toList()));
         entityTypes.add(entityType4);
         //endregion
 
@@ -78,33 +160,31 @@ public class OntologyTestUtils {
 
         //region relationshipTypes
         List<RelationshipType> relationshipTypes = new ArrayList<>();
-
-        RelationshipType relationshipType1 = new RelationshipType();
-        relationshipType1.setrType(1);
-        relationshipType1.setName("own");
-        relationshipType1.setDirectional(true);
-        relationshipType1.setePairs(Arrays.asList(new EPair() {{
-            seteTypeA(1);
-            seteTypeB(2);
-        }}));
-        relationshipType1.setProperties(Arrays.asList(8, 9));
-
-        relationshipTypes.add(relationshipType1);
-
-        RelationshipType relationshipType2 = new RelationshipType();
-        relationshipType2.setrType(2);
-        relationshipType2.setName("memberOf");
-        relationshipType2.setDirectional(true);
-        relationshipType2.setePairs(Arrays.asList(new EPair() {{
-            seteTypeA(1);
-            seteTypeB(4);
-        }}));
-        relationshipType2.setProperties(Arrays.asList(8, 9));
-        relationshipTypes.add(relationshipType2);
+        relationshipTypes.addAll(Arrays.asList(
+                new RelationshipTypeOf(OWN.name, OWN.type, true)
+                        .withEPairs(singletonList(new EPair(PERSON.type, DRAGON.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)),
+                new RelationshipTypeOf(MEMBER_OF.name, MEMBER_OF.type, true)
+                        .withEPairs(singletonList(new EPair(PERSON.type, GUILD.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE))
+        ));
         //endregion
 
         ontologyShortObj.setRelationshipTypes(relationshipTypes);
         return OntologyFinalizer.finalize(ontologyShortObj);
     }
 
+    public static enum Gender {
+        MALE, FEMALE, OTHER;
+        public static final String TYPE_GENDER = "TYPE_Gender";
+
+    }
+
+    public static Property getPropertyByName(List<Property> properties, String name) {
+        return properties.stream().filter(p -> p.name.equals(name)).findFirst().get();
+    }
+
+    public static Property getPropertyByType(List<Property> properties, int type) {
+        return properties.stream().filter(p -> p.type == type).findFirst().get();
+    }
 }

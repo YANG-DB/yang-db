@@ -28,12 +28,10 @@ public class AsgQuant1PropertiesGroupingStrategy implements AsgStrategy {
                 List<EProp> eProps = Stream.ofAll(ePropsAsgChildren).map(AsgEBase::geteBase).toJavaList();
 
                 if (eProps.size() > 0) {
-                    EPropGroup ePropGroup = new EPropGroup();
-                    AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
-                    ePropGroup.seteProps(eProps);
+                    EPropGroup ePropGroup = new EPropGroup(eProps);
                     ePropGroup.seteNum(Stream.ofAll(eProps).map(EProp::geteNum).min().get());
                     ePropsAsgChildren.forEach(quant::removeNextChild);
-                    quant.addNextChild(ePropGroupAsgEbase);
+                    quant.addNextChild(new AsgEBase<>(ePropGroup));
                 } else {
                     List<AsgEBase<EPropGroup>> ePropsGroupAsgChildren = AsgQueryUtil.getNextAdjacentDescendants(quant, EPropGroup.class);
                     if (ePropsGroupAsgChildren.isEmpty()) {

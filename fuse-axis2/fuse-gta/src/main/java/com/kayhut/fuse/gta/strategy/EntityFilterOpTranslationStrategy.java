@@ -4,10 +4,7 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
@@ -69,7 +66,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
                     entityFilterOp.getAsgEBase().geteBase(),
                     context.getOntology());
 
-        } else if (!entityFilterOp.getAsgEBase().geteBase().geteProps().isEmpty()) {
+        } else if (!entityFilterOp.getAsgEBase().geteBase().getProps().isEmpty()) {
 
             traversal = appendPropertyGroup(
                     traversal,
@@ -103,7 +100,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
             }
 
             List<Traversal> epropTraversals =
-                    Stream.ofAll(ePropGroup.geteProps())
+                    Stream.ofAll(ePropGroup.getProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
 
             if (!epropTraversals.isEmpty()) {
@@ -123,7 +120,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
             Ontology ontology) {
 
         List<Traversal> epropTraversals =
-                Stream.ofAll(ePropGroup.geteProps())
+                Stream.ofAll(ePropGroup.getProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
 
         Traversal constraintTraversal = epropTraversals.size() == 1 ?

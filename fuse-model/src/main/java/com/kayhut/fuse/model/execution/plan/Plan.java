@@ -5,11 +5,9 @@ import com.kayhut.fuse.model.log.Trace;
 import javaslang.Tuple2;
 
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
-import static com.kayhut.fuse.model.Utils.pattern;
-import static com.kayhut.fuse.model.Utils.simplePattern;
+import static com.kayhut.fuse.model.Utils.*;
 
 /**
  * Created by User on 22/02/2017.
@@ -18,15 +16,16 @@ public class Plan extends CompositePlanOpBase implements Trace<String> {
     private Trace<String> trace = Trace.build(Plan.class.getSimpleName());
 
     //region Constructors
-    private Plan() {}
+    public Plan() {}
+
+    public Plan(PlanOpBase ... ops) {
+        super(ops);
+    }
 
     public Plan(List<PlanOpBase> ops) {
         super(ops);
     }
 
-    public Plan(PlanOpBase...ops) {
-        super(ops);
-    }
 
     @Override
     @JsonIgnore
@@ -47,12 +46,21 @@ public class Plan extends CompositePlanOpBase implements Trace<String> {
 
     //endregion
 
+    @Override
+    public String toString() {
+        return toSimplePattern(this);
+    }
+
     public String toPattern() {
         return toPattern(this);
     }
 
     public static String toSimplePattern(Plan plan) {
         return simplePattern(plan.getOps());
+    }
+
+    public static String toFullPattern(CompositePlanOpBase plan) {
+        return fullPattern(plan.getOps());
     }
 
     public static String toPattern(CompositePlanOpBase plan) {

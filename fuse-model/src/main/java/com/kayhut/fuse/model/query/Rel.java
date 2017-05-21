@@ -4,12 +4,13 @@ package com.kayhut.fuse.model.query;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Below;
 import com.kayhut.fuse.model.Next;
+import com.kayhut.fuse.model.query.entity.Typed;
 
 /**
  * Created by user on 16-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Rel extends EBase implements Next<Integer>, Below<Integer> {
+public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped{
     public enum Direction {
         R,
         L,

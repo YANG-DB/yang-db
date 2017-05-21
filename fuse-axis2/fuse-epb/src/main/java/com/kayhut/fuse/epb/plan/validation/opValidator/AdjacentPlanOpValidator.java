@@ -41,6 +41,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         return trace.who();
     }
 
+
     //region ChainedPlanValidator.PlanOpValidator Implementation
     @Override
     public void reset() {

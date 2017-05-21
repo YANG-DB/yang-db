@@ -1,11 +1,13 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
@@ -14,7 +16,10 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +64,7 @@ public interface PlanMockUtils {
 
         private Plan plan;
         private Plan oldPlan;
-
+        private int enumIndex;
 
         private PlanMockBuilder(AsgQuery asgQuery) {
             this();
@@ -87,12 +92,14 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder entity(Type type, long total, int eType) throws Exception {
+            int eNum = enumIndex++;
             EntityOp entityOp = new EntityOp();
             EEntityBase instance = type.type.newInstance();
+            instance.seteNum(eNum);
             //no type => max nodes return
             nodeStatistics.put(eType, Double.MAX_VALUE);
             if (eType > 0) {
-                ((Typed) instance).seteType(eType);
+                ((Typed.eTyped) instance).seteType(eType);
                 nodeStatistics.put(eType, (double) total);
             }
             entityOp.setAsgEBase(new AsgEBase<>(instance));
@@ -112,7 +119,7 @@ public interface PlanMockUtils {
             //no type => max nodes return
             nodeStatistics.put(eType, Double.MAX_VALUE);
             if (eType > 0) {
-                ((Typed) instance).seteType(eType);
+                ((Typed.eTyped) instance).seteType(eType);
                 nodeStatistics.put(eType, (double) total);
             }
             entityOp.setAsgEBase(new AsgEBase<>(instance));
@@ -127,8 +134,8 @@ public interface PlanMockUtils {
             return this;
         }
 
-        public PlanMockBuilder rel(int num,Rel.Direction direction) {
-            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num),direction));
+        public PlanMockBuilder rel(int num, Rel.Direction direction) {
+            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num), direction));
             return this;
         }
 
@@ -158,32 +165,28 @@ public interface PlanMockUtils {
             return this;
         }
 
-        public PlanMockBuilder entityFilter(double factor, int id) throws Exception {
-
-            EPropGroup ePropGroup = new EPropGroup();
-            EProp eProp = new EProp();
-            eProp.setpType(String.valueOf(id));
-            ePropGroup.seteProps(Collections.singletonList(eProp));
+        public PlanMockBuilder entityFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
+            EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType, eNum, constraint)));
             EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
-
+            EntityOp last = (EntityOp) PlanUtil.getLast(plan);
             plan = plan.withOp(filterOp);
-            nodeFilterStatistics.put(id,factor);
+            nodeFilterStatistics.put(eNum, factor);
             //statistics simulator
-            costs.put(filterOp, factor);
+            costs.put(filterOp, 0d);
+            costs.put(last,costs.get(last)*factor);
             return this;
         }
 
-        public PlanMockBuilder relFilter(double factor, int id) throws Exception {
-            RelPropGroup relPropGroup = new RelPropGroup();
-            RelProp relProp = new RelProp();
-            relProp.setpType(String.valueOf(id));
-            relPropGroup.setrProps(Collections.singletonList(relProp));
+        public PlanMockBuilder relFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
+            RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(pType, eNum, constraint)));
             RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relPropGroup));
 
+            RelationOp last = (RelationOp) PlanUtil.getLast(plan);
             plan = plan.withOp(relationFilterOp);
-            edgeFilterStatistics.put(id,factor);
+            edgeFilterStatistics.put(eNum, factor );
             //statistics simulator
             costs.put(relationFilterOp, factor);
+            costs.put(last,costs.get(last)*factor);
             return this;
         }
 
@@ -192,31 +195,31 @@ public interface PlanMockUtils {
         }
 
 
-        public PlanWithCost<Plan, PlanDetailedCost> planWithCost(long globalCost, long total) {
-            Cost cost = new Cost(globalCost, total);
-            List<PlanOpWithCost<Cost>> collect = oldPlan.getOps().stream().map(element -> new PlanOpWithCost<>(getCost(element), getCost(element).total, element)).collect(Collectors.toList());
+        public PlanWithCost<Plan, PlanDetailedCost> oldPlanWithCost(long globalCost, long total) {
+            Cost cost = new Cost(globalCost );
+            List<PlanOpWithCost<Cost>> collect = oldPlan.getOps().stream().map(element -> new PlanOpWithCost<>(getCost(element), total, element)).collect(Collectors.toList());
             return new PlanWithCost<>(oldPlan, new PlanDetailedCost(cost, collect));
         }
 
         private Cost getCost(PlanOpBase opBase) {
-            return new Cost(costs.getOrDefault(opBase, 1d), costs.getOrDefault(opBase, 1d).longValue());
+            return new Cost(costs.getOrDefault(opBase, 1d));
         }
 
         public Map<PlanOpBase, Double> costs() {
             return costs;
         }
 
-        public Map<String, Map<Integer,Double>> statistics() {
-            Map<String, Map<Integer,Double>> map = new HashMap<>();
-            map.put(EDGE_FILTER_STATISTICS,edgeFilterStatistics);
-            map.put(EDGE_STATISTICS,edgeStatistics);
-            map.put(NODE_FILTER_STATISTICS,nodeFilterStatistics);
-            map.put(NODE_STATISTICS,nodeStatistics);
+        public Map<String, Map<Integer, Double>> statistics() {
+            Map<String, Map<Integer, Double>> map = new HashMap<>();
+            map.put(EDGE_FILTER_STATISTICS, edgeFilterStatistics);
+            map.put(EDGE_STATISTICS, edgeStatistics);
+            map.put(NODE_FILTER_STATISTICS, nodeFilterStatistics);
+            map.put(NODE_STATISTICS, nodeStatistics);
             return map;
         }
 
         public PlanMockBuilder startNewPlan() {
-            oldPlan = plan;
+            oldPlan = new Plan(plan.getOps());
             return this;
         }
 

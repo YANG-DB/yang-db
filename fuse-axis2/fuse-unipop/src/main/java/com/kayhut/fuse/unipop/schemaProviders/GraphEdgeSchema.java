@@ -15,8 +15,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
     interface End {
         String getIdField();
         Optional<String> getType();
-        //Optional<GraphEdgeRedundancy> getEdgeRedundancy();
         Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property);
+        Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property);
     }
 
     interface Direction {

@@ -13,7 +13,6 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import javaslang.collection.Stream;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -33,21 +32,20 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
         Stream.ofAll(AsgQueryUtil.getElements(query, EEntityBase.class))
                 .filter(asgEBase -> !AsgQueryUtil.getNextAdjacentDescendant(asgEBase, Quant1.class).isPresent())
                 .forEach(entityBase -> {
-                    EPropGroup ePropGroup = new EPropGroup();
-                    AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
 
                     Optional<AsgEBase<EProp>> asgEProp = AsgQueryUtil.getNextAdjacentDescendant(entityBase, EProp.class);
                     if (asgEProp.isPresent()) {
-                        ePropGroup.seteProps(Arrays.asList(asgEProp.get().geteBase()));
+                        EPropGroup ePropGroup = new EPropGroup(Arrays.asList(asgEProp.get().geteBase()));
                         ePropGroup.seteNum(asgEProp.get().geteNum());
                         entityBase.removeNextChild(asgEProp.get());
-                        entityBase.addNextChild(ePropGroupAsgEbase);
+                        entityBase.addNextChild(new AsgEBase<>(ePropGroup));
                     } else {
+                        EPropGroup ePropGroup = new EPropGroup();
                         int maxEnum = Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get();
 
                         if (entityBase.getNext().isEmpty()) {
                             ePropGroup.seteNum(maxEnum + 1);
-                            entityBase.addNextChild(ePropGroupAsgEbase);
+                            entityBase.addNextChild(new AsgEBase<>(ePropGroup));
                         } else {
                             Quant1 quant1 = new Quant1();
                             quant1.seteNum(maxEnum + 1);
@@ -56,7 +54,7 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
 
                             ePropGroup.seteNum(maxEnum + 2);
 
-                            asgQuant1.addNextChild(ePropGroupAsgEbase);
+                            asgQuant1.addNextChild(new AsgEBase<>(ePropGroup));
                             new ArrayList<>(entityBase.getNext()).forEach(nextAsgEbase -> {
                                 entityBase.removeNextChild(nextAsgEbase);
                                 asgQuant1.addNextChild(nextAsgEbase);
@@ -65,7 +63,6 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
                         }
                     }
                 });
-
     }
     //endregion
 }

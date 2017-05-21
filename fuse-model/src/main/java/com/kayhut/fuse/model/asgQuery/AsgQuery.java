@@ -1,6 +1,5 @@
 package com.kayhut.fuse.model.asgQuery;
 
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -14,8 +13,6 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -182,10 +179,25 @@ public class AsgQuery {
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(String eTag, int eNum,Integer ... vTypes) {
+        public static AsgEBase<ETyped> typed(int eType, int eNum) {
+            ETyped eTyped = new ETyped();
+            eTyped.seteType(eType);
+            eTyped.seteNum(eNum);
+            return new AsgEBase<>(eTyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(String eTag,int eNum, Integer ... vTypes) {
             EUntyped untyped = new EUntyped();
             untyped.setNvTypes(Arrays.asList(vTypes));
             untyped.seteTag(eTag);
+            untyped.seteNum(eNum);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum,Integer ... vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setNvTypes(Arrays.asList(vTypes));
             untyped.seteNum(eNum);
 
             return new AsgEBase<>(untyped);
@@ -201,18 +213,14 @@ public class AsgQuery {
         }
 
         public static AsgEBase<EPropGroup> eProp(int eNum, EProp... props) {
-            EPropGroup group = new EPropGroup();
+            EPropGroup group = new EPropGroup(Arrays.asList(props));
             group.seteNum(eNum);
-            group.seteProps(new ArrayList<>(Arrays.asList(props)));
-
             return new AsgEBase<>(group);
         }
 
         public static AsgEBase<RelPropGroup> relProp(int eNum, RelProp ... props) {
-            RelPropGroup relPropGroup = new RelPropGroup();
+            RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
             relPropGroup.seteNum(eNum);
-            relPropGroup.setrProps(new ArrayList<>(Arrays.asList(props)));
-
             return new AsgEBase<>(relPropGroup);
         }
 

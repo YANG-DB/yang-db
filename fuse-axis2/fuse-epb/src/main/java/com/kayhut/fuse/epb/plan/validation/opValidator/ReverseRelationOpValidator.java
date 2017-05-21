@@ -43,7 +43,6 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
         return trace.who();
     }
 
-
     @Override
     public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
         if (opIndex == 0) {

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Created by user on 16-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class EConcrete extends ETyped implements Typed{
+public class EConcrete extends ETyped implements Typed.eTyped{
     //region Constructors
     public EConcrete() {}
 

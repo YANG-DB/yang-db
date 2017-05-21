@@ -33,4 +33,11 @@ public class TraceAble<T> implements Trace<T>{
     public String who() {
         return who;
     }
+
+    @Override
+    public Trace<T> clone() {
+        TraceAble<T> newTrace = new TraceAble<>(who);
+        newTrace.log = new ArrayList<>(log);
+        return newTrace;
+    }
 }

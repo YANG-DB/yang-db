@@ -83,7 +83,7 @@ public class PushDownSplitFilterStrategy implements PlanExtensionStrategy<Plan, 
             Optional<GraphRedundantPropertySchema> redundantTypeProperty = edgeSchema.get().getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, OntologyFinalizer.TYPE_FIELD_P_TYPE).get().getName());
             if(redundantTypeProperty.isPresent()) {
                 RelProp relProp = PushdownRelProp.of(redundantTypeProperty.get().getPropertyRedundantName(), Integer.toString(OntologyFinalizer.TYPE_FIELD_P_TYPE), toEntity.get().geteNum(), constraint);
-                relPropGroup.getrProps().add(relProp);
+                relPropGroup.getProps().add(relProp);
             }
         }
         if(toEntity.get().geteBase() instanceof EConcrete){
@@ -92,22 +92,22 @@ public class PushDownSplitFilterStrategy implements PlanExtensionStrategy<Plan, 
             Optional<GraphRedundantPropertySchema> redundantIdProperty = edgeSchema.get().getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, OntologyFinalizer.ID_FIELD_P_TYPE).get().getName());
             if(redundantIdProperty.isPresent()) {
                 RelProp relProp = PushdownRelProp.of(redundantIdProperty.get().getPropertyRedundantName(), Integer.toString(OntologyFinalizer.ID_FIELD_P_TYPE), toEntity.get().geteNum(), constraint);
-                relPropGroup.getrProps().add(relProp);
+                relPropGroup.getProps().add(relProp);
             }
         }
         //
         if(toEntityPropGroup.isPresent()) {
             AsgEBase<EPropGroup> eProp = AsgEBase.Builder.<EPropGroup>get().withEBase(toEntityPropGroup.get().geteBase().clone()).build();
             List<EProp> ePropsToRemove = new LinkedList<>();
-            eProp.geteBase().geteProps().forEach(p -> {
+            eProp.geteBase().getProps().forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, Integer.parseInt(p.getpType())).get().getName());
                 if(redundantVertexProperty.isPresent()){
                     RelProp relProp = PushdownRelProp.of(redundantVertexProperty.get().getPropertyRedundantName(),p.getpType(), toEntityPropGroup.get().geteNum(), p.getCon());
-                    relPropGroup.getrProps().add(relProp);
+                    relPropGroup.getProps().add(relProp);
                     ePropsToRemove.add(p);
                 }
             });
-            eProp.geteBase().geteProps().removeAll(ePropsToRemove);
+            eProp.geteBase().getProps().removeAll(ePropsToRemove);
 
             EntityFilterOp entityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(eProp.geteBase()).build());
             EntityFilterOp oldFilterOp = PlanUtil.findFirst(newPlan,EntityFilterOp.class,

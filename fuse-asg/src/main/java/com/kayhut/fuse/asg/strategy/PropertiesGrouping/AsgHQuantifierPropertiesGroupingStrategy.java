@@ -11,7 +11,8 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.HQuant;
 import javaslang.collection.Stream;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by benishue on 19-Apr-17.
@@ -29,15 +30,16 @@ public class AsgHQuantifierPropertiesGroupingStrategy implements AsgStrategy {
                                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
                                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class));
 
-                RelPropGroup rPropGroup = new RelPropGroup();
+                RelPropGroup rPropGroup;
                 List<RelProp> relProps = Stream.ofAll(relPropsAsgBChildren).map(AsgEBase::geteBase).toJavaList();
 
                 if (relProps.size() > 0 ){
-                    rPropGroup.setrProps(relProps);
+                    rPropGroup = new RelPropGroup(relProps);
                     rPropGroup.seteNum(Stream.ofAll(relProps).map(RelProp::geteNum).min().get());
 
                     relPropsAsgBChildren.forEach(hQuant::removeBChild);
                 } else {
+                    rPropGroup = new RelPropGroup();
                     rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get() + 1);
                 }
 
