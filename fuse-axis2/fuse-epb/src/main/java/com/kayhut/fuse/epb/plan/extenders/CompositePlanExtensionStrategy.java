@@ -15,6 +15,7 @@ public class CompositePlanExtensionStrategy<P, Q> implements PlanExtensionStrate
     private PlanExtensionStrategy<P,Q>[] innerExtenders;
 
     @Inject
+    @SafeVarargs
     public CompositePlanExtensionStrategy(PlanExtensionStrategy<P, Q> ... innerExtenders) {
         this.innerExtenders = innerExtenders;
     }

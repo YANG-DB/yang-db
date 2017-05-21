@@ -26,7 +26,7 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
         Plan startPlan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 0)));
 
 
-        ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy(
+        ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy<Plan, AsgQuery>(
                 (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 1)))
                                              , Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 3)))),
                 (plan, query) -> Collections.singletonList(Plan.compose(plan.get(), new RelationOp(getAsgEBaseByEnum(asgQuery, 5)))),
@@ -48,7 +48,7 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
         Plan startPlan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 0)));
 
 
-        ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy(
+        ChainPlanExtensionStrategy chain =  new ChainPlanExtensionStrategy<Plan, AsgQuery>(
                 (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 1)))
                                              , Plan.compose(plan.get(), new RelationOp(getAsgEBaseByEnum(asgQuery, 3)))),
                 (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(getAsgEBaseByEnum(asgQuery, 7)))

@@ -2,7 +2,9 @@ package com.kayhut.fuse.epb.plan.extenders.dfs;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.extenders.CompoundStepExtenderStrategy;
+import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1NoRedundantPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -16,13 +18,13 @@ import java.util.Optional;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 import static org.junit.Assert.assertEquals;
 
-public class CompoundPlanGeneratorExtenderStrategyTest {
+public class M1NoRedundantPlanExtensionStrategyTest {
 
     @Test
     public void test_simpleQuery0seedPlan() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
 
-        CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.empty(), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 4);
@@ -39,7 +41,7 @@ public class CompoundPlanGeneratorExtenderStrategyTest {
         Plan startPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
 
-        CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
@@ -50,7 +52,7 @@ public class CompoundPlanGeneratorExtenderStrategyTest {
     public void test_simpleQuery2ElementsPlan() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
 
-        CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(
                 Optional.of(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).plan()), asgQuery)).toJavaList();
 
@@ -78,7 +80,7 @@ public class CompoundPlanGeneratorExtenderStrategyTest {
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
 
-        CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 5);
@@ -101,7 +103,7 @@ public class CompoundPlanGeneratorExtenderStrategyTest {
                 new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
 
-        CompoundStepExtenderStrategy strategy = new CompoundStepExtenderStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 6);
