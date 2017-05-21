@@ -23,8 +23,8 @@ public class InitialPlanGeneratorExtenderStrategyTest {
     public void test_simpleQuery1_seedPlan() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan expectedPlan1 = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
-        Plan expectedPlan2 = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
+        Plan expectedPlan2 = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
         List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorExtensionStrategy().extendPlan(Optional.empty(), asgQuery)).toJavaList();
 
@@ -62,11 +62,4 @@ public class InitialPlanGeneratorExtenderStrategyTest {
         assertEquals(extendedPlans.get(4).getOps().size(), 1);
         assertEquals(extendedPlans.get(5).getOps().size(), 1);
     }
-
-
-    //region Private Methods
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
-    }
-    //endregion
 }

@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
@@ -58,8 +57,8 @@ public class RelationFilterOpTranslationStrategyTest {
     public void test_rel2_filter10() {
         AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
-                new RelationOp(AsgQueryUtil.<Rel>getElement(query, 2).get()),
-                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(query, 10).get())
+                new RelationOp(AsgQueryUtil.<Rel>element(query, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(query, 10).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);
@@ -105,8 +104,8 @@ public class RelationFilterOpTranslationStrategyTest {
     public void test_reversed_rel2_filter10() {
         AsgQuery query = simpleQuery2("name", "ontName");
         Plan plan = new Plan(
-                new RelationOp(AsgQueryUtil.reverseRelation(AsgQueryUtil.<Rel>getElement(query, 2).get())),
-                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(query, 10).get())
+                new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.<Rel>element(query, 2).get())),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(query, 10).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);

@@ -5,7 +5,6 @@ import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
@@ -29,11 +28,11 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        Stream.ofAll(AsgQueryUtil.getElements(query, EEntityBase.class))
-                .filter(asgEBase -> !AsgQueryUtil.getNextAdjacentDescendant(asgEBase, Quant1.class).isPresent())
+        Stream.ofAll(AsgQueryUtil.elements(query, EEntityBase.class))
+                .filter(asgEBase -> !AsgQueryUtil.nextAdjacentDescendant(asgEBase, Quant1.class).isPresent())
                 .forEach(entityBase -> {
 
-                    Optional<AsgEBase<EProp>> asgEProp = AsgQueryUtil.getNextAdjacentDescendant(entityBase, EProp.class);
+                    Optional<AsgEBase<EProp>> asgEProp = AsgQueryUtil.nextAdjacentDescendant(entityBase, EProp.class);
                     if (asgEProp.isPresent()) {
                         EPropGroup ePropGroup = new EPropGroup(Arrays.asList(asgEProp.get().geteBase()));
                         ePropGroup.seteNum(asgEProp.get().geteNum());
@@ -41,7 +40,7 @@ public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
                         entityBase.addNextChild(new AsgEBase<>(ePropGroup));
                     } else {
                         EPropGroup ePropGroup = new EPropGroup();
-                        int maxEnum = Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get();
+                        int maxEnum = Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
 
                         if (entityBase.getNext().isEmpty()) {
                             ePropGroup.seteNum(maxEnum + 1);

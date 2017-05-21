@@ -72,11 +72,11 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
         PushDownSplitFilterStrategy chain = new PushDownSplitFilterStrategy(ontologyProvider,schemaProvider);
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
@@ -104,10 +104,10 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.queryWithEtypedAndEconcrete("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
         PushDownSplitFilterStrategy chain = new PushDownSplitFilterStrategy(ontologyProvider,schemaProvider);
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
@@ -121,10 +121,4 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         Assert.assertTrue(idRelProp.isPresent());
         Assert.assertEquals("123",idRelProp.get().getCon().getExpr());
     }
-
-    //region Private Methods
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
-    }
-    //endregion
 }

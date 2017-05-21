@@ -34,9 +34,9 @@ public class RelationOpTranslationStrategyTest {
     public void test_entity1_rel2_entity3() throws Exception {
         AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(query, 2).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(query, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 3).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);
@@ -79,9 +79,9 @@ public class RelationOpTranslationStrategyTest {
     public void test_entity3_rel2_entity1() throws Exception {
         AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 3).get()),
-                new RelationOp(AsgQueryUtil.reverseRelation(AsgQueryUtil.<Rel>getElement(query, 2).get())),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 3).get()),
+                new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.<Rel>element(query, 2).get())),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get())
         );
 
         Ontology ontology = Mockito.mock(Ontology.class);

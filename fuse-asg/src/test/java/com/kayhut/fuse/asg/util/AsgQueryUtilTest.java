@@ -1,6 +1,5 @@
 package com.kayhut.fuse.asg.util;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -83,7 +82,7 @@ public class AsgQueryUtilTest {
         AsgQuery query = simpleQuery1("name", "ont");
 
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(1, 2, 3));
-        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.getPath(query, 1, 3);
+        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 1, 3);
         assertEquals(expectedPath, actualPath);
     }
 
@@ -92,7 +91,7 @@ public class AsgQueryUtilTest {
         AsgQuery query = simpleQuery1("name", "ont");
 
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(3, 2, 1));
-        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.getPath(query, 3, 1);
+        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 3, 1);
         assertEquals(expectedPath, actualPath);
     }
 
@@ -101,7 +100,7 @@ public class AsgQueryUtilTest {
         AsgQuery query = simpleQuery2("name", "ont");
 
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(3, 4, 5, 6));
-        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.getPath(query, 3, 6);
+        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 3, 6);
         assertEquals(expectedPath, actualPath);
     }
 
@@ -110,7 +109,7 @@ public class AsgQueryUtilTest {
         AsgQuery query = simpleQuery2("name", "ont");
 
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(6, 5, 4, 3));
-        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.getPath(query, 6, 3);
+        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 6, 3);
         assertEquals(expectedPath, actualPath);
     }
 
@@ -119,7 +118,7 @@ public class AsgQueryUtilTest {
         AsgQuery query = simpleQuery2("name", "ont");
 
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(3, 4, 7, 8));
-        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.getPath(query, 3, 8);
+        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 3, 8);
         assertEquals(expectedPath, actualPath);
     }
 
@@ -128,7 +127,7 @@ public class AsgQueryUtilTest {
         AsgQuery query = simpleQuery2("name", "ont");
 
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(8, 7, 4, 3));
-        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.getPath(query, 8, 3);
+        List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 8, 3);
         assertEquals(expectedPath, actualPath);
     }
     //endregion
@@ -137,7 +136,7 @@ public class AsgQueryUtilTest {
     private List<AsgEBase<? extends EBase>> getExpectedPath(AsgQuery query, Iterable<Integer> eNums) {
         List<AsgEBase<? extends EBase>> expectedPath = new ArrayList<>();
         for(int eNum : eNums) {
-            expectedPath.add(AsgQueryUtil.getNextDescendant(query.getStart(), eNum).get());
+            expectedPath.add(AsgQueryUtil.nextDescendant(query.getStart(), eNum).get());
         }
         return expectedPath;
     }

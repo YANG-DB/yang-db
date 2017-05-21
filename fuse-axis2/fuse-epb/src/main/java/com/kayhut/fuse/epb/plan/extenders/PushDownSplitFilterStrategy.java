@@ -55,9 +55,9 @@ public class PushDownSplitFilterStrategy implements PlanExtensionStrategy<Plan, 
             return Collections.emptyList();
         }
 
-        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.getBDescendant(nextRelation.get(), RelPropGroup.class);
-        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.getNextDescendant(nextRelation.get(), EEntityBase.class);
-        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = AsgQueryUtil.getNextDescendant(toEntity.get(), EPropGroup.class);
+        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.bDescendant(nextRelation.get(), RelPropGroup.class);
+        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.nextDescendant(nextRelation.get(), EEntityBase.class);
+        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = AsgQueryUtil.nextDescendant(toEntity.get(), EPropGroup.class);
 
         String relationTypeNameById = OntologyUtil.getRelationTypeNameById(ontology, nextRelation.get().geteBase().getrType());
         Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeNameById);

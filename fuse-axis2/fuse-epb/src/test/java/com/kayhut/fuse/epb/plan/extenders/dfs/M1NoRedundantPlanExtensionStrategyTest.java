@@ -1,10 +1,8 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1NoRedundantPlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -87,7 +85,7 @@ public class M1NoRedundantPlanExtensionStrategyTest {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
         Plan startPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();
@@ -121,12 +119,12 @@ public class M1NoRedundantPlanExtensionStrategyTest {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
@@ -144,12 +142,12 @@ public class M1NoRedundantPlanExtensionStrategyTest {
         AsgQuery asgQuery = simpleQuery3("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
@@ -162,11 +160,4 @@ public class M1NoRedundantPlanExtensionStrategyTest {
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(5).entity(6).plan(), extendedPlans.get(4));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(7).relFilter(11).entity(8).plan(), extendedPlans.get(5));
     }
-
-
-    //region Private Methods
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
-    }
-    //endregion
 }

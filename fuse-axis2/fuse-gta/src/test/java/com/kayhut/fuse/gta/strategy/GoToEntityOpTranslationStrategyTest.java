@@ -23,7 +23,7 @@ public class GoToEntityOpTranslationStrategyTest {
     public void test_entity1_rel2_entity3_goto1() throws Exception {
         AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
         Plan plan = new Plan(
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(query, 1).get())
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get())
         );
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
