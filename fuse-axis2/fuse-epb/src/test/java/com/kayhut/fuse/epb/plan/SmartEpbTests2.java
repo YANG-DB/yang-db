@@ -1,0 +1,297 @@
+package com.kayhut.fuse.epb.plan;
+
+import com.google.common.collect.Iterables;
+import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
+import com.kayhut.fuse.epb.plan.extenders.CompoundStepExtenderStrategy;
+import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
+import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
+import com.kayhut.fuse.epb.plan.statistics.Statistics;
+import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
+import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.unipop.schemaProviders.*;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import javaslang.collection.Stream;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Created by moti on 20/05/2017.
+ */
+public class SmartEpbTests2 {
+
+    private GraphElementSchemaProvider graphElementSchemaProvider;
+    private Ontology ontology;
+    private PhysicalIndexProvider physicalIndexProvider;
+    private GraphStatisticsProvider graphStatisticsProvider;
+    private OntologyGraphLayoutProvider layoutProvider;
+
+    private EBaseStatisticsProvider eBaseStatisticsProvider;
+    private StatisticsCostEstimator statisticsCostEstimator;
+
+    private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+    private long startTime;
+
+    private static String INDEX_PREFIX = "idx-";
+    private static String INDEX_FORMAT = "idx-%s";
+    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+
+    @Before
+    public void setup() throws ParseException {
+
+        startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
+        Map<String, Integer> typeCard = new HashMap<>();
+        typeCard.put("own", 200);
+        typeCard.put("Dragon", 1000);
+        typeCard.put("Person", 200);
+
+        graphStatisticsProvider = mock(GraphStatisticsProvider.class);
+        when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
+            GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
+            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartition().getIndices()).toJavaList();
+            return graphStatisticsProvider.getEdgeCardinality(edgeSchema, indices);
+        });
+
+        when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
+            GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
+            List indices = invocationOnMock.getArgumentAt(1, List.class);
+            return new Statistics.Cardinality(typeCard.get(edgeSchema.getType())* indices.size(), typeCard.get(edgeSchema.getType())* indices.size());
+        });
+
+        when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
+            GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
+            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartition().getIndices()).toJavaList();
+            return graphStatisticsProvider.getVertexCardinality(vertexSchema, indices);
+        });
+
+        when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
+            GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
+            List indices = invocationOnMock.getArgumentAt(1, List.class);
+            return new Statistics.Cardinality(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
+        });
+
+        when(graphStatisticsProvider.getGlobalSelectivity(any(), any())).thenReturn(10l);
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(List.class))).thenAnswer(invocationOnMock -> {
+            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
+            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
+            int card = typeCard.get(elementSchema.getType());
+            if(propertySchema.getType().equals("string")){
+                return createStringHistogram(card, indices.size());
+            }
+            if(propertySchema.getType().equals("int")){
+                return createLongHistogram(card, indices.size());
+            }
+            if(propertySchema.getType().equals("date")){
+                return createDateHistogram(card, elementSchema,propertySchema, indices);
+            }
+            return null;
+        });
+
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(String.class))).thenAnswer(invocationOnMock -> {
+            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
+            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            int card = typeCard.get(elementSchema.getType());
+            return createStringHistogram(card, indices.size());
+        });
+
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(Long.class))).thenAnswer(invocationOnMock -> {
+            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
+            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            int card = typeCard.get(elementSchema.getType());
+            return createLongHistogram(card, indices.size());
+        });
+
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(Date.class))).thenAnswer(invocationOnMock -> {
+            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
+            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
+            int card = typeCard.get(elementSchema.getType());
+            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
+            return createDateHistogram(card,elementSchema,propertySchema, indices);
+        });
+
+        IndexPartition defaultIndexPartition = mock(IndexPartition.class);
+        when(defaultIndexPartition.getIndices()).thenReturn(Collections.singleton("idx1"));
+        physicalIndexProvider = mock(PhysicalIndexProvider.class);
+        when(physicalIndexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
+            String type = invocationOnMock.getArgumentAt(0, String.class);
+            if(type.equals("Person")){
+                return (IndexPartition) () -> Arrays.asList("Persons1","Persons2");
+            }
+            if(type.equals("Dragon")){
+                return (IndexPartition) () -> Arrays.asList("Dragons1","Dragons2");
+            }
+            if(type.equals("own")){
+                return new TimeSeriesIndexPartition() {
+                    @Override
+                    public String getDateFormat() {
+                        return DATE_FORMAT_STRING;
+                    }
+
+                    @Override
+                    public String getIndexPrefix() {
+                        return INDEX_PREFIX;
+                    }
+
+                    @Override
+                    public String getIndexFormat() {
+                        return INDEX_FORMAT;
+                    }
+
+                    @Override
+                    public String getTimeField() {
+                        return "startDate";
+                    }
+
+                    @Override
+                    public String getIndexName(Date date) {
+                        return String.format(getIndexFormat(), DATE_FORMAT.format(date));
+                    }
+
+                    @Override
+                    public Iterable<String> getIndices() {
+                        return IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
+                                map(this::getIndexName).collect(Collectors.toList());
+                    }
+                };
+            }
+            return defaultIndexPartition;
+        });
+
+        layoutProvider = mock(OntologyGraphLayoutProvider.class);
+        when(layoutProvider.getRedundantVertexProperty(any(), any())).thenReturn(Optional.empty());
+
+        ontology = OntologyTestUtils.createDragonsOntologyShort();
+        graphElementSchemaProvider = new OntologySchemaProvider(physicalIndexProvider, ontology,layoutProvider);
+
+
+
+
+        eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
+        statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1.0,0.001));
+
+        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
+        PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
+
+
+        PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
+
+        planSearcher = new BottomUpPlanSearcher<>(
+                new CompoundStepExtenderStrategy(),
+                pruneStrategy,
+                pruneStrategy,
+                planSelector,
+                planSelector,
+                validator,
+                statisticsCostEstimator);
+    }
+
+    private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {
+        List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
+        if(elementSchema.getIndexPartition() instanceof TimeSeriesIndexPartition){
+            TimeSeriesIndexPartition timeSeriesIndexPartition = (TimeSeriesIndexPartition) elementSchema.getIndexPartition();
+            if(timeSeriesIndexPartition.getTimeField().equals(graphElementPropertySchema.getName())){
+                for(int i = 0;i<3;i++){
+                    Date dt = new Date(startTime - i*60*60*1000);
+                    String indexName = timeSeriesIndexPartition.getIndexName(dt);
+                    if(indices.contains(indexName)){
+                        buckets.add(new Statistics.BucketInfo<>(card, card/10, dt, new Date(startTime - (i-1) * 60*60*1000)));
+                    }
+                }
+                return new Statistics.HistogramStatistics<>(buckets);
+            }
+        }
+        long bucketSize = card * indices.size() / 3;
+        for(int i = 0;i < 3;i++){
+            Date dt = new Date(startTime - i*60*60*1000);
+            buckets.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, dt, new Date(startTime - (i-1) * 60*60*1000)));
+        }
+        return new Statistics.HistogramStatistics<>(buckets);
+    }
+
+    private Statistics.HistogramStatistics<Long> createLongHistogram(int card, int numIndices) {
+        long bucketSize = card * numIndices / 3;
+        List<Statistics.BucketInfo<Long>> bucketInfos = new ArrayList<>();
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0l,1000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000l,2000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000l,3000l));
+        return new Statistics.HistogramStatistics<>(bucketInfos);
+    }
+
+
+    private Statistics.HistogramStatistics<String> createStringHistogram(int card, int numIndices) {
+        long bucketSize = card * numIndices / 3;
+        List<Statistics.BucketInfo<String>> bucketInfos = new ArrayList<>();
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, "a","g"));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, "g","o"));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, "o","z"));
+        return new Statistics.HistogramStatistics<>(bucketInfos);
+    }
+
+    @Test
+    public void testSingleElementNoCondition(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed( 1,"D", 1)).
+                next(eProp(2)).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        Assert.assertEquals(first.getCost().getGlobalCost().cost,400, 0.1);
+        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,400, 0.1);
+    }
+
+    @Test
+    public void testSingleElementWithCondition(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed( 1,"D", 1)).
+                next(eProp(2, EProp.of("1", 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        Assert.assertEquals(first.getCost().getGlobalCost().cost,133d/13d, 0.1);
+        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,133d/13d, 0.1);
+    }
+
+    @Test
+    public void testPathSelectionNoConditions(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed( 1,"P", 1)).
+                next(eProp(2)).
+                next(rel(Rel.Direction.R, 3, 1).below(relProp(4))).
+                next(typed(2,"D", 5)).
+                next(eProp(6)).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        Assert.assertEquals(first.getCost().getGlobalCost().cost,133d/13d, 0.1);
+        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,133d/13d, 0.1);
+    }
+}
