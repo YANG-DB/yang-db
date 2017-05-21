@@ -11,19 +11,11 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.AndP;
 public class AndPQueryTranslator extends CompositeQueryTranslator {
     //region Constructors
     public AndPQueryTranslator(PredicateQueryTranslator...translators) {
-        super(null, translators);
-    }
-
-    public AndPQueryTranslator(String name, PredicateQueryTranslator...translators) {
-        super(name, Stream.of(translators).toJavaList());
+        super(translators);
     }
 
     public AndPQueryTranslator(Iterable<PredicateQueryTranslator> translators) {
-        super(null, translators);
-    }
-
-    public AndPQueryTranslator(String name, Iterable<PredicateQueryTranslator> translators) {
-        super(name, translators);
+        super(translators);
     }
     //endregion
 

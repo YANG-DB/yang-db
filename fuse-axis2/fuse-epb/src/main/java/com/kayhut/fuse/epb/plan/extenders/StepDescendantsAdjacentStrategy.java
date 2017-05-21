@@ -40,27 +40,32 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
 
         Plan newPlan = plan.get();
         for (AsgEBase<Rel> nextRelation : nextRelations) {
-            plans.add(compute(nextRelation, newPlan));
+            Optional<Plan> computedPlan = compute(nextRelation, newPlan);
+            if (computedPlan.isPresent()) {
+                plans.add(computedPlan.get());
 
-            if(!Plan.equals(plan.get(), newPlan)) {
-                newPlan.log("StepDescendantsAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+                if (!Plan.equals(plan.get(), newPlan)) {
+                    newPlan.log("StepDescendantsAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+                }
             }
         }
 
         return plans;
     }
 
-    private Plan compute(AsgEBase<Rel> nextRelation, Plan newPlan) {
+    private Optional<Plan> compute(AsgEBase<Rel> nextRelation, Plan newPlan) {
 
         Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.getBDescendant(nextRelation, RelPropGroup.class);
 
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.getNextDescendant(nextRelation, EEntityBase.class);
+        if (!toEntity.isPresent()) {
+            return Optional.empty();
+        }
 
         Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtil.getNextAdjacentDescendant(toEntity.get(), Quant1.class);
-        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
-        if (toEntityQuant.isPresent()) {
-            toEntityPropGroup = AsgQueryUtil.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
-        }
+        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = toEntityQuant.isPresent() ?
+                AsgQueryUtil.getNextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class) :
+                AsgQueryUtil.getNextAdjacentDescendant(toEntity.get(), EPropGroup.class);
 
         newPlan = newPlan.withOp(new RelationOp(nextRelation));
         if (nextRelationPropGroup.isPresent()) {
@@ -71,7 +76,8 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
         if (toEntityPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
-        return newPlan;
+
+        return Optional.of(newPlan);
     }
     //endregion
 

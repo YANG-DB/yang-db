@@ -12,21 +12,12 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.OrP;
 public class OrPQueryTranslator extends CompositeQueryTranslator {
     //region Constructors
     public OrPQueryTranslator(PredicateQueryTranslator...translators) {
-        super(null, translators);
-    }
-
-    public OrPQueryTranslator(String name, PredicateQueryTranslator...translators) {
-        super(name, Stream.of(translators).toJavaList());
+        super(translators);
     }
 
     public OrPQueryTranslator(Iterable<PredicateQueryTranslator> translators) {
-        super(null, translators);
-    }
-
-    public OrPQueryTranslator(String name, Iterable<PredicateQueryTranslator> translators) {
-        super(name, translators);
-    }
-    //endregion
+        super(translators);
+    }    //endregion
 
     //region CompositeQueryTranslator Implementation
     @Override

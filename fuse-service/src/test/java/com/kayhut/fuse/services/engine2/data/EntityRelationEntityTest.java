@@ -723,7 +723,7 @@ public class EntityRelationEntityTest {
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
             if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
         }
 
