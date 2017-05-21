@@ -10,6 +10,10 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
+import com.typesafe.config.ConfigValueFactory;
 import org.jooby.Jooby;
 import org.jooby.Result;
 import org.jooby.Results;
@@ -61,7 +65,16 @@ public class FuseApp extends Jooby {
         registerCursorApi(urlSupplier);
         registerPageApi(urlSupplier);
         registerSearchApi(urlSupplier);
+    }
+    //endregion
 
+    //region Public Methods
+    public FuseApp conf(String path, String activeProfile) {
+        Config config = ConfigFactory.parseResources(path);
+        config = config.withValue("application.profile", ConfigValueFactory.fromAnyRef(activeProfile, "FuseApp"));
+
+        super.use(config);
+        return this;
     }
     //endregion
 
@@ -243,6 +256,7 @@ public class FuseApp extends Jooby {
     //endregion
 
     public static void main(final String[] args) {
-        run(() -> new FuseApp(new DefaultAppUrlSupplier("/fuse")), args);
+        run(() -> new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                .conf("application.conf", "activeProfile"), args);
     }
 }
