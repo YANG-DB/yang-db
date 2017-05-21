@@ -179,10 +179,25 @@ public class AsgQuery {
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(String eTag, int eNum,Integer ... vTypes) {
+        public static AsgEBase<ETyped> typed(int eType, int eNum) {
+            ETyped eTyped = new ETyped();
+            eTyped.seteType(eType);
+            eTyped.seteNum(eNum);
+            return new AsgEBase<>(eTyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(String eTag,int eNum, Integer ... vTypes) {
             EUntyped untyped = new EUntyped();
             untyped.setNvTypes(Arrays.asList(vTypes));
             untyped.seteTag(eTag);
+            untyped.seteNum(eNum);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum,Integer ... vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setNvTypes(Arrays.asList(vTypes));
             untyped.seteNum(eNum);
 
             return new AsgEBase<>(untyped);

@@ -2,13 +2,22 @@ package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 22-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EnumeratedType {
+    public EnumeratedType() {
+    }
+
+    public EnumeratedType(String eType, List<Value> values) {
+        this.eType = eType;
+        this.values = values;
+    }
 
     public String geteType() {
         return eType;
@@ -37,6 +46,10 @@ public class EnumeratedType {
     private List<Value> values;
     //endregion
 
+    public static EnumeratedType from(String name,Enum[] enums) {
+        return new EnumeratedType(name, Arrays.stream(enums).map(v-> new Value(v.ordinal(), v.name())).collect(Collectors.toList()));
+    }
+
     public static final class EnumeratedTypeBuilder {
         private String eType;
         private List<Value> values;
@@ -59,10 +72,7 @@ public class EnumeratedType {
         }
 
         public EnumeratedType build() {
-            EnumeratedType enumeratedType = new EnumeratedType();
-            enumeratedType.setValues(values);
-            enumeratedType.eType = this.eType;
-            return enumeratedType;
+            return new EnumeratedType(this.eType,values);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
 import com.kayhut.fuse.epb.plan.extenders.CompoundStepExtenderStrategy;
@@ -9,6 +8,8 @@ import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.epb.tests.BasicScenarioSetup;
 import com.kayhut.fuse.epb.tests.ScenarioMockUtil;
+import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -17,19 +18,15 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.RelProp;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.FIRST_NAME;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
-import static com.kayhut.fuse.model.query.ConstraintOp.gt;
-import static com.kayhut.fuse.model.query.Rel.Direction.R;
-import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 /**
  * Created by moti on 5/18/2017.
@@ -64,8 +61,8 @@ public class SmartEpbTests {
     @Test
     public void testSingleElement(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed( 1,"D", 1)).
-                next(eProp(2,EProp.of("1", 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(typed(PERSON.type, 1)).
+                next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);

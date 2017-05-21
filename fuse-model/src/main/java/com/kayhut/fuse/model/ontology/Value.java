@@ -8,6 +8,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Value {
 
+    public Value() {
+    }
+
+    public Value(int val, String name) {
+        this.val = val;
+        this.name = name;
+    }
+
     public int getVal() {
         return val;
     }
@@ -57,10 +65,7 @@ public class Value {
         }
 
         public Value build() {
-            Value value = new Value();
-            value.setVal(val);
-            value.setName(name);
-            return value;
+            return new Value(val,name);
         }
     }
 }

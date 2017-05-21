@@ -12,7 +12,6 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -33,6 +32,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
@@ -66,9 +66,9 @@ public class SmartEpbTests2 {
 
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
         Map<String, Integer> typeCard = new HashMap<>();
-        typeCard.put("own", 200);
-        typeCard.put("Dragon", 1000);
-        typeCard.put("Person", 200);
+        typeCard.put(OWN.name, 200);
+        typeCard.put(DRAGON.name, 1000);
+        typeCard.put(PERSON.name, 200);
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
@@ -101,13 +101,13 @@ public class SmartEpbTests2 {
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
             int card = typeCard.get(elementSchema.getType());
-            if(propertySchema.getType().equals("string")){
+            if(propertySchema.getType().equals(STRING)){
                 return createStringHistogram(card, indices.size());
             }
-            if(propertySchema.getType().equals("int")){
+            if(propertySchema.getType().equals(INT)){
                 return createLongHistogram(card, indices.size());
             }
-            if(propertySchema.getType().equals("date")){
+            if(propertySchema.getType().equals(DATE)){
                 return createDateHistogram(card, elementSchema,propertySchema, indices);
             }
             return null;
@@ -140,13 +140,13 @@ public class SmartEpbTests2 {
         physicalIndexProvider = mock(PhysicalIndexProvider.class);
         when(physicalIndexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
             String type = invocationOnMock.getArgumentAt(0, String.class);
-            if(type.equals("Person")){
+            if(type.equals(PERSON.name)){
                 return (IndexPartition) () -> Arrays.asList("Persons1","Persons2");
             }
-            if(type.equals("Dragon")){
+            if(type.equals(DRAGON.name)){
                 return (IndexPartition) () -> Arrays.asList("Dragons1","Dragons2");
             }
-            if(type.equals("own")){
+            if(type.equals(OWN)){
                 return new TimeSeriesIndexPartition() {
                     @Override
                     public String getDateFormat() {
@@ -165,7 +165,7 @@ public class SmartEpbTests2 {
 
                     @Override
                     public String getTimeField() {
-                        return "startDate";
+                        return START_DATE.name;
                     }
 
                     @Override
@@ -256,7 +256,7 @@ public class SmartEpbTests2 {
     @Test
     public void testSingleElementNoCondition(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed( 1,"D", 1)).
+                next(typed( PERSON.type, 1)).
                 next(eProp(2)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
@@ -269,8 +269,8 @@ public class SmartEpbTests2 {
     @Test
     public void testSingleElementWithCondition(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed( 1,"D", 1)).
-                next(eProp(2, EProp.of("1", 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(typed(PERSON.type, 1)).
+                next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
@@ -282,10 +282,10 @@ public class SmartEpbTests2 {
     @Test
     public void testPathSelectionNoConditions(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed( 1,"P", 1)).
+                next(typed(PERSON.type, 1)).
                 next(eProp(2)).
-                next(rel(Rel.Direction.R, 3, 1).below(relProp(4))).
-                next(typed(2,"D", 5)).
+                next(rel(Rel.Direction.R, 3, OWN.type).below(relProp(4))).
+                next(typed(DRAGON.type, 5)).
                 next(eProp(6)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);

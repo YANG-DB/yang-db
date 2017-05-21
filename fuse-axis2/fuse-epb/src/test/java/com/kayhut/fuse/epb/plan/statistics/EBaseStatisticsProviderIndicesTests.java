@@ -100,9 +100,7 @@ public class EBaseStatisticsProviderIndicesTests {
 
         ontology = OntologyTestUtils.createDragonsOntologyShort();
         RelationshipType relation2 = OntologyUtil.getRelationshipType(ontology, OntologyUtil.getRelationTypeNameById(ontology, 2)).get();
-        List<Integer> props = new ArrayList<>(relation2.getProperties());
-        props.add(1);
-        relation2.setProperties(props);
+        relation2.addProperty(1);
 
         graphElementSchemaProvider = new OntologySchemaProvider(indexProvider, ontology);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);

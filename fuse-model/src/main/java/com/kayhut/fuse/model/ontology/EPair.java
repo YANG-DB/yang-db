@@ -8,6 +8,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EPair {
+    public EPair() {
+    }
+
+    public EPair(int eTypeA, int eTypeB) {
+        this.eTypeA = eTypeA;
+        this.eTypeB = eTypeB;
+    }
 
     public int geteTypeA() {
         return eTypeA;
@@ -47,6 +54,10 @@ public class EPair {
             return new EPairBuilder();
         }
 
+        public EPair with(int eTypeA,int eTypeB) {
+            return new EPair(eTypeA,eTypeB);
+        }
+
         public EPairBuilder withETypeA(int eTypeA) {
             this.eTypeA = eTypeA;
             return this;
@@ -63,6 +74,8 @@ public class EPair {
             ePair.eTypeB = this.eTypeB;
             return ePair;
         }
+
+
     }
 
 
