@@ -18,6 +18,7 @@ import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
+import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
@@ -110,8 +111,12 @@ public class TraversalCursorFactory implements CursorFactory {
 
         private Entity toEntity(TraversalCursorFactory.TraversalCursorContext context, Path path, EUntyped element) {
             PromiseVertex vertex = path.get(element.geteTag());
-            Set key = new TraversalValuesByKeyProvider().getValueByKey(((TraversalConstraint) vertex.getConstraint().get()).getTraversal(), T.label.getAccessor());
-            int eType = OntologyUtil.getEntityTypeIdByName(context.getOntology(), key.iterator().next().toString());
+            IdPromise idPromise = (IdPromise)vertex.getPromise();
+
+            int eType = idPromise.getLabel().isPresent() ?
+                    OntologyUtil.getEntityTypeIdByName(context.getOntology(), idPromise.getLabel().get()) :
+                    0;
+
             return toEntity(vertex.id().toString(),eType,element.geteTag());
         }
 

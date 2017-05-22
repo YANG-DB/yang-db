@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -171,53 +172,53 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    public void test_Dragon_Fire_d1() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d1", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_1() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_1", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d2() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d2", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_2() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_2", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d3() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d3", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_3() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_3", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d4() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d4", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_4() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_4", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d5() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d5", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_5() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_5", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d6() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d6", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_6() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_6", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d7() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d7", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_7() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_7", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d8() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d8", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_8() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_8", Rel.Direction.R);
     }
 
     @Test
-    public void test_Dragon_Fire_d9() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d9", Rel.Direction.R);
+    public void test_Dragon_Fire_Dragon_9() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_9", Rel.Direction.R);
     }
 
     @Test
-    public void test_d0_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d0", Rel.Direction.R);
+    public void test_Dragon_0_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_0", Rel.Direction.R);
     }
 
     @Test
@@ -231,38 +232,38 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    public void test_d3_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d3", Rel.Direction.R);
+    public void test_Dragon_3_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_3", Rel.Direction.R);
     }
 
     @Test
-    public void test_d4_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d4", Rel.Direction.R);
+    public void test_Dragon_4_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_4", Rel.Direction.R);
     }
 
     @Test
-    public void test_d5_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d5", Rel.Direction.R);
+    public void test_Dragon_5_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_5", Rel.Direction.R);
     }
 
     @Test
-    public void test_d6_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d6", Rel.Direction.R);
+    public void test_Dragon_6_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_6", Rel.Direction.R);
     }
 
     @Test
-    public void test_d7_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d7", Rel.Direction.R);
+    public void test_Dragon_7_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_7", Rel.Direction.R);
     }
 
     @Test
-    public void test_d8_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d8", Rel.Direction.R);
+    public void test_Dragon_8_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_8", Rel.Direction.R);
     }
 
     @Test
-    public void test_d9_Fire_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d9", Rel.Direction.R);
+    public void test_Dragon_9_Fire_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_9", Rel.Direction.R);
     }
 
     @Test
@@ -294,48 +295,48 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    public void test_Dragon_FiredBy_d3() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d3", Rel.Direction.L);
+    public void test_Dragon_FiredBy_Dragon_3() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_3", Rel.Direction.L);
     }
 
     @Test
-    public void test_Dragon_FiredBy_d4() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d4", Rel.Direction.L);
+    public void test_Dragon_FiredBy_Dragon_4() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_4", Rel.Direction.L);
     }
 
     @Test
-    public void test_Dragon_FiredBy_d5() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d5", Rel.Direction.L);
+    public void test_Dragon_FiredBy_Dragon_5() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_5", Rel.Direction.L);
     }
 
     @Test
-    public void test_Dragon_FiredBy_d6() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d6", Rel.Direction.L);
+    public void test_Dragon_FiredBy_Dragon_6() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_6", Rel.Direction.L);
     }
 
     @Test
-    public void test_Dragon_FiredBy_d7() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d7", Rel.Direction.L);
+    public void test_Dragon_FiredBy_Dragon_7() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_7", Rel.Direction.L);
     }
 
     @Test
-    public void test_Dragon_FiredBy_d8() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d8", Rel.Direction.L);
+    public void test_Dragon_FiredBy_Dragon_8() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_8", Rel.Direction.L);
     }
 
     @Test
-    public void test_Dragon_FiredBy_d9() throws Exception {
-        test_Dragon_Fire_ConcreteDragon("d9", Rel.Direction.L);
+    public void test_Dragon_FiredBy_Dragon_9() throws Exception {
+        test_Dragon_Fire_ConcreteDragon("Dragon_9", Rel.Direction.L);
     }
 
     @Test
-    public void test_d0_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d0", Rel.Direction.L);
+    public void test_Dragon_0_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_0", Rel.Direction.L);
     }
 
     @Test
-    public void test_d1_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d1", Rel.Direction.L);
+    public void test_Dragon_1_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_1", Rel.Direction.L);
     }
 
     @Test
@@ -344,38 +345,38 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    public void test_d3_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d3", Rel.Direction.L);
+    public void test_Dragon_3_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_3", Rel.Direction.L);
     }
 
     @Test
-    public void test_d4_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d4", Rel.Direction.L);
+    public void test_Dragon_4_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_4", Rel.Direction.L);
     }
 
     @Test
-    public void test_d5_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d5", Rel.Direction.L);
+    public void test_Dragon_5_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_5", Rel.Direction.L);
     }
 
     @Test
-    public void test_d6_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d6", Rel.Direction.L);
+    public void test_Dragon_6_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_6", Rel.Direction.L);
     }
 
     @Test
-    public void test_d7_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d7", Rel.Direction.L);
+    public void test_Dragon_7_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_7", Rel.Direction.L);
     }
 
     @Test
-    public void test_d8_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d8", Rel.Direction.L);
+    public void test_Dragon_8_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_8", Rel.Direction.L);
     }
 
     @Test
-    public void test_d9_FiredBy_Dragon() throws Exception {
-        test_ConcreteDragon_Fire_Dragon("d9", Rel.Direction.L);
+    public void test_Dragon_9_FiredBy_Dragon() throws Exception {
+        test_ConcreteDragon_Fire_Dragon("Dragon_9", Rel.Direction.L);
     }
 
     @Test
@@ -592,6 +593,26 @@ public class EntityRelationEntityTest {
                         sdf.parse("1980-03-01 00:00:00").getTime(),
                         sdf.parse("1980-03-31 00:00:00").getTime()));
     }
+
+    @Test
+    public void test_Dragon_Fire_Untyped() throws Exception {
+        test_Dragon_Fire_Untyped(Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Dragon_FiredBy_Untyped() throws Exception {
+        test_Dragon_Fire_Untyped(Rel.Direction.L);
+    }
+
+    @Test
+    public void test_Untyped_Fire_Dragon() throws Exception {
+        test_Untyped_Fire_Dragon(Rel.Direction.R);
+    }
+
+    @Test
+    public void test_Untyped_FiredBy_Dragon() throws Exception {
+        test_Untyped_Fire_Dragon(Rel.Direction.L);
+    }
     //endregion
 
     //region Protected Methods
@@ -655,7 +676,7 @@ public class EntityRelationEntityTest {
                         __.has("temperature", ConverstionUtil.convertConstraint(of(op, value))))),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
-                        .map(entity -> Integer.parseInt(entity.geteID().substring(1)))
+                        .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
                         .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
                                 .test(temperatureValueFunction.apply(intId)))
                         .isEmpty()));
@@ -682,7 +703,7 @@ public class EntityRelationEntityTest {
                         __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("A"))
-                        .map(entity -> Integer.parseInt(entity.geteID().substring(1)))
+                        .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
                         .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
                                 .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
                         .isEmpty()));
@@ -708,9 +729,51 @@ public class EntityRelationEntityTest {
                         __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
-                        .map(entity -> Integer.parseInt(entity.geteID().substring(1)))
+                        .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
                         .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
                                 .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
+                        .isEmpty()));
+    }
+
+    private static void test_Dragon_Fire_Untyped(Rel.Direction direction) throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
+                new Rel(2, $ont.rType$("Fire"), direction, null, 3, 0),
+                new EUntyped(3, "B", 0, 0)
+        )).build();
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                direction,
+                Constraint.by(__.and(
+                        __.has(T.label, "Fire"),
+                        __.has(GlobalConstants.HasKeys.DIRECTION,
+                                direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
+                assignment -> !Stream.ofAll(assignment.getEntities())
+                        .filter(entity -> entity.geteTag().contains("A"))
+                        .filter(entity -> entity.geteType() == $ont.eType$("Dragon"))
+                        .isEmpty()));
+    }
+
+    private static void test_Untyped_Fire_Dragon(Rel.Direction direction) throws Exception {
+        Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new EUntyped(1, "A", 2, 0),
+                new Rel(2, $ont.rType$("Fire"), direction, null, 3, 0),
+                new ETyped(3, "B", $ont.eType$("Dragon"), 0, 0)
+        )).build();
+
+        testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
+                10,
+                direction,
+                Constraint.by(__.and(
+                        __.has(T.label, "Fire"),
+                        __.has(GlobalConstants.HasKeys.DIRECTION,
+                                direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
+                assignment -> !Stream.ofAll(assignment.getEntities())
+                        .filter(entity -> entity.geteTag().contains("B"))
+                        .filter(entity -> entity.geteType() == $ont.eType$("Dragon"))
                         .isEmpty()));
     }
 
@@ -735,7 +798,7 @@ public class EntityRelationEntityTest {
         List<Map<String, Object>> people = new ArrayList<>();
         for(int i = 0 ; i < numPeople ; i++) {
             Map<String, Object> person = new HashMap<>();
-            person.put("id", "p" + i);
+            person.put("id", "Person_" + i);
             person.put("name", "person" + i);
             people.add(person);
         }
@@ -753,7 +816,7 @@ public class EntityRelationEntityTest {
         List<Map<String, Object>> dragons = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashMap<>();
-            dragon.put("id", "d" + i);
+            dragon.put("id", "Dragon_" + i);
             dragon.put("name", "dragon" + i);
             dragon.put("birthDate", sdf.format(new Date(birthDateValueFunction.apply(i))));
             dragons.add(dragon);
@@ -790,16 +853,16 @@ public class EntityRelationEntityTest {
                 fireEdgeDual.put("direction", Direction.IN);
 
                 Map<String, Object> entityAI = new HashMap<>();
-                entityAI.put("id", "d" + i);
+                entityAI.put("id", "Dragon_" + i);
                 entityAI.put("type", "Dragon");
                 Map<String, Object> entityAJ = new HashMap<>();
-                entityAJ.put("id", "d" + j);
+                entityAJ.put("id", "Dragon_" + j);
                 entityAJ.put("type", "Dragon");
                 Map<String, Object> entityBI = new HashMap<>();
-                entityBI.put("id", "d" + i);
+                entityBI.put("id", "Dragon_" + i);
                 entityBI.put("type", "Dragon");
                 Map<String, Object> entityBJ = new HashMap<>();
-                entityBJ.put("id", "d" + j);
+                entityBJ.put("id", "Dragon_" + j);
                 entityBJ.put("type", "Dragon");
 
                 fireEdge.put("entityA", entityAI);
@@ -846,13 +909,13 @@ public class EntityRelationEntityTest {
         for(int i = 0 ; i < numDragons ; i++) {
             for (int j = 0; j < i; j++) {
                 Entity entityA = Entity.Builder.instance()
-                        .withEID("d" + i)
+                        .withEID("Dragon_" + i)
                         .withETag(Collections.singletonList(eTag1))
                         .withEType($ont.eType$("Dragon"))
                         .build();
 
                 Entity entityB = Entity.Builder.instance()
-                        .withEID("d" + j)
+                        .withEID("Dragon_" + j)
                         .withETag(Collections.singletonList(eTag2))
                         .withEType($ont.eType$("Dragon"))
                         .build();

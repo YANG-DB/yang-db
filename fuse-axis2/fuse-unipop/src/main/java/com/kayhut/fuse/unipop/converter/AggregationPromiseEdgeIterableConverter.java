@@ -2,6 +2,7 @@ package com.kayhut.fuse.unipop.converter;
 
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.labelProvider.LabelProvider;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.PromiseEdge;
@@ -18,9 +19,13 @@ import java.util.*;
  */
 public class AggregationPromiseEdgeIterableConverter implements ElementConverter<Map<String, Aggregation>, Iterator<Edge>> {
     //region Constructor
-    public AggregationPromiseEdgeIterableConverter(UniGraph graph, EdgeIdProvider<String> edgeIdProvider) {
+    public AggregationPromiseEdgeIterableConverter(
+            UniGraph graph,
+            EdgeIdProvider<String> edgeIdProvider,
+            LabelProvider<String> vertexLabelProvider) {
         this.graph = graph;
         this.edgeIdProvider = edgeIdProvider;
+        this.vertexLabelProvider = vertexLabelProvider;
     }
     //endregion
 
@@ -37,7 +42,9 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
             Terms layer2 = (Terms) b.getAggregations().asMap().get(GlobalConstants.EdgeSchema.DEST);
             layer2.getBuckets().forEach(innerBucket -> {
                 String destId = innerBucket.getKeyAsString();
-                PromiseVertex destVertex = new PromiseVertex(Promise.as(destId), Optional.empty(), graph);
+                String destLabel = this.vertexLabelProvider.get(destId);
+
+                PromiseVertex destVertex = new PromiseVertex(Promise.as(destId, destLabel), Optional.empty(), graph);
 
                 Map<String,Object> propMap = new HashMap<>();
                 propMap.put(GlobalConstants.HasKeys.COUNT, innerBucket.getDocCount());
@@ -64,5 +71,6 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
     //region Fields
     private UniGraph graph;
     private EdgeIdProvider<String> edgeIdProvider;
+    private LabelProvider<String> vertexLabelProvider;
     //endregion
 }
