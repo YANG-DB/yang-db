@@ -10,6 +10,7 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -19,6 +20,8 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.Typed;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
@@ -291,10 +294,56 @@ public class SmartEpbTests2 {
         Assert.assertNotNull(first);
         Assert.assertEquals(first.getCost().getGlobalCost().cost,601, 0.1);
         Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        Assert.assertEquals(iterator.next().getCost().cost,400, 0.1);
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(400,op.getCost().cost, 0.1);
+        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
+        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
+        Assert.assertEquals(101,iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(100, iterator.next().getCost().cost, 0.1);
+
+    }
+
+    @Test
+    public void testPathSelectionNoConditions(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2)).
+                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6)).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        Assert.assertEquals(first.getCost().getGlobalCost().cost,601, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(400, op.getCost().cost, 0.1);
+
         Assert.assertEquals(iterator.next().getCost().cost,101, 0.1);
         Assert.assertEquals(iterator.next().getCost().cost,100, 0.1);
     }
 
-    
+    @Test
+    public void testPathSelectionNoConditionsFilterToSide(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2)).
+                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc")))).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        Assert.assertEquals(30.3, first.getCost().getGlobalCost().cost, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(10.09,op.getCost().cost, 0.1);
+        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
+        Assert.assertEquals(DRAGON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
+        Assert.assertEquals(10.19, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(10.09, iterator.next().getCost().cost, 0.1);
+    }
+
 }

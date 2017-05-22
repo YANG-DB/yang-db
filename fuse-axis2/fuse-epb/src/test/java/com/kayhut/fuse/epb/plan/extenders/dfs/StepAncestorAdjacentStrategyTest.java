@@ -109,7 +109,7 @@ public class StepAncestorAdjacentStrategyTest {
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
+                new RelationOp(getAsgEBaseByEnum(asgQuery, 2), R),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
 
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 3)))), asgQuery)).toJavaList();
@@ -157,7 +157,7 @@ public class StepAncestorAdjacentStrategyTest {
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
+                new RelationOp(getAsgEBaseByEnum(asgQuery, 5), R),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
 
@@ -177,7 +177,7 @@ public class StepAncestorAdjacentStrategyTest {
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
+                new RelationOp(getAsgEBaseByEnum(asgQuery, 5), R),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
 
@@ -198,7 +198,7 @@ public class StepAncestorAdjacentStrategyTest {
 
         Plan expectedPlan = new Plan(
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 8)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 7)),
+                new RelationOp(getAsgEBaseByEnum(asgQuery, 7), R),
                 new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 11)),
                 new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
                 new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));

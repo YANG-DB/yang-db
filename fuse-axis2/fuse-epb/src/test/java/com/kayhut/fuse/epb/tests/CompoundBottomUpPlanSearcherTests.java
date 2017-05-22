@@ -41,7 +41,7 @@ public class CompoundBottomUpPlanSearcherTests {
         List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
         plans.forEach(planList::add);
 
-        Assert.assertEquals(2, planList.size());
+        Assert.assertEquals(12, planList.size());
 //        PlanAssert.assertEquals(mock(query).entity(1).rel(2).relFilter(10).entity(3).entityFilter(9).rel(5).entity(6).goTo(3).rel(7).relFilter(11).entity(8).plan(), planList.get(1).getPlan());
 //        PlanAssert.assertEquals(mock(query).entity(1).rel(2).relFilter(10).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).plan(), planList.get(0).getPlan());
     }
@@ -58,8 +58,9 @@ public class CompoundBottomUpPlanSearcherTests {
         List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
         plans.forEach(planList::add);
 
-        Assert.assertEquals(1, planList.size());
+        Assert.assertEquals(2, planList.size());
         Assert.assertEquals(3, planList.get(0).getPlan().getOps().size());
+        Assert.assertEquals(3, planList.get(1).getPlan().getOps().size());
     }
 
     @Test
@@ -74,8 +75,9 @@ public class CompoundBottomUpPlanSearcherTests {
         List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
         plans.forEach(planList::add);
 
-        Assert.assertEquals(1, planList.size());
+        Assert.assertEquals(2, planList.size());
         Assert.assertEquals(3, planList.get(0).getPlan().getOps().size());
+        Assert.assertEquals(3, planList.get(1).getPlan().getOps().size());
     }
 
     @Test
@@ -107,8 +109,9 @@ public class CompoundBottomUpPlanSearcherTests {
         List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
         planWrappers.forEach(planList::add);
 
-        Assert.assertEquals(1, planList.size());
+        Assert.assertEquals(2, planList.size());
         Assert.assertEquals(3, planList.get(0).getPlan().getOps().size());
+        Assert.assertEquals(3, planList.get(1).getPlan().getOps().size());
 
         AsgEBase firstElement = query.getLeft().getStart().getNext().get(0);
         AsgEBase secondElement = (AsgEBase) firstElement.getNext().get(0);
