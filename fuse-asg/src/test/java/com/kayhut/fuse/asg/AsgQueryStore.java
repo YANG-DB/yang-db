@@ -281,7 +281,7 @@ public class AsgQueryStore {
 
     public static AsgQuery Q188_V1() {
         //region Query Building
-        Query query = new Query(); //Person owns dragon with EProp - Name: 'dragonA'
+        Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
         query.setOnt("Dragons");
         query.setName("Q188");
         List<EBase> elements = new ArrayList<EBase>();
@@ -346,7 +346,7 @@ public class AsgQueryStore {
 
     public static AsgQuery Q187_V1() {
         //region Query Building
-        Query query = new Query(); //Person owns dragon with EProp - Name: 'dragonA'
+        Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
         query.setOnt("Dragons");
         query.setName("Q187");
         List<EBase> elements = new ArrayList<EBase>();

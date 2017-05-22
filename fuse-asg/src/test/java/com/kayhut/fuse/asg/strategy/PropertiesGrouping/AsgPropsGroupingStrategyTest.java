@@ -120,7 +120,7 @@ public class AsgPropsGroupingStrategyTest {
         quant.setqType(QuantType.all);
         quant.setNext(Arrays.asList(5,6));
         elements.add(quant);
-        //Entity Property  -> dragon Name = Black
+        //Entity Property  -> Dragon Name = Black
         EProp eProp1 = new EProp();
         eProp1.seteNum(5);
         eProp1.setpType("1.1");
@@ -130,7 +130,7 @@ public class AsgPropsGroupingStrategyTest {
         con.setExpr("dragonA");
         eProp1.setCon(con);
         elements.add(eProp1);
-        //Entity Property  -> dragon Color = Black
+        //Entity Property  -> Dragon Color = Black
         EProp eProp2 = new EProp();
         eProp2.seteNum(6);
         eProp2.setpType("3");

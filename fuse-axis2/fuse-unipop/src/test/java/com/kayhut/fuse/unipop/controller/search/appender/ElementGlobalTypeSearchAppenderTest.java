@@ -44,7 +44,7 @@ public class ElementGlobalTypeSearchAppenderTest {
         Assert.assertTrue(appendResult);
 
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"dragon\"]}}}}}}",
+                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"terms\":{\"_type\":[\"Person\",\"Dragon\"]}}}}}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
     }
@@ -54,7 +54,7 @@ public class ElementGlobalTypeSearchAppenderTest {
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider((label, elementType) -> {
             if (elementType == ElementType.vertex) {
-                if (label.equals("dragon")){
+                if (label.equals("Dragon")){
                     return () -> Arrays.<String>asList("dragonIndex1", "dragonIndex2");
                 }
                 else if(label.equals("Person")){
@@ -86,7 +86,7 @@ public class ElementGlobalTypeSearchAppenderTest {
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
                             .withEType(1).withName("Person").build());
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(2).withName("dragon").build());
+                            .withEType(2).withName("Dragon").build());
                     return entityTypes;
                 }
         );

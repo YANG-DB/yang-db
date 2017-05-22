@@ -113,7 +113,7 @@ public class OntologyTest {
                 "\t},\n" +
                 "\t{\n" +
                 "\t\t\"eType\": 2,\n" +
-                "\t\t\"name\": \"dragon\",\n" +
+                "\t\t\"name\": \"Dragon\",\n" +
                 "\t\t\"properties\": [7]\n" +
                 "\t},\n" +
                 "\t{\n" +

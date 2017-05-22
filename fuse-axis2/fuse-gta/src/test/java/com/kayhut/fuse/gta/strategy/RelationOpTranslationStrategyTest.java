@@ -46,7 +46,7 @@ public class RelationOpTranslationStrategyTest {
                             EntityType.EntityTypeBuilder.anEntityType()
                                     .withEType(1).withName("Person").build(),
                             EntityType.EntityTypeBuilder.anEntityType()
-                                    .withEType(2).withName("dragon").build()
+                                    .withEType(2).withName("Dragon").build()
                     );
                 }
         );
@@ -91,7 +91,7 @@ public class RelationOpTranslationStrategyTest {
                             EntityType.EntityTypeBuilder.anEntityType()
                                     .withEType(1).withName("Person").build(),
                             EntityType.EntityTypeBuilder.anEntityType()
-                                    .withEType(2).withName("dragon").build()
+                                    .withEType(2).withName("Dragon").build()
                     );
                 }
         );

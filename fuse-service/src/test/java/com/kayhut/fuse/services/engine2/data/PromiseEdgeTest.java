@@ -177,8 +177,8 @@ public class PromiseEdgeTest{
         //Assert.assertEquals(1, edges.size());
 
         edges.forEach(e -> {
-            //Verify that the relation's endpoint is the correct vertex
-            System.out.println("Promise Filter relation: " + e);
+            //Verify that the edge's endpoint is the correct vertex
+            System.out.println("Promise Filter edge: " + e);
             Assert.assertEquals("d11", e.inVertex().id());
         });
 

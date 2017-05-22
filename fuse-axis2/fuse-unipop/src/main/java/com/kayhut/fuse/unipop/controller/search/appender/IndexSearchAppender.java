@@ -49,7 +49,7 @@ public class IndexSearchAppender implements SearchAppender<PromiseElementControl
                     }
                 });
                 return true;
-            } else // No specific label - append all index partitions filtered by the type of the element (vertex or relation)
+            } else // No specific label - append all index partitions filtered by the type of the element (vertex or edge)
             {
                 manageSpecialCase(promiseElementControllerContext,schemaProvider,searchBuilder);
             }

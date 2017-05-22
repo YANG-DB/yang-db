@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Created by User on 19/03/2017.
  *
- * g.V() OR g.E() ==> relation controller
+ * g.V() OR g.E() ==> edge controller
  */
 public class PromiseElementController implements SearchQuery.SearchController {
     //region Constructors
