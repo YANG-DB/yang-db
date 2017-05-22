@@ -22,7 +22,7 @@ public class SearchHitPromiseFilterEdgeConverter implements ElementConverter<Sea
 
     @Override
     public Edge convert(SearchHit hit) {
-        PromiseVertex v = new PromiseVertex(Promise.as(hit.id()), Optional.empty(), graph);
+        PromiseVertex v = new PromiseVertex(Promise.as(hit.id(), hit.getType()), Optional.empty(), graph);
         return new PromiseFilterEdge(v, graph);
     }
 

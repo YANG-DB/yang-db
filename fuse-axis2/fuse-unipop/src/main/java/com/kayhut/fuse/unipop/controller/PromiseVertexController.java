@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.labelProvider.PrefixedLabelProvider;
 import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -21,6 +22,8 @@ import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
+
+import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 
 /**
  * Created by User on 16/03/2017.
@@ -82,10 +85,10 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
 
         CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
-                        new StartVerticesSearchAppender(),
-                        SearchAppenderUtil.wrap(new EdgeConstraintSearchAppender()),
-                        new PromiseEdgeAggregationAppender(),
-                        new PromiseEdgeIndexAppender());
+                        wrap(new StartVerticesSearchAppender()),
+                        wrap(new EdgeConstraintSearchAppender()),
+                        wrap(new PromiseEdgeAggregationAppender()),
+                        wrap(new PromiseEdgeIndexAppender()));
 
         compositeAppender.append(searchBuilder, context);
 
@@ -95,7 +98,10 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
         SearchResponse response = searchRequest.execute().actionGet();
 
         //convert result
-        AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(graph, new PromiseEdgeIdProvider(constraint));
+        AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(
+                graph,
+                new PromiseEdgeIdProvider(constraint),
+                new PrefixedLabelProvider("_"));
         return converter.convert(response.getAggregations().asMap());
 
     }

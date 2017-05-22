@@ -1,6 +1,7 @@
 package com.kayhut.fuse.unipop.converter;
 
 import com.kayhut.fuse.unipop.promise.IdPromise;
+import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.search.SearchHit;
@@ -20,7 +21,7 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
 
     @Override
     public Element convert(SearchHit element) {
-        return new PromiseVertex(new IdPromise(element.id()), Optional.empty(), graph);
+        return new PromiseVertex(Promise.as(element.id(), element.getType()), Optional.empty(), graph);
     }
     //endregion
 
