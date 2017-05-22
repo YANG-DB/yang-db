@@ -52,6 +52,11 @@ public class RandomUtil {
         return (new Date(ThreadLocalRandom.current().nextLong(startDate.getTime(), endDate.getTime())));
     }
 
+    /**
+     * @param n num of random numbers
+     * @param m normalize sum to m
+     * @return n random numbers normalized
+     */
     public static double[] getRandDistArray(int n, double m) {
         double randArray[] = new double[n];
         double sum = 0;
@@ -59,6 +64,47 @@ public class RandomUtil {
         // Generate n random numbers
         for (int i = 0; i < randArray.length; i++) {
             randArray[i] = Math.random();
+            sum += randArray[i];
+        }
+
+        // Normalize sum to m
+        for (int i = 0; i < randArray.length; i++) {
+            randArray[i] /= sum;
+            randArray[i] *= m;
+        }
+        return randArray;
+    }
+
+
+
+    public static double[] getCumulativeDistArray(double[] array) {
+        double cumulativeArray[] = new double[array.length];
+
+        for (int i = 0; i < cumulativeArray.length; i++) {
+            if (i == 0) {
+                cumulativeArray[i] = array[i];
+            }
+            else {
+                cumulativeArray[i] = cumulativeArray[i - 1] + array[i];
+            }
+        }
+        return cumulativeArray;
+    }
+
+
+    /**
+     * @param n num of random numbers
+     * @param m normalize sum to m
+     * @param lambda the rate of the exponential distribution (> 0.0)
+     * @return n exp distributed numbers normalized
+     */
+    public static double[] getExpDistArray(int n, double m, double lambda) {
+        double randArray[] = new double[n];
+        double sum = 0;
+
+        // Generate n random numbers
+        for (int i = 0; i < randArray.length; i++) {
+            randArray[i] = exp(lambda);
             sum += randArray[i];
         }
 
@@ -215,6 +261,55 @@ public class RandomUtil {
             p *= uniform();
         } while (p >= expLambda);
         return k - 1;
+    }
+
+    /**
+     * Returns a random real number from an exponential distribution
+     * with rate &lambda;.
+     *
+     * @param  lambda the rate of the exponential distribution
+     * @return a random real number from an exponential distribution with
+     *         rate {@code lambda}
+     * @throws IllegalArgumentException unless {@code lambda > 0.0}
+     */
+    public static double exp(double lambda) {
+        if (!(lambda > 0.0))
+            throw new IllegalArgumentException("lambda must be positive");
+        return -Math.log(1 - uniform()) / lambda;
+    }
+
+    /**
+     * Rearranges the elements of the specified array in uniformly random order.
+     *
+     * @param  a the array to shuffle
+     * @throws IllegalArgumentException if {@code a} is {@code null}
+     */
+    public static void shuffle(double[] a) {
+        if (a == null) throw new IllegalArgumentException("argument array is null");
+        int n = a.length;
+        for (int i = 0; i < n; i++) {
+            int r = i + uniform(n-i);     // between i and n-1
+            double temp = a[i];
+            a[i] = a[r];
+            a[r] = temp;
+        }
+    }
+
+    /**
+     * Rearranges the elements of the specified array in uniformly random order.
+     *
+     * @param  a the array to shuffle
+     * @throws IllegalArgumentException if {@code a} is {@code null}
+     */
+    public static void shuffle(int[] a) {
+        if (a == null) throw new IllegalArgumentException("argument array is null");
+        int n = a.length;
+        for (int i = 0; i < n; i++) {
+            int r = i + uniform(n-i);     // between i and n-1
+            int temp = a[i];
+            a[i] = a[r];
+            a[r] = temp;
+        }
     }
 
 }

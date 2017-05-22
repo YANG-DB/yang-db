@@ -74,13 +74,10 @@ public class DataGenerator {
     }
 
     public static List<Kingdom> generateKingdoms(Logger logger, Configuration configuration) {
-        //PersonConfiguration personConfiguration =  new PersonConfiguration(configuration);
         List<Kingdom> kingdomsList = new ArrayList<>();
-
         try {
             KingdomConfiguration kingdomConfiguration = new KingdomConfiguration(configuration);
             KingdomGenerator generator = new KingdomGenerator(kingdomConfiguration);
-            //int populationSize = personConfiguration.getNumberOfNodes();
 
             //In cases we want to generate only part of the kingdoms
             int kingdomsSize = kingdomConfiguration.getNumberOfNodes();
@@ -148,6 +145,36 @@ public class DataGenerator {
             startPerosnId += kingdomPopulationSize + 1;
         }
         return personsToKingdomsSet;
+    }
+
+    public static List<Tuple2> attachPersonsToGuilds(List<Integer> guildsIdList, List<Integer> personsIdList) {
+        final double notAssignedRatio = 0.025; //precentage of persons not assigned to any guild
+        int totalPopulationSize = personsIdList.size();
+        List<Tuple2> personsToGuildsSet = new ArrayList<>();
+        //We are creating an exp distribution of guild size summed up to the kingdoms number
+        double[] expDistArray = RandomUtil.getExpDistArray(guildsIdList.size() - 1, 1 - notAssignedRatio, 0.5);
+        List<Double> guildsMembersDist = Arrays.stream(expDistArray).boxed().collect(Collectors.toList());
+        double[] cumulativeDistArray = RandomUtil.getCumulativeDistArray(expDistArray);
+
+        // Adding a 'artficial - not member' guild - the persons belong to this
+        guildsMembersDist.add(notAssignedRatio);
+
+        int startPerosnId = 0;
+        for (int i = 0; i < guildsMembersDist.size(); i++) {
+            int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * totalPopulationSize));
+            for (int personId = startPerosnId; personId < totalPopulationSize * (1-notAssignedRatio); personId++) {
+                //The last persons do not belong to any guild
+                personsToGuildsSet.add(new Tuple2<>(personId, i));
+                if (personId == startPerosnId + guildMembersSize)
+                    break;
+            }
+            startPerosnId += guildMembersSize + 1;
+        }
+
+        //Adding the same persons to severals guilds - without changing the ratio of each guild
+        //RandomUtil.randomInt()
+
+        return personsToGuildsSet;
     }
 
 
