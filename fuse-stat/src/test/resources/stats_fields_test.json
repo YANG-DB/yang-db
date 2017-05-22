@@ -76,6 +76,22 @@
             }
           ]
         }
+      },
+      {
+        "field" : "gender",
+        "histogram":
+        {
+          "histogramType": "term",
+          "dataType":"string",
+          "buckets":[
+            {
+              "term":"MALE"
+            },
+            {
+              "term":"FEMALE"
+            }
+          ]
+        }
       }
     ]
   }]

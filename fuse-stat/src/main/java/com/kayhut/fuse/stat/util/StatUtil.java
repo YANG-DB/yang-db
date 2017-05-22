@@ -2,6 +2,7 @@ package com.kayhut.fuse.stat.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.model.configuration.*;
+import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.configuration.histogram.HistogramType;
 import com.kayhut.fuse.stat.model.result.StringStatResult;
 import javaslang.collection.Stream;
@@ -123,13 +124,13 @@ public class StatUtil {
         return field;
     }
 
-    public static List<Bucket> calculateAlphabeticBuckets(int startCode, int numChars, int prefixLen, int interval) {
-        List<Bucket> buckets = new ArrayList<>();
+    public static List<BucketRange> calculateAlphabeticBuckets(int startCode, int numChars, int prefixLen, int interval) {
+        List<BucketRange> buckets = new ArrayList<>();
 
         int numOfBuckets = (int) Math.ceil(Math.pow(numChars, prefixLen) / interval);
         for (int i = 0; i < numOfBuckets; i++) {
             int bucketIdx = i * interval;
-            buckets.add(new Bucket(calcBucketStart(numChars, startCode, prefixLen, bucketIdx),
+            buckets.add(new BucketRange(calcBucketStart(numChars, startCode, prefixLen, bucketIdx),
                     calcBucketEnd(numChars, startCode, prefixLen, bucketIdx, interval)));
         }
 
@@ -194,8 +195,8 @@ public class StatUtil {
         }
     }
 
-    public static List<Bucket> createNumericBuckets(double min, double max, int numOfBins) {
-        List<Bucket> buckets = new ArrayList<>();
+    public static List<BucketRange> createNumericBuckets(double min, double max, int numOfBins) {
+        List<BucketRange> buckets = new ArrayList<>();
         double[] bucketsData = new double[numOfBins];
         for (int i = 0; i < numOfBins; i++){
             bucketsData[i] = min + i * (max - min) / (numOfBins - 1);
@@ -204,7 +205,7 @@ public class StatUtil {
         for (int i = 0; i < bucketsData.length -1; i++){
             int start = (int)bucketsData[i];
             int end = (int)bucketsData[i+1];
-            Bucket bucket = new Bucket(Integer.toString(start), Integer.toString(end));
+            BucketRange bucket = new BucketRange(Integer.toString(start), Integer.toString(end));
             buckets.add(bucket);
         }
         return buckets;

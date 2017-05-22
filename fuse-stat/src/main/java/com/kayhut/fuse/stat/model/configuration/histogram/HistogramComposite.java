@@ -1,6 +1,6 @@
 package com.kayhut.fuse.stat.model.configuration.histogram;
 
-import com.kayhut.fuse.stat.model.configuration.Bucket;
+import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
 
 import java.util.List;
 
@@ -25,11 +25,11 @@ public class HistogramComposite extends Histogram {
         this.dataType = dataType;
     }
 
-    public List<Bucket> getManualBuckets() {
+    public List<BucketRange> getManualBuckets() {
         return manualBuckets;
     }
 
-    public void setManualBuckets(List<Bucket> manualBuckets) {
+    public void setManualBuckets(List<BucketRange> manualBuckets) {
         this.manualBuckets = manualBuckets;
     }
 
@@ -45,7 +45,7 @@ public class HistogramComposite extends Histogram {
 
     //region Fields
     private String dataType;
-    private List<Bucket> manualBuckets;
+    private List<BucketRange> manualBuckets;
     public Histogram autoBuckets;
     //endregion
 
@@ -53,7 +53,7 @@ public class HistogramComposite extends Histogram {
     public static final class HistogramCompositeBuilder {
         public Histogram autoBuckets;
         private String dataType;
-        private List<Bucket> manualBuckets;
+        private List<BucketRange> manualBuckets;
 
         private HistogramCompositeBuilder() {
         }
@@ -67,7 +67,7 @@ public class HistogramComposite extends Histogram {
             return this;
         }
 
-        public HistogramCompositeBuilder withManualBuckets(List<Bucket> manualBuckets) {
+        public HistogramCompositeBuilder withManualBuckets(List<BucketRange> manualBuckets) {
             this.manualBuckets = manualBuckets;
             return this;
         }

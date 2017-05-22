@@ -1,12 +1,12 @@
 package com.kayhut.fuse.stat.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.stat.model.configuration.bucket.Bucket;
+import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
+import com.kayhut.fuse.stat.model.configuration.bucket.BucketTerm;
+import com.kayhut.fuse.stat.model.configuration.histogram.*;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.model.configuration.*;
-import com.kayhut.fuse.stat.model.configuration.histogram.HistogramComposite;
-import com.kayhut.fuse.stat.model.configuration.histogram.HistogramManual;
-import com.kayhut.fuse.stat.model.configuration.histogram.HistogramNumeric;
-import com.kayhut.fuse.stat.model.configuration.histogram.HistogramString;
 import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -22,41 +22,49 @@ public class StatConfigurationTest {
     public void testStatModel() throws Exception {
         HistogramNumeric histogramDragonAge = HistogramNumeric.HistogramNumericBuilder.aHistogramNumeric()
                 .withMin(10).withMax(100).withNumOfBins(10).build();
+
         HistogramString histogramDragonName = HistogramString.HistogramStringBuilder.aHistogramString()
                 .withPrefixSize(3)
                 .withInterval(10).withNumOfChars(26).withFirstCharCode("97").build();
 
         HistogramManual histogramDragonAddress = HistogramManual.HistogramManualBuilder.aHistogramManual()
                 .withBuckets(Arrays.asList(
-                        new Bucket("abc", "dzz"),
-                        new Bucket("efg", "hij"),
-                        new Bucket("klm", "xyz")
+                        new BucketRange("abc", "dzz"),
+                        new BucketRange("efg", "hij"),
+                        new BucketRange("klm", "xyz")
                 )).withDataType("string")
                 .build();
 
         HistogramComposite histogramDragonColor = HistogramComposite.HistogramCompositeBuilder.aHistogramComposite()
                 .withManualBuckets(Arrays.asList(
-                        new Bucket("00", "11"),
-                        new Bucket("22", "33"),
-                        new Bucket("44", "55")
+                        new BucketRange("00", "11"),
+                        new BucketRange("22", "33"),
+                        new BucketRange("44", "55")
                 )).withDataType("string")
                 .withAutoBuckets(HistogramString.HistogramStringBuilder.aHistogramString()
-                .withFirstCharCode("97")
-                .withInterval(10)
-                .withNumOfChars(26)
-                .withPrefixSize(3).build())
+                        .withFirstCharCode("97")
+                        .withInterval(10)
+                        .withNumOfChars(26)
+                        .withPrefixSize(3).build())
                 .build();
 
+        HistogramTerm histogramTerm = HistogramTerm.HistogramTermBuilder.aHistogramTerm()
+                .withDataType("string").withBuckets(Arrays.asList(
+                        new BucketTerm("MALE"),
+                        new BucketTerm("FEMALE")
+                )).build();
 
-        Field nameField = new Field("name",histogramDragonName);
-        Field ageField = new Field("age",histogramDragonAge);
-        Field addressField = new Field("address",histogramDragonAddress);
-        Field colorField = new Field("color",histogramDragonColor);
+
+        Field nameField = new Field("name", histogramDragonName);
+        Field ageField = new Field("age", histogramDragonAge);
+        Field addressField = new Field("address", histogramDragonAddress);
+        Field colorField = new Field("color", histogramDragonColor);
+        Field genderField = new Field("gender", histogramTerm);
 
 
-        Type typeDragon = new Type("dragon",Arrays.asList(ageField, nameField, addressField, colorField));
+        Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField));
 
-        Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1","index2"))
+        Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();
 
         StatContainer statContainer = StatContainer.StatContainerBuilder.aStatContainer()

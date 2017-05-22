@@ -1,15 +1,17 @@
-package com.kayhut.fuse.stat.model.configuration;
+package com.kayhut.fuse.stat.model.configuration.bucket;
 
 /**
  * Created by benishue on 30-Apr-17.
  */
-public class Bucket {
+public class BucketRange extends Bucket {
 
     //region Ctrs
-    public Bucket() {
+    public BucketRange() {
+        super();
     }
 
-    public Bucket(String start, String end) {
+    public BucketRange(String start, String end) {
+        super();
         this.start = start;
         this.end = end;
     }
@@ -37,4 +39,5 @@ public class Bucket {
     private String start;
     private String end;
     //endregion
+
 }

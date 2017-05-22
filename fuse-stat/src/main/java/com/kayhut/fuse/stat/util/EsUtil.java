@@ -1,6 +1,6 @@
 package com.kayhut.fuse.stat.util;
 
-import com.kayhut.fuse.stat.model.configuration.Bucket;
+import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.result.StringStatResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
@@ -55,9 +55,9 @@ public class EsUtil {
                                                                     String typeName,
                                                                     String fieldName,
                                                                     double min, double max,
-                                                                    long numOfBins){
+                                                                    long numOfBins) {
 
-        List<Bucket> buckets =  StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
+        List<BucketRange> buckets = StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
 
         return getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
     }
@@ -67,11 +67,11 @@ public class EsUtil {
                                                                    String typeName,
                                                                    String fieldName,
                                                                    String dataType,
-                                                                   List<Bucket> buckets){
+                                                                   List<BucketRange> buckets) {
 
         List<StringStatResult> bucketStatResults = new ArrayList<>();
 
-        String aggName = buildAggName(indexName,typeName,fieldName);
+        String aggName = buildAggName(indexName, typeName, fieldName);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
                 .setTypes(typeName);
 
@@ -112,9 +112,13 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    private static List<StringStatResult> getNumericBucketsStatResults(Client client, String indexName, String typeName, String fieldName, List<Bucket> buckets) {
+    private static List<StringStatResult> getNumericBucketsStatResults(Client client,
+                                                                       String indexName,
+                                                                       String typeName,
+                                                                       String fieldName,
+                                                                       List<BucketRange> buckets) {
         List<StringStatResult> bucketStatResults = new ArrayList<>();
-        String aggName = buildAggName(indexName,typeName,fieldName);
+        String aggName = buildAggName(indexName, typeName, fieldName);
 
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
                 .setTypes(typeName);
@@ -156,11 +160,11 @@ public class EsUtil {
                                                                    String indexName,
                                                                    String typeName,
                                                                    String fieldName,
-                                                                   List<Bucket> buckets){
+                                                                   List<BucketRange> buckets) {
 
         List<StringStatResult> bucketStatResults = new ArrayList<>();
 
-        String aggName = buildAggName(indexName,typeName,fieldName);
+        String aggName = buildAggName(indexName, typeName, fieldName);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
                 .setTypes(typeName);
 
@@ -196,7 +200,7 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    private static String buildAggName(String indexName, String typeName, String fieldName){
+    private static String buildAggName(String indexName, String typeName, String fieldName) {
         return indexName + "_" + typeName + "_" + fieldName + "_" + "hist";
     }
 
@@ -294,14 +298,14 @@ public class EsUtil {
 
     }
 
-    public static boolean checkIfEsTypeExists(Client client,String index, String type) {
+    public static boolean checkIfEsTypeExists(Client client, String index, String type) {
         ClusterStateResponse resp =
                 client.admin().cluster().prepareState().execute().actionGet();
         ImmutableOpenMap<String, MappingMetaData> mappings = resp.getState().metaData().index(index).getMappings();
         return mappings.containsKey(type);
     }
 
-    public static boolean checkIfEsDocExists(Client client,String index, String type, String docId) {
+    public static boolean checkIfEsDocExists(Client client, String index, String type, String docId) {
         // Check if a document exists
         GetResponse response = client.prepareGet(index, type, docId).setRefresh(true).execute().actionGet();
         return response.isExists();

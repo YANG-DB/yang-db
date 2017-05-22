@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat;
 
+import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
@@ -42,6 +43,9 @@ public class StatCalculator {
             statIndexName = configuration.getString("statistics.index.name");
             statTypeNumericName = configuration.getString("statistics.type.numeric.name");
             statTypeStringName = configuration.getString("statistics.type.string.name");
+            statTypeTermName = configuration.getString("statistics.type.term.name");
+
+
 
             Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
 
@@ -129,7 +133,7 @@ public class StatCalculator {
                 for(Field field : fieldsWithStringHistogram.get()) {
                     String fieldName = field.getField();
                     HistogramString histogram = (HistogramString) field.getHistogram();
-                    List<Bucket> stringBuckets = StatUtil.calculateAlphabeticBuckets(
+                    List<BucketRange> stringBuckets = StatUtil.calculateAlphabeticBuckets(
                             Integer.parseInt(histogram.getFirstCharCode()),
                             histogram.getNumOfChars(),
                             histogram.getPrefixSize(),
@@ -158,7 +162,7 @@ public class StatCalculator {
 
                     if ("string".equals(dataType)) {
                         HistogramString subHistogram = (HistogramString) histogramComposite.getAutoBuckets();
-                        List<Bucket> stringBuckets = StatUtil.calculateAlphabeticBuckets(
+                        List<BucketRange> stringBuckets = StatUtil.calculateAlphabeticBuckets(
                                 Integer.parseInt(subHistogram.getFirstCharCode()),
                                 subHistogram.getNumOfChars(),
                                 subHistogram.getPrefixSize(),
@@ -211,6 +215,7 @@ public class StatCalculator {
     private static String statIndexName;
     private static String statTypeNumericName;
     private static String statTypeStringName;
+    private static String statTypeTermName;
     //endregion
 }
 
