@@ -29,7 +29,7 @@ public class AsgPropsGroupingStrategyTest {
     @Test
     public void simpleCaseGroupTest() throws Exception {
         //region Query Building
-        Query query = new Query(); //Person owns dragon with EProp - Name: 'dragonA'
+        Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
         query.setOnt("Dragons");
         query.setName("Q1");
         List<EBase> elements = new ArrayList<EBase>();
@@ -89,7 +89,7 @@ public class AsgPropsGroupingStrategyTest {
     @Test
     public void andQuantifierWithAllEPropsTest() throws Exception {
         //region Query Building
-        Query query = new Query(); //Person owns dragon with EProp - Name: 'dragonA'
+        Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
         query.setOnt("Dragons");
         query.setName("Q1");
         List<EBase> elements = new ArrayList<EBase>();

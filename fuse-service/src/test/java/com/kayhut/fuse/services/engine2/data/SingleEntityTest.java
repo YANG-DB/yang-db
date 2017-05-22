@@ -50,7 +50,7 @@ public class SingleEntityTest {
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
                 "dragon",
-                "dragon",
+                "Dragon",
                 idField,
                 () -> createDragons(10)).populate();
 

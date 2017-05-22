@@ -71,7 +71,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
                 .otherV().as("B")
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "dragon"))))
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "Dragon"))))
                 .otherV()
                 .path();
 
@@ -91,7 +91,7 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
                         .otherV().as("B")
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "dragon")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .otherV()
                         .path();
 

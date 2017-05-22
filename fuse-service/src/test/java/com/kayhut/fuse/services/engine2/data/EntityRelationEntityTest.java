@@ -96,7 +96,7 @@ public class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
                 "dragon",
-                "dragon",
+                "Dragon",
                 idField,
                 () -> createDragons(10, birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L)))
                 .populate(); // date interval is ~ 1 month
@@ -791,16 +791,16 @@ public class EntityRelationEntityTest {
 
                 Map<String, Object> entityAI = new HashMap<>();
                 entityAI.put("id", "d" + i);
-                entityAI.put("type", "dragon");
+                entityAI.put("type", "Dragon");
                 Map<String, Object> entityAJ = new HashMap<>();
                 entityAJ.put("id", "d" + j);
-                entityAJ.put("type", "dragon");
+                entityAJ.put("type", "Dragon");
                 Map<String, Object> entityBI = new HashMap<>();
                 entityBI.put("id", "d" + i);
-                entityBI.put("type", "dragon");
+                entityBI.put("type", "Dragon");
                 Map<String, Object> entityBJ = new HashMap<>();
                 entityBJ.put("id", "d" + j);
-                entityBJ.put("type", "dragon");
+                entityBJ.put("type", "Dragon");
 
                 fireEdge.put("entityA", entityAI);
                 fireEdge.put("entityB", entityBJ);

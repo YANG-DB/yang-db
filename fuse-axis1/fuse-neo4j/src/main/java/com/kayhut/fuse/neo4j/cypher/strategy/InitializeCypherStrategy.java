@@ -18,7 +18,7 @@ public class InitializeCypherStrategy extends CypherStrategy {
     }
 
     public CypherCompilationState apply(AsgEBase element) {
-        //start entity - initialize an empty cypher statement, with one path.
+        //start node - initialize an empty cypher statement, with one path.
         if (element.geteBase() instanceof Start) {
             CypherStatement statement = CypherStatement.cypherStatement();
             String path = statement.getNextPathTag();

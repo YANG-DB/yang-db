@@ -18,7 +18,7 @@ public class DragonsPhysicalIndexProvider implements PhysicalIndexProvider {
     public DragonsPhysicalIndexProvider() {
         this.indexPartitions = new HashMap<>();
         this.indexPartitions.put("Person", new StaticIndexPartition(Arrays.asList("person")));
-        this.indexPartitions.put("dragon", new StaticIndexPartition(Arrays.asList("dragon")));
+        this.indexPartitions.put("Dragon", new StaticIndexPartition(Arrays.asList("dragon")));
         this.indexPartitions.put("Fire", new StaticIndexPartition(Arrays.asList("fire20170511", "fire20170512", "fire20170513")));
     }
     //endregion

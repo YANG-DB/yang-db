@@ -64,7 +64,7 @@ public class Neo4jEmbeddedCsvPopTests {
         List<Relationship> relationships = graphDatabaseService.getAllRelationships().stream().collect(Collectors.toList());
         Assert.assertEquals(321, nodes.stream().filter(n -> n.hasLabel(Label.label("Person"))).count());
         Assert.assertEquals(100, nodes.stream().filter(n -> n.hasLabel(Label.label("Horse"))).count());
-        Assert.assertEquals(100, nodes.stream().filter(n -> n.hasLabel(Label.label("dragon"))).count());
+        Assert.assertEquals(100, nodes.stream().filter(n -> n.hasLabel(Label.label("Dragon"))).count());
         Assert.assertEquals(60, nodes.stream().filter(n -> n.hasLabel(Label.label("Guild"))).count());
         Assert.assertEquals(10, nodes.stream().filter(n -> n.hasLabel(Label.label("Kingdom"))).count());
         Assert.assertEquals(5598,relationships.stream().filter(r -> r.isType(RelationshipType.withName("FIRES_AT"))).count());

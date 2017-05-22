@@ -101,7 +101,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "dragon")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
                         .otherV().as("A")
@@ -202,7 +202,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         ETyped eTyped2 = new ETyped();
         eTyped2.seteNum(3);
         eTyped2.seteTag("B");
-        eTyped2.seteType(2); //dragon
+        eTyped2.seteType(2); //Dragon
         AsgEBase<ETyped> eTypedAsg2 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped2).build();
 
         Rel rel = new Rel();

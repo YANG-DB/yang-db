@@ -96,7 +96,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         Optional<RelProp> typeRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.type")).findFirst();
         Assert.assertTrue(typeRelProp.isPresent());
-        Assert.assertEquals("dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));
+        Assert.assertEquals("Dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));
     }
 
     @Test

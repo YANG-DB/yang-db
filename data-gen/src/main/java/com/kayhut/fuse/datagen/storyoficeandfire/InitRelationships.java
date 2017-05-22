@@ -28,7 +28,7 @@ public class InitRelationships {
         
         //
         for (int idx = startIdx ; idx < relListSize; idx++) {
-            // 1. select person entity from people list.
+            // 1. select person node from people list.
             PeopleRelasion owner = new PeopleRelasion(peopleList.getEntity(idx)) ;
             // 2. create number of person --> horse relationships ...
             int iter_h = GenerateRandom.genRandomWithDiffDelta(max_horses,10 ,0.05) ;
@@ -122,7 +122,7 @@ public class InitRelationships {
             int rnd = GenerateRandom.genRandomInt(0, numberOfKingdoms-1) ;
             kingdomRelasionList.getRelasion(rnd).setHorseOrigin(horseList.getEntity(idx));
         }
-        //OriginatedIn(dragon,Kingdom)
+        //OriginatedIn(Dragon,Kingdom)
         for (int idx = 0 ; idx < numberOfDragons ; idx++) {
             int rnd = GenerateRandom.genRandomInt(0, numberOfKingdoms-1) ;
             kingdomRelasionList.getRelasion(rnd).setDragonOrigin(dragonList.getEntity(idx));
