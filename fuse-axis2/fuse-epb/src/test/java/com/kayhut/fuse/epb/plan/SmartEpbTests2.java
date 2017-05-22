@@ -11,7 +11,9 @@ import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -64,10 +66,9 @@ public class SmartEpbTests2 {
 
     @Before
     public void setup() throws ParseException {
-
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
         Map<String, Integer> typeCard = new HashMap<>();
-        typeCard.put(OWN.name, 200);
+        typeCard.put(OWN.name, 1000);
         typeCard.put(DRAGON.name, 1000);
         typeCard.put(PERSON.name, 200);
 
@@ -190,9 +191,6 @@ public class SmartEpbTests2 {
         ontology = OntologyTestUtils.createDragonsOntologyShort();
         graphElementSchemaProvider = new OntologySchemaProvider(physicalIndexProvider, ontology,layoutProvider);
 
-
-
-
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
         statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1.0,0.001));
 
@@ -244,7 +242,6 @@ public class SmartEpbTests2 {
         return new Statistics.HistogramStatistics<>(bucketInfos);
     }
 
-
     private Statistics.HistogramStatistics<String> createStringHistogram(int card, int numIndices) {
         long bucketSize = card * numIndices / 3;
         List<Statistics.BucketInfo<String>> bucketInfos = new ArrayList<>();
@@ -292,7 +289,12 @@ public class SmartEpbTests2 {
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost().cost,133d/13d, 0.1);
-        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,133d/13d, 0.1);
+        Assert.assertEquals(first.getCost().getGlobalCost().cost,601, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        Assert.assertEquals(iterator.next().getCost().cost,400, 0.1);
+        Assert.assertEquals(iterator.next().getCost().cost,101, 0.1);
+        Assert.assertEquals(iterator.next().getCost().cost,100, 0.1);
     }
+
+    
 }
