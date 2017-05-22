@@ -110,7 +110,7 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder entity(int num) {
-            plan = plan.withOp(new EntityOp(getAsgEBaseByEnum(asgQuery, num)));
+            plan = plan.withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, num)));
             return this;
         }
 
@@ -130,17 +130,17 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder rel(int num) {
-            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num)));
+            plan = plan.withOp(new RelationOp(AsgQueryUtil.element$(asgQuery, num)));
             return this;
         }
 
         public PlanMockBuilder rel(int num, Rel.Direction direction) {
-            plan = plan.withOp(new RelationOp(getAsgEBaseByEnum(asgQuery, num), direction));
+            plan = plan.withOp(new RelationOp(AsgQueryUtil.element$(asgQuery, num), direction));
             return this;
         }
 
         public PlanMockBuilder relFilter(int num) {
-            plan = plan.withOp(new RelationFilterOp(getAsgEBaseByEnum(asgQuery, num)));
+            plan = plan.withOp(new RelationFilterOp(AsgQueryUtil.element$(asgQuery, num)));
             return this;
         }
 
@@ -161,7 +161,7 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder entityFilter(int num) {
-            plan = plan.withOp(new EntityFilterOp(getAsgEBaseByEnum(asgQuery, num)));
+            plan = plan.withOp(new EntityFilterOp(AsgQueryUtil.element$(asgQuery, num)));
             return this;
         }
 
@@ -224,14 +224,8 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder goTo(int num) {
-            plan = plan.withOp(new GoToEntityOp(getAsgEBaseByEnum(asgQuery, num)));
+            plan = plan.withOp(new GoToEntityOp(AsgQueryUtil.element$(asgQuery, num)));
             return this;
         }
-    }
-
-
-    //region Private Methods
-    static  <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
     }
 }

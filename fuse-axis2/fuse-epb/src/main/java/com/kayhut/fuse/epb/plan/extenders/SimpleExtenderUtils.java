@@ -99,7 +99,7 @@ public interface SimpleExtenderUtils {
     static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextDescendantUnmarkedOfType(Class<? extends EBase> type,
                                                                                                     AsgEBase<T> asgEBase,
                                                                                                     Set<Integer> markedElements) {
-        return AsgQueryUtil.getNextDescendant(asgEBase,
+        return AsgQueryUtil.nextDescendant(asgEBase,
                 (child) -> type.isAssignableFrom(child.geteBase().getClass()) &&
                         !markedElements.contains(child.geteNum()));
     }
@@ -107,7 +107,7 @@ public interface SimpleExtenderUtils {
     static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> getNextAncestorUnmarkedOfType(Class<? extends EBase> type,
                                                                                                   AsgEBase<T> asgEBase,
                                                                                                   Set<Integer> markedElements) {
-        return AsgQueryUtil.getAncestor(asgEBase,
+        return AsgQueryUtil.ancestor(asgEBase,
                 (child) -> type.isAssignableFrom(child.geteBase().getClass()) &&
                         !markedElements.contains(child.geteNum()));
     }
@@ -146,14 +146,14 @@ public interface SimpleExtenderUtils {
 
         Optional<AsgEBase<T>> nextRelation = getNextDescendantUnmarkedOfType(type, lastEntityOp.getAsgEBase(), markedElements);
         if (!nextRelation.isPresent()) {
-            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtil.getAncestor(lastEntityOp.getAsgEBase(), EEntityBase.class);
+            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtil.ancestor(lastEntityOp.getAsgEBase(), EEntityBase.class);
             while (parentEntity.isPresent()) {
                 nextRelation = getNextDescendantUnmarkedOfType(type, parentEntity.get(), markedElements);
                 if (nextRelation.isPresent()) {
                     break;
                 }
 
-                parentEntity = AsgQueryUtil.getAncestor(parentEntity.get(), EEntityBase.class);
+                parentEntity = AsgQueryUtil.ancestor(parentEntity.get(), EEntityBase.class);
             }
         }
 
@@ -172,12 +172,12 @@ public interface SimpleExtenderUtils {
         if(lastEntityOp==null)
             return Collections.emptyList();
 
-        return AsgQueryUtil.getNextDescendants(lastEntityOp.getAsgEBase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
+        return AsgQueryUtil.nextDescendants(lastEntityOp.getAsgEBase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
                 p -> {
                     if(p.equals(lastEntityOp.getAsgEBase()))
                         return true;
 
-                    List path = AsgQueryUtil.getPathToAncestor(p, lastEntityOp.getAsgEBase().geteBase().geteNum());
+                    List path = AsgQueryUtil.pathToAncestor(p, lastEntityOp.getAsgEBase().geteBase().geteNum());
                     return !path.isEmpty() && path.size()<3;
                 });
     }

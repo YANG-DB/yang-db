@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.extenders.StepDescendantsAdjacentStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -106,11 +105,11 @@ public class StepDescendantsAdjacentStrategyTest {
     public void test_simpleQueryGotoSeedPlan() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
-        Plan plan = new Plan(new GoToEntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+        Plan plan = new Plan(new GoToEntityOp(AsgQueryUtil.element$(asgQuery, 1)));
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -122,11 +121,11 @@ public class StepDescendantsAdjacentStrategyTest {
     public void test_simpleQuery1_seedPlan() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
-        Plan plan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+        Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -139,9 +138,9 @@ public class StepDescendantsAdjacentStrategyTest {
     public void test_simpleQuery1_fullPlan() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -152,13 +151,13 @@ public class StepDescendantsAdjacentStrategyTest {
     public void test_simpleQuery2_seedPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        Plan plan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+        Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -173,31 +172,31 @@ public class StepDescendantsAdjacentStrategyTest {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
         Plan expectedPlan1 = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         Plan expectedPlan2 = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 7)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 11)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 8)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 11)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
 
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -214,30 +213,30 @@ public class StepDescendantsAdjacentStrategyTest {
         AsgQuery asgQuery = simpleQuery3("name", "ont");
 
         Plan expectedPlan1 = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         Plan expectedPlan2 = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 7)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 11)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 8)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 11)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -255,24 +254,24 @@ public class StepDescendantsAdjacentStrategyTest {
         AsgQuery asgQuery = simpleQuery3("name", "ont");
 
         Plan expectedPlan1 = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 7)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 8)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 14)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 15)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 8)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 14)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 15)));
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 7)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 8)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
 
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -288,24 +287,24 @@ public class StepDescendantsAdjacentStrategyTest {
         AsgQuery asgQuery = simpleQuery3("name", "ont");
 
         Plan expectedPlan1 = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 12)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 13)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 12)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 13)));
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -315,10 +314,4 @@ public class StepDescendantsAdjacentStrategyTest {
 
         PlanAssert.assertEquals(expectedPlan1, actualPlan1);
     }
-
-    //region Private Methods
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
-    }
-    //endregion
 }

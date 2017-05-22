@@ -12,13 +12,17 @@ import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import javaslang.collection.Stream;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.*;
 
@@ -599,4 +603,21 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return cardinality;
     }
 
+    private List<String> getVertexTypes(EEntityBase entity, Ontology ontology, Iterable<String> vertexTypes) {
+        List<String> _vertexTypes = Stream.ofAll(vertexTypes).toJavaList();
+        if (entity instanceof EUntyped) {
+            EUntyped eUntyped = (EUntyped) entity;
+            if (eUntyped.getvTypes().size() > 0) {
+                _vertexTypes = eUntyped.getvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList());
+            } else {
+                _vertexTypes = StreamSupport.stream(vertexTypes.spliterator(), false).collect(Collectors.toList());
+                if (eUntyped.getNvTypes().size() > 0) {
+                    _vertexTypes.removeAll(eUntyped.getNvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList()));
+                }
+            }
+        } else if (entity instanceof ETyped) {
+            _vertexTypes = Collections.singletonList(OntologyUtil.getEntityTypeNameById(ontology, ((ETyped) entity).geteType()));
+        }
+        return _vertexTypes;
+    }
 }

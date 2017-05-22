@@ -21,8 +21,8 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     // AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        Stream.ofAll(AsgQueryUtil.<Rel>getElements(query, Rel.class))
-                .filter(asgEBase -> !AsgQueryUtil.getBDescendant(asgEBase, HQuant.class).isPresent())
+        Stream.ofAll(AsgQueryUtil.<Rel>elements(query, Rel.class))
+                .filter(asgEBase -> !AsgQueryUtil.bDescendant(asgEBase, HQuant.class).isPresent())
                 .forEach(asgEBase -> groupRelProps(query, asgEBase));
     }
     //endregion
@@ -31,7 +31,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
     private void groupRelProps(AsgQuery query, AsgEBase<Rel> asgEBase) {
         RelPropGroup rPropGroup;
 
-        List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtil.getBDescendants(
+        List<AsgEBase<RelProp>> relPropsAsgBChildren = AsgQueryUtil.bDescendants(
                 asgEBase,
                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class) ||
@@ -44,7 +44,7 @@ public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
             relPropsAsgBChildren.forEach(asgEBase::removeBChild);
         } else {
             rPropGroup = new RelPropGroup();
-            rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get() + 1);
+            rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
         }
         asgEBase.addBChild(new AsgEBase<>(rPropGroup));
     }

@@ -21,11 +21,11 @@ public class AsgHQuantifierPropertiesGroupingStrategy implements AsgStrategy {
     // Horizontal Quantifier with Bs below
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
-        AsgQueryUtil.getElements(query, HQuant.class).forEach(hQuant -> {
+        AsgQueryUtil.elements(query, HQuant.class).forEach(hQuant -> {
             for (AsgEBase<? extends EBase> asgEBase : new ArrayList<>(hQuant.getB())) {
 
                 List<AsgEBase<RelProp>> relPropsAsgBChildren =
-                        AsgQueryUtil.getBDescendants(
+                        AsgQueryUtil.bDescendants(
                                 asgEBase,
                                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class),
                                 (asgEBase1) -> asgEBase1.geteBase().getClass().equals(RelProp.class));
@@ -40,7 +40,7 @@ public class AsgHQuantifierPropertiesGroupingStrategy implements AsgStrategy {
                     relPropsAsgBChildren.forEach(hQuant::removeBChild);
                 } else {
                     rPropGroup = new RelPropGroup();
-                    rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.getEnums(query)).max().get() + 1);
+                    rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
                 }
 
                 hQuant.addBChild(new AsgEBase<>(rPropGroup));

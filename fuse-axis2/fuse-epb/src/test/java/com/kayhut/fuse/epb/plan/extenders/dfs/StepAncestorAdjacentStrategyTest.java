@@ -81,7 +81,7 @@ public class StepAncestorAdjacentStrategyTest {
     @Test
     public void test_simpleQuery1_seedPlan() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
-        Plan plan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+        Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 0);
@@ -90,12 +90,12 @@ public class StepAncestorAdjacentStrategyTest {
     @Test
     public void test_simpleQuery1_fullPlan() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
-        AsgEBase<Rel> relation = getAsgEBaseByEnum(asgQuery, 2);
+        AsgEBase<Rel> relation = AsgQueryUtil.element$(asgQuery, 2);
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
 
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -105,14 +105,13 @@ public class StepAncestorAdjacentStrategyTest {
     @Test
     public void test_simpleQuery2_fullPlan() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
-        AsgEBase<Rel> relation = getAsgEBaseByEnum(asgQuery, 2);
+        AsgEBase<Rel> relation = AsgQueryUtil.element$(asgQuery, 2);
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2), R),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
-
-        List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 3)))), asgQuery)).toJavaList();
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2), R),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
+        List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
         Plan actualPlan = extendedPlans.get(0);
@@ -124,10 +123,10 @@ public class StepAncestorAdjacentStrategyTest {
     public void test_simpleQuery2ReversefullPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
 
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
@@ -135,17 +134,17 @@ public class StepAncestorAdjacentStrategyTest {
         Assert.assertTrue(extendedPlans.size() == 1);
         Plan actualPlan = extendedPlans.get(0);
 
-        AsgEBase<Rel> relation = getAsgEBaseByEnum(asgQuery, 2);
+        AsgEBase<Rel> relation = AsgQueryUtil.element$(asgQuery, 2);
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
 
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
 
         PlanAssert.assertEquals(expectedPlan, actualPlan);
     }
@@ -153,15 +152,15 @@ public class StepAncestorAdjacentStrategyTest {
     @Test
     public void test_simpleQuery2_seedPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
-        AsgEBase<Rel> relation = getAsgEBaseByEnum(asgQuery, 5);
+        AsgEBase<Rel> relation = AsgQueryUtil.element$(asgQuery, 5);
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5), R),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5),R),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        Plan plan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+        Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -173,15 +172,15 @@ public class StepAncestorAdjacentStrategyTest {
     @Test
     public void test_simpleQuery2GotoPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
-        AsgEBase<Rel> relation = getAsgEBaseByEnum(asgQuery, 5);
+        AsgEBase<Rel> relation = AsgQueryUtil.element$(asgQuery, 5);
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5), R),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5), R),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        Plan plan = new Plan(new GoToEntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+        Plan plan = new Plan(new GoToEntityOp(AsgQueryUtil.element$(asgQuery, 6)));
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -193,17 +192,16 @@ public class StepAncestorAdjacentStrategyTest {
     @Test
     public void test_simpleQuery2_secondPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
-        AsgEBase<Rel> relation = getAsgEBaseByEnum(asgQuery, 7);
+        AsgEBase<Rel> relation = AsgQueryUtil.element$(asgQuery, 7);
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
 
         Plan expectedPlan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 8)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 7), R),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 11)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
-
-        Plan plan = new Plan(new EntityOp(getAsgEBaseByEnum(asgQuery, 8)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 8)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 7), R),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 11)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
+        Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -211,11 +209,4 @@ public class StepAncestorAdjacentStrategyTest {
 
         PlanAssert.assertEquals(expectedPlan, actualPlan);
     }
-
-
-    //region Private Methods
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
-    }
-    //endregion
 }

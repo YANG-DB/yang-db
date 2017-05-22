@@ -26,9 +26,9 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanExtensionStrat
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         List<Plan> plans = new LinkedList<>();
         if(!plan.isPresent()) {
-            List<AsgEBase<EEntityBase>> entitySeeds = AsgQueryUtil.getNextDescendants(query.getStart(), e -> e.geteBase() instanceof EEntityBase, p -> true);
+            List<AsgEBase<EEntityBase>> entitySeeds = AsgQueryUtil.nextDescendants(query.getStart(), e -> e.geteBase() instanceof EEntityBase, p -> true);
             entitySeeds.forEach(entity-> {
-                Optional<AsgEBase<EPropGroup>> epropGroup = AsgQueryUtil.getNextAdjacentDescendant(entity, EPropGroup.class, 2);
+                Optional<AsgEBase<EPropGroup>> epropGroup = AsgQueryUtil.nextAdjacentDescendant(entity, EPropGroup.class, 2);
                 EntityOp op = new EntityOp(entity);
                 Plan newPlan = new Plan(Collections.singletonList(op));
                 if(epropGroup.isPresent()) {
