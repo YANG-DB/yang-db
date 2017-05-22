@@ -273,6 +273,10 @@ public class Ontology {
             return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
         }
 
+        public List<Integer> eTypes() {
+            return Stream.ofAll(ontology.getEntityTypes()).map(EntityType::geteType).toJavaList();
+        }
+
         public List<RelationshipType> relations() {
             return Stream.ofAll(ontology.getRelationshipTypes()).toJavaList();
         }

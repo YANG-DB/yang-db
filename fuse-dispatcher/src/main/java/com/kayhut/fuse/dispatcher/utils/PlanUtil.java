@@ -1,6 +1,5 @@
 package com.kayhut.fuse.dispatcher.utils;
 
-import com.google.common.collect.Iterables;
 import com.kayhut.fuse.model.execution.plan.*;
 
 import java.util.ArrayList;
@@ -19,55 +18,68 @@ public class PlanUtil {
         return compositePlanOp.getOps().size() > 0 && compositePlanOp.getOps().get(0) == planOpBase;
     }
 
-    public static <T extends PlanOpBase> Optional<T> getAdjacentNext(CompositePlanOpBase compositePlanOp, PlanOpBase planOp) {
+    public static <T extends PlanOpBase> Optional<T> adjacentNext(CompositePlanOpBase compositePlanOp, PlanOpBase planOp) {
         int indexOf = compositePlanOp.getOps().indexOf(planOp);
         return getPlanOp(compositePlanOp, truePredicate, nextAdjacentDirectionFunction.apply(indexOf), indexOf);
     }
 
-    public static <T extends PlanOpBase> Optional<T> getNext(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Predicate<PlanOpBase> opPredicate) {
+    public static <T extends PlanOpBase> Optional<T> next(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Predicate<PlanOpBase> opPredicate) {
         return getPlanOp(compositePlanOp, opPredicate, nextDirection, compositePlanOp.getOps().indexOf(planOp));
     }
 
-    public static <T extends PlanOpBase> Optional<T> getNext(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Class<?> klass) {
+    public static <T extends PlanOpBase> Optional<T> next(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Class<T> klass) {
         return getPlanOp(compositePlanOp, classPredicateFunction.apply(klass), nextDirection, compositePlanOp.getOps().indexOf(planOp));
     }
 
-    public static <T extends PlanOpBase> Optional<T> getAdjacentPrev(CompositePlanOpBase compositePlanOp, PlanOpBase planOp) {
+    public static <T extends PlanOpBase> Optional<T> adjacentPrev(CompositePlanOpBase compositePlanOp, PlanOpBase planOp) {
         int indexOf = compositePlanOp.getOps().indexOf(planOp);
         return getPlanOp(compositePlanOp, truePredicate, prevAdjacentDirectionFunction.apply(indexOf), indexOf);
     }
 
-    public static <T extends PlanOpBase> Optional<T> getPrev(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Predicate<PlanOpBase> opPredicate) {
+    public static <T extends PlanOpBase> Optional<T> prev(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Predicate<PlanOpBase> opPredicate) {
         return getPlanOp(compositePlanOp, opPredicate, prevDirection, compositePlanOp.getOps().indexOf(planOp));
     }
 
-    public static <T extends PlanOpBase> Optional<T> getPrev(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Class<?> klass) {
+    public static <T extends PlanOpBase> Optional<T> prev(CompositePlanOpBase compositePlanOp, PlanOpBase planOp, Class<T> klass) {
         return getPlanOp(compositePlanOp, classPredicateFunction.apply(klass), prevDirection, compositePlanOp.getOps().indexOf(planOp));
     }
 
-    public static PlanOpBase getLast(Plan plan) {
-        return Iterables.getLast(plan.getOps());
+    public static <T extends PlanOpBase> Optional<T> first(CompositePlanOpBase compositePlanOp, Predicate<PlanOpBase> opPredicate) {
+        return getPlanOp(compositePlanOp, opPredicate, nextDirection, -1);
     }
 
-    public static <T extends PlanOpBase> Optional<T> findFirst(Plan plan, Predicate<PlanOpBase> predicate) {
-        return getNext(plan, plan.getOps().get(0), predicate);
+    public static <T extends PlanOpBase> Optional<T> first(CompositePlanOpBase compositePlanOp, Class<T> klass) {
+        return first(compositePlanOp, classPredicateFunction.apply(klass));
     }
 
-    public static <T extends PlanOpBase> Optional<T> findFirst(Plan plan, Class<?> klass) {
-        return getNext(plan, plan.getOps().get(0), classPredicateFunction.apply(klass));
+    public static <T extends PlanOpBase> T first$(Plan plan, Predicate<PlanOpBase> predicate) {
+        return PlanUtil.<T>first(plan, predicate).get();
     }
 
-    public static <T extends PlanOpBase> T findFirst$(Plan plan, Predicate<PlanOpBase> predicate) {
-        return PlanUtil.<T>findFirst(plan, predicate).get();
+    public static <T extends PlanOpBase> T first$(Plan plan, Class<T> klass) {
+        return PlanUtil.<T>first(plan, klass).get();
     }
 
-    public static <T extends PlanOpBase> T findFirst$(Plan plan, Class<T> klass) {
-        return PlanUtil.<T>findFirst(plan, klass).get();
+    public static <T extends PlanOpBase> Optional<T> last(CompositePlanOpBase compositePlanOp, Predicate<PlanOpBase> opPredicate) {
+        return getPlanOp(compositePlanOp, opPredicate, prevDirection, compositePlanOp.getOps().size());
     }
 
-    public static Plan replace(Plan plan, AsgEBasePlanOp oldOp, AsgEBasePlanOp newOp) {
-        plan.getOps().set(plan.getOps().indexOf(oldOp), newOp);
-        return plan;
+    public static <T extends PlanOpBase> Optional<T> last(CompositePlanOpBase compositePlanOp, Class<T> klass) {
+        return last(compositePlanOp, classPredicateFunction.apply(klass));
+    }
+
+    public static <T extends PlanOpBase> T last$(Plan plan, Predicate<PlanOpBase> predicate) {
+        return PlanUtil.<T>last(plan, predicate).get();
+    }
+
+    public static <T extends PlanOpBase> T last$(Plan plan, Class<T> klass) {
+        return PlanUtil.<T>last(plan, klass).get();
+    }
+
+    public static Plan replace(Plan plan, PlanOpBase oldOp, PlanOpBase newOp) {
+        Plan newPlan = new Plan(plan.getOps());
+        newPlan.getOps().set(plan.getOps().indexOf(oldOp), newOp);
+        return newPlan;
     }
 
     public static List<PlanOpBase> extractNewStep(Plan current) {
@@ -96,7 +108,7 @@ public class PlanUtil {
             int startIndex) {
 
         for(int index = direction.apply(startIndex) ;
-            index >= 0 && index <= compositePlanOp.getOps().size() ;
+            index >= 0 && index < compositePlanOp.getOps().size() ;
             index = direction.apply(index)) {
             PlanOpBase planOp = compositePlanOp.getOps().get(index);
             if (opPredicate.test(planOp)) {

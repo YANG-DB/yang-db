@@ -11,7 +11,6 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.Promise;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -48,7 +47,7 @@ public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
             traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEBase().geteBase().geteTag());
             appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOntology());
         } else {
-            Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(plan, planOp);
+            Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
             if (previousPlanOp.isPresent() &&
                     (previousPlanOp.get() instanceof RelationOp ||
                      previousPlanOp.get() instanceof RelationFilterOp)) {

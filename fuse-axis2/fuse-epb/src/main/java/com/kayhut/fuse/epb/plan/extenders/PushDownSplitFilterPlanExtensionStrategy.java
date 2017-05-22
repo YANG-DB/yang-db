@@ -13,18 +13,18 @@ import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
-import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.schemaProviders.*;
+import javaslang.collection.Stream;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorOfType;
 import static com.kayhut.fuse.model.ontology.OntologyUtil.getComplementaryTypes;
 
 /**
@@ -46,83 +46,98 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
             return Collections.emptyList();
         }
 
-        Ontology ontology = ontologyProvider.get(query.getOnt()).get();
+        Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
 
-        Plan newPlan = new Plan(plan.get().getOps());
-        Optional<AsgEBase<Rel>> nextRelation = getNextAncestorOfType(plan.get(), Rel.class);
-        if (!nextRelation.isPresent()) {
+        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan.get(), EntityOp.class);
+        if (!lastEntityOp.isPresent()) {
             return Collections.emptyList();
         }
 
-        Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.bDescendant(nextRelation.get(), RelPropGroup.class);
-        Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.nextDescendant(nextRelation.get(), EEntityBase.class);
-        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = AsgQueryUtil.nextDescendant(toEntity.get(), EPropGroup.class);
+        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan.get(), lastEntityOp.get(), RelationOp.class);
+        if (!lastRelationOp.isPresent()) {
+            return Collections.emptyList();
+        }
 
-        String relationTypeNameById = OntologyUtil.getRelationTypeNameById(ontology, nextRelation.get().geteBase().getrType());
-        Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeNameById);
+        Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(plan.get(), lastRelationOp.get(), RelationFilterOp.class);
+        if (!lastRelationFilterOp.isPresent()) {
+            return Collections.emptyList();
+        }
+
+        Optional<EntityFilterOp> lastEntityFilterOp = PlanUtil.next(plan.get(), lastEntityOp.get(), EntityFilterOp.class);
+
+        AtomicInteger maxEnum = new AtomicInteger(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get());
+
+        Plan newPlan = new Plan(plan.get().getOps());
+
+        //String relationTypeNameById = OntologyUtil.getRelationTypeNameById(ontology, nextRelation.get().geteBase().getrType());
+        String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEBase().geteBase().getrType()).getName();
+        Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
 
         // label
-        List<Integer> labels = new ArrayList<>();
-        if(toEntity.get().geteBase() instanceof ETyped) {
-            labels.add(((ETyped) toEntity.get().geteBase()).geteType());
+        List<Integer> vTypes = new ArrayList<>();
+        if(lastEntityOp.get().getAsgEBase().geteBase() instanceof ETyped) {
+            vTypes.add(((ETyped) lastEntityOp.get().getAsgEBase().geteBase()).geteType());
         }
-        if(toEntity.get().geteBase() instanceof EUntyped){
-            EUntyped eUntyped = (EUntyped) toEntity.get().geteBase();
+        if(lastEntityOp.get().getAsgEBase().geteBase() instanceof EUntyped){
+            EUntyped eUntyped = (EUntyped) lastEntityOp.get().getAsgEBase().geteBase();
             if(eUntyped.getvTypes().size() > 0){
-                labels.addAll(eUntyped.getvTypes());
+                vTypes.addAll(eUntyped.getvTypes());
             }else{
-                labels.addAll(getComplementaryTypes(ontology, eUntyped));
+                vTypes.addAll(Stream.ofAll($ont.eTypes())
+                        .filter(eType -> !eUntyped.getNvTypes().contains(eType)).toJavaList());
             }
         }
 
-        RelPropGroup relPropGroup = nextRelationPropGroup.get().geteBase().clone();
+        RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEBase().geteBase().clone();
 
-        if(labels.size() > 0){
-            Constraint constraint = Constraint.of(ConstraintOp.inSet, labels.stream().map(l -> OntologyUtil.getEntityTypeNameById(ontology, l)).collect(Collectors.toList()));
-            Optional<GraphRedundantPropertySchema> redundantTypeProperty = edgeSchema.get().getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, OntologyFinalizer.TYPE_FIELD_P_TYPE).get().getName());
+        if(vTypes.size() > 0){
+            Constraint constraint = Constraint.of(ConstraintOp.inSet,
+                    Stream.ofAll(vTypes).map(eType -> $ont.$entity$(eType).getName()).toJavaList());
+
+            Optional<GraphRedundantPropertySchema> redundantTypeProperty = edgeSchema.get().getDestination().get()
+                    .getRedundantVertexProperty($ont.$property$(OntologyFinalizer.TYPE_FIELD_P_TYPE).getName());
+
             if(redundantTypeProperty.isPresent()) {
-                RelProp relProp = PushdownRelProp.of(redundantTypeProperty.get().getPropertyRedundantName(), Integer.toString(OntologyFinalizer.TYPE_FIELD_P_TYPE), toEntity.get().geteNum(), constraint);
+                RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantTypeProperty.get().getPropertyRedundantName(),
+                        Integer.toString(OntologyFinalizer.TYPE_FIELD_P_TYPE), constraint);
                 relPropGroup.getProps().add(relProp);
             }
         }
-        if(toEntity.get().geteBase() instanceof EConcrete){
-            EConcrete eConcrete = (EConcrete) toEntity.get().geteBase();
+
+        if(lastEntityOp.get().getAsgEBase().geteBase() instanceof EConcrete){
+            EConcrete eConcrete = (EConcrete) lastEntityOp.get().getAsgEBase().geteBase();
             Constraint constraint = Constraint.of(ConstraintOp.eq, eConcrete.geteID());
-            Optional<GraphRedundantPropertySchema> redundantIdProperty = edgeSchema.get().getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, OntologyFinalizer.ID_FIELD_P_TYPE).get().getName());
+
+            Optional<GraphRedundantPropertySchema> redundantIdProperty = edgeSchema.get().getDestination().get()
+                    .getRedundantVertexProperty($ont.$property$(OntologyFinalizer.ID_FIELD_P_TYPE).getName());
+
             if(redundantIdProperty.isPresent()) {
-                RelProp relProp = PushdownRelProp.of(redundantIdProperty.get().getPropertyRedundantName(), Integer.toString(OntologyFinalizer.ID_FIELD_P_TYPE), toEntity.get().geteNum(), constraint);
+                RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantIdProperty.get().getPropertyRedundantName(),
+                        Integer.toString(OntologyFinalizer.ID_FIELD_P_TYPE), constraint);
                 relPropGroup.getProps().add(relProp);
             }
         }
-        //
-        if(toEntityPropGroup.isPresent()) {
-            AsgEBase<EPropGroup> eProp = AsgEBase.Builder.<EPropGroup>get().withEBase(toEntityPropGroup.get().geteBase().clone()).build();
-            List<EProp> ePropsToRemove = new LinkedList<>();
-            eProp.geteBase().getProps().forEach(p -> {
-                Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get().getRedundantVertexProperty(OntologyUtil.getProperty(ontology, Integer.parseInt(p.getpType())).get().getName());
+
+        if(lastEntityFilterOp.isPresent()) {
+            AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEBase().geteBase().clone()).build();
+            Stream.ofAll(ePropGroup.geteBase().getProps()).forEach(p -> {
+                Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get()
+                        .getRedundantVertexProperty($ont.$property$(Integer.parseInt(p.getpType())).getName());
+
                 if(redundantVertexProperty.isPresent()){
-                    RelProp relProp = PushdownRelProp.of(redundantVertexProperty.get().getPropertyRedundantName(),p.getpType(), toEntityPropGroup.get().geteNum(), p.getCon());
+                    RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
+                            p.getpType(), p.getCon());
                     relPropGroup.getProps().add(relProp);
-                    ePropsToRemove.add(p);
+                    ePropGroup.geteBase().getProps().remove(p);
                 }
             });
-            eProp.geteBase().getProps().removeAll(ePropsToRemove);
 
-            EntityFilterOp entityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(eProp.geteBase()).build());
-            EntityFilterOp oldFilterOp = PlanUtil.findFirst$(
-                    newPlan,
-                    planOp -> ((AsgEBasePlanOp) planOp).getAsgEBase().equals(toEntityPropGroup.get()));
-
-            PlanUtil.replace(newPlan,oldFilterOp,entityFilterOp);
-
+            EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(ePropGroup.geteBase()).build());
+            newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);
         }
 
-        RelationFilterOp relationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
-        RelationFilterOp oldFilterOp = PlanUtil.findFirst$(
-                newPlan,
-                planOp -> ((AsgEBasePlanOp) planOp).getAsgEBase().equals(nextRelationPropGroup.get()));
-
-        PlanUtil.replace(newPlan,oldFilterOp,relationFilterOp);
+        RelationFilterOp newRelationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
+        newPlan = PlanUtil.replace(newPlan, lastRelationFilterOp.get(), newRelationFilterOp);
 
         return Collections.singleton(newPlan);
     }

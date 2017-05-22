@@ -36,7 +36,7 @@ public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStr
         }
 
         RelationFilterOp relationFilterOp = (RelationFilterOp)planOp;
-        Optional<RelationOp> relationOp = PlanUtil.getAdjacentPrev(plan, relationFilterOp);
+        Optional<RelationOp> relationOp = PlanUtil.adjacentPrev(plan, relationFilterOp);
         if (!relationOp.isPresent()) {
             return traversal;
         }

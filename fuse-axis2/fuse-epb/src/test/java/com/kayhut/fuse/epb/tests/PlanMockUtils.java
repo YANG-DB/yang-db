@@ -168,7 +168,7 @@ public interface PlanMockUtils {
         public PlanMockBuilder entityFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
             EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType, eNum, constraint)));
             EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
-            EntityOp last = (EntityOp) PlanUtil.getLast(plan);
+            EntityOp last = PlanUtil.last$(plan, planOp -> true);
             plan = plan.withOp(filterOp);
             nodeFilterStatistics.put(eNum, factor);
             //statistics simulator
@@ -181,7 +181,7 @@ public interface PlanMockUtils {
             RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(pType, eNum, constraint)));
             RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relPropGroup));
 
-            RelationOp last = (RelationOp) PlanUtil.getLast(plan);
+            RelationOp last = PlanUtil.last$(plan, planOp -> true);
             plan = plan.withOp(relationFilterOp);
             edgeFilterStatistics.put(eNum, factor );
             //statistics simulator

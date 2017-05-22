@@ -188,7 +188,7 @@ public class EBaseStatisticsProviderRedundantTests {
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
         prop.setCon(constraint);
-        PushdownRelProp pushdownRelProp = PushdownRelProp.of("EntityB.firstName", "2", 0, Constraint.of(ConstraintOp.ge, "abc"));
+        PushdownRelProp pushdownRelProp = PushdownRelProp.of(0, "EntityB.firstName", "2", Constraint.of(ConstraintOp.ge, "abc"));
 
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
 

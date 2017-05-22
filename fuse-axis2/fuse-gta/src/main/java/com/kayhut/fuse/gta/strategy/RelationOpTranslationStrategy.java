@@ -38,8 +38,8 @@ public class RelationOpTranslationStrategy implements PlanOpTranslationStrategy 
             return traversal;
         }
 
-        Optional<EntityOp> prev = PlanUtil.getPrev(plan, planOp, EntityOp.class);
-        Optional<EntityOp> next = PlanUtil.getNext(plan, planOp, EntityOp.class);
+        Optional<EntityOp> prev = PlanUtil.prev(plan, planOp, EntityOp.class);
+        Optional<EntityOp> next = PlanUtil.next(plan, planOp, EntityOp.class);
 
         Rel rel = ((RelationOp)planOp).getAsgEBase().geteBase();
         String rTypeName = OntologyUtil.getRelationTypeNameById(context.getOntology(), rel.getrType());

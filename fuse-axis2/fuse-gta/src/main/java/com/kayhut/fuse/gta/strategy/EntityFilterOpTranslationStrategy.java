@@ -16,7 +16,6 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.Promise;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -41,7 +40,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
         }
 
         EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(plan, entityFilterOp);
+        Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, entityFilterOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }

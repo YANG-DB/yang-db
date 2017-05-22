@@ -17,19 +17,15 @@ import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.results.Relationship;
-import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.IdPromise;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 
@@ -95,9 +91,9 @@ public class TraversalCursorFactory implements CursorFactory {
                 } else if (planOp instanceof RelationOp) {
                     RelationOp relationOp = (RelationOp)planOp;
                     Optional<EntityOp> prevEntityOp =
-                            PlanUtil.getPrev(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                            PlanUtil.prev(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
                     Optional<EntityOp> nextEntityOp =
-                            PlanUtil.getNext(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                            PlanUtil.next(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
 
                     builder.withRelationship(toRelationship(path,
                             prevEntityOp.get().getAsgEBase().geteBase(),
