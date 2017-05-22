@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import jline.internal.TestAccessible;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

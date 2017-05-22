@@ -200,7 +200,7 @@ public class SmartEpbTests2 {
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
 
 
-        PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
+        PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new CheapestPlanSelector();
 
         planSearcher = new BottomUpPlanSearcher<>(
                 new M1NoRedundantPlanExtensionStrategy(),
@@ -281,13 +281,12 @@ public class SmartEpbTests2 {
     }
 
     @Test
-    @Ignore
-    public void testPathSelectionNoConditions(){
+    public void testPathSelectionNoConditionsReversePlan(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(1, PERSON.type)).
+                next(typed(1, DRAGON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
-                next(typed(5, DRAGON.type)).
+                next(rel(3, OWN.type, Rel.Direction.L).below(relProp(4))).
+                next(typed(5, PERSON.type)).
                 next(eProp(6)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
