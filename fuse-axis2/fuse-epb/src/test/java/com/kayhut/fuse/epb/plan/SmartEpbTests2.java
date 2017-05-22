@@ -23,6 +23,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.Typed;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
@@ -366,5 +367,51 @@ public class SmartEpbTests2 {
         Assert.assertEquals(10.3, iterator.next().getCost().cost, 0.1);
         Assert.assertEquals(133d/13d, iterator.next().getCost().cost, 0.1);
     }
+
+    @Test
+    public void testPathSelectionFilterOnRel(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2)).
+                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6)).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        Assert.assertEquals(601, first.getCost().getGlobalCost().cost, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(400,op.getCost().cost, 0.1);
+        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
+        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
+        Assert.assertEquals(101, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(100, iterator.next().getCost().cost, 0.1);
+    }
+
+
+    @Test
+    public void testFilterOnAllItems(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.ge, "g")))).
+                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.ge,"g")))).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        Assert.assertEquals(467, first.getCost().getGlobalCost().cost, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(266,op.getCost().cost, 0.1);
+        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
+        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
+        Assert.assertEquals(101, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(100, iterator.next().getCost().cost, 0.1);
+    }
+
 
 }
