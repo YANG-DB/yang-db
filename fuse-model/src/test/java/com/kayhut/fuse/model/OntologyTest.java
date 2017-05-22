@@ -25,6 +25,7 @@ public class OntologyTest {
 
 
     @Test
+    @Ignore
     public void testShortOntologySerialization() throws IOException, JSONException {
         String ontologyActualJSON = mapper.writeValueAsString(ontologyShortObj);
         String ontologyExpectedJSONString = "{\n" +

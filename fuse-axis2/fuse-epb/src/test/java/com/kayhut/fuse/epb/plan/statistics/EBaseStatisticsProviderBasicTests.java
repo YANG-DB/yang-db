@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Value;
 import com.kayhut.fuse.model.query.Constraint;
@@ -85,8 +84,7 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelHistogramTest() {
-        Rel rel = new Rel();
-        rel.setrType(2);
+        Rel rel = new Rel(0, 2, Rel.Direction.L, null, 0,0);
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeStatistics(rel);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(1d, nodeStatistics.getTotal(), 0);
@@ -94,18 +92,9 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateEqFilterHistogramTest() {
-        Rel rel = new Rel();
-        rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
-
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.eq);
-        prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
-
+        Rel rel = new Rel(0,2, Rel.Direction.L, null, 0, 0);
+        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.eq, new Date()));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5, nodeStatistics.getTotal(), 0.1);
@@ -114,18 +103,9 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateGtFilterHistogramTest() {
-        Rel rel = new Rel();
-        rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
-
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.gt);
-        prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
-
+        Rel rel = new Rel(0, 2, Rel.Direction.L, null, 0, 0);
+        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.gt, new Date()));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(25, nodeStatistics.getTotal(), 0.1);
@@ -133,17 +113,10 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateGeFilterHistogramTest() {
-        Rel rel = new Rel();
-        rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
+        Rel rel = new Rel(0,2, Rel.Direction.L, null, 0,0);
 
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.ge);
-        prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.ge, new Date()));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -152,17 +125,10 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateLtFilterHistogramTest() {
-        Rel rel = new Rel();
-        rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
+        Rel rel = new Rel(0,2, Rel.Direction.L, null,0,0);
 
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.lt);
-        prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.lt, new Date()));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -171,17 +137,10 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateLeFilterHistogramTest() {
-        Rel rel = new Rel();
-        rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
+        Rel rel = new Rel(0,2, Rel.Direction.L, null,0,0);
 
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.le);
-        prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.le, new Date()));
+        RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -201,16 +160,9 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedDateFilterEqHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("4");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr(new Date());
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        props.add(EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date())));
+        EPropGroup propGroup = new EPropGroup(props);
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -221,16 +173,9 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedStringFilterEqHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr("abc");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        props.add(EProp.of("1", 0, Constraint.of(ConstraintOp.eq, "abc")));
+        EPropGroup propGroup = new EPropGroup(props);
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -241,16 +186,9 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedStringFilterGeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.ge);
-        con.setExpr("abc");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        props.add(EProp.of("1", 0, Constraint.of(ConstraintOp.ge, "abc")));
+        EPropGroup propGroup = new EPropGroup(props);
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -261,16 +199,9 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedStringFilterGe2HistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.ge);
-        con.setExpr("m");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        props.add(EProp.of("1", 0, Constraint.of(ConstraintOp.ge, "m")));
+        EPropGroup propGroup = new EPropGroup(props);
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -281,24 +212,11 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedCompositeFilterTest(){
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
         ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("4");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr(new Date());
-        prop.setCon(con);
-        props.add(prop);
-        prop = new EProp();
-        prop.setpType("6");
-        con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr(10L);
-        prop.setCon(con);
-        props.add(prop);
+        props.add(EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date())));
+        props.add(EProp.of("6", 0, Constraint.of(ConstraintOp.eq, 10L)));
 
-        propGroup.seteProps(props);
+        EPropGroup propGroup = new EPropGroup(props);
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -309,16 +227,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterEqHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("6");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr(10L);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.eq, 10L));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -330,16 +240,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterNeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("6");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.ne);
-        con.setExpr(10L);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ne, 10L));;
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -351,16 +253,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterGtHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("6");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.gt);
-        con.setExpr(10L);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.gt, 10L));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -372,16 +266,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterGeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("6");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.ge);
-        con.setExpr(10L);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ge, 10L));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -393,16 +279,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterLtHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("6");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.lt);
-        con.setExpr(10L);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.lt, 10L));;
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -414,16 +292,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterLeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("6");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.le);
-        con.setExpr(10L);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop =EProp.of("6", 0, Constraint.of(ConstraintOp.le , 10L));;
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -443,17 +313,9 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eUnTypedDateFilterEqHistogramTest() {
         EUntyped eUntyped = new EUntyped();
-        eUntyped.setvTypes(Arrays.asList(1));
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("4");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr(new Date());
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        eUntyped.setvTypes(Collections.singletonList(1));
+        EProp prop = EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date()));;
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eUntyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -464,19 +326,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedEnumeratedFieldTest(){
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("3");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        Value value = new Value();
-        value.setName("male");
-        value.setVal(2);
-        con.setExpr(value);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("3", 0, Constraint.of(ConstraintOp.eq, Value.ValueBuilder.aValue().withName("male").withVal(2).build()));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -493,19 +344,8 @@ public class EBaseStatisticsProviderBasicTests {
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("3");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        Value value = new Value();
-        value.setName("male");
-        value.setVal(2);
-        con.setExpr(value);
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop =  EProp.of("3", 0, Constraint.of(ConstraintOp.eq, Value.ValueBuilder.aValue().withName("male").withVal(2).build()));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -523,22 +363,110 @@ public class EBaseStatisticsProviderBasicTests {
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.ge);
-        con.setExpr("edf");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.ge, "edf"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
 
     }
+
+    @Test
+    public void eTypedStringLeSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.le, "edf"));;
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringLtSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.lt, "edf"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringNeSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.ne, "edf"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringNotInSetSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.notInSet, Arrays.asList("edf", "abc")));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+
+    @Test
+    public void eTypedStringGtSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.gt, "edf"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
+    }
+
 
     @Test
     public void eTypedStringRangeTest(){
@@ -550,16 +478,27 @@ public class EBaseStatisticsProviderBasicTests {
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.inRange);
-        con.setExpr(Arrays.asList("f", "r"));
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.inRange, Arrays.asList("f","r"), "[]"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+
+    }
+
+    @Test
+    public void eTypedStringRangeExclusiveTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "r"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ra", "z"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.inRange, Arrays.asList("f","ra"), "[)"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
@@ -577,16 +516,8 @@ public class EBaseStatisticsProviderBasicTests {
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.startsWith);
-        con.setExpr("g");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "g"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
@@ -604,16 +535,8 @@ public class EBaseStatisticsProviderBasicTests {
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.startsWith);
-        con.setExpr("f");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "f"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
@@ -630,16 +553,8 @@ public class EBaseStatisticsProviderBasicTests {
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.startsWith);
-        con.setExpr("a");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "a"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(0d, nodeStatistics.getTotal(), 0.1);
@@ -656,25 +571,40 @@ public class EBaseStatisticsProviderBasicTests {
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.startsWith);
-        con.setExpr("e");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "e"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(20d, nodeStatistics.getCardinality(), 0.1);
-        con.setExpr("ed");
+        prop.getCon().setExpr("ed");
         nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+    }
+
+    @Test
+    public void eTypedStringNotStartsSingleValueBucketsTest(){
+        List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
+        stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "abc", "abc"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "edf", "edf"));
+        stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "egh", "egh"));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+
+        ETyped eTyped = new ETyped();
+        eTyped.seteType(1);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.notStartsWith, "e"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
+        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
+        prop.getCon().setExpr("ed");
+        nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Assert.assertNotNull(nodeStatistics);
+        Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(20d, nodeStatistics.getCardinality(), 0.1);
     }
 
     @Test
@@ -683,24 +613,15 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp prop = new EProp();
-        prop.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.startsWith);
-        con.setExpr("edf");
-        prop.setCon(con);
-        props.add(prop);
-        propGroup.seteProps(props);
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "edf"));
+        EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
     }
-
 }

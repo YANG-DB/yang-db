@@ -41,6 +41,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         return trace.who();
     }
 
+
     //region ChainedPlanValidator.PlanOpValidator Implementation
     @Override
     public void reset() {
@@ -66,7 +67,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 return false;
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.path(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
             return areFilterAndEntityAdjacent(path, compositePlanOp);
         }
 
@@ -77,7 +78,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
 
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.path(query, currentPlanOp.geteNum(), previousPlanOp.geteNum());
             return areFilterAndRelationAdjacent(path, compositePlanOp);
         }
 
@@ -88,7 +89,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 return false;
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousRelationOp.get().geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.path(query, currentPlanOp.geteNum(), previousRelationOp.get().geteNum());
             return areEntityAndRelationAdjacent(path, compositePlanOp);
         }
 
@@ -99,7 +100,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
                 return false;
             }
 
-            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.getPath(query, currentPlanOp.geteNum(), previousEntityOp.get().geteNum());
+            List<AsgEBase<? extends EBase>> path = AsgQueryUtil.path(query, currentPlanOp.geteNum(), previousEntityOp.get().geteNum());
             return areEntityAndRelationAdjacent(path, compositePlanOp);
         }
 

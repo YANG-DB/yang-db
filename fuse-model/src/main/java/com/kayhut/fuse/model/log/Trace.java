@@ -11,7 +11,7 @@ import java.util.logging.LogManager;
 /**
  * Created by liorp on 5/9/2017.
  */
-public interface Trace<T> {
+public interface Trace<T> extends Cloneable{
     void log(T event, Level level);
 
     List<Tuple2<String,T>> getLogs(Level level);
@@ -49,6 +49,11 @@ public interface Trace<T> {
         @Override
         public String who() {
             return "EMPTY";
+        }
+
+        @Override
+        public Trace clone() {
+            return this;
         }
     }
 }

@@ -3,6 +3,7 @@ package com.kayhut.fuse.model.ontology;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +12,16 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class RelationshipType {
+    public RelationshipType() {
+        properties = new ArrayList<>();
+    }
+
+    public RelationshipType(String name, int rType, boolean directional) {
+        this();
+        this.rType = rType;
+        this.name = name;
+        this.directional = directional;
+    }
 
     //region Getters & Setters
     public int getrType() {
@@ -62,6 +73,12 @@ public class RelationshipType {
     public void setProperties(List<Integer> properties) {
         this.properties = properties;
     }
+
+    public RelationshipType addProperty(int type) {
+        this.properties.add(type);
+        return this;
+    }
+
     //endregion
 
     @Override
@@ -77,6 +94,7 @@ public class RelationshipType {
     private String DBrName;
     private List<EPair> ePairs;
     private List<Integer> properties;
+
     //endregion
 
     //region Builder

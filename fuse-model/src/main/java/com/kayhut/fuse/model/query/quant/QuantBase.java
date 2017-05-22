@@ -10,7 +10,18 @@ import com.kayhut.fuse.model.query.EBase;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class QuantBase extends EBase {
+    //region Constructors
+    public QuantBase() {
+        super();
+    }
 
+    public QuantBase(int eNum, QuantType qType) {
+        super(eNum);
+        this.qType = qType;
+    }
+    //endregion
+
+    //region Properties
     public QuantType getqType() {
         return qType;
     }
@@ -18,6 +29,7 @@ public class QuantBase extends EBase {
     public void setqType(QuantType qType) {
         this.qType = qType;
     }
+    //endregion
 
     //region Fields
     private QuantType qType;

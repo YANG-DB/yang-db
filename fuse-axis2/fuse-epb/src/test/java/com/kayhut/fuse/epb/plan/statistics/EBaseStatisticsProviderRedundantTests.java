@@ -7,8 +7,7 @@ import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
@@ -16,7 +15,6 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.*;
 
@@ -57,6 +55,30 @@ public class EBaseStatisticsProviderRedundantTests {
             @Override
             public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
                 if(property.equals("firstName")){
+                    return Optional.of(new GraphRedundantPropertySchema() {
+                        @Override
+                        public String getPropertyRedundantName() {
+                            return "EntityB.firstName";
+                        }
+
+                        @Override
+                        public String getName() {
+                            return "firstName";
+                        }
+
+                        @Override
+                        public String getType() {
+                            return "string";
+                        }
+                    });
+                }else{
+                    return Optional.empty();
+                }
+            }
+
+            @Override
+            public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property) {
+                if(property.equals("EntityB.firstName")){
                     return Optional.of(new GraphRedundantPropertySchema() {
                         @Override
                         public String getPropertyRedundantName() {
@@ -155,107 +177,28 @@ public class EBaseStatisticsProviderRedundantTests {
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(500,50));
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
     }
-
-
-    @Test
-    public void nonRedundantEdgePropTest(){
-        Rel rel = new Rel();
-        rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
-
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.eq);
-        prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteType(4);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp eProp = new EProp();
-        eProp.setpType("2");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.eq);
-        con.setExpr("abc");
-        prop.setCon(con);
-        props.add(eProp);
-        propGroup.seteProps(props);
-        Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantEdgeStatistics(rel, relFilter, eTyped, propGroup, Direction.out);
-        Assert.assertNotNull(redundantEdgeStatistics);
-        Assert.assertEquals(1000, redundantEdgeStatistics.getTotal(), 0.1);
-    }
-
-    @Test
-    public void redundantEdgePropTest(){
-        Rel rel = new Rel();
-        rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
-
-        RelProp prop = new RelProp();
-        prop.setpType("8");
-        Constraint constraint = new Constraint();
-        constraint.setExpr(new Date());
-        constraint.setOp(ConstraintOp.eq);
-        prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteType(4);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp eProp = new EProp();
-        eProp.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.ge);
-        con.setExpr("abc");
-        eProp.setCon(con);
-        props.add(eProp);
-        propGroup.seteProps(props);
-        Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantEdgeStatistics(rel, relFilter, eTyped, propGroup, Direction.out);
-        Assert.assertNotNull(redundantEdgeStatistics);
-        Assert.assertEquals(100l, redundantEdgeStatistics.getTotal(), 0.1);
-    }
-
-
+    
     @Test
     public void redundantNodePropTest(){
         Rel rel = new Rel();
         rel.setrType(2);
-        RelPropGroup relFilter = new RelPropGroup();
         RelProp prop = new RelProp();
         prop.setpType("8");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
         prop.setCon(constraint);
-        relFilter.setrProps(Collections.singletonList(prop));
+        PushdownRelProp pushdownRelProp = PushdownRelProp.of("EntityB.firstName", "2", 0, Constraint.of(ConstraintOp.ge, "abc"));
+
+        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(4);
-        EPropGroup propGroup = new EPropGroup();
-        ArrayList<EProp> props = new ArrayList<>();
-        EProp eProp = new EProp();
-        eProp.setpType("1");
-        Constraint con = new Constraint();
-        con.setOp(ConstraintOp.ge);
-        con.setExpr("abc");
-        eProp.setCon(con);
-        props.add(eProp);
 
-        eProp = new EProp();
-        eProp.setpType("2");
-        con = new Constraint();
-        con.setOp(ConstraintOp.ge);
-        con.setExpr("abc");
-        eProp.setCon(con);
-        props.add(eProp);
-        propGroup.seteProps(props);
-        Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantNodeStatistics(rel, eTyped, propGroup, Direction.out);
+
+        Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantNodeStatistics(eTyped, relFilter);
         Assert.assertNotNull(redundantEdgeStatistics);
-        Assert.assertEquals(100l, redundantEdgeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(200l, redundantEdgeStatistics.getTotal(), 0.1);
     }
 
 }

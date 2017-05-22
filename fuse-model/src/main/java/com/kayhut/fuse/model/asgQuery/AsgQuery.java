@@ -1,6 +1,5 @@
 package com.kayhut.fuse.model.asgQuery;
 
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -14,8 +13,6 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -130,13 +127,13 @@ public class AsgQuery {
             return current;
         }
 
-        public static AsgEBase<EConcrete> concrete(String eID, int eType, String eName, String eTag, int eNum) {
+        public static AsgEBase<EConcrete> concrete(int eNum, String eID, int eType, String eName, String eTag) {
             EConcrete concrete = new EConcrete();
+            concrete.seteNum(eNum);
             concrete.seteType(eType);
             concrete.seteID(eID);
             concrete.seteName(eName);
             concrete.seteTag(eTag);
-            concrete.seteNum(eNum);
 
             return new AsgEBase<>(concrete);
         }
@@ -173,16 +170,23 @@ public class AsgQuery {
             return new AsgEBase<>(quant2);
         }
 
-        public static AsgEBase<ETyped> typed(int eType,String eTag, int eNum) {
+        public static AsgEBase<ETyped> typed(int eNum, int eType, String eTag) {
             ETyped eTyped = new ETyped();
+            eTyped.seteNum(eNum);
             eTyped.seteType(eType);
             eTyped.seteTag(eTag);
-            eTyped.seteNum(eNum);
 
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(String eTag, int eNum,Integer ... vTypes) {
+        public static AsgEBase<ETyped> typed(int eNum, int eType) {
+            ETyped eTyped = new ETyped();
+            eTyped.seteNum(eNum);
+            eTyped.seteType(eType);
+            return new AsgEBase<>(eTyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Integer ... vTypes) {
             EUntyped untyped = new EUntyped();
             untyped.setNvTypes(Arrays.asList(vTypes));
             untyped.seteTag(eTag);
@@ -191,7 +195,15 @@ public class AsgQuery {
             return new AsgEBase<>(untyped);
         }
 
-        public static AsgEBase<Rel> rel(Rel.Direction direction, int eNum, int rType) {
+        public static AsgEBase<EUntyped> unTyped(int eNum, Integer ... vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setNvTypes(Arrays.asList(vTypes));
+            untyped.seteNum(eNum);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<Rel> rel(int eNum, int rType, Rel.Direction direction) {
             Rel rel = new Rel();
             rel.setDir(direction);
             rel.setrType(rType);
@@ -201,18 +213,14 @@ public class AsgQuery {
         }
 
         public static AsgEBase<EPropGroup> eProp(int eNum, EProp... props) {
-            EPropGroup group = new EPropGroup();
+            EPropGroup group = new EPropGroup(Arrays.asList(props));
             group.seteNum(eNum);
-            group.seteProps(new ArrayList<>(Arrays.asList(props)));
-
             return new AsgEBase<>(group);
         }
 
         public static AsgEBase<RelPropGroup> relProp(int eNum, RelProp ... props) {
-            RelPropGroup relPropGroup = new RelPropGroup();
+            RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
             relPropGroup.seteNum(eNum);
-            relPropGroup.setrProps(new ArrayList<>(Arrays.asList(props)));
-
             return new AsgEBase<>(relPropGroup);
         }
 

@@ -24,7 +24,7 @@ import java.util.Optional;
  *          * ancestorStrategy
  *          * descendantStrategy
  */
-public class CompoundStepExtenderStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+/*public class CompoundStepExtenderStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
 
     private StepAncestorAdjacentStrategy ancestorStrategy;
     private StepDescendantsAdjacentStrategy descendantStrategy;
@@ -54,4 +54,4 @@ public class CompoundStepExtenderStrategy implements PlanExtensionStrategy<Plan,
         plans.addAll(chain);
         return plans;
     }
-}
+}*/

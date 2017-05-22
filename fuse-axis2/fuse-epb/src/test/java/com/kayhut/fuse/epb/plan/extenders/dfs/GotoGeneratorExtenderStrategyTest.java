@@ -20,11 +20,11 @@ public class GotoGeneratorExtenderStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -36,17 +36,17 @@ public class GotoGeneratorExtenderStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
-                new GoToEntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 7)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 11)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 8)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)),
+                new GoToEntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 11)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 3);
@@ -61,13 +61,13 @@ public class GotoGeneratorExtenderStrategyTest {
 
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 2);
@@ -81,15 +81,15 @@ public class GotoGeneratorExtenderStrategyTest {
     public void test_simpleQuery3_thirdPlan() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery3("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 5)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 6)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 12)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 13)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 6)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 12)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 13)));
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 3);
@@ -100,10 +100,4 @@ public class GotoGeneratorExtenderStrategyTest {
         Assert.assertTrue(extendedPlans.get(2).getOps().get(extendedPlans.get(2).getOps().size()-1) instanceof GoToEntityOp);
         Assert.assertEquals(extendedPlans.get(2).getOps().size(),10);
     }
-
-    //region Private Methods
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
-    }
-    //endregion
 }

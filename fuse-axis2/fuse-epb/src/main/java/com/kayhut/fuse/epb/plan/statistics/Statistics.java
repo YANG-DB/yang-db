@@ -39,6 +39,7 @@ public interface Statistics {
      * Created by moti on 31/03/2017.
      */
     class HistogramStatistics<T extends Comparable<T>> implements Statistics{
+        private static final double CARDINALITY_LAMBDA = 1.0;
         private List<BucketInfo<T>> buckets;
 
         public HistogramStatistics(List<BucketInfo<T>> buckets) {
@@ -109,8 +110,11 @@ public interface Statistics {
 
         public List<BucketInfo<T>> findBucketsBelow(T value, boolean inclusive){
             int i = buckets.size()-1;
-            while(i >=0 && ((buckets.get(i).getLowerBound().compareTo(value) > 0 && inclusive) || (buckets.get(i).getLowerBound().compareTo(value) >= 0 && !inclusive))){
+            BucketInfo<T> currentBucket = buckets.get(i);
+            while(i >=0 && ((currentBucket.getLowerBound().compareTo(value) > 0 && inclusive) || (currentBucket.getLowerBound().compareTo(value) >= 0 && !inclusive))){
                 i--;
+                if(i >= 0)
+                    currentBucket = buckets.get(i);
             }
             return buckets.subList(0, i+1);
         }
@@ -125,7 +129,63 @@ public interface Statistics {
             return new Tuple2<>(total,card);
         }
 
-     }
+        public static <T extends Comparable<T>> HistogramStatistics<T> combine(List<HistogramStatistics<T>> histograms){
+            List<BucketInfo<T>> buckets = new ArrayList<>();
+            List<Integer> indices = new ArrayList<>();
+            for(int i = 0; i < histograms.size(); i++){
+                indices.add(0);
+            }
+
+            while(haveBucketsToHandle(histograms, indices)){
+                T minBucket = findMinBucketLowerBound(histograms, indices);
+                List<BucketInfo<T>> bucketsToMerge = new LinkedList<>();
+                for(int i = 0;i<histograms.size();i++){
+                    HistogramStatistics<T> currentHistogram = histograms.get(i);
+                    Integer bucketIndex = indices.get(i);
+                    if(bucketIndex < currentHistogram.getBuckets().size() && minBucket.equals(currentHistogram.getBuckets().get(bucketIndex).getLowerBound()))
+                    {
+                        bucketsToMerge.add(currentHistogram.getBuckets().get(bucketIndex));
+                        indices.set(i, bucketIndex + 1);
+                    }
+                }
+
+                buckets.add(mergeBucketList(bucketsToMerge));
+            }
+
+            return new HistogramStatistics<T>(buckets);
+        }
+
+        private static <T extends Comparable<T>> boolean haveBucketsToHandle(List<HistogramStatistics<T>> histograms, List<Integer> indices) {
+            for (int i = 0;i<histograms.size();i++){
+                if(indices.get(i) < histograms.get(i).getBuckets().size())
+                    return true;
+            }
+            return false;
+        }
+
+        private static <T extends Comparable<T>> BucketInfo<T> mergeBucketList(List<BucketInfo<T>> bucketsToMerge) {
+            if(bucketsToMerge.size() == 0)
+                return null;
+
+            long total = bucketsToMerge.stream().mapToLong(b -> b.getTotal()).sum();
+            long card = bucketsToMerge.get(0).isSingleValue() ? 1 :  bucketsToMerge.stream().mapToLong(b -> Math.round(b.getCardinality() * CARDINALITY_LAMBDA )).sum();
+            BucketInfo<T> newBucket = new BucketInfo<T>(total, card, bucketsToMerge.get(0).getLowerBound(),bucketsToMerge.get(0).getHigherBound());
+            return newBucket;
+        }
+
+        private static <T extends Comparable<T>> T findMinBucketLowerBound(List<HistogramStatistics<T>> histograms, List<Integer> indices) {
+            T minValue = null;
+            for(int i = 0;i<histograms.size();i++){
+                HistogramStatistics<T> currentHistogram = histograms.get(i);
+                Integer bucketIndex = indices.get(i);
+                if(bucketIndex < currentHistogram.getBuckets().size() &&
+                        (minValue == null || minValue.compareTo(currentHistogram.getBuckets().get(bucketIndex).getLowerBound()) > 0)){
+                    minValue = currentHistogram.getBuckets().get(bucketIndex).getLowerBound();
+                }
+            }
+            return minValue;
+        }
+    }
 
     /**
      * Created by moti on 31/03/2017.
@@ -152,6 +212,8 @@ public interface Statistics {
 
         //lower bound - inclusive, higher bound - non-inclusive
         public boolean isValueInRange(T value) {
+            if(isSingleValue() && lowerBound.equals(value))
+                return true;
             if (higherBound != null && value.compareTo(higherBound) >= 0) {
                 return false;
             }

@@ -59,4 +59,12 @@ public class PlanWithCost<P, C> {
         result = 31 * result + (cost != null ? cost.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "plan=" + plan.toString() +
+                ", cost=" + cost.toString() +
+                '}';
+    }
 }

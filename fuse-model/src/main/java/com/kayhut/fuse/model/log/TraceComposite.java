@@ -2,7 +2,6 @@ package com.kayhut.fuse.model.log;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
@@ -26,6 +25,7 @@ public interface TraceComposite<T> extends Trace<T> {
     }
 
     class EMPTY1 implements TraceComposite{
+
         public static final EMPTY1 instance = new EMPTY1();
 
         @Override
@@ -43,7 +43,12 @@ public interface TraceComposite<T> extends Trace<T> {
 
         @Override
         public void with(Trace trace) {
-
         }
+
+        @Override
+        public Trace<String> clone() {
+            return this;
+        }
+
     }
 }

@@ -75,6 +75,12 @@ public interface Utils {
         }
     }
 
+    static String fullPattern(List<PlanOpBase> pattern) {
+        StringJoiner sj = new StringJoiner(":", "", "");
+        pattern.forEach(op -> sj.add(op.toString()));
+        return sj.toString();
+    }
+
     static String pattern(List<PlanOpBase> pattern) {
         StringJoiner sj = new StringJoiner(":", "", "");
         pattern.forEach(op -> sj.add(op.getClass().getSimpleName()));

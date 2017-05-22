@@ -22,16 +22,19 @@ import static org.mockito.Mockito.when;
  */
 public class StatisticsMockUtils {
 
-    static StatisticsProvider build(Map<String, Map<Integer, Double>> statistics, long maxCardinalityNode, long maxCardinalityEdge) {
+    public static StatisticsProvider build(Map<String, Map<Integer, Double>> statistics, long maxCardinalityNode) {
         StatisticsProvider mock = Mockito.mock(StatisticsProvider.class);
 
         //mock statistics provider
         when(mock.getNodeFilterStatistics(any(), any())).thenAnswer(invocationOnMock -> {
             EEntityBase item = (EEntityBase) invocationOnMock.getArguments()[0];
             EPropGroup eProp = (EPropGroup) invocationOnMock.getArguments()[1];
-            List<EProp> eProps = (eProp).geteProps();
+            List<EProp> eProps = (eProp).getProps();
             int id = Integer.valueOf(eProps.get(0).getpType());
-            double factor = statistics.get(PlanMockUtils.NODE_FILTER_STATISTICS).get(id);
+            double factor  =1;
+            if(statistics.get(PlanMockUtils.NODE_FILTER_STATISTICS).containsKey(id)) {
+                factor = statistics.get(PlanMockUtils.NODE_FILTER_STATISTICS).get(id);
+            }
 
             long cost = 1;
             if (item instanceof EConcrete)
@@ -71,10 +74,12 @@ public class StatisticsMockUtils {
             Rel item = (Rel) invocationOnMock.getArguments()[0];
             RelPropGroup ePropGroup = (RelPropGroup) invocationOnMock.getArguments()[1];
 
-            List<RelProp> relProps = (ePropGroup).getrProps();
+            List<RelProp> relProps = (ePropGroup).getProps();
             int id = Integer.valueOf(relProps.get(0).getpType());
-            double factor = statistics.get(PlanMockUtils.EDGE_FILTER_STATISTICS).get(id);
-
+            double factor  = 1;
+            if(statistics.get(PlanMockUtils.EDGE_FILTER_STATISTICS).containsKey(id)) {
+                factor = statistics.get(PlanMockUtils.EDGE_FILTER_STATISTICS).get(id);
+            }
             if (item != null) {
                 long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(item.getrType()).longValue();
                 double total = factor * cost;
@@ -98,12 +103,12 @@ public class StatisticsMockUtils {
 
         });
 
-        when(mock.getRedundantNodeStatistics(any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
-            Rel rel = (Rel) invocationOnMock.getArguments()[0];
+        when(mock.getRedundantNodeStatistics(any(), any())).thenAnswer(invocationOnMock -> {
+            Typed.eTyped etype= (Typed.eTyped) invocationOnMock.getArguments()[0];
             //todo - implement smart
-            Typed etype = (Typed) invocationOnMock.getArguments()[1];
-            EProp eprop = (EProp) invocationOnMock.getArguments()[2];
-            Direction dir = (Direction) invocationOnMock.getArguments()[3];
+            //Typed etype = (Typed) invocationOnMock.getArguments()[1];
+            //EProp eprop = (EProp) invocationOnMock.getArguments()[2];
+            //Direction dir = (Direction) invocationOnMock.getArguments()[3];
 
 
             long cost = statistics.get(PlanMockUtils.NODE_STATISTICS).get(etype.geteType()).longValue();
@@ -111,17 +116,17 @@ public class StatisticsMockUtils {
         });
 
 
-        when(mock.getRedundantEdgeStatistics(any(),any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
+        /*when(mock.getRedundantEdgeStatistics(any(),any(), any())).thenAnswer(invocationOnMock -> {
             Rel rel = (Rel) invocationOnMock.getArguments()[0];
             //todo - implement smart
-            Typed etype = (Typed) invocationOnMock.getArguments()[2];
-            EPropGroup ePropGroup = (EPropGroup) invocationOnMock.getArguments()[3];
-            Direction dir = (Direction) invocationOnMock.getArguments()[4];
+            //Typed etype = (Typed) invocationOnMock.getArguments()[2];
+            //EPropGroup ePropGroup = (EPropGroup) invocationOnMock.getArguments()[3];
+            Direction dir = (Direction) invocationOnMock.getArguments()[2];
 
 
             long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(rel.getrType()).longValue();
             return new Statistics.Cardinality(cost, cost);
-        });
+        });*/
 
 
         when(mock.getGlobalSelectivity(any(), any(), any(), any())).thenAnswer(invocationOnMock -> 10);

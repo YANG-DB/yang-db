@@ -22,8 +22,8 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testValidPlan_entity1_goto1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -33,10 +33,10 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_goto1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -46,10 +46,10 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_goto3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -59,12 +59,12 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_rel5_entity6_goto1() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -74,12 +74,12 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_rel5_entity6_goto3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -89,12 +89,12 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testValidPlan_entity1_rel2_entity3_rel5_entity6_goto6() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -104,14 +104,14 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testValidPlan_entity1_rel2_filter10_entity3_filter9_rel5_entity6_goto3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
-                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>getElement(asgQuery, 10).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get()),
-                new EntityFilterOp(AsgQueryUtil.<EPropGroup>getElement(asgQuery, 9).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 5).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 6).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(asgQuery, 10).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 9).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
@@ -123,8 +123,8 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testInvalidPlan_entity1_goto3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery1("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
@@ -134,9 +134,9 @@ public class RedundantGoToEntityOpValidatorTests {
     public void testInvalidPlan_entity1_rel2_goto3() {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
         Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>getElement(asgQuery, 2).get()),
-                new GoToEntityOp(AsgQueryUtil.<EEntityBase>getElement(asgQuery, 3).get())
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery));

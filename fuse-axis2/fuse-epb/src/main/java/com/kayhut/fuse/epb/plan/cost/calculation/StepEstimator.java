@@ -1,21 +1,46 @@
 package com.kayhut.fuse.epb.plan.cost.calculation;
 
+import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * Created by liorp on 4/24/2017.
  */
-public class StepEstimator {
-    public final Double edgeEstimator;
-    public final Double outVEstimator;
-    public final Double lambda;
+public interface StepEstimator {
 
-    public StepEstimator() {
-        this(null,null,null);
-    }
+    StepEstimatorResult calculate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map,
+                                  StatisticsCostEstimator.StatisticsCostEstimatorPatterns pattern,
+                                  Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
 
-    public StepEstimator(Double edgeEstimator, Double outVEstimator, Double lambda) {
-        this.edgeEstimator = edgeEstimator;
-        this.outVEstimator = outVEstimator;
-        this.lambda = lambda;
+    interface StepEstimatorResult {
+        List<PlanOpWithCost<Cost>>  planOpWithCosts();
+
+        double lambda();
+
+        static StepEstimatorResult of(double lambda, PlanOpWithCost<Cost> ... planOpWithCosts) {
+            return new StepEstimatorResult() {
+                @Override
+                public List<PlanOpWithCost<Cost>> planOpWithCosts() {
+                    return Arrays.asList(planOpWithCosts);
+                }
+
+                @Override
+                public double lambda() {
+                    return lambda;
+                }
+            };
+        }
     }
 
 }

@@ -43,7 +43,6 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
         return trace.who();
     }
 
-
     @Override
     public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
         if (opIndex == 0) {
@@ -86,7 +85,7 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
     private boolean areEntityAndRelationReversed(AsgQuery query, AsgEBase<EEntityBase> asgEntity, AsgEBase<Rel> asgRelation) {
         Set<Integer> entityAndRelationEnums = new HashSet<>(Arrays.asList(asgEntity.geteNum(), asgRelation.geteNum()));
 
-        List<AsgEBase<EBase>> elements = AsgQueryUtil.getElements(query, asgEBase -> entityAndRelationEnums.contains(asgEBase.geteNum()));
+        List<AsgEBase<EBase>> elements = AsgQueryUtil.elements(query, asgEBase -> entityAndRelationEnums.contains(asgEBase.geteNum()));
 
         boolean isReversed = Rel.class.isAssignableFrom(elements.get(0).geteBase().getClass());
 

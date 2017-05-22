@@ -72,26 +72,28 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)),
-                new EntityFilterOp(getAsgEBaseByEnum(asgQuery, 9)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
         PushDownSplitFilterStrategy chain = new PushDownSplitFilterStrategy(ontologyProvider,schemaProvider);
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),EntityFilterOp.class, p->true).getAsgEBase().geteBase().geteProps().size(),1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().size(),3);
-        //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(2) instanceof PushdownRelProp);
 
-        Optional<RelProp> firstNameRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getrProps().stream().
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),EntityFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),1);
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),3);
+
+        //first eProp is the old eprop filter condition (non pushdown)
+        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
+        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(2) instanceof PushdownRelProp);
+
+        Optional<RelProp> firstNameRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.firstName")).findFirst();
         Assert.assertTrue(firstNameRelProp.isPresent());
-        Optional<RelProp> typeRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getrProps().stream().
+        Optional<RelProp> typeRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.type")).findFirst();
         Assert.assertTrue(typeRelProp.isPresent());
         Assert.assertEquals("dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));
@@ -102,27 +104,21 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         AsgQuery asgQuery = AsgQueryStore.queryWithEtypedAndEconcrete("name", "ont");
 
         Plan plan = new Plan(
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 1)),
-                new RelationOp(getAsgEBaseByEnum(asgQuery, 2)),
-                new RelationFilterOp(getAsgEBaseByEnum(asgQuery, 10)),
-                new EntityOp(getAsgEBaseByEnum(asgQuery, 3)));
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
         PushDownSplitFilterStrategy chain = new PushDownSplitFilterStrategy(ontologyProvider,schemaProvider);
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().size(),3);
+        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),3);
         //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getrProps().get(1) instanceof PushdownRelProp);
-        Optional<RelProp> idRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getrProps().stream().
+        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
+        Optional<RelProp> idRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.id")).findFirst();
         Assert.assertTrue(idRelProp.isPresent());
         Assert.assertEquals("123",idRelProp.get().getCon().getExpr());
     }
-
-    //region Private Methods
-    private <T extends EBase> AsgEBase<T> getAsgEBaseByEnum(AsgQuery asgQuery, int eNum) {
-        return AsgQueryUtil.<T>getElement(asgQuery, eNum).get();
-    }
-    //endregion
 }

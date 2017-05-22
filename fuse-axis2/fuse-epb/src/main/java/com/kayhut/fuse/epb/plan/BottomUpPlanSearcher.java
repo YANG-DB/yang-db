@@ -40,7 +40,6 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> , Tr
         return trace.who();
     }
 
-
     @Inject
     public BottomUpPlanSearcher(PlanExtensionStrategy<P, Q> extensionStrategy,
                                 @Named("GlobalPruningStrategy") PlanPruneStrategy<PlanWithCost<P, C>> globalPruneStrategy,

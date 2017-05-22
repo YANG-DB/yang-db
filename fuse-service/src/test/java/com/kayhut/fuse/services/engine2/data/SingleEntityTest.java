@@ -30,7 +30,7 @@ public class SingleEntityTest {
     @ClassRule
     public static JoobyRule createApp() {
         return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf("application.engine2.dev.conf"));
+                .conf("application.engine2.dev.conf", "m1.dfs.non_redundant"));
     }
 
     @BeforeClass
@@ -160,7 +160,7 @@ public class SingleEntityTest {
         while (!pageResourceInfo.isAvailable()) {
             pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
             if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(100);
+                Thread.sleep(10);
             }
         }
 
@@ -204,7 +204,7 @@ public class SingleEntityTest {
             while (!pageResourceInfo.isAvailable()) {
                 pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
                 if (!pageResourceInfo.isAvailable()) {
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                 }
             }
 

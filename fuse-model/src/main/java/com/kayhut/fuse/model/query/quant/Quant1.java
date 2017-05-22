@@ -3,6 +3,7 @@ package com.kayhut.fuse.model.query.quant;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Next;
+import javaslang.collection.Stream;
 
 import java.util.List;
 
@@ -11,6 +12,19 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Quant1 extends QuantBase implements Next<List<Integer>> {
+    //region Constructors
+    public Quant1() {
+        super();
+    }
+
+    public Quant1(int eNum, QuantType qType, Iterable<Integer> next, int b) {
+        super(eNum, qType);
+        this.next = Stream.ofAll(next).toJavaList();
+        this.b = b;
+    }
+    //endregion
+
+    //region Properties
     public int getB() {
         return b;
     }
@@ -26,14 +40,9 @@ public class Quant1 extends QuantBase implements Next<List<Integer>> {
     public void setNext(List<Integer> next) {
         this.next = next;
     }
-
-
-    //region Fields
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private int b;
-    private List<Integer> next;
     //endregion
 
+    //region Override Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -53,4 +62,11 @@ public class Quant1 extends QuantBase implements Next<List<Integer>> {
         result = 31 * result + next.hashCode();
         return result;
     }
+    //endregion
+
+    //region Fields
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private int b;
+    private List<Integer> next;
+    //endregion
 }
