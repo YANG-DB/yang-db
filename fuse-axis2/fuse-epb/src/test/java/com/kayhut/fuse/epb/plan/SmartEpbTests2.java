@@ -3,7 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M1NoRedundantPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
@@ -203,7 +203,7 @@ public class SmartEpbTests2 {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
 
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1NoRedundantPlanExtensionStrategy(),
+                new M1NonRedundantPlanExtensionStrategy(),
                 pruneStrategy,
                 pruneStrategy,
                 planSelector,

@@ -27,7 +27,7 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                                         )
                                 )
                         ),
-                        new PushDownSplitFilterStrategy(ontologyProvider, schemaProvider)
+                        new PushDownSplitFilterPlanExtensionStrategy(ontologyProvider, schemaProvider)
                 )
         );
     }

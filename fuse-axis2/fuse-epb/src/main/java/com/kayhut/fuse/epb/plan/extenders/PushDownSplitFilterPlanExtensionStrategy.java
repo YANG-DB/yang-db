@@ -19,9 +19,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
+import com.kayhut.fuse.unipop.schemaProviders.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,20 +30,21 @@ import static com.kayhut.fuse.model.ontology.OntologyUtil.getComplementaryTypes;
 /**
  * Created by moti on 5/14/2017.
  */
-public class PushDownSplitFilterStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
-    private OntologyProvider ontologyProvider;
-    private GraphElementSchemaProvider schemaProvider;
-
+public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+    //region Constructors
     @Inject
-    public PushDownSplitFilterStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProvider schemaProvider) {
+    public PushDownSplitFilterPlanExtensionStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProvider schemaProvider) {
         this.ontologyProvider = ontologyProvider;
         this.schemaProvider = schemaProvider;
     }
+    //endregion
 
+    //region PlanExtensionStrategy Implementation
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
-        if(!plan.isPresent())
-            return Collections.EMPTY_LIST;
+        if(!plan.isPresent()) {
+            return Collections.emptyList();
+        }
 
         Ontology ontology = ontologyProvider.get(query.getOnt()).get();
 
@@ -110,20 +109,27 @@ public class PushDownSplitFilterStrategy implements PlanExtensionStrategy<Plan, 
             eProp.geteBase().getProps().removeAll(ePropsToRemove);
 
             EntityFilterOp entityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(eProp.geteBase()).build());
-            EntityFilterOp oldFilterOp = PlanUtil.findFirst(newPlan,EntityFilterOp.class,
-                    predicate -> ((EntityFilterOp) predicate).getAsgEBase().equals(toEntityPropGroup.get()));
+            EntityFilterOp oldFilterOp = PlanUtil.findFirst$(
+                    newPlan,
+                    planOp -> ((AsgEBasePlanOp) planOp).getAsgEBase().equals(toEntityPropGroup.get()));
 
             PlanUtil.replace(newPlan,oldFilterOp,entityFilterOp);
 
         }
 
         RelationFilterOp relationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
-        RelationFilterOp oldFilterOp = PlanUtil.findFirst(newPlan,RelationFilterOp.class,
-                predicate -> ((RelationFilterOp) predicate).getAsgEBase().equals(nextRelationPropGroup.get()));
+        RelationFilterOp oldFilterOp = PlanUtil.findFirst$(
+                newPlan,
+                planOp -> ((AsgEBasePlanOp) planOp).getAsgEBase().equals(nextRelationPropGroup.get()));
 
         PlanUtil.replace(newPlan,oldFilterOp,relationFilterOp);
 
         return Collections.singleton(newPlan);
     }
+    //region
 
+    //region Fields
+    private OntologyProvider ontologyProvider;
+    private GraphElementSchemaProvider schemaProvider;
+    //endregion
 }

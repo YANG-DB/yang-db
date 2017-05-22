@@ -49,8 +49,20 @@ public class PlanUtil {
         return Iterables.getLast(plan.getOps());
     }
 
-    public static <T extends PlanOpBase> T findFirst(Plan plan, Class<T> clazz, Predicate<PlanOpBase> predicate) {
-        return (T) plan.getOps().stream().filter(p -> clazz.isAssignableFrom(p.getClass()) && predicate.test(p)).findFirst().get();
+    public static <T extends PlanOpBase> Optional<T> findFirst(Plan plan, Predicate<PlanOpBase> predicate) {
+        return getNext(plan, plan.getOps().get(0), predicate);
+    }
+
+    public static <T extends PlanOpBase> Optional<T> findFirst(Plan plan, Class<?> klass) {
+        return getNext(plan, plan.getOps().get(0), classPredicateFunction.apply(klass));
+    }
+
+    public static <T extends PlanOpBase> T findFirst$(Plan plan, Predicate<PlanOpBase> predicate) {
+        return PlanUtil.<T>findFirst(plan, predicate).get();
+    }
+
+    public static <T extends PlanOpBase> T findFirst$(Plan plan, Class<T> klass) {
+        return PlanUtil.<T>findFirst(plan, klass).get();
     }
 
     public static Plan replace(Plan plan, AsgEBasePlanOp oldOp, AsgEBasePlanOp newOp) {

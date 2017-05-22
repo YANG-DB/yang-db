@@ -4,7 +4,7 @@ import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.cost.CostEstimator;
 import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M1NoRedundantPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -138,7 +138,7 @@ public class CompoundBottomUpPlanSearcherTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
 
         return new BottomUpPlanSearcher<>(
-                new M1NoRedundantPlanExtensionStrategy(),
+                new M1NonRedundantPlanExtensionStrategy(),
                 pruneStrategy,
                 pruneStrategy,
                 planSelector,

@@ -4,12 +4,10 @@ import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.extenders.PushDownSplitFilterStrategy;
+import com.kayhut.fuse.epb.plan.extenders.PushDownSplitFilterPlanExtensionStrategy;
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
@@ -78,22 +76,22 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        PushDownSplitFilterStrategy chain = new PushDownSplitFilterStrategy(ontologyProvider,schemaProvider);
-        List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        PushDownSplitFilterPlanExtensionStrategy strategy = new PushDownSplitFilterPlanExtensionStrategy(ontologyProvider, schemaProvider);
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
 
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),EntityFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),3);
+        assertEquals(PlanUtil.findFirst$(extendedPlans.get(0), EntityFilterOp.class).getAsgEBase().geteBase().getProps().size(),1);
+        assertEquals(PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().size(),3);
 
         //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(2) instanceof PushdownRelProp);
+        assertTrue(PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
+        assertTrue(PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().get(2) instanceof PushdownRelProp);
 
-        Optional<RelProp> firstNameRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
+        Optional<RelProp> firstNameRelProp = PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.firstName")).findFirst();
         Assert.assertTrue(firstNameRelProp.isPresent());
-        Optional<RelProp> typeRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
+        Optional<RelProp> typeRelProp = PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.type")).findFirst();
         Assert.assertTrue(typeRelProp.isPresent());
         Assert.assertEquals("Dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));
@@ -109,14 +107,14 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                 new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
-        PushDownSplitFilterStrategy chain = new PushDownSplitFilterStrategy(ontologyProvider,schemaProvider);
-        List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        PushDownSplitFilterPlanExtensionStrategy strategy = new PushDownSplitFilterPlanExtensionStrategy(ontologyProvider,schemaProvider);
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().size(),3);
+        assertEquals(PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().size(),3);
         //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.findFirst(extendedPlans.get(0),RelationFilterOp.class,p->true).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
-        Optional<RelProp> idRelProp = PlanUtil.findFirst(extendedPlans.get(0), RelationFilterOp.class, p -> true).getAsgEBase().geteBase().getProps().stream().
+        assertTrue(PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);
+        Optional<RelProp> idRelProp = PlanUtil.findFirst$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().stream().
                 filter(r -> r instanceof PushdownRelProp && ((PushdownRelProp) r).getPushdownPropName().equals("entityB.id")).findFirst();
         Assert.assertTrue(idRelProp.isPresent());
         Assert.assertEquals("123",idRelProp.get().getCon().getExpr());
