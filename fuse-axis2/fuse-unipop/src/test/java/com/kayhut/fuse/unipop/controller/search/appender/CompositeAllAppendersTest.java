@@ -13,6 +13,7 @@ import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.when;
 public class CompositeAllAppendersTest {
 
     @Test
-    public void testSimpleCompositeAppender() {
+    public void testSimpleCompositeAppender() throws JSONException {
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
@@ -85,7 +86,7 @@ public class CompositeAllAppendersTest {
     }
 
     @Test
-    public void testCompositeAppender_No_Label_AND_Statement() {
+    public void testCompositeAppender_No_Label_AND_Statement() throws JSONException {
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
@@ -151,7 +152,7 @@ public class CompositeAllAppendersTest {
     }
 
     @Test
-    public void testCompositeAppender_Label_OR_Statement() {
+    public void testCompositeAppender_Label_OR_Statement() throws JSONException {
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);

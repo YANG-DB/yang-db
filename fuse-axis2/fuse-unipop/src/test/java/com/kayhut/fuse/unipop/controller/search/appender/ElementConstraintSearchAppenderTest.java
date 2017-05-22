@@ -9,6 +9,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -41,7 +42,7 @@ public class ElementConstraintSearchAppenderTest {
     }
 
     @Test
-    public void testSimpleConstraint() {
+    public void testSimpleConstraint() throws JSONException {
 
         Traversal dragonTraversal = __.has("label", P.eq("dragon")).limit(100);
 
@@ -63,7 +64,7 @@ public class ElementConstraintSearchAppenderTest {
     }
 
     @Test
-    public void testComplexConstraint() {
+    public void testComplexConstraint() throws JSONException {
         SearchBuilder searchBuilder = new SearchBuilder();
 
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
