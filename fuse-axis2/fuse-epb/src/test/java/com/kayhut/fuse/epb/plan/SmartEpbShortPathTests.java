@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by moti on 20/05/2017.
  */
-public class SmartEpbTests2 {
+public class SmartEpbShortPathTests {
 
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private Ontology ontology;
@@ -418,5 +418,25 @@ public class SmartEpbTests2 {
         Assert.assertEquals(100, iterator.next().getCost().cost, 0.1);
     }
 
-
+    @Test
+    public void testFilterOnAllItemsReverse(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.ge, "g")))).
+                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc")))).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, Rel.Direction.L).relFilter(4).entity(1).entityFilter(2).plan();
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(30.3, first.getCost().getGlobalCost().cost, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(10.09,op.getCost().cost, 0.1);
+        Assert.assertEquals(10.19, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(10.09, iterator.next().getCost().cost, 0.1);
+    }
 }
