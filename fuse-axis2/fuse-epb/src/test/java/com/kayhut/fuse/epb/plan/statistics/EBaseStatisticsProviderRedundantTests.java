@@ -53,32 +53,8 @@ public class EBaseStatisticsProviderRedundantTests {
             }
 
             @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
-                if(property.equals("firstName")){
-                    return Optional.of(new GraphRedundantPropertySchema() {
-                        @Override
-                        public String getPropertyRedundantName() {
-                            return "EntityB.firstName";
-                        }
-
-                        @Override
-                        public String getName() {
-                            return "firstName";
-                        }
-
-                        @Override
-                        public String getType() {
-                            return "string";
-                        }
-                    });
-                }else{
-                    return Optional.empty();
-                }
-            }
-
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property) {
-                if(property.equals("EntityB.firstName")){
+            public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
+                if(property.getName().equals("firstName")){
                     return Optional.of(new GraphRedundantPropertySchema() {
                         @Override
                         public String getPropertyRedundantName() {

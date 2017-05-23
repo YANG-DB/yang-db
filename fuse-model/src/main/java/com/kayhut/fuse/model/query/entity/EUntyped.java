@@ -14,7 +14,10 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EUntyped extends EEntityBase {
     //region Constructors
-    public EUntyped() {}
+    public EUntyped() {
+        this.vTypes = Collections.emptyList();
+        this.nvTypes = Collections.emptyList();
+    }
 
     public EUntyped(int eNum, String eTag, int next, int b) {
         this(eNum, eTag, Collections.emptyList(), Collections.emptyList(), next, b);

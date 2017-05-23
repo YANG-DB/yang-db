@@ -188,7 +188,7 @@ public class SmartEpbTests2 {
         });
 
         layoutProvider = mock(GraphLayoutProvider.class);
-        when(layoutProvider.getRedundantVertexProperty(any(), any())).thenReturn(Optional.empty());
+        when(layoutProvider.getRedundantProperty(any(), any())).thenReturn(Optional.empty());
 
         ontology = OntologyTestUtils.createDragonsOntologyShort();
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);

@@ -145,7 +145,7 @@ public class AsgQueryUtil {
         return element(query.getStart(), AsgEBase::getB, AsgEBase::getNext, predicate, truePredicate);
     }
 
-    public static <T extends EBase> Optional<AsgEBase<T>> element(AsgQuery query, Class<?> klass) {
+    public static <T extends EBase> Optional<AsgEBase<T>> element(AsgQuery query, Class<T> klass) {
         return element(query, classPredicateFunction.apply(klass));
     }
 
@@ -157,7 +157,7 @@ public class AsgQueryUtil {
         return AsgQueryUtil.<T>element(query, predicate).get();
     }
 
-    public static <T extends EBase> AsgEBase<T> element$(AsgQuery query, Class<?> klass) {
+    public static <T extends EBase> AsgEBase<T> element$(AsgQuery query, Class<T> klass) {
         return AsgQueryUtil.<T>element(query, klass).get();
     }
 
@@ -169,7 +169,7 @@ public class AsgQueryUtil {
         return elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, elementPredicate, truePredicate, Collections.emptyList());
     }
 
-    public static <T extends EBase> List<AsgEBase<T>> elements(AsgQuery query, Class<?> klass) {
+    public static <T extends EBase> List<AsgEBase<T>> elements(AsgQuery query, Class<T> klass) {
         return elements(query, classPredicateFunction.apply(klass));
     }
 

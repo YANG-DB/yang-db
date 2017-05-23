@@ -63,7 +63,7 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
         when(graphEdgeSchema.getIndexPartition())
                 .thenReturn(new StaticIndexPartition(Collections.singleton("index")));
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
-        when(edgeEnd.getRedundantVertexProperty(any())).thenAnswer(invocationOnMock -> {
+        when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];
             if(property.equals("lastName")){
                 return Optional.of(new GraphRedundantPropertySchema() {

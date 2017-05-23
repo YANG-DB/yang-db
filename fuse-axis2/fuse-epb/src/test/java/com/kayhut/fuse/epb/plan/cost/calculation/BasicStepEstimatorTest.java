@@ -43,7 +43,7 @@ public class BasicStepEstimatorTest {
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
         GraphEdgeSchema graphEdgeSchema = mock(GraphEdgeSchema.class);
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
-        when(edgeEnd.getRedundantVertexProperty(any())).thenAnswer(invocationOnMock -> {
+        when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];
             if(property.equals("lastName")){
                 return Optional.of(new GraphRedundantPropertySchema() {

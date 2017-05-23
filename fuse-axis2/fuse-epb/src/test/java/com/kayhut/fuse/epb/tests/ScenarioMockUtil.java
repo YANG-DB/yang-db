@@ -48,23 +48,12 @@ public class ScenarioMockUtil {
         this.nodeScaleFactor = nodeScaleFactor;
         this.edgeScaleFactor = edgeScaleFactor;
         this.graphLayoutProvider = mock(GraphLayoutProvider.class);
-        when(this.graphLayoutProvider.getRedundantVertexProperty(any(), any())).thenAnswer(invocationOnMock -> {
+        when(this.graphLayoutProvider.getRedundantProperty(any(), any())).thenAnswer(invocationOnMock -> {
             String edgeType = invocationOnMock.getArgumentAt(0, String.class);
             String property = invocationOnMock.getArgumentAt(1, String.class);
             if(redundantProps.containsKey(edgeType)){
                 if(redundantProps.get(edgeType).containsKey(property)){
                     return Optional.of(redundantProps.get(edgeType).get(property));
-                }
-            }
-            return Optional.empty();
-        });
-
-        when(this.graphLayoutProvider.getRedundantVertexPropertyByPushdownName(any(), any())).thenAnswer(invocationOnMock -> {
-            String edgeType = invocationOnMock.getArgumentAt(0, String.class);
-            String property = invocationOnMock.getArgumentAt(1, String.class);
-            if(redundantProps.containsKey(edgeType)){
-                if(redundantProps.get(edgeType).containsValue(property)){
-                    return redundantProps.get(edgeType).entrySet().stream().filter(set -> set.getValue().equals(property)).map(Map.Entry::getKey).findFirst();
                 }
             }
             return Optional.empty();

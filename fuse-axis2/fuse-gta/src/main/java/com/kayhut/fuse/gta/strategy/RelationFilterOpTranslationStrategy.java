@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
@@ -78,7 +79,11 @@ public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStr
 
     private Traversal convertRelPropToTraversal(RelProp relProp, Ontology ontology) {
         Optional<Property> property = OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType()));
-        return property.<Traversal>map(property1 -> __.has(property1.getName(), ConverstionUtil.convertConstraint(relProp.getCon())))
+        return property.<Traversal>map(property1 ->
+                __.has(relProp instanceof PushdownRelProp ?
+                        ((PushdownRelProp)relProp).getPushdownPropName() :
+                        property1.getName()
+                , ConverstionUtil.convertConstraint(relProp.getCon())))
                 .orElseGet(__::start);
 
     }

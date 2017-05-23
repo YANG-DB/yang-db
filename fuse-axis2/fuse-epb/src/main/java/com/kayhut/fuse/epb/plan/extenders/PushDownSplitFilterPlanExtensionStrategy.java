@@ -12,11 +12,9 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
@@ -25,9 +23,6 @@ import javaslang.collection.Stream;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import static com.kayhut.fuse.model.ontology.OntologyUtil.getComplementaryTypes;
 
 /**
  * Created by moti on 5/14/2017.
@@ -56,17 +51,17 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
         Optional<EntityOp> lastEntityOp = PlanUtil.last(plan.get(), EntityOp.class);
         if (!lastEntityOp.isPresent()) {
-            return Collections.emptyList();
+            return Collections.singleton(plan.get());
         }
 
         Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan.get(), lastEntityOp.get(), RelationOp.class);
         if (!lastRelationOp.isPresent()) {
-            return Collections.emptyList();
+            return Collections.singleton(plan.get());
         }
 
         Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(plan.get(), lastRelationOp.get(), RelationFilterOp.class);
         if (!lastRelationFilterOp.isPresent()) {
-            return Collections.emptyList();
+            return Collections.singleton(plan.get());
         }
 
         Optional<EntityFilterOp> lastEntityFilterOp = PlanUtil.next(plan.get(), lastEntityOp.get(), EntityFilterOp.class);
@@ -105,7 +100,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
                     Stream.ofAll(vTypes).map(eType -> $ont.$entity$(eType).getName()).toJavaList());
 
             Optional<GraphRedundantPropertySchema> redundantTypeProperty = edgeSchema.get().getDestination().get()
-                    .getRedundantVertexProperty($ont.$property$(OntologyFinalizer.TYPE_FIELD_P_TYPE).getName());
+                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.TYPE_FIELD_P_TYPE).getName()).get());
 
             if(redundantTypeProperty.isPresent()) {
                 RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantTypeProperty.get().getPropertyRedundantName(),
@@ -119,7 +114,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
             Constraint constraint = Constraint.of(ConstraintOp.eq, eConcrete.geteID());
 
             Optional<GraphRedundantPropertySchema> redundantIdProperty = edgeSchema.get().getDestination().get()
-                    .getRedundantVertexProperty($ont.$property$(OntologyFinalizer.ID_FIELD_P_TYPE).getName());
+                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.ID_FIELD_P_TYPE).getName()).get());
 
             if(redundantIdProperty.isPresent()) {
                 RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantIdProperty.get().getPropertyRedundantName(),
@@ -132,7 +127,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
             AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEBase().geteBase().clone()).build();
             Stream.ofAll(ePropGroup.geteBase().getProps()).forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get()
-                        .getRedundantVertexProperty($ont.$property$(Integer.parseInt(p.getpType())).getName());
+                        .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(Integer.parseInt(p.getpType())).getName()).get());
 
                 if(redundantVertexProperty.isPresent()){
                     RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),

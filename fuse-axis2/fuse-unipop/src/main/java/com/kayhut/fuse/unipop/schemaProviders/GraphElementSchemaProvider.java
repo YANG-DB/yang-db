@@ -10,6 +10,8 @@ public interface GraphElementSchemaProvider {
     Optional<GraphEdgeSchema> getEdgeSchema(String type);
     Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String type);
 
+    Optional<GraphElementPropertySchema> getPropertySchema(String name);
+
     Iterable<String> getVertexTypes();
     Iterable<String> getEdgeTypes();
 }

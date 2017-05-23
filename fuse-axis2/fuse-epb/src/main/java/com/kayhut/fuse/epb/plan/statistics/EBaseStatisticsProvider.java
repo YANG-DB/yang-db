@@ -2,8 +2,6 @@ package com.kayhut.fuse.epb.plan.statistics;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Constraint;
@@ -23,8 +21,6 @@ import javaslang.collection.Stream;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.*;
 
 /**
  * Created by liorp on 4/26/2017.
@@ -129,7 +125,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
 
         for(PushdownRelProp pushdownRelProp : pushdownProps){
-            Optional<GraphRedundantPropertySchema> pushdownVertexProperty = destination.getRedundantVertexPropertyByPushdownName(pushdownRelProp.getPushdownPropName());
+            Optional<GraphRedundantPropertySchema> pushdownVertexProperty = destination.getOriginalProperty(pushdownRelProp.getPushdownPropName());
             Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, pushdownVertexProperty.get(), pushdownRelProp.getCon(), relevantIndices, pushdownVertexProperty.get().getType());
             if (conditionCardinality.isPresent() && minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
                 minEdgeCardinality = conditionCardinality.get();
@@ -214,7 +210,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         for(EProp eProp : entityFilter.getProps()){
             Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
-            if(graphElementPropertySchema.isPresent() && graphEdgeSchema.getDestination().get().getRedundantVertexProperty(graphElementPropertySchema.get().getName()).isPresent()) {
+            if(graphElementPropertySchema.isPresent() && graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementPropertySchema.get()).isPresent()) {
                 Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
                 if (conditionCardinality.isPresent() && minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
                     minVertexCardinality = conditionCardinality.get();

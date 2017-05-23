@@ -39,6 +39,7 @@ import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -159,9 +160,7 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 Rel.Direction.R,
-                Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
+                getExpectedEdgeTraversalConstraint("Fire", Direction.OUT, null, null, null, Collections.singleton("Dragon")),
                 allAssignments));
     }
 
@@ -272,9 +271,7 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 Rel.Direction.L,
-                Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.has(GlobalConstants.HasKeys.DIRECTION, Direction.IN))),
+                getExpectedEdgeTraversalConstraint("Fire", Direction.IN, null, null, null, Collections.singleton("Dragon")),
                 allAssignments));
     }
 
@@ -610,7 +607,7 @@ public abstract class EntityRelationEntityTest {
     //endregion
 
     //region Protected Methods
-    private static void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
+    private void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -621,17 +618,20 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 direction,
-                Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.has(GlobalConstants.HasKeys.DIRECTION,
-                                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
+                getExpectedEdgeTraversalConstraint(
+                        "Fire",
+                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN,
+                        null,
+                        null,
+                        eId,
+                        Collections.singleton("Dragon")),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .filter(entity -> entity.geteID().equals(eId))
                         .isEmpty()));
     }
 
-    private static void test_ConcreteDragon_Fire_Dragon(String eId, Rel.Direction direction) throws Exception {
+    private void test_ConcreteDragon_Fire_Dragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", $ont.eType$("Dragon"), eId, eId, 2, 0),
@@ -642,17 +642,20 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 direction,
-                Constraint.by(__.and(
-                                __.has(T.label, "Fire"),
-                                __.has(GlobalConstants.HasKeys.DIRECTION,
-                                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
+                getExpectedEdgeTraversalConstraint(
+                        "Fire",
+                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN,
+                        null,
+                        null,
+                        null,
+                        Collections.singleton("Dragon")),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("A"))
                         .filter(entity -> entity.geteID().equals(eId))
                         .isEmpty()));
     }
 
-    private static void test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp op, Object value) throws Exception {
+    private void test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp op, Object value) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -664,10 +667,13 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 Rel.Direction.R,
-                Constraint.by(__.and(
-                        __.has(T.label, "Fire"),
-                        __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT),
-                        __.has("temperature", ConverstionUtil.convertConstraint(of(op, value))))),
+                getExpectedEdgeTraversalConstraint(
+                        "Fire",
+                        Direction.OUT,
+                        "temperature",
+                        ConverstionUtil.convertConstraint(of(op, value)),
+                        null,
+                        Collections.singleton("Dragon")),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
@@ -676,7 +682,7 @@ public abstract class EntityRelationEntityTest {
                         .isEmpty()));
     }
 
-    private static void test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp op, Object value) throws Exception {
+    private void test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp op, Object value) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -692,9 +698,7 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 Rel.Direction.R,
-                Constraint.by(__.and(
-                        __.has(T.label, "Fire"),
-                        __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
+                getExpectedEdgeTraversalConstraint("Fire", Direction.OUT, null, null, null, Collections.singleton("Dragon")),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("A"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
@@ -703,7 +707,7 @@ public abstract class EntityRelationEntityTest {
                         .isEmpty()));
     }
 
-    private static void test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp op, Object value) throws Exception {
+    private void test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp op, Object value) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -718,9 +722,7 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 Rel.Direction.R,
-                Constraint.by(__.and(
-                        __.has(T.label, "Fire"),
-                        __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))),
+                getExpectedEdgeTraversalConstraint("Fire", Direction.OUT, null, null, null, Collections.singleton("Dragon")),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
@@ -729,7 +731,7 @@ public abstract class EntityRelationEntityTest {
                         .isEmpty()));
     }
 
-    private static void test_Dragon_Fire_Untyped(Rel.Direction direction) throws Exception {
+    private void test_Dragon_Fire_Untyped(Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Dragon"), 2, 0),
@@ -740,17 +742,20 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 direction,
-                Constraint.by(__.and(
-                        __.has(T.label, "Fire"),
-                        __.has(GlobalConstants.HasKeys.DIRECTION,
-                                direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
+                getExpectedEdgeTraversalConstraint(
+                        "Fire",
+                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN,
+                        null,
+                        null,
+                        null,
+                        Arrays.asList("Person", "Dragon", "Guild")),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("A"))
                         .filter(entity -> entity.geteType() == $ont.eType$("Dragon"))
                         .isEmpty()));
     }
 
-    private static void test_Untyped_Fire_Dragon(Rel.Direction direction) throws Exception {
+    private void test_Untyped_Fire_Dragon(Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName("name").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EUntyped(1, "A", 2, 0),
@@ -761,15 +766,26 @@ public abstract class EntityRelationEntityTest {
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
                 10,
                 direction,
-                Constraint.by(__.and(
-                        __.has(T.label, "Fire"),
-                        __.has(GlobalConstants.HasKeys.DIRECTION,
-                                direction == Rel.Direction.R ? Direction.OUT : Direction.IN))),
+                getExpectedEdgeTraversalConstraint(
+                        "Fire",
+                        direction == Rel.Direction.R ? Direction.OUT : Direction.IN,
+                        null,
+                        null,
+                        null,
+                        Collections.singleton("Dragon")),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .filter(entity -> entity.geteType() == $ont.eType$("Dragon"))
                         .isEmpty()));
     }
+
+    protected abstract TraversalConstraint getExpectedEdgeTraversalConstraint(
+            String relationType,
+            Direction direction,
+            String relProperty,
+            P relPropertyPredicate,
+            String entityBId,
+            Iterable<String> entityBTypes);
 
     private static void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

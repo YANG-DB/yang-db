@@ -37,8 +37,9 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .build();
 
-        AsgEBase<EUntyped> next = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
-        Assert.assertNull(next.geteBase().getvTypes());
+        AsgEBase<EUntyped> next = AsgQueryUtil
+                .element$(query, EUntyped.class);
+        Assert.assertEquals(0, next.geteBase().getvTypes().size());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
         strategy.apply(query,new AsgStrategyContext(ontology));
@@ -60,8 +61,8 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
                 .next(concrete(3, "123",OntologyTestUtils.DRAGON.type,"",""))
                 .build();
 
-        AsgEBase<EUntyped> next = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
-        Assert.assertNull(next.geteBase().getvTypes());
+        AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
+        Assert.assertEquals(0, next.geteBase().getvTypes().size());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
         strategy.apply(query,new AsgStrategyContext(ontology));
@@ -83,8 +84,8 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
                 .next(unTyped(3))
                 .build();
 
-        AsgEBase<EUntyped> next = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
-        Assert.assertNull(next.geteBase().getvTypes());
+        AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
+        Assert.assertEquals(0, next.geteBase().getvTypes().size());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
         strategy.apply(query,new AsgStrategyContext(ontology));

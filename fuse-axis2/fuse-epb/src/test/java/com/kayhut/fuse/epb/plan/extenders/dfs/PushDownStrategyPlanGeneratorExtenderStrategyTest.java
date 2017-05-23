@@ -47,26 +47,18 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         ontologyProvider = mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenReturn(Optional.of(OntologyTestUtils.createDragonsOntologyShort()));
 
-        GraphLayoutProvider graphLayoutProvider = new GraphLayoutProvider() {
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String edgeType, String property) {
-                if(property.equals("firstName"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.firstName", null));
-                if(property.equals("gender"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.gender", null));
-                if(property.equals("id"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.id", null));
-                if(property.equals("type"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.type", null));
+        GraphLayoutProvider graphLayoutProvider = ((edgeType, property) -> {
+                if(property.getName().equals("firstName"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.firstName", property.getType()));
+                if(property.getName().equals("gender"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.gender", property.getType()));
+                if(property.getName().equals("id"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.id", property.getType()));
+                if(property.getName().equals("type"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.type", property.getType()));
 
                 return Optional.empty();
-            }
-
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String edgeType, String property) {
-                return Optional.empty();
-            }
-        };
+            });
 
         graphLayoutProviderFactory = ontology -> graphLayoutProvider;
         physicalIndexProviderFactory = (ontology -> new PhysicalIndexProvider.Constant(new StaticIndexPartition(Arrays.asList("index"))));
