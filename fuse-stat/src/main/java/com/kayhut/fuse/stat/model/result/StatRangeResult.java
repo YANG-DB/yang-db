@@ -5,13 +5,13 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 /**
  * Created by benishue on 03-May-17.
  */
-public class StatResult<T> extends StatResultBase {
+public class StatRangeResult<T> extends StatResultBase {
 
     //region Ctors
-    public StatResult() {
+    public StatRangeResult() {
     }
 
-    public StatResult(String index, String type, String field, String key, DataType dataType, T lowerBound, T upperBound, long count, long cardinality) {
+    public StatRangeResult(String index, String type, String field, String key, DataType dataType, T lowerBound, T upperBound, long count, long cardinality) {
         super(index, type, field, key, dataType, count, cardinality);
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;

@@ -5,7 +5,9 @@ import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.enums.HistogramType;
-import com.kayhut.fuse.stat.model.result.StatResult;
+import com.kayhut.fuse.stat.model.result.StatRangeResult;
+import com.kayhut.fuse.stat.model.result.StatResultBase;
+import com.kayhut.fuse.stat.model.result.StatTermResult;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
@@ -94,19 +96,38 @@ public class StatUtil {
         return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.manual);
     }
 
-    public static Iterable<Map<String, Object>> prepareStatDocs(List<StatResult> bucketStatResults) {
+    public static Optional<List<Field>> getFieldsWithTermHistogramOfType(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.term);
+    }
+
+    public static Iterable<Map<String, Object>> prepareStatDocs(List<? extends StatResultBase> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
-        for (StatResult bucketStatResult : bucketStatResults) {
+        for (StatResultBase bucketStatResult : bucketStatResults) {
             Map<String, Object> bucket = new HashedMap();
-            String bucketId = createBucketUniqueId(bucketStatResult.getIndex(), bucketStatResult.getType(), bucketStatResult.getField(), bucketStatResult.getLowerBound(), bucketStatResult.getUpperBound());
-            bucket.put("id", bucketId);
             bucket.put("index", bucketStatResult.getIndex());
             bucket.put("type", bucketStatResult.getType());
             bucket.put("field", bucketStatResult.getField());
-            if (bucketStatResult.getDataType() == DataType.numeric ||
-                    bucketStatResult.getDataType() == DataType.string) {
-                bucket.put("upper_bound_" + bucketStatResult.getDataType(), bucketStatResult.getUpperBound());
-                bucket.put("lower_bound_" + bucketStatResult.getDataType(), bucketStatResult.getLowerBound());
+            if (bucketStatResult instanceof StatRangeResult) {
+                String bucketId = createRangeBucketUniqueId(bucketStatResult.getIndex(),
+                        bucketStatResult.getType(),
+                        bucketStatResult.getField(),
+                        ((StatRangeResult) bucketStatResult).getLowerBound(),
+                        ((StatRangeResult) bucketStatResult).getUpperBound());
+                bucket.put("id", bucketId);
+                if (bucketStatResult.getDataType() == DataType.numeric ||
+                        bucketStatResult.getDataType() == DataType.string) {
+                    bucket.put("upper_bound_" + bucketStatResult.getDataType(), ((StatRangeResult) bucketStatResult).getUpperBound());
+                    bucket.put("lower_bound_" + bucketStatResult.getDataType(), ((StatRangeResult) bucketStatResult).getLowerBound());
+                }
+            }
+
+            if (bucketStatResult instanceof StatTermResult) {
+                String bucketId = createTermBucketUniqueId(bucketStatResult.getIndex(),
+                        bucketStatResult.getType(),
+                        bucketStatResult.getField(),
+                        ((StatTermResult) bucketStatResult).getTerm());
+                bucket.put("id", bucketId);
+                bucket.put("term", ((StatTermResult) bucketStatResult).getTerm());
             }
             bucket.put("count", bucketStatResult.getDocCount());
             bucket.put("cardinality", bucketStatResult.getCardinality());
@@ -115,8 +136,12 @@ public class StatUtil {
         return buckets;
     }
 
-    public static String createBucketUniqueId(String indexName, String typeName, String fieldName, Object lowerBound, Object upperBound) {
+    public static String createRangeBucketUniqueId(String indexName, String typeName, String fieldName, Object lowerBound, Object upperBound) {
         return hashString(indexName + typeName + fieldName + lowerBound + upperBound);
+    }
+
+    public static String createTermBucketUniqueId(String indexName, String typeName, String fieldName, Object term) {
+        return hashString(indexName + typeName + fieldName + term);
     }
 
     public static Optional<Field> getFieldByName(StatContainer statContainer, String typeName, String fieldName) {

@@ -115,6 +115,7 @@ public class StatCalculatorTest {
             dragon.put("name", generateRandomString(10) + " dragon" + i);
             dragon.put("age", r.nextInt(100));
             dragon.put("color", colors.get(r.nextInt(colors.size())));
+            dragon.put("gender", (r.nextBoolean() ? "MALE" : "FEMALE"));
             dragon.put("address", generateRandomString(20));
 
             dragons.add(dragon);

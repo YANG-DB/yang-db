@@ -1,8 +1,10 @@
 package com.kayhut.fuse.stat.util;
 
+import com.kayhut.fuse.stat.model.bucket.BucketTerm;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.result.StatResult;
+import com.kayhut.fuse.stat.model.result.StatRangeResult;
+import com.kayhut.fuse.stat.model.result.StatTermResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
@@ -51,7 +53,7 @@ public class EsUtil {
         throw new IllegalAccessError("Utility class");
     }
 
-    public static List<StatResult> getNumericHistogramResults(TransportClient client,
+    public static List<StatRangeResult> getNumericHistogramResults(TransportClient client,
                                                               String indexName,
                                                               String typeName,
                                                               String fieldName,
@@ -63,14 +65,14 @@ public class EsUtil {
         return getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
     }
 
-    public static List<StatResult> getManualHistogramResults(TransportClient client,
+    public static List<StatRangeResult> getManualHistogramResults(TransportClient client,
                                                              String indexName,
                                                              String typeName,
                                                              String fieldName,
                                                              DataType dataType,
-                                                             List<BucketRange<? extends Object>> buckets) {
+                                                             List<BucketRange<?>> buckets) {
 
-        List<StatResult> bucketStatResults = new ArrayList<>();
+        List<StatRangeResult> bucketStatResults = new ArrayList<>();
 
         if (DataType.string == dataType) {
             List<BucketRange<String>> stringBucketRanges = new ArrayList<>();
@@ -86,12 +88,12 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    private static List<StatResult> getNumericBucketsStatResults(Client client,
+    private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
                                                                  String indexName,
                                                                  String typeName,
                                                                  String fieldName,
                                                                  List<BucketRange<Double>> buckets) {
-        List<StatResult> bucketStatResults = new ArrayList<>();
+        List<StatRangeResult> bucketStatResults = new ArrayList<>();
         String aggName = buildAggName(indexName, typeName, fieldName);
 
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
@@ -117,7 +119,7 @@ public class EsUtil {
             long docCount = entry.getDocCount();    // Doc count
 
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
-            StatResult<Double> bucketStatResult = new StatResult(indexName, typeName, fieldName,
+            StatRangeResult bucketStatResult = new StatRangeResult(indexName, typeName, fieldName,
                     key,
                     DataType.numeric,
                     from,
@@ -131,13 +133,13 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    public static List<StatResult> getStringBucketsStatResults(TransportClient client,
+    public static List<StatRangeResult> getStringBucketsStatResults(TransportClient client,
                                                                String indexName,
                                                                String typeName,
                                                                String fieldName,
                                                                List<BucketRange<String>> buckets) {
 
-        List<StatResult> bucketStatResults = new ArrayList<>();
+        List<StatRangeResult> bucketStatResults = new ArrayList<>();
 
         String aggName = buildAggName(indexName, typeName, fieldName);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
@@ -163,11 +165,50 @@ public class EsUtil {
             String end = key.split("_")[1];              // Bucket end
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
 
-            StatResult<String> bucketStatResult = new StatResult(indexName, typeName, fieldName,
+            StatRangeResult bucketStatResult = new StatRangeResult(indexName, typeName, fieldName,
                     key,
                     DataType.string,
                     start,
                     end,
+                    docCount,
+                    cardinality.getValue());
+
+            bucketStatResults.add(bucketStatResult);
+        }
+        return bucketStatResults;
+    }
+
+    public static List<StatTermResult> getTermHistogramResults(TransportClient client,
+                                                               String indexName,
+                                                               String typeName,
+                                                               String fieldName,
+                                                               DataType dataType,
+                                                               List<BucketTerm> buckets) {
+
+        List<StatTermResult> bucketStatResults = new ArrayList<>();
+
+        String aggName = buildAggName(indexName, typeName, fieldName);
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
+                .setTypes(typeName);
+
+        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
+        buckets.forEach(bucket -> filtersAggregationBuilder.filter((String) bucket.getTerm(), QueryBuilders.termQuery(fieldName, bucket.getTerm())));
+
+        SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
+                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
+                .execute().actionGet();
+
+        Filters aggregation = sr.getAggregations().get(aggName);
+
+        for (Filters.Bucket entry : aggregation.getBuckets()) {
+            String key = entry.getKeyAsString();            // bucket key
+            long docCount = entry.getDocCount();            // Doc count
+            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
+
+            StatTermResult bucketStatResult = new StatTermResult(indexName, typeName, fieldName,
+                    key,
+                    dataType,
+                    key,
                     docCount,
                     cardinality.getValue());
 
@@ -237,7 +278,7 @@ public class EsUtil {
         ClusterState cs = esClient.admin().cluster().prepareState().setIndices(indexName).execute().actionGet().getState();
         IndexMetaData imd = cs.getMetaData().index(indexName);
         MappingMetaData mdd = imd.mapping(typeName);
-        Map<String, Object> map = null;
+        Map<String, Object> map;
         map = mdd.getSourceAsMap();
         List<String> fieldList = getList("", map);
         System.out.println("Field List:");

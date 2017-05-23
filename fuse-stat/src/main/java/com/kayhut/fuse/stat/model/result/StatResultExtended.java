@@ -3,7 +3,7 @@ package com.kayhut.fuse.stat.model.result;
 /**
  * Created by benishue on 03-May-17.
  */
-public class StatResultExtended extends StatResult {
+public class StatResultExtended{
 
     // todo maybe for the future
     //region Ctors

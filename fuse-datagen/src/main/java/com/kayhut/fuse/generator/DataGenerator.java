@@ -162,12 +162,9 @@ public class DataGenerator {
             int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * totalPopulationSize));
             for (int personId = startPerosnId; personId < totalPopulationSize * (1 - notAssignedRatio); personId++) {
                 //The last persons do not belong to any guild
-                if (personsToGuildsSet.get(i) == null)
-                {
+                if (personsToGuildsSet.get(i) == null) {
                     personsToGuildsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
-                }
-                else
-                {
+                } else {
                     personsToGuildsSet.get(i).add(personId);
                 }
 
