@@ -293,6 +293,16 @@ public class Ontology {
         public List<RelationshipType> relations() {
             return Stream.ofAll(ontology.getRelationshipTypes()).toJavaList();
         }
+
+        public Optional<PrimitiveType> type(String typeName) {
+            return Stream.ofAll(ontology.getPrimitiveTypes())
+                    .filter(primitiveType -> primitiveType.getType().equals(typeName))
+                    .toJavaOptional();
+        }
+
+        public PrimitiveType type$(String typeName) {
+            return type(typeName).get();
+        }
         //endregion
 
         //region Fields

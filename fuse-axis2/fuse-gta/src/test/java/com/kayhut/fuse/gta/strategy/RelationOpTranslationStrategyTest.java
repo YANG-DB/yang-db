@@ -61,7 +61,7 @@ public class RelationOpTranslationStrategyTest {
         );
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
-        when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
+        when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
@@ -106,7 +106,7 @@ public class RelationOpTranslationStrategyTest {
         );
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
-        when(context.getOntology()).thenAnswer( invocationOnMock -> ontology);
+        when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);

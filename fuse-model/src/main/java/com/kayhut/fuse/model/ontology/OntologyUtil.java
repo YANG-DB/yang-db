@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * Created by benishue on 12-Mar-17.
  */
 public class OntologyUtil {
-    public static int getEntityTypeIdByName(Ontology ontology,String name) {
+    /*public static int getEntityTypeIdByName(Ontology ontology,String name) {
         Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()
                 .filter(entityType -> entityType.getName().equals(name))
                 .findFirst();
@@ -23,9 +23,9 @@ public class OntologyUtil {
             throw new IllegalArgumentException("Not Supported Entity Type name: " + name);
         }
         return entityTypeId;
-    }
+    }*/
 
-    public static String getEntityTypeNameById(Ontology ontology, int eTypeId){
+    /*public static String getEntityTypeNameById(Ontology ontology, int eTypeId){
         Optional<EntityType> entityTypeMatch = ontology.getEntityTypes().stream()
                 .filter(entityType -> entityType.geteType() == eTypeId)
                 .findFirst();
@@ -37,7 +37,7 @@ public class OntologyUtil {
             throw new IllegalArgumentException("Not Supported Entity Type Id: " + eTypeId);
         }
         return entityTypeName;
-    }
+    }*/
 
     public static String getRelationTypeNameById(Ontology ontology, int rTypeId){
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()
@@ -51,15 +51,6 @@ public class OntologyUtil {
             throw new IllegalArgumentException("Not Supported Relation Type Id: " + rTypeId);
         }
         return relationTypeName;
-    }
-
-    public static Optional<String> getEntityLabel(Ontology ontology, int eType) {
-        for(EntityType e : ontology.getEntityTypes()) {
-            if(e.geteType() == eType) {
-                return Optional.of(e.getName());
-            }
-        }
-        return Optional.empty();
     }
 
     public static Optional<List<String>> getAllEntityLabels(Ontology ontology) {

@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 public class EBaseStatisticsProviderIndicesTests {
     GraphElementSchemaProvider graphElementSchemaProvider;
     GraphStatisticsProvider graphStatisticsProvider;
-    Ontology ontology;
+    Ontology.Accessor ont;
     EBaseStatisticsProvider statisticsProvider;
     PhysicalIndexProvider indexProvider;
     private static String INDEX_PREFIX = "idx-";
@@ -98,11 +98,11 @@ public class EBaseStatisticsProviderIndicesTests {
         });
 
 
-        ontology = OntologyTestUtils.createDragonsOntologyShort();
-        RelationshipType relation2 = OntologyUtil.getRelationshipType(ontology, OntologyUtil.getRelationTypeNameById(ontology, 2)).get();
+        ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
+        RelationshipType relation2 = ont.$relation$(2);
         relation2.addProperty(1);
 
-        graphElementSchemaProvider = new OntologySchemaProvider(ontology, indexProvider);
+        graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
@@ -161,7 +161,7 @@ public class EBaseStatisticsProviderIndicesTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(secondDateBuckets));
         //when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
-        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
+        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
     }
 
     @Test

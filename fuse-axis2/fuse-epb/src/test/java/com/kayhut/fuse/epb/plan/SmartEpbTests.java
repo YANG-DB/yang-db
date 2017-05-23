@@ -35,8 +35,16 @@ public class SmartEpbTests {
     @Before
     public void setup(){
         ScenarioMockUtil scenarioMockUtil = BasicScenarioSetup.setup();
-        EBaseStatisticsProvider eBaseStatisticsProvider = new EBaseStatisticsProvider(scenarioMockUtil.getGraphElementSchemaProvider(), scenarioMockUtil.getOntology(), scenarioMockUtil.getGraphStatisticsProvider());
-        StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, scenarioMockUtil.getGraphElementSchemaProvider(), scenarioMockUtil.getOntology(), new BasicStepEstimator(1.0,0.001 ));
+        EBaseStatisticsProvider eBaseStatisticsProvider = new EBaseStatisticsProvider(
+                scenarioMockUtil.getGraphElementSchemaProvider(),
+                scenarioMockUtil.getOntologyAccessor(),
+                scenarioMockUtil.getGraphStatisticsProvider());
+
+        StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(
+                eBaseStatisticsProvider,
+                scenarioMockUtil.getGraphElementSchemaProvider(),
+                scenarioMockUtil.getOntologyAccessor(),
+                new BasicStepEstimator(1.0,0.001 ));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();

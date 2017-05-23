@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 public class SmartEpbTests2 {
 
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
+    private Ontology.Accessor ont;
     private PhysicalIndexProvider physicalIndexProvider;
     private GraphStatisticsProvider graphStatisticsProvider;
     private GraphLayoutProvider layoutProvider;
@@ -190,11 +190,11 @@ public class SmartEpbTests2 {
         layoutProvider = mock(GraphLayoutProvider.class);
         when(layoutProvider.getRedundantProperty(any(), any())).thenReturn(Optional.empty());
 
-        ontology = OntologyTestUtils.createDragonsOntologyShort();
-        graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
+        ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
+        graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), physicalIndexProvider, layoutProvider);
 
-        eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
-        statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1.0,0.001));
+        eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
+        statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ont, new BasicStepEstimator(1.0,0.001));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();

@@ -42,7 +42,7 @@ public class RelationOpTranslationStrategy implements PlanOpTranslationStrategy 
         Optional<EntityOp> next = PlanUtil.next(plan, planOp, EntityOp.class);
 
         Rel rel = ((RelationOp)planOp).getAsgEBase().geteBase();
-        String rTypeName = OntologyUtil.getRelationTypeNameById(context.getOntology(), rel.getrType());
+        String rTypeName = context.getOnt().$relation$(rel.getrType()).getName();
         return traversal.outE(GlobalConstants.Labels.PROMISE)
                 .as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), next.get().getAsgEBase().geteBase()))
                 .has(GlobalConstants.HasKeys.CONSTRAINT,

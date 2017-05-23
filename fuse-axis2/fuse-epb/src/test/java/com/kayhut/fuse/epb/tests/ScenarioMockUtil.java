@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
  * Created by moti on 5/17/2017.
  */
 public class ScenarioMockUtil {
-    private Ontology ontology;
+    private Ontology.Accessor ont;
     private PhysicalIndexProvider indexProvider;
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private GraphLayoutProvider graphLayoutProvider = null;
@@ -59,7 +59,7 @@ public class ScenarioMockUtil {
             return Optional.empty();
         });
 
-        this.ontology = OntologyTestUtils.createDragonsOntologyShort();
+        this.ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
 
         this.indexProvider = mock(PhysicalIndexProvider.class);
         IndexPartition defaultPartition = () -> Arrays.asList("idx1");
@@ -70,7 +70,7 @@ public class ScenarioMockUtil {
             return indexPartitionMap.getOrDefault(item, defaultPartition);
         });
 
-        this.graphElementSchemaProvider = new OntologySchemaProvider(this.ontology, this.indexProvider, this.graphLayoutProvider);
+        this.graphElementSchemaProvider = new OntologySchemaProvider(this.ont.get(), this.indexProvider, this.graphLayoutProvider);
 
         this.graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any())).thenAnswer(invocationOnMock -> {
@@ -222,8 +222,8 @@ public class ScenarioMockUtil {
     }
 
 
-    public Ontology getOntology() {
-        return ontology;
+    public Ontology.Accessor getOntologyAccessor() {
+        return ont;
     }
 
     public PhysicalIndexProvider getIndexProvider() {

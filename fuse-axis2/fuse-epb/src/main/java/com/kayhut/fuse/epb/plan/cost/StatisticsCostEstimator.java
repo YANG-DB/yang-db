@@ -92,14 +92,18 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
     private StatisticsProvider statisticsProvider;
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
+    private Ontology.Accessor ont;
     private StepEstimator estimator;
 
     @Inject
-    public StatisticsCostEstimator(StatisticsProvider statisticsProvider, GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology, StepEstimator estimator) {
+    public StatisticsCostEstimator(
+            StatisticsProvider statisticsProvider,
+            GraphElementSchemaProvider graphElementSchemaProvider,
+            Ontology.Accessor ont,
+            StepEstimator estimator) {
         this.statisticsProvider = statisticsProvider;
         this.graphElementSchemaProvider = graphElementSchemaProvider;
-        this.ontology = ontology;
+        this.ont = ont;
         this.estimator = estimator;
     }
 

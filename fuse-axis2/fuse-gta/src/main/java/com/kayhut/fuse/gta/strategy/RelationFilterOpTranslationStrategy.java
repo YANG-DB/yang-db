@@ -50,7 +50,7 @@ public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStr
                 traversal,
                 relationOp.get().getAsgEBase().geteBase(),
                 relationFilterOp.getAsgEBase().geteBase(),
-                context.getOntology());
+                context.getOnt());
 
         return traversal;
     }
@@ -61,11 +61,11 @@ public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStr
             GraphTraversal traversal,
             Rel rel,
             RelPropGroup relPropGroup,
-            Ontology ontology) {
+            Ontology.Accessor ont) {
 
-        String relationTypeName = OntologyUtil.getRelationTypeNameById(ontology, rel.getrType());
+        String relationTypeName = ont.$relation$(rel.getrType()).getName();
         List<Traversal> traversals = Stream.ofAll(relPropGroup.getProps())
-                .map(relProp -> convertRelPropToTraversal(relProp, ontology))
+                .map(relProp -> convertRelPropToTraversal(relProp, ont))
                 .toJavaList();
 
         traversals.addAll(0, Arrays.asList(
@@ -77,8 +77,8 @@ public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStr
                 Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class))));
     }
 
-    private Traversal convertRelPropToTraversal(RelProp relProp, Ontology ontology) {
-        Optional<Property> property = OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType()));
+    private Traversal convertRelPropToTraversal(RelProp relProp, Ontology.Accessor ont) {
+        Optional<Property> property = ont.$property(Integer.parseInt(relProp.getpType()));
         return property.<Traversal>map(property1 ->
                 __.has(relProp instanceof PushdownRelProp ?
                         ((PushdownRelProp)relProp).getPushdownPropName() :

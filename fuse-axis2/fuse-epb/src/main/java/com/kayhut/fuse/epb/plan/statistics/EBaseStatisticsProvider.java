@@ -27,7 +27,7 @@ import java.util.stream.StreamSupport;
  */
 public class EBaseStatisticsProvider implements StatisticsProvider {
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
+    private Ontology.Accessor ont;
     private GraphStatisticsProvider graphStatisticsProvider;
 
     // Supported operators by the cost estimator, used for validation
@@ -47,9 +47,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         supportedOps.add(ConstraintOp.notStartsWith);
     }
 
-    public EBaseStatisticsProvider(GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology, GraphStatisticsProvider graphStatisticsProvider) {
+    public EBaseStatisticsProvider(
+            GraphElementSchemaProvider graphElementSchemaProvider,
+            Ontology.Accessor ont,
+            GraphStatisticsProvider graphStatisticsProvider) {
         this.graphElementSchemaProvider = graphElementSchemaProvider;
-        this.ontology = ontology;
+        this.ont = ont;
         this.graphStatisticsProvider = graphStatisticsProvider;
     }
 
@@ -62,7 +65,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         }
 
         // We estimate each vertex type's statistics, and combine all statistics together
-        List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
+        List<String> vertexTypes = getVertexTypes(entity, ont, graphElementSchemaProvider.getVertexTypes());
         Statistics.Cardinality entityStats = getVertexStatistics(vertexTypes.get(0));
 
         for (int i = 1; i < vertexTypes.size(); i++) {
@@ -79,7 +82,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
             return bucketInfos.get(0).getCardinalityObject();
         }
-        List<String> vertexTypes = getVertexTypes(entity,ontology,graphElementSchemaProvider.getVertexTypes());
+        List<String> vertexTypes = getVertexTypes(entity,ont,graphElementSchemaProvider.getVertexTypes());
 
         Statistics.Cardinality entityStats = estimateVertexPropertyGroup(vertexTypes.get(0),entityFilter);
 
@@ -92,18 +95,18 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.Cardinality getEdgeStatistics(Rel rel) {
-        GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
+        GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         return getEdgeStatistics(edgeSchema);
     }
 
     @Override
     public Statistics.Cardinality getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
 
         for(RelProp relProp : relFilter.getProps()){
-            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( relProp.getpType())).get();
+            Property property = ont.$property$(Integer.parseInt( relProp.getpType()));
             GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
             if(conditionCardinality.isPresent() &&  minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
@@ -146,7 +149,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     @Override
     public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
 
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(filter, graphEdgeSchema);
         return graphStatisticsProvider.getGlobalSelectivity(graphEdgeSchema, relevantIndices);
     }
@@ -184,7 +187,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
         for(EProp eProp : entityFilter.getProps()){
-            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
+            Property property = ont.$property$(Integer.parseInt( eProp.getpType()));
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
                 Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
@@ -202,13 +205,13 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private Statistics.Cardinality estimateVertexRedundantPropertyGroup(String vertexType, EPropGroup entityFilter, Rel rel) {
         GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
         List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
+        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
         for(EProp eProp : entityFilter.getProps()){
-            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt( eProp.getpType())).get();
+            Property property = ont.$property$(Integer.parseInt( eProp.getpType()));
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent() && graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementPropertySchema.get()).isPresent()) {
                 Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
@@ -238,11 +241,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             return Optional.empty();
         }
 
-        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, pType);
+        Optional<PrimitiveType> primitiveType = ont.type(pType);
         if(primitiveType.isPresent()) {
             return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
         }else{
-            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ontology, graphElementPropertySchema.getType());
+            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ont.get(), graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 Value value = (Value) constraint.getExpr();
                 return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
@@ -261,11 +264,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             return Optional.empty();
         }
 
-        Optional<PrimitiveType> primitiveType = OntologyUtil.getPrimitiveType(ontology, pType);
+        Optional<PrimitiveType> primitiveType = ont.type(pType);
         if(primitiveType.isPresent()) {
             return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
         }else{
-            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ontology, graphElementPropertySchema.getType());
+            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ont.get(), graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 Value value = (Value) constraint.getExpr();
                 return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
@@ -485,7 +488,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, EPropGroup entityFilter) {
         List<EProp> timeConditions = new ArrayList<>();
         for (EProp eProp : entityFilter.getProps()){
-            Property property = OntologyUtil.getProperty(ontology, Integer.parseInt(eProp.getpType())).get();
+            Property property =  ont.$property$(Integer.parseInt(eProp.getpType()));
             if(property.getName().equals(indexPartition.getTimeField())){
                 switch(eProp.getCon().getOp()){
                     case inRange:
@@ -525,11 +528,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     }
 
-    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition,RelPropGroup relPropGroup) {
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, RelPropGroup relPropGroup) {
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getProps()){
-            if(OntologyUtil.getProperty(ontology, Integer.parseInt(relProp.getpType())).get().getName().equals(indexPartition.getTimeField())){
-
+            if (ont.$property$(Integer.parseInt(relProp.getpType())).getName().equals(indexPartition.getTimeField())) {
                 switch(relProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();
@@ -599,20 +601,20 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return cardinality;
     }
 
-    private List<String> getVertexTypes(EEntityBase entity, Ontology ontology, Iterable<String> vertexTypes) {
+    private List<String> getVertexTypes(EEntityBase entity, Ontology.Accessor ont, Iterable<String> vertexTypes) {
         List<String> _vertexTypes = Stream.ofAll(vertexTypes).toJavaList();
         if (entity instanceof EUntyped) {
             EUntyped eUntyped = (EUntyped) entity;
             if (eUntyped.getvTypes().size() > 0) {
-                _vertexTypes = eUntyped.getvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList());
+                _vertexTypes = Stream.ofAll(eUntyped.getvTypes()).map(v -> ont.$entity$(v).getName()).toJavaList();
             } else {
-                _vertexTypes = StreamSupport.stream(vertexTypes.spliterator(), false).collect(Collectors.toList());
+                _vertexTypes = Stream.ofAll(vertexTypes).toJavaList();
                 if (eUntyped.getNvTypes().size() > 0) {
-                    _vertexTypes.removeAll(eUntyped.getNvTypes().stream().map(v -> OntologyUtil.getEntityTypeNameById(ontology, v)).collect(Collectors.toList()));
+                    _vertexTypes.removeAll(Stream.ofAll(eUntyped.getNvTypes()).map(v -> ont.$entity$(v).getName()).toJavaList());
                 }
             }
         } else if (entity instanceof ETyped) {
-            _vertexTypes = Collections.singletonList(OntologyUtil.getEntityTypeNameById(ontology, ((ETyped) entity).geteType()));
+            _vertexTypes = Collections.singletonList(ont.$entity$(((ETyped) entity).geteType()).getName());
         }
         return _vertexTypes;
     }

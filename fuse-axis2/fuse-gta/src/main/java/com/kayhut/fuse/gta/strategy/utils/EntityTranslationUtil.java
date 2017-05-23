@@ -1,5 +1,6 @@
 package com.kayhut.fuse.gta.strategy.utils;
 
+import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -21,39 +22,42 @@ import java.util.Set;
  * Created by Roman on 14/05/2017.
  */
 public class EntityTranslationUtil {
-    public static List<String> getValidEntityNames(Ontology ontology, EEntityBase entity) {
+    public static List<String> getValidEntityNames(Ontology.Accessor ont, EEntityBase entity) {
         if (entity instanceof EConcrete) {
-            return Collections.singletonList(OntologyUtil.getEntityTypeNameById(ontology, ((EConcrete) entity).geteType()));
+            return Collections.singletonList(ont.$entity$(((EConcrete) entity).geteType()).getName());
         } else if (entity instanceof ETyped) {
-            return Collections.singletonList(OntologyUtil.getEntityTypeNameById(ontology, ((ETyped) entity).geteType()));
+            return Collections.singletonList(ont.$entity$(((ETyped) entity).geteType()).getName());
         } else if (entity instanceof EUntyped) {
-            return getValidEntityNames(ontology, (EUntyped)entity);
+            return getValidEntityNames(ont, (EUntyped)entity);
         }
 
         return Collections.emptyList();
     }
 
-    public static List<String> getValidEntityNames(Ontology ontology, EUntyped eUntyped) {
+    public static List<String> getValidEntityNames(Ontology.Accessor ont, EUntyped eUntyped) {
         List<String> eTypeNames = Stream.ofAll(eUntyped.getvTypes() == null ?
                 Collections.emptyList() :
                 eUntyped.getvTypes())
-                .map(eType -> OntologyUtil.getEntityTypeNameById(ontology, eType))
+                .map(eType -> ont.$entity$(eType).getName())
                 .toJavaList();
 
         if (eTypeNames.isEmpty()) {
             Set<String> nvTypeNames = Stream.ofAll(eUntyped.getNvTypes() == null ?
                     Collections.emptyList() :
                     eUntyped.getNvTypes())
-                    .map(eType -> OntologyUtil.getEntityTypeNameById(ontology, eType))
+                    .map(eType -> ont.$entity$(eType).getName())
                     .toJavaSet();
 
-            eTypeNames = Stream.ofAll(OntologyUtil.getAllEntityLabels(ontology).get())
+            eTypeNames = Stream.ofAll(ont.entities())
+                    .map(EntityType::getName)
                     .filter(eName -> !nvTypeNames.contains(eName))
                     .toJavaList();
         }
 
         if (eTypeNames.isEmpty()) {
-            eTypeNames = Stream.ofAll(OntologyUtil.getAllEntityLabels(ontology).get()).toJavaList();
+            eTypeNames = Stream.ofAll(ont.entities())
+                    .map(EntityType::getName)
+                    .toJavaList();
         }
 
         return eTypeNames;

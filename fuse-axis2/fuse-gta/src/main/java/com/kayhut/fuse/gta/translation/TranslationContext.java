@@ -10,15 +10,15 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
  */
 public class TranslationContext {
     //region Constructors
-    public TranslationContext(Ontology ontology, GraphTraversalSource graphTraversalSource) {
-        this.ontology = ontology;
+    public TranslationContext(Ontology.Accessor ont, GraphTraversalSource graphTraversalSource) {
+        this.ont = ont;
         this.graphTraversalSource = graphTraversalSource;
     }
     //endregion
 
     //region Properties
-    public Ontology getOntology() {
-        return ontology;
+    public Ontology.Accessor getOnt() {
+        return ont;
     }
 
     public GraphTraversalSource getGraphTraversalSource() {
@@ -27,7 +27,7 @@ public class TranslationContext {
     //endregion
 
     //region Fields
-    private Ontology ontology;
+    private Ontology.Accessor ont;
     private GraphTraversalSource graphTraversalSource;
     //endregion
 }
