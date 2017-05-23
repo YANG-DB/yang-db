@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.Color.TYPE_COLOR;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.TYPE_GENDER;
 import static java.util.Collections.singletonList;
 
@@ -22,6 +23,11 @@ public class OntologyTestUtils {
 
     public static final RelationType OWN = new RelationType("own", 1);
     public static final RelationType MEMBER_OF = new RelationType("memberOf", 2);
+    public static final RelationType FIRE = new RelationType("fire", 3);
+    public static final RelationType FREEZE = new RelationType("freeze", 4);
+    public static final RelationType ORIGIN = new RelationType("origin", 5);
+    public static final RelationType SUBJECT = new RelationType("subject", 6);
+    public static final RelationType REGISTERED = new RelationType("registered", 7);
 
 
     public static Property FIRST_NAME = new Property("firstName", STRING, 1);
@@ -31,6 +37,7 @@ public class OntologyTestUtils {
     public static Property DEATH_DATE = new Property("deathDate", STRING, 5);
     public static Property HEIGHT = new Property("height", INT, 6);
     public static Property NAME = new Property("name", STRING, 7);
+    public static Property COLOR = new Property("color", TYPE_COLOR, 8);
 
     public static Property START_DATE = new Property("startDate", DATE, 8);
     public static Property END_DATE = new Property("endDate", DATE, 9);
@@ -67,6 +74,10 @@ public class OntologyTestUtils {
             return super.getProperties();
         }
 
+        @Override
+        public int hashCode() {
+            return propertiesOf.hashCode();
+        }
     }
 
     public static class Property {
@@ -84,8 +95,34 @@ public class OntologyTestUtils {
     public static class DRAGON {
         public static String name = "Dragon";
         public static int type = 2;
-        public static List<Property> propertyList = Arrays.asList(NAME);
+        public static List<Property> propertyList = Arrays.asList(NAME, GENDER, COLOR);
 
+        public static List<RelationshipTypeOf> relationshipList = Arrays.asList(
+                new RelationshipTypeOf(REGISTERED.name, REGISTERED.type, true)
+                        .withEPairs(singletonList(new EPair(GUILD.type, KINGDOM.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)),
+                new RelationshipTypeOf(FIRE.name, FIRE.type, true)
+                        .withEPairs(singletonList(new EPair(DRAGON.type, DRAGON.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)),
+                new RelationshipTypeOf(FREEZE.name, FREEZE.type, true)
+                        .withEPairs(singletonList(new EPair(DRAGON.type, DRAGON.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)),
+                new RelationshipTypeOf(ORIGIN.name, ORIGIN.type, true)
+                        .withEPairs(singletonList(new EPair(DRAGON.type, KINGDOM.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE))
+        );
+
+    }
+
+    public static class HORSE {
+        public static String name = "Horse";
+        public static int type = 3;
+        public static List<Property> propertyList = Arrays.asList(NAME, GENDER);
+
+        public static List<RelationshipTypeOf> relationshipList = Arrays.asList(
+                new RelationshipTypeOf(REGISTERED.name, REGISTERED.type, true)
+                        .withEPairs(singletonList(new EPair(HORSE.type, KINGDOM.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)));
     }
 
     public static class GUILD {
@@ -93,6 +130,18 @@ public class OntologyTestUtils {
         public static int type = 4;
         public static List<Property> propertyList = Arrays.asList(NAME);
 
+        public static List<RelationshipTypeOf> relationshipList = Arrays.asList(
+                new RelationshipTypeOf(REGISTERED.name, REGISTERED.type, true)
+                        .withEPairs(singletonList(new EPair(GUILD.type, KINGDOM.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE))
+        );
+
+    }
+
+    public static class KINGDOM {
+        public static String name = "kingdom";
+        public static int type = 5;
+        public static List<Property> propertyList = Arrays.asList(NAME);
     }
 
     public static class PERSON {
@@ -106,13 +155,40 @@ public class OntologyTestUtils {
                 new RelationshipTypeOf(OWN.name, OWN.type, true)
                         .withEPairs(singletonList(new EPair(PERSON.type, DRAGON.type)))
                         .withProperties(Arrays.asList(START_DATE, END_DATE)),
+                new RelationshipTypeOf(OWN.name, OWN.type, true)
+                        .withEPairs(singletonList(new EPair(PERSON.type, HORSE.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)),
                 new RelationshipTypeOf(MEMBER_OF.name, MEMBER_OF.type, true)
                         .withEPairs(singletonList(new EPair(PERSON.type, GUILD.type)))
+                        .withProperties(Arrays.asList(START_DATE, END_DATE)),
+                new RelationshipTypeOf(SUBJECT.name, SUBJECT.type, true)
+                        .withEPairs(singletonList(new EPair(PERSON.type, KINGDOM.type)))
                         .withProperties(Arrays.asList(START_DATE, END_DATE))
         );
 
     }
 
+    public static Ontology createDragonsOntologyLong() {
+        Ontology ontology = createDragonsOntologyShort();
+
+        ontology.getRelationshipTypes().addAll(PERSON.relationshipList);
+        ontology.getRelationshipTypes().addAll(DRAGON.relationshipList);
+        ontology.getRelationshipTypes().addAll(HORSE.relationshipList);
+        ontology.getRelationshipTypes().addAll(GUILD.relationshipList);
+
+        ontology.getProperties().add(com.kayhut.fuse.model.ontology.Property.Builder.get().withPType(1).withName(COLOR.name).withType(TYPE_COLOR).build());
+
+        //region EntityType1 = Person
+        EntityType entityType3 = new EntityType(HORSE.type, HORSE.name, HORSE.propertyList.stream().map(p -> p.type).collect(Collectors.toList()));
+        EntityType entityType4 = new EntityType(KINGDOM.type, KINGDOM.name, KINGDOM.propertyList.stream().map(p -> p.type).collect(Collectors.toList()));
+        EntityType entityType5 = new EntityType(HORSE.type, HORSE.name, HORSE.propertyList.stream().map(p -> p.type).collect(Collectors.toList()));
+
+        ontology.getEntityTypes().add(entityType3);
+        ontology.getEntityTypes().add(entityType4);
+        ontology.getEntityTypes().add(entityType5);
+
+        return ontology;
+    }
 
     public static Ontology createDragonsOntologyShort() {
         Ontology ontologyShortObj = new Ontology();
@@ -177,6 +253,12 @@ public class OntologyTestUtils {
     public static enum Gender {
         MALE, FEMALE, OTHER;
         public static final String TYPE_GENDER = "TYPE_Gender";
+
+    }
+
+    public static enum Color {
+        RED, BLUE, GREEN, YELLOW;
+        public static final String TYPE_COLOR = "TYPE_Color";
 
     }
 
