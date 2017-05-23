@@ -3,14 +3,14 @@ package com.kayhut.fuse.stat.model.configuration.bucket;
 /**
  * Created by benishue on 30-Apr-17.
  */
-public class BucketRange extends Bucket {
+public class BucketRange <T>  extends Bucket {
 
     //region Ctrs
     public BucketRange() {
         super();
     }
 
-    public BucketRange(String start, String end) {
+    public BucketRange(T start, T end) {
         super();
         this.start = start;
         this.end = end;
@@ -18,26 +18,26 @@ public class BucketRange extends Bucket {
     //endregion
 
     //region Getters & Setters
-    public String getStart() {
+    public T getStart() {
         return start;
     }
 
-    public void setStart(String start) {
+    public void setStart(T start) {
         this.start = start;
     }
 
-    public String getEnd() {
+    public T getEnd() {
         return end;
     }
 
-    public void setEnd(String end) {
+    public void setEnd(T end) {
         this.end = end;
     }
     //endregion
 
     //region Fields
-    private String start;
-    private String end;
+    private T start;
+    private T end;
     //endregion
 
 }

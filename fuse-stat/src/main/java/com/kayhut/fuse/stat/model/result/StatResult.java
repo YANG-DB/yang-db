@@ -1,67 +1,42 @@
 package com.kayhut.fuse.stat.model.result;
 
-public abstract class StatResult {
+/**
+ * Created by benishue on 03-May-17.
+ */
+public class NumericStatResult extends StatResult {
 
-    //region Ctr
-    public StatResult() {
+    //region Ctors
+    public NumericStatResult() {
     }
 
-    public StatResult(String index, String type, String field, long docCount, long cardinality) {
-        this.index = index;
-        this.type = type;
-        this.field = field;
-        this.docCount = docCount;
-        this.cardinality = cardinality;
+    public NumericStatResult(String index, String type, String field, double lowerBound, double upperBound, long count, long cardinality) {
+        super(index,type,field,count,cardinality);
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
     }
+
     //endregion
 
     //region Getter & Setters
-    public String getIndex() {
-        return index;
+    public double getLowerBound() {
+        return lowerBound;
     }
 
-    public void setIndex(String index) {
-        this.index = index;
+    public void setLowerBound(double lowerBound) {
+        this.lowerBound = lowerBound;
     }
 
-    public String getType() {
-        return type;
+    public double getUpperBound() {
+        return upperBound;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getField() {
-        return field;
-    }
-
-    public void setField(String field) {
-        this.field = field;
-    }
-
-    public long getDocCount() {
-        return docCount;
-    }
-
-    public void setDocCount(long docCount) {
-        this.docCount = docCount;
-    }
-
-    public long getCardinality() {
-        return cardinality;
-    }
-
-    public void setCardinality(long cardinality) {
-        this.cardinality = cardinality;
+    public void setUpperBound(double upperBound) {
+        this.upperBound = upperBound;
     }
     //endregion
 
     //region Fields
-    private String index;
-    private String type;
-    private String field;
-    private long docCount;
-    private long cardinality;
+    private double lowerBound;
+    private double upperBound;
     //endregion
 }

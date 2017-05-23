@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat.model.configuration.histogram;
 
+import com.kayhut.fuse.stat.model.configuration.DataType;
 import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Created by benishue on 30-Apr-17.
  */
-public class HistogramManual extends Histogram {
+public class HistogramManual <T> extends Histogram {
 
     //region Ctrs
     public HistogramManual() {
@@ -17,32 +18,32 @@ public class HistogramManual extends Histogram {
 
     //region Getters & Setters
 
-    public List<BucketRange> getBuckets() {
+    public List<BucketRange<T>> getBuckets() {
         return buckets;
     }
 
-    public void setBuckets(List<BucketRange> buckets) {
+    public void setBuckets(List<BucketRange<T>> buckets) {
         this.buckets = buckets;
     }
 
-    public String getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
-    public void setDataType(String dataType) {
+    public void setDataType(DataType dataType) {
         this.dataType = dataType;
     }
     //endregion
 
     //region Fields
-    private List<BucketRange> buckets;
-    private String dataType;
+    private List<BucketRange<T>> buckets;
+    private DataType dataType;
     //endregion
 
     //region Builder
     public static final class HistogramManualBuilder {
         private List<BucketRange> buckets;
-        private String dataType;
+        private DataType dataType;
 
         private HistogramManualBuilder() {
         }
@@ -56,7 +57,7 @@ public class HistogramManual extends Histogram {
             return this;
         }
 
-        public HistogramManualBuilder withDataType(String dataType) {
+        public HistogramManualBuilder withDataType(DataType dataType) {
             this.dataType = dataType;
             return this;
         }

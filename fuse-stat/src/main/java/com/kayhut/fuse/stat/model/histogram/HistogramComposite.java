@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat.model.configuration.histogram;
 
+import com.kayhut.fuse.stat.model.configuration.DataType;
 import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * Created by benishue on 30-Apr-17.
  */
-public class HistogramComposite extends Histogram {
+public class HistogramComposite <T> extends Histogram {
 
     //region Ctrs
     public HistogramComposite() {
@@ -17,19 +18,19 @@ public class HistogramComposite extends Histogram {
 
     //region Getters & Setters
 
-    public String getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
-    public void setDataType(String dataType) {
+    public void setDataType(DataType dataType) {
         this.dataType = dataType;
     }
 
-    public List<BucketRange> getManualBuckets() {
+    public List<BucketRange<T>> getManualBuckets() {
         return manualBuckets;
     }
 
-    public void setManualBuckets(List<BucketRange> manualBuckets) {
+    public void setManualBuckets(List<BucketRange <T>> manualBuckets) {
         this.manualBuckets = manualBuckets;
     }
 
@@ -44,15 +45,15 @@ public class HistogramComposite extends Histogram {
     //endregion
 
     //region Fields
-    private String dataType;
-    private List<BucketRange> manualBuckets;
+    private DataType dataType;
+    private List<BucketRange<T>> manualBuckets;
     public Histogram autoBuckets;
     //endregion
 
     //region Builder
     public static final class HistogramCompositeBuilder {
         public Histogram autoBuckets;
-        private String dataType;
+        private DataType dataType;
         private List<BucketRange> manualBuckets;
 
         private HistogramCompositeBuilder() {
@@ -62,7 +63,7 @@ public class HistogramComposite extends Histogram {
             return new HistogramCompositeBuilder();
         }
 
-        public HistogramCompositeBuilder withDataType(String dataType) {
+        public HistogramCompositeBuilder withDataType(DataType dataType) {
             this.dataType = dataType;
             return this;
         }

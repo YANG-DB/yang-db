@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat.model.configuration.histogram;
 
+import com.kayhut.fuse.stat.model.configuration.DataType;
 import com.kayhut.fuse.stat.model.configuration.bucket.BucketTerm;
 
 import java.util.List;
@@ -24,24 +25,24 @@ public class HistogramTerm extends Histogram {
         this.buckets = buckets;
     }
 
-    public String getDataType() {
+    public DataType getDataType() {
         return dataType;
     }
 
-    public void setDataType(String dataType) {
+    public void setDataType(DataType dataType) {
         this.dataType = dataType;
     }
     //endregion
 
     //region Fields
     private List<BucketTerm> buckets;
-    private String dataType;
+    private DataType dataType;
     //endregion
 
     //region Builder
     public static final class HistogramTermBuilder {
         private List<BucketTerm> buckets;
-        private String dataType;
+        private DataType dataType;
 
         private HistogramTermBuilder() {
         }
@@ -55,7 +56,7 @@ public class HistogramTerm extends Histogram {
             return this;
         }
 
-        public HistogramTermBuilder withDataType(String dataType) {
+        public HistogramTermBuilder withDataType(DataType dataType) {
             this.dataType = dataType;
             return this;
         }
