@@ -59,20 +59,18 @@ public class DataGeneratorTest {
                 .boxed().collect(Collectors.toList());
 
         List<Tuple2> personsToGuildsEdges = DataGenerator.attachPersonsToGuilds(guildsIdList, personsIdList);
-        //Checking that the size of the EdgeSet is the size of persons list
-        assertEquals(personsIdList.size(), personsToGuildsEdges.size());
+        //Checking that the size of the EdgeSet is the size of persons population less 0.025% (not belong to any guild)
+        assertEquals(9750, personsToGuildsEdges.size());
 
         List<Integer> personsIdsInEdges = Stream.ofAll(personsToGuildsEdges).map(tuple2 -> (Integer) tuple2._1).toJavaList();
         List<Integer> guildsIdsInEdges = Stream.ofAll(personsToGuildsEdges).map(tuple2 -> (Integer) tuple2._2).toJavaList();
 
         //Check that all Persons belong to kingdoms
-        for (int i = 0; i < personsIdList.size(); i++) {
+        for (int i = 0; i < 9750; i++) {
             assertThat(personsIdsInEdges, hasItem(i));
         }
 
-        for (int i = 0; i < guildsIdList.size(); i++) {
-            assertThat(guildsIdsInEdges, hasItem(i));
-        }
+
 
         personsToGuildsEdges.stream()
                 .collect(Collectors.groupingBy(tuple2 -> tuple2._2, Collectors.counting()))

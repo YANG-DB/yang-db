@@ -18,9 +18,7 @@ import org.graphstream.graph.Graph;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -121,9 +119,8 @@ public class DataGenerator {
 
     /**
      * @param kingdomsIdList 0...Number of kingdoms
-     * @param personsIdList 0...Number of persons
+     * @param personsIdList  0...Number of persons
      * @return EdgeSet ( List of Tuple<Person Id, Kingdom ID>) of relationships between Persons and Kingdoms.
-     *
      */
     public static List<Tuple2> attachPersonsToKingdoms(List<Integer> kingdomsIdList, List<Integer> personsIdList) {
         final double largestKingdomRatio = 0.3; //Used to skew the distribution
@@ -150,31 +147,50 @@ public class DataGenerator {
     public static List<Tuple2> attachPersonsToGuilds(List<Integer> guildsIdList, List<Integer> personsIdList) {
         final double notAssignedRatio = 0.025; //precentage of persons not assigned to any guild
         int totalPopulationSize = personsIdList.size();
-        List<Tuple2> personsToGuildsSet = new ArrayList<>();
+        Map<Integer, List<Integer>> personsToGuildsSet = new HashMap<>();
+
         //We are creating an exp distribution of guild size summed up to the kingdoms number
         double[] expDistArray = RandomUtil.getExpDistArray(guildsIdList.size() - 1, 1 - notAssignedRatio, 0.5);
         List<Double> guildsMembersDist = Arrays.stream(expDistArray).boxed().collect(Collectors.toList());
         double[] cumulativeDistArray = RandomUtil.getCumulativeDistArray(expDistArray);
 
-        // Adding a 'artficial - not member' guild - the persons belong to this
+        // Adding a 'artificial - not member' guild - the persons belong to this
         guildsMembersDist.add(notAssignedRatio);
 
         int startPerosnId = 0;
         for (int i = 0; i < guildsMembersDist.size(); i++) {
             int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * totalPopulationSize));
-            for (int personId = startPerosnId; personId < totalPopulationSize * (1-notAssignedRatio); personId++) {
+            for (int personId = startPerosnId; personId < totalPopulationSize * (1 - notAssignedRatio); personId++) {
                 //The last persons do not belong to any guild
-                personsToGuildsSet.add(new Tuple2<>(personId, i));
+                if (personsToGuildsSet.get(i) == null)
+                {
+                    personsToGuildsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
+                }
+                else
+                {
+                    personsToGuildsSet.get(i).add(personId);
+                }
+
+                int randomNumOfGuildsMembership = RandomUtil.randomInt(1, 8);
+                for (int j = 0; j < randomNumOfGuildsMembership; j++) {
+                    int randomGuild = RandomUtil.randomInt(0, guildsMembersDist.size() - 1);
+                    List<Integer> personsInGuild = personsToGuildsSet.get(randomGuild);
+                    if (personsInGuild != null && !personsInGuild.contains(personId)) {
+                        personsToGuildsSet.get(i).add(personId);
+                        personsInGuild.add(personId);
+                        personsToGuildsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
+                    }
+
+                }
                 if (personId == startPerosnId + guildMembersSize)
                     break;
             }
             startPerosnId += guildMembersSize + 1;
         }
 
-        //Adding the same persons to severals guilds - without changing the ratio of each guild
-        //RandomUtil.randomInt()
+        //Adding the same persons to several guilds - without changing the ratio of each guild
 
-        return personsToGuildsSet;
+        return null;
     }
 
 
