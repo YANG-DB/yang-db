@@ -19,6 +19,13 @@ import java.util.function.Supplier;
 public class Ontology {
     public Ontology() {
         primitiveTypes = new ArrayList<>();
+        entityTypes = new ArrayList<>();
+        relationshipTypes = new ArrayList<>();
+        enumeratedTypes = new ArrayList<>();
+        properties = new ArrayList<>();
+        compositeTypes = new ArrayList<>();
+
+
         primitiveTypes.add(new PrimitiveType("int", Long.class));
         primitiveTypes.add(new PrimitiveType("string", String.class));
         primitiveTypes.add(new PrimitiveType("float", Double.class));

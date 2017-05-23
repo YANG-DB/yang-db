@@ -70,7 +70,7 @@ public class SmartEpbTests2 {
     public void setup() throws ParseException {
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
         Map<String, Integer> typeCard = new HashMap<>();
-        typeCard.put(OWN.name, 1000);
+        typeCard.put(OWN.getName(), 1000);
         typeCard.put(DRAGON.name, 1000);
         typeCard.put(PERSON.name, 200);
 
@@ -150,7 +150,7 @@ public class SmartEpbTests2 {
             if(type.equals(DRAGON.name)){
                 return (IndexPartition) () -> Arrays.asList("Dragons1","Dragons2");
             }
-            if(type.equals(OWN.name)){
+            if(type.equals(OWN.getName())){
                 return new TimeSeriesIndexPartition() {
                     @Override
                     public String getDateFormat() {
@@ -284,7 +284,7 @@ public class SmartEpbTests2 {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.L).below(relProp(4))).
+                next(rel(3, OWN.getrType(), Rel.Direction.L).below(relProp(4))).
                 next(typed(5, PERSON.type)).
                 next(eProp(6)).
                 build();
@@ -307,7 +307,7 @@ public class SmartEpbTests2 {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -327,7 +327,7 @@ public class SmartEpbTests2 {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
@@ -349,7 +349,7 @@ public class SmartEpbTests2 {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type),2, Constraint.of(ConstraintOp.eq,"abc")))).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -371,7 +371,7 @@ public class SmartEpbTests2 {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -394,7 +394,7 @@ public class SmartEpbTests2 {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.ge, "g")))).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.ge,"g")))).
                 build();

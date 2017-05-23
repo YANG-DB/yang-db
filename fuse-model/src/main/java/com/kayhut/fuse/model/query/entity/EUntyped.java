@@ -4,6 +4,7 @@ package com.kayhut.fuse.model.query.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javaslang.collection.Stream;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,7 +15,10 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EUntyped extends EEntityBase {
     //region Constructors
-    public EUntyped() {}
+    public EUntyped() {
+        this.vTypes = new ArrayList<>();
+        this.nvTypes = new ArrayList<>();
+    }
 
     public EUntyped(int eNum, String eTag, int next, int b) {
         this(eNum, eTag, Collections.emptyList(), Collections.emptyList(), next, b);
