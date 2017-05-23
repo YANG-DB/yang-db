@@ -28,7 +28,7 @@ public class ScenarioMockUtil {
     private Ontology ontology;
     private PhysicalIndexProvider indexProvider;
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private OntologyGraphLayoutProvider ontologyGraphLayoutProvider = null;
+    private GraphLayoutProvider graphLayoutProvider = null;
     private Map<String, Map<String, String>> redundantProps = new HashMap<>();
     private Map<Tuple<String, ElementType>, IndexPartition> indexPartitionMap = new HashMap<>();
     private static String INDEX_PREFIX = "idx-";
@@ -47,8 +47,8 @@ public class ScenarioMockUtil {
     public ScenarioMockUtil(long nodeScaleFactor, long edgeScaleFactor) {
         this.nodeScaleFactor = nodeScaleFactor;
         this.edgeScaleFactor = edgeScaleFactor;
-        this.ontologyGraphLayoutProvider = mock(OntologyGraphLayoutProvider.class);
-        when(this.ontologyGraphLayoutProvider.getRedundantVertexProperty(any(), any())).thenAnswer(invocationOnMock -> {
+        this.graphLayoutProvider = mock(GraphLayoutProvider.class);
+        when(this.graphLayoutProvider.getRedundantVertexProperty(any(), any())).thenAnswer(invocationOnMock -> {
             String edgeType = invocationOnMock.getArgumentAt(0, String.class);
             String property = invocationOnMock.getArgumentAt(1, String.class);
             if(redundantProps.containsKey(edgeType)){
@@ -59,7 +59,7 @@ public class ScenarioMockUtil {
             return Optional.empty();
         });
 
-        when(this.ontologyGraphLayoutProvider.getRedundantVertexPropertyByPushdownName(any(), any())).thenAnswer(invocationOnMock -> {
+        when(this.graphLayoutProvider.getRedundantVertexPropertyByPushdownName(any(), any())).thenAnswer(invocationOnMock -> {
             String edgeType = invocationOnMock.getArgumentAt(0, String.class);
             String property = invocationOnMock.getArgumentAt(1, String.class);
             if(redundantProps.containsKey(edgeType)){
@@ -81,7 +81,7 @@ public class ScenarioMockUtil {
             return indexPartitionMap.getOrDefault(item, defaultPartition);
         });
 
-        this.graphElementSchemaProvider = new OntologySchemaProvider(this.indexProvider, this.ontology, this.ontologyGraphLayoutProvider);
+        this.graphElementSchemaProvider = new OntologySchemaProvider(this.ontology, this.indexProvider, this.graphLayoutProvider);
 
         this.graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any())).thenAnswer(invocationOnMock -> {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ import java.util.List;
 public class RelationshipType {
     public RelationshipType() {
         properties = new ArrayList<>();
+        ePairs = new ArrayList<>();
     }
 
     public RelationshipType(String name, int rType, boolean directional) {
@@ -66,6 +68,11 @@ public class RelationshipType {
         this.ePairs = ePairs;
     }
 
+    public RelationshipType addPair(EPair pair) {
+        this.getePairs().add(pair);
+        return this;
+    }
+
     public List<Integer> getProperties() {
         return properties;
     }
@@ -78,8 +85,38 @@ public class RelationshipType {
         this.properties.add(type);
         return this;
     }
+    public RelationshipType withProperty(Integer ... properties) {
+        this.properties.addAll(Arrays.asList(properties));
+        return this;
+    }
 
     //endregion
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RelationshipType that = (RelationshipType) o;
+
+        if (rType != that.rType) return false;
+        if (directional != that.directional) return false;
+        if (!name.equals(that.name)) return false;
+        if (DBrName != null ? !DBrName.equals(that.DBrName) : that.DBrName != null) return false;
+        if (ePairs != null ? !ePairs.equals(that.ePairs) : that.ePairs != null) return false;
+        return properties != null ? properties.equals(that.properties) : that.properties == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = rType;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (directional ? 1 : 0);
+        result = 31 * result + (DBrName != null ? DBrName.hashCode() : 0);
+        result = 31 * result + (ePairs != null ? ePairs.hashCode() : 0);
+        result = 31 * result + (properties != null ? properties.hashCode() : 0);
+        return result;
+    }
 
     @Override
     public String toString()

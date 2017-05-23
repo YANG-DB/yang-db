@@ -20,7 +20,6 @@ import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.Typed;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -55,7 +54,7 @@ public class SmartEpbShortPathTests {
     private Ontology ontology;
     private PhysicalIndexProvider physicalIndexProvider;
     private GraphStatisticsProvider graphStatisticsProvider;
-    private OntologyGraphLayoutProvider layoutProvider;
+    private GraphLayoutProvider layoutProvider;
 
     private EBaseStatisticsProvider eBaseStatisticsProvider;
     private StatisticsCostEstimator statisticsCostEstimator;
@@ -72,8 +71,8 @@ public class SmartEpbShortPathTests {
     public void setup() throws ParseException {
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
         Map<String, Integer> typeCard = new HashMap<>();
-        typeCard.put(OWN.name, 1000);
-        typeCard.put(MEMBER_OF.name, 100);
+        typeCard.put(OWN.getName(), 1000);
+        typeCard.put(MEMBER_OF.getName(), 100);
         typeCard.put(DRAGON.name, 1000);
         typeCard.put(PERSON.name, 200);
         typeCard.put(GUILD.name, 100);
@@ -155,7 +154,7 @@ public class SmartEpbShortPathTests {
             if(type.equals(DRAGON.name)){
                 return (IndexPartition) () -> Arrays.asList("Dragons1","Dragons2");
             }
-            if(type.equals(OWN.name)){
+            if(type.equals(OWN.getName())){
                 return new TimeSeriesIndexPartition() {
                     @Override
                     public String getDateFormat() {
@@ -192,11 +191,11 @@ public class SmartEpbShortPathTests {
             return defaultIndexPartition;
         });
 
-        layoutProvider = mock(OntologyGraphLayoutProvider.class);
+        layoutProvider = mock(GraphLayoutProvider.class);
         when(layoutProvider.getRedundantVertexProperty(any(), any())).thenReturn(Optional.empty());
 
         ontology = OntologyTestUtils.createDragonsOntologyShort();
-        graphElementSchemaProvider = new OntologySchemaProvider(physicalIndexProvider, ontology,layoutProvider);
+        graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
         statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1.0,0.001));
@@ -274,41 +273,18 @@ public class SmartEpbShortPathTests {
     }
 
     @Test
-    public void testSingleElementWithCondition(){
+    public void testSingleElementWithCondition() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(first.getCost().getGlobalCost().cost,133d/13d, 0.1);
-        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,133d/13d, 0.1);
-    }
-
-    @Test
-    public void testPathSelectionNoConditionsReversePlan(){
-        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(1, DRAGON.type)).
-                next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.L).below(relProp(4))).
-                next(typed(5, PERSON.type)).
-                next(eProp(6)).
-                build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, Rel.Direction.R).relFilter(4).entity(1).entityFilter(2).plan();
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        Assert.assertEquals(2403, first.getCost().getGlobalCost().cost, 0.1);
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(400,op.getCost().cost, 0.1);
-        Assert.assertEquals(3,iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(2000, iterator.next().getCost().cost, 0.1);
-
+        Assert.assertEquals(first.getCost().getGlobalCost().cost, 133d / 13d, 0.1);
+        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost, 133d / 13d, 0.1);
     }
 
     @Test
@@ -316,7 +292,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -338,7 +314,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
@@ -360,7 +336,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type),2, Constraint.of(ConstraintOp.eq,"abc")))).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -382,7 +358,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -405,7 +381,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.ge, "g")))).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.ge,"g")))).
                 build();
@@ -427,7 +403,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.ge, "g")))).
-                next(rel(3, OWN.type, Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
@@ -451,10 +427,10 @@ public class SmartEpbShortPathTests {
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
                 in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
-                    rel(4, OWN.type, Rel.Direction.R).below(relProp(5)).
+                    rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                     next(typed(6, DRAGON.type)
                             .next(eProp(7))),
-                    rel(8, MEMBER_OF.type, Rel.Direction.R).below(relProp(9)).
+                    rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                     next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
@@ -478,10 +454,10 @@ public class SmartEpbShortPathTests {
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
                 in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
-                        rel(4, OWN.type, Rel.Direction.R).below(relProp(5)).
+                        rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
                                         .next(eProp(7, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc"))))),
-                        rel(8, MEMBER_OF.type, Rel.Direction.R).below(relProp(9)).
+                        rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);

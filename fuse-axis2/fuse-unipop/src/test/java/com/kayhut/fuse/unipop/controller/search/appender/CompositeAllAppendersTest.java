@@ -202,7 +202,7 @@ public class CompositeAllAppendersTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider((label, elementType) -> {
+        return new OntologySchemaProvider(ontology, (label, elementType) -> {
             if (elementType == ElementType.vertex) {
                 if (label.equals("Dragon")){
                     return () -> Arrays.asList("dragonIndex1", "dragonIndex2");
@@ -219,7 +219,7 @@ public class CompositeAllAppendersTest {
                 Assert.assertTrue(false);
                 return null;
             }
-        }, ontology);
+        });
     }
 
     private Ontology getOntology() {

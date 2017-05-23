@@ -71,7 +71,7 @@ public class OntologySchemaProviderTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider((label, elementType) -> {
+        return new OntologySchemaProvider(ontology, (label, elementType) -> {
             if (elementType == ElementType.vertex) {
                 return () -> Arrays.<String>asList("vertexIndex1", "vertexIndex2");
             } else if (elementType == ElementType.edge) {
@@ -81,7 +81,7 @@ public class OntologySchemaProviderTest {
                 Assert.assertTrue(false);
                 return null;
             }
-        }, ontology);
+        });
     }
 
     private Ontology getOntology() {

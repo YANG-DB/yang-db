@@ -104,6 +104,19 @@ public class Property {
             return this;
         }
 
+        public Property build(int pType,String name,String type) {
+            return build(pType,name,type,null);
+        }
+
+        public Property build(int pType,String name,String type,String units ) {
+            Property property = new Property();
+            property.setName(name);
+            property.setType(type);
+            property.setpType(pType);
+            property.setUnits(units);
+            return property;
+        }
+
         public Property build() {
             Property property = new Property();
             property.setName(name);
@@ -113,6 +126,8 @@ public class Property {
             property.pType = this.pType;
             return property;
         }
+
+
     }
     //endregion
 

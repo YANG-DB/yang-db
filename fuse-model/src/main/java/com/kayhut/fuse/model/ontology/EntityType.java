@@ -10,6 +10,14 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EntityType {
+    public EntityType() {
+    }
+
+    public EntityType(int type, String name, List<Integer> properties) {
+        this.eType = type;
+        this.name = name;
+        this.properties = properties;
+    }
 
     public int geteType() {
         return eType;
