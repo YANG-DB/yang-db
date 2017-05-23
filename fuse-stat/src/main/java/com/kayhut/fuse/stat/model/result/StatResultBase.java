@@ -1,15 +1,19 @@
 package com.kayhut.fuse.stat.model.result;
 
-public abstract class StatResult {
+import com.kayhut.fuse.stat.model.enums.DataType;
+
+public abstract class StatResultBase {
 
     //region Ctr
-    public StatResult() {
+    public StatResultBase() {
     }
 
-    public StatResult(String index, String type, String field, long docCount, long cardinality) {
+    public StatResultBase(String index, String type, String field, String key, DataType dataType, long docCount, long cardinality) {
         this.index = index;
         this.type = type;
         this.field = field;
+        this.key = key;
+        this.dataType = dataType;
         this.docCount = docCount;
         this.cardinality = cardinality;
     }
@@ -55,12 +59,31 @@ public abstract class StatResult {
     public void setCardinality(long cardinality) {
         this.cardinality = cardinality;
     }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
+
     //endregion
 
     //region Fields
     private String index;
     private String type;
     private String field;
+    private String key;
+    private DataType dataType;
     private long docCount;
     private long cardinality;
     //endregion

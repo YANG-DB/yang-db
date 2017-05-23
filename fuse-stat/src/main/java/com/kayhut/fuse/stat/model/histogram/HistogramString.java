@@ -1,4 +1,6 @@
-package com.kayhut.fuse.stat.model.configuration.histogram;
+package com.kayhut.fuse.stat.model.histogram;
+
+import com.kayhut.fuse.stat.model.enums.HistogramType;
 
 /**
  * Created by benishue on 30-Apr-17.

@@ -1,6 +1,6 @@
 package com.kayhut.fuse.stat.model.configuration;
 
-import com.kayhut.fuse.stat.model.configuration.histogram.Histogram;
+import com.kayhut.fuse.stat.model.histogram.Histogram;
 
 /**
  * Created by benishue on 30-Apr-17.

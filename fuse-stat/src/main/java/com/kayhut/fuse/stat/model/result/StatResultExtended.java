@@ -3,14 +3,14 @@ package com.kayhut.fuse.stat.model.result;
 /**
  * Created by benishue on 03-May-17.
  */
-public class ExtendedStatResult extends StatResult {
+public class StatResultExtended extends StatResult {
 
+    // todo maybe for the future
     //region Ctors
-
-    public ExtendedStatResult() {
+    public StatResultExtended() {
     }
 
-    public ExtendedStatResult(long count, double sum, double sumOfSquares, double avg, double min, double max, double variance, double stdDeviation) {
+    public StatResultExtended(long count, double sum, double sumOfSquares, double avg, double min, double max, double variance, double stdDeviation) {
         this.count = count;
         this.sum = sum;
         this.sumOfSquares = sumOfSquares;

@@ -2,9 +2,10 @@ package com.kayhut.fuse.stat.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.model.configuration.*;
-import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.configuration.histogram.HistogramType;
-import com.kayhut.fuse.stat.model.result.StringStatResult;
+import com.kayhut.fuse.stat.model.bucket.BucketRange;
+import com.kayhut.fuse.stat.model.enums.DataType;
+import com.kayhut.fuse.stat.model.enums.HistogramType;
+import com.kayhut.fuse.stat.model.result.StatResult;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
@@ -48,7 +49,7 @@ public class StatUtil {
         return resultObj;
     }
 
-    public static Optional<Type> getTypeConfiguration(StatContainer statContainer, String typeName){
+    public static Optional<Type> getTypeConfiguration(StatContainer statContainer, String typeName) {
         Optional<Type> typeElement = Optional.empty();
         List<Type> types = Stream.ofAll(statContainer.getTypes()).filter(type -> type.getType().equals(typeName)).toJavaList();
         if (!types.isEmpty())
@@ -56,10 +57,10 @@ public class StatUtil {
         return typeElement;
     }
 
-    public static Optional<Field> geFieldConfiguration(StatContainer statContainer, String typeName ,String fieldName){
+    public static Optional<Field> geFieldConfiguration(StatContainer statContainer, String typeName, String fieldName) {
         Optional<Field> fieldElement = Optional.empty();
-        Optional<Type> typeElement = getTypeConfiguration(statContainer,typeName);
-        if (typeElement.isPresent()){
+        Optional<Type> typeElement = getTypeConfiguration(statContainer, typeName);
+        if (typeElement.isPresent()) {
             List<Field> fields = Stream.ofAll(typeElement.get().getFields()).filter(field -> field.getField().equals(fieldName)).toJavaList();
             if (!fields.isEmpty()) {
                 fieldElement = Optional.ofNullable(fields.get(0));
@@ -68,42 +69,45 @@ public class StatUtil {
         return fieldElement;
     }
 
-    public static Optional<List<Field>> getFieldsWithHistogramOfType(StatContainer statContainer, String typeName, HistogramType histogramType ){
+    public static Optional<List<Field>> getFieldsWithHistogramOfType(StatContainer statContainer, String typeName, HistogramType histogramType) {
         Optional<List<Field>> fields = Optional.empty();
-        Optional<Type> typeElement = getTypeConfiguration(statContainer,typeName);
-        if (typeElement.isPresent()){
+        Optional<Type> typeElement = getTypeConfiguration(statContainer, typeName);
+        if (typeElement.isPresent()) {
             fields = Optional.ofNullable(Stream.ofAll(typeElement.get().getFields()).filter(field -> field.getHistogram().getHistogramType() == histogramType).toJavaList());
         }
-        return  fields;
+        return fields;
     }
 
-    public static Optional<List<Field>> getFieldsWithNumericHistogramOfType(StatContainer statContainer, String typeName){
-        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.numeric);
+    public static Optional<List<Field>> getFieldsWithNumericHistogramOfType(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.numeric);
     }
 
-    public static Optional<List<Field>> getFieldsWithStringHistogramOfType(StatContainer statContainer, String typeName){
-        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.string);
+    public static Optional<List<Field>> getFieldsWithStringHistogramOfType(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.string);
     }
 
-    public static Optional<List<Field>> getFieldsWithCompositeHistogramOfType(StatContainer statContainer, String typeName){
-        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.composite);
+    public static Optional<List<Field>> getFieldsWithCompositeHistogramOfType(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.composite);
     }
 
-    public static Optional<List<Field>> getFieldsWithManualHistogramOfType(StatContainer statContainer, String typeName){
-        return  getFieldsWithHistogramOfType(statContainer,typeName,HistogramType.manual);
+    public static Optional<List<Field>> getFieldsWithManualHistogramOfType(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.manual);
     }
 
-    public static Iterable<Map<String, Object>> prepareStatDocs(List<StringStatResult> bucketStatResults) {
+    public static Iterable<Map<String, Object>> prepareStatDocs(List<StatResult> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
-        for (StringStatResult bucketStatResult : bucketStatResults) {
+        for (StatResult bucketStatResult : bucketStatResults) {
             Map<String, Object> bucket = new HashedMap();
-            String bucketId = createBucketUniqueId(bucketStatResult.getIndex(),bucketStatResult.getType(),bucketStatResult.getField(), bucketStatResult.getLowerBound(),bucketStatResult.getUpperBound());
+            String bucketId = createBucketUniqueId(bucketStatResult.getIndex(), bucketStatResult.getType(), bucketStatResult.getField(), bucketStatResult.getLowerBound(), bucketStatResult.getUpperBound());
             bucket.put("id", bucketId);
             bucket.put("index", bucketStatResult.getIndex());
             bucket.put("type", bucketStatResult.getType());
             bucket.put("field", bucketStatResult.getField());
-            bucket.put("upper_bound", bucketStatResult.getUpperBound());
-            bucket.put("lower_bound", bucketStatResult.getLowerBound());
+            if (bucketStatResult.getDataType() == DataType.numeric ||
+                    bucketStatResult.getDataType() == DataType.string) {
+                bucket.put("upper_bound_" + bucketStatResult.getDataType(), bucketStatResult.getUpperBound());
+                bucket.put("lower_bound_" + bucketStatResult.getDataType(), bucketStatResult.getLowerBound());
+            }
             bucket.put("count", bucketStatResult.getDocCount());
             bucket.put("cardinality", bucketStatResult.getCardinality());
             buckets.add(bucket);
@@ -111,7 +115,7 @@ public class StatUtil {
         return buckets;
     }
 
-    public static String createBucketUniqueId(String indexName, String typeName, String fieldName, String lowerBound, String upperBound){
+    public static String createBucketUniqueId(String indexName, String typeName, String fieldName, Object lowerBound, Object upperBound) {
         return hashString(indexName + typeName + fieldName + lowerBound + upperBound);
     }
 
@@ -124,8 +128,8 @@ public class StatUtil {
         return field;
     }
 
-    public static List<BucketRange> calculateAlphabeticBuckets(int startCode, int numChars, int prefixLen, int interval) {
-        List<BucketRange> buckets = new ArrayList<>();
+    public static List<BucketRange<String>> calculateAlphabeticBuckets(int startCode, int numChars, int prefixLen, int interval) {
+        List<BucketRange<String>> buckets = new ArrayList<>();
 
         int numOfBuckets = (int) Math.ceil(Math.pow(numChars, prefixLen) / interval);
         for (int i = 0; i < numOfBuckets; i++) {
@@ -147,7 +151,7 @@ public class StatUtil {
         return buckets;
     }
 
-    private static String calcBucketStart(int numChars, int startCode, int prefixLen, int bucketIdx ) {
+    private static String calcBucketStart(int numChars, int startCode, int prefixLen, int bucketIdx) {
         char[] chars = new char[prefixLen];
         for (int i = 0; i < prefixLen; i++) {
             int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
@@ -156,7 +160,7 @@ public class StatUtil {
         return String.valueOf(chars);
     }
 
-    private static String calcBucketEnd(int numChars, int startCode,int prefixLen, int bucketIdx, int interval) {
+    private static String calcBucketEnd(int numChars, int startCode, int prefixLen, int bucketIdx, int interval) {
         char[] chars = new char[prefixLen];
         for (int i = 0; i < prefixLen; i++) {
             int code = startCode + (Math.floorDiv(bucketIdx + interval - 1, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
@@ -165,7 +169,7 @@ public class StatUtil {
         return String.valueOf(chars);
     }
 
-   //Create a MD5 hash of a given message. Used for creating unique document IDs.
+    //Create a MD5 hash of a given message. Used for creating unique document IDs.
     public static String hashString(String message) {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -195,17 +199,17 @@ public class StatUtil {
         }
     }
 
-    public static List<BucketRange> createNumericBuckets(double min, double max, int numOfBins) {
-        List<BucketRange> buckets = new ArrayList<>();
+    public static List<BucketRange<Double>> createNumericBuckets(double min, double max, int numOfBins) {
+        List<BucketRange<Double>> buckets = new ArrayList<>();
         double[] bucketsData = new double[numOfBins];
-        for (int i = 0; i < numOfBins; i++){
+        for (int i = 0; i < numOfBins; i++) {
             bucketsData[i] = min + i * (max - min) / (numOfBins - 1);
         }
 
-        for (int i = 0; i < bucketsData.length -1; i++){
-            int start = (int)bucketsData[i];
-            int end = (int)bucketsData[i+1];
-            BucketRange bucket = new BucketRange(Integer.toString(start), Integer.toString(end));
+        for (int i = 0; i < bucketsData.length - 1; i++) {
+            double start = bucketsData[i];
+            double end = bucketsData[i + 1];
+            BucketRange bucket = new BucketRange<>(start, end);
             buckets.add(bucket);
         }
         return buckets;

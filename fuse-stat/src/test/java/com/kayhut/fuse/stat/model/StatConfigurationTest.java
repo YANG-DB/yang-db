@@ -1,10 +1,10 @@
 package com.kayhut.fuse.stat.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.stat.model.configuration.bucket.Bucket;
-import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.configuration.bucket.BucketTerm;
-import com.kayhut.fuse.stat.model.configuration.histogram.*;
+import com.kayhut.fuse.stat.model.bucket.BucketRange;
+import com.kayhut.fuse.stat.model.bucket.BucketTerm;
+import com.kayhut.fuse.stat.model.enums.DataType;
+import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.model.configuration.*;
 import org.junit.Assert;
@@ -32,7 +32,7 @@ public class StatConfigurationTest {
                         new BucketRange("abc", "dzz"),
                         new BucketRange("efg", "hij"),
                         new BucketRange("klm", "xyz")
-                )).withDataType("string")
+                )).withDataType(DataType.string)
                 .build();
 
         HistogramComposite histogramDragonColor = HistogramComposite.HistogramCompositeBuilder.aHistogramComposite()
@@ -40,7 +40,7 @@ public class StatConfigurationTest {
                         new BucketRange("00", "11"),
                         new BucketRange("22", "33"),
                         new BucketRange("44", "55")
-                )).withDataType("string")
+                )).withDataType(DataType.string)
                 .withAutoBuckets(HistogramString.HistogramStringBuilder.aHistogramString()
                         .withFirstCharCode("97")
                         .withInterval(10)
@@ -49,7 +49,7 @@ public class StatConfigurationTest {
                 .build();
 
         HistogramTerm histogramTerm = HistogramTerm.HistogramTermBuilder.aHistogramTerm()
-                .withDataType("string").withBuckets(Arrays.asList(
+                .withDataType(DataType.string).withBuckets(Arrays.asList(
                         new BucketTerm("MALE"),
                         new BucketTerm("FEMALE")
                 )).build();

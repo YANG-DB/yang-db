@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model.configuration.bucket;
+package com.kayhut.fuse.stat.model.bucket;
 
 /**
  * Created by benishue on 30-Apr-17.

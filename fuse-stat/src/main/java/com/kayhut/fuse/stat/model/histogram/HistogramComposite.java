@@ -1,7 +1,8 @@
-package com.kayhut.fuse.stat.model.configuration.histogram;
+package com.kayhut.fuse.stat.model.histogram;
 
-import com.kayhut.fuse.stat.model.configuration.DataType;
-import com.kayhut.fuse.stat.model.configuration.bucket.BucketRange;
+import com.kayhut.fuse.stat.model.enums.DataType;
+import com.kayhut.fuse.stat.model.bucket.BucketRange;
+import com.kayhut.fuse.stat.model.enums.HistogramType;
 
 import java.util.List;
 

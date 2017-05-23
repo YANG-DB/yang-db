@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model.histogram;
+package com.kayhut.fuse.stat.model.enums;
 
 /**
  * Created by benishue on 30-Apr-17.

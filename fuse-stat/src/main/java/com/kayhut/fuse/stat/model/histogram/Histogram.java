@@ -1,9 +1,10 @@
-package com.kayhut.fuse.stat.model.configuration.histogram;
+package com.kayhut.fuse.stat.model.histogram;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.kayhut.fuse.stat.model.enums.HistogramType;
 
 /**
  * Created by benishue on 30-Apr-17.

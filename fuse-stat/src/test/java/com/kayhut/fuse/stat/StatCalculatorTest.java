@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat;
 
+import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
@@ -27,6 +28,8 @@ public class StatCalculatorTest {
     static ElasticEmbeddedNode elasticEmbeddedNode;
     static Configuration configuration;
     static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
+
+    //todo - add more tests, specially small unit tests per each case
 
     @Test
     public void statCalculatorTest() throws Exception {
