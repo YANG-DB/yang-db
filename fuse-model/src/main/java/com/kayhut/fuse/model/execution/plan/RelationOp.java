@@ -16,8 +16,8 @@ public class RelationOp extends AsgEBasePlanOp<Rel> {
         super(relation);
     }
 
-    public RelationOp(AsgEBase<Rel> relation,Rel.Direction direction) {
-        super(new AsgEBase<>(relation.geteBase().clone()));
+    public RelationOp(AsgEBase<Rel> relation, Rel.Direction direction) {
+        super(relation);
         getAsgEBase().geteBase().setDir(direction);
     }
     //endregion

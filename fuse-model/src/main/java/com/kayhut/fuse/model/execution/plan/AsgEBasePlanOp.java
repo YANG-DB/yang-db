@@ -9,12 +9,10 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
  */
 public abstract class AsgEBasePlanOp<T extends EBase> extends PlanOpBase{
     //region Constructors
-    public AsgEBasePlanOp() {
-
-    }
+    public AsgEBasePlanOp() {}
 
     public AsgEBasePlanOp(AsgEBase<T> asgEBase) {
-        this.asgEBase = asgEBase;
+        this.asgEBase = new AsgEBase<>(asgEBase.geteBase());
     }
     //endregion
 
