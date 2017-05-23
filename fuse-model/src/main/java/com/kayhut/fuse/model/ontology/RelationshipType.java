@@ -82,6 +82,32 @@ public class RelationshipType {
     //endregion
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RelationshipType that = (RelationshipType) o;
+
+        if (rType != that.rType) return false;
+        if (directional != that.directional) return false;
+        if (!name.equals(that.name)) return false;
+        if (DBrName != null ? !DBrName.equals(that.DBrName) : that.DBrName != null) return false;
+        if (ePairs != null ? !ePairs.equals(that.ePairs) : that.ePairs != null) return false;
+        return properties != null ? properties.equals(that.properties) : that.properties == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = rType;
+        result = 31 * result + name.hashCode();
+        result = 31 * result + (directional ? 1 : 0);
+        result = 31 * result + (DBrName != null ? DBrName.hashCode() : 0);
+        result = 31 * result + (ePairs != null ? ePairs.hashCode() : 0);
+        result = 31 * result + (properties != null ? properties.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public String toString()
     {
         return "RelationshipType [ePairs = "+ePairs+", rType = "+rType+", directional = "+directional+", name = "+name+", properties = "+properties+"]";

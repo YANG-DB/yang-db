@@ -150,6 +150,10 @@ public class OntologyUtil {
         return ontology.getEntityTypes().stream().map(et -> et.geteType()).filter(e -> !eUntyped.getNvTypes().contains(e)).collect(Collectors.toList());
     }
 
+    public static Optional<RelationshipType> getRelationshipType(Ontology ontology, int relTypeId) {
+        return getRelationshipType(ontology,getRelationTypeNameById(ontology,relTypeId));
+    }
+
     public static Optional<RelationshipType> getRelationshipType(Ontology ontology, String name) {
         Optional<RelationshipType> relationTypeMatch = ontology.getRelationshipTypes().stream()
                 .filter(relationshipType-> relationshipType.getName().equals(name))

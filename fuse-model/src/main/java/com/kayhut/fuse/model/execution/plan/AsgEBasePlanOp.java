@@ -12,7 +12,8 @@ public abstract class AsgEBasePlanOp<T extends EBase> extends PlanOpBase{
     public AsgEBasePlanOp() {}
 
     public AsgEBasePlanOp(AsgEBase<T> asgEBase) {
-        this.asgEBase = new AsgEBase<>(asgEBase.geteBase());
+        this.asgEBase = asgEBase;
+//        this.asgEBase = new AsgEBase<>(asgEBase.geteBase());
     }
     //endregion
 
