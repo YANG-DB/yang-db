@@ -100,7 +100,7 @@ public class IndexSearchAppenderTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider((label, elementType) -> {
+        return new OntologySchemaProvider(ontology, (label, elementType) -> {
             if (elementType == ElementType.vertex) {
                 if (label.equals("Dragon")){
                     return () -> Arrays.<String>asList("dragonIndex1", "dragonIndex2");
@@ -117,7 +117,7 @@ public class IndexSearchAppenderTest {
                 Assert.assertTrue(false);
                 return null;
             }
-        }, ontology);
+        });
     }
 
     private Ontology getOntology() {

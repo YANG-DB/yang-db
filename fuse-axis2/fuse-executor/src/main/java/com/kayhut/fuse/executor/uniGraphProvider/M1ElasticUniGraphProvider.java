@@ -29,17 +29,23 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
             Client client,
             ElasticGraphConfiguration elasticGraphConfiguration,
             UniGraphConfiguration uniGraphConfiguration,
-            PhysicalIndexProviderFactory physicalIndexProviderFactory) {
+            PhysicalIndexProviderFactory physicalIndexProviderFactory,
+            GraphLayoutProviderFactory graphLayoutProviderFactory) {
         this.client = client;
         this.elasticGraphConfiguration = elasticGraphConfiguration;
         this.uniGraphConfiguration = uniGraphConfiguration;
         this.physicalIndexProviderFactory = physicalIndexProviderFactory;
+        this.graphLayoutProviderFactory = graphLayoutProviderFactory;
     }
     //endregion
 
     @Override
     public UniGraph getGraph(Ontology ontology) throws Exception {
-        GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(this.physicalIndexProviderFactory.get(ontology), ontology);
+        GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(
+                ontology,
+                this.physicalIndexProviderFactory.get(ontology),
+                this.graphLayoutProviderFactory.get(ontology));
+
         return new UniGraph(this.uniGraphConfiguration, controllerManagerFactory(schemaProvider), new StandardStrategyProvider());
     }
 
@@ -71,5 +77,6 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
     private final ElasticGraphConfiguration elasticGraphConfiguration;
     private final UniGraphConfiguration uniGraphConfiguration;
     private final PhysicalIndexProviderFactory physicalIndexProviderFactory;
+    private final GraphLayoutProviderFactory graphLayoutProviderFactory;
     //endregion
 }

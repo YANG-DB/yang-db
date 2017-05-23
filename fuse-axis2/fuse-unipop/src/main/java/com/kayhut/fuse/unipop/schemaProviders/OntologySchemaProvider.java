@@ -7,7 +7,6 @@ import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 22-Mar-17.
@@ -15,16 +14,17 @@ import java.util.stream.Collectors;
 public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region Constructor
-    public OntologySchemaProvider(PhysicalIndexProvider indexProvider, Ontology ontology) {
-        this.indexProvider = indexProvider;
-        this.ontology = ontology;
-        this.vertexTypes = new HashSet<>(OntologyUtil.getAllEntityLabels(ontology).get());
-        this.edgeTypes = new HashSet<>(OntologyUtil.getAllRelationshipTypeLabels(ontology).get());
+    public OntologySchemaProvider(Ontology ontology, PhysicalIndexProvider physicalIndexProvider) {
+        this(ontology, physicalIndexProvider, GraphLayoutProvider.NoneRedundant.getInstance());
     }
 
-    public OntologySchemaProvider(PhysicalIndexProvider indexProvider, Ontology ontology, OntologyGraphLayoutProvider graphLayoutProvider) {
-        this(indexProvider, ontology);
+    public OntologySchemaProvider(Ontology ontology, PhysicalIndexProvider physicalIndexProvider, GraphLayoutProvider graphLayoutProvider) {
+        this.ontology = ontology;
+        this.physicalIndexProvider = physicalIndexProvider;
         this.graphLayoutProvider = graphLayoutProvider;
+
+        this.vertexTypes = new HashSet<>(OntologyUtil.getAllEntityLabels(ontology).get());
+        this.edgeTypes = new HashSet<>(OntologyUtil.getAllRelationshipTypeLabels(ontology).get());
     }
     //endregion
 
@@ -106,7 +106,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public IndexPartition getIndexPartition() {
-                return indexProvider.getIndexPartitionByLabel(vertexType, ElementType.vertex);
+                return physicalIndexProvider.getIndexPartitionByLabel(vertexType, ElementType.vertex);
             }
 
             @Override
@@ -226,7 +226,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
             @Override
             public IndexPartition getIndexPartition() {
-                return indexProvider.getIndexPartitionByLabel(edgeType, ElementType.edge);
+                return physicalIndexProvider.getIndexPartitionByLabel(edgeType, ElementType.edge);
             }
 
             @Override
@@ -271,10 +271,10 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     //endregion
 
     //region Fields
-    protected PhysicalIndexProvider indexProvider;
+    protected PhysicalIndexProvider physicalIndexProvider;
     protected Set<String> vertexTypes;
     protected Set<String> edgeTypes;
     protected Ontology ontology;
-    protected OntologyGraphLayoutProvider graphLayoutProvider = null;
+    protected GraphLayoutProvider graphLayoutProvider = null;
     //endregion
 }

@@ -102,7 +102,7 @@ public class EBaseStatisticsProviderIndicesTests {
         RelationshipType relation2 = OntologyUtil.getRelationshipType(ontology, OntologyUtil.getRelationTypeNameById(ontology, 2)).get();
         relation2.addProperty(1);
 
-        graphElementSchemaProvider = new OntologySchemaProvider(indexProvider, ontology);
+        graphElementSchemaProvider = new OntologySchemaProvider(ontology, indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));

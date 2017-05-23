@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -164,7 +165,7 @@ public class Ontology {
     //endregion
 
     //region Accessor
-    public static class Accessor {
+    public static class Accessor implements Supplier<Ontology> {
         //region Constructors
         public Accessor(Ontology ontology) {
             this.ontology = ontology;
@@ -172,6 +173,11 @@ public class Ontology {
         //endregion
 
         //region Public Methods
+        @Override
+        public Ontology get() {
+            return this.ontology;
+        }
+
         public String name() {
             return this.ontology.getOnt();
         }

@@ -5,6 +5,8 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.executor.uniGraphProvider.GraphLayoutProviderFactory;
+import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -33,9 +35,13 @@ import static com.kayhut.fuse.model.ontology.OntologyUtil.getComplementaryTypes;
 public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     //region Constructors
     @Inject
-    public PushDownSplitFilterPlanExtensionStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProvider schemaProvider) {
+    public PushDownSplitFilterPlanExtensionStrategy(
+            OntologyProvider ontologyProvider,
+            PhysicalIndexProviderFactory physicalIndexProviderFactory,
+            GraphLayoutProviderFactory graphLayoutProviderFactory) {
         this.ontologyProvider = ontologyProvider;
-        this.schemaProvider = schemaProvider;
+        this.physicalIndexProviderFactory = physicalIndexProviderFactory;
+        this.graphLayoutProviderFactory = graphLayoutProviderFactory;
     }
     //endregion
 
@@ -69,7 +75,11 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
         Plan newPlan = new Plan(plan.get().getOps());
 
-        //String relationTypeNameById = OntologyUtil.getRelationTypeNameById(ontology, nextRelation.get().geteBase().getrType());
+        GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(
+                $ont.get(),
+                this.physicalIndexProviderFactory.get($ont.get()),
+                this.graphLayoutProviderFactory.get($ont.get()));
+
         String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEBase().geteBase().getrType()).getName();
         Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
 
@@ -145,6 +155,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
     //region Fields
     private OntologyProvider ontologyProvider;
-    private GraphElementSchemaProvider schemaProvider;
+    private PhysicalIndexProviderFactory physicalIndexProviderFactory;
+    private GraphLayoutProviderFactory graphLayoutProviderFactory;
     //endregion
 }

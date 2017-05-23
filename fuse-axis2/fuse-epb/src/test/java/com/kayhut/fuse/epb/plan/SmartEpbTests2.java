@@ -21,7 +21,6 @@ import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.entity.Typed;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.unipop.schemaProviders.*;
@@ -30,7 +29,6 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -55,7 +53,7 @@ public class SmartEpbTests2 {
     private Ontology ontology;
     private PhysicalIndexProvider physicalIndexProvider;
     private GraphStatisticsProvider graphStatisticsProvider;
-    private OntologyGraphLayoutProvider layoutProvider;
+    private GraphLayoutProvider layoutProvider;
 
     private EBaseStatisticsProvider eBaseStatisticsProvider;
     private StatisticsCostEstimator statisticsCostEstimator;
@@ -189,11 +187,11 @@ public class SmartEpbTests2 {
             return defaultIndexPartition;
         });
 
-        layoutProvider = mock(OntologyGraphLayoutProvider.class);
+        layoutProvider = mock(GraphLayoutProvider.class);
         when(layoutProvider.getRedundantVertexProperty(any(), any())).thenReturn(Optional.empty());
 
         ontology = OntologyTestUtils.createDragonsOntologyShort();
-        graphElementSchemaProvider = new OntologySchemaProvider(physicalIndexProvider, ontology,layoutProvider);
+        graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
         statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1.0,0.001));
