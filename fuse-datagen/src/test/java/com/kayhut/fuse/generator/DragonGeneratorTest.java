@@ -25,6 +25,7 @@ public class DragonGeneratorTest {
 
         for (int i= 0 ; i <100 ; i++) {
             Dragon dragonA = dragonGenerator.generate();
+            dragonA.setId(Integer.toString(i));
             assertTrue(dragonA.getPower() >= 10 && dragonA.getPower() <= 100);
             assertTrue(!dragonA.getName().isEmpty());
             System.out.println(dragonA);

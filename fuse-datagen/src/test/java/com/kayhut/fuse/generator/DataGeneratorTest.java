@@ -4,6 +4,7 @@ import com.google.common.collect.LinkedHashMultiset;
 import com.kayhut.fuse.generator.helper.TestUtil;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class DataGeneratorTest {
     }
 
 
+    @Ignore
     @Test
     public void attachPersonsToGuildsTest() throws Exception {
         List<Integer> personsIdList = IntStream.rangeClosed(0, 9999)

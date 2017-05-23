@@ -31,6 +31,7 @@ public class RandomUtilTest {
     public void getCumulativeDistArray() throws Exception {
         double[] expDistArray = RandomUtil.getExpDistArray(100, 1.0, 0.5);
         double[] cumulativeDistArray = RandomUtil.getCumulativeDistArray(expDistArray);
-        assertTrue(Math.round(cumulativeDistArray[cumulativeDistArray.length - 1]) == 1.0);
+        //Since we are talking on statistics the number supposed to be close to 1.0
+        assertTrue(cumulativeDistArray[cumulativeDistArray.length - 1] > 0.99 && cumulativeDistArray[cumulativeDistArray.length - 1] <1.01 );
     }
 }

@@ -26,6 +26,7 @@ public class PersonGeneratorTest {
 
         for (int i = 0; i < 100; i++) {
             Person personA = personGenerator.generate();
+            personA.setId(Integer.toString(i));
             assertTrue(!personA.getFirstName().isEmpty());
             assertTrue(!personA.getLastName().isEmpty());
             assertTrue(personA.getBirthDate().compareTo(personA.getDeathDate()) < 0);
