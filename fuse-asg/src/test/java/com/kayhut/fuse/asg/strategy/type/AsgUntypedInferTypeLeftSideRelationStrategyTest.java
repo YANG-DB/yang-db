@@ -11,8 +11,10 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
@@ -29,17 +31,16 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
 
     @Test
     public void testUntypedToTypedStrategy() throws Exception {
-        Ontology ontology = OntologyTestUtils.createDragonsOntologyLong();
+        Ontology ontology = OntologyTestUtils.createDragonsOntologyShort();
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
-                .next(rel(2, OntologyTestUtils.OWN.type, R).below(relProp(10,
+                .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .build();
 
-        AsgEBase<EUntyped> next = AsgQueryUtil
-                .element$(query, EUntyped.class);
-        Assert.assertEquals(0, next.geteBase().getvTypes().size());
+        AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
+        Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
         strategy.apply(query,new AsgStrategyContext(ontology));
@@ -56,13 +57,13 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
         Ontology ontology = OntologyTestUtils.createDragonsOntologyLong();
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
-                .next(rel(2, OntologyTestUtils.OWN.type, R).below(relProp(10,
+                .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(concrete(3, "123",OntologyTestUtils.DRAGON.type,"",""))
                 .build();
 
         AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
-        Assert.assertEquals(0, next.geteBase().getvTypes().size());
+        Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
         strategy.apply(query,new AsgStrategyContext(ontology));
@@ -79,19 +80,23 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
         Ontology ontology = OntologyTestUtils.createDragonsOntologyLong();
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
-                .next(rel(2, OntologyTestUtils.OWN.type, R).below(relProp(10,
+                .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(unTyped(3))
                 .build();
 
         AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
-        Assert.assertEquals(0, next.geteBase().getvTypes().size());
+        Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
         strategy.apply(query,new AsgStrategyContext(ontology));
 
-        AsgEBase<EUntyped> after = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
-        Assert.assertEquals(after.geteBase().getvTypes(), Collections.singletonList(OntologyTestUtils.PERSON.type));
+        Iterator<AsgEBase<EUntyped>> iterator = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator();
+        AsgEBase<EUntyped> afterSideA = iterator.next();
+        AsgEBase<EUntyped> afterSideB = iterator.next();
+
+        Assert.assertEquals(afterSideA.geteBase().getvTypes(), Collections.singletonList(OntologyTestUtils.PERSON.type));
+        Assert.assertEquals(afterSideB.geteBase().getvTypes(), Arrays.asList(OntologyTestUtils.DRAGON.type,OntologyTestUtils.HORSE.type));
 
 
 

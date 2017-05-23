@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ import java.util.List;
 public class RelationshipType {
     public RelationshipType() {
         properties = new ArrayList<>();
+        ePairs = new ArrayList<>();
     }
 
     public RelationshipType(String name, int rType, boolean directional) {
@@ -66,6 +68,11 @@ public class RelationshipType {
         this.ePairs = ePairs;
     }
 
+    public RelationshipType addPair(EPair pair) {
+        this.getePairs().add(pair);
+        return this;
+    }
+
     public List<Integer> getProperties() {
         return properties;
     }
@@ -76,6 +83,10 @@ public class RelationshipType {
 
     public RelationshipType addProperty(int type) {
         this.properties.add(type);
+        return this;
+    }
+    public RelationshipType withProperty(Integer ... properties) {
+        this.properties.addAll(Arrays.asList(properties));
         return this;
     }
 
