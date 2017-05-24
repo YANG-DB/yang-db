@@ -4,7 +4,6 @@ import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -36,7 +35,7 @@ public class AsgConstraintTypeTransformationStrategy extends AsgConstraintTransf
     private void applyExpressionTransformation(AsgStrategyContext context, EBase eBase, Class klass) {
         if (klass == EProp.class){
             EProp eProp = (EProp) eBase;
-            Optional<Property> property = OntologyUtil.getProperty(context.getOntology(), Integer.parseInt(eProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(eProp.getpType()));
             ConstraintOp op = eProp.getCon().getOp();
             if (property.isPresent() && isSingleElementOp(op)) {
                 Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));
@@ -45,7 +44,7 @@ public class AsgConstraintTypeTransformationStrategy extends AsgConstraintTransf
         }
         if (klass == RelProp.class) {
             RelProp relProp = (RelProp) eBase;
-            Optional<Property> property = OntologyUtil.getProperty(context.getOntology(), Integer.parseInt(relProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(relProp.getpType()));
             ConstraintOp op = relProp.getCon().getOp();
             if (property.isPresent() && isSingleElementOp(op)) {
                 Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));

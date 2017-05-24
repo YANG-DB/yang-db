@@ -28,8 +28,16 @@ import static org.junit.Assert.assertThat;
  * Created by benishue on 09-May-17.
  */
 public class AsgConstraintTypeTransformationStrategyTest {
+    //region Setup
+    @Before
+    public void setUp() throws Exception {
+        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
+        ont = new Ontology.Accessor(new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class));
 
-    Ontology ontology;
+    }
+    //endregion
+
+    //region Test Methods
     @Test
     public void asgConstraintTransformationStrategyEPropsLongToDateTest() throws Exception {
         AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
@@ -41,7 +49,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         assertThat(eProp.getCon().getExpr(), instanceOf(Long.class));
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
@@ -61,7 +69,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         assertThat(eProp.getCon().getExpr(), instanceOf(int.class));
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
@@ -82,7 +90,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(eProp.getCon().getExpr(), instanceOf(Integer.class));
 
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
@@ -122,7 +130,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(rProp4.getCon().getExpr(), instanceOf(Long.class));
         //endregion
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the RelProp #1 with the Epoch time
@@ -135,7 +143,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         //Appling First the Properties Grouping Startegy and then applying the constraint transformation strategy
         //We want to be sure that the order of strategies is not affecting the final result
         AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
-        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext());
+        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(ont));
 
         expr1 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();
@@ -157,14 +165,9 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(expr2, instanceOf(Date.class));
 
     }
+    //endregion
 
-    @Before
-    public void setUp() throws Exception {
-        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
-        ontology = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
-
-    }
-
+    //region Private Methods
     private static String readJsonToString(String jsonRelativePath) throws Exception {
         String contents = "";
         try {
@@ -174,5 +177,10 @@ public class AsgConstraintTypeTransformationStrategyTest {
         }
         return contents;
     }
+    //endregion
+
+    //region Fields
+    private Ontology.Accessor ont;
+    //endregion
 
 }

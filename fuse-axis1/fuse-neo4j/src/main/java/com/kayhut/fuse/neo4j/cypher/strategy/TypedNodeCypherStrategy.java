@@ -3,7 +3,6 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.neo4j.cypher.*;
 

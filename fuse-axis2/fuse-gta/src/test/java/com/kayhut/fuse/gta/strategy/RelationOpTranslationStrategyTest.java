@@ -41,14 +41,12 @@ public class RelationOpTranslationStrategyTest {
 
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
-                {
-                    return Arrays.asList(
-                            EntityType.EntityTypeBuilder.anEntityType()
-                                    .withEType(1).withName("Person").build(),
-                            EntityType.EntityTypeBuilder.anEntityType()
-                                    .withEType(2).withName("Dragon").build()
-                    );
-                }
+                Arrays.asList(
+                        EntityType.EntityTypeBuilder.anEntityType()
+                                .withEType(1).withName("Person").build(),
+                        EntityType.EntityTypeBuilder.anEntityType()
+                                .withEType(2).withName("Dragon").build()
+                )
         );
 
         when(ontology.getRelationshipTypes()).thenAnswer(invocationOnMock ->

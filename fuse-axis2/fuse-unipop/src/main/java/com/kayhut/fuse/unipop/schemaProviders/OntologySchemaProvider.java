@@ -23,8 +23,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
         this.physicalIndexProvider = physicalIndexProvider;
         this.graphLayoutProvider = graphLayoutProvider;
 
-        this.vertexTypes = new HashSet<>(OntologyUtil.getAllEntityLabels(ontology).get());
-        this.edgeTypes = new HashSet<>(OntologyUtil.getAllRelationshipTypeLabels(ontology).get());
+        this.vertexTypes = new HashSet<>(Stream.ofAll($ont.eNames()).toJavaList());
+        this.edgeTypes = new HashSet<>(Stream.ofAll($ont.rNames()).toJavaList());
     }
     //endregion
 

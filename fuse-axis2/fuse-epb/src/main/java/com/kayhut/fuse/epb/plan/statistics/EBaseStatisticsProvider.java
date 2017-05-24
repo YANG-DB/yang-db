@@ -241,11 +241,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             return Optional.empty();
         }
 
-        Optional<PrimitiveType> primitiveType = ont.type(pType);
+        Optional<PrimitiveType> primitiveType = ont.primitiveType(pType);
         if(primitiveType.isPresent()) {
             return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
         }else{
-            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ont.get(), graphElementPropertySchema.getType());
+            Optional<EnumeratedType> enumeratedType = ont.enumeratedType(graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 Value value = (Value) constraint.getExpr();
                 return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
@@ -264,11 +264,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             return Optional.empty();
         }
 
-        Optional<PrimitiveType> primitiveType = ont.type(pType);
+        Optional<PrimitiveType> primitiveType = ont.primitiveType(pType);
         if(primitiveType.isPresent()) {
             return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
         }else{
-            Optional<EnumeratedType> enumeratedType = OntologyUtil.getEnumeratedType(ont.get(), graphElementPropertySchema.getType());
+            Optional<EnumeratedType> enumeratedType = ont.enumeratedType(graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 Value value = (Value) constraint.getExpr();
                 return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);

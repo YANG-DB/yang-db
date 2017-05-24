@@ -282,11 +282,15 @@ public class Ontology {
             return pType(propertyName).get();
         }
 
-        public List<EntityType> entities() {
+        public Iterable<EntityType> entities() {
             return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
         }
 
-        public List<Integer> eTypes() {
+        public Iterable<String> eNames() {
+            return Stream.ofAll(entities()).map(EntityType::getName).toJavaList();
+        }
+
+        public Iterable<Integer> eTypes() {
             return Stream.ofAll(ontology.getEntityTypes()).map(EntityType::geteType).toJavaList();
         }
 
@@ -294,14 +298,32 @@ public class Ontology {
             return Stream.ofAll(ontology.getRelationshipTypes()).toJavaList();
         }
 
-        public Optional<PrimitiveType> type(String typeName) {
+        public Iterable<Integer> rTypes() {
+            return Stream.ofAll(relations()).map(RelationshipType::getrType).toJavaList();
+        }
+
+        public Iterable<String> rNames() {
+            return Stream.ofAll(relations()).map(RelationshipType::getName).toJavaList();
+        }
+
+        public Optional<PrimitiveType> primitiveType(String typeName) {
             return Stream.ofAll(ontology.getPrimitiveTypes())
-                    .filter(primitiveType -> primitiveType.getType().equals(typeName))
+                    .filter(type -> type.getType().equals(typeName))
                     .toJavaOptional();
         }
 
-        public PrimitiveType type$(String typeName) {
-            return type(typeName).get();
+        public PrimitiveType primitiveType$(String typeName) {
+            return primitiveType(typeName).get();
+        }
+
+        public Optional<EnumeratedType> enumeratedType(String typeName) {
+            return Stream.ofAll(ontology.getEnumeratedTypes())
+                    .filter(type -> type.geteType().equals(typeName))
+                    .toJavaOptional();
+        }
+
+        public EnumeratedType enumeratedType$(String typeName) {
+            return enumeratedType(typeName).get();
         }
         //endregion
 
