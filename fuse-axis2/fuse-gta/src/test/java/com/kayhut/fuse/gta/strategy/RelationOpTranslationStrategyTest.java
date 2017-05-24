@@ -3,6 +3,9 @@ package com.kayhut.fuse.gta.strategy;
 import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
+import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
@@ -23,6 +26,10 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.rel;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -30,9 +37,17 @@ import static org.mockito.Mockito.when;
  * Created by benishue on 12-Mar-17.
  */
 public class RelationOpTranslationStrategyTest {
+
+    public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, PERSON.type,"A"))
+                .next(rel(2,OWN.getrType(),R))
+                .next(typed(3, DRAGON.type,"B")).build();
+    }
+
     @Test
     public void test_entity1_rel2_entity3() throws Exception {
-        AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
+        AsgQuery query = simpleQuery1("name", "ontName");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get()),
                 new RelationOp(AsgQueryUtil.<Rel>element(query, 2).get()),
@@ -75,7 +90,7 @@ public class RelationOpTranslationStrategyTest {
 
     @Test
     public void test_entity3_rel2_entity1() throws Exception {
-        AsgQuery query = AsgQueryStore.simpleQuery1("name", "ontName");
+        AsgQuery query = simpleQuery1("name", "ontName");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 3).get()),
                 new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.<Rel>element(query, 2).get())),

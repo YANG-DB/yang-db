@@ -52,6 +52,7 @@ public class OntologyTestUtils {
         List<RelationshipType> relations();
 
         List<Property> properties();
+
     }
 
     public static class Property {
@@ -72,7 +73,7 @@ public class OntologyTestUtils {
         public static List<Property> propertyList = Arrays.asList(NAME, GENDER, COLOR);
 
         public static List<RelationshipType> relationshipList = Arrays.asList(
-                REGISTERED.addPair(new EPair(type, KINGDOM.type)),
+                REGISTERED.addPair(new EPair(type, GUILD.type)),
                 FIRE.addPair(new EPair(type, DRAGON.type)),
                 FREEZE.addPair(new EPair(type, DRAGON.type)),
                 ORIGIN.addPair(new EPair(type, KINGDOM.type)));
@@ -104,7 +105,7 @@ public class OntologyTestUtils {
         public static List<Property> propertyList = Arrays.asList(NAME, GENDER);
 
         public static List<RelationshipType> relationshipList = Collections.singletonList(
-                REGISTERED.addPair(new EPair(type, KINGDOM.type)));
+                REGISTERED.addPair(new EPair(type, GUILD.type)));
 
         @Override
         public String name() {
@@ -220,39 +221,8 @@ public class OntologyTestUtils {
     }
 
     public static Ontology createDragonsOntologyShort() {
-        Ontology ontologyShortObj = new Ontology();
-        ontologyShortObj.setOnt("Dragons");
-        //enums
-        ontologyShortObj.setEnumeratedTypes(Collections.singletonList(
-                EnumeratedType.from(TYPE_GENDER, Gender.values())));
-
-        //properties
-        ontologyShortObj.setProperties(Arrays.asList(
-                get().build(FIRST_NAME.type,FIRST_NAME.name,STRING),
-                get().build(LAST_NAME.type,LAST_NAME.name,STRING),
-                get().build(GENDER.type,GENDER.name,TYPE_GENDER),
-                get().build(BIRTH_DATE.type,BIRTH_DATE.name,DATE),
-                get().build(DEATH_DATE.type,DEATH_DATE.name,DATE),
-                get().build(HEIGHT.type,HEIGHT.name,INT,CM),
-                get().build(NAME.type,NAME.name,STRING),
-                get().build(START_DATE.type,START_DATE.name,DATE),
-                get().build(END_DATE.type,END_DATE.name,DATE)));
-
-        //entities
-        ontologyShortObj.getEntityTypes().addAll(Arrays.asList(
-                new EntityType(PERSON.type, PERSON.name, PERSON.propertyList.stream().map(p1 -> p1.type).collect(Collectors.toList())),
-                new EntityType(HORSE.type, HORSE.name, HORSE.propertyList.stream().map(p1 -> p1.type).collect(Collectors.toList())),
-                new EntityType(DRAGON.type, DRAGON.name, DRAGON.propertyList.stream().map(p1 -> p1.type).collect(Collectors.toList())),
-                new EntityType(GUILD.type, GUILD.name, GUILD.propertyList.stream().map(p1 -> p1.type).collect(Collectors.toList()))));
-
-        ontologyShortObj.setRelationshipTypes(Arrays.asList(
-                ORIGIN,
-                FREEZE,
-                FIRE,
-                MEMBER_OF,
-                OWN));
-
-        return OntologyFinalizer.finalize(ontologyShortObj);
+        //no real use of partial ontology under no validation
+        return createDragonsOntologyLong();
     }
 
     public static Ontology createDragonsOntologyLong() {

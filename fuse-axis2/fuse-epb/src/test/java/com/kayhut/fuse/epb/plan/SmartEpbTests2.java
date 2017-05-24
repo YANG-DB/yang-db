@@ -29,6 +29,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by moti on 20/05/2017.
  */
+@Ignore
 public class SmartEpbTests2 {
 
     private GraphElementSchemaProvider graphElementSchemaProvider;
@@ -58,8 +60,8 @@ public class SmartEpbTests2 {
     private EBaseStatisticsProvider eBaseStatisticsProvider;
     private StatisticsCostEstimator statisticsCostEstimator;
 
-    private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
-    private long startTime;
+    protected BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+    protected long startTime;
 
     private static String INDEX_PREFIX = "idx-";
     private static String INDEX_FORMAT = "idx-%s";
@@ -71,8 +73,15 @@ public class SmartEpbTests2 {
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
         Map<String, Integer> typeCard = new HashMap<>();
         typeCard.put(OWN.getName(), 1000);
+        typeCard.put(REGISTERED.getName(), 5000);
+        typeCard.put(MEMBER_OF.getName(), 100);
+        typeCard.put(FIRE.getName(), 10000);
+        typeCard.put(FREEZE.getName(), 50000);
         typeCard.put(DRAGON.name, 1000);
         typeCard.put(PERSON.name, 200);
+        typeCard.put(HORSE.name, 4600);
+        typeCard.put(GUILD.name, 50);
+        typeCard.put(KINGDOM.name, 15);
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
