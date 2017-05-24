@@ -211,7 +211,7 @@ public class StatisticalCostEstimatorTests {
         Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().size(), 2);
         Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().get(0) instanceof EntityOp);
 
-        Assert.assertEquals(estimate.getCost().getGlobalCost(),new Cost(52.06));
+        Assert.assertEquals(estimate.getCost().getGlobalCost(),new Cost(51.06));
 
         Assert.assertEquals(250, newArrayList(estimate.getCost().getOpCosts()).get(0).peek(), 0);
 

@@ -34,8 +34,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         //option 1
         SINGLE_MODE("^(?<" + ENTITY_ONLY.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_ONLY_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
         //option 3 And node
-        AND_MODE("^(?<" + AND_MODE_ENTITY_ONE.value+">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + AND_MODE_OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
-                "(?<" + AND_MODE_ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + AND_MODE_OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
+        GOTO_MODE("^(?<" + GOTO_ENTITY.value+">" + GoToEntityOp.class.getSimpleName() + ")" + ":" +
+                "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
+                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
         private String pattern;
         private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
@@ -70,10 +71,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         OPTIONAL_REL_FILTER("optionalRelFilter"),
         ENTITY_ONLY("entityOnly"),
         OPTIONAL_ENTITY_ONLY_FILTER("optionalEntityOnlyFilter"),
-        AND_MODE_ENTITY_ONE("andEntityOne"),
-        AND_MODE_OPTIONAL_ENTITY_ONE_FILTER("andOptionalEntityOneFilter"),
-        AND_MODE_ENTITY_TWO("andEntityTwo"),
-        AND_MODE_OPTIONAL_ENTITY_TWO_FILTER("andOptionalEntityTwoFilter");
+        GOTO_ENTITY("gotoEntity");
 
         private String value;
 

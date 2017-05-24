@@ -8,12 +8,10 @@ import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
+import com.kayhut.fuse.epb.tests.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
-import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -23,6 +21,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
@@ -48,8 +47,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by moti on 20/05/2017.
  */
-@Ignore
-public class SmartEpbTests2 {
+public class SmartEpbShortPathTests {
 
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private Ontology.Accessor ont;
@@ -268,47 +266,28 @@ public class SmartEpbTests2 {
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
                 build();
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).plan();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
+        PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(first.getCost().getGlobalCost().cost,400, 0.1);
         Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,400, 0.1);
     }
 
     @Test
-    public void testSingleElementWithCondition(){
+    public void testSingleElementWithCondition() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2,EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost().cost,133d/13d, 0.1);
-        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,133d/13d, 0.1);
-    }
-
-    @Test
-    public void testPathSelectionNoConditionsReversePlan(){
-        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(1, DRAGON.type)).
-                next(eProp(2)).
-                next(rel(3, OWN.getrType(), Rel.Direction.L).below(relProp(4))).
-                next(typed(5, PERSON.type)).
-                next(eProp(6)).
-                build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost().cost,1003, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(400,op.getCost().cost, 0.1);
-        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
-        Assert.assertEquals(303,iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(300, iterator.next().getCost().cost, 0.1);
-
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(first.getCost().getGlobalCost().cost, 133d / 13d, 0.1);
+        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost, 133d / 13d, 0.1);
     }
 
     @Test
@@ -321,14 +300,16 @@ public class SmartEpbTests2 {
                 next(eProp(6)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost().cost,1003, 0.1);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(2403, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
         PlanOpWithCost<Cost> op = iterator.next();
         Assert.assertEquals(400, op.getCost().cost, 0.1);
-        Assert.assertEquals(303, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(300, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(3, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(2000, iterator.next().getCost().cost, 0.1);
     }
 
     @Test
@@ -341,16 +322,16 @@ public class SmartEpbTests2 {
                 next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, Rel.Direction.L).relFilter(4).entity(1).entityFilter(2).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(30.3, first.getCost().getGlobalCost().cost, 0.1);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(111.1, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
         PlanOpWithCost<Cost> op = iterator.next();
         Assert.assertEquals(10.09,op.getCost().cost, 0.1);
-        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(DRAGON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
-        Assert.assertEquals(10.19, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(10.09, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(100.9, iterator.next().getCost().cost, 0.1);
     }
 
     @Test
@@ -363,16 +344,16 @@ public class SmartEpbTests2 {
                 next(eProp(6)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(30.7, first.getCost().getGlobalCost().cost, 0.1);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(112.6, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
         PlanOpWithCost<Cost> op = iterator.next();
         Assert.assertEquals(133d/13d,op.getCost().cost, 0.1);
-        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
-        Assert.assertEquals(10.3, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(133d/13d, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(102.3, iterator.next().getCost().cost, 0.1);
     }
 
     @Test
@@ -385,16 +366,16 @@ public class SmartEpbTests2 {
                 next(eProp(6)).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(601, first.getCost().getGlobalCost().cost, 0.1);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(1401, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
         PlanOpWithCost<Cost> op = iterator.next();
         Assert.assertEquals(400,op.getCost().cost, 0.1);
-        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
-        Assert.assertEquals(101, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(100, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(1000, iterator.next().getCost().cost, 0.1);
     }
 
 
@@ -408,17 +389,91 @@ public class SmartEpbTests2 {
                 next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.ge,"g")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(467, first.getCost().getGlobalCost().cost, 0.1);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(1267, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
         PlanOpWithCost<Cost> op = iterator.next();
         Assert.assertEquals(266,op.getCost().cost, 0.1);
-        Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
-        Assert.assertEquals(101, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(100, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(1000, iterator.next().getCost().cost, 0.1);
     }
 
+    @Test
+    public void testFilterOnAllItemsReverse(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2, EProp.of(Integer.toString(FIRST_NAME.type), 2, Constraint.of(ConstraintOp.ge, "g")))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc")))).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, Rel.Direction.L).relFilter(4).entity(1).entityFilter(2).plan();
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(111.1, first.getCost().getGlobalCost().cost, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(10.09,op.getCost().cost, 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(100.9, iterator.next().getCost().cost, 0.1);
+    }
+
+
+    @Test
+    public void testThreeEntityPathWithQuant(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(quant1(2, QuantType.all)).
+                in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                    rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
+                    next(typed(6, DRAGON.type)
+                            .next(eProp(7))),
+                    rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
+                    next(typed(10, GUILD.type).next(eProp(11)))).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(8, Rel.Direction.R).relFilter(9).entity(10).entityFilter(11).goTo(1).rel(4).relFilter(5).entity(6).entityFilter(7).plan();
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(10.5, first.getCost().getGlobalCost().cost, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(10.23,op.getCost().cost, 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+    }
+
+
+    @Test
+    @Ignore
+    public void testThreeEntityPathWithQuantAnFilter(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(quant1(2, QuantType.all)).
+                in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                        rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
+                                next(typed(6, DRAGON.type)
+                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type),6, Constraint.of(ConstraintOp.eq,"abc"))))),
+                        rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
+                                next(typed(10, GUILD.type).next(eProp(11)))).
+                build();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8, Rel.Direction.R).relFilter(9).entity(10).entityFilter(11).plan();
+        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
+        Assert.assertNotNull(first);
+        PlanAssert.assertEquals(expected, first.getPlan());
+        Assert.assertEquals(10.5, first.getCost().getGlobalCost().cost, 0.1);
+        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
+        PlanOpWithCost<Cost> op = iterator.next();
+        Assert.assertEquals(10.23,op.getCost().cost, 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+    }
 
 }
