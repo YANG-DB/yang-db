@@ -32,7 +32,7 @@ import static com.kayhut.fuse.model.query.quant.QuantType.all;
  * Created by moti on 20/05/2017.
  */
 @Ignore
-public class SmartEpbTests3 extends SmartEpbTests2 {
+public class SmartEpbTests3 extends SmartEpbShortPathTests {
 
     public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         long time = System.currentTimeMillis();
