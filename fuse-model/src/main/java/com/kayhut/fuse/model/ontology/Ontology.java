@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Created by benishue on 22-Feb-17.
@@ -18,6 +19,13 @@ import java.util.Optional;
 public class Ontology {
     public Ontology() {
         primitiveTypes = new ArrayList<>();
+        entityTypes = new ArrayList<>();
+        relationshipTypes = new ArrayList<>();
+        enumeratedTypes = new ArrayList<>();
+        properties = new ArrayList<>();
+        compositeTypes = new ArrayList<>();
+
+
         primitiveTypes.add(new PrimitiveType("int", Long.class));
         primitiveTypes.add(new PrimitiveType("string", String.class));
         primitiveTypes.add(new PrimitiveType("float", Double.class));
@@ -164,7 +172,7 @@ public class Ontology {
     //endregion
 
     //region Accessor
-    public static class Accessor {
+    public static class Accessor implements Supplier<Ontology> {
         //region Constructors
         public Accessor(Ontology ontology) {
             this.ontology = ontology;
@@ -172,6 +180,11 @@ public class Ontology {
         //endregion
 
         //region Public Methods
+        @Override
+        public Ontology get() {
+            return this.ontology;
+        }
+
         public String name() {
             return this.ontology.getOnt();
         }
@@ -269,12 +282,48 @@ public class Ontology {
             return pType(propertyName).get();
         }
 
-        public List<EntityType> entities() {
+        public Iterable<EntityType> entities() {
             return Stream.ofAll(ontology.getEntityTypes()).toJavaList();
+        }
+
+        public Iterable<String> eNames() {
+            return Stream.ofAll(entities()).map(EntityType::getName).toJavaList();
+        }
+
+        public Iterable<Integer> eTypes() {
+            return Stream.ofAll(ontology.getEntityTypes()).map(EntityType::geteType).toJavaList();
         }
 
         public List<RelationshipType> relations() {
             return Stream.ofAll(ontology.getRelationshipTypes()).toJavaList();
+        }
+
+        public Iterable<Integer> rTypes() {
+            return Stream.ofAll(relations()).map(RelationshipType::getrType).toJavaList();
+        }
+
+        public Iterable<String> rNames() {
+            return Stream.ofAll(relations()).map(RelationshipType::getName).toJavaList();
+        }
+
+        public Optional<PrimitiveType> primitiveType(String typeName) {
+            return Stream.ofAll(ontology.getPrimitiveTypes())
+                    .filter(type -> type.getType().equals(typeName))
+                    .toJavaOptional();
+        }
+
+        public PrimitiveType primitiveType$(String typeName) {
+            return primitiveType(typeName).get();
+        }
+
+        public Optional<EnumeratedType> enumeratedType(String typeName) {
+            return Stream.ofAll(ontology.getEnumeratedTypes())
+                    .filter(type -> type.geteType().equals(typeName))
+                    .toJavaOptional();
+        }
+
+        public EnumeratedType enumeratedType$(String typeName) {
+            return enumeratedType(typeName).get();
         }
         //endregion
 

@@ -43,7 +43,7 @@ public class BasicStepEstimatorTest {
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
         GraphEdgeSchema graphEdgeSchema = mock(GraphEdgeSchema.class);
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
-        when(edgeEnd.getRedundantVertexProperty(any())).thenAnswer(invocationOnMock -> {
+        when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];
             if(property.equals("lastName")){
                 return Optional.of(new GraphRedundantPropertySchema() {
@@ -115,9 +115,9 @@ public class BasicStepEstimatorTest {
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
         StepEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
         Assert.assertEquals(result.planOpWithCosts().get(0).getCost().cost,20,0.1);
-        Assert.assertEquals(result.planOpWithCosts().get(1).getCost().cost,40.4,0.1);
-        Assert.assertEquals(result.planOpWithCosts().get(2).getCost().cost,40,0.1);
-        Assert.assertEquals(result.lambda(),0.8,0.1);//lambda
+        Assert.assertEquals(0.4, result.planOpWithCosts().get(1).getCost().cost,0.1);
+        Assert.assertEquals(50, result.planOpWithCosts().get(2).getCost().cost,0.1);
+        Assert.assertEquals(1.0, result.lambda(),0.1);//lambda
     }
 
 }

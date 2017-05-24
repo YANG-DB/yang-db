@@ -4,7 +4,6 @@ import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -15,7 +14,6 @@ import javaslang.collection.Stream;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +44,7 @@ public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTr
     private void applyArrayTransformation(EBase eBase, AsgStrategyContext context) {
         if (eBase instanceof EProp) {
             EProp eProp = (EProp) eBase;
-            Optional<Property> property = OntologyUtil.getProperty(context.getOntology(), Integer.parseInt(eProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(eProp.getpType()));
             Object expr = eProp.getCon().getExpr();
             ConstraintOp op = eProp.getCon().getOp();
             if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
@@ -57,7 +55,7 @@ public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTr
         }
         if (eBase instanceof RelProp) {
             RelProp relProp = (RelProp) eBase;
-            Optional<Property> property = OntologyUtil.getProperty(context.getOntology(), Integer.parseInt(relProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(relProp.getpType()));
             Object expr = relProp.getCon().getExpr();
             ConstraintOp op = relProp.getCon().getOp();
             if (isArray(expr) && isMultivaluedOp(op) && property.isPresent()) {

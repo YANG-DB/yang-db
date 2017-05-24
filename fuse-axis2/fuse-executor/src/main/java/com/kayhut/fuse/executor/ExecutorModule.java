@@ -4,10 +4,12 @@ import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
+import com.kayhut.fuse.executor.uniGraphProvider.GraphLayoutProviderFactory;
 import com.kayhut.fuse.executor.uniGraphProvider.M1ElasticUniGraphProvider;
 import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.schemaProviders.GraphLayoutProvider;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
@@ -39,6 +41,7 @@ public class ExecutorModule extends ModuleBase {
 
         binder.bind(UniGraphProvider.class).to(M1ElasticUniGraphProvider.class).asEagerSingleton();
         binder.bind(PhysicalIndexProviderFactory.class).toInstance(createPhysicalIndexProviderFactory(conf));
+        binder.bind(GraphLayoutProviderFactory.class).toInstance(createGraphLayoutProviderFactory(conf));
     }
     //endregion
 
@@ -79,6 +82,10 @@ public class ExecutorModule extends ModuleBase {
 
     private PhysicalIndexProviderFactory createPhysicalIndexProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         return (PhysicalIndexProviderFactory)(Class.forName(conf.getString("fuse.physical_index_provider_factory_class")).newInstance());
+    }
+
+    private GraphLayoutProviderFactory createGraphLayoutProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        return (GraphLayoutProviderFactory)(Class.forName(conf.getString("fuse.graph_layout_provider_factory_class")).newInstance());
     }
     //endregion
 }

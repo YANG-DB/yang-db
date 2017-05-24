@@ -16,15 +16,17 @@ import com.kayhut.fuse.model.query.quant.HQuant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
-import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 /**
@@ -152,35 +154,10 @@ public class AsgQueryStore {
      * @return
      */
     public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
-        Start start = new Start();
-        start.seteNum(0);
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteNum(1);
-        eTyped.seteTag("A");
-        eTyped.seteType(1);
-
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setDir(R);
-        rel.setrType(1);
-
-        ETyped eTyped2 = new ETyped();
-        eTyped2.seteNum(3);
-        eTyped2.seteTag("B");
-        eTyped2.seteType(2);
-
-        AsgEBase<Start> asgStart =
-                AsgEBase.Builder.<Start>get().withEBase(start)
-                        .withNext(AsgEBase.Builder.get().withEBase(eTyped)
-                                .withNext(AsgEBase.Builder.get().withEBase(rel)
-                                        .withNext(AsgEBase.Builder.get().withEBase(eTyped2)
-                                                .build())
-                                        .build())
-                                .build())
-                        .build();
-
-        return AsgQuery.AsgQueryBuilder.anAsgQuery().withName(queryName).withOnt(ontologyName).withStart(asgStart).build();
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1,PERSON.type,"A"))
+                .next(rel(2,OWN.getrType(),R))
+                .next(typed(3,DRAGON.type,"B")).build();
     }
 
     /**
@@ -208,17 +185,20 @@ public class AsgQueryStore {
      */
 
     public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
+        long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1,  1))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(typed(3,  2))
+                .next(typed(1, PERSON.type))
+                .next(rel(2, OWN.getrType(), R).below(relProp(10, of(START_DATE.type, 10, of(eq, new Date())))))
+                .next(typed(3, DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
-                        , rel(5, 4, R)
-                                .next(unTyped( 6))
-                        , rel(7, 5, R)
-                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
-                                .next(concrete(8, "concrete1", 3, "Concrete1", "D"))
+                .in(eProp(9, EProp.of(NAME.type, 9, of(eq, "smith")), EProp.of(GENDER.type, 9, of(gt, MALE)))
+                        , rel(5, FREEZE.getrType(), R)
+                                .next(unTyped(6))
+                        , rel(7, FIRE.getrType(), R)
+                                .below(relProp(11, of(START_DATE.type, 11,
+                                            of(ge, new Date(time - 1000 * 60))),
+                                        of(END_DATE.type, 11, of(le, new Date(time + 1000 * 60)))))
+                                .next(concrete(8, "smoge", DRAGON.type, "Display:smoge", "D"))
                 )
                 .build();
     }
@@ -247,37 +227,30 @@ public class AsgQueryStore {
      * @return
      */
     public static AsgQuery simpleQuery3(String queryName, String ontologyName) {
+        long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, 1))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(typed(3, 2))
+                .next(typed(1, PERSON.type))
+                .next(rel(2, OWN.getrType(), R).below(relProp(10, of(START_DATE.type, 10, of(eq, new Date())))))
+                .next(typed(3, DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
-                        , rel(5, 4, R)
-                                .next(unTyped( 6)
-                                        .next(rel(12, 4, R)
-                                                .next(typed(13, 4))
+                .in(eProp(9, EProp.of(NAME.type, 9, of(eq, "Moshe")), EProp.of(GENDER.type, 9, of(gt, MALE)))
+                        , rel(5, FIRE.getrType(), R)
+                                .next(unTyped(6)
+                                        .next(rel(12, REGISTERED.getrType(), R)
+                                                .next(typed(13, KINGDOM.type))
                                         )
                                 )
-                        , rel(7, 5, R)
-                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
-                                .next(concrete(8, "concrete1", 3, "Concrete1", "D")
-                                        .next(rel(14, 1, R)
-                                                .next(typed(15, 1))
+                        , rel(7, FREEZE.getrType(), R)
+                                .below(relProp(11, of(START_DATE.type, 11,
+                                        of(ge, new Date(time - 1000 * 60))),
+                                        of(END_DATE.type, 11, of(le, new Date(time + 1000 * 60)))))
+                                .next(concrete(8, "Beltazar", DRAGON.type, "Beltazar", "D")
+                                        .next(rel(14, ORIGIN.getrType(), R)
+                                                .next(typed(15, KINGDOM.type))
                                         )
                                 )
-                )
-                .build();
+                ).build();
     }
-
-    public static AsgQuery queryWithEtypedAndEconcrete(String queryName, String ontologyName){
-        return AsgQuery.Builder.start(queryName, ontologyName )
-                .next(typed(1, 1))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(concrete(3, "123", 2, "B", "tag"))
-                .build();
-    }
-
 
     public static AsgQuery Q188_V1() {
         //region Query Building

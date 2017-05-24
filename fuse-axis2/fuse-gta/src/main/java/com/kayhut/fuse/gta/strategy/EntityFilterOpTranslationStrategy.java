@@ -6,7 +6,6 @@ import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -16,7 +15,6 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.Promise;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -41,7 +39,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
         }
 
         EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.getAdjacentPrev(plan, entityFilterOp);
+        Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, entityFilterOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
@@ -64,14 +62,14 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
                     traversal,
                     entityOp.getAsgEBase().geteBase(),
                     entityFilterOp.getAsgEBase().geteBase(),
-                    context.getOntology());
+                    context.getOnt());
 
         } else if (!entityFilterOp.getAsgEBase().geteBase().getProps().isEmpty()) {
 
             traversal = appendPropertyGroup(
                     traversal,
                     entityFilterOp.getAsgEBase().geteBase(),
-                    context.getOntology());
+                    context.getOnt());
         }
 
         return traversal;
@@ -83,7 +81,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
             GraphTraversal traversal,
             EEntityBase entity,
             EPropGroup ePropGroup,
-            Ontology ontology) {
+            Ontology.Accessor ont) {
 
         if (entity instanceof EConcrete) {
             //traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
@@ -91,7 +89,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
                     P.eq(Constraint.by(__.has(T.id, P.eq(((EConcrete)entity).geteID())))));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
-            List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ontology, entity);
+            List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
             Traversal constraintTraversal = __.has(T.label, P.eq(GlobalConstants.Labels.NONE));
             if (eTypeNames.size() == 1) {
                 constraintTraversal = __.has(T.label, P.eq(eTypeNames.get(0)));
@@ -101,7 +99,7 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
 
             List<Traversal> epropTraversals =
                     Stream.ofAll(ePropGroup.getProps())
-                        .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
+                        .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
 
             if (!epropTraversals.isEmpty()) {
                 epropTraversals.add(0, constraintTraversal);
@@ -117,11 +115,11 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
     private GraphTraversal appendPropertyGroup(
             GraphTraversal traversal,
             EPropGroup ePropGroup,
-            Ontology ontology) {
+            Ontology.Accessor ont) {
 
         List<Traversal> epropTraversals =
                 Stream.ofAll(ePropGroup.getProps())
-                        .map(eProp -> convertEPropToTraversal(eProp, ontology)).toJavaList();
+                        .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
 
         Traversal constraintTraversal = epropTraversals.size() == 1 ?
                 epropTraversals.get(0) :
@@ -132,8 +130,8 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
                 .otherV();
     }
 
-    private Traversal convertEPropToTraversal(EProp eProp, Ontology ontology) {
-         Optional<Property> property = OntologyUtil.getProperty(ontology, Integer.parseInt(eProp.getpType()));
+    private Traversal convertEPropToTraversal(EProp eProp, Ontology.Accessor ont) {
+         Optional<Property> property = ont.$property(Integer.parseInt(eProp.getpType()));
          if (!property.isPresent()) {
              return __.start();
          }

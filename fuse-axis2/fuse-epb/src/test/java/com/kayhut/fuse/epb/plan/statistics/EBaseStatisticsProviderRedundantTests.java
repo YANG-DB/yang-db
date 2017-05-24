@@ -53,32 +53,8 @@ public class EBaseStatisticsProviderRedundantTests {
             }
 
             @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
-                if(property.equals("firstName")){
-                    return Optional.of(new GraphRedundantPropertySchema() {
-                        @Override
-                        public String getPropertyRedundantName() {
-                            return "EntityB.firstName";
-                        }
-
-                        @Override
-                        public String getName() {
-                            return "firstName";
-                        }
-
-                        @Override
-                        public String getType() {
-                            return "string";
-                        }
-                    });
-                }else{
-                    return Optional.empty();
-                }
-            }
-
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property) {
-                if(property.equals("EntityB.firstName")){
+            public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
+                if(property.getName().equals("firstName")){
                     return Optional.of(new GraphRedundantPropertySchema() {
                         @Override
                         public String getPropertyRedundantName() {
@@ -175,7 +151,7 @@ public class EBaseStatisticsProviderRedundantTests {
             return new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(200l,200l,"a","z")));
         });
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(500,50));
-        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
+        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, new Ontology.Accessor(ontology), graphStatisticsProvider);
     }
     
     @Test
@@ -188,7 +164,7 @@ public class EBaseStatisticsProviderRedundantTests {
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
         prop.setCon(constraint);
-        PushdownRelProp pushdownRelProp = PushdownRelProp.of("EntityB.firstName", "2", 0, Constraint.of(ConstraintOp.ge, "abc"));
+        PushdownRelProp pushdownRelProp = PushdownRelProp.of(0, "EntityB.firstName", "2", Constraint.of(ConstraintOp.ge, "abc"));
 
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
 

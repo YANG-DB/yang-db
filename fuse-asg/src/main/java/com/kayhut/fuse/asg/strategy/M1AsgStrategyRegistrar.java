@@ -6,6 +6,7 @@ import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgEntityPropertiesGroupi
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgHQuantifierPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgQuant1PropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.type.AsgUntypedInferTypeLeftSideRelationStrategy;
 
 import java.util.Arrays;
 
@@ -17,6 +18,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
     @Override
     public Iterable<AsgStrategy> register() {
         return Arrays.asList(
+                new AsgUntypedInferTypeLeftSideRelationStrategy(),
                 new AsgEntityPropertiesGroupingStrategy(),
                 new AsgHQuantifierPropertiesGroupingStrategy(),
                 new AsgQuant1PropertiesGroupingStrategy(),

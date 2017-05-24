@@ -109,9 +109,8 @@ public class StepAncestorAdjacentStrategyTest {
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
-                new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 2), R),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
-
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))), asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
@@ -157,7 +156,7 @@ public class StepAncestorAdjacentStrategyTest {
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)),
-                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5),R),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
@@ -177,7 +176,7 @@ public class StepAncestorAdjacentStrategyTest {
         relation.geteBase().setDir(reverse(relation.geteBase().getDir()));
         Plan expectedPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)),
-                new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 5), R),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
@@ -198,11 +197,10 @@ public class StepAncestorAdjacentStrategyTest {
 
         Plan expectedPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 8)),
-                new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
+                new RelationOp(AsgQueryUtil.element$(asgQuery, 7), R),
                 new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 11)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
-
         Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
         List<Plan> extendedPlans = Stream.ofAll(new StepAncestorAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 

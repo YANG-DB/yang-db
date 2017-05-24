@@ -35,7 +35,7 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
             return Collections.emptyList();
         }
         //reverse direction
-        nextRelation.get().geteBase().setDir(Direction.reverse(nextRelation.get().geteBase().getDir()));
+        //nextRelation.get().geteBase().setDir(Direction.reverse(nextRelation.get().geteBase().getDir()));
         //
         Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.bDescendant(nextRelation.get(), RelPropGroup.class);
 
@@ -52,7 +52,8 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
 
         Plan newPlan = Plan.clone(plan.get());
         //current step on plan is the "from" entity whether is entity or filter op
-        newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
+        RelationOp relationOp = new RelationOp(nextRelation.get(), Direction.reverse(nextRelation.get().geteBase().getDir()));
+        newPlan = newPlan.withOp(relationOp);
         if (nextRelationPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
         }

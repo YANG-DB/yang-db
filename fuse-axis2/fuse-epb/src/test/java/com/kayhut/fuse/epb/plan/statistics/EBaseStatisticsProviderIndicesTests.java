@@ -1,9 +1,7 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -11,7 +9,6 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.junit.Assert;
@@ -33,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class EBaseStatisticsProviderIndicesTests {
     GraphElementSchemaProvider graphElementSchemaProvider;
     GraphStatisticsProvider graphStatisticsProvider;
-    Ontology ontology;
+    Ontology.Accessor ont;
     EBaseStatisticsProvider statisticsProvider;
     PhysicalIndexProvider indexProvider;
     private static String INDEX_PREFIX = "idx-";
@@ -98,11 +95,11 @@ public class EBaseStatisticsProviderIndicesTests {
         });
 
 
-        ontology = OntologyTestUtils.createDragonsOntologyShort();
-        RelationshipType relation2 = OntologyUtil.getRelationshipType(ontology, OntologyUtil.getRelationTypeNameById(ontology, 2)).get();
+        ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
+        RelationshipType relation2 = ont.$relation$(2);
         relation2.addProperty(1);
 
-        graphElementSchemaProvider = new OntologySchemaProvider(indexProvider, ontology);
+        graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
@@ -161,7 +158,7 @@ public class EBaseStatisticsProviderIndicesTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(secondDateBuckets));
         //when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
-        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
+        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
     }
 
     @Test

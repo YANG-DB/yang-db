@@ -12,6 +12,7 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class ElementGlobalTypeSearchAppenderTest {
 
     @Test
-    public void testSimpleConstraint() {
+    public void testSimpleConstraint() throws JSONException {
         SearchBuilder searchBuilder = new SearchBuilder();
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
@@ -52,7 +53,7 @@ public class ElementGlobalTypeSearchAppenderTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider((label, elementType) -> {
+        return new OntologySchemaProvider(ontology, (label, elementType) -> {
             if (elementType == ElementType.vertex) {
                 if (label.equals("Dragon")){
                     return () -> Arrays.<String>asList("dragonIndex1", "dragonIndex2");
@@ -69,7 +70,7 @@ public class ElementGlobalTypeSearchAppenderTest {
                 Assert.assertTrue(false);
                 return null;
             }
-        }, ontology);
+        });
     }
 
     private Ontology getOntology() {

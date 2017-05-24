@@ -7,9 +7,8 @@ import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.cost.CostEstimator;
 import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
-import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.dfs.StepAdjacentStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1DfsRedundantPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -19,9 +18,9 @@ import com.typesafe.config.Config;
 import org.jooby.Env;
 
 /**
- * Created by Roman on 24/04/2017.
+ * Created by Roman on 22/05/2017.
  */
-public class EpbDfsModule extends ModuleBase {
+public class EpbDfsRedundantModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
@@ -33,9 +32,7 @@ public class EpbDfsModule extends ModuleBase {
                 .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
-                .toInstance(new CompositePlanExtensionStrategy<>(
-                                new InitialPlanGeneratorExtensionStrategy(),
-                                new StepAdjacentStrategy()));
+                .to(M1DfsRedundantPlanExtensionStrategy.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                 .annotatedWith(Names.named("GlobalPruningStrategy"))

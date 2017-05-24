@@ -7,7 +7,6 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -17,19 +16,15 @@ import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.results.Relationship;
-import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.IdPromise;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Set;
 
 import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 
@@ -49,16 +44,17 @@ public class TraversalCursorFactory implements CursorFactory {
      * Created by liorp on 3/20/2017.
      */
     public static class TraversalCursor implements Cursor {
-
+        //region Constructors
         public TraversalCursor(TraversalCursorContext context) {
             this.context = context;
+            this.ont = new Ontology.Accessor(context.getOntology());
         }
         //endregion
 
         //region Cursor Implementation
         @Override
         public QueryResult getNextResults(int numResults) {
-            return toQuery(numResults, context);
+            return toQuery(numResults);
         }
         //endregion
 
@@ -69,17 +65,17 @@ public class TraversalCursorFactory implements CursorFactory {
         //endregion
 
         //region Private Methods
-        private QueryResult toQuery(int numResults, TraversalCursorFactory.TraversalCursorContext context) {
+        private QueryResult toQuery(int numResults) {
             QueryResult.Builder builder = instance();
             builder.withPattern(context.getQueryResource().getQuery());
             //build assignments
             (context.getTraversal().next(numResults)).forEach(path -> {
-                builder.withAssignment(toAssignment(context, path));
+                builder.withAssignment(toAssignment(path));
             });
             return builder.build();
         }
 
-        private Assignment toAssignment(TraversalCursorFactory.TraversalCursorContext context, Path path) {
+        private Assignment toAssignment(Path path) {
             Assignment.Builder builder = Assignment.Builder.instance();
             context.getQueryResource().getExecutionPlan().getPlan().getOps().forEach(planOp -> {
                 if (planOp instanceof EntityOp) {
@@ -90,14 +86,14 @@ public class TraversalCursorFactory implements CursorFactory {
                     } else if(entity instanceof ETyped) {
                         builder.withEntity(toEntity(path, (ETyped) entity));
                     } else if(entity instanceof EUntyped) {
-                        builder.withEntity(toEntity(context, path, (EUntyped) entity));
+                        builder.withEntity(toEntity(path, (EUntyped) entity));
                     }
                 } else if (planOp instanceof RelationOp) {
                     RelationOp relationOp = (RelationOp)planOp;
                     Optional<EntityOp> prevEntityOp =
-                            PlanUtil.getPrev(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                            PlanUtil.prev(this.context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
                     Optional<EntityOp> nextEntityOp =
-                            PlanUtil.getNext(context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                            PlanUtil.next(this.context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
 
                     builder.withRelationship(toRelationship(path,
                             prevEntityOp.get().getAsgEBase().geteBase(),
@@ -109,13 +105,11 @@ public class TraversalCursorFactory implements CursorFactory {
             return builder.build();
         }
 
-        private Entity toEntity(TraversalCursorFactory.TraversalCursorContext context, Path path, EUntyped element) {
+        private Entity toEntity(Path path, EUntyped element) {
             PromiseVertex vertex = path.get(element.geteTag());
             IdPromise idPromise = (IdPromise)vertex.getPromise();
 
-            int eType = idPromise.getLabel().isPresent() ?
-                    OntologyUtil.getEntityTypeIdByName(context.getOntology(), idPromise.getLabel().get()) :
-                    0;
+            int eType = idPromise.getLabel().isPresent() ? ont.eType$(idPromise.getLabel().get()) : 0;
 
             return toEntity(vertex.id().toString(),eType,element.geteTag());
         }
@@ -165,6 +159,7 @@ public class TraversalCursorFactory implements CursorFactory {
 
         //region Fields
         private TraversalCursorContext context;
+        private Ontology.Accessor ont;
         //endregion
     }
 

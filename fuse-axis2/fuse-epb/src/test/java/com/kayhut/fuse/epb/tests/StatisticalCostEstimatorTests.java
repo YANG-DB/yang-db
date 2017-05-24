@@ -5,7 +5,6 @@ import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
-import com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -16,6 +15,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
@@ -26,11 +26,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.getSupportedPattern;
@@ -38,7 +38,15 @@ import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
+import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
+import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.properties.RelProp.of;
+import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,14 +56,33 @@ import static org.mockito.Mockito.when;
  */
 public class StatisticalCostEstimatorTests {
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
+    private Ontology.Accessor ont;
+
+    public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
+        long time = System.currentTimeMillis();
+        return AsgQuery.Builder.start(queryName, ontologyName)
+                .next(typed(1, OntologyTestUtils.PERSON.type))
+                .next(rel(2, OWN.getrType(), R).below(relProp(10, of(START_DATE.type, 10, Constraint.of(eq, new Date())))))
+                .next(typed(3, OntologyTestUtils.DRAGON.type))
+                .next(quant1(4, all))
+                .in(eProp(9, EProp.of(NAME.type, 9, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 9, Constraint.of(gt, MALE)))
+                        , rel(5, FREEZE.getrType(), R)
+                                .next(unTyped(6))
+                        , rel(7, FIRE.getrType(), R)
+                                .below(relProp(11, of(START_DATE.type, 11,
+                                        Constraint.of(ge, new Date(time - 1000 * 60))),
+                                        of(END_DATE.type, 11, Constraint.of(le, new Date(time + 1000 * 60)))))
+                                .next(concrete(8, "smoge", DRAGON.type, "Display:smoge", "D"))
+                )
+                .build();
+    }
 
     @Before
     public void setup() {
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
         GraphEdgeSchema graphEdgeSchema = mock(GraphEdgeSchema.class);
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
-        when(edgeEnd.getRedundantVertexProperty(any())).thenAnswer(invocationOnMock -> {
+        when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String) invocationOnMock.getArguments()[0];
             if (property.equals("lastName")) {
                 return Optional.of(new GraphRedundantPropertySchema() {
@@ -83,7 +110,7 @@ public class StatisticalCostEstimatorTests {
         });
         when(graphEdgeSchema.getDestination()).thenReturn(Optional.of(edgeEnd));
         when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(graphEdgeSchema));
-        ontology = OntologyTestUtils.createDragonsOntologyShort();
+        ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
     }
 
     @Test
@@ -158,14 +185,14 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void calculateStepPattern() throws Exception {
-        AsgQuery asgQuery = AsgQueryStore.simpleQuery2("name", "ont");
+        AsgQuery asgQuery = simpleQuery2("name", "ont");
 
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock(asgQuery).entity(TYPED, 100, 4)
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, 1, 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, 5).entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
 
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1, 0.001));
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, graphElementSchemaProvider, ont, new BasicStepEstimator(1, 0.001));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost);
@@ -184,7 +211,7 @@ public class StatisticalCostEstimatorTests {
         Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().size(), 2);
         Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().get(0) instanceof EntityOp);
 
-        Assert.assertEquals(estimate.getCost().getGlobalCost(),new Cost(52.06));
+        Assert.assertEquals(estimate.getCost().getGlobalCost(),new Cost(51.06));
 
         Assert.assertEquals(250, newArrayList(estimate.getCost().getOpCosts()).get(0).peek(), 0);
 
@@ -207,7 +234,7 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1, 0.001));
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, graphElementSchemaProvider, ont, new BasicStepEstimator(1, 0.001));
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
 

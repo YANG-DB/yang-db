@@ -50,7 +50,11 @@ public class PlanAssert {
 
         Assert.assertTrue(expectedEntityOp != null && actualEntityOp != null);
         Assert.assertTrue(expectedEntityOp.geteNum() == actualEntityOp.geteNum());
-        Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().geteTag().equals(actualEntityOp.getAsgEBase().geteBase().geteTag()));
+        if(expectedEntityOp.getAsgEBase().geteBase().geteTag() != null) {
+            Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().geteTag().equals(actualEntityOp.getAsgEBase().geteBase().geteTag()));
+        }else{
+            Assert.assertTrue(actualEntityOp.getAsgEBase().geteBase().geteTag() == null);
+        }
         Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().geteNum() == actualEntityOp.getAsgEBase().geteBase().geteNum());
         Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().getClass().equals(actualEntityOp.getAsgEBase().geteBase().getClass()));
 

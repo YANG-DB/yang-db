@@ -2,11 +2,9 @@ package com.kayhut.fuse.epb.plan.extenders.dfs;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.M1NoRedundantPlanExtensionStrategy;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import javaslang.collection.Stream;
@@ -20,11 +18,12 @@ import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
 import static com.kayhut.fuse.model.query.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.junit.Assert.assertEquals;
 
-public class M1NoRedundantPlanExtensionStrategyTest {
+public class M1NonRedundantPlanExtensionStrategyTest {
 
     public static AsgQuery simpleQuery3(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
@@ -70,7 +69,7 @@ public class M1NoRedundantPlanExtensionStrategyTest {
     public void test_simpleQuery0seedPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
-        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.empty(), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 4);
@@ -87,7 +86,7 @@ public class M1NoRedundantPlanExtensionStrategyTest {
         Plan startPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
 
-        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
@@ -98,13 +97,13 @@ public class M1NoRedundantPlanExtensionStrategyTest {
     public void test_simpleQuery2ElementsPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
-        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(
                 Optional.of(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).plan()), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 4);
 
-        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(2).relFilter(10).entity(1).plan(), extendedPlans.get(0));
+        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(2, L).relFilter(10).entity(1).plan(), extendedPlans.get(0));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).plan(), extendedPlans.get(1));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(7).relFilter(11).entity(8).plan(), extendedPlans.get(2));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).goTo(1).rel(2).relFilter(10).entity(3).entityFilter(9).plan(), extendedPlans.get(3));
@@ -126,13 +125,13 @@ public class M1NoRedundantPlanExtensionStrategyTest {
                 new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
-        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 5);
-        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).rel(5).entity(3).entityFilter(9).plan(), extendedPlans.get(0));
+        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).rel(5, L).entity(3).entityFilter(9).plan(), extendedPlans.get(0));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(1).rel(2).relFilter(10).entity(3).entityFilter(9).plan(), extendedPlans.get(1));
-        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(2).relFilter(10).entity(1).plan(), extendedPlans.get(2));
+        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(2, L).relFilter(10).entity(1).plan(), extendedPlans.get(2));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(5).entity(6).plan(), extendedPlans.get(3));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(7).relFilter(11).entity(8).plan(), extendedPlans.get(4));
     }
@@ -149,14 +148,14 @@ public class M1NoRedundantPlanExtensionStrategyTest {
                 new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
-        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NoRedundantPlanExtensionStrategy();
+        PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 6);
-        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).rel(5).entity(3).entityFilter(9).plan(), extendedPlans.get(0));
+        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).rel(5, L).entity(3).entityFilter(9).plan(), extendedPlans.get(0));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).rel(12).entity(13).plan(), extendedPlans.get(1));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(1).rel(2).relFilter(10).entity(3).entityFilter(9).plan(), extendedPlans.get(2));
-        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(2).relFilter(10).entity(1).plan(), extendedPlans.get(3));
+        PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(2, L).relFilter(10).entity(1).plan(), extendedPlans.get(3));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(5).entity(6).plan(), extendedPlans.get(4));
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).goTo(3).rel(7).relFilter(11).entity(8).plan(), extendedPlans.get(5));
     }

@@ -2,6 +2,8 @@ package com.kayhut.fuse.epb.plan.extenders;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.executor.uniGraphProvider.GraphLayoutProviderFactory;
+import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -12,7 +14,10 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan, AsgQuery> {
     //region Constructors
     @Inject
-    public M1PlanExtensionStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProvider schemaProvider) {
+    public M1PlanExtensionStrategy(
+            OntologyProvider ontologyProvider,
+            PhysicalIndexProviderFactory physicalIndexProviderFactory,
+            GraphLayoutProviderFactory graphLayoutProviderFactory) {
         super(
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
@@ -27,7 +32,10 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                                         )
                                 )
                         ),
-                        new PushDownSplitFilterStrategy(ontologyProvider, schemaProvider)
+                        new PushDownSplitFilterPlanExtensionStrategy(
+                                ontologyProvider,
+                                physicalIndexProviderFactory,
+                                graphLayoutProviderFactory)
                 )
         );
     }

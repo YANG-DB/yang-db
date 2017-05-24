@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
  */
 public class BasicStepEstimatorWithStatisticsProviderTest {
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
+    private Ontology.Accessor ont;
 
     @Before
     public void setup(){
@@ -63,7 +63,7 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
         when(graphEdgeSchema.getIndexPartition())
                 .thenReturn(new StaticIndexPartition(Collections.singleton("index")));
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
-        when(edgeEnd.getRedundantVertexProperty(any())).thenAnswer(invocationOnMock -> {
+        when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];
             if(property.equals("lastName")){
                 return Optional.of(new GraphRedundantPropertySchema() {
@@ -91,14 +91,14 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
         });
         when(graphEdgeSchema.getDestination()).thenReturn(Optional.of(edgeEnd));
         when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(graphEdgeSchema));
-        ontology = OntologyTestUtils.createDragonsOntologyShort();
+        ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
     }
 
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
         BasicStepEstimator estimator = new BasicStepEstimator(1, 0.001);
-        StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider,ontology, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
+        StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
 
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
@@ -123,7 +123,7 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
                 .rel(out, 1, 100).relFilter(0.6,11,"5",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, 5).entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.oldPlanWithCost(50, 250);
         Plan plan = builder.plan();
-        StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider,ontology, getStatisticsProvider(builder));
+        StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(builder));
 
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
         int numOps = plan.getOps().size();

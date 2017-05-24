@@ -1,5 +1,8 @@
 package com.kayhut.fuse.services;
 
+import com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest;
+import com.kayhut.fuse.services.engine2.data.EntityRelationEntityTest;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,8 +38,10 @@ public class TestsConfiguration {
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.CursorTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.PageTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.QueryTest.class);
+
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SingleEntityTest.class);
-        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.EntityRelationEntityTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest.class);
     }
     //endregion
 

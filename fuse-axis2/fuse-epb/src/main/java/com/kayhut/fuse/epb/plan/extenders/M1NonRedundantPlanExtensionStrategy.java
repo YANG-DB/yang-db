@@ -9,10 +9,10 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 /**
  * Created by Roman on 21/05/2017.
  */
-public class M1NoRedundantPlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan, AsgQuery> {
+public class M1NonRedundantPlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan, AsgQuery> {
     //region Constructors
     @Inject
-    public M1NoRedundantPlanExtensionStrategy() {
+    public M1NonRedundantPlanExtensionStrategy() {
         super(
                 new CompositePlanExtensionStrategy<>(
                         new InitialPlanGeneratorExtensionStrategy(),

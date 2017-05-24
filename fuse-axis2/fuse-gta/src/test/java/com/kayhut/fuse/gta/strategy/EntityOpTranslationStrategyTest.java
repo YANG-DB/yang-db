@@ -126,7 +126,7 @@ public class EntityOpTranslationStrategyTest {
         );
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
-        when(context.getOntology()).thenReturn(ontology);
+        when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
         when(context.getGraphTraversalSource()).thenReturn(new PromiseGraph().traversal());
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(0), context);
@@ -174,7 +174,7 @@ public class EntityOpTranslationStrategyTest {
         );
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
-        when(context.getOntology()).thenReturn(ontology);
+        when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
 
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.filterEntity);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(2), context);

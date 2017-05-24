@@ -30,10 +30,16 @@ import static org.junit.Assert.*;
  * Created by benishue on 11-May-17.
  */
 public class AsgConstraintIterableTransformationStrategyTest {
+    //region Setup
+    @Before
+    public void setUp() throws Exception {
+        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
+        ont = new Ontology.Accessor(new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class));
 
-    Ontology ontology;
+    }
+    //endregion
 
-
+    //region Test Methods
     @Test
     public void asgConstraintTransformationStrategyEPropsLongToDateTest() throws Exception {
         AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
@@ -46,7 +52,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
 
         assertTrue(eProp.getCon().getExpr().getClass().isArray());
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintIterableTransformationStrategy asgConstraintIterableTransformationStrategy = new AsgConstraintIterableTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
@@ -89,7 +95,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
 
         //endregion
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintIterableTransformationStrategy asgConstraintIterableTransformationStrategy = new AsgConstraintIterableTransformationStrategy();
 
         //Applying the Strategy on the RelProp #1 with the Epoch time
@@ -104,7 +110,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
         //Appling First the Properties Grouping Startegy and then applying the constraint transformation strategy
         //We want to be sure that the order of strategies is not affecting the final result
         AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
-        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext());
+        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(null));
         expr1 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();
         assertTrue(expr1.getClass().isArray());
@@ -167,14 +173,9 @@ public class AsgConstraintIterableTransformationStrategyTest {
         assertThat(expr8, instanceOf(List.class));
         assertThat(((ArrayList)expr8).get(0), instanceOf(Date.class));
     }
+    //endregion
 
-    @Before
-    public void setUp() throws Exception {
-        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
-        ontology = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
-
-    }
-
+    //region Private Methods
     private static String readJsonToString(String jsonRelativePath) throws Exception {
         String contents = "";
         try {
@@ -184,4 +185,9 @@ public class AsgConstraintIterableTransformationStrategyTest {
         }
         return contents;
     }
+    //endregion
+
+    //region Fields
+    private Ontology.Accessor ont;
+    //endregion
 }

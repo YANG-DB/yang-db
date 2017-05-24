@@ -38,8 +38,8 @@ public class PlanUtilTest {
         PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
         PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
-        assertEquals(planOpBaseSecond, PlanUtil.getAdjacentNext(planOf2, planOpBaseFirst).get());
-        assertNotEquals(planOpBaseFirst, PlanUtil.getAdjacentNext(planOf2, planOpBaseSecond).get());
+        assertEquals(planOpBaseSecond, PlanUtil.adjacentNext(planOf2, planOpBaseFirst).get());
+        assertNotEquals(planOpBaseFirst, PlanUtil.adjacentNext(planOf2, planOpBaseSecond).get());
     }
 
     @Test
@@ -47,8 +47,8 @@ public class PlanUtilTest {
         PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
         PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
 
-        assertTrue(!PlanUtil.getAdjacentPrev(planOf2, planOpBaseFirst).isPresent());
-        assertEquals(planOpBaseFirst, PlanUtil.getAdjacentPrev(planOf2, planOpBaseSecond).get());
+        assertTrue(!PlanUtil.adjacentPrev(planOf2, planOpBaseFirst).isPresent());
+        assertEquals(planOpBaseFirst, PlanUtil.adjacentPrev(planOf2, planOpBaseSecond).get());
     }
 
 
