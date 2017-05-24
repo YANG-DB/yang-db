@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.model;
+package com.kayhut.fuse.stat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
@@ -50,8 +50,13 @@ public class StatConfigurationTest {
 
         HistogramTerm histogramTerm = HistogramTerm.HistogramTermBuilder.aHistogramTerm()
                 .withDataType(DataType.string).withBuckets(Arrays.asList(
-                        new BucketTerm("MALE"),
-                        new BucketTerm("FEMALE")
+                        new BucketTerm("male"),
+                        new BucketTerm("female")
+                )).build();
+
+        HistogramTerm histogramDocType = HistogramTerm.HistogramTermBuilder.aHistogramTerm()
+                .withDataType(DataType.string).withBuckets(Arrays.asList(
+                        new BucketTerm("dragon")
                 )).build();
 
 
@@ -60,9 +65,10 @@ public class StatConfigurationTest {
         Field addressField = new Field("address", histogramDragonAddress);
         Field colorField = new Field("color", histogramDragonColor);
         Field genderField = new Field("gender", histogramTerm);
+        Field dragonTypeField = new Field("_type", histogramDocType);
 
 
-        Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField));
+        Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
 
         Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();

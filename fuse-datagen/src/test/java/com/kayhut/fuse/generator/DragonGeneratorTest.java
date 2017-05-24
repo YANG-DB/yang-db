@@ -32,6 +32,7 @@ public class DragonGeneratorTest {
         }
 
     }
+
     @BeforeClass
     public static void setup() throws Exception {
         configuration = new DataGenConfiguration(CONFIGURATION_FILE_PATH).getInstance();

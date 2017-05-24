@@ -108,7 +108,7 @@ public class EsUtil {
 
         SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
-                .execute().actionGet();
+                .setSize(0).execute().actionGet();
 
         Range agg = sr.getAggregations().get(aggName);
 
@@ -154,7 +154,7 @@ public class EsUtil {
 
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
-                .execute().actionGet();
+                .setSize(0).execute().actionGet();
 
         Filters aggregation = sr.getAggregations().get(aggName);
 
@@ -196,7 +196,7 @@ public class EsUtil {
 
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
-                .execute().actionGet();
+                .setSize(0).execute().actionGet();
 
         Filters aggregation = sr.getAggregations().get(aggName);
 

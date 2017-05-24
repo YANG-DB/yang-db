@@ -1,6 +1,7 @@
-package com.kayhut.fuse.generator.util;
+package com.kayhut.fuse.generator;
 
 import com.google.common.primitives.Doubles;
+import com.kayhut.fuse.generator.util.RandomUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,7 +25,7 @@ public class RandomUtilTest {
         List<Double> list = Arrays.stream(expDistArray).boxed().collect(Collectors.toList());
         double sum = list.stream().mapToDouble(d -> d).sum();
         System.out.println(sum);
-        assertTrue(1.0 == Math.floor(sum));
+        assertEquals(1.0, sum, 0.1);
     }
 
     @Test
@@ -32,6 +33,6 @@ public class RandomUtilTest {
         double[] expDistArray = RandomUtil.getExpDistArray(100, 1.0, 0.5);
         double[] cumulativeDistArray = RandomUtil.getCumulativeDistArray(expDistArray);
         //Since we are talking on statistics the number supposed to be close to 1.0
-        assertTrue(cumulativeDistArray[cumulativeDistArray.length - 1] > 0.99 && cumulativeDistArray[cumulativeDistArray.length - 1] <1.01 );
+        assertEquals(cumulativeDistArray[cumulativeDistArray.length - 1], 1.0, 0.1 );
     }
 }

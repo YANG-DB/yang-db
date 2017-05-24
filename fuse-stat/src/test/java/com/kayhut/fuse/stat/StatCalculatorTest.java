@@ -1,18 +1,18 @@
 package com.kayhut.fuse.stat;
 
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
+import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
-import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -28,9 +28,12 @@ public class StatCalculatorTest {
     static ElasticEmbeddedNode elasticEmbeddedNode;
     static Configuration configuration;
     static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
+    static final int numOfDragonsInIndex1 = 1000;
+    static final int numOfDragonsInIndex2 = 555; //HAMSA HAMSA HAMSA
+
 
     //todo - add more tests, specially small unit tests per each case
-
+    //Full - blown test
     @Test
     public void statCalculatorTest() throws Exception {
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
@@ -39,6 +42,8 @@ public class StatCalculatorTest {
         String statIndexName = "stat";
         String statTypeNumericName = "bucketNumeric";
         String statTypeStringName = "bucketString";
+        String statTypeTermName = "bucketTerm";
+
 
         String dataIndexName1 = "index1" ;
         String dataIndexName2 = "index2" ;
@@ -46,13 +51,17 @@ public class StatCalculatorTest {
         String dataFieldNameAge = "age";
         String dataFieldNameAddress = "address";
         String dataFieldNameColor = "color";
+        String dataFieldNameGender = "gender";
+        String dataFieldNameType = "_type";
+
 
         assertTrue(EsUtil.checkIfEsIndexExists(statClient, statIndexName ));
         assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeNumericName));
         assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeStringName));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeTermName));
 
 
-        //Check if age stat bucket exists (bucket #1: 10.0-20.0)
+        //Check if age stat numeric bucket exists (bucket #1: 10.0-20.0)
         String docId1 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameAge  + "10.0" + "20.0");
         assertEquals("vc8XbeyVJ7gfdxmfHSiOCQ==", docId1);
         assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeNumericName, docId1));
@@ -74,6 +83,22 @@ public class StatCalculatorTest {
         String docId4 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameColor  + "00" + "11");
         assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId4));
 
+        //Check term buckets (Gender male) - cardinality should be 1
+        String docId5 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameGender  + "male");
+        Optional<Map<String, Object>> doc5Result = EsUtil.getDocumentById(statClient, statIndexName, statTypeTermName, docId5);
+        assertTrue(doc5Result.isPresent());
+        assertEquals(1, (int)doc5Result.get().get("cardinality"));
+        //Since we have 1000 deagons (~0.5% should be males)
+        assertEquals(Double.valueOf(doc5Result.get().get("count").toString()),
+                numOfDragonsInIndex1/2.0, numOfDragonsInIndex1 * 0.1);
+
+        //Check that there are 1000 dragons in Index: "index1", Type: "dragon"
+        //Cardinality should be 1
+        String docId6 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameType  + "dragon");
+        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentById(statClient, statIndexName, statTypeTermName, docId6);
+        assertTrue(doc6Result.isPresent());
+        assertEquals(1, (int)doc6Result.get().get("cardinality"));
+        assertEquals((int)doc6Result.get().get("count"), 1000);
     }
 
     @BeforeClass
@@ -92,46 +117,21 @@ public class StatCalculatorTest {
                 "index1",
                 "dragon",
                 "id",
-                () -> createDragons(1000)).populate();
+                () -> StatTestUtil.createDragons(numOfDragonsInIndex1)).populate();
 
         new ElasticDataPopulator(
                 dataClient,
                 "index2",
                 "dragon",
                 "id",
-                () -> createDragons(555)).populate();
+                () -> StatTestUtil.createDragons(numOfDragonsInIndex2)).populate();
 
         Thread.sleep(2000);
 
     }
 
-    private static Iterable<Map<String, Object>> createDragons(int numDragons) {
-        Random r = new Random();
-        List<String> colors = Arrays.asList("red", "green", "yellow", "blue", "00" ,"11" ,"22" ,"33" ,"44" ,"55");
-        List<Map<String, Object>> dragons = new ArrayList<>();
-        for(int i = 0 ; i < numDragons ; i++) {
-            Map<String, Object> dragon = new HashedMap();
-            dragon.put("id", Integer.toString(i));
-            dragon.put("name", generateRandomString(10) + " dragon" + i);
-            dragon.put("age", r.nextInt(100));
-            dragon.put("color", colors.get(r.nextInt(colors.size())));
-            dragon.put("gender", (r.nextBoolean() ? "MALE" : "FEMALE"));
-            dragon.put("address", generateRandomString(20));
 
-            dragons.add(dragon);
-        }
-        return dragons;
-    }
 
-    private static String generateRandomString(int stringSize){
-        char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < stringSize; i++) {
-            char c = chars[random.nextInt(chars.length)];
-            sb.append(c);
-        }
-        return sb.toString();
-    }
+
 
 }

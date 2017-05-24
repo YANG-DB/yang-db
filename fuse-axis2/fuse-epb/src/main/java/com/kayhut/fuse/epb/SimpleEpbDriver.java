@@ -21,7 +21,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
 
     @Inject
-    public SimpleEpbDriver(EventBus bus,PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
+    public SimpleEpbDriver(EventBus bus, PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
         this.bus = bus;
         this.planSearcher = planSearcher;
         this.bus.register(this);

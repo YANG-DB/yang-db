@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat.util;
+package com.kayhut.fuse.stat;
 
 import org.junit.Before;
 import org.junit.Test;
