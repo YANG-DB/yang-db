@@ -14,6 +14,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import org.elasticsearch.client.transport.TransportClient;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,6 +58,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                                                                              GraphElementPropertySchema graphElementPropertySchema,
                                                                                              Constraint constraint,
                                                                                              T value) {
+//        graphVertexSchema.getType(); name of entity e.g., dragon
+//        graphElementPropertySchema.getType()  // Type : String, integer -> BUCKET STRING, BUCKET NUMERIC
+//        constraint.getOp() -> ELASTIC FILTER
         return null;
     }
 
@@ -83,8 +87,17 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     private long getTermBucketCount(String indexName, String docType, String term) {
-        long count = 0;
         String docId = StatUtil.hashString(indexName + docType + "_type" + term);
+        return getStatBucketCount(docId);
+    }
+
+    private long getRangeBucketCount(String indexName, String docType, String field, String lowerBound, String upperBound) {
+        String docId = StatUtil.hashString(indexName + docType + field + lowerBound + upperBound);
+        return getStatBucketCount(docId);
+    }
+
+    private long getStatBucketCount(String docId) {
+        long count = 0;
         Optional<Map<String, Object>> statDoc = ElasticUtil.getDocumentById(
                 this.elasticClient,
                 statConfig.getStatIndexName(),

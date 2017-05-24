@@ -10,6 +10,9 @@ import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
+import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -55,6 +58,9 @@ public class EpbModule extends ModuleBase {
                 .toInstance(new AllCompletePlanSelector<>());
 
         binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){}).to(M1PlanValidator.class).asEagerSingleton();
+
+        binder.bind(StatConfig.class).toInstance(new StatConfig(conf));
+        binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
 
     }
 }
