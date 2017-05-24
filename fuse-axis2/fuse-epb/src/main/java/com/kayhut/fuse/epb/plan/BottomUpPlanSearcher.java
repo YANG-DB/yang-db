@@ -12,9 +12,11 @@ import javaslang.collection.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 /**
  * Created by moti on 2/21/2017.
@@ -109,7 +111,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
                 currentPlans.add(planWithCost);
             }
 //            selectedPlans = currentPlans.stream().filter(Objects::nonNull).collect(Collectors.toSet());
-            selectedPlans = Stream.ofAll(selectedPlans).appendAll(localPlanSelector.select(query, selectedPlans)).toJavaList();
+            selectedPlans = Stream.ofAll(selectedPlans).appendAll(localPlanSelector.select(query, currentPlans)).toJavaList();
         }
 
         selectedPlans = globalPlanSelector.select(query, selectedPlans);
