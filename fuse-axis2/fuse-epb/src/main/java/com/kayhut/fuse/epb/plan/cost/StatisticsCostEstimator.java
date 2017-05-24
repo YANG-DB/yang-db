@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -129,7 +130,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         List<PlanOpWithCost<Cost>> planOpWithCosts;
         if (previousCost.isPresent()) {
             completePlanCost.set(previousCost.get().getCost().getGlobalCost());
-            planOpWithCosts = Lists.newArrayList(previousCost.get().getCost().getOpCosts());
+            planOpWithCosts = Stream.ofAll(previousCost.get().getCost().getOpCosts()).map(c -> new PlanOpWithCost<>(c.getCost(), c.peek(), c.getOpBase())).toJavaList();
         } else {
             completePlanCost.set(new Cost(0));
             planOpWithCosts = new ArrayList<>();
