@@ -30,16 +30,16 @@ import java.util.Optional;
 /**
  * Created by Roman on 09/05/2017.
  */
-public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrategy {
+public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategyBase<EntityFilterOp> {
+    //region Constructors
+    public EntityFilterOpTranslationStrategy() {
+        super(EntityFilterOp.class);
+    }
+    //endregion
     //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
-        if (!(planOp instanceof EntityFilterOp)) {
-            return traversal;
-        }
-
-        EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, entityFilterOp);
+    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, EntityFilterOp planOp, TranslationContext context) {
+        Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
@@ -61,14 +61,14 @@ public class EntityFilterOpTranslationStrategy implements PlanOpTranslationStrat
             traversal = appendEntityAndPropertyGroup(
                     traversal,
                     entityOp.getAsgEBase().geteBase(),
-                    entityFilterOp.getAsgEBase().geteBase(),
+                    planOp.getAsgEBase().geteBase(),
                     context.getOnt());
 
-        } else if (!entityFilterOp.getAsgEBase().geteBase().getProps().isEmpty()) {
+        } else if (!planOp.getAsgEBase().geteBase().getProps().isEmpty()) {
 
             traversal = appendPropertyGroup(
                     traversal,
-                    entityFilterOp.getAsgEBase().geteBase(),
+                    planOp.getAsgEBase().geteBase(),
                     context.getOnt());
         }
 

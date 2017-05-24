@@ -4,9 +4,11 @@ import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
+import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseVertexConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
+import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -27,6 +29,8 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+
+import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 
 /**
  * Created by liorp on 4/2/2017.
@@ -60,8 +64,13 @@ class VertexController implements SearchQuery.SearchController {
             throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
         }
 
+        List<HasContainer> selectPHasContainers = Stream.ofAll(searchQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() != null)
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
+                .toJavaList();
+
         return (Iterator<E>) (promiseHasContainers.isEmpty() ?
-                queryPromiseVertices(searchQuery, constraintHasContainers) :
+                queryPromiseVertices(searchQuery, constraintHasContainers, selectPHasContainers) :
                 createPromiseVertices(searchQuery,promiseHasContainers, constraintHasContainers));
     }
     //endregion
@@ -116,7 +125,10 @@ class VertexController implements SearchQuery.SearchController {
      * @param constraintHasContainers - the constraint predicate
      * @return the promise vertex iterator
      */
-    private Iterator<Element> queryPromiseVertices(SearchQuery searchQuery, List<HasContainer> constraintHasContainers) {
+    private Iterator<Element> queryPromiseVertices(
+            SearchQuery searchQuery,
+            List<HasContainer> constraintHasContainers,
+            List<HasContainer> selectPHasContainers) {
         Optional<TraversalConstraint> constraint = constraintHasContainers.stream()
                 .findFirst().filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
                 .map(h -> (TraversalConstraint) h.getValue());
@@ -125,16 +137,18 @@ class VertexController implements SearchQuery.SearchController {
         PromiseElementControllerContext context = new PromiseElementControllerContext(
                 Collections.emptyList(),
                 constraint,
+                selectPHasContainers,
                 this.schemaProvider,
                 ElementType.vertex,
                 searchQuery);
 
         //search appender
-        CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender(CompositeSearchAppender.Mode.all,
-                new IndexSearchAppender(),
-                new SizeSearchAppender(this.configuration),
-                new ElementConstraintSearchAppender(),
-                new ElementGlobalTypeSearchAppender());
+        CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
+                wrap(new IndexSearchAppender()),
+                wrap(new SizeSearchAppender(this.configuration)),
+                wrap(new ElementConstraintSearchAppender()),
+                wrap(new ElementGlobalTypeSearchAppender()),
+                wrap(new FilterSourceSearchAppender()));
 
         searchAppender.append(searchBuilder, context);
 
