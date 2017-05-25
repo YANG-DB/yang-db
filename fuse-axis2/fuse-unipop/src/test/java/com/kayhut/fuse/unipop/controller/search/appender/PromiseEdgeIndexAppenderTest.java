@@ -59,6 +59,27 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    public void appendTest_ConstraintLabelOnly_TSIndex() throws ParseException {
+
+        Ontology ontology = getOntology();
+        GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, TIME_SERIES_INDEX_EDGE));
+
+        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
+                Optional.of(traversalConstraint),
+                schemaProvider);
+
+        SearchBuilder searchBuilder = new SearchBuilder();
+
+        PromiseEdgeIndexAppender indexAppender = new PromiseEdgeIndexAppender();
+        indexAppender.append(searchBuilder, context);
+
+        Assert.assertEquals(TIME_SERIES_INDEX_NAMES.size(), searchBuilder.getIndices().size());
+
+        Stream.ofAll(searchBuilder.getIndices()).forEach(index -> Assert.assertTrue(TIME_SERIES_INDEX_NAMES.contains(index)));
+    }
+
+    @Test
     public void appendTest_ConstraintEqTime_TSIndex() throws ParseException {
 
         Date date = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/01/2017");
@@ -386,11 +407,23 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
-    public void appendTest_NoConstraintTime_TSIndex() throws ParseException {
+    public void appendTest_ConstraintComplex1Time_TSIndex() throws ParseException {
+
+        Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
+        Date date2 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/13/2017");
+
+        Date date3 = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/13/2017");
+        Date date4 = (new SimpleDateFormat("MM/dd/yyyy")).parse("03/13/2017");
+
+        Date date5 = (new SimpleDateFormat("MM/dd/yyyy")).parse("05/13/2017");
+        Date date6 = (new SimpleDateFormat("MM/dd/yyyy")).parse("06/13/2017");
 
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
-        TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, TIME_SERIES_INDEX_EDGE));
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
+                __.has("time",
+                        P.outside(date1, date2)
+                                .and(P.between(date3, date4).or(P.between(date5, date6))))));
 
         PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
                 Optional.of(traversalConstraint),
@@ -401,9 +434,90 @@ public class PromiseEdgeIndexAppenderTest{
         PromiseEdgeIndexAppender indexAppender = new PromiseEdgeIndexAppender();
         indexAppender.append(searchBuilder, context);
 
-        Assert.assertEquals(TIME_SERIES_INDEX_NAMES.size(), searchBuilder.getIndices().size());
+        Assert.assertEquals(4, searchBuilder.getIndices().size());
 
-        Stream.ofAll(searchBuilder.getIndices()).forEach(index -> Assert.assertTrue(TIME_SERIES_INDEX_NAMES.contains(index)));
+        Assert.assertFalse(searchBuilder.getIndices().contains("ts_2017-03"));
+        Assert.assertFalse(searchBuilder.getIndices().contains("ts_2017-04"));
+
+    }
+
+    @Test
+    public void appendTest_ConstraintComplex2Time_TSIndex() throws ParseException {
+
+        Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
+        Date date2 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/13/2017");
+
+        Date date3 = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/13/2017");
+        Date date4 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
+
+        Date date5 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/13/2017");
+        Date date6 = (new SimpleDateFormat("MM/dd/yyyy")).parse("06/13/2017");
+
+        Ontology ontology = getOntology();
+        GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
+                __.has("time",
+                        P.outside(date1, date2)
+                                .or(P.between(date3, date4).or(P.between(date5, date6))))));
+
+        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
+                Optional.of(traversalConstraint),
+                schemaProvider);
+
+        SearchBuilder searchBuilder = new SearchBuilder();
+
+        PromiseEdgeIndexAppender indexAppender = new PromiseEdgeIndexAppender();
+        indexAppender.append(searchBuilder, context);
+
+        Assert.assertEquals(5, searchBuilder.getIndices().size());
+
+        Assert.assertFalse(searchBuilder.getIndices().contains("ts_2017-03"));
+
+
+    }
+
+    @Test
+    public void appendTest_ConstraintComplex3Time_TSIndex() throws ParseException {
+
+        Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
+        Date date2 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/13/2017");
+
+        Date date3 = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/13/2017");
+        Date date4 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
+
+        Date date5 = (new SimpleDateFormat("MM/dd/yyyy")).parse("05/13/2017");
+        Date date6 = (new SimpleDateFormat("MM/dd/yyyy")).parse("06/13/2017");
+
+        Date date7 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/03/2017");
+        Date date8 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/13/2017");
+
+        Date date9 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/22/2017");
+        Date date10 = (new SimpleDateFormat("MM/dd/yyyy")).parse("04/30/2017");
+
+        Ontology ontology = getOntology();
+        GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
+        TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
+                __.has("time",
+                        P.outside(date1, date2)
+                                .and(P.outside(date3, date4))
+                                .and(P.outside(date5, date6))
+                                .and(P.between(date7, date8)
+                                        .or(P.between(date9, date10))))));
+
+        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
+                Optional.of(traversalConstraint),
+                schemaProvider);
+
+        SearchBuilder searchBuilder = new SearchBuilder();
+
+        PromiseEdgeIndexAppender indexAppender = new PromiseEdgeIndexAppender();
+        indexAppender.append(searchBuilder, context);
+
+        Assert.assertEquals(1, searchBuilder.getIndices().size());
+
+        Assert.assertTrue(searchBuilder.getIndices().contains("ts_2017-04"));
+
+
     }
 
     //region Private Methods

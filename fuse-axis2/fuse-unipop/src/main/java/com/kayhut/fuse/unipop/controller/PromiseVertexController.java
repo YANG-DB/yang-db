@@ -89,6 +89,11 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
 
         compositeAppender.append(searchBuilder, context);
 
+        if(searchBuilder.getIndices().size() == 0) {
+            //there is no relevant index to search...
+            return Collections.emptyIterator();
+        }
+
         //search
         SearchRequestBuilder searchRequest = searchBuilder.compose(client, true).setSearchType(SearchType.COUNT);
 

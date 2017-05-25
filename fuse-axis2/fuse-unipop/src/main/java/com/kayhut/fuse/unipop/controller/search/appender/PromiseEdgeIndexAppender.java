@@ -1,7 +1,6 @@
 package com.kayhut.fuse.unipop.controller.search.appender;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
@@ -11,7 +10,6 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 import javaslang.collection.Stream;
-import javaslang.control.Option;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -20,7 +18,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.OrP;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by Elad on 4/26/2017.
@@ -53,13 +53,15 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
 
                     if(predicates.size() == 0) {
                         //if there are no constraints, add all indices
-                        Stream.ofAll(tsIndexPartition.getIndices()).forEach(index -> searchBuilder.getIndices().add(index));
+                        searchBuilder.getIndices().addAll(Lists.newArrayList(indexPartition.getIndices()));
 
                     } else {
+                        //ass only indices satisfying the constraints
                         searchBuilder.getIndices().addAll(Stream.ofAll(tsIndexPartition.getIndices()).filter(index -> isIndexRelevant(index, predicates, tsIndexPartition)).toJavaList());
                     }
                 } else {
-                    searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchema.get().getIndexPartition()));
+                    //index partition is static, add all indices
+                    searchBuilder.getIndices().addAll(Lists.newArrayList(indexPartition.getIndices()));
                 }
 
             }
@@ -81,7 +83,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
             }
         }
 
-        return false;
+        return true;
     }
 
     private boolean testSimplePredicate(P predicate, String index, TimeSeriesIndexPartition tsIndexPartition) {
@@ -129,7 +131,4 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
         return String.format(indexPartition.getIndexFormat(), formattedDate);
     }
 
-    private List<String> getEdgeSchemasIndices(IndexPartition indexPartition) {
-        return Lists.newArrayList(indexPartition.getIndices());
-    }
 }
