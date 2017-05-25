@@ -51,6 +51,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         supportedOps.add(ConstraintOp.notStartsWith);
     }
 
+
     public EBaseStatisticsProvider(GraphElementSchemaProvider graphElementSchemaProvider, Ontology ontology, GraphStatisticsProvider graphStatisticsProvider) {
         this.graphElementSchemaProvider = graphElementSchemaProvider;
         this.ontology = ontology;
