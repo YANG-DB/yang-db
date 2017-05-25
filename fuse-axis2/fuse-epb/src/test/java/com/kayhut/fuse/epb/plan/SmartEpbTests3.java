@@ -31,16 +31,16 @@ import static com.kayhut.fuse.model.query.quant.QuantType.all;
 /**
  * Created by moti on 20/05/2017.
  */
-@Ignore
+
 public class SmartEpbTests3 extends SmartEpbShortPathTests {
 
-    public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
-        long time = System.currentTimeMillis();
+    public AsgQuery simpleQuery2(String queryName, String ontologyName) {
+        //long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, PERSON.type)
-                        .next(eProp(2,EProp.of(Integer.toString(HEIGHT.type), 3, Constraint.of(ConstraintOp.gt, 189)))))
+                        .next(eProp(2,EProp.of(Integer.toString(HEIGHT.type), 3, Constraint.of(ConstraintOp.gt, 189l)))))
                 .next(rel(4, OWN.getrType(), R)
-                        .below(relProp(5, of(START_DATE.type, 6, Constraint.of(eq, new Date())))))
+                        .below(relProp(5, of(START_DATE.type, 6, Constraint.of(ge, new Date(startTime))))))
                 .next(typed(7, DRAGON.type))
                 .next(quant1(8, all))
                 .in(eProp(9, EProp.of(NAME.type, 10, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 11, Constraint.of(gt, new Value(MALE.ordinal(),MALE.name()))))
@@ -51,8 +51,8 @@ public class SmartEpbTests3 extends SmartEpbShortPathTests {
                                 )
                         , rel(16, FIRE.getrType(), R)
                                 .below(relProp(18, of(START_DATE.type, 19,
-                                        Constraint.of(ge, new Date(time - 1000 * 60))),
-                                        of(END_DATE.type, 19, Constraint.of(le, new Date(time + 1000 * 60)))))
+                                        Constraint.of(ge, new Date(startTime - 1000 * 60))),
+                                        of(END_DATE.type, 19, Constraint.of(le, new Date(startTime + 1000 * 60)))))
                                 .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
                                     .next(eProp(21,EProp.of(Integer.toString(NAME.type), 22, Constraint.of(ConstraintOp.eq, "smoge"))))
                                 )
@@ -65,14 +65,14 @@ public class SmartEpbTests3 extends SmartEpbShortPathTests {
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(simpleQuery2("q1","Dragons"));
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost().cost,1003, 0.1);
+        Assert.assertEquals(first.getCost().getGlobalCost().cost,12.2, 0.1);
         Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
         PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(400,op.getCost().cost, 0.1);
+        Assert.assertEquals(10,op.getCost().cost, 0.1);
         Assert.assertTrue(op.getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(PERSON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
-        Assert.assertEquals(303,iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(300, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(DRAGON.type,((ETyped)((EntityOp)op.getOpBase().get(0)).getAsgEBase().geteBase()).geteType());
+        Assert.assertEquals(0.1,iterator.next().getCost().cost, 0.01);
+        Assert.assertEquals(1, iterator.next().getCost().cost, 0.1);
 
     }
 

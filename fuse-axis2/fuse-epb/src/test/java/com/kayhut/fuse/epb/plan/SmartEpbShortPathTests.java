@@ -212,8 +212,7 @@ public class SmartEpbShortPathTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new CheapestPlanSelector();
 
         planSearcher = new BottomUpPlanSearcher<>(
-                //new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
-                new M1NonRedundantPlanExtensionStrategy(),
+                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
                 pruneStrategy,
                 pruneStrategy,
                 planSelector,
@@ -294,7 +293,6 @@ public class SmartEpbShortPathTests {
     }
 
     @Test
-    @Ignore
     public void testPathSelectionNoConditions(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
@@ -429,7 +427,6 @@ public class SmartEpbShortPathTests {
 
 
     @Test
-    @Ignore
     public void testThreeEntityPathWithQuant(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
@@ -442,22 +439,16 @@ public class SmartEpbShortPathTests {
                     next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(8, Rel.Direction.R).relFilter(9).entity(10).entityFilter(11).goTo(1).rel(4).relFilter(5).entity(6).entityFilter(7).plan();
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(10.5, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(10.23,op.getCost().cost, 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(112.8, first.getCost().getGlobalCost().cost, 0.1);
     }
 
 
     @Test
-    @Ignore
-    public void testThreeEntityPathWithQuantAnFilter(){
+    public void testThreeEntityPathWithQuantAndFilter(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
@@ -473,12 +464,7 @@ public class SmartEpbShortPathTests {
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(10.5, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(10.23,op.getCost().cost, 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
+        Assert.assertEquals(23.91, first.getCost().getGlobalCost().cost, 0.1);
     }
 
 }

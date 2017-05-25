@@ -23,9 +23,9 @@ public class CheapestPlanSelector implements PlanSelector<PlanWithCost<Plan, Pla
                 if (minPlan == null)
                     minPlan = planWithCost;
                 else {
-                    if (minPlan.getCost().getGlobalCost().cost > planWithCost.getCost().getGlobalCost().cost
-                            || (minPlan.getCost().getGlobalCost().cost == planWithCost.getCost().getGlobalCost().cost
-                                && minPlan.getPlan().toString().compareTo(planWithCost.getPlan().toString()) > 0))
+                    if (minPlan.getCost().getGlobalCost().cost > planWithCost.getCost().getGlobalCost().cost)
+                            //|| (minPlan.getCost().getGlobalCost().cost == planWithCost.getCost().getGlobalCost().cost
+                            //    && minPlan.getPlan().toString().compareTo(planWithCost.getPlan().toString()) > 0))
                         minPlan = planWithCost;
                 }
             }

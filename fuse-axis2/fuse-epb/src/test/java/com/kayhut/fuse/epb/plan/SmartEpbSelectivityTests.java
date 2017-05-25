@@ -222,8 +222,8 @@ public class SmartEpbSelectivityTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new CheapestPlanSelector();
 
         planSearcher = new BottomUpPlanSearcher<>(
-                //new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
-                new M1NonRedundantPlanExtensionStrategy(),
+                new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
+                //new M1NonRedundantPlanExtensionStrategy(),
                 pruneStrategy,
                 pruneStrategy,
                 planSelector,
