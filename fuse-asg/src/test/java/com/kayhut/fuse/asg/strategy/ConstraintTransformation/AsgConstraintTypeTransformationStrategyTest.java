@@ -1,14 +1,17 @@
 package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.AsgQueryStore;
+import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
 import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
@@ -18,7 +21,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertNotNull;
@@ -28,11 +33,119 @@ import static org.junit.Assert.assertThat;
  * Created by benishue on 09-May-17.
  */
 public class AsgConstraintTypeTransformationStrategyTest {
+    //region Setup
+    @Before
+    public void setUp() throws Exception {
+        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
+        ont = new Ontology.Accessor(new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class));
 
-    Ontology ontology;
+    }
+    //endregion
+
+    public static AsgQuery Q1() {
+        //region Query Building
+        Query query = new Query(); //Person owns Dragon with EProp - Name: 'dragonA'
+        query.setOnt("Dragons");
+        query.setName("Q1");
+        List<EBase> elements = new ArrayList<EBase>();
+
+       /*
+        {
+          "eNum": 0,
+          "type": "Start",
+          "next": 1
+        }
+         */
+
+        Start start = new Start();
+        start.seteNum(0);
+        start.setNext(1);
+        elements.add(start);
+
+       /* Person
+         {
+          "eNum": 1,
+          "type": "ETyped",
+          "eTag": "A",
+          "eType": 1,
+          "next":2
+        }
+        */
+
+        ETyped eTypedA = new ETyped();
+        eTypedA.seteNum(1);
+        eTypedA.seteTag("A");
+        eTypedA.seteType(1);
+        eTypedA.setNext(2);
+        elements.add(eTypedA);
+
+       /* Owns
+        {
+          "eNum": 2,
+          "type": "Rel",
+          "rType": 1,
+          "dir": "R",
+          "next": 3
+        }
+         */
+        Rel rel = new Rel();
+        rel.seteNum(2);
+        rel.setrType(1);
+        rel.setDir(Rel.Direction.R);
+        rel.setNext(3);
+        elements.add(rel);
+
+
+       /* Dragon
+        {
+          "eNum": 3,
+          "type": "ETyped",
+          "eTag": "B",
+          "eType": 2
+        }
+        */
+        ETyped eTypedB = new ETyped();
+        eTypedB.seteNum(3);
+        eTypedB.seteTag("B");
+        eTypedB.seteType(2);
+        eTypedB.setNext(4);
+        elements.add(eTypedB);
+
+       /* The dragon has the Name Entity Property = "dragonA"
+            "type": "EProp",
+            "eNum": 4,
+            "pType": "1.1",
+            "pTag": "1",
+            "con": {
+            "op": "eq",
+            "expr": "dragonA"
+            }
+         */
+
+
+        EProp eProp = new EProp();
+        eProp.seteNum(4);
+        eProp.setpType("1");
+        eProp.setpTag("1");
+        Constraint con = new Constraint();
+        con.setOp(ConstraintOp.eq);
+        con.setExpr("dragonA");
+        eProp.setCon(con);
+        elements.add(eProp);
+
+        query.setElements(elements);
+
+        //endregion
+
+        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
+        AsgQuery asgQuery = asgSupplier.get();
+        return asgQuery;
+    }
+
+    //region Test Methods
     @Test
     public void asgConstraintTransformationStrategyEPropsLongToDateTest() throws Exception {
-        AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
+        AsgQuery asgQueryWithEProps = Q1();
 
         //Setting The EProp expression as a date represented by Long value
         EProp eProp = (EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase();
@@ -41,7 +154,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         assertThat(eProp.getCon().getExpr(), instanceOf(Long.class));
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
@@ -52,7 +165,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
     @Test
     public void asgConstraintTransformationStrategyEPropsIntToDateTest() throws Exception {
-        AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
+        AsgQuery asgQueryWithEProps = Q1();
 
         //Setting The EProp expression as a date represented by Long value
         EProp eProp = (EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase();
@@ -61,7 +174,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         assertThat(eProp.getCon().getExpr(), instanceOf(int.class));
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
@@ -72,7 +185,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
     @Test
     public void asgConstraintTransformationStrategyEPropsIntToLongTest() throws Exception {
-        AsgQuery asgQueryWithEProps = AsgQueryStore.Q1();
+        AsgQuery asgQueryWithEProps = Q1();
 
         //Setting The EProp expression as an int
         EProp eProp = (EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase();
@@ -82,7 +195,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(eProp.getCon().getExpr(), instanceOf(Integer.class));
 
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
@@ -122,7 +235,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(rProp4.getCon().getExpr(), instanceOf(Long.class));
         //endregion
 
-        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ontology);
+        AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
 
         //Applying the Strategy on the RelProp #1 with the Epoch time
@@ -135,7 +248,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         //Appling First the Properties Grouping Startegy and then applying the constraint transformation strategy
         //We want to be sure that the order of strategies is not affecting the final result
         AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
-        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext());
+        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(ont));
 
         expr1 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();
@@ -157,14 +270,9 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(expr2, instanceOf(Date.class));
 
     }
+    //endregion
 
-    @Before
-    public void setUp() throws Exception {
-        String ontologyExpectedJson = readJsonToString("src/test/resources/Dragons_Ontology.json");
-        ontology = new ObjectMapper().readValue(ontologyExpectedJson, Ontology.class);
-
-    }
-
+    //region Private Methods
     private static String readJsonToString(String jsonRelativePath) throws Exception {
         String contents = "";
         try {
@@ -174,5 +282,10 @@ public class AsgConstraintTypeTransformationStrategyTest {
         }
         return contents;
     }
+    //endregion
+
+    //region Fields
+    private Ontology.Accessor ont;
+    //endregion
 
 }

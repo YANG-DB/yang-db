@@ -8,7 +8,6 @@ import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -165,6 +164,10 @@ public interface PlanMockUtils {
             return this;
         }
 
+        public PlanMockBuilder entityFilter(double factor, int eNum, int pType, Constraint constraint) throws Exception {
+            return entityFilter(factor,eNum,Integer.toString(pType),constraint);
+        }
+
         public PlanMockBuilder entityFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
             EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType, eNum, constraint)));
             EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
@@ -175,6 +178,10 @@ public interface PlanMockUtils {
             costs.put(filterOp, 0d);
             costs.put(last,costs.get(last)*factor);
             return this;
+        }
+
+        public PlanMockBuilder relFilter(double factor, int eNum, int pType, Constraint constraint) throws Exception {
+            return relFilter(factor,eNum,Integer.toString(pType),constraint);
         }
 
         public PlanMockBuilder relFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {

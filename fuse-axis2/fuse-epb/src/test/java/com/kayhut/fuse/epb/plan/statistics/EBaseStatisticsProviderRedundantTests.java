@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -16,7 +15,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
@@ -53,32 +55,8 @@ public class EBaseStatisticsProviderRedundantTests {
             }
 
             @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
-                if(property.equals("firstName")){
-                    return Optional.of(new GraphRedundantPropertySchema() {
-                        @Override
-                        public String getPropertyRedundantName() {
-                            return "EntityB.firstName";
-                        }
-
-                        @Override
-                        public String getName() {
-                            return "firstName";
-                        }
-
-                        @Override
-                        public String getType() {
-                            return "string";
-                        }
-                    });
-                }else{
-                    return Optional.empty();
-                }
-            }
-
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property) {
-                if(property.equals("EntityB.firstName")){
+            public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
+                if(property.getName().equals("firstName")){
                     return Optional.of(new GraphRedundantPropertySchema() {
                         @Override
                         public String getPropertyRedundantName() {
@@ -114,12 +92,7 @@ public class EBaseStatisticsProviderRedundantTests {
 
             @Override
             public IndexPartition getIndexPartition() {
-                return new IndexPartition() {
-                    @Override
-                    public Iterable<String> getIndices() {
-                        return Arrays.asList();
-                    }
-                };
+                return () -> Arrays.asList();
             }
 
             @Override
@@ -175,7 +148,7 @@ public class EBaseStatisticsProviderRedundantTests {
             return new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(200l,200l,"a","z")));
         });
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(500,50));
-        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
+        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, new Ontology.Accessor(ontology), graphStatisticsProvider);
     }
     
     @Test

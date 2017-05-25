@@ -14,19 +14,11 @@ public interface GraphLayoutProvider {
 
         //region GraphLayoutProvider Implementation
         @Override
-        public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String edgeType, String property) {
-            return Optional.empty();
-        }
-
-        @Override
-        public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String edgeType, String property) {
+        public Optional<GraphRedundantPropertySchema> getRedundantProperty(String edgeType, GraphElementPropertySchema property) {
             return Optional.empty();
         }
         //endregion
     }
 
-    Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String edgeType, String property);
-
-    Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String edgeType, String property);
-
+    Optional<GraphRedundantPropertySchema> getRedundantProperty(String edgeType, GraphElementPropertySchema property);
 }

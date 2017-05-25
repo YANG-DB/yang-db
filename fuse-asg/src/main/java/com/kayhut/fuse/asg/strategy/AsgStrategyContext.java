@@ -10,21 +10,18 @@ import com.kayhut.fuse.model.ontology.Ontology;
 public class AsgStrategyContext {
 
     //region Ctrs
-    public AsgStrategyContext() {
-    }
-
-    public AsgStrategyContext(Ontology ontology) {
-        this.ontology = ontology;
+    public AsgStrategyContext(Ontology.Accessor ont) {
+        this.ont = ont;
     }
     //endregion
 
     //region Getters & Setters
-    public Ontology getOntology() {
-        return ontology;
+    public Ontology.Accessor getOntologyAccessor() {
+        return ont;
     }
     //endregion
 
     //region Fields
-    private Ontology ontology;
+    private Ontology.Accessor ont;
     //endregion
 }

@@ -22,8 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.FIRST_NAME;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
 
 /**
  * Created by moti on 5/18/2017.
@@ -35,8 +35,16 @@ public class SmartEpbTests {
     @Before
     public void setup(){
         ScenarioMockUtil scenarioMockUtil = BasicScenarioSetup.setup();
-        EBaseStatisticsProvider eBaseStatisticsProvider = new EBaseStatisticsProvider(scenarioMockUtil.getGraphElementSchemaProvider(), scenarioMockUtil.getOntology(), scenarioMockUtil.getGraphStatisticsProvider());
-        StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, scenarioMockUtil.getGraphElementSchemaProvider(), scenarioMockUtil.getOntology(), new BasicStepEstimator(1.0,0.001 ));
+        EBaseStatisticsProvider eBaseStatisticsProvider = new EBaseStatisticsProvider(
+                scenarioMockUtil.getGraphElementSchemaProvider(),
+                scenarioMockUtil.getOntologyAccessor(),
+                scenarioMockUtil.getGraphStatisticsProvider());
+
+        StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(
+                eBaseStatisticsProvider,
+                scenarioMockUtil.getGraphElementSchemaProvider(),
+                scenarioMockUtil.getOntologyAccessor(),
+                new BasicStepEstimator(1.0,0.001 ));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -67,21 +75,4 @@ public class SmartEpbTests {
         Assert.assertEquals(first.getCost().getGlobalCost(),new Cost(10));
         Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost(),new Cost(10));
     }
-/*
-    @Test
-    public void testFullStep(){
-        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
-                .next(typed(1, "A", 1))
-                .next(eProp(12))
-                .next(rel(R, 2, 1).below(relProp(10, RelProp.of("8", 10, of(eq, new Date())))))
-                .next(typed(2, "B", 3))
-                .next(eProp(14))
-                .build();
-
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost(),new Cost(10));
-    }
-    */
 }

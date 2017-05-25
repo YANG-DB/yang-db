@@ -45,7 +45,7 @@ public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
 
         if (PlanUtil.isFirst(plan, entityOp)) {
             traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEBase().geteBase().geteTag());
-            appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOntology());
+            appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
         } else {
             Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
             if (previousPlanOp.isPresent() &&
@@ -57,7 +57,7 @@ public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
                     case filterEntity:
                         traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                         traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
-                        appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOntology());
+                        appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
                         traversal.otherV();
                 }
             }
@@ -70,7 +70,7 @@ public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
     //region Private Methods
     private GraphTraversal appendEntity(GraphTraversal traversal,
                                         EEntityBase entity,
-                                        Ontology ontology) {
+                                        Ontology.Accessor ont) {
 
         if (entity instanceof EConcrete) {
             //traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
@@ -78,7 +78,7 @@ public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
                     P.eq(Constraint.by(__.has(T.id, P.eq(((EConcrete)entity).geteID())))));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
-            List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ontology, entity);
+            List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
             if (eTypeNames.isEmpty()) {
                 traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
                         Constraint.by(__.has(T.label, P.eq(GlobalConstants.Labels.NONE))));

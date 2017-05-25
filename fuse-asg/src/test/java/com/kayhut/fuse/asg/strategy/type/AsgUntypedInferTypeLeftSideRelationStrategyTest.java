@@ -31,7 +31,7 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
 
     @Test
     public void testUntypedToTypedStrategy() throws Exception {
-        Ontology ontology = OntologyTestUtils.createDragonsOntologyShort();
+        Ontology.Accessor ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
@@ -39,11 +39,11 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .build();
 
-        AsgEBase<EUntyped> next = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
+        AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
         Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
-        strategy.apply(query,new AsgStrategyContext(ontology));
+        strategy.apply(query,new AsgStrategyContext(ont));
 
         AsgEBase<EUntyped> after = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
         Assert.assertEquals(after.geteBase().getvTypes(), Collections.singletonList(OntologyTestUtils.PERSON.type));
@@ -54,7 +54,7 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
 
     @Test
     public void testUntypedToConcreteStrategy() throws Exception {
-        Ontology ontology = OntologyTestUtils.createDragonsOntologyLong();
+        Ontology.Accessor ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyLong());
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
@@ -62,11 +62,11 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
                 .next(concrete(3, "123",OntologyTestUtils.DRAGON.type,"",""))
                 .build();
 
-        AsgEBase<EUntyped> next = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
+        AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
         Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
-        strategy.apply(query,new AsgStrategyContext(ontology));
+        strategy.apply(query,new AsgStrategyContext(ont));
 
         AsgEBase<EUntyped> after = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
         Assert.assertEquals(after.geteBase().getvTypes(), Collections.singletonList(OntologyTestUtils.PERSON.type));
@@ -77,7 +77,7 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
 
     @Test
     public void testUntypedToUntypedStrategy() throws Exception {
-        Ontology ontology = OntologyTestUtils.createDragonsOntologyLong();
+        Ontology.Accessor ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyLong());
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
@@ -85,11 +85,11 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
                 .next(unTyped(3))
                 .build();
 
-        AsgEBase<EUntyped> next = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
+        AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
         Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
         AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
-        strategy.apply(query,new AsgStrategyContext(ontology));
+        strategy.apply(query,new AsgStrategyContext(ont));
 
         Iterator<AsgEBase<EUntyped>> iterator = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator();
         AsgEBase<EUntyped> afterSideA = iterator.next();

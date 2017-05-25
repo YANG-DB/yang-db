@@ -2,21 +2,14 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
-import com.kayhut.fuse.model.ontology.Property;
+import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.aggregation.AggL1;
-import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
-import com.kayhut.fuse.neo4j.cypher.CypherCondition;
 import com.kayhut.fuse.neo4j.cypher.CypherRelationship;
 import com.kayhut.fuse.neo4j.cypher.CypherReturnElement;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import static com.kayhut.fuse.neo4j.cypher.CypherOps.getOp;
 
 /**
  * Created by User on 26/03/2017.
@@ -35,9 +28,9 @@ public class TypedRelCypherStrategy extends CypherStrategy {
 
             CypherCompilationState curState = getRelevantState(element);
 
-            Optional<String> label = OntologyUtil.getRelationLabel(ontology, typedRel.getrType());
+            Optional<RelationshipType> relation =  new Ontology.Accessor(this.ontology).$relation(typedRel.getrType());
 
-            if (!label.isPresent()) {
+            if (!relation.isPresent()) {
                 throw new RuntimeException("Failed compiling query. Unknown Relationship type: " + typedRel.getrType());
             }
 
@@ -45,7 +38,7 @@ public class TypedRelCypherStrategy extends CypherStrategy {
             String tag = curState.getStatement().getNewRelTag();
 
             CypherRelationship rel = CypherRelationship.cypherRel()
-                                                       .withLabel(label.get())
+                                                       .withLabel(relation.get().getName())
                                                        .withTag(tag)
                                                        .withDirection(getDirection(typedRel));
 

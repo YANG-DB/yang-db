@@ -4,7 +4,6 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
@@ -42,7 +41,7 @@ public class RelationOpTranslationStrategy implements PlanOpTranslationStrategy 
         Optional<EntityOp> next = PlanUtil.next(plan, planOp, EntityOp.class);
 
         Rel rel = ((RelationOp)planOp).getAsgEBase().geteBase();
-        String rTypeName = OntologyUtil.getRelationTypeNameById(context.getOntology(), rel.getrType());
+        String rTypeName = context.getOnt().$relation$(rel.getrType()).getName();
         return traversal.outE(GlobalConstants.Labels.PROMISE)
                 .as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), next.get().getAsgEBase().geteBase()))
                 .has(GlobalConstants.HasKeys.CONSTRAINT,

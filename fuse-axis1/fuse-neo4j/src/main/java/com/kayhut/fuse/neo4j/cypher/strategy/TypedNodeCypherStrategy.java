@@ -1,8 +1,8 @@
 package com.kayhut.fuse.neo4j.cypher.strategy;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.neo4j.cypher.*;
 
@@ -13,10 +13,11 @@ import java.util.Optional;
  * Created by Elad on 26/03/2017.
  */
 public class TypedNodeCypherStrategy extends CypherStrategy {
-
+    private Ontology.Accessor $ont;
 
     public TypedNodeCypherStrategy(Map<AsgEBase, CypherCompilationState> compilationState, Ontology ont) {
         super(compilationState, ont);
+        $ont = new Ontology.Accessor(ont);
     }
 
     public CypherCompilationState apply(AsgEBase element) {
@@ -27,15 +28,15 @@ public class TypedNodeCypherStrategy extends CypherStrategy {
 
             CypherCompilationState curState = getRelevantState(element);
 
-            Optional<String> label = OntologyUtil.getEntityLabel(ontology, eTyped.geteType());
+            Optional<EntityType> entity = $ont.$entity(eTyped.geteType());
 
-            if (!label.isPresent()) {
+            if (!entity.isPresent()) {
                 throw new RuntimeException("Failed compiling query. Unknown entity type: " + eTyped.geteType());
             }
 
             CypherNode node = CypherNode.cypherNode()
                     .withTag(eTyped.geteTag())
-                    .withLabel(label.get());
+                    .withLabel(entity.get().getName());
 
             CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement().withTag(node.tag);
 

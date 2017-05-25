@@ -21,9 +21,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -62,8 +60,8 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     @Test
     public void test_concrete_rel_untyped() throws Exception {
         Plan plan = create_Con_Rel_Unt_PathQuery();
-        Ontology ontology = getOntology();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
+        Ontology.Accessor ont = getOntologyAccessor();
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 __.start().V().as("A")
@@ -79,8 +77,8 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     @Test
     public void test_concrete_rel_typed() throws Exception {
         Plan plan = create_Con_Rel_Typ_PathQuery();
-        Ontology ontology = getOntology();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
+        Ontology.Accessor ont = getOntologyAccessor();
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
@@ -96,8 +94,8 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     @Test
     public void test_typed_rel_concrete() throws Exception {
         Plan plan = create_Typ_Rel_Con_PathQuery();
-        Ontology ontology = getOntology();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
+        Ontology.Accessor ont = getOntologyAccessor();
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("B")
@@ -113,8 +111,8 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     @Test
     public void test_typed_rel_typed() throws Exception {
         Plan plan = create_Typ_Rel_Typ_PathQuery();
-        Ontology ontology = getOntology();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
+        Ontology.Accessor ont = getOntologyAccessor();
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
@@ -132,8 +130,8 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     @Test
     public void test_concrete_rel_typed_rel_untyped() throws Exception {
         Plan plan = create_Con_Rel_Typ_Rel_Unt_PathQuery();
-        Ontology ontology = getOntology();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ontology, new PromiseGraph().traversal()));
+        Ontology.Accessor ont = getOntologyAccessor();
+        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
@@ -393,7 +391,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     //endregion
 
 
-    private Ontology getOntology() {
+    private Ontology.Accessor getOntologyAccessor() {
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
@@ -413,7 +411,8 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                     return  relTypes;
                 }
         );
-        return ontology;
+
+        return new Ontology.Accessor(ontology);
     }
 
 }

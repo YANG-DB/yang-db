@@ -2,7 +2,6 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.OntologyUtil;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.EBase;
@@ -76,6 +75,7 @@ public class ConditionCypherStrategy extends CypherStrategy {
     }
 
     private Optional<Property> getProperty(AsgEBase asgNode, Ontology ont) {
+        Ontology.Accessor $ont = new Ontology.Accessor(ont);
 
         String pType = getPropertyType(asgNode.geteBase());
 
@@ -88,9 +88,9 @@ public class ConditionCypherStrategy extends CypherStrategy {
             AsgEBase p = parents.poll();
 
             if (asgNode.geteBase() instanceof EProp && p.geteBase() instanceof ETyped) {
-                return OntologyUtil.getProperty(ont, Integer.parseInt(pType));
+                return $ont.$property(Integer.parseInt(pType));
             } else if (asgNode.geteBase() instanceof RelProp && p.geteBase() instanceof Rel) {
-                return OntologyUtil.getProperty(ont, Integer.parseInt(pType));
+                return $ont.$property(Integer.parseInt(pType));
             } else {
                 parents.addAll(p.getParents());
             }

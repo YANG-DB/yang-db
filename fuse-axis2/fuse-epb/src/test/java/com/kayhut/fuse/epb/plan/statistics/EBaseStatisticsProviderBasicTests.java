@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 
 import java.util.*;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
@@ -70,7 +71,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
-        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
+        statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, new Ontology.Accessor(ontology), graphStatisticsProvider);
     }
 
 
@@ -84,7 +85,7 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelHistogramTest() {
-        Rel rel = new Rel(0, 2, Rel.Direction.L, null, 0,0);
+        Rel rel = new Rel(0, OWN.getrType(), Rel.Direction.L, null, 0,0);
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeStatistics(rel);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(1d, nodeStatistics.getTotal(), 0);
@@ -92,8 +93,8 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateEqFilterHistogramTest() {
-        Rel rel = new Rel(0,2, Rel.Direction.L, null, 0, 0);
-        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.eq, new Date()));
+        Rel rel = new Rel(0,REGISTERED.getrType(), Rel.Direction.L, null, 0, 0);
+        RelProp prop = RelProp.of(START_DATE.type, 0, Constraint.of(ConstraintOp.eq, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -103,8 +104,8 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateGtFilterHistogramTest() {
-        Rel rel = new Rel(0, 2, Rel.Direction.L, null, 0, 0);
-        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.gt, new Date()));
+        Rel rel = new Rel(0, SUBJECT.getrType(), Rel.Direction.L, null, 0, 0);
+        RelProp prop = RelProp.of(END_DATE.type, 0, Constraint.of(ConstraintOp.gt, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
@@ -113,9 +114,9 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateGeFilterHistogramTest() {
-        Rel rel = new Rel(0,2, Rel.Direction.L, null, 0,0);
+        Rel rel = new Rel(0,FREEZE.getrType(), Rel.Direction.L, null, 0,0);
 
-        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.ge, new Date()));
+        RelProp prop = RelProp.of(END_DATE.type, 0, Constraint.of(ConstraintOp.ge, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
@@ -125,9 +126,9 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateLtFilterHistogramTest() {
-        Rel rel = new Rel(0,2, Rel.Direction.L, null,0,0);
+        Rel rel = new Rel(0,FIRE.getrType(), Rel.Direction.L, null,0,0);
 
-        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.lt, new Date()));
+        RelProp prop = RelProp.of(START_DATE.type, 0, Constraint.of(ConstraintOp.lt, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
@@ -137,9 +138,9 @@ public class EBaseStatisticsProviderBasicTests {
 
     @Test
     public void eRelDateLeFilterHistogramTest() {
-        Rel rel = new Rel(0,2, Rel.Direction.L, null,0,0);
+        Rel rel = new Rel(0,OWN.getrType(), Rel.Direction.L, null,0,0);
 
-        RelProp prop = RelProp.of("8", 0, Constraint.of(ConstraintOp.le, new Date()));
+        RelProp prop = RelProp.of(END_DATE.type, 0, Constraint.of(ConstraintOp.le, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);

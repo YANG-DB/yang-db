@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
  * Created by moti on 5/17/2017.
  */
 public class ScenarioMockUtil {
-    private Ontology ontology;
+    private Ontology.Accessor ont;
     private PhysicalIndexProvider indexProvider;
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private GraphLayoutProvider graphLayoutProvider = null;
@@ -48,7 +48,7 @@ public class ScenarioMockUtil {
         this.nodeScaleFactor = nodeScaleFactor;
         this.edgeScaleFactor = edgeScaleFactor;
         this.graphLayoutProvider = mock(GraphLayoutProvider.class);
-        when(this.graphLayoutProvider.getRedundantVertexProperty(any(), any())).thenAnswer(invocationOnMock -> {
+        when(this.graphLayoutProvider.getRedundantProperty(any(), any())).thenAnswer(invocationOnMock -> {
             String edgeType = invocationOnMock.getArgumentAt(0, String.class);
             String property = invocationOnMock.getArgumentAt(1, String.class);
             if(redundantProps.containsKey(edgeType)){
@@ -59,18 +59,7 @@ public class ScenarioMockUtil {
             return Optional.empty();
         });
 
-        when(this.graphLayoutProvider.getRedundantVertexPropertyByPushdownName(any(), any())).thenAnswer(invocationOnMock -> {
-            String edgeType = invocationOnMock.getArgumentAt(0, String.class);
-            String property = invocationOnMock.getArgumentAt(1, String.class);
-            if(redundantProps.containsKey(edgeType)){
-                if(redundantProps.get(edgeType).containsValue(property)){
-                    return redundantProps.get(edgeType).entrySet().stream().filter(set -> set.getValue().equals(property)).map(Map.Entry::getKey).findFirst();
-                }
-            }
-            return Optional.empty();
-        });
-
-        this.ontology = OntologyTestUtils.createDragonsOntologyShort();
+        this.ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
 
         this.indexProvider = mock(PhysicalIndexProvider.class);
         IndexPartition defaultPartition = () -> Arrays.asList("idx1");
@@ -81,7 +70,7 @@ public class ScenarioMockUtil {
             return indexPartitionMap.getOrDefault(item, defaultPartition);
         });
 
-        this.graphElementSchemaProvider = new OntologySchemaProvider(this.ontology, this.indexProvider, this.graphLayoutProvider);
+        this.graphElementSchemaProvider = new OntologySchemaProvider(this.ont.get(), this.indexProvider, this.graphLayoutProvider);
 
         this.graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> {
@@ -233,8 +222,8 @@ public class ScenarioMockUtil {
     }
 
 
-    public Ontology getOntology() {
-        return ontology;
+    public Ontology.Accessor getOntologyAccessor() {
+        return ont;
     }
 
     public PhysicalIndexProvider getIndexProvider() {

@@ -19,12 +19,12 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     }
 
     public OntologySchemaProvider(Ontology ontology, PhysicalIndexProvider physicalIndexProvider, GraphLayoutProvider graphLayoutProvider) {
-        this.ontology = ontology;
+        this.$ont = new Ontology.Accessor(ontology);
         this.physicalIndexProvider = physicalIndexProvider;
         this.graphLayoutProvider = graphLayoutProvider;
 
-        this.vertexTypes = new HashSet<>(OntologyUtil.getAllEntityLabels(ontology).get());
-        this.edgeTypes = new HashSet<>(OntologyUtil.getAllRelationshipTypeLabels(ontology).get());
+        this.vertexTypes = new HashSet<>(Stream.ofAll($ont.eNames()).toJavaList());
+        this.edgeTypes = new HashSet<>(Stream.ofAll($ont.rNames()).toJavaList());
     }
     //endregion
 
@@ -58,13 +58,13 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             return Optional.empty();
         }
 
-        Optional<RelationshipType> relationshipType = OntologyUtil.getRelationshipType(ontology, edgeType);
+        Optional<RelationshipType> relationshipType = $ont.relation(edgeType);
         if (relationshipType.isPresent()) {
             List<GraphEdgeSchema> graphEdgeSchemas = new ArrayList<>();
             List<EPair> verticesPair = relationshipType.get().getePairs();
             for (EPair ePair : verticesPair) {
-                String eTypeA = OntologyUtil.getEntityLabel(ontology, ePair.geteTypeA()).get();
-                String eTypeB = OntologyUtil.getEntityLabel(ontology, ePair.geteTypeB()).get();
+                String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
+                String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
                 Optional<GraphEdgeSchema> relationTypeSchema = getRelationTypeSchema(edgeType, eTypeA, eTypeB);
                 if (relationTypeSchema.isPresent()) {
                     graphEdgeSchemas.add(relationTypeSchema.get());
@@ -76,6 +76,26 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 return Optional.empty();
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<GraphElementPropertySchema> getPropertySchema(String name) {
+        Optional<Property> property = $ont.property(name);
+        if (!property.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new GraphElementPropertySchema() {
+            @Override
+            public String getName() {
+                return property.get().getName();
+            }
+
+            @Override
+            public String getType() {
+                return property.get().getType();
+            }
+        });
     }
 
     @Override
@@ -91,7 +111,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region Private Methods
     private Optional<GraphVertexSchema> getEntityTypeSchema(String vertexType) {
-        EntityType entityType = ontology.getEntityTypes().stream().filter(tp -> tp.getName().equals(vertexType)).findFirst().get();
+        EntityType entityType = $ont.entity$(vertexType);
 
         return Optional.of(new GraphVertexSchema() {
             @Override
@@ -112,7 +132,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             @Override
             public Iterable<GraphElementPropertySchema> getProperties() {
                 return Stream.ofAll(entityType.getProperties())
-                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .map(pType -> $ont.$property$(pType))
                         .map(property -> (GraphElementPropertySchema)new GraphElementPropertySchema() {
                                 @Override
                                 public String getName() {
@@ -129,7 +149,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             @Override
             public Optional<GraphElementPropertySchema> getProperty(String name) {
                 return Stream.ofAll(entityType.getProperties())
-                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .map(pType -> $ont.$property$(pType))
                         .filter(property -> property.getName().equals(name))
                         .toJavaOptional()
                         .map(property -> new GraphElementPropertySchema() {
@@ -148,7 +168,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     }
 
     private Optional<GraphEdgeSchema> getRelationTypeSchema(String edgeType, String sourceVertexType, String destinationVertexType) {
-        RelationshipType relationshipType = OntologyUtil.getRelationshipType(ontology, edgeType).get();
+        RelationshipType relationshipType = $ont.relation$(edgeType);
         return Optional.of(new GraphEdgeSchema() {
             @Override
             public Optional<End> getSource() {
@@ -164,13 +184,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     }
 
                     @Override
-                    public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
-                        return Optional.empty();
-                    }
-
-                    @Override
-                    public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property) {
-                        return Optional.empty();
+                    public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
+                        return graphLayoutProvider.getRedundantProperty(edgeType, property);
                     }
                 });
             }
@@ -189,22 +204,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     }
 
                     @Override
-                    public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String property) {
-                        if(graphLayoutProvider != null){
-                            return graphLayoutProvider.getRedundantVertexProperty(edgeType, property);
-                        }else {
-                            return Optional.empty();
-                        }
-                    }
-
-
-                    @Override
-                    public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String property) {
-                        if(graphLayoutProvider != null){
-                            return graphLayoutProvider.getRedundantVertexPropertyByPushdownName(edgeType, property);
-                        }else {
-                            return Optional.empty();
-                        }
+                    public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
+                        return graphLayoutProvider.getRedundantProperty(edgeType, property);
                     }
                 });
             }
@@ -232,7 +233,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             @Override
             public Iterable<GraphElementPropertySchema> getProperties() {
                 return Stream.ofAll(relationshipType.getProperties())
-                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .map(pType -> $ont.$property$(pType))
                         .map(property -> (GraphElementPropertySchema) new GraphElementPropertySchema() {
                             @Override
                             public String getName() {
@@ -250,7 +251,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             @Override
             public Optional<GraphElementPropertySchema> getProperty(String name) {
                 return Stream.ofAll(relationshipType.getProperties())
-                        .map(pType -> OntologyUtil.getProperty(ontology, pType).get())
+                        .map(pType -> $ont.$property$(pType))
                         .filter(property -> property.getName().equals(name))
                         .toJavaOptional()
                         .map(property -> (GraphElementPropertySchema) new GraphElementPropertySchema() {
@@ -274,7 +275,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     protected PhysicalIndexProvider physicalIndexProvider;
     protected Set<String> vertexTypes;
     protected Set<String> edgeTypes;
-    protected Ontology ontology;
+    protected Ontology.Accessor $ont;
     protected GraphLayoutProvider graphLayoutProvider = null;
     //endregion
 }

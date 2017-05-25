@@ -8,6 +8,8 @@ import com.kayhut.fuse.epb.plan.extenders.PushDownSplitFilterPlanExtensionStrate
 import com.kayhut.fuse.executor.uniGraphProvider.GraphLayoutProviderFactory;
 import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
+import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -22,9 +24,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
+import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
 import static com.kayhut.fuse.model.query.ConstraintOp.eq;
@@ -47,26 +52,18 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
         ontologyProvider = mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenReturn(Optional.of(OntologyTestUtils.createDragonsOntologyShort()));
 
-        GraphLayoutProvider graphLayoutProvider = new GraphLayoutProvider() {
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexProperty(String edgeType, String property) {
-                if(property.equals("firstName"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.firstName", null));
-                if(property.equals("gender"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.gender", null));
-                if(property.equals("id"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.id", null));
-                if(property.equals("type"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(null, "entityB.type", null));
+        GraphLayoutProvider graphLayoutProvider = ((edgeType, property) -> {
+                if(property.getName().equals("firstName"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.firstName", property.getType()));
+                if(property.getName().equals("gender"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.gender", property.getType()));
+                if(property.getName().equals("id"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.id", property.getType()));
+                if(property.getName().equals("type"))
+                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.type", property.getType()));
 
                 return Optional.empty();
-            }
-
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantVertexPropertyByPushdownName(String edgeType, String property) {
-                return Optional.empty();
-            }
-        };
+            });
 
         graphLayoutProviderFactory = ontology -> graphLayoutProvider;
         physicalIndexProviderFactory = (ontology -> new PhysicalIndexProvider.Constant(new StaticIndexPartition(Arrays.asList("index"))));
@@ -140,16 +137,18 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
     //region Private Methods
     private AsgQuery query1() {
         return AsgQuery.Builder.start("name", "ont" )
-                .next(typed(1, 1))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(concrete(3, "123", 2, "B", "tag"))
+                .next(typed(1, PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                .next(concrete(3, "123", DRAGON.type, "B", "tag"))
                 .build();
     }
 
     private AsgQuery query2() {
         return AsgQuery.Builder.start("name", "ont")
-                .next(typed(1,  1))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                .next(typed(1,  PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(typed(3,  2))
                 .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))

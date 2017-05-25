@@ -70,7 +70,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgQuery asgQuery = asgSupplier.get();
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtil.element(asgQuery, 4).get();
         AsgEntityPropertiesGroupingStrategy asgEntityPropertiesGroupingStrategy = new AsgEntityPropertiesGroupingStrategy();
-        asgEntityPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
+        asgEntityPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -147,7 +147,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgEBase<EBase> originalEProp1AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
         AsgEBase<EBase> originalEProp2AsgEbase = AsgQueryUtil.element(asgQuery, 6).get();
         AsgQuant1PropertiesGroupingStrategy asgQuant1PropertiesGroupingStrategy = new AsgQuant1PropertiesGroupingStrategy();
-        asgQuant1PropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
+        asgQuant1PropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -218,7 +218,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgQuery asgQuery = asgSupplier.get();
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtil.element(asgQuery, 3).get();
         AsgQuant1PropertiesGroupingStrategy asgQuant1PropertiesGroupingStrategy = new AsgQuant1PropertiesGroupingStrategy();
-        asgQuant1PropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
+        asgQuant1PropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -246,7 +246,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgEBase<EBase> originalRelProp1AsgEbase = AsgQueryUtil.element(asgQuery, 4).get();
         AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
         AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
-        asgRelPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
+        asgRelPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());
@@ -269,7 +269,7 @@ public class AsgPropsGroupingStrategyTest {
         AsgEBase<EBase> originalRelProp1AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
         AsgEBase<EBase> originalRelProp2AsgEbase = AsgQueryUtil.element(asgQuery, 6).get();
         AsgHQuantifierPropertiesGroupingStrategy asgHQuantifierPropertiesGroupingStrategy = new AsgHQuantifierPropertiesGroupingStrategy();
-        asgHQuantifierPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext());
+        asgHQuantifierPropertiesGroupingStrategy.apply(asgQuery, new AsgStrategyContext(null));
         //Checking that the ASG query still hold - nothing has broken
         assertEquals(0, asgQuery.getStart().geteBase().geteNum());
         assertEquals(0,asgQuery.getStart().getNext().get(0).getParents().get(0).geteBase().geteNum());

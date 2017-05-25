@@ -52,6 +52,7 @@ public class SmartEpbSelectivityTests {
 
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private Ontology ontology;
+    private Ontology.Accessor ont;
     private PhysicalIndexProvider physicalIndexProvider;
     private GraphStatisticsProvider graphStatisticsProvider;
     private GraphLayoutProvider layoutProvider;
@@ -205,13 +206,14 @@ public class SmartEpbSelectivityTests {
         });
 
         layoutProvider = mock(GraphLayoutProvider.class);
-        when(layoutProvider.getRedundantVertexProperty(any(), any())).thenReturn(Optional.empty());
+        when(layoutProvider.getRedundantProperty(any(), any())).thenReturn(Optional.empty());
 
         ontology = OntologyTestUtils.createDragonsOntologyShort();
+        ont = new Ontology.Accessor(ontology);
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
 
-        eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ontology, graphStatisticsProvider);
-        statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ontology, new BasicStepEstimator(1.0,0.001));
+        eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
+        statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, graphElementSchemaProvider, ont, new BasicStepEstimator(1.0,0.001));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -220,7 +222,8 @@ public class SmartEpbSelectivityTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new CheapestPlanSelector();
 
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
+                //new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
+                new M1NonRedundantPlanExtensionStrategy(),
                 pruneStrategy,
                 pruneStrategy,
                 planSelector,
