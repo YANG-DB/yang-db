@@ -195,7 +195,10 @@ public class StatisticalCostEstimatorTests {
                 .rel(out, 1, 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, 5).entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
 
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, new BasicStepEstimator(1, 0.001));
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(
+                (ont) -> provider,
+                new BasicStepEstimator(1, 0.001),
+                (id) -> Optional.of(ont.get()));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost, asgQuery);
@@ -237,7 +240,10 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, new BasicStepEstimator(1, 0.001));
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(
+                (ont) -> provider,
+                new BasicStepEstimator(1, 0.001),
+                (id) -> Optional.of(ont.get()));
 
         AsgQuery query = AsgQuery.Builder.start("name", "ont").
                 next(concrete(1, "id", 1, "name", "A")).

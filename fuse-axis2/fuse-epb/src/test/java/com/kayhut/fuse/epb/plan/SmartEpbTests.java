@@ -21,6 +21,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static com.kayhut.fuse.model.OntologyTestUtils.FIRST_NAME;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
@@ -41,8 +43,9 @@ public class SmartEpbTests {
                 scenarioMockUtil.getGraphStatisticsProvider());
 
         StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(
-                eBaseStatisticsProvider,
-                new BasicStepEstimator(1.0,0.001 ));
+                (ont) -> eBaseStatisticsProvider,
+                new BasicStepEstimator(1.0,0.001 ),
+                (id) -> Optional.of(scenarioMockUtil.getOntologyAccessor().get()));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();

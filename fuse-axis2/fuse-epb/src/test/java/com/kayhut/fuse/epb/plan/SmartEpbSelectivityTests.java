@@ -213,7 +213,10 @@ public class SmartEpbSelectivityTests {
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
-        statisticsCostEstimator = new StatisticsCostEstimator(eBaseStatisticsProvider, new BasicStepEstimator(1.0,0.001));
+        statisticsCostEstimator = new StatisticsCostEstimator(
+                (ont) -> eBaseStatisticsProvider,
+                new BasicStepEstimator(1.0,0.001),
+                (id) -> Optional.of(ont.get()));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
