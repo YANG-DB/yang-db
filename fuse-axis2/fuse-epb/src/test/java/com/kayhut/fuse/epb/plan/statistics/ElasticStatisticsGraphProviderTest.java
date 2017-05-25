@@ -1,9 +1,9 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
 import com.kayhut.fuse.epb.util.EpbUtil;
-import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
@@ -15,11 +15,10 @@ import com.kayhut.fuse.stat.model.configuration.Type;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,7 +71,6 @@ public class ElasticStatisticsGraphProviderTest {
 
     }
 
-
     @BeforeClass
     public static void setup() throws Exception {
 
@@ -87,25 +85,24 @@ public class ElasticStatisticsGraphProviderTest {
                 "cardinality",
                 buildStatContainer());
 
-        dataClient = ClientProvider.getDataClient(null);
-        statClient = ClientProvider.getDataClient(null);
+        statClient = new ElasticClientProvider(statConfig).getStatClient();
         elasticEmbeddedNode = new ElasticEmbeddedNode();
 
         Thread.sleep(4000);
 
         new ElasticDataPopulator(
-                dataClient,
-                "index1",
-                "dragon",
+                statClient,
+                statConfig.getStatIndexName(),
+                statConfig.getStatNumericTypeName(),
                 "id",
-                () -> EpbUtil.createDragons(numOfDragonsInIndex1)).populate();
+                () -> EpbUtil.createNumericStatistics("index1",
+                        "dragon",
+                        "age",
+                        10L,
+                        100L,
+                        20
+                        )).populate();
 
-        new ElasticDataPopulator(
-                dataClient,
-                "index2",
-                "dragon",
-                "id",
-                () -> EpbUtil.createDragons(numOfDragonsInIndex2)).populate();
 
         Thread.sleep(2000);
 
