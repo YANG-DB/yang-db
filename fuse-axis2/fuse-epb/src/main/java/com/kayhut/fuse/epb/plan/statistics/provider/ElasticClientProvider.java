@@ -14,8 +14,6 @@ import java.util.List;
  */
 public class ElasticClientProvider {
 
-    private StatConfig config;
-
     public ElasticClientProvider(StatConfig config) {
         this.config = config;
     }
@@ -33,4 +31,9 @@ public class ElasticClientProvider {
         }
         return esClient;
     }
+
+    //region Fields
+    private StatConfig config;
+    //endregion
+
 }

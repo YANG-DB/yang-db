@@ -2,6 +2,8 @@ package com.kayhut.fuse.epb.plan.statistics.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -37,5 +39,15 @@ public class StatUtil {
 
             return null;
         }
+    }
+
+    public static String readJsonToString(String jsonRelativePath) {
+        String contents = "";
+        try {
+            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return contents;
     }
 }

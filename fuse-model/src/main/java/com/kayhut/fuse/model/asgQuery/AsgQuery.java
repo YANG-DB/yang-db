@@ -20,7 +20,6 @@ import java.util.Arrays;
  */
 public class AsgQuery {
 
-
     //region Getters & Setters
 
     public String getOnt() {

@@ -54,11 +54,11 @@ public class EsUtil {
     }
 
     public static List<StatRangeResult> getNumericHistogramResults(TransportClient client,
-                                                              String indexName,
-                                                              String typeName,
-                                                              String fieldName,
-                                                              double min, double max,
-                                                              long numOfBins) {
+                                                                   String indexName,
+                                                                   String typeName,
+                                                                   String fieldName,
+                                                                   double min, double max,
+                                                                   long numOfBins) {
 
         List<BucketRange<Double>> buckets = StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
 
@@ -66,11 +66,11 @@ public class EsUtil {
     }
 
     public static List<StatRangeResult> getManualHistogramResults(TransportClient client,
-                                                             String indexName,
-                                                             String typeName,
-                                                             String fieldName,
-                                                             DataType dataType,
-                                                             List<BucketRange<?>> buckets) {
+                                                                  String indexName,
+                                                                  String typeName,
+                                                                  String fieldName,
+                                                                  DataType dataType,
+                                                                  List<BucketRange<?>> buckets) {
 
         List<StatRangeResult> bucketStatResults = new ArrayList<>();
 
@@ -89,10 +89,10 @@ public class EsUtil {
     }
 
     private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
-                                                                 String indexName,
-                                                                 String typeName,
-                                                                 String fieldName,
-                                                                 List<BucketRange<Double>> buckets) {
+                                                                      String indexName,
+                                                                      String typeName,
+                                                                      String fieldName,
+                                                                      List<BucketRange<Double>> buckets) {
         List<StatRangeResult> bucketStatResults = new ArrayList<>();
         String aggName = buildAggName(indexName, typeName, fieldName);
 
@@ -134,10 +134,10 @@ public class EsUtil {
     }
 
     public static List<StatRangeResult> getStringBucketsStatResults(TransportClient client,
-                                                               String indexName,
-                                                               String typeName,
-                                                               String fieldName,
-                                                               List<BucketRange<String>> buckets) {
+                                                                    String indexName,
+                                                                    String typeName,
+                                                                    String fieldName,
+                                                                    List<BucketRange<String>> buckets) {
 
         List<StatRangeResult> bucketStatResults = new ArrayList<>();
 

@@ -20,6 +20,21 @@ import java.util.Collections;
 public class StatConfigurationTest {
     @Test
     public void testStatModel() throws Exception {
+        StatContainer statContainer = buildStatContainer();
+
+        ObjectMapper mapper = new ObjectMapper();
+        String statActualJson = mapper.writeValueAsString(statContainer);
+        System.out.println(statActualJson);
+        String statExpectedJson = StatUtil.readJsonToString("src/test/resources/stats_fields_test.json");
+
+        JSONAssert.assertEquals(statExpectedJson, statActualJson, false);
+
+        StatContainer resultObj = new ObjectMapper().readValue(statExpectedJson, StatContainer.class);
+        Assert.assertNotNull(resultObj);
+
+    }
+
+    private StatContainer buildStatContainer() {
         HistogramNumeric histogramDragonAge = HistogramNumeric.HistogramNumericBuilder.aHistogramNumeric()
                 .withMin(10).withMax(100).withNumOfBins(10).build();
 
@@ -73,21 +88,9 @@ public class StatConfigurationTest {
         Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();
 
-        StatContainer statContainer = StatContainer.StatContainerBuilder.aStatContainer()
+        return StatContainer.StatContainerBuilder.aStatContainer()
                 .withMappings(Collections.singletonList(mapping))
                 .withTypes(Collections.singletonList(typeDragon))
                 .build();
-
-
-        ObjectMapper mapper = new ObjectMapper();
-        String statActualJson = mapper.writeValueAsString(statContainer);
-        System.out.println(statActualJson);
-        String statExpectedJson = StatUtil.readJsonToString("src/test/resources/stats_fields_test.json");
-
-        JSONAssert.assertEquals(statExpectedJson, statActualJson, false);
-
-        StatContainer resultObj = new ObjectMapper().readValue(statExpectedJson, StatContainer.class);
-        Assert.assertNotNull(resultObj);
-
     }
 }
