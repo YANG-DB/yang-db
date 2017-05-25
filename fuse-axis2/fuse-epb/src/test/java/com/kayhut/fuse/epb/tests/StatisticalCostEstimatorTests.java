@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.asg.AsgQueryStore;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
@@ -14,7 +15,9 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -192,10 +195,10 @@ public class StatisticalCostEstimatorTests {
                 .rel(out, 1, 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, 5).entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
 
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, graphElementSchemaProvider, ont, new BasicStepEstimator(1, 0.001));
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, new BasicStepEstimator(1, 0.001));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost);
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost, asgQuery);
 
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 6);
@@ -234,12 +237,16 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, graphElementSchemaProvider, ont, new BasicStepEstimator(1, 0.001));
-        EntityOp entityOp = new EntityOp();
-        entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(provider, new BasicStepEstimator(1, 0.001));
+
+        AsgQuery query = AsgQuery.Builder.start("name", "ont").
+                next(concrete(1, "id", 1, "name", "A")).
+                build();
+
+        EntityOp entityOp = new EntityOp(AsgQueryUtil.element$(query, 1));
 
         Plan plan = new Plan().withOp(entityOp);
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, Optional.empty());
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, Optional.empty(), query);
 
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 2);

@@ -27,7 +27,7 @@ public class EpbDfsNonRedundantModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost>>(){})
+        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})

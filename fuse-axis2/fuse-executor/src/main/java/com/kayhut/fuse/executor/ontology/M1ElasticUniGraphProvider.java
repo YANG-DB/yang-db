@@ -1,7 +1,10 @@
-package com.kayhut.fuse.executor.uniGraphProvider;
+package com.kayhut.fuse.executor.ontology;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
+import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
+import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.PromiseElementController;

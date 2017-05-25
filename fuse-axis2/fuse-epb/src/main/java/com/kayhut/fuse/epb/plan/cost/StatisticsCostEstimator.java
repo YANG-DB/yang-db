@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -26,7 +27,7 @@ import static com.kayhut.fuse.model.execution.plan.Plan.contains;
 /**
  * Created by moti on 01/04/2017.
  */
-public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost> {
+public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost, AsgQuery> {
     public enum StatisticsCostEstimatorPatterns {
         //option2
         FULL_STEP("^(?<" + ENTITY_ONE.value + ">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
@@ -90,24 +91,19 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     }
 
     private StatisticsProvider statisticsProvider;
-    private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology.Accessor ont;
     private StepEstimator estimator;
 
     @Inject
-    public StatisticsCostEstimator(
-            StatisticsProvider statisticsProvider,
-            GraphElementSchemaProvider graphElementSchemaProvider,
-            Ontology.Accessor ont,
-            StepEstimator estimator) {
+    public StatisticsCostEstimator(StatisticsProvider statisticsProvider, StepEstimator estimator) {
         this.statisticsProvider = statisticsProvider;
-        this.graphElementSchemaProvider = graphElementSchemaProvider;
-        this.ont = ont;
         this.estimator = estimator;
     }
 
     @Override
-    public PlanWithCost<Plan, PlanDetailedCost> estimate(Plan plan, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public PlanWithCost<Plan, PlanDetailedCost> estimate(
+            Plan plan,
+            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
+            AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
         List<PlanOpBase> step = plan.getOps();
         if (previousCost.isPresent()) {

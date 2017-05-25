@@ -42,8 +42,6 @@ public class SmartEpbTests {
 
         StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(
                 eBaseStatisticsProvider,
-                scenarioMockUtil.getGraphElementSchemaProvider(),
-                scenarioMockUtil.getOntologyAccessor(),
                 new BasicStepEstimator(1.0,0.001 ));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();

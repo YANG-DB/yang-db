@@ -47,7 +47,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
                                 @Named("GlobalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector,
                                 @Named("LocalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector,
                                 PlanValidator<P, Q> planValidator,
-                                CostEstimator<P, C> costEstimator) {
+                                CostEstimator<P, C, Q> costEstimator) {
         this.extensionStrategy = extensionStrategy;
         this.globalPruneStrategy = globalPruneStrategy;
         this.localPruneStrategy = localPruneStrategy;
@@ -64,7 +64,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
     private PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector;
     private PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector;
     private PlanValidator<P, Q> planValidator;
-    private CostEstimator<P, C> costEstimator;
+    private CostEstimator<P, C, Q> costEstimator;
     //endregion
 
     //region Methods
@@ -77,7 +77,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
         // Generate seed plans (plan is null)
         for (P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)) {
             if (planValidator.isPlanValid(seedPlan, query)) {
-                PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, Optional.empty());
+                PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, Optional.empty(), query);
                 currentPlans.add(planWithCost);
             }
         }
@@ -94,7 +94,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
                     for (P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)) {
                         log("Step#" + step + " [" + planValidator.isPlanValid(extendedPlan, query) + "]" + Plan.toPattern((Plan) extendedPlan), Level.INFO);
                         if (planValidator.isPlanValid(extendedPlan, query)) {
-                            PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan));
+                            PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan), query);
                             planExtensions.add(planWithCost);
 //                        }
                     }
