@@ -222,15 +222,16 @@ public class SmartEpbSelectivityTests {
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
 
 
-        PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new CheapestPlanSelector();
+        PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
+        PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
 
         planSearcher = new BottomUpPlanSearcher<>(
                 new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
                 //new M1NonRedundantPlanExtensionStrategy(),
                 pruneStrategy,
                 pruneStrategy,
-                planSelector,
-                planSelector,
+                globalPlanSelector,
+                localPlanSelector,
                 validator,
                 statisticsCostEstimator);
     }
