@@ -97,7 +97,7 @@
   ],
   "relationshipTypes": [
     {
-      "rType": 1,
+      "rType": 101,
       "name": "own",
       "directional": true,
       "ePairs": [
@@ -112,7 +112,7 @@
       ]
     },
     {
-      "rType": 2,
+      "rType": 102,
       "name": "memberOf",
       "directional": true,
       "ePairs": [

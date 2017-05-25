@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -16,7 +15,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Optional;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.isA;
@@ -90,12 +92,7 @@ public class EBaseStatisticsProviderRedundantTests {
 
             @Override
             public IndexPartition getIndexPartition() {
-                return new IndexPartition() {
-                    @Override
-                    public Iterable<String> getIndices() {
-                        return Arrays.asList();
-                    }
-                };
+                return () -> Arrays.asList();
             }
 
             @Override

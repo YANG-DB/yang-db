@@ -31,17 +31,19 @@ public class OntologyTestUtils {
     public static Property NAME = new Property("name", STRING, 7);
     public static Property COLOR = new Property("color", TYPE_COLOR, 8);
 
-    public static Property START_DATE = new Property("startDate", DATE, 8);
-    public static Property END_DATE = new Property("endDate", DATE, 9);
+    public static Property START_DATE = new Property("startDate", DATE, 9);
+    public static Property END_DATE = new Property("endDate", DATE, 10);
+    public static Property TEMPERATURE = new Property("temperature", INT, 11);
+    public static Property TIMESTAMP = new Property("timestamp", DATE, 12);
 
 
-    public static final RelationshipType OWN = new RelationshipType("own", 1, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType MEMBER_OF = new RelationshipType("memberOf", 2, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType FIRE = new RelationshipType("fire", 3, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType FREEZE = new RelationshipType("freeze", 4, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType ORIGIN = new RelationshipType("origin", 5, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType SUBJECT = new RelationshipType("subject", 6, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType REGISTERED = new RelationshipType("registered", 7, true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType OWN = new RelationshipType("own", 101, true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType MEMBER_OF = new RelationshipType("memberOf", 102, true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType FIRE = new RelationshipType("fire", 103, true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type,TIMESTAMP.type);
+    public static final RelationshipType FREEZE = new RelationshipType("freeze", 104, true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type);
+    public static final RelationshipType ORIGIN = new RelationshipType("origin", 105, true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType SUBJECT = new RelationshipType("subject", 106, true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType REGISTERED = new RelationshipType("registered", 107, true).withProperty(START_DATE.type, END_DATE.type);
 
 
     public interface Entity {
@@ -159,7 +161,7 @@ public class OntologyTestUtils {
     }
 
     public static class KINGDOM implements Entity {
-        public static String name = "kingdom";
+        public static String name = "Kingdom";
         public static int type = 5;
         public static List<Property> propertyList = Arrays.asList(NAME);
 
@@ -243,7 +245,9 @@ public class OntologyTestUtils {
                 get().build(HEIGHT.type,HEIGHT.name,INT,CM),
                 get().build(NAME.type,NAME.name,STRING),
                 get().build(START_DATE.type,START_DATE.name,DATE),
-                get().build(END_DATE.type,END_DATE.name,DATE)));
+                get().build(END_DATE.type,END_DATE.name,DATE),
+                get().build(TIMESTAMP.type,TIMESTAMP.name,DATE),
+                get().build(TEMPERATURE.type,TEMPERATURE.name,INT)));
 
         ontologyShortObj.setRelationshipTypes(Arrays.asList(
                 REGISTERED,

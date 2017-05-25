@@ -2,6 +2,8 @@ package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -26,10 +28,13 @@ import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Mockito.when;

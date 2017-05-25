@@ -1,75 +1,5 @@
 {
   "ont": "Dragons",
-  "properties": [
-    {
-      "pType": 1,
-      "name": "firstName",
-      "type": "string"
-    },
-    {
-      "pType": 2,
-      "name": "lastName",
-      "type": "string"
-    },
-    {
-      "pType": 3,
-      "name": "name",
-      "type": "string"
-    },
-    {
-      "pType": 4,
-      "name": "gender",
-      "type": "TYPE_Gender"
-    },
-    {
-      "pType": 5,
-      "name": "birthDate",
-      "type": "date"
-    },
-    {
-      "pType": 6,
-      "name": "deathDate",
-      "type": "date"
-    },
-    {
-      "pType": 7,
-      "name": "height",
-      "type": "int",
-      "units": "cm"
-    },
-    {
-      "pType": 8,
-      "name": "color",
-      "type": "TYPE_HorseColor"
-    },
-    {
-      "pType": 9,
-      "name": "weight",
-      "type": "int",
-      "units": "kg"
-    },
-    {
-      "pType": 10,
-      "name": "startDate",
-      "type": "date"
-    },
-    {
-      "pType": 11,
-      "name": "endDate",
-      "type": "date"
-    },
-    {
-      "pType": 12,
-      "name": "timestamp",
-      "type": "date"
-    },
-    {
-      "pType": 13,
-      "name": "duration",
-      "type": "int",
-      "units": "min"
-    }
-  ],
   "entityTypes": [
     {
       "eType": 1,
@@ -77,6 +7,7 @@
       "properties": [
         1,
         2,
+        3,
         4,
         5,
         6,
@@ -84,39 +15,141 @@
       ]
     },
     {
-      "eType": 2,
-      "name": "Dragon",
+      "eType": 3,
+      "name": "Horse",
       "properties": [
+        7,
         3
       ]
     },
     {
-      "eType": 3,
-      "name": "Horse",
+      "eType": 2,
+      "name": "Dragon",
       "properties": [
+        7,
         3,
-        8,
-        9
+        8
+      ]
+    },
+    {
+      "eType": 5,
+      "name": "kingdom",
+      "properties": [
+        7
       ]
     },
     {
       "eType": 4,
       "name": "Guild",
       "properties": [
-        3
-      ]
-    },
-    {
-      "eType": 5,
-      "name": "Kingdom",
-      "properties": [
-        3
+        7
       ]
     }
   ],
   "relationshipTypes": [
     {
-      "rType": 1,
+      "rType": 107,
+      "name": "registered",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 4,
+          "eTypeB": 5
+        },
+        {
+          "eTypeA": 2,
+          "eTypeB": 4
+        },
+        {
+          "eTypeA": 3,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 106,
+      "name": "subject",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 5
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 105,
+      "name": "origin",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 5
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 104,
+      "name": "freeze",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "rType": 103,
+      "name": "fire",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "rType": 102,
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 101,
       "name": "own",
       "directional": true,
       "ePairs": [
@@ -130,115 +163,77 @@
         }
       ],
       "properties": [
-        10,
-        11
-      ]
-    },
-    {
-      "rType": 2,
-      "name": "fires at",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 2,
-          "eTypeB": 2
-        }
-      ],
-      "properties": [
-        12
-      ]
-    },
-    {
-      "rType": 3,
-      "name": "freezes",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 2,
-          "eTypeB": 2
-        }
-      ],
-      "properties": [
-        12,
-        13
-      ]
-    },
-    {
-      "rType": 4,
-      "name": "offspringOf",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 1
-        }
-      ]
-    },
-    {
-      "rType": 5,
-      "name": "knows",
-      "directional": false,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 1
-        }
-      ],
-      "properties": [
+        9,
         10
       ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": 1,
+      "name": "firstName",
+      "type": "string"
     },
     {
-      "rType": 6,
-      "name": "memberOf",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 4
-        }
-      ],
-      "properties": [
-        10,
-        11
-      ]
+      "pType": 2,
+      "name": "lastName",
+      "type": "string"
     },
     {
-      "rType": 7,
-      "name": "subjectOf",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 5
-        }
-      ]
+      "pType": 3,
+      "name": "gender",
+      "type": "TYPE_Gender"
     },
     {
-      "rType": 8,
-      "name": "registeredIn",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 4,
-          "eTypeB": 5
-        }
-      ]
+      "pType": 4,
+      "name": "birthDate",
+      "type": "date"
     },
     {
-      "rType": 9,
-      "name": "originatedIn",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 2,
-          "eTypeB": 5
-        },
-        {
-          "eTypeA": 3,
-          "eTypeB": 5
-        }
-      ]
+      "pType": 5,
+      "name": "deathDate",
+      "type": "date"
+    },
+    {
+      "pType": 6,
+      "name": "height",
+      "type": "int",
+      "units": "cm"
+    },
+    {
+      "pType": 7,
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": 9,
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": 10,
+      "name": "endDate",
+      "type": "date"
+    },
+    {
+      "pType": 12,
+      "name": "timestamp",
+      "type": "long"
+    },
+    {
+      "pType": 11,
+      "name": "temperature",
+      "type": "long"
+    },
+    {
+      "pType": 2147483647,
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": 2147483646,
+      "name": "type",
+      "type": "string"
     }
   ],
   "enumeratedTypes": [
@@ -246,33 +241,37 @@
       "eType": "TYPE_Gender",
       "values": [
         {
+          "val": 0,
+          "name": "MALE"
+        },
+        {
           "val": 1,
-          "name": "Female"
+          "name": "FEMALE"
         },
         {
           "val": 2,
-          "name": "Male"
-        },
-        {
-          "val": 3,
-          "name": "Other"
+          "name": "OTHER"
         }
       ]
     },
     {
-      "eType": "TYPE_HorseColor",
+      "eType": "TYPE_Color",
       "values": [
         {
+          "val": 0,
+          "name": "RED"
+        },
+        {
           "val": 1,
-          "name": "Black"
+          "name": "BLUE"
         },
         {
           "val": 2,
-          "name": "White"
+          "name": "GREEN"
         },
         {
           "val": 3,
-          "name": "Brown"
+          "name": "YELLOW"
         }
       ]
     }
