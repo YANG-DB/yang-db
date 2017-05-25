@@ -522,7 +522,7 @@ public class PromiseEdgeIndexAppenderTest{
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider((label, elementType) -> {
+        return new OntologySchemaProvider(ontology, (label, elementType) -> {
 
             if (elementType == ElementType.edge) {
                 switch(label){
@@ -570,7 +570,7 @@ public class PromiseEdgeIndexAppenderTest{
                 // must fail
                 return null;
             }
-        }, ontology);
+        });
     }
 
     private Ontology getOntology() {
