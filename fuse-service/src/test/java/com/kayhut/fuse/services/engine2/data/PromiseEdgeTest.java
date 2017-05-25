@@ -1,12 +1,15 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.google.common.collect.Lists;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -19,7 +22,11 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.client.Client;
-import org.junit.*;
+import org.joda.time.DateTime;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
@@ -213,21 +220,22 @@ public class PromiseEdgeTest{
 
         for(int i = 0 ; i < numRels ; i++) {
 
-            Map<String, Object> own = new HashedMap();
+            Map<String, Object> fire = new HashedMap();
 
-            own.put("id", "f" + i);
+            fire.put("id", "f" + i);
 
             Map<String, Object> entityA = new HashMap<>();
             entityA.put("id", "d" + r.nextInt(9));
-            own.put("entityA", entityA);
+            fire.put("entityA", entityA);
 
             Map<String, Object> entityB = new HashMap<>();
             entityB.put("id", "d" + r.nextInt(9));
-            own.put("entityB", entityB);
+            fire.put("entityB", entityB);
 
-            own.put("direction", "out");
+            fire.put("direction", "out");
+            fire.put("time", DateTime.now().toString());
 
-            ownDocs.add(own);
+            ownDocs.add(fire);
         }
         return ownDocs;
     }
