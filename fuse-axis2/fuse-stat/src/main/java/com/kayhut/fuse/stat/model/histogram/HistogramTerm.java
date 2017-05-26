@@ -25,19 +25,10 @@ public class HistogramTerm extends Histogram {
     public void setBuckets(List<BucketTerm> buckets) {
         this.buckets = buckets;
     }
-
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
     //endregion
 
     //region Fields
     private List<BucketTerm> buckets;
-    private DataType dataType;
     //endregion
 
     //region Builder

@@ -1,13 +1,16 @@
 package com.kayhut.fuse.stat.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.bucket.BucketTerm;
 import com.kayhut.fuse.stat.model.enums.DataType;
-import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
 import org.elasticsearch.action.bulk.BackoffPolicy;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -15,12 +18,12 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.Requests;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
@@ -218,7 +221,7 @@ public class EsUtil {
     }
 
     private static String buildAggName(String indexName, String typeName, String fieldName) {
-        return indexName + "_" + typeName + "_" + fieldName + "_" + "hist";
+        return String.format("%s_%s_%s_hist", indexName, typeName, fieldName);
     }
 
     public static void bulkIndexingFromFile(TransportClient client, String filePath, String index, String type) throws IOException {
@@ -273,35 +276,6 @@ public class EsUtil {
 
     }
 
-    public static void showTypeFieldsNames(TransportClient esClient, String indexName, String typeName) throws IOException {
-
-        ClusterState cs = esClient.admin().cluster().prepareState().setIndices(indexName).execute().actionGet().getState();
-        IndexMetaData imd = cs.getMetaData().index(indexName);
-        MappingMetaData mdd = imd.mapping(typeName);
-        Map<String, Object> map;
-        map = mdd.getSourceAsMap();
-        List<String> fieldList = getList("", map);
-        System.out.println("Field List:");
-        for (String field : fieldList) {
-            System.out.println(field);
-        }
-    }
-
-    private static List<String> getList(String fieldName, Map<String, Object> mapProperties) {
-        List<String> fieldList = new ArrayList<>();
-        Map<String, Object> map = (Map<String, Object>) mapProperties.get("properties");
-        Set<String> keys = map.keySet();
-        for (String key : keys) {
-            if (((Map<String, Object>) map.get(key)).containsKey("type")) {
-                fieldList.add(fieldName + "" + key);
-            } else {
-                List<String> tempList = getList(fieldName + "" + key + ".", (Map<String, Object>) map.get(key));
-                fieldList.addAll(tempList);
-            }
-        }
-        return fieldList;
-    }
-
     public static boolean checkIfEsIndexExists(Client client, String index) {
 
         IndexMetaData indexMetaData = client.admin().cluster()
@@ -328,11 +302,100 @@ public class EsUtil {
         return response.isExists();
     }
 
+    /**
+     * @param client
+     * @param indexName
+     * @param documentType
+     * @param id
+     * @return Elastic Document
+     */
     public static Optional<Map<String, Object>> getDocumentById(Client client, String indexName, String documentType, String id) {
         GetResponse r = client.get((new GetRequest(indexName, documentType, id))).actionGet();
         if (r != null && r.isExists()) {
             return Optional.ofNullable(r.getSourceAsMap());
         }
         return Optional.empty();
+    }
+
+    public static SearchResponse getAllDocuments(Client client, String index,
+                                                 String type) {
+        return client.prepareSearch(index).setTypes(type).execute()
+                .actionGet();
+    }
+
+    /**
+     * Return all the documents from a cluster.
+
+     * @param client
+     * @return
+     */
+    public static SearchResponse getAllDocuemnts(Client client) {
+        return client.prepareSearch().execute().actionGet();
+    }
+
+    /**
+     * Return all indices from cluster.
+     * @param client
+     * @return array of Indices
+     */
+    public static String[] getAllIndices(Client client) {
+        Set<String> indicesSet = client.admin().indices().stats(new IndicesStatsRequest())
+                .actionGet().getIndices().keySet();
+        return indicesSet.toArray(new String[indicesSet.size()]);
+    }
+
+    /**
+     * Return all mappings of given index
+     * @param client Elastic Client
+     * @param index Index Name
+     * @return
+     */
+    public static ImmutableOpenMap<String, MappingMetaData> getMappingsOfIndex(
+            Client client, String index) {
+        ClusterStateResponse clusterStateResponse = client.admin().cluster()
+                .prepareState().execute().actionGet();
+        return clusterStateResponse.getState().getMetaData().index(index)
+                .getMappings();
+    }
+
+    /**
+     * Get all types in given index
+     * @param client Elastic Client
+     * @param index Index Name
+     * @return array of Elastic types
+     */
+    public static String[] getAllTypesFromIndex(
+            Client client, String index) {
+        return getMappingsOfIndex(client, index).keys().toArray(String.class);
+    }
+
+    /**
+     * Index given document.
+     * @param client: Client used to index data
+     * @param index: Document is stored in this index
+     * @param type: Document stored in this type
+     * @param id: Specifies _id of the document
+     * @param document: Represents body of the document
+     * @return {@link IndexResponse}
+     */
+    public static IndexResponse indexData(Client client, String index,
+                                          String type, String id, String document) {
+        IndexResponse response = client.prepareIndex(index, type, id)
+                .setSource(document).execute().actionGet();
+        return response;
+    }
+
+    /**
+     * Index given object
+     * @param client: Client used to index data
+     * @param index: Document is stored in this index
+     * @param type: Document stored in this type
+     * @param id : Specifies id of the document
+     * @param obj: Object to index
+     * @return {@link IndexResponse}
+     */
+    public static IndexResponse indexData(Client client, String index,
+                                          String type, String id, Object obj) throws JsonProcessingException {
+        return indexData(client, index, type, id, new ObjectMapper().writeValueAsString(obj));
     }
 }

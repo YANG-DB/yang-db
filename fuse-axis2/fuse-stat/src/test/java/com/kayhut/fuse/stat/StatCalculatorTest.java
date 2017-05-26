@@ -8,6 +8,7 @@ import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.transport.TransportClient;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -22,7 +23,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class StatCalculatorTest {
 
-
     static TransportClient dataClient;
     static TransportClient statClient;
     static ElasticEmbeddedNode elasticEmbeddedNode;
@@ -33,7 +33,7 @@ public class StatCalculatorTest {
 
 
     //todo - add more tests, specially small unit tests per each case
-    //Full - blown test
+    //Full - blown test using Statistics configuration File
     @Test
     public void statCalculatorTest() throws Exception {
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
@@ -61,9 +61,8 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeTermName));
 
 
-        //Check if age stat numeric bucket exists (bucket #1: 10.0-20.0)
-        String docId1 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameAge  + "10.0" + "20.0");
-        assertEquals("vc8XbeyVJ7gfdxmfHSiOCQ==", docId1);
+        //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
+        String docId1 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameAge  + "10.0" + "19.0");
         assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeNumericName, docId1));
 
         //Check if address bucket exists (bucket #1 "abc" + "dzz")
@@ -130,8 +129,22 @@ public class StatCalculatorTest {
 
     }
 
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        if (statClient != null) {
+            statClient.close();
+            statClient = null;
+        }
 
+        if (dataClient != null) {
+            dataClient.close();
+            dataClient = null;
+        }
 
+        elasticEmbeddedNode.close();
+        Thread.sleep(4000);
+
+    }
 
 
 }

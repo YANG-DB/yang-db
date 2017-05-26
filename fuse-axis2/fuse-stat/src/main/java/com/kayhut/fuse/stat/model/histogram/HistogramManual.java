@@ -27,18 +27,10 @@ public class HistogramManual <T> extends Histogram {
         this.buckets = buckets;
     }
 
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
     //endregion
 
     //region Fields
     private List<BucketRange<T>> buckets;
-    private DataType dataType;
     //endregion
 
     //region Builder

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat.model.histogram;
 
+import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.enums.HistogramType;
 
 /**
@@ -78,6 +79,7 @@ public class HistogramNumeric extends Histogram {
             HistogramNumeric histogramNumeric = new HistogramNumeric();
             histogramNumeric.setMin(min);
             histogramNumeric.setMax(max);
+            histogramNumeric.setDataType(DataType.numeric);
             histogramNumeric.setNumOfBins(numOfBins);
             return histogramNumeric;
         }

@@ -19,14 +19,6 @@ public class HistogramComposite <T> extends Histogram {
 
     //region Getters & Setters
 
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
-
     public List<BucketRange<T>> getManualBuckets() {
         return manualBuckets;
     }
@@ -46,7 +38,6 @@ public class HistogramComposite <T> extends Histogram {
     //endregion
 
     //region Fields
-    private DataType dataType;
     private List<BucketRange<T>> manualBuckets;
     public Histogram autoBuckets;
     //endregion

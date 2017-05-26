@@ -192,6 +192,9 @@ public interface Statistics {
      */
     class BucketInfo<T extends Comparable<T>> {
 
+        public BucketInfo() {
+        }
+
         public BucketInfo(Long total, Long cardinality, T lowerBound, T higherBound) {
             this.total = total;
             this.cardinality = cardinality;

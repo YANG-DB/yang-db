@@ -225,13 +225,12 @@ public class StatUtil {
     }
 
     public static List<BucketRange<Double>> createNumericBuckets(double min, double max, int numOfBins) {
-        List<BucketRange<Double>> buckets = new ArrayList<>();
         double[] bucketsData = new double[numOfBins + 1];
         for (int i = 0; i <= numOfBins ; i++) {
             bucketsData[i] = min + i * (max - min) / (numOfBins);
         }
-
-        for (int i = 0; i < bucketsData.length; i++) {
+        List<BucketRange<Double>> buckets = new ArrayList<>();
+        for (int i = 0; i < bucketsData.length - 1; i++) {
             double start = bucketsData[i];
             double end = bucketsData[i + 1];
             BucketRange bucket = new BucketRange<>(start, end);

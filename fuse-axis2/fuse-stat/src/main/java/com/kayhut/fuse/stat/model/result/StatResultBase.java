@@ -8,7 +8,13 @@ public abstract class StatResultBase {
     public StatResultBase() {
     }
 
-    public StatResultBase(String index, String type, String field, String key, DataType dataType, long docCount, long cardinality) {
+    public StatResultBase(String index,
+                          String type,
+                          String field,
+                          String key,
+                          DataType dataType,
+                          long docCount,
+                          long cardinality) {
         this.index = index;
         this.type = type;
         this.field = field;

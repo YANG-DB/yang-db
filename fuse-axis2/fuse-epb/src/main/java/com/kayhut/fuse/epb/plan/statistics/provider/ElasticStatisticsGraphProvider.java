@@ -19,9 +19,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by benishue on 22-May-17.
@@ -117,7 +115,18 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         for (String index : indices) {
             totalCount += getTermBucketCount(index, docType, docType);
         }
-        return new Statistics.Cardinality(totalCount, 0);
+        return new Statistics.Cardinality(totalCount, 1);
+    }
+
+    private <T extends Comparable<T>> Statistics.HistogramStatistics<T> getCombinedStatResultsForType(String docType, Iterable<String> indices) {
+        List<Statistics.BucketInfo<T>> buckets = new ArrayList<>();
+        for (String index : indices) {
+            String docId = StatUtil.hashString(index + docType + "_type" + docType);
+            buckets.add(getTermStatBucket(docId));
+        }
+
+        Statistics.HistogramStatistics histogram = new Statistics.HistogramStatistics<>(buckets);
+        return Statistics.HistogramStatistics.<T>combine(Arrays.asList(histogram));
     }
 
     private long getTermBucketCount(String indexName, String docType, String term) {
@@ -138,9 +147,26 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 statConfig.getStatTermTypeName(),
                 docId);
         if (statDoc.isPresent()) {
-            count = (long) statDoc.get().get(statConfig.getStatCountFieldName());
+            count = ((Number) statDoc.get().get(statConfig.getStatCountFieldName())).longValue();
         }
         return count;
+    }
+
+
+    private <T extends Comparable<T>> Statistics.BucketInfo getTermStatBucket(String docId) {
+        Statistics.BucketInfo<T> bucketInfo = new Statistics.BucketInfo();
+        Optional<Map<String, Object>> statDoc = ElasticUtil.getDocumentById(
+                this.elasticClient,
+                statConfig.getStatIndexName(),
+                statConfig.getStatTermTypeName(),
+                docId);
+        if (statDoc.isPresent()) {
+            long count = ((Number) statDoc.get().get(statConfig.getStatCountFieldName())).longValue();
+            long cardinality = ((Number) statDoc.get().get(statConfig.getStatCardinalityFieldName())).longValue();
+            T term = (T) statDoc.get().get("term");
+            bucketInfo = new Statistics.BucketInfo(count, cardinality, term, term);
+        }
+        return bucketInfo;
     }
 
 

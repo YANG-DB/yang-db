@@ -45,11 +45,7 @@ public class StatCalculator {
             Configuration configuration = new StatConfiguration(args[0]).getInstance();
             dataClient = ClientProvider.getDataClient(configuration);
             statClient = ClientProvider.getStatClient(configuration);
-
-            statIndexName = configuration.getString("statistics.index.name");
-            statTypeNumericName = configuration.getString("statistics.type.numeric.name");
-            statTypeStringName = configuration.getString("statistics.type.string.name");
-            statTypeTermName = configuration.getString("statistics.type.term.name");
+            loadDefaultStatParameters(configuration);
 
             Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
 
@@ -232,7 +228,6 @@ public class StatCalculator {
         }
     }
 
-
     private static void populateBuckets(String statIndexName,
                                         String statTypeName,
                                         TransportClient statClient,
@@ -247,6 +242,12 @@ public class StatCalculator {
         ).populate();
     }
 
+    private static void loadDefaultStatParameters(Configuration configuration) {
+        statIndexName = configuration.getString("statistics.index.name");
+        statTypeNumericName = configuration.getString("statistics.type.numeric.name");
+        statTypeStringName = configuration.getString("statistics.type.string.name");
+        statTypeTermName = configuration.getString("statistics.type.term.name");
+    }
 
     private static boolean isValidNumberOfArguments(String[] args, Logger logger) {
         if (args.length != NUM_OF_ARGUMENTS) {

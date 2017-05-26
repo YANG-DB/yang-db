@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.enums.HistogramType;
 
 /**
@@ -33,9 +34,18 @@ public class Histogram {
     public HistogramType getHistogramType() {
         return histogramType;
     }
+
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
     //endregion
 
     //region Fields
     private HistogramType histogramType;
+    private DataType dataType;
     //endregion
 }
