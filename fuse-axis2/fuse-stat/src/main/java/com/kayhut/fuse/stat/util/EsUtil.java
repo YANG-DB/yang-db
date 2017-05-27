@@ -56,6 +56,16 @@ public class EsUtil {
         throw new IllegalAccessError("Utility class");
     }
 
+    /**
+     * @param client Elastic client
+     * @param indexName Elastic index name (e.g., index1)
+     * @param typeName Elastic type name (e.g., Dragon)
+     * @param fieldName Elastic field name
+     * @param min The lower bound of the left most range bucket
+     * @param max the upper bound of the right most range bucket
+     * @param numOfBins number of buckets
+     * @return List of range buckets with lower and upper bound
+     */
     public static List<StatRangeResult> getNumericHistogramResults(TransportClient client,
                                                                    String indexName,
                                                                    String typeName,
@@ -68,12 +78,12 @@ public class EsUtil {
         return getNumericBucketsStatResults(client, indexName, typeName, fieldName, buckets);
     }
 
-    public static List<StatRangeResult> getManualHistogramResults(TransportClient client,
+    public static <T> List<StatRangeResult> getManualHistogramResults(TransportClient client,
                                                                   String indexName,
                                                                   String typeName,
                                                                   String fieldName,
                                                                   DataType dataType,
-                                                                  List<BucketRange<?>> buckets) {
+                                                                  List<BucketRange<T>> buckets) {
 
         List<StatRangeResult> bucketStatResults = new ArrayList<>();
 

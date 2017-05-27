@@ -126,7 +126,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         }
 
         Statistics.HistogramStatistics histogram = new Statistics.HistogramStatistics<>(buckets);
-        return Statistics.HistogramStatistics.<T>combine(Arrays.asList(histogram));
+        return Statistics.HistogramStatistics.<T>combine(Collections.singletonList(histogram));
     }
 
     private long getTermBucketCount(String indexName, String docType, String term) {

@@ -12,6 +12,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,13 +25,33 @@ import static org.junit.Assert.assertTrue;
  */
 public class StatCalculatorTest {
 
-    static TransportClient dataClient;
-    static TransportClient statClient;
-    static ElasticEmbeddedNode elasticEmbeddedNode;
-    static Configuration configuration;
-    static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
-    static final int numOfDragonsInIndex1 = 1000;
-    static final int numOfDragonsInIndex2 = 555; //HAMSA HAMSA HAMSA
+    private static TransportClient dataClient;
+    private static TransportClient statClient;
+    private static ElasticEmbeddedNode elasticEmbeddedNode;
+    private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
+    private static final int NUM_OF_DRAGONS_IN_INDEX_1 = 1000;
+    private static final int NUM_OF_DRAGONS_IN_INDEX_2 = 555;
+    private static final String STAT_INDEX_NAME = "stat";
+    private static final String STAT_TYPE_NUMERIC_NAME = "bucketNumeric";
+    private static final String STAT_TYPE_STRING_NAME = "bucketString";
+    private static final String STAT_TYPE_TERM_NAME = "bucketTerm";
+    private static final String DATA_INDEX_NAME_1 = "index1";
+    private static final String DATA_INDEX_NAME_2 = "index2";
+    private static final String DATA_TYPE_NAME_1 = "dragon";
+    private static final String DATA_FIELD_NAME_AGE = "age";
+    private static final String DATA_FIELD_NAME_ADDRESS = "address";
+    private static final String DATA_FIELD_NAME_COLOR = "color";
+    private static final String DATA_FIELD_NAME_GENDER = "gender";
+    private static final String DATA_FIELD_NAME_TYPE = "_type";
+
+    private static final int DRAGON_MIN_AGE = 0;
+    private static final int DRAGON_MAX_AGE = 100;
+    private static final int DRAGON_ADDRESS_LENGTH = 20;
+    private static final int DRAGON_NAME_PREFIX_LENGTH = 10;
+    private static final List<String> DRAGON_COLORS =
+            Arrays.asList("red", "green", "yellow", "blue", "00", "11", "22", "33", "44", "55");
+    private static final List<String> DRAGON_GENDERS =
+            Arrays.asList("MALE", "FEMALE");
 
 
     //todo - add more tests, specially small unit tests per each case
@@ -39,71 +61,55 @@ public class StatCalculatorTest {
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
 
         //Check if Stat index created
-        String statIndexName = "stat";
-        String statTypeNumericName = "bucketNumeric";
-        String statTypeStringName = "bucketString";
-        String statTypeTermName = "bucketTerm";
-
-
-        String dataIndexName1 = "index1" ;
-        String dataIndexName2 = "index2" ;
-        String dataTypeName1 = "dragon";
-        String dataFieldNameAge = "age";
-        String dataFieldNameAddress = "address";
-        String dataFieldNameColor = "color";
-        String dataFieldNameGender = "gender";
-        String dataFieldNameType = "_type";
-
-
-        assertTrue(EsUtil.checkIfEsIndexExists(statClient, statIndexName ));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeNumericName));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeStringName));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient,statIndexName,statTypeTermName));
+        assertTrue(EsUtil.checkIfEsIndexExists(statClient, STAT_INDEX_NAME));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
 
 
         //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
-        String docId1 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameAge  + "10.0" + "19.0");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeNumericName, docId1));
+        String docId1 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_AGE + "10.0" + "19.0");
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME, docId1));
 
         //Check if address bucket exists (bucket #1 "abc" + "dzz")
-        String docId2 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameAddress  + "abc" + "dzz");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId2));
+        String docId2 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_ADDRESS + "abc" + "dzz");
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId2));
 
         //Check if color bucket exists (bucket with lower_bound: "grc", upper_bound: "grl")
-        String docId3 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameColor  + "grc" + "grl");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId3));
+        String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_COLOR + "grc" + "grl");
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3));
 
         //Check that the bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
-        Optional<Map<String, Object>> doc3Result = EsUtil.getDocumentById(statClient, statIndexName, statTypeStringName, docId3);
+        Optional<Map<String, Object>> doc3Result = EsUtil.getDocumentById(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3);
         assertTrue(doc3Result.isPresent());
-        assertEquals(1, (int)doc3Result.get().get("cardinality"));
+        assertEquals(1, (int) doc3Result.get().get("cardinality"));
 
         //Check that the manual bucket ("00", "11"] exists for the composite histogram
-        String docId4 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameColor  + "00" + "11");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, statIndexName, statTypeStringName, docId4));
+        String docId4 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_COLOR + "00" + "11");
+        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId4));
 
         //Check term buckets (Gender male) - cardinality should be 1
-        String docId5 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameGender  + "male");
-        Optional<Map<String, Object>> doc5Result = EsUtil.getDocumentById(statClient, statIndexName, statTypeTermName, docId5);
+        String docId5 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_GENDER + "male");
+        Optional<Map<String, Object>> doc5Result = EsUtil.getDocumentById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId5);
         assertTrue(doc5Result.isPresent());
-        assertEquals(1, (int)doc5Result.get().get("cardinality"));
-        //Since we have 1000 deagons (~0.5% should be males)
+        assertEquals(1, (int) doc5Result.get().get("cardinality"));
+        //Since we have 1000 dragons (~0.5% should be males)
         assertEquals(Double.valueOf(doc5Result.get().get("count").toString()),
-                numOfDragonsInIndex1/2.0, numOfDragonsInIndex1 * 0.1);
+                NUM_OF_DRAGONS_IN_INDEX_1 / 2.0, NUM_OF_DRAGONS_IN_INDEX_1 * 0.1);
 
         //Check that there are 1000 dragons in Index: "index1", Type: "dragon"
         //Cardinality should be 1
-        String docId6 = StatUtil.hashString(dataIndexName1 + dataTypeName1 + dataFieldNameType  + "dragon");
-        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentById(statClient, statIndexName, statTypeTermName, docId6);
+        String docId6 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_TYPE + "dragon");
+        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId6);
         assertTrue(doc6Result.isPresent());
-        assertEquals(1, (int)doc6Result.get().get("cardinality"));
-        assertEquals((int)doc6Result.get().get("count"), 1000);
+        assertEquals(1, (int) doc6Result.get().get("cardinality"));
+        assertEquals((int) doc6Result.get().get("count"), 1000);
     }
 
     @BeforeClass
     public static void setup() throws Exception {
 
-        configuration = new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance();
+        Configuration configuration = new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance();
 
         dataClient = ClientProvider.getDataClient(configuration);
         statClient = ClientProvider.getDataClient(configuration);
@@ -113,17 +119,29 @@ public class StatCalculatorTest {
 
         new ElasticDataPopulator(
                 dataClient,
-                "index1",
-                "dragon",
+                DATA_INDEX_NAME_1,
+                DATA_TYPE_NAME_1,
                 "id",
-                () -> StatTestUtil.createDragons(numOfDragonsInIndex1)).populate();
+                () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_1,
+                        DRAGON_MIN_AGE,
+                        DRAGON_MAX_AGE,
+                        DRAGON_NAME_PREFIX_LENGTH,
+                        DRAGON_COLORS,
+                        DRAGON_GENDERS,
+                        DRAGON_ADDRESS_LENGTH)).populate();
 
         new ElasticDataPopulator(
                 dataClient,
-                "index2",
-                "dragon",
+                DATA_INDEX_NAME_2,
+                DATA_TYPE_NAME_1,
                 "id",
-                () -> StatTestUtil.createDragons(numOfDragonsInIndex2)).populate();
+                () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_2,
+                        DRAGON_MIN_AGE,
+                        DRAGON_MAX_AGE,
+                        DRAGON_NAME_PREFIX_LENGTH,
+                        DRAGON_COLORS,
+                        DRAGON_GENDERS,
+                        DRAGON_ADDRESS_LENGTH)).populate();
 
         Thread.sleep(2000);
 

@@ -9,7 +9,10 @@ import java.util.*;
  */
 public class StatTestUtil {
 
-    public static String generateRandomString(int stringSize){
+
+    private static final Random rand = new Random();
+
+    public static String generateRandomString(int stringSize) {
         char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -20,18 +23,30 @@ public class StatTestUtil {
         return sb.toString();
     }
 
-    public static Iterable<Map<String, Object>> createDragons(int numDragons) {
-        Random r = new Random();
-        List<String> colors = Arrays.asList("red", "green", "yellow", "blue", "00" ,"11" ,"22" ,"33" ,"44" ,"55");
+    public static int randomInt(int a, int b) {
+        if ((b <= a) || ((long) b - a >= Integer.MAX_VALUE)) {
+            throw new IllegalArgumentException("invalid range: [" + a + ", " + b + "]");
+        }
+        return rand.nextInt((b + 1) - a) + a;
+    }
+
+    public static Iterable<Map<String, Object>> createDragons(int numDragons,
+                                                              int dragonMinAge,
+                                                              int dragonMaxAge,
+                                                              int dragonNamePrefixLength,
+                                                              List<String> dragonColors,
+                                                              List<String> dragonGenders,
+                                                              int dragonAddressLength
+    ) {
         List<Map<String, Object>> dragons = new ArrayList<>();
-        for(int i = 0 ; i < numDragons ; i++) {
+        for (int i = 0; i < numDragons; i++) {
             Map<String, Object> dragon = new HashedMap();
             dragon.put("id", Integer.toString(i));
-            dragon.put("name", StatTestUtil.generateRandomString(10) + " dragon" + i);
-            dragon.put("age", r.nextInt(100));
-            dragon.put("color", colors.get(r.nextInt(colors.size())));
-            dragon.put("gender", (r.nextBoolean() ? "MALE" : "FEMALE"));
-            dragon.put("address", StatTestUtil.generateRandomString(20));
+            dragon.put("name", StatTestUtil.generateRandomString(dragonNamePrefixLength) + "_dragon" + i);
+            dragon.put("age", randomInt(dragonMinAge, dragonMaxAge));
+            dragon.put("color", dragonColors.get(rand.nextInt(dragonColors.size())));
+            dragon.put("gender", dragonGenders.get(rand.nextInt(dragonGenders.size())));
+            dragon.put("address", StatTestUtil.generateRandomString(dragonAddressLength));
 
             dragons.add(dragon);
         }
