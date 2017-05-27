@@ -80,7 +80,7 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3));
 
         //Check that the bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
-        Optional<Map<String, Object>> doc3Result = EsUtil.getDocumentById(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3);
+        Optional<Map<String, Object>> doc3Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3);
         assertTrue(doc3Result.isPresent());
         assertEquals(1, (int) doc3Result.get().get("cardinality"));
 
@@ -90,7 +90,7 @@ public class StatCalculatorTest {
 
         //Check term buckets (Gender male) - cardinality should be 1
         String docId5 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_GENDER + "male");
-        Optional<Map<String, Object>> doc5Result = EsUtil.getDocumentById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId5);
+        Optional<Map<String, Object>> doc5Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId5);
         assertTrue(doc5Result.isPresent());
         assertEquals(1, (int) doc5Result.get().get("cardinality"));
         //Since we have 1000 dragons (~0.5% should be males)
@@ -100,7 +100,7 @@ public class StatCalculatorTest {
         //Check that there are 1000 dragons in Index: "index1", Type: "dragon"
         //Cardinality should be 1
         String docId6 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_TYPE + "dragon");
-        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId6);
+        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId6);
         assertTrue(doc6Result.isPresent());
         assertEquals(1, (int) doc6Result.get().get("cardinality"));
         assertEquals((int) doc6Result.get().get("count"), 1000);

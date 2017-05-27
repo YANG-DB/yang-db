@@ -23,13 +23,28 @@ public class StatTestUtil {
         return sb.toString();
     }
 
+    /**
+     * @param a
+     * @param b
+     * @return random number betwen [a, b]
+     */
     public static int randomInt(int a, int b) {
         if ((b <= a) || ((long) b - a >= Integer.MAX_VALUE)) {
-            throw new IllegalArgumentException("invalid range: [" + a + ", " + b + "]");
+            throw new IllegalArgumentException(String.format("Invalid range: [%d, %d]", a, b));
         }
         return rand.nextInt((b + 1) - a) + a;
     }
 
+    /**
+     * @param numDragons
+     * @param dragonMinAge
+     * @param dragonMaxAge
+     * @param dragonNamePrefixLength
+     * @param dragonColors
+     * @param dragonGenders
+     * @param dragonAddressLength
+     * @return Dragon documents with sequential id [0..numOfDragons)
+     */
     public static Iterable<Map<String, Object>> createDragons(int numDragons,
                                                               int dragonMinAge,
                                                               int dragonMaxAge,

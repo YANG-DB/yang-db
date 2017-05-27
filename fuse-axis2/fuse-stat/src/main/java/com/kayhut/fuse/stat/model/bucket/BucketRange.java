@@ -3,7 +3,7 @@ package com.kayhut.fuse.stat.model.bucket;
 /**
  * Created by benishue on 30-Apr-17.
  */
-public class BucketRange <T>  extends Bucket {
+public class BucketRange<T> extends Bucket {
 
     //region Ctrs
     public BucketRange() {

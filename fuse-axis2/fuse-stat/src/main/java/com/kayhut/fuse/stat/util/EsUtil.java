@@ -64,7 +64,7 @@ public class EsUtil {
      * @param min The lower bound of the left most range bucket
      * @param max the upper bound of the right most range bucket
      * @param numOfBins number of buckets
-     * @return List of range buckets with lower and upper bound
+     * @return List of numeric range buckets with lower (inclusive) and upper bound (exclusive)
      */
     public static List<StatRangeResult> getNumericHistogramResults(TransportClient client,
                                                                    String indexName,
@@ -146,6 +146,14 @@ public class EsUtil {
         return bucketStatResults;
     }
 
+    /**
+     * @param client Elastic client
+     * @param indexName Elastic index name (e.g., index1)
+     * @param typeName Elastic type name (e.g., Dragon)
+     * @param fieldName Elastic field name (e.g., Address)
+     * @param buckets - String buckets ["str1", "str2")
+     * @return List of String range buckets with lower (inclusive) and upper bound (exclusive)
+     */
     public static List<StatRangeResult> getStringBucketsStatResults(TransportClient client,
                                                                     String indexName,
                                                                     String typeName,
@@ -317,12 +325,24 @@ public class EsUtil {
      * @param indexName
      * @param documentType
      * @param id
-     * @return Elastic Document
+     * @return Elastic source document (As a map)
      */
-    public static Optional<Map<String, Object>> getDocumentById(Client client, String indexName, String documentType, String id) {
-        GetResponse r = client.get((new GetRequest(indexName, documentType, id))).actionGet();
+    public static Optional<Map<String, Object>> getDocumentSourceById(Client client, String indexName, String documentType, String id) {
+        GetResponse r = getGetResponse(client, indexName, documentType, id);
         if (r != null && r.isExists()) {
             return Optional.ofNullable(r.getSourceAsMap());
+        }
+        return Optional.empty();
+    }
+
+    private static GetResponse getGetResponse(Client client, String indexName, String documentType, String id) {
+        return client.get((new GetRequest(indexName, documentType, id))).actionGet();
+    }
+
+    public static Optional<String> getDocumentTypeByDocId(Client client, String indexName, String documentType, String docId) {
+        GetResponse r = getGetResponse(client, indexName, documentType, docId);
+        if (r != null && r.isExists()) {
+            return Optional.ofNullable(r.getType());
         }
         return Optional.empty();
     }

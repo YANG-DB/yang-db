@@ -85,7 +85,7 @@ public class ElasticStatisticsGraphProviderTest {
 
         //Check that the bucket term exists (the bucket is calculated on the field _type which is value is 'Dragon')
         String docId = StatUtil.hashString(VERTEX_INDICES.get(0) + DRAGON_TYPE_NAME + "_type"  + DRAGON_TYPE_NAME);
-        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentById(statClient, STAT_INDEX_NAME, STAT_TERM_TYPE_NAME, docId);
+        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TERM_TYPE_NAME, docId);
         assertTrue(doc6Result.isPresent());
 
         assertEquals(1, (int)doc6Result.get().get(STAT_CARDINALITY_FIELD_NAME));

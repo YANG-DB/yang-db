@@ -3,8 +3,10 @@ package com.kayhut.fuse.stat;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
+import com.kayhut.fuse.stat.model.bucket.BucketTerm;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
+import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
@@ -17,9 +19,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -32,6 +32,7 @@ public class EsUtilTest {
     private static TransportClient dataClient;
     private static TransportClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
+    private static Iterable<Map<String, Object>> dragonsList;
 
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
     private static final int NUM_OF_DRAGONS_IN_INDEX = 1000;
@@ -54,11 +55,11 @@ public class EsUtilTest {
     private static final List<String> DRAGON_COLORS =
             Arrays.asList("red", "green", "yellow", "blue");
     private static final List<String> DRAGON_GENDERS =
-            Arrays.asList("MALE", "FEMALE");
+            Arrays.asList("male", "female");
 
 
     @Test
-    public void getNumericHistogramResults() throws Exception {
+    public void getNumericHistogramResultsTest() throws Exception {
         final int numOfBins = 10;
         final double min = DRAGON_MIN_AGE;
         final double max = DRAGON_MAX_AGE;
@@ -92,18 +93,41 @@ public class EsUtilTest {
         Selecting random bin and checking that the number  of elements
         in the bucket is approximately ~ NumOfDragons/NumOfBuckets
         */
-        StatRangeResult statRangeResult = numericHistogramResults.get(new Random().nextInt(numericHistogramResults.size()));
-        assertEquals(statRangeResult.getDocCount(), NUM_OF_DRAGONS_IN_INDEX / numOfBins, NUM_OF_DRAGONS_IN_INDEX * 0.2);
-
+        for (int i = 0; i < 10; i++) {
+            StatRangeResult statRangeResult = numericHistogramResults.get(new Random().nextInt(numericHistogramResults.size()));
+            assertEquals(statRangeResult.getDocCount(), NUM_OF_DRAGONS_IN_INDEX / numOfBins, NUM_OF_DRAGONS_IN_INDEX * 0.2);
+        }
     }
 
     @Test
-    public void getManualHistogramResults() throws Exception {
+    public void getManualHistogramResultsTest() throws Exception {
+        BucketRange bucketRange_1dot0_TO_1dot5 = new BucketRange(1.0, 1.5);
         List<BucketRange<Double>> manualBuckets = Arrays.asList(
-                new BucketRange<>(1.0, 1.5),
+                bucketRange_1dot0_TO_1dot5,
                 new BucketRange<>(1.5, 2.0),
                 new BucketRange<>(2.0, 2.5)
         );
+
+        StatRangeResult statRangeResult_1dot0_TO_1dot5 = new StatRangeResult(DATA_INDEX_NAME,
+                DATA_TYPE_NAME,
+                DATA_FIELD_NAME_AGE,
+                "don't care",
+                DataType.numeric,
+                bucketRange_1dot0_TO_1dot5.getStart(),
+                bucketRange_1dot0_TO_1dot5.getEnd(),
+                0,
+                0);
+
+        dragonsList.forEach(dragon -> {
+            double age = ((Number) dragon.get(DATA_FIELD_NAME_AGE)).doubleValue();
+            double lowerBoundFirstBucket = ((Number) bucketRange_1dot0_TO_1dot5.getStart()).doubleValue();
+            double upperBoundFirstBucket = ((Number) bucketRange_1dot0_TO_1dot5.getEnd()).doubleValue();
+
+            if (age >= lowerBoundFirstBucket && age < upperBoundFirstBucket) {
+                statRangeResult_1dot0_TO_1dot5.setDocCount(statRangeResult_1dot0_TO_1dot5.getDocCount() + 1);
+            }
+        });
+
         List<StatRangeResult> manualHistogramResults = EsUtil.getManualHistogramResults(dataClient,
                 DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
@@ -111,36 +135,104 @@ public class EsUtilTest {
                 DataType.numeric,
                 manualBuckets);
         assertEquals(manualBuckets.size(), manualHistogramResults.size());
-    }
 
-    @Test
-    public void getStringBucketsStatResults() throws Exception {
+        assertEquals(statRangeResult_1dot0_TO_1dot5.getDocCount(), manualHistogramResults.get(0).getDocCount());
 
     }
 
     @Test
-    public void getTermHistogramResults() throws Exception {
+    public void getStringBucketsStatResultsTest() throws Exception {
+        BucketRange<String> stringBucketRange_A_TO_B = new BucketRange<>("a", "b");
+        List<BucketRange<String>> stringBuckets = Arrays.asList(
+                stringBucketRange_A_TO_B,
+                new BucketRange<>("c", "d"));
+        StatRangeResult statRangeResult_A_TO_B = new StatRangeResult(DATA_INDEX_NAME,
+                DATA_TYPE_NAME,
+                DATA_FIELD_NAME_ADDRESS,
+                "don't care",
+                DataType.string,
+                stringBucketRange_A_TO_B.getStart(),
+                stringBucketRange_A_TO_B.getEnd(),
+                0,
+                0);
+
+
+        List<StatRangeResult> stringBucketsStatResults = EsUtil.getStringBucketsStatResults(dataClient,
+                DATA_INDEX_NAME,
+                DATA_TYPE_NAME,
+                DATA_FIELD_NAME_ADDRESS,
+                stringBuckets);
+
+        dragonsList.forEach(dragon -> {
+            String address = dragon.get(DATA_FIELD_NAME_ADDRESS).toString();
+            if (address.startsWith("a")) {
+                statRangeResult_A_TO_B.setDocCount(statRangeResult_A_TO_B.getDocCount() + 1);
+            }
+        });
+        assertEquals(stringBuckets.size(), stringBucketsStatResults.size());
+        assertEquals(statRangeResult_A_TO_B.getDocCount(), stringBucketsStatResults.get(0).getDocCount());
+    }
+
+
+    @Test
+    public void getTermHistogramResultsTest() throws Exception {
+        String randomGender = DRAGON_GENDERS.get(StatTestUtil.randomInt(0, DRAGON_GENDERS.size() - 1));
+        BucketTerm bucketTerm = new BucketTerm(randomGender);
+        List<StatTermResult> termHistogramResults = EsUtil.getTermHistogramResults(dataClient,
+                DATA_INDEX_NAME,
+                DATA_TYPE_NAME,
+                DATA_FIELD_NAME_GENDER,
+                DataType.string,
+                Collections.singletonList(bucketTerm)
+        );
+
+        //We have only one bucket
+        assertEquals(1, termHistogramResults.size());
+        //We should get proportional (~equal) docCount for each gender
+        assertEquals(NUM_OF_DRAGONS_IN_INDEX / DRAGON_GENDERS.size(),
+                termHistogramResults.get(0).getDocCount(),
+                NUM_OF_DRAGONS_IN_INDEX * 0.05);
+    }
+
+    @Test
+    public void checkIfEsIndexExistsTest() throws Exception {
+        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME));
+    }
+
+    @Test
+    public void checkIfEsTypeExistsTest() throws Exception {
+        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME, DATA_TYPE_NAME));
 
     }
 
     @Test
-    public void checkIfEsIndexExists() throws Exception {
-
+    public void checkIfEsDocExistsTest() throws Exception {
+        assertTrue(EsUtil.checkIfEsDocExists(dataClient,
+                DATA_INDEX_NAME,
+                DATA_TYPE_NAME,
+                Integer.toString(StatTestUtil.randomInt(0, NUM_OF_DRAGONS_IN_INDEX - 1))
+        ));
     }
 
     @Test
-    public void checkIfEsTypeExists() throws Exception {
-
+    public void getDocumentByIdTest() throws Exception {
+        for (int i = 0; i < NUM_OF_DRAGONS_IN_INDEX; i++) {
+            Optional<Map<String, Object>> documentById = EsUtil.getDocumentSourceById(dataClient, DATA_INDEX_NAME, DATA_TYPE_NAME, Integer.toString(i));
+            assertTrue(documentById.isPresent());
+        }
     }
 
     @Test
-    public void checkIfEsDocExists() throws Exception {
+    public void getDocumentTypeByDocIdTest() throws Exception {
+        for (int i = 0; i < NUM_OF_DRAGONS_IN_INDEX; i++) {
+            Optional<String> documentTypeByDocId = EsUtil.getDocumentTypeByDocId(dataClient
+                    , DATA_INDEX_NAME,
+                    DATA_TYPE_NAME,
+                    Integer.toString(i));
 
-    }
-
-    @Test
-    public void getDocumentById() throws Exception {
-
+            assertTrue(documentTypeByDocId.isPresent());
+            assertEquals(DATA_TYPE_NAME, documentTypeByDocId.get());
+        }
     }
 
     @BeforeClass
@@ -152,6 +244,14 @@ public class EsUtilTest {
         statClient = ClientProvider.getDataClient(configuration);
         elasticEmbeddedNode = new ElasticEmbeddedNode();
 
+        dragonsList = StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
+                DRAGON_MIN_AGE,
+                DRAGON_MAX_AGE,
+                DRAGON_NAME_PREFIX_LENGTH,
+                DRAGON_COLORS,
+                DRAGON_GENDERS,
+                DRAGON_ADDRESS_LENGTH);
+
         Thread.sleep(4000);
 
         new ElasticDataPopulator(
@@ -159,14 +259,8 @@ public class EsUtilTest {
                 DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
                 "id",
-                () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
-                        DRAGON_MIN_AGE,
-                        DRAGON_MAX_AGE,
-                        DRAGON_NAME_PREFIX_LENGTH,
-                        DRAGON_COLORS,
-                        DRAGON_GENDERS,
-                        DRAGON_ADDRESS_LENGTH
-                )).populate();
+                () -> dragonsList
+        ).populate();
 
         Thread.sleep(2000);
 

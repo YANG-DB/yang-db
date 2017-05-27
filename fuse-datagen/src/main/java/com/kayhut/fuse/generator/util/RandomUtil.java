@@ -138,7 +138,7 @@ public class RandomUtil {
      */
     public static int randomInt(int a, int b) {
         if ((b <= a) || ((long) b - a >= Integer.MAX_VALUE)) {
-            throw new IllegalArgumentException("invalid range: [" + a + ", " + b + "]");
+            throw new IllegalArgumentException(String.format("Invalid range: [%d, %d]", a, b));
         }
         return rand.nextInt((b + 1) - a) + a;
     }
@@ -154,7 +154,7 @@ public class RandomUtil {
      */
     public static int uniform(int a, int b) {
         if ((b <= a) || ((long) b - a >= Integer.MAX_VALUE)) {
-            throw new IllegalArgumentException("invalid range: [" + a + ", " + b + "]");
+            throw new IllegalArgumentException(String.format("Invalid range: [%d, %d]", a, b));
         }
         return a + uniform(b - a);
     }
@@ -169,7 +169,7 @@ public class RandomUtil {
      */
     public static double uniform(double a, double b) {
         if (!(a < b)) {
-            throw new IllegalArgumentException("invalid range: [" + a + ", " + b + "]");
+            throw new IllegalArgumentException(String.format("Invalid range: [%s, %s]", a, b));
         }
         return a + uniform() * (b - a);
     }
@@ -182,7 +182,7 @@ public class RandomUtil {
      * @throws IllegalArgumentException if {@code n <= 0}
      */
     public static int uniform(int n) {
-        if (n <= 0) throw new IllegalArgumentException("argument must be positive");
+        if (n <= 0) throw new IllegalArgumentException("Argument must be positive");
         return rand.nextInt(n);
     }
 
@@ -207,7 +207,7 @@ public class RandomUtil {
      */
     public static int geometric(double p) {
         if (!(p >= 0.0 && p <= 1.0)) {
-            throw new IllegalArgumentException("probability p must be between 0.0 and 1.0");
+            throw new IllegalArgumentException("Probability p must be between 0.0 and 1.0");
         }
         // using algorithm given by Knuth
         return (int) Math.ceil(Math.log(uniform()) / Math.log(1.0 - p));
@@ -224,7 +224,7 @@ public class RandomUtil {
      */
     public static boolean bernoulli(double p) {
         if (!(p >= 0.0 && p <= 1.0))
-            throw new IllegalArgumentException("probability p must be between 0.0 and 1.0");
+            throw new IllegalArgumentException("Probability p must be between 0.0 and 1.0");
         return uniform() < p;
     }
 
@@ -248,9 +248,9 @@ public class RandomUtil {
      */
     public static int poisson(double lambda) {
         if (!(lambda > 0.0))
-            throw new IllegalArgumentException("lambda must be positive");
+            throw new IllegalArgumentException("Lambda must be positive");
         if (Double.isInfinite(lambda))
-            throw new IllegalArgumentException("lambda must not be infinite");
+            throw new IllegalArgumentException("Lambda must not be infinite");
         // using algorithm given by Knuth
         // see http://en.wikipedia.org/wiki/Poisson_distribution
         int k = 0;
@@ -274,7 +274,7 @@ public class RandomUtil {
      */
     public static double exp(double lambda) {
         if (!(lambda > 0.0))
-            throw new IllegalArgumentException("lambda must be positive");
+            throw new IllegalArgumentException("Lambda must be positive");
         return -Math.log(1 - uniform()) / lambda;
     }
 
@@ -285,7 +285,7 @@ public class RandomUtil {
      * @throws IllegalArgumentException if {@code a} is {@code null}
      */
     public static void shuffle(double[] a) {
-        if (a == null) throw new IllegalArgumentException("argument array is null");
+        if (a == null) throw new IllegalArgumentException("Argument array is null");
         int n = a.length;
         for (int i = 0; i < n; i++) {
             int r = i + uniform(n-i);     // between i and n-1
@@ -302,7 +302,7 @@ public class RandomUtil {
      * @throws IllegalArgumentException if {@code a} is {@code null}
      */
     public static void shuffle(int[] a) {
-        if (a == null) throw new IllegalArgumentException("argument array is null");
+        if (a == null) throw new IllegalArgumentException("Argument array is null");
         int n = a.length;
         for (int i = 0; i < n; i++) {
             int r = i + uniform(n-i);     // between i and n-1
