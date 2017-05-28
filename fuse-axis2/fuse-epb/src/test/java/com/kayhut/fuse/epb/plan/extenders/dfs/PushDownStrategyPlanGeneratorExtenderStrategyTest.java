@@ -1,16 +1,16 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.extenders.PushDownSplitFilterPlanExtensionStrategy;
-import com.kayhut.fuse.executor.uniGraphProvider.GraphLayoutProviderFactory;
-import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
+import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
+import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
+import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -22,9 +22,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
+import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
 import static com.kayhut.fuse.model.query.ConstraintOp.eq;
@@ -132,16 +135,18 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
     //region Private Methods
     private AsgQuery query1() {
         return AsgQuery.Builder.start("name", "ont" )
-                .next(typed(1, 1))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(concrete(3, "123", 2, "B", "tag"))
+                .next(typed(1, PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                .next(concrete(3, "123", DRAGON.type, "B", "tag"))
                 .build();
     }
 
     private AsgQuery query2() {
         return AsgQuery.Builder.start("name", "ont")
-                .next(typed(1,  1))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                .next(typed(1,  PERSON.type))
+                .next(rel(2, OWN.getrType(), R)
+                        .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(typed(3,  2))
                 .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))

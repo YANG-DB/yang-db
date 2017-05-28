@@ -19,6 +19,9 @@ import org.mockito.Mockito;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
+import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
+import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
@@ -62,7 +65,9 @@ public class EBaseStatisticsProviderIndicesTests {
         indexProvider = Mockito.mock(PhysicalIndexProvider.class);
         List<String> indices = Arrays.asList(String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime - 60*60*1000))),
                                              String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime))));
-        when(indexProvider.getIndexPartitionByLabel(eq("memberOf"), eq(ElementType.edge))).thenReturn(new TimeSeriesIndexPartition() {
+
+        when(indexProvider.getIndexPartitionByLabel(any(), eq(ElementType.edge)))
+                .thenReturn(new TimeSeriesIndexPartition() {
             @Override
             public String getDateFormat() {
                 return DATE_FORMAT_STRING;
@@ -96,7 +101,7 @@ public class EBaseStatisticsProviderIndicesTests {
 
 
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
-        RelationshipType relation2 = ont.$relation$(2);
+        RelationshipType relation2 = ont.$relation$(OWN.getrType());
         relation2.addProperty(1);
 
         graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), indexProvider);
@@ -164,10 +169,10 @@ public class EBaseStatisticsProviderIndicesTests {
     @Test
     public void eRelDateGtFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType("8");
+        prop.setpType(Integer.toString(START_DATE.type));
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date(nowTime));
         constraint.setOp(ConstraintOp.gt);
@@ -182,10 +187,10 @@ public class EBaseStatisticsProviderIndicesTests {
     @Test
     public void eRelDateRangeFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType("8");
+        prop.setpType(Integer.toString(START_DATE.type));
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.inRange);
@@ -202,10 +207,10 @@ public class EBaseStatisticsProviderIndicesTests {
     @Test
     public void eRelDateInSetFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType("8");
+        prop.setpType(Integer.toString(START_DATE.type));
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.inSet);
@@ -222,10 +227,10 @@ public class EBaseStatisticsProviderIndicesTests {
     @Test
     public void eRelDateNotInSetFilterSingleIndexHistogramTest() {
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType("8");
+        prop.setpType(Integer.toString(START_DATE.type));
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.notInSet);
@@ -241,7 +246,7 @@ public class EBaseStatisticsProviderIndicesTests {
     @Test
     public void eRelStringGtFilterHistogramTest() {
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
         prop.setpType("1");
@@ -259,10 +264,10 @@ public class EBaseStatisticsProviderIndicesTests {
     @Test
     public void eRelStringGtFilterWithDateFilterHistogramTest() {
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType(OWN.getrType());
 
         RelProp dateProp = new RelProp();
-        dateProp.setpType("8");
+        dateProp.setpType(Integer.toString(START_DATE.type));
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date(nowTime));
         constraint.setOp(ConstraintOp.gt);
@@ -283,10 +288,10 @@ public class EBaseStatisticsProviderIndicesTests {
     @Test
     public void eRelStringGtFilterWithDateRangeFilterHistogramTest() {
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType(OWN.getrType());
 
         RelProp dateProp = new RelProp();
-        dateProp.setpType("8");
+        dateProp.setpType(Integer.toString(START_DATE.type));
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-60*1000),new Date(nowTime+60*1000)));
         constraint.setOp(ConstraintOp.inRange);

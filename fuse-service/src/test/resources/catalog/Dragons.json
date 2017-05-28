@@ -1,25 +1,179 @@
 {
   "ont": "Dragons",
-  "enumeratedTypes": [{
-    "eType": "TYPE_Gender",
-    "values": [{
-      "val": 1,
-      "name": "Female"
+  "entityTypes": [
+    {
+      "eType": 1,
+      "name": "Person",
+      "properties": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
     },
-      {
-        "val": 2,
-        "name": "Male"
-      },
-      {
-        "val": 3,
-        "name": "Other"
-      }]
-  }],
-  "properties": [{
-    "pType": 1,
-    "name": "firstName",
-    "type": "string"
-  },
+    {
+      "eType": 3,
+      "name": "Horse",
+      "properties": [
+        7,
+        3
+      ]
+    },
+    {
+      "eType": 2,
+      "name": "Dragon",
+      "properties": [
+        7,
+        3,
+        8
+      ]
+    },
+    {
+      "eType": 5,
+      "name": "Kingdom",
+      "properties": [
+        7
+      ]
+    },
+    {
+      "eType": 4,
+      "name": "Guild",
+      "properties": [
+        7
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": 107,
+      "name": "registered",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 4,
+          "eTypeB": 5
+        },
+        {
+          "eTypeA": 2,
+          "eTypeB": 4
+        },
+        {
+          "eTypeA": 3,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 106,
+      "name": "subject",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 5
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 105,
+      "name": "origin",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 5
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 104,
+      "name": "freeze",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        9,
+        10,
+        11
+      ]
+    },
+    {
+      "rType": 103,
+      "name": "fire",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    {
+      "rType": 102,
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
+    {
+      "rType": 101,
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 2
+        },
+        {
+          "eTypeA": 1,
+          "eTypeB": 3
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": 1,
+      "name": "firstName",
+      "type": "string"
+    },
     {
       "pType": 2,
       "name": "lastName",
@@ -52,17 +206,17 @@
       "type": "string"
     },
     {
-      "pType": 8,
+      "pType": 9,
       "name": "startDate",
       "type": "date"
     },
     {
-      "pType": 9,
+      "pType": 10,
       "name": "endDate",
       "type": "date"
     },
     {
-      "pType": 10,
+      "pType": 12,
       "name": "timestamp",
       "type": "date"
     },
@@ -72,66 +226,54 @@
       "type": "int"
     },
     {
-      "pType": 2147483646,
-      "name": "type",
-      "type": "string"
-    },
-    {
       "pType": 2147483647,
       "name": "id",
       "type": "string"
-    }],
-  "entityTypes": [{
-    "eType": 1,
-    "name": "Person",
-    "properties": [1,
-      2,
-      3,
-      4,
-      5,
-      6]
-  },
-    {
-      "eType": 2,
-      "name": "Dragon",
-      "properties": [7]
     },
     {
-      "eType": 4,
-      "name": "Guild",
-      "properties": [7]
-    }],
-  "relationshipTypes": [{
-    "rType": 1,
-    "name": "Own",
-    "directional": true,
-    "ePairs": [{
-      "eTypeA": 1,
-      "eTypeB": 2
-    }],
-    "properties": [8,
-      9]
-  },
+      "pType": 2147483646,
+      "name": "type",
+      "type": "string"
+    }
+  ],
+  "enumeratedTypes": [
     {
-      "rType": 2,
-      "name": "MemberOf",
-      "directional": true,
-      "ePairs": [{
-        "eTypeA": 1,
-        "eTypeB": 4
-      }],
-      "properties": [8,
-        9]
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 0,
+          "name": "MALE"
+        },
+        {
+          "val": 1,
+          "name": "FEMALE"
+        },
+        {
+          "val": 2,
+          "name": "OTHER"
+        }
+      ]
     },
     {
-      "rType": 3,
-      "name": "Fire",
-      "directional": true,
-      "ePairs": [{
-        "eTypeA": 2,
-        "eTypeB": 2
-      }],
-      "properties": [10, 11]
+      "eType": "TYPE_Color",
+      "values": [
+        {
+          "val": 0,
+          "name": "RED"
+        },
+        {
+          "val": 1,
+          "name": "BLUE"
+        },
+        {
+          "val": 2,
+          "name": "GREEN"
+        },
+        {
+          "val": 3,
+          "name": "YELLOW"
+        }
+      ]
     }
   ]
 }

@@ -8,7 +8,6 @@ import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.cost.CostEstimator;
 import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1DfsNonRedundantPlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -28,7 +27,7 @@ public class EpbDfsNonRedundantModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost>>(){})
+        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})

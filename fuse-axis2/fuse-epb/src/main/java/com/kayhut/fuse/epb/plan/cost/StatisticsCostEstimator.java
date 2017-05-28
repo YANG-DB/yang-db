@@ -2,13 +2,17 @@ package com.kayhut.fuse.epb.plan.cost;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
+import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -25,7 +29,7 @@ import static com.kayhut.fuse.model.execution.plan.Plan.contains;
 /**
  * Created by moti on 01/04/2017.
  */
-public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost> {
+public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost, AsgQuery> {
     public enum StatisticsCostEstimatorPatterns {
         //option2
         FULL_STEP("^(?<" + ENTITY_ONE.value + ">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
@@ -34,8 +38,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         //option 1
         SINGLE_MODE("^(?<" + ENTITY_ONLY.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_ONLY_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
         //option 3 And node
-        AND_MODE("^(?<" + AND_MODE_ENTITY_ONE.value+">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + AND_MODE_OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
-                "(?<" + AND_MODE_ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + AND_MODE_OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
+        GOTO_MODE("^(?<" + GOTO_ENTITY.value+">" + GoToEntityOp.class.getSimpleName() + ")" + ":" +
+                "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
+                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
         private String pattern;
         private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
@@ -70,10 +75,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         OPTIONAL_REL_FILTER("optionalRelFilter"),
         ENTITY_ONLY("entityOnly"),
         OPTIONAL_ENTITY_ONLY_FILTER("optionalEntityOnlyFilter"),
-        AND_MODE_ENTITY_ONE("andEntityOne"),
-        AND_MODE_OPTIONAL_ENTITY_ONE_FILTER("andOptionalEntityOneFilter"),
-        AND_MODE_ENTITY_TWO("andEntityTwo"),
-        AND_MODE_OPTIONAL_ENTITY_TWO_FILTER("andOptionalEntityTwoFilter");
+        GOTO_ENTITY("gotoEntity");
 
         private String value;
 
@@ -90,25 +92,25 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         }
     }
 
-    private StatisticsProvider statisticsProvider;
-    private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology.Accessor ont;
+    private StatisticsProviderFactory statisticsProviderFactory;
+    private OntologyProvider ontologyProvider;
     private StepEstimator estimator;
 
     @Inject
     public StatisticsCostEstimator(
-            StatisticsProvider statisticsProvider,
-            GraphElementSchemaProvider graphElementSchemaProvider,
-            Ontology.Accessor ont,
-            StepEstimator estimator) {
-        this.statisticsProvider = statisticsProvider;
-        this.graphElementSchemaProvider = graphElementSchemaProvider;
-        this.ont = ont;
+            StatisticsProviderFactory statisticsProviderFactory,
+            StepEstimator estimator,
+            OntologyProvider ontologyProvider) {
+        this.statisticsProviderFactory = statisticsProviderFactory;
         this.estimator = estimator;
+        this.ontologyProvider = ontologyProvider;
     }
 
     @Override
-    public PlanWithCost<Plan, PlanDetailedCost> estimate(Plan plan, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public PlanWithCost<Plan, PlanDetailedCost> estimate(
+            Plan plan,
+            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
+            AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
         List<PlanOpBase> step = plan.getOps();
         if (previousCost.isPresent()) {
@@ -122,6 +124,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
                 Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
+                StatisticsProvider statisticsProvider = statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get());
                 StepEstimator.StepEstimatorResult result = estimator.calculate(statisticsProvider, map, pattern, previousCost);
                 newPlan = buildNewPlan(result, previousCost);
                 break;
@@ -135,7 +138,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         List<PlanOpWithCost<Cost>> planOpWithCosts;
         if (previousCost.isPresent()) {
             completePlanCost.set(previousCost.get().getCost().getGlobalCost());
-            planOpWithCosts = Lists.newArrayList(previousCost.get().getCost().getOpCosts());
+            planOpWithCosts = Stream.ofAll(previousCost.get().getCost().getOpCosts()).map(c -> new PlanOpWithCost<>(c.getCost(), c.peek(), c.getOpBase())).toJavaList();
         } else {
             completePlanCost.set(new Cost(0));
             planOpWithCosts = new ArrayList<>();

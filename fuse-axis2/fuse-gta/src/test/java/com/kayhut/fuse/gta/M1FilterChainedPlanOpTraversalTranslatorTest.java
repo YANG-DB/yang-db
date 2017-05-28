@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta;
 
-import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
+import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.gta.strategy.M1FilterPlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;

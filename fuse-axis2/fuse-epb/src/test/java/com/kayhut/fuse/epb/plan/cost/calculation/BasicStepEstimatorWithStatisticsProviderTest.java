@@ -8,6 +8,8 @@ import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.tests.GraphStatisticsProviderMock;
 import com.kayhut.fuse.epb.tests.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
+import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
@@ -32,6 +34,7 @@ import java.util.Optional;
 
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
+import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -118,9 +121,12 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
     @Test
     public void calculateFullStepNotNull() throws Exception {
         BasicStepEstimator estimator = new BasicStepEstimator(1, 0.001);
-        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, 4)
-                .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
-                .rel(out, 1, 100).relFilter(0.6,11,"5",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, 5).entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
+        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, PERSON.type)
+                .entityFilter(0.2,7,FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
+                .rel(out, OWN.getrType(), 100)
+                    .relFilter(0.6,11,START_DATE.type,Constraint.of(ConstraintOp.ge, "gt"))
+                .entity(CONCRETE, 1, DRAGON.type)
+                    .entityFilter(1,12, NAME.type, Constraint.of(ConstraintOp.inSet, "inSet"));
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.oldPlanWithCost(50, 250);
         Plan plan = builder.plan();
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(builder));

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.cost.calculation;
 
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -35,23 +36,27 @@ public class BasicStepEstimator implements StepEstimator {
                 return calculateFullStep(statisticsProvider, map, previousCost.get());
             case SINGLE_MODE:
                 return calculateSingleNodeStep(statisticsProvider, map);
-            case AND_MODE:
-                return calculateAndStep(map, previousCost.get());
+            case GOTO_MODE:
+                return calculateGoToStep(statisticsProvider,map, previousCost.get());
         }
         throw new RuntimeException("No Appropriate pattern found [" + pattern + "]");
     }
 
-    private StepEstimatorResult calculateAndStep(Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> planPlanDetailedCostPlanWithCost) {
-        EntityOp entityOp = (EntityOp) map.get(AND_MODE_ENTITY_TWO);
-        if (!map.containsKey(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER)) {
-            map.put(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER, new EntityFilterOp());
-        }
+    private StepEstimatorResult calculateGoToStep(StatisticsProvider statisticsProvider,Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map, PlanWithCost<Plan, PlanDetailedCost> planPlanDetailedCostPlanWithCost) {
+        GoToEntityOp gotoOp = (GoToEntityOp) map.get(GOTO_ENTITY);
 
-        EntityFilterOp filterOp = (EntityFilterOp) map.get(AND_MODE_OPTIONAL_ENTITY_TWO_FILTER);
-        filterOp.setEntity(entityOp.getAsgEBase());
+        PlanOpBase entityOp = planPlanDetailedCostPlanWithCost.getPlan().getOps().stream().
+                filter(op -> (op instanceof EntityOp) && ((EntityOp) op).getAsgEBase().geteBase().equals(gotoOp.getAsgEBase().geteBase())).
+                findFirst().get();
+        EntityFilterOp filterOp = (EntityFilterOp) PlanUtil.adjacentNext(planPlanDetailedCostPlanWithCost.getPlan(), entityOp).get();
 
-        PlanOpWithCost<Cost> entityLatestOp = planPlanDetailedCostPlanWithCost.getCost().getPlanOpByEntity(entityOp.getAsgEBase().geteBase()).get();
-        return StepEstimatorResult.of(1d, new PlanOpWithCost<>(new Cost(0 ), entityLatestOp.peek(), entityOp, filterOp));
+        map.put(ENTITY_ONE, entityOp);
+        map.put(OPTIONAL_ENTITY_ONE_FILTER, filterOp);
+
+        StepEstimatorResult stepEstimatorResult = calculateFullStep(statisticsProvider, map, planPlanDetailedCostPlanWithCost);
+        Cost gotoCost = new Cost(0);
+
+        return StepEstimatorResult.of(stepEstimatorResult.lambda(), new PlanOpWithCost<Cost>(gotoCost, stepEstimatorResult.planOpWithCosts().get(0).peek(),gotoOp), stepEstimatorResult.planOpWithCosts().get(1), stepEstimatorResult.planOpWithCosts().get(2));
 
     }
 
@@ -146,7 +151,7 @@ public class BasicStepEstimator implements StepEstimator {
         double Z = statisticsProvider.getRedundantNodeStatistics(entityTwoOp.getAsgEBase().geteBase(), RelPropGroup.of(pushdownProps)).getTotal();
 
         // N2-1 (relation based estimate for E2) = min(R*alpha/GS, Z)
-        double N2_1 = Math.min(R / selectivity * alpha, Z);
+        double N2_1 = Math.min(R * alpha, Z);
         //N2_2 (E2 complete estimate) = statistical_estimate(E1 + filter (with pushdown))
         double N2_2 = statisticsProvider.getNodeFilterStatistics(entityTwoOp.getAsgEBase().geteBase(), clone).getTotal();
 
@@ -160,7 +165,7 @@ public class BasicStepEstimator implements StepEstimator {
         double lambda = lambdaEdge * lambdaNode;
 
         //cost if zero since the real cost is residing on the adjacent filter (rel filter)
-        Cost relCost = new DetailedCost(N2 + R * delta, lambdaNode, lambdaEdge, R, N2);
+        Cost relCost = new DetailedCost(R * delta, lambdaNode, lambdaEdge, R, N2);
 
         PlanOpWithCost<Cost> entityOneOpCost = new PlanOpWithCost<>(entityOneCost, N1*lambda, entityOneOp, filterOneOp);
         PlanOpWithCost<Cost> relOpCost = new PlanOpWithCost<>(relCost, R, relationOp, relFilterOp);

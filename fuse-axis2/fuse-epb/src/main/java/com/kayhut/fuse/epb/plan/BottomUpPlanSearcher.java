@@ -21,13 +21,13 @@ import java.util.logging.Level;
 /**
  * Created by moti on 2/21/2017.
  */
-public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> , Trace<String> {
+public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Trace<String> {
     final Logger logger = LoggerFactory.getLogger(BottomUpPlanSearcher.class);
     private TraceComposite<String> trace = TraceComposite.build(this.getClass().getSimpleName());
 
     @Override
     public void log(String event, Level level) {
-        trace.log(event,level);
+        trace.log(event, level);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> , Tr
                                 @Named("GlobalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector,
                                 @Named("LocalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector,
                                 PlanValidator<P, Q> planValidator,
-                                CostEstimator<P, C> costEstimator) {
+                                CostEstimator<P, C, Q> costEstimator) {
         this.extensionStrategy = extensionStrategy;
         this.globalPruneStrategy = globalPruneStrategy;
         this.localPruneStrategy = localPruneStrategy;
@@ -64,7 +64,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> , Tr
     private PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector;
     private PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector;
     private PlanValidator<P, Q> planValidator;
-    private CostEstimator<P, C> costEstimator;
+    private CostEstimator<P, C, Q> costEstimator;
     //endregion
 
     //region Methods
@@ -77,7 +77,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> , Tr
         // Generate seed plans (plan is null)
         for (P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)) {
             if (planValidator.isPlanValid(seedPlan, query)) {
-                PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, Optional.empty());
+                PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, Optional.empty(), query);
                 currentPlans.add(planWithCost);
             }
         }
@@ -90,11 +90,13 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> , Tr
             Set<PlanWithCost<P, C>> newPlans = new HashSet<>();
             for (PlanWithCost<P, C> partialPlan : currentPlans) {
                 Set<PlanWithCost<P, C>> planExtensions = new HashSet<>();
-                for (P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)) {
-                    log("Step#"+step+" [" + planValidator.isPlanValid(extendedPlan, query) + "]"+ Plan.toPattern((Plan) extendedPlan)  ,Level.INFO);
-                    if (planValidator.isPlanValid(extendedPlan, query)) {
-                        PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan));
-                        planExtensions.add(planWithCost);
+//                if (partialPlan != null) {
+                    for (P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)) {
+                        log("Step#" + step + " [" + planValidator.isPlanValid(extendedPlan, query) + "]" + Plan.toPattern((Plan) extendedPlan), Level.INFO);
+                        if (planValidator.isPlanValid(extendedPlan, query)) {
+                            PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan), query);
+                            planExtensions.add(planWithCost);
+//                        }
                     }
                 }
 
@@ -108,7 +110,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> , Tr
             for (PlanWithCost<P, C> planWithCost : globalPruneStrategy.prunePlans(newPlans)) {
                 currentPlans.add(planWithCost);
             }
-
+//            selectedPlans = currentPlans.stream().filter(Objects::nonNull).collect(Collectors.toSet());
             selectedPlans = Stream.ofAll(selectedPlans).appendAll(localPlanSelector.select(query, currentPlans)).toJavaList();
         }
 

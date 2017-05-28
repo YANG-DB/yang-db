@@ -151,7 +151,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(filter, graphEdgeSchema);
-        return graphStatisticsProvider.getGlobalSelectivity(graphEdgeSchema, relevantIndices);
+        return graphStatisticsProvider.getGlobalSelectivity(graphEdgeSchema, rel.getDir(), relevantIndices);
     }
 
     private List<String> getRelevantIndicesForEdge(RelPropGroup relPropGroup, GraphEdgeSchema graphEdgeSchema) {
