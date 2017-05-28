@@ -1,4 +1,4 @@
-package com.kayhut.fuse.stat;
+package com.kayhut.fuse.stat.util;
 
 import org.apache.commons.collections.map.HashedMap;
 
@@ -26,7 +26,7 @@ public class StatTestUtil {
     /**
      * @param a
      * @param b
-     * @return random number betwen [a, b]
+     * @return random number between [a, b]
      */
     public static int randomInt(int a, int b) {
         if ((b <= a) || ((long) b - a >= Integer.MAX_VALUE)) {

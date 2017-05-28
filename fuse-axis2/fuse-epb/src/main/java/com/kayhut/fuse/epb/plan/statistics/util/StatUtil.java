@@ -40,14 +40,4 @@ public class StatUtil {
             return null;
         }
     }
-
-    public static String readJsonToString(String jsonRelativePath) {
-        String contents = "";
-        try {
-            contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return contents;
-    }
 }

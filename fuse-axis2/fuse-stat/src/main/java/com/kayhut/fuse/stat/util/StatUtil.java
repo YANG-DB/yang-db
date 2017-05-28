@@ -218,7 +218,7 @@ public class StatUtil {
         } catch (IOException e) {
 
 //            logger.error("Could not hash the message: {}", message);
-//            logger.error("A problem occured when encoding as URL safe hash. Stack trace follows.", e);
+//            logger.error("A problem occurred when encoding as URL safe hash. Stack trace follows.", e);
 
             return null;
         }

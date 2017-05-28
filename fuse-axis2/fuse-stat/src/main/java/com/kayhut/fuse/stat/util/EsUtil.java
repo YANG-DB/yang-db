@@ -355,11 +355,10 @@ public class EsUtil {
 
     /**
      * Return all the documents from a cluster.
-
      * @param client
      * @return
      */
-    public static SearchResponse getAllDocuemnts(Client client) {
+    public static SearchResponse getAllDocuments(Client client) {
         return client.prepareSearch().execute().actionGet();
     }
 
@@ -410,9 +409,8 @@ public class EsUtil {
      */
     public static IndexResponse indexData(Client client, String index,
                                           String type, String id, String document) {
-        IndexResponse response = client.prepareIndex(index, type, id)
+        return client.prepareIndex(index, type, id)
                 .setSource(document).execute().actionGet();
-        return response;
     }
 
     /**

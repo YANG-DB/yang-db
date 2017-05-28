@@ -4,6 +4,7 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.bucket.BucketTerm;
 import com.kayhut.fuse.stat.model.enums.HistogramType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,23 +33,30 @@ public class HistogramTerm extends Histogram {
     //endregion
 
     //region Builder
-    public static final class HistogramTermBuilder {
+    public static final class Builder {
         private List<BucketTerm> buckets;
         private DataType dataType;
 
-        private HistogramTermBuilder() {
+        private Builder() {
         }
 
-        public static HistogramTermBuilder aHistogramTerm() {
-            return new HistogramTermBuilder();
+        public static Builder aHistogramTerm() {
+            return new Builder();
         }
 
-        public HistogramTermBuilder withBuckets(List<BucketTerm> buckets) {
+        public Builder withBuckets(List<BucketTerm> buckets) {
             this.buckets = buckets;
             return this;
         }
 
-        public HistogramTermBuilder withDataType(DataType dataType) {
+        public Builder withTerms(List<String> terms) {
+            List<BucketTerm> buckets = new ArrayList<>();
+            terms.forEach(term -> buckets.add(new BucketTerm<>(term)));
+            this.buckets = buckets;
+            return this;
+        }
+
+        public Builder withDataType(DataType dataType) {
             this.dataType = dataType;
             return this;
         }

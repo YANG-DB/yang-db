@@ -43,29 +43,29 @@ public class HistogramComposite <T> extends Histogram {
     //endregion
 
     //region Builder
-    public static final class HistogramCompositeBuilder {
+    public static final class Builder {
         public Histogram autoBuckets;
         private DataType dataType;
         private List<BucketRange> manualBuckets;
 
-        private HistogramCompositeBuilder() {
+        private Builder() {
         }
 
-        public static HistogramCompositeBuilder aHistogramComposite() {
-            return new HistogramCompositeBuilder();
+        public static Builder aHistogramComposite() {
+            return new Builder();
         }
 
-        public HistogramCompositeBuilder withDataType(DataType dataType) {
+        public Builder withDataType(DataType dataType) {
             this.dataType = dataType;
             return this;
         }
 
-        public HistogramCompositeBuilder withManualBuckets(List<BucketRange> manualBuckets) {
+        public Builder withManualBuckets(List<BucketRange> manualBuckets) {
             this.manualBuckets = manualBuckets;
             return this;
         }
 
-        public HistogramCompositeBuilder withAutoBuckets(Histogram autoBuckets) {
+        public Builder withAutoBuckets(Histogram autoBuckets) {
             this.autoBuckets = autoBuckets;
             return this;
         }

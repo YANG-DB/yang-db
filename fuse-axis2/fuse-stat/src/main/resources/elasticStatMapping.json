@@ -1,0 +1,96 @@
+{
+  "mappings": {
+    "bucketTerm": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "index": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "type": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "field": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "term": {
+          "index": "not_analyzed"
+        },
+        "count": {
+          "type": "long"
+        },
+        "cardinality": {
+          "type": "long"
+        }
+      }
+    },
+    "bucketString": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "index": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "type": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "field": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "lower_bound_string": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "upper_bound_string": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "count": {
+          "type": "long"
+        },
+        "cardinality": {
+          "type": "long"
+        }
+      }
+    },
+    "bucketNumeric": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "index": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "type": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "field": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "lower_bound_numeric": {
+          "type": "double"
+        },
+        "upper_bound_numeric": {
+          "type": "double"
+        },
+        "count": {
+          "type": "long"
+        },
+        "cardinality": {
+          "type": "long"
+        }
+      }
+    }
+  }
+}

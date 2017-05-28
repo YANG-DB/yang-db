@@ -8,6 +8,7 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
+import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -189,7 +190,7 @@ public class EsUtilTest {
         //We have only one bucket
         assertEquals(1, termHistogramResults.size());
         //We should get proportional (~equal) docCount for each gender
-        assertEquals(NUM_OF_DRAGONS_IN_INDEX / DRAGON_GENDERS.size(),
+        assertEquals(NUM_OF_DRAGONS_IN_INDEX / (double) DRAGON_GENDERS.size(),
                 termHistogramResults.get(0).getDocCount(),
                 NUM_OF_DRAGONS_IN_INDEX * 0.05);
     }

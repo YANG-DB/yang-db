@@ -35,8 +35,9 @@ public class StatCalculator {
 
         Logger logger = org.slf4j.LoggerFactory.getLogger(StatCalculator.class);
 
-        if (!isValidNumberOfArguments(args, logger))
-            System.exit(1);
+        if (!isValidNumberOfArguments(args, logger)) {
+            throw new RuntimeException("Invalid/Missing Arguments");
+        }
 
         TransportClient dataClient = null;
         TransportClient statClient = null;
@@ -48,26 +49,10 @@ public class StatCalculator {
             loadDefaultStatParameters(configuration);
 
             Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
-
             if (statConfiguration.isPresent()) {
-                StatContainer statContainer = statConfiguration.get();
-
-                for (Mapping mapping : statContainer.getMappings()) {
-                    List<String> indices = mapping.getIndices();
-                    List<String> types = mapping.getTypes();
-                    for (String indexName : indices) {
-                        for (String typeName : types) {
-                            Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, typeName);
-                            if (typeConfiguration.isPresent()) {
-                                buildHistogramForNumericFields(logger, dataClient, statClient, statContainer, indexName, typeName);
-                                buildHistogramForManualFields(logger, dataClient, statClient, statContainer, indexName, typeName);
-                                buildHistogramForStringFields(logger, dataClient, statClient, statContainer, indexName, typeName);
-                                buildHistogramForCompositeFields(logger, dataClient, statClient, statContainer, indexName, typeName);
-                                buildHistogramForTermFields(logger, dataClient, statClient, statContainer, indexName, typeName);
-                            }
-                        }
-                    }
-                }
+                buildStatisticsBasedOnConfiguration(logger, dataClient, statClient, statConfiguration.get());
+            } else {
+                throw new RuntimeException("Statistics Configuration is Invalid / Empty");
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -78,6 +63,41 @@ public class StatCalculator {
                 statClient.close();
         }
     }
+
+    //region Public Methods
+    public static void buildStatisticsBasedOnConfiguration(Logger logger,
+                                                           TransportClient dataClient,
+                                                           TransportClient statClient,
+                                                           StatContainer statContainer) {
+        for (Mapping mapping : statContainer.getMappings()) {
+            List<String> indices = mapping.getIndices();
+            List<String> types = mapping.getTypes();
+            for (String indexName : indices) {
+                for (String typeName : types) {
+                    Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, typeName);
+                    if (typeConfiguration.isPresent()) {
+                        buildHistogramForNumericFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                        buildHistogramForManualFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                        buildHistogramForStringFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                        buildHistogramForCompositeFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                        buildHistogramForTermFields(logger, dataClient, statClient, statContainer, indexName, typeName);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void loadDefaultStatParameters(String statIndex,
+                                                 String statTypeNumeric,
+                                                 String statTypeString,
+                                                 String statTypeTerm) {
+        statIndexName = statIndex;
+        statTypeNumericName = statTypeNumeric;
+        statTypeStringName = statTypeString;
+        statTypeTermName = statTypeTerm;
+    }
+    //endregion
+
 
     //region Private Methods
     private static void buildHistogramForNumericFields(Logger logger,
@@ -243,11 +263,15 @@ public class StatCalculator {
     }
 
     private static void loadDefaultStatParameters(Configuration configuration) {
-        statIndexName = configuration.getString("statistics.index.name");
-        statTypeNumericName = configuration.getString("statistics.type.numeric.name");
-        statTypeStringName = configuration.getString("statistics.type.string.name");
-        statTypeTermName = configuration.getString("statistics.type.term.name");
+        loadDefaultStatParameters(configuration.getString("statistics.index.name"),
+                configuration.getString("statistics.type.numeric.name"),
+                configuration.getString("statistics.type.string.name"),
+                configuration.getString("statistics.type.term.name")
+        );
     }
+
+
+
 
     private static boolean isValidNumberOfArguments(String[] args, Logger logger) {
         if (args.length != NUM_OF_ARGUMENTS) {

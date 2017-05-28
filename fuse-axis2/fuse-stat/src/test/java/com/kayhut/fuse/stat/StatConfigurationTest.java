@@ -19,7 +19,7 @@ import java.util.Collections;
  */
 public class StatConfigurationTest {
     @Test
-    public void testStatModel() throws Exception {
+    public void statModelTest() throws Exception {
         StatContainer statContainer = buildStatContainer();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -35,14 +35,14 @@ public class StatConfigurationTest {
     }
 
     private StatContainer buildStatContainer() {
-        HistogramNumeric histogramDragonAge = HistogramNumeric.HistogramNumericBuilder.aHistogramNumeric()
+        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.aHistogramNumeric()
                 .withMin(10).withMax(100).withNumOfBins(10).build();
 
-        HistogramString histogramDragonName = HistogramString.HistogramStringBuilder.aHistogramString()
+        HistogramString histogramDragonName = HistogramString.Builder.aHistogramString()
                 .withPrefixSize(3)
                 .withInterval(10).withNumOfChars(26).withFirstCharCode("97").build();
 
-        HistogramManual histogramDragonAddress = HistogramManual.HistogramManualBuilder.aHistogramManual()
+        HistogramManual histogramDragonAddress = HistogramManual.Builder.aHistogramManual()
                 .withBuckets(Arrays.asList(
                         new BucketRange("abc", "dzz"),
                         new BucketRange("efg", "hij"),
@@ -50,27 +50,27 @@ public class StatConfigurationTest {
                 )).withDataType(DataType.string)
                 .build();
 
-        HistogramComposite histogramDragonColor = HistogramComposite.HistogramCompositeBuilder.aHistogramComposite()
+        HistogramComposite histogramDragonColor = HistogramComposite.Builder.aHistogramComposite()
                 .withManualBuckets(Arrays.asList(
                         new BucketRange("00", "11"),
                         new BucketRange("22", "33"),
                         new BucketRange("44", "55")
                 )).withDataType(DataType.string)
-                .withAutoBuckets(HistogramString.HistogramStringBuilder.aHistogramString()
+                .withAutoBuckets(HistogramString.Builder.aHistogramString()
                         .withFirstCharCode("97")
                         .withInterval(10)
                         .withNumOfChars(26)
                         .withPrefixSize(3).build())
                 .build();
 
-        HistogramTerm histogramTerm = HistogramTerm.HistogramTermBuilder.aHistogramTerm()
+        HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
                 .withDataType(DataType.string).withBuckets(Arrays.asList(
                         new BucketTerm("male"),
                         new BucketTerm("female")
                 )).build();
 
-        HistogramTerm histogramDocType = HistogramTerm.HistogramTermBuilder.aHistogramTerm()
-                .withDataType(DataType.string).withBuckets(Arrays.asList(
+        HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
+                .withDataType(DataType.string).withBuckets(Collections.singletonList(
                         new BucketTerm("dragon")
                 )).build();
 
@@ -88,7 +88,7 @@ public class StatConfigurationTest {
         Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();
 
-        return StatContainer.StatContainerBuilder.aStatContainer()
+        return StatContainer.Builder.aStatContainer()
                 .withMappings(Collections.singletonList(mapping))
                 .withTypes(Collections.singletonList(typeDragon))
                 .build();

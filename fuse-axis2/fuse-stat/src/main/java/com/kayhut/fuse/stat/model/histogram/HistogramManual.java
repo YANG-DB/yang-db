@@ -34,23 +34,23 @@ public class HistogramManual <T> extends Histogram {
     //endregion
 
     //region Builder
-    public static final class HistogramManualBuilder {
+    public static final class Builder {
         private List<BucketRange> buckets;
         private DataType dataType;
 
-        private HistogramManualBuilder() {
+        private Builder() {
         }
 
-        public static HistogramManualBuilder aHistogramManual() {
-            return new HistogramManualBuilder();
+        public static Builder aHistogramManual() {
+            return new Builder();
         }
 
-        public HistogramManualBuilder withBuckets(List<BucketRange> buckets) {
+        public Builder withBuckets(List<BucketRange> buckets) {
             this.buckets = buckets;
             return this;
         }
 
-        public HistogramManualBuilder withDataType(DataType dataType) {
+        public Builder withDataType(DataType dataType) {
             this.dataType = dataType;
             return this;
         }

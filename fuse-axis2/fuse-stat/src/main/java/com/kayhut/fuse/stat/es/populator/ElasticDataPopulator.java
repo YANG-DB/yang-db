@@ -21,7 +21,7 @@ public class ElasticDataPopulator implements DataPopulator {
     private String docType;
     private String idField;
     private GenericDataProvider provider;
-    private static int BULK_SIZE = 500;
+    private static final int BULK_SIZE = 500;
 
     public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
         this.client = client;
@@ -47,14 +47,13 @@ public class ElasticDataPopulator implements DataPopulator {
         int currentBulkSize = 0;
 
         BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
-        for(Iterator<Map<String, Object>> iterator = this.provider.getDocuments().iterator(); iterator.hasNext();){
-            Map<String, Object> document = iterator.next();
+        for (Map<String, Object> document : this.provider.getDocuments()) {
             currentBulkSize++;
             IndexRequestBuilder indexRequestBuilder = documentIndexRequest(document);
             bulkRequestBuilder.add(indexRequestBuilder);
-            if(currentBulkSize == BULK_SIZE){
+            if (currentBulkSize == BULK_SIZE) {
                 BulkResponse bulkItemResponses = bulkRequestBuilder.execute().actionGet();
-                if(bulkItemResponses.hasFailures()){
+                if (bulkItemResponses.hasFailures()) {
                     throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
                 }
                 bulkRequestBuilder = client.prepareBulk();

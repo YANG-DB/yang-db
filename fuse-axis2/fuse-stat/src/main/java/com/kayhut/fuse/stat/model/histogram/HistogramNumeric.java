@@ -47,30 +47,30 @@ public class HistogramNumeric extends Histogram {
     //endregion
 
     //region Builder
-    public static final class HistogramNumericBuilder {
+    public static final class Builder {
         private double min;
         private double max;
         private int numOfBins;
 
-        private HistogramNumericBuilder() {
+        private Builder() {
             super();
         }
 
-        public static HistogramNumericBuilder aHistogramNumeric() {
-            return new HistogramNumericBuilder();
+        public static Builder aHistogramNumeric() {
+            return new Builder();
         }
 
-        public HistogramNumericBuilder withMin(double min) {
+        public Builder withMin(double min) {
             this.min = min;
             return this;
         }
 
-        public HistogramNumericBuilder withMax(double max) {
+        public Builder withMax(double max) {
             this.max = max;
             return this;
         }
 
-        public HistogramNumericBuilder withNumOfBins(int numOfBins) {
+        public Builder withNumOfBins(int numOfBins) {
             this.numOfBins = numOfBins;
             return this;
         }

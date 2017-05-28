@@ -31,23 +31,23 @@ public class StatContainer {
     //endregion
 
     //region Builder
-    public static final class StatContainerBuilder {
+    public static final class Builder {
         private List<Mapping> mappings;
         private List<Type> types;
 
-        private StatContainerBuilder() {
+        private Builder() {
         }
 
-        public static StatContainerBuilder aStatContainer() {
-            return new StatContainerBuilder();
+        public static Builder aStatContainer() {
+            return new Builder();
         }
 
-        public StatContainerBuilder withMappings(List<Mapping> mappings) {
+        public Builder withMappings(List<Mapping> mappings) {
             this.mappings = mappings;
             return this;
         }
 
-        public StatContainerBuilder withTypes(List<Type> types) {
+        public Builder withTypes(List<Type> types) {
             this.types = types;
             return this;
         }

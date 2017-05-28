@@ -24,10 +24,10 @@ import com.kayhut.fuse.stat.model.enums.HistogramType;
 public class Histogram {
 
     //region Ctrs
-    public Histogram() {
+    Histogram() {
     }
 
-    public Histogram(HistogramType histogramType) {
+    Histogram(HistogramType histogramType) {
         this.histogramType = histogramType;
     }
 

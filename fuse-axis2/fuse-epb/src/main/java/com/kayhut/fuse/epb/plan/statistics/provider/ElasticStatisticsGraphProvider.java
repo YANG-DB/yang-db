@@ -5,10 +5,9 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.epb.plan.statistics.util.ElasticUtil;
+import com.kayhut.fuse.epb.plan.statistics.util.ElasticStatUtil;
 import com.kayhut.fuse.epb.plan.statistics.util.StatUtil;
 import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
@@ -16,8 +15,9 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.*;
-import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 
 import java.util.*;
 
@@ -25,6 +25,11 @@ import java.util.*;
  * Created by benishue on 22-May-17.
  */
 public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
+
+    private static final String DATE = "date";
+    private static final String ENUM = "enum";
+    private static final String INT = "int";
+    private static final String STRING = "string";
 
     @Inject
     public ElasticStatisticsGraphProvider(StatConfig config) {
@@ -60,37 +65,47 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                                                                              GraphElementPropertySchema graphElementPropertySchema,
                                                                                              Constraint constraint,
                                                                                              T value) {
-//        graphVertexSchema.getType(); name of entity e.g., dragon
-//        graphElementPropertySchema.getType()  // Type : String, integer -> BUCKET STRING, BUCKET NUMERIC
-//        constraint.getOp() -> ELASTIC FILTER
-
-        String entityType = graphVertexSchema.getType();
+        String statTypeName = null;
         String fieldType = graphElementPropertySchema.getType();
-        String fieldName = graphElementPropertySchema.getName();
-        ConstraintOp op = constraint.getOp();
-//        switch (entityType) {
-//            case STRING: {
-//
-//                break;
-//            }
-//            case gt: {
-//                break;
-//            }
-//            case ge: {
-//                break;
-//            }
-//            case lt: {
-//                break;
-//            }
-//            case le: {
-//                break;
-//            }
-//            default:
-//                ;//todo
-//
-//        }
+        switch (fieldType) {
+            case STRING: { //String
+                statTypeName = statConfig.getStatStringTypeName();
+                break;
+            }
+            case INT: { //Numeric
+                statTypeName = statConfig.getStatStringTypeName();
+                break;
+            }
+            case ENUM: { //Enum
+                statTypeName = statConfig.getStatTermTypeName();
+                break;
+            }
+            case DATE: { //Enum
+                statTypeName = statConfig.getStatTermTypeName();
+                break;
+            }
+            default:
+                ;//todo
 
+        }
 
+        List<Statistics.HistogramStatistics> histograms = new ArrayList<>();
+
+        List<Statistics.BucketInfo> fieldStatistics = ElasticStatUtil.getFieldStatistics(
+                this.elasticClient,
+                statConfig.getStatIndexName(),
+                statTypeName,
+                relevantIndices,
+                Arrays.asList(graphVertexSchema.getType()),
+                Arrays.asList(graphElementPropertySchema.getName())
+        );
+
+        for(Statistics.BucketInfo bucket : fieldStatistics) {
+            //Statistics.HistogramStatistics histogramStatistics = new Statistics.HistogramStatistics();
+
+        }
+
+//        Statistics.HistogramStatistics.combine()
 
 
         return null;
@@ -111,9 +126,17 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     private Statistics.Cardinality getStatResultsForType(String docType, Iterable<String> indices) {
+        List<Statistics.BucketInfo> buckets = ElasticStatUtil.getFieldStatistics(
+                this.elasticClient,
+                statConfig.getStatIndexName(),
+                statConfig.getStatTermTypeName(),
+                Lists.newArrayList(indices),
+                Arrays.asList(docType),
+                Arrays.asList("_type"));
+
         long totalCount = 0;
-        for (String index : indices) {
-            totalCount += getTermBucketCount(index, docType, docType);
+        for (Statistics.BucketInfo bucket : buckets) {
+            totalCount += bucket.getTotal();
         }
         return new Statistics.Cardinality(totalCount, 1);
     }
@@ -141,7 +164,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     private long getStatBucketCount(String docId) {
         long count = 0;
-        Optional<Map<String, Object>> statDoc = ElasticUtil.getDocumentById(
+        Optional<Map<String, Object>> statDoc = ElasticStatUtil.getDocumentById(
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
@@ -155,7 +178,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     private <T extends Comparable<T>> Statistics.BucketInfo getTermStatBucket(String docId) {
         Statistics.BucketInfo<T> bucketInfo = new Statistics.BucketInfo();
-        Optional<Map<String, Object>> statDoc = ElasticUtil.getDocumentById(
+        Optional<Map<String, Object>> statDoc = ElasticStatUtil.getDocumentById(
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
@@ -208,30 +231,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         //return getHitFieldStatistics(searchResponse.getHits());
     }
 
-
-    private void getHitFieldStatistics(Iterable<SearchHit> hits){
-        List<SearchHit> hitList = Lists.newArrayList(hits);
-
-//        if (hitList.get(0).getSource().get("dataType").equals("long")) {
-//            converter = _longConverter;
-//            if (true) {
-//                converter = new TempLongElasticHitsToHistogramStatistics();
-//            }
-//        }
-//        else if (hitList.get(0).getSource().get("dataType").equals("string")) {
-//            converter = _stringConverter;
-//        }
-//
-//        return converter.convertHits(hits);
-    }
-
-
     //region Fields
     private StatConfig statConfig;
     private TransportClient elasticClient;
-    private static final String DATE = "date";
-    private static final String INT = "int";
-    private static final String STRING = "string";
     //endregion
 
 }

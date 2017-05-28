@@ -1,0 +1,30 @@
+{
+  "mappings": {
+    "Dragon": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "name": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "gender": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "address": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "age": {
+          "type": "double"
+        },
+        "color": {
+          "type": "string",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}

@@ -17,24 +17,7 @@ import java.util.*;
  * Created by benishue on 25-May-17.
  */
 public class EpbTestUtil {
-    public static Iterable<Map<String, Object>> createDragons(int numDragons) {
-        Random r = new Random();
-        List<String> colors = Arrays.asList("red", "green", "yellow", "blue");
-        List<Map<String, Object>> dragons = new ArrayList<>();
-        for (int i = 0; i < numDragons; i++) {
-            Map<String, Object> dragon = new HashedMap();
-            dragon.put("id", Integer.toString(i));
-            dragon.put("name", generateRandomString(10) + " dragon" + i);
-            dragon.put("age", r.nextInt(100));
-            dragon.put("color", colors.get(r.nextInt(colors.size())));
-            dragon.put("gender", (r.nextBoolean() ? "MALE" : "FEMALE"));
-            dragon.put("address", generateRandomString(20));
-
-            dragons.add(dragon);
-        }
-        return dragons;
-    }
-
+    private static final Random rand = new Random();
 
     public static String generateRandomString(int stringSize) {
         char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
@@ -47,6 +30,48 @@ public class EpbTestUtil {
         return sb.toString();
     }
 
+    /**
+     * @param a
+     * @param b
+     * @return random number between [a, b]
+     */
+    public static int randomInt(int a, int b) {
+        if ((b <= a) || ((long) b - a >= Integer.MAX_VALUE)) {
+            throw new IllegalArgumentException(String.format("Invalid range: [%d, %d]", a, b));
+        }
+        return rand.nextInt((b + 1) - a) + a;
+    }
 
+    /**
+     * @param numDragons
+     * @param dragonMinAge
+     * @param dragonMaxAge
+     * @param dragonNamePrefixLength
+     * @param dragonColors
+     * @param dragonGenders
+     * @param dragonAddressLength
+     * @return Dragon documents with sequential id [0..numOfDragons)
+     */
+    public static Iterable<Map<String, Object>> createDragons(int numDragons,
+                                                              int dragonMinAge,
+                                                              int dragonMaxAge,
+                                                              int dragonNamePrefixLength,
+                                                              List<String> dragonColors,
+                                                              List<String> dragonGenders,
+                                                              int dragonAddressLength
+    ) {
+        List<Map<String, Object>> dragons = new ArrayList<>();
+        for (int i = 0; i < numDragons; i++) {
+            Map<String, Object> dragon = new HashedMap();
+            dragon.put("id", Integer.toString(i));
+            dragon.put("name", generateRandomString(dragonNamePrefixLength) + "_dragon" + i);
+            dragon.put("age", randomInt(dragonMinAge, dragonMaxAge));
+            dragon.put("color", dragonColors.get(rand.nextInt(dragonColors.size())));
+            dragon.put("gender", dragonGenders.get(rand.nextInt(dragonGenders.size())));
+            dragon.put("address", generateRandomString(dragonAddressLength));
 
+            dragons.add(dragon);
+        }
+        return dragons;
+    }
 }

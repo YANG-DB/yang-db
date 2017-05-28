@@ -18,11 +18,7 @@ public class ClientProvider {
         int transportPort = configuration.getInt("es.client.transport.port");
         String[] hosts = configuration.getStringArray("es.nodes.hosts");
 
-        Settings settings = Settings.builder().put("client.transport.sniff", true).put("cluster.name", clusterName).build();
-        TransportClient esClient = TransportClient.builder().settings(settings).build();
-        for(String node: hosts){
-            esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), transportPort));
-        }
+        TransportClient esClient = getTransportClient(clusterName, transportPort, hosts);
 
         return esClient;
     }
@@ -32,12 +28,17 @@ public class ClientProvider {
         int transportPort = configuration.getInt("statistics.client.transport.port");
         String[] hosts = configuration.getStringArray("statistics.nodes.hosts");
 
+        TransportClient esClient = getTransportClient(clusterName, transportPort, hosts);
+
+        return esClient;
+    }
+
+    public static TransportClient getTransportClient(String clusterName, int transportPort, String[] hosts) throws UnknownHostException {
         Settings settings = Settings.builder().put("client.transport.sniff", true).put("cluster.name", clusterName).build();
         TransportClient esClient = TransportClient.builder().settings(settings).build();
         for(String node: hosts){
             esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), transportPort));
         }
-
         return esClient;
     }
 }

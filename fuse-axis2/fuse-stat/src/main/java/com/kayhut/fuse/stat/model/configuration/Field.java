@@ -38,7 +38,7 @@ public class Field {
     //region Fields
     //The name of the field for which statistics are being calculated
     private String field;
-    //histogram buckets defenition
+    //histogram buckets definition
     private Histogram histogram;
     //endregion
 }

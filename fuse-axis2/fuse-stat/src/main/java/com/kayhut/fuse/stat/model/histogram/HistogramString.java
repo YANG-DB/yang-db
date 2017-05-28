@@ -55,35 +55,35 @@ public class HistogramString extends Histogram {
     //endregion
 
     //region Builder
-    public static final class HistogramStringBuilder {
+    public static final class Builder {
         private int interval;
         private int prefixSize;
         private String firstCharCode;
         private int numOfChars;
 
-        private HistogramStringBuilder() {
+        private Builder() {
         }
 
-        public static HistogramStringBuilder aHistogramString() {
-            return new HistogramStringBuilder();
+        public static Builder aHistogramString() {
+            return new Builder();
         }
 
-        public HistogramStringBuilder withInterval(int interval) {
+        public Builder withInterval(int interval) {
             this.interval = interval;
             return this;
         }
 
-        public HistogramStringBuilder withPrefixSize(int prefixSize) {
+        public Builder withPrefixSize(int prefixSize) {
             this.prefixSize = prefixSize;
             return this;
         }
 
-        public HistogramStringBuilder withFirstCharCode(String firstCharCode) {
+        public Builder withFirstCharCode(String firstCharCode) {
             this.firstCharCode = firstCharCode;
             return this;
         }
 
-        public HistogramStringBuilder withNumOfChars(int numOfChars) {
+        public Builder withNumOfChars(int numOfChars) {
             this.numOfChars = numOfChars;
             return this;
         }
