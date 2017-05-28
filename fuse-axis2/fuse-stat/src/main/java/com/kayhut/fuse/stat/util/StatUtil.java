@@ -29,6 +29,7 @@ public class StatUtil {
         throw new IllegalAccessError("Utility class");
     }
 
+    //region Public Methods
     public static String readJsonToString(String jsonRelativePath) {
         String contents = "";
         try {
@@ -175,25 +176,6 @@ public class StatUtil {
 
         return buckets;
     }
-
-    private static String calcBucketStart(int numChars, int startCode, int prefixLen, int bucketIdx) {
-        char[] chars = new char[prefixLen];
-        for (int i = 0; i < prefixLen; i++) {
-            int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
-            chars[i] = Character.toChars(code)[0];
-        }
-        return String.valueOf(chars);
-    }
-
-    private static String calcBucketEnd(int numChars, int startCode, int prefixLen, int bucketIdx, int interval) {
-        char[] chars = new char[prefixLen];
-        for (int i = 0; i < prefixLen; i++) {
-            int code = startCode + (Math.floorDiv(bucketIdx + interval - 1, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
-            chars[i] = Character.toChars(code)[0];
-        }
-        return String.valueOf(chars);
-    }
-
     //Create a MD5 hash of a given message. Used for creating unique document IDs.
     public static String hashString(String message) {
         try {
@@ -238,4 +220,27 @@ public class StatUtil {
         }
         return buckets;
     }
+    //endregion
+
+    //region Private Methods
+    private static String calcBucketStart(int numChars, int startCode, int prefixLen, int bucketIdx) {
+        char[] chars = new char[prefixLen];
+        for (int i = 0; i < prefixLen; i++) {
+            int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            chars[i] = Character.toChars(code)[0];
+        }
+        return String.valueOf(chars);
+    }
+
+    private static String calcBucketEnd(int numChars, int startCode, int prefixLen, int bucketIdx, int interval) {
+        char[] chars = new char[prefixLen];
+        for (int i = 0; i < prefixLen; i++) {
+            int code = startCode + (Math.floorDiv(bucketIdx + interval - 1, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            chars[i] = Character.toChars(code)[0];
+        }
+        return String.valueOf(chars);
+    }
+    //endregion
+
+
 }

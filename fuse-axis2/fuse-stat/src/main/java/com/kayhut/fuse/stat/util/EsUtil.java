@@ -51,11 +51,11 @@ public class EsUtil {
     private static final String AGG_EXTENDED_STATS = "extended_stats";
     private static final String AGG_CARDINALITY = "cardinality";
 
-
     private EsUtil() {
         throw new IllegalAccessError("Utility class");
     }
 
+    //region Public Methods
     /**
      * @param client Elastic client
      * @param indexName Elastic index name (e.g., index1)
@@ -101,50 +101,6 @@ public class EsUtil {
         return bucketStatResults;
     }
 
-    private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
-                                                                      String indexName,
-                                                                      String typeName,
-                                                                      String fieldName,
-                                                                      List<BucketRange<Double>> buckets) {
-        List<StatRangeResult> bucketStatResults = new ArrayList<>();
-        String aggName = buildAggName(indexName, typeName, fieldName);
-
-        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
-                .setTypes(typeName);
-
-        RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(fieldName);
-        buckets.forEach(bucket -> {
-            Double start = bucket.getStart();
-            Double end = bucket.getEnd();
-            rangesAggregationBuilder.addRange(start, end);
-        });
-
-        SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
-                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
-                .setSize(0).execute().actionGet();
-
-        Range agg = sr.getAggregations().get(aggName);
-
-        for (Range.Bucket entry : agg.getBuckets()) {
-            String key = entry.getKeyAsString();             // Range as key
-            Number from = (Number) entry.getFrom();          // Bucket from
-            Number to = (Number) entry.getTo();              // Bucket to
-            long docCount = entry.getDocCount();    // Doc count
-
-            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
-            StatRangeResult bucketStatResult = new StatRangeResult(indexName, typeName, fieldName,
-                    key,
-                    DataType.numeric,
-                    from,
-                    to,
-                    docCount,
-                    cardinality.getValue());
-
-            bucketStatResults.add(bucketStatResult);
-        }
-
-        return bucketStatResults;
-    }
 
     /**
      * @param client Elastic client
@@ -237,11 +193,6 @@ public class EsUtil {
         }
         return bucketStatResults;
     }
-
-    private static String buildAggName(String indexName, String typeName, String fieldName) {
-        return String.format("%s_%s_%s_hist", indexName, typeName, fieldName);
-    }
-
     public static void bulkIndexingFromFile(TransportClient client, String filePath, String index, String type) throws IOException {
         BulkProcessor bulkProcessor = BulkProcessor.builder(
                 client,
@@ -335,10 +286,6 @@ public class EsUtil {
         return Optional.empty();
     }
 
-    private static GetResponse getGetResponse(Client client, String indexName, String documentType, String id) {
-        return client.get((new GetRequest(indexName, documentType, id))).actionGet();
-    }
-
     public static Optional<String> getDocumentTypeByDocId(Client client, String indexName, String documentType, String docId) {
         GetResponse r = getGetResponse(client, indexName, documentType, docId);
         if (r != null && r.isExists()) {
@@ -426,4 +373,61 @@ public class EsUtil {
                                           String type, String id, Object obj) throws JsonProcessingException {
         return indexData(client, index, type, id, new ObjectMapper().writeValueAsString(obj));
     }
+    //endregion
+
+    //region Private Methods
+    private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
+                                                                      String indexName,
+                                                                      String typeName,
+                                                                      String fieldName,
+                                                                      List<BucketRange<Double>> buckets) {
+        List<StatRangeResult> bucketStatResults = new ArrayList<>();
+        String aggName = buildAggName(indexName, typeName, fieldName);
+
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
+                .setTypes(typeName);
+
+        RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(fieldName);
+        buckets.forEach(bucket -> {
+            Double start = bucket.getStart();
+            Double end = bucket.getEnd();
+            rangesAggregationBuilder.addRange(start, end);
+        });
+
+        SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
+                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
+                .setSize(0).execute().actionGet();
+
+        Range agg = sr.getAggregations().get(aggName);
+
+        for (Range.Bucket entry : agg.getBuckets()) {
+            String key = entry.getKeyAsString();             // Range as key
+            Number from = (Number) entry.getFrom();          // Bucket from
+            Number to = (Number) entry.getTo();              // Bucket to
+            long docCount = entry.getDocCount();    // Doc count
+
+            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
+            StatRangeResult bucketStatResult = new StatRangeResult(indexName, typeName, fieldName,
+                    key,
+                    DataType.numeric,
+                    from,
+                    to,
+                    docCount,
+                    cardinality.getValue());
+
+            bucketStatResults.add(bucketStatResult);
+        }
+
+        return bucketStatResults;
+    }
+
+    private static String buildAggName(String indexName, String typeName, String fieldName) {
+        return String.format("%s_%s_%s_hist", indexName, typeName, fieldName);
+    }
+
+    private static GetResponse getGetResponse(Client client, String indexName, String documentType, String id) {
+        return client.get((new GetRequest(indexName, documentType, id))).actionGet();
+    }
+    //endregion
+
 }
