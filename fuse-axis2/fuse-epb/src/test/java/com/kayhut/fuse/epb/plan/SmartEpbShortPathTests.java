@@ -304,8 +304,9 @@ public class SmartEpbShortPathTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
@@ -315,6 +316,8 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(400, op.getCost().cost, 0.1);
         Assert.assertEquals(3, iterator.next().getCost().cost, 0.1);
         Assert.assertEquals(2000, iterator.next().getCost().cost, 0.1);
+
+
     }
 
     @Test
