@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by moti on 2/21/2017.
@@ -111,7 +113,10 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
                 currentPlans.add(planWithCost);
             }
 //            selectedPlans = currentPlans.stream().filter(Objects::nonNull).collect(Collectors.toSet());
-            selectedPlans = Stream.ofAll(selectedPlans).appendAll(localPlanSelector.select(query, currentPlans)).toJavaList();
+            List<PlanWithCost<P, C>> plansList = StreamSupport.stream(selectedPlans.spliterator(), false).collect(Collectors.toList());
+            plansList.addAll(StreamSupport.stream(localPlanSelector.select(query, currentPlans).spliterator(), false).collect(Collectors.toList()));
+            selectedPlans = plansList;
+            //selectedPlans = Stream.ofAll(selectedPlans).appendAll(localPlanSelector.select(query, currentPlans)).toJavaList();
         }
 
         selectedPlans = globalPlanSelector.select(query, selectedPlans);
