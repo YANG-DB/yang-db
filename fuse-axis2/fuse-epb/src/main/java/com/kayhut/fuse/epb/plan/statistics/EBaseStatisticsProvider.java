@@ -104,10 +104,16 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
-
         for(RelProp relProp : relFilter.getProps()){
             Property property = ont.$property$(Integer.parseInt( relProp.getpType()));
-            GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
+
+            GraphElementPropertySchema graphElementPropertySchema;
+            if (relProp instanceof PushdownRelProp){
+                graphElementPropertySchema = graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
+            }else {
+                graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
+            }
+
             Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
             if(conditionCardinality.isPresent() &&  minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
                 minEdgeCardinality = conditionCardinality.get();

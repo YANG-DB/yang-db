@@ -138,7 +138,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         List<PlanOpWithCost<Cost>> planOpWithCosts;
         if (previousCost.isPresent()) {
             completePlanCost.set(previousCost.get().getCost().getGlobalCost());
-            planOpWithCosts = Stream.ofAll(previousCost.get().getCost().getOpCosts()).map(c -> new PlanOpWithCost<>(c.getCost(), c.peek(), c.getOpBase())).toJavaList();
+            planOpWithCosts = Stream.ofAll(previousCost.get().getCost().getOpCosts()).map(c -> new PlanOpWithCost<>(c.getCost(), c.getCountEstimates(), c.getOpBase())).toJavaList();
         } else {
             completePlanCost.set(new Cost(0));
             planOpWithCosts = new ArrayList<>();
@@ -146,7 +146,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         double lambda = result.lambda();
         planOpWithCosts.forEach(element-> {
-            if(element.getOpBase().get(0) instanceof EntityOp) {
+            if(element.getOpBase().get(0).getClass().equals(EntityOp.class)) {
                 element.push(element.peek()*lambda);
             }
         });

@@ -125,10 +125,9 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
         if(lastEntityFilterOp.isPresent()) {
             AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEBase().geteBase().clone()).build();
-            Stream.ofAll(ePropGroup.geteBase().getProps()).forEach(p -> {
+            Stream.ofAll(ePropGroup.geteBase().getProps()).toJavaList().forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get()
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(Integer.parseInt(p.getpType())).getName()).get());
-
                 if(redundantVertexProperty.isPresent()){
                     RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
                             p.getpType(), p.getCon());
@@ -140,7 +139,6 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
             EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(ePropGroup.geteBase()).build());
             newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);
         }
-
         RelationFilterOp newRelationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
         newPlan = PlanUtil.replace(newPlan, lastRelationFilterOp.get(), newRelationFilterOp);
 
