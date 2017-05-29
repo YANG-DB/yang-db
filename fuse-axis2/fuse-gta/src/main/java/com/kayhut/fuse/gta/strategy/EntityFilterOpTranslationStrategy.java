@@ -27,6 +27,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeOtherVertexSt
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 import org.apache.tinkerpop.gremlin.structure.T;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,8 +38,9 @@ import static com.kayhut.fuse.gta.strategy.utils.TraversalUtil.last;
  */
 public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
-    public EntityFilterOpTranslationStrategy() {
+    public EntityFilterOpTranslationStrategy(EntityTranslationOptions options) {
         super(EntityFilterOp.class);
+        this.options = options;
     }
     //endregion
     //region PlanOpTranslationStrategy Implementation
@@ -70,8 +72,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                     entityFilterOp.getAsgEBase().geteBase(),
                     context.getOnt());
 
-        } else if (!entityFilterOp.getAsgEBase().geteBase().getProps().isEmpty()) {
-
+        } else {
             traversal = appendPropertyGroup(
                     traversal,
                     entityOp.getAsgEBase().geteBase(),
@@ -125,13 +126,23 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             EPropGroup ePropGroup,
             Ontology.Accessor ont) {
 
+        List<Traversal> entityTraversals = Collections.emptyList();
+        if (this.options == EntityTranslationOptions.filterEntity) {
+            entityTraversals = Collections.singletonList(getEntityFilterTraversal(entity, ont));
+        }
+
         List<Traversal> epropTraversals =
                 Stream.ofAll(ePropGroup.getProps())
                         .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
 
-        Traversal constraintTraversal = epropTraversals.size() == 1 ?
-                epropTraversals.get(0) :
-                __.and(Stream.ofAll(epropTraversals).toJavaArray(Traversal.class));
+        List<Traversal> traversals = Stream.ofAll(entityTraversals).appendAll(epropTraversals).toJavaList();
+        if (traversals.isEmpty()) {
+            return traversal;
+        }
+
+        Traversal constraintTraversal = traversals.size() == 1 ?
+                traversals.get(0) :
+                __.and(Stream.ofAll(traversals).toJavaArray(Traversal.class));
 
         Stream.ofAll(TraversalUtil.<Step>lastSteps(traversal, step -> step.getLabels().contains(entity.geteTag())))
                 .forEach(step -> step.removeLabel(entity.geteTag()));
@@ -139,6 +150,25 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         return traversal.outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal))
                 .otherV().as(entity.geteTag());
+    }
+
+    private Traversal getEntityFilterTraversal(EEntityBase entity, Ontology.Accessor ont) {
+        if (entity instanceof EConcrete) {
+            //traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
+            return __.has(T.id, P.eq(((EConcrete)entity).geteID()));
+        }
+        else if (entity instanceof ETyped || entity instanceof EUntyped) {
+            List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
+            if (eTypeNames.isEmpty()) {
+                return __.has(T.label, P.eq(GlobalConstants.Labels.NONE));
+            } else if (eTypeNames.size() == 1) {
+                return __.has(T.label, P.eq(eTypeNames.get(0)));
+            } else if (eTypeNames.size() > 1) {
+                return __.has(T.label, P.within(eTypeNames));
+            }
+        }
+
+        return null;
     }
 
     private Traversal convertEPropToTraversal(EProp eProp, Ontology.Accessor ont) {
@@ -156,5 +186,9 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                 .isEmpty();
 
     }
+    //endregion
+
+    //region Fields
+    private EntityTranslationOptions options;
     //endregion
 }

@@ -23,13 +23,8 @@ import java.util.Optional;
  * Created by Roman on 10/05/2017.
  */
 public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
-    public enum Options {
-        none,
-        filterEntity
-    }
-
     //region Constructors
-    public EntityOpTranslationStrategy(Options options) {
+    public EntityOpTranslationStrategy(EntityTranslationOptions options) {
         super(EntityOp.class);
         this.options = options;
     }
@@ -93,6 +88,6 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //endregion
 
     //region Fields
-    private Options options;
+    private EntityTranslationOptions options;
     //endregion
 }

@@ -10,7 +10,7 @@ public class M1FilterPlanOpTranslationStrategy extends CompositePlanOpTranslatio
     private static class EntityOpStrategies extends CompositePlanOpTranslationStrategy {
         public EntityOpStrategies() {
             super(
-                    new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.filterEntity),
+                    new EntityOpTranslationStrategy(EntityTranslationOptions.filterEntity),
                     new SelectionTranslationStrategy(EntityOp.class)
             );
         }
@@ -19,7 +19,7 @@ public class M1FilterPlanOpTranslationStrategy extends CompositePlanOpTranslatio
     private static class EntityFilterOpStrategies extends CompositePlanOpTranslationStrategy {
         public EntityFilterOpStrategies() {
             super(
-                    new EntityFilterOpTranslationStrategy(),
+                    new EntityFilterOpTranslationStrategy(EntityTranslationOptions.filterEntity),
                     new SelectionTranslationStrategy(EntityFilterOp.class)
             );
         }

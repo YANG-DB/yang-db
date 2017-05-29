@@ -95,7 +95,7 @@ public class EntityFilterOpTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
-        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy();
+        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(
                 __.start().has("willBeDeleted", "doesnt matter"),
                 plan,
@@ -148,7 +148,7 @@ public class EntityFilterOpTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
-        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy();
+        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(3), context);
         GraphTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)

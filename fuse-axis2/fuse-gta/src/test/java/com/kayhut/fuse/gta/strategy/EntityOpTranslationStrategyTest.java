@@ -113,7 +113,7 @@ public class EntityOpTranslationStrategyTest {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get())
         );
 
-        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.none);
+        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
 
         Ontology ontology = Mockito.mock(Ontology.class);
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
@@ -147,7 +147,7 @@ public class EntityOpTranslationStrategyTest {
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
 
-        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.none);
+        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(2), context);
         GraphTraversal expectedTraversal = __.start().otherV().as("B");
 
@@ -176,7 +176,7 @@ public class EntityOpTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
 
-        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.filterEntity);
+        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.filterEntity);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(2), context);
         GraphTraversal expectedTraversal = __.start().otherV()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
@@ -198,7 +198,7 @@ public class EntityOpTranslationStrategyTest {
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
 
-        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.none);
+        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(3), context);
         GraphTraversal expectedTraversal = __.start().otherV().as("B");
 
