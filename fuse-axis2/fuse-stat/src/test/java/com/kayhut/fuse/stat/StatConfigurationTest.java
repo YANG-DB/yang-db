@@ -7,6 +7,7 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.model.configuration.*;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -75,6 +76,13 @@ public class StatConfigurationTest {
                 )).build();
 
 
+        HistogramManual histogramFireEntity = HistogramManual.Builder.aHistogramManual()
+                .withBuckets(Arrays.asList(
+                        new BucketRange("a", "zzzzz")
+                )).withDataType(DataType.string)
+                .build();
+
+
         Field nameField = new Field("name", histogramDragonName);
         Field ageField = new Field("age", histogramDragonAge);
         Field addressField = new Field("address", histogramDragonAddress);
@@ -82,15 +90,27 @@ public class StatConfigurationTest {
         Field genderField = new Field("gender", histogramTerm);
         Field dragonTypeField = new Field("_type", histogramDocType);
 
+        Field fireEntityAOutField = new Field("entityA.id",
+                histogramFireEntity,
+                Arrays.asList(new Filter("direction", "OUT")));
+
+        Field fireEntityAInField = new Field("entityA.id",
+                histogramFireEntity,
+                Arrays.asList(new Filter("direction", "IN")));
 
         Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
+        Type typeFire = new Type("fire", Arrays.asList(fireEntityAInField, fireEntityAOutField));
 
-        Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1", "index2"))
+        Mapping mappingDragon = Mapping.Builder.aMapping().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();
 
+        Mapping mappingFire = Mapping.Builder.aMapping().withIndices(Arrays.asList("index3", "index4"))
+                .withTypes(Collections.singletonList("fire")).build();
+
+
         return StatContainer.Builder.aStatContainer()
-                .withMappings(Collections.singletonList(mapping))
-                .withTypes(Collections.singletonList(typeDragon))
+                .withMappings(Arrays.asList(mappingDragon, mappingFire))
+                .withTypes(Arrays.asList(typeDragon, typeFire))
                 .build();
     }
 }

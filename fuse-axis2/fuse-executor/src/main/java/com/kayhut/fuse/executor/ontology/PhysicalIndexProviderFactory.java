@@ -1,4 +1,4 @@
-package com.kayhut.fuse.executor.uniGraphProvider;
+package com.kayhut.fuse.executor.ontology;
 
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;

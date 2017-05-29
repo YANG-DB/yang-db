@@ -51,18 +51,18 @@ public class EsUtil {
     private static final String AGG_EXTENDED_STATS = "extended_stats";
     private static final String AGG_CARDINALITY = "cardinality";
 
+
     private EsUtil() {
         throw new IllegalAccessError("Utility class");
     }
 
-    //region Public Methods
     /**
-     * @param client Elastic client
+     * @param client    Elastic client
      * @param indexName Elastic index name (e.g., index1)
-     * @param typeName Elastic type name (e.g., Dragon)
+     * @param typeName  Elastic type name (e.g., Dragon)
      * @param fieldName Elastic field name
-     * @param min The lower bound of the left most range bucket
-     * @param max the upper bound of the right most range bucket
+     * @param min       The lower bound of the left most range bucket
+     * @param max       the upper bound of the right most range bucket
      * @param numOfBins number of buckets
      * @return List of numeric range buckets with lower (inclusive) and upper bound (exclusive)
      */
@@ -79,11 +79,11 @@ public class EsUtil {
     }
 
     public static <T> List<StatRangeResult> getManualHistogramResults(TransportClient client,
-                                                                  String indexName,
-                                                                  String typeName,
-                                                                  String fieldName,
-                                                                  DataType dataType,
-                                                                  List<BucketRange<T>> buckets) {
+                                                                      String indexName,
+                                                                      String typeName,
+                                                                      String fieldName,
+                                                                      DataType dataType,
+                                                                      List<BucketRange<T>> buckets) {
 
         List<StatRangeResult> bucketStatResults = new ArrayList<>();
 
@@ -103,11 +103,64 @@ public class EsUtil {
 
 
     /**
-     * @param client Elastic client
+     * @param client    Elastic client
      * @param indexName Elastic index name (e.g., index1)
-     * @param typeName Elastic type name (e.g., Dragon)
+     * @param typeName  Elastic type name (e.g., Dragon)
+     * @param fieldName Elastic field name
+     * @param buckets List of numeric buckets with each bucket [lower bound, upper bound]
+     * @return Numeric buckets with lower bound (inclusive),  upper bound (exclusive)
+     */
+    private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
+                                                                      String indexName,
+                                                                      String typeName,
+                                                                      String fieldName,
+                                                                      List<BucketRange<Double>> buckets) {
+        List<StatRangeResult> bucketStatResults = new ArrayList<>();
+        String aggName = buildAggName(indexName, typeName, fieldName);
+
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
+                .setTypes(typeName);
+
+        RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(fieldName);
+        buckets.forEach(bucket -> {
+            Double start = bucket.getStart();
+            Double end = bucket.getEnd();
+            rangesAggregationBuilder.addRange(start, end);
+        });
+
+        SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
+                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
+                .setSize(0).execute().actionGet();
+
+        Range agg = sr.getAggregations().get(aggName);
+
+        for (Range.Bucket entry : agg.getBuckets()) {
+            String key = entry.getKeyAsString();             // Range as key
+            Number from = (Number) entry.getFrom();          // Bucket from
+            Number to = (Number) entry.getTo();              // Bucket to
+            long docCount = entry.getDocCount();    // Doc count
+
+            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
+            StatRangeResult bucketStatResult = new StatRangeResult(indexName, typeName, fieldName,
+                    key,
+                    DataType.numeric,
+                    from,
+                    to,
+                    docCount,
+                    cardinality.getValue());
+
+            bucketStatResults.add(bucketStatResult);
+        }
+
+        return bucketStatResults;
+    }
+
+    /**
+     * @param client    Elastic client
+     * @param indexName Elastic index name (e.g., index1)
+     * @param typeName  Elastic type name (e.g., Dragon)
      * @param fieldName Elastic field name (e.g., Address)
-     * @param buckets - String buckets ["str1", "str2")
+     * @param buckets   - String buckets ["str1", "str2")
      * @return List of String range buckets with lower (inclusive) and upper bound (exclusive)
      */
     public static List<StatRangeResult> getStringBucketsStatResults(TransportClient client,
@@ -126,7 +179,10 @@ public class EsUtil {
         FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
         buckets.forEach(bucket -> {
             String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
-            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.rangeQuery(fieldName).from(bucket.getStart()).to(bucket.getEnd()));
+            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.rangeQuery(fieldName).
+                    from(bucket.getStart()).to(bucket.getEnd())
+                    .includeLower(true)
+                    .includeUpper(false));
         });
 
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
@@ -193,6 +249,11 @@ public class EsUtil {
         }
         return bucketStatResults;
     }
+
+    private static String buildAggName(String indexName, String typeName, String fieldName) {
+        return String.format("%s_%s_%s_hist", indexName, typeName, fieldName);
+    }
+
     public static void bulkIndexingFromFile(TransportClient client, String filePath, String index, String type) throws IOException {
         BulkProcessor bulkProcessor = BulkProcessor.builder(
                 client,
@@ -272,8 +333,8 @@ public class EsUtil {
     }
 
     /**
-     * @param client
-     * @param indexName
+     * @param client Elastic Client
+     * @param indexName Index Name
      * @param documentType
      * @param id
      * @return Elastic source document (As a map)
@@ -294,15 +355,21 @@ public class EsUtil {
         return Optional.empty();
     }
 
-    public static SearchResponse getAllDocuments(Client client, String index,
-                                                 String type) {
+    /**
+     * Return all the documents from a type.
+     * @param client Elastic Client
+     * @param index Index Name
+     * @param type Type Name
+     * @return
+     */
+    public static SearchResponse getAllDocumentsInType(Client client, String index, String type) {
         return client.prepareSearch(index).setTypes(type).execute()
                 .actionGet();
     }
 
     /**
      * Return all the documents from a cluster.
-     * @param client
+     * @param client Elastic Client
      * @return
      */
     public static SearchResponse getAllDocuments(Client client) {
@@ -311,7 +378,7 @@ public class EsUtil {
 
     /**
      * Return all indices from cluster.
-     * @param client
+     * @param client Elastic Client
      * @return array of Indices
      */
     public static String[] getAllIndices(Client client) {
@@ -323,7 +390,7 @@ public class EsUtil {
     /**
      * Return all mappings of given index
      * @param client Elastic Client
-     * @param index Index Name
+     * @param index  Index Name
      * @return
      */
     public static ImmutableOpenMap<String, MappingMetaData> getMappingsOfIndex(
@@ -337,7 +404,7 @@ public class EsUtil {
     /**
      * Get all types in given index
      * @param client Elastic Client
-     * @param index Index Name
+     * @param index  Index Name
      * @return array of Elastic types
      */
     public static String[] getAllTypesFromIndex(
@@ -347,10 +414,10 @@ public class EsUtil {
 
     /**
      * Index given document.
-     * @param client: Client used to index data
-     * @param index: Document is stored in this index
-     * @param type: Document stored in this type
-     * @param id: Specifies _id of the document
+     * @param client:   Client used to index data
+     * @param index:    Document is stored in this index
+     * @param type:     Document stored in this type
+     * @param id:       Specifies _id of the document
      * @param document: Represents body of the document
      * @return {@link IndexResponse}
      */
@@ -363,71 +430,18 @@ public class EsUtil {
     /**
      * Index given object
      * @param client: Client used to index data
-     * @param index: Document is stored in this index
-     * @param type: Document stored in this type
-     * @param id : Specifies id of the document
-     * @param obj: Object to index
+     * @param index:  Document is stored in this index
+     * @param type:   Document stored in this type
+     * @param id      : Specifies id of the document
+     * @param obj:    Object to index
      * @return {@link IndexResponse}
      */
     public static IndexResponse indexData(Client client, String index,
                                           String type, String id, Object obj) throws JsonProcessingException {
         return indexData(client, index, type, id, new ObjectMapper().writeValueAsString(obj));
     }
-    //endregion
-
-    //region Private Methods
-    private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
-                                                                      String indexName,
-                                                                      String typeName,
-                                                                      String fieldName,
-                                                                      List<BucketRange<Double>> buckets) {
-        List<StatRangeResult> bucketStatResults = new ArrayList<>();
-        String aggName = buildAggName(indexName, typeName, fieldName);
-
-        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(indexName)
-                .setTypes(typeName);
-
-        RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(fieldName);
-        buckets.forEach(bucket -> {
-            Double start = bucket.getStart();
-            Double end = bucket.getEnd();
-            rangesAggregationBuilder.addRange(start, end);
-        });
-
-        SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
-                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(fieldName)))
-                .setSize(0).execute().actionGet();
-
-        Range agg = sr.getAggregations().get(aggName);
-
-        for (Range.Bucket entry : agg.getBuckets()) {
-            String key = entry.getKeyAsString();             // Range as key
-            Number from = (Number) entry.getFrom();          // Bucket from
-            Number to = (Number) entry.getTo();              // Bucket to
-            long docCount = entry.getDocCount();    // Doc count
-
-            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
-            StatRangeResult bucketStatResult = new StatRangeResult(indexName, typeName, fieldName,
-                    key,
-                    DataType.numeric,
-                    from,
-                    to,
-                    docCount,
-                    cardinality.getValue());
-
-            bucketStatResults.add(bucketStatResult);
-        }
-
-        return bucketStatResults;
-    }
-
-    private static String buildAggName(String indexName, String typeName, String fieldName) {
-        return String.format("%s_%s_%s_hist", indexName, typeName, fieldName);
-    }
 
     private static GetResponse getGetResponse(Client client, String indexName, String documentType, String id) {
         return client.get((new GetRequest(indexName, documentType, id))).actionGet();
     }
-    //endregion
-
 }

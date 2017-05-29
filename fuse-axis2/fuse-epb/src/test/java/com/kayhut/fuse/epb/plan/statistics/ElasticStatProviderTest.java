@@ -1,7 +1,9 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import com.kayhut.fuse.epb.plan.statistics.util.ElasticStatUtil;
-import com.kayhut.fuse.epb.util.EpbTestUtil;
+import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
+import com.kayhut.fuse.epb.plan.statistics.util.StatConfigTestUtil;
+import com.kayhut.fuse.epb.plan.statistics.util.StatTestUtil;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
@@ -34,23 +36,22 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by benishue on 28-May-17.
  */
-public class ElasticStatUtilTest {
+public class ElasticStatProviderTest {
 
     //region Parameters
     private static TransportClient dataClient;
     private static TransportClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
+    private static StatConfig statConfig;
+
     private static Iterable<Map<String, Object>> dragonsList;
 
-    private static final String MAPPING_DATA_FILE_PATH = "src\\test\\resources\\elastic.test.data.mapping.json";
+    private static final String MAPPING_DATA_FILE_PATH = "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
     private static final String MAPPING_STAT_FILE_PATH = "src\\test\\resources\\elastic.test.stat.mapping.json";
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
 
     private static final int NUM_OF_DRAGONS_IN_INDEX = 1000;
-    private static final String STAT_INDEX_NAME = "stat";
-    private static final String STAT_TYPE_NUMERIC_NAME = "bucketNumeric";
-    private static final String STAT_TYPE_STRING_NAME = "bucketString";
-    private static final String STAT_TYPE_TERM_NAME = "bucketTerm";
+
     private static final String DATA_INDEX_NAME = "index1";
     private static final String DATA_TYPE_NAME = "Dragon";
     private static final String DATA_FIELD_NAME_AGE = "age";
@@ -88,20 +89,21 @@ public class ElasticStatUtilTest {
     // The transport port for the statistics cluster
     private static final int STAT_TRANSPORT_PORT = 9300;
 
-    static Logger logger = org.slf4j.LoggerFactory.getLogger(ElasticStatUtilTest.class);
+    static Logger logger = org.slf4j.LoggerFactory.getLogger(ElasticStatProviderTest.class);
     //endregion
 
     //todo Add more tests
 
     @Test
     public void getGenderFieldStatisticsTest() throws Exception {
-        List<Statistics.BucketInfo> genderStatistics = ElasticStatUtil.getFieldStatistics(statClient,
-                STAT_INDEX_NAME,
-                STAT_TYPE_TERM_NAME,
+        ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig);
+
+        List<Statistics.BucketInfo> genderStatistics = elasticStatProvider.getFieldStatistics(statClient,
+                statConfig.getStatIndexName(),
+                statConfig.getStatTermTypeName(),
                 Arrays.asList(DATA_INDEX_NAME),
                 Arrays.asList(DATA_TYPE_NAME),
                 Arrays.asList(DATA_FIELD_NAME_GENDER));
-
 
 
         assertEquals(DRAGON_GENDERS.size(), genderStatistics.size());
@@ -117,9 +119,10 @@ public class ElasticStatUtilTest {
 
     @Test
     public void getAgeFieldStatisticsTest() throws Exception {
-        List<Statistics.BucketInfo> ageStatistics = ElasticStatUtil.getFieldStatistics(statClient,
-                STAT_INDEX_NAME,
-                STAT_TYPE_NUMERIC_NAME,
+        ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig);
+        List<Statistics.BucketInfo> ageStatistics = elasticStatProvider.getFieldStatistics(statClient,
+                statConfig.getStatIndexName(),
+                statConfig.getStatNumericTypeName(),
                 Arrays.asList(DATA_INDEX_NAME),
                 Arrays.asList(DATA_TYPE_NAME),
                 Arrays.asList(DATA_FIELD_NAME_AGE));
@@ -128,15 +131,18 @@ public class ElasticStatUtilTest {
 
         ageStatistics.forEach(bucketInfo -> {
             //Since this is a term: Lower bound value == Upper bound value
-            assertTrue((Double)bucketInfo.getLowerBound() <= (Double)bucketInfo.getHigherBound());
+            assertTrue((Double) bucketInfo.getLowerBound() <= (Double) bucketInfo.getHigherBound());
         });
     }
 
 
     @BeforeClass
     public static void setUp() throws Exception {
+
+        statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
+
         MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME, MAPPING_DATA_FILE_PATH);
-        MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(STAT_INDEX_NAME, MAPPING_STAT_FILE_PATH);
+        MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH);
 
         elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{configurerIndex1, configurerStat});
 
@@ -144,7 +150,7 @@ public class ElasticStatUtilTest {
         dataClient = ClientProvider.getTransportClient(DATA_CLUSTER_NAME, DATA_TRANSPORT_PORT, DATA_HOSTS);
         statClient = ClientProvider.getTransportClient(STAT_CLUSTER_NAME, STAT_TRANSPORT_PORT, STAT_HOSTS);
 
-        dragonsList = EpbTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
+        dragonsList = StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
                 DRAGON_MIN_AGE,
                 DRAGON_MAX_AGE,
                 DRAGON_NAME_PREFIX_LENGTH,
@@ -163,8 +169,12 @@ public class ElasticStatUtilTest {
         ).populate();
 
         Thread.sleep(2000);
-        StatCalculator.loadDefaultStatParameters(STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME, STAT_TYPE_STRING_NAME, STAT_TYPE_TERM_NAME);
-        StatCalculator.buildStatisticsBasedOnConfiguration(logger, dataClient, statClient, buildStatContainer() );
+        StatCalculator.loadDefaultStatParameters(
+                statConfig.getStatIndexName(),
+                statConfig.getStatNumericTypeName(),
+                statConfig.getStatStringTypeName(),
+                statConfig.getStatTermTypeName());
+        StatCalculator.buildStatisticsBasedOnConfiguration(logger, dataClient, statClient, buildStatContainer());
         Thread.sleep(3000);
 
     }
@@ -186,7 +196,7 @@ public class ElasticStatUtilTest {
 
     }
 
-
+    //Per test
     private static StatContainer buildStatContainer() {
         HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.aHistogramNumeric()
                 .withMin(DRAGON_MIN_AGE).withMax(DRAGON_MAX_AGE).withNumOfBins(10).build();
@@ -236,7 +246,7 @@ public class ElasticStatUtilTest {
 
         Type typeDragon = new Type(DATA_TYPE_NAME, Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
 
-        Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList(DATA_INDEX_NAME))
+        Mapping mapping = Mapping.Builder.aMapping().withIndices(Arrays.asList(DATA_INDEX_NAME))
                 .withTypes(Collections.singletonList(DATA_TYPE_NAME)).build();
 
         return StatContainer.Builder.aStatContainer()

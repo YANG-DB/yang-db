@@ -1,22 +1,13 @@
-package com.kayhut.fuse.epb.util;
+package com.kayhut.fuse.epb.plan.statistics.util;
 
-import com.kayhut.fuse.stat.model.bucket.Bucket;
-import com.kayhut.fuse.stat.model.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.enums.DataType;
-import com.kayhut.fuse.stat.model.result.StatRangeResult;
-import com.kayhut.fuse.stat.model.result.StatResultBase;
-import com.kayhut.fuse.stat.model.result.StatTermResult;
-import com.kayhut.fuse.stat.util.StatUtil;
-import javaslang.Tuple2;
 import org.apache.commons.collections.map.HashedMap;
-import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.Str;
 
 import java.util.*;
 
 /**
  * Created by benishue on 25-May-17.
  */
-public class EpbTestUtil {
+public class StatTestUtil {
     private static final Random rand = new Random();
 
     public static String generateRandomString(int stringSize) {

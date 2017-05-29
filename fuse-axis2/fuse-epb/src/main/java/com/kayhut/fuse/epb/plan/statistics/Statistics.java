@@ -168,7 +168,7 @@ public interface Statistics {
                 return null;
 
             long total = bucketsToMerge.stream().mapToLong(b -> b.getTotal()).sum();
-            long card = bucketsToMerge.get(0).isSingleValue() ? 1 :  bucketsToMerge.stream().mapToLong(b -> Math.round(b.getCardinality() * CARDINALITY_LAMBDA )).sum();
+            long card = bucketsToMerge.get(0).isSingleValue() ? 1 : Math.round(bucketsToMerge.stream().mapToDouble(b -> b.getCardinality()).average().getAsDouble());
             BucketInfo<T> newBucket = new BucketInfo<T>(total, card, bucketsToMerge.get(0).getLowerBound(),bucketsToMerge.get(0).getHigherBound());
             return newBucket;
         }

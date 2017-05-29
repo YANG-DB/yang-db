@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data.schema;
 
+import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
@@ -10,6 +11,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.*;
+
 /**
  * Created by Roman on 11/05/2017.
  */
@@ -17,9 +20,12 @@ public class DragonsPhysicalIndexProvider implements PhysicalIndexProvider {
     //region Constructors
     public DragonsPhysicalIndexProvider() {
         this.indexPartitions = new HashMap<>();
-        this.indexPartitions.put("Person", new StaticIndexPartition(Arrays.asList("person")));
-        this.indexPartitions.put("Dragon", new StaticIndexPartition(Arrays.asList("dragon")));
-        this.indexPartitions.put("Fire", new StaticIndexPartition(Arrays.asList("fire20170511", "fire20170512", "fire20170513")));
+        this.indexPartitions.put(PERSON.name, new StaticIndexPartition(Arrays.asList(PERSON.name.toLowerCase())));
+        this.indexPartitions.put(DRAGON.name, new StaticIndexPartition(Arrays.asList(DRAGON.name.toLowerCase())));
+        this.indexPartitions.put(FIRE.getName(), new StaticIndexPartition(Arrays.asList(
+                FIRE.getName().toLowerCase() + "20170511",
+                FIRE.getName().toLowerCase() + "20170512",
+                FIRE.getName().toLowerCase() + "20170513")));
     }
     //endregion
 

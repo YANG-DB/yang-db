@@ -1,6 +1,6 @@
 {
   "mappings": {
-    "Dragon": {
+    "dragon": {
       "_all": {
         "enabled": false
       },

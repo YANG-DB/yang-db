@@ -181,7 +181,7 @@ public class CompoundBottomUpPlanSearcherTests {
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
 
-        CostEstimator<Plan, PlanDetailedCost> costEstimator = new DummyCostEstimator<>(new PlanDetailedCost());
+        CostEstimator<Plan, PlanDetailedCost, AsgQuery> costEstimator = new DummyCostEstimator<>(new PlanDetailedCost());
 
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
 

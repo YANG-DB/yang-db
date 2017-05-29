@@ -27,9 +27,7 @@ import org.junit.rules.ExpectedException;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Created by benishue on 04-May-17.
@@ -40,18 +38,27 @@ public class StatCalculatorTest {
     private static TransportClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
-    private static final String MAPPING_DATA_FILE_PATH = "src\\test\\resources\\elastic.test.data.mapping.json";
+    private static final String MAPPING_DATA_FILE_DRAGON_PATH = "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
+    private static final String MAPPING_DATA_FILE_FIRE_PATH = "src\\test\\resources\\elastic.test.data.fire.mapping.json";
     private static final String MAPPING_STAT_FILE_PATH = "src\\test\\resources\\elastic.test.stat.mapping.json";
 
     private static final int NUM_OF_DRAGONS_IN_INDEX_1 = 1000;
     private static final int NUM_OF_DRAGONS_IN_INDEX_2 = 555;
+    private static final int NUM_OF_DRAGONS_IN_INDEX_3 = 200;
+    private static final int NUM_OF_DRAGONS_IN_INDEX_4 = 100;
+
     private static final String STAT_INDEX_NAME = "stat";
     private static final String STAT_TYPE_NUMERIC_NAME = "bucketNumeric";
     private static final String STAT_TYPE_STRING_NAME = "bucketString";
     private static final String STAT_TYPE_TERM_NAME = "bucketTerm";
     private static final String DATA_INDEX_NAME_1 = "index1";
     private static final String DATA_INDEX_NAME_2 = "index2";
-    private static final String DATA_TYPE_NAME_1 = "dragon";
+    private static final String DATA_INDEX_NAME_3 = "index3";
+    private static final String DATA_INDEX_NAME_4 = "index4";
+
+    private static final String DATA_TYPE_DRAGON = "dragon";
+    private static final String DATA_TYPE_FIRE = "fire";
+
     private static final String DATA_FIELD_NAME_AGE = "age";
     private static final String DATA_FIELD_NAME_ADDRESS = "address";
     private static final String DATA_FIELD_NAME_COLOR = "color";
@@ -62,6 +69,10 @@ public class StatCalculatorTest {
     private static final int DRAGON_MAX_AGE = 100;
     private static final int DRAGON_ADDRESS_LENGTH = 20;
     private static final int DRAGON_NAME_PREFIX_LENGTH = 10;
+    private static final int DRAGON_MIN_TEMP = 25;
+    private static final int DRAGON_MAX_TEMP = 1000;
+    private static final long DRAGON_START_DATE = 0L;
+    private static final long DRAGON_END_DATE = 999999L;
     private static final List<String> DRAGON_COLORS =
             Arrays.asList("red", "green", "yellow", "blue", "00", "11", "22", "33", "44", "55");
     private static final List<String> DRAGON_GENDERS =
@@ -82,17 +93,16 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME));
         assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
 
-
         //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
-        String docId1 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_AGE + "10.0" + "19.0");
+        String docId1 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_AGE + "10.0" + "19.0");
         assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME, docId1));
 
         //Check if address bucket exists (bucket #1 "abc" + "dzz")
-        String docId2 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_ADDRESS + "abc" + "dzz");
+        String docId2 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_ADDRESS + "abc" + "dzz");
         assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId2));
 
         //Check if color bucket exists (bucket with lower_bound: "grc", upper_bound: "grl")
-        String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_COLOR + "grc" + "grl");
+        String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "grc" + "grl");
         assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3));
 
         //Check that the bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
@@ -101,11 +111,11 @@ public class StatCalculatorTest {
         assertEquals(1, (int) doc3Result.get().get("cardinality"));
 
         //Check that the manual bucket ("00", "11"] exists for the composite histogram
-        String docId4 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_COLOR + "00" + "11");
+        String docId4 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "00" + "11");
         assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId4));
 
         //Check term buckets (Gender male) - cardinality should be 1
-        String docId5 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_GENDER + "male");
+        String docId5 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_GENDER + "male");
         Optional<Map<String, Object>> doc5Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId5);
         assertTrue(doc5Result.isPresent());
         assertEquals(1, (int) doc5Result.get().get("cardinality"));
@@ -115,7 +125,7 @@ public class StatCalculatorTest {
 
         //Check that there are 1000 dragons in Index: "index1", Type: "dragon"
         //Cardinality should be 1
-        String docId6 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_NAME_1 + DATA_FIELD_NAME_TYPE + "dragon");
+        String docId6 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_TYPE + "dragon");
         Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME, docId6);
         assertTrue(doc6Result.isPresent());
         assertEquals(1, (int) doc6Result.get().get("cardinality"));
@@ -133,6 +143,62 @@ public class StatCalculatorTest {
         }
     }
 
+    @Test
+    public void statDataValidationTest() throws Exception {
+        //Used only to test that the data is populated correctly
+
+        //Check if all indices exists: index1, index2, index3, index4
+        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_1));
+        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_2));
+        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_3));
+        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_4));
+
+        //Check if Type= Dragon exists in indices: index1, index2
+        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON));
+        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON));
+
+        //Check if Type= Dragon exists in indices: index1, index2
+        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE));
+        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE));
+
+        //Check on types
+        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_1).length);
+        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_2).length);
+        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_3).length);
+        assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_4).length);
+
+        //Check on mappings
+        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_1).size());
+        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_2).size());
+
+        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_3).size());
+        assertEquals(1, EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_4).size());
+
+        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_1).get(DATA_TYPE_DRAGON).getSourceAsMap());
+        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_2).get(DATA_TYPE_DRAGON).getSourceAsMap());
+        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_3).get(DATA_TYPE_DRAGON));
+        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_4).get(DATA_TYPE_DRAGON));
+
+        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_3).get(DATA_TYPE_FIRE).getSourceAsMap());
+        assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_4).get(DATA_TYPE_FIRE).getSourceAsMap());
+        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_1).get(DATA_TYPE_FIRE));
+        assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_2).get(DATA_TYPE_FIRE));
+
+
+        //Check that we have documents and they are in the right place
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE).getHits().getTotalHits() > 0);
+
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_FIRE).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_FIRE).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_DRAGON).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_DRAGON).getHits().getTotalHits() == 0);
+
+
+    }
+
     @BeforeClass
     public static void setup() throws Exception {
 
@@ -141,11 +207,20 @@ public class StatCalculatorTest {
         dataClient = ClientProvider.getDataClient(configuration);
         statClient = ClientProvider.getDataClient(configuration);
 
-        MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_PATH);
-        MappingFileElasticConfigurer configurerIndex2 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_PATH);
+        MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH);
+        MappingFileElasticConfigurer configurerIndex2 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH);
+        MappingFileElasticConfigurer configurerIndex3 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH);
+        MappingFileElasticConfigurer configurerIndex4 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH);
+
+
         MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(STAT_INDEX_NAME, MAPPING_STAT_FILE_PATH);
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{configurerIndex1, configurerIndex2, configurerStat});
+        elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{
+                configurerIndex1,
+                configurerIndex2,
+                configurerIndex3,
+                configurerIndex4,
+                configurerStat});
 
 
         Thread.sleep(4000);
@@ -153,7 +228,7 @@ public class StatCalculatorTest {
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_1,
-                DATA_TYPE_NAME_1,
+                DATA_TYPE_DRAGON,
                 "id",
                 () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_1,
                         DRAGON_MIN_AGE,
@@ -166,7 +241,7 @@ public class StatCalculatorTest {
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_2,
-                DATA_TYPE_NAME_1,
+                DATA_TYPE_DRAGON,
                 "id",
                 () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_2,
                         DRAGON_MIN_AGE,
@@ -176,8 +251,34 @@ public class StatCalculatorTest {
                         DRAGON_GENDERS,
                         DRAGON_ADDRESS_LENGTH)).populate();
 
-        Thread.sleep(2000);
 
+        new ElasticDataPopulator(
+                dataClient,
+                DATA_INDEX_NAME_3,
+                DATA_TYPE_FIRE,
+                "id",
+                () -> StatTestUtil.createDragonFireDragonEdges(
+                        NUM_OF_DRAGONS_IN_INDEX_3,
+                        DRAGON_START_DATE,
+                        DRAGON_END_DATE,
+                        DRAGON_MIN_TEMP,
+                        DRAGON_MAX_TEMP
+                )).populate();
+
+        new ElasticDataPopulator(
+                dataClient,
+                DATA_INDEX_NAME_4,
+                DATA_TYPE_FIRE,
+                "id",
+                () -> StatTestUtil.createDragonFireDragonEdges(
+                        NUM_OF_DRAGONS_IN_INDEX_4,
+                        DRAGON_START_DATE,
+                        DRAGON_END_DATE,
+                        DRAGON_MIN_TEMP,
+                        DRAGON_MAX_TEMP
+                )).populate();
+
+        Thread.sleep(4000);
     }
 
     @AfterClass
@@ -248,7 +349,7 @@ public class StatCalculatorTest {
 
         Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
 
-        Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1", "index2"))
+        Mapping mapping = Mapping.Builder.aMapping().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();
 
         return StatContainer.Builder.aStatContainer()

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.*;
 import javaslang.collection.Stream;
@@ -23,6 +24,11 @@ public class OntologyTest {
     private static Ontology ontologyShortObj = new Ontology();
     private static Ontology ontologyWithCompositeObj = new Ontology();
 
+    public static void main(String[] args) throws JsonProcessingException {
+        Ontology ontology = OntologyTestUtils.createDragonsOntologyLong();
+        String json = new ObjectMapper().writeValueAsString(ontology);
+        System.out.println(json);
+    }
 
     @Test
     @Ignore

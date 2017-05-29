@@ -2,6 +2,7 @@ package com.kayhut.fuse.stat.model.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,11 +12,17 @@ public class Type {
 
     //region Ctrs
     public Type() {
+        //needed for Jackson
     }
 
     public Type(String type, List<Field> fields) {
         this.type = type;
         this.fields = fields;
+    }
+
+    public Type(String type) {
+        this.type = type;
+        this.fields = new ArrayList<>();
     }
     //endregion
 

@@ -8,7 +8,7 @@ import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
-import com.kayhut.fuse.executor.uniGraphProvider.UniGraphProvider;
+import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -18,7 +18,6 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
-import org.unipop.structure.UniGraph;
 
 import static com.kayhut.fuse.model.Utils.submit;
 

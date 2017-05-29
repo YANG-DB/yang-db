@@ -1,6 +1,6 @@
 package com.kayhut.fuse.services.engine2.data.schema;
 
-import com.kayhut.fuse.executor.uniGraphProvider.GraphLayoutProviderFactory;
+import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphLayoutProvider;
 

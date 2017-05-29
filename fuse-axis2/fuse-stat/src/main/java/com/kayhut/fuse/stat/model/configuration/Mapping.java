@@ -9,6 +9,7 @@ public class Mapping {
 
     //region Ctrs
     public Mapping() {
+        //needed for Jackson
     }
 
     public Mapping(List<String> indices, List<String> types) {
@@ -41,23 +42,23 @@ public class Mapping {
     //endregion
 
     //region Builder
-    public static final class MappingBuilder {
+    public static final class Builder {
         private List<String> indices;
         private List<String> types;
 
-        private MappingBuilder() {
+        private Builder() {
         }
 
-        public static MappingBuilder aMapping() {
-            return new MappingBuilder();
+        public static Builder aMapping() {
+            return new Builder();
         }
 
-        public MappingBuilder withIndices(List<String> indices) {
+        public Builder withIndices(List<String> indices) {
             this.indices = indices;
             return this;
         }
 
-        public MappingBuilder withTypes(List<String> types) {
+        public Builder withTypes(List<String> types) {
             this.types = types;
             return this;
         }
