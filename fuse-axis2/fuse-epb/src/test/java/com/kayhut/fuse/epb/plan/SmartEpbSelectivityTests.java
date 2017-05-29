@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
@@ -215,7 +216,7 @@ public class SmartEpbSelectivityTests {
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         statisticsCostEstimator = new StatisticsCostEstimator(
                 (ont) -> eBaseStatisticsProvider,
-                new BasicStepEstimator(1.0,0.001),
+                M1StepEstimator.getStepEstimator(1.0,0.001),
                 (id) -> Optional.of(ont.get()));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
