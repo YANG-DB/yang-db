@@ -57,12 +57,12 @@ public class EsUtil {
     }
 
     /**
-     * @param client Elastic client
+     * @param client    Elastic client
      * @param indexName Elastic index name (e.g., index1)
-     * @param typeName Elastic type name (e.g., Dragon)
+     * @param typeName  Elastic type name (e.g., Dragon)
      * @param fieldName Elastic field name
-     * @param min The lower bound of the left most range bucket
-     * @param max the upper bound of the right most range bucket
+     * @param min       The lower bound of the left most range bucket
+     * @param max       the upper bound of the right most range bucket
      * @param numOfBins number of buckets
      * @return List of numeric range buckets with lower (inclusive) and upper bound (exclusive)
      */
@@ -79,11 +79,11 @@ public class EsUtil {
     }
 
     public static <T> List<StatRangeResult> getManualHistogramResults(TransportClient client,
-                                                                  String indexName,
-                                                                  String typeName,
-                                                                  String fieldName,
-                                                                  DataType dataType,
-                                                                  List<BucketRange<T>> buckets) {
+                                                                      String indexName,
+                                                                      String typeName,
+                                                                      String fieldName,
+                                                                      DataType dataType,
+                                                                      List<BucketRange<T>> buckets) {
 
         List<StatRangeResult> bucketStatResults = new ArrayList<>();
 
@@ -101,6 +101,15 @@ public class EsUtil {
         return bucketStatResults;
     }
 
+
+    /**
+     * @param client    Elastic client
+     * @param indexName Elastic index name (e.g., index1)
+     * @param typeName  Elastic type name (e.g., Dragon)
+     * @param fieldName Elastic field name
+     * @param buckets List of numeric buckets with each bucket [lower bound, upper bound]
+     * @return Numeric buckets with lower bound (inclusive),  upper bound (exclusive)
+     */
     private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
                                                                       String indexName,
                                                                       String typeName,
@@ -147,11 +156,11 @@ public class EsUtil {
     }
 
     /**
-     * @param client Elastic client
+     * @param client    Elastic client
      * @param indexName Elastic index name (e.g., index1)
-     * @param typeName Elastic type name (e.g., Dragon)
+     * @param typeName  Elastic type name (e.g., Dragon)
      * @param fieldName Elastic field name (e.g., Address)
-     * @param buckets - String buckets ["str1", "str2")
+     * @param buckets   - String buckets ["str1", "str2")
      * @return List of String range buckets with lower (inclusive) and upper bound (exclusive)
      */
     public static List<StatRangeResult> getStringBucketsStatResults(TransportClient client,
@@ -170,7 +179,10 @@ public class EsUtil {
         FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
         buckets.forEach(bucket -> {
             String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
-            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.rangeQuery(fieldName).from(bucket.getStart()).to(bucket.getEnd()));
+            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.rangeQuery(fieldName).
+                    from(bucket.getStart()).to(bucket.getEnd())
+                    .includeLower(true)
+                    .includeUpper(false));
         });
 
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
@@ -355,6 +367,7 @@ public class EsUtil {
 
     /**
      * Return all the documents from a cluster.
+     *
      * @param client
      * @return
      */
@@ -364,6 +377,7 @@ public class EsUtil {
 
     /**
      * Return all indices from cluster.
+     *
      * @param client
      * @return array of Indices
      */
@@ -375,8 +389,9 @@ public class EsUtil {
 
     /**
      * Return all mappings of given index
+     *
      * @param client Elastic Client
-     * @param index Index Name
+     * @param index  Index Name
      * @return
      */
     public static ImmutableOpenMap<String, MappingMetaData> getMappingsOfIndex(
@@ -389,8 +404,9 @@ public class EsUtil {
 
     /**
      * Get all types in given index
+     *
      * @param client Elastic Client
-     * @param index Index Name
+     * @param index  Index Name
      * @return array of Elastic types
      */
     public static String[] getAllTypesFromIndex(
@@ -400,10 +416,11 @@ public class EsUtil {
 
     /**
      * Index given document.
-     * @param client: Client used to index data
-     * @param index: Document is stored in this index
-     * @param type: Document stored in this type
-     * @param id: Specifies _id of the document
+     *
+     * @param client:   Client used to index data
+     * @param index:    Document is stored in this index
+     * @param type:     Document stored in this type
+     * @param id:       Specifies _id of the document
      * @param document: Represents body of the document
      * @return {@link IndexResponse}
      */
@@ -415,11 +432,12 @@ public class EsUtil {
 
     /**
      * Index given object
+     *
      * @param client: Client used to index data
-     * @param index: Document is stored in this index
-     * @param type: Document stored in this type
-     * @param id : Specifies id of the document
-     * @param obj: Object to index
+     * @param index:  Document is stored in this index
+     * @param type:   Document stored in this type
+     * @param id      : Specifies id of the document
+     * @param obj:    Object to index
      * @return {@link IndexResponse}
      */
     public static IndexResponse indexData(Client client, String index,
