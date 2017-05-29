@@ -19,14 +19,14 @@ public class CheapestPlanSelector implements PlanSelector<PlanWithCost<Plan, Pla
     public Iterable<PlanWithCost<Plan, PlanDetailedCost>> select(AsgQuery query, Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {
         PlanWithCost<Plan, PlanDetailedCost> minPlan = null;
         for(PlanWithCost<Plan, PlanDetailedCost> planWithCost : plans) {
-//            if(planWithCost!=null) {
-                if (SimpleExtenderUtils.checkIfPlanIsComplete(planWithCost.getPlan(), query)) {
-                    if (minPlan == null)
+            if(SimpleExtenderUtils.checkIfPlanIsComplete(planWithCost.getPlan(), query)) {
+                if (minPlan == null)
+                    minPlan = planWithCost;
+                else {
+                    if (minPlan.getCost().getGlobalCost().cost > planWithCost.getCost().getGlobalCost().cost)
+                            //|| (minPlan.getCost().getGlobalCost().cost == planWithCost.getCost().getGlobalCost().cost
+                            //    && minPlan.getPlan().toString().compareTo(planWithCost.getPlan().toString()) > 0))
                         minPlan = planWithCost;
-                    else {
-                        if (minPlan.getCost().getGlobalCost().cost > planWithCost.getCost().getGlobalCost().cost)
-                            minPlan = planWithCost;
-//                    }
                 }
             }
         }

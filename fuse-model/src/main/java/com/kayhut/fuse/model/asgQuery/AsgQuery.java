@@ -13,7 +13,9 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 23-Feb-17.
@@ -187,7 +189,7 @@ public class AsgQuery {
 
         public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Integer ... vTypes) {
             EUntyped untyped = new EUntyped();
-            untyped.setNvTypes(Arrays.asList(vTypes));
+            untyped.setvTypes(Arrays.stream(vTypes).collect(Collectors.toList()));
             untyped.seteTag(eTag);
             untyped.seteNum(eNum);
 
@@ -196,7 +198,7 @@ public class AsgQuery {
 
         public static AsgEBase<EUntyped> unTyped(int eNum, Integer ... vTypes) {
             EUntyped untyped = new EUntyped();
-            untyped.setNvTypes(Arrays.asList(vTypes));
+            untyped.setvTypes(Arrays.stream(vTypes).collect(Collectors.toList()));
             untyped.seteNum(eNum);
 
             return new AsgEBase<>(untyped);

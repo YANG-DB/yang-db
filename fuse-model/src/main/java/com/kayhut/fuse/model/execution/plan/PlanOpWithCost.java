@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
@@ -16,6 +17,17 @@ public class PlanOpWithCost<C> {
         this.opBase = Arrays.asList(opBase);
         this.countEstimates = new Stack<>();
         this.countEstimates.push(countEstimates);
+    }
+
+    public PlanOpWithCost(C cost, double countEstimates, List<PlanOpBase> ops){
+        this(cost, countEstimates);
+        this.opBase = new ArrayList<>(ops);
+    }
+
+    public PlanOpWithCost(C cost, Stack<Double> countEstimates, List<PlanOpBase> ops){
+        this.cost = cost;
+        this.countEstimates = (Stack<Double>) countEstimates.clone();
+        this.opBase = new ArrayList<>(ops);
     }
     //endregion
 

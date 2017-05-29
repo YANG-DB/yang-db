@@ -73,9 +73,9 @@ public class ScenarioMockUtil {
         this.graphElementSchemaProvider = new OntologySchemaProvider(this.ont.get(), this.indexProvider, this.graphLayoutProvider);
 
         this.graphStatisticsProvider = mock(GraphStatisticsProvider.class);
-        when(graphStatisticsProvider.getGlobalSelectivity(any(), any())).thenAnswer(invocationOnMock -> {
+        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema schema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = (List<String>) invocationOnMock.getArgumentAt(1, List.class);
+            List<String> indices = (List<String>) invocationOnMock.getArgumentAt(2, List.class);
             Long globalSelectivity = this.globalSelectivity.getOrDefault(schema.getType(), 10L);
             return globalSelectivity*indices.size();
         });

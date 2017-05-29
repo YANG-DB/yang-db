@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.kayhut.fuse.model.OntologyTestUtils.FIRE;
+
 /**
  * Created by Roman on 23/05/2017.
  */
@@ -19,7 +21,7 @@ public class DragonsGraphLayoutProvider implements GraphLayoutProvider {
         fireRedundantProperties.put("id", "entityB.id");
         fireRedundantProperties.put("type", "entityB.type");
 
-        this.redundantProperties.put("Fire", fireRedundantProperties);
+        this.redundantProperties.put(FIRE.getName(), fireRedundantProperties);
     }
     //endregion
 

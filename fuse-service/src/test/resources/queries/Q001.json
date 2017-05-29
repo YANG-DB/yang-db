@@ -19,7 +19,7 @@
     {
       "eNum": 2,
       "type": "Rel",
-      "rType": 1,
+      "rType": 101,
       "dir": "R",
       "next": 3
     },

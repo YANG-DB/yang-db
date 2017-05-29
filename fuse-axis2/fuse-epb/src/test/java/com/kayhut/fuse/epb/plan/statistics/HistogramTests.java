@@ -99,8 +99,8 @@ public class HistogramTests {
         Assert.assertEquals("z",mergedHistogram.getBuckets().get(1).getHigherBound());
         Assert.assertEquals(200l ,(long)mergedHistogram.getBuckets().get(0).getTotal());
         Assert.assertEquals(100l ,(long)mergedHistogram.getBuckets().get(1).getTotal());
-        Assert.assertEquals(20l ,(long)mergedHistogram.getBuckets().get(0).getCardinality());
-        Assert.assertEquals(30l ,(long)mergedHistogram.getBuckets().get(1).getCardinality());
+        Assert.assertEquals(10l ,(long)mergedHistogram.getBuckets().get(0).getCardinality());
+        Assert.assertEquals(15l ,(long)mergedHistogram.getBuckets().get(1).getCardinality());
     }
 
     @Test
@@ -154,7 +154,7 @@ public class HistogramTests {
         Assert.assertEquals(200l ,(long)mergedHistogram.getBuckets().get(3).getTotal());
         Assert.assertEquals(100l ,(long)mergedHistogram.getBuckets().get(4).getTotal());
         Assert.assertEquals(1l ,(long)mergedHistogram.getBuckets().get(0).getCardinality());
-        Assert.assertEquals(20l ,(long)mergedHistogram.getBuckets().get(1).getCardinality());
+        Assert.assertEquals(10l ,(long)mergedHistogram.getBuckets().get(1).getCardinality());
         Assert.assertEquals(10l ,(long)mergedHistogram.getBuckets().get(2).getCardinality());
         Assert.assertEquals(1l ,(long)mergedHistogram.getBuckets().get(3).getCardinality());
         Assert.assertEquals(20l ,(long)mergedHistogram.getBuckets().get(4).getCardinality());

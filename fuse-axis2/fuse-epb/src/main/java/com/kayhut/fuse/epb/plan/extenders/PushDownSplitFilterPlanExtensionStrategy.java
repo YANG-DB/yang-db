@@ -5,8 +5,8 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
-import com.kayhut.fuse.executor.uniGraphProvider.GraphLayoutProviderFactory;
-import com.kayhut.fuse.executor.uniGraphProvider.PhysicalIndexProviderFactory;
+import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
+import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -125,10 +125,9 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
         if(lastEntityFilterOp.isPresent()) {
             AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEBase().geteBase().clone()).build();
-            Stream.ofAll(ePropGroup.geteBase().getProps()).forEach(p -> {
+            Stream.ofAll(ePropGroup.geteBase().getProps()).toJavaList().forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get()
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(Integer.parseInt(p.getpType())).getName()).get());
-
                 if(redundantVertexProperty.isPresent()){
                     RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
                             p.getpType(), p.getCon());
@@ -140,7 +139,6 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
             EntityFilterOp newEntityFilterOp = new EntityFilterOp(AsgEBase.Builder.<EPropGroup>get().withEBase(ePropGroup.geteBase()).build());
             newPlan = PlanUtil.replace(newPlan, lastEntityFilterOp.get(), newEntityFilterOp);
         }
-
         RelationFilterOp newRelationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
         newPlan = PlanUtil.replace(newPlan, lastRelationFilterOp.get(), newRelationFilterOp);
 

@@ -56,7 +56,7 @@ public class BasicStepEstimator implements StepEstimator {
         StepEstimatorResult stepEstimatorResult = calculateFullStep(statisticsProvider, map, planPlanDetailedCostPlanWithCost);
         Cost gotoCost = new Cost(0);
 
-        return StepEstimatorResult.of(stepEstimatorResult.lambda(), new PlanOpWithCost<Cost>(gotoCost, stepEstimatorResult.planOpWithCosts().get(0).peek(),gotoOp), stepEstimatorResult.planOpWithCosts().get(1), stepEstimatorResult.planOpWithCosts().get(2));
+        return StepEstimatorResult.of(stepEstimatorResult.lambda(), new PlanOpWithCost<Cost>(gotoCost, 0,gotoOp), stepEstimatorResult.planOpWithCosts().get(1), stepEstimatorResult.planOpWithCosts().get(2));
 
     }
 
@@ -167,7 +167,8 @@ public class BasicStepEstimator implements StepEstimator {
         //cost if zero since the real cost is residing on the adjacent filter (rel filter)
         Cost relCost = new DetailedCost(R * delta, lambdaNode, lambdaEdge, R, N2);
 
-        PlanOpWithCost<Cost> entityOneOpCost = new PlanOpWithCost<>(entityOneCost, N1*lambda, entityOneOp, filterOneOp);
+        PlanOpWithCost<Cost> entityOneOpCost = new PlanOpWithCost<>(entityOneCost, N1, entityOneOp, filterOneOp);
+        entityOneOpCost.push(N1*lambda);
         PlanOpWithCost<Cost> relOpCost = new PlanOpWithCost<>(relCost, R, relationOp, relFilterOp);
         PlanOpWithCost<Cost> entityTwoOpCost = new PlanOpWithCost<>(new DetailedCost(N2, lambdaNode, lambdaEdge, R, N2), N2, entityTwoOp, filterTwoOp);
 
