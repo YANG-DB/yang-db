@@ -333,8 +333,8 @@ public class EsUtil {
     }
 
     /**
-     * @param client
-     * @param indexName
+     * @param client Elastic Client
+     * @param indexName Index Name
      * @param documentType
      * @param id
      * @return Elastic source document (As a map)
@@ -347,10 +347,6 @@ public class EsUtil {
         return Optional.empty();
     }
 
-    private static GetResponse getGetResponse(Client client, String indexName, String documentType, String id) {
-        return client.get((new GetRequest(indexName, documentType, id))).actionGet();
-    }
-
     public static Optional<String> getDocumentTypeByDocId(Client client, String indexName, String documentType, String docId) {
         GetResponse r = getGetResponse(client, indexName, documentType, docId);
         if (r != null && r.isExists()) {
@@ -359,16 +355,21 @@ public class EsUtil {
         return Optional.empty();
     }
 
-    public static SearchResponse getAllDocuments(Client client, String index,
-                                                 String type) {
+    /**
+     * Return all the documents from a type.
+     * @param client Elastic Client
+     * @param index Index Name
+     * @param type Type Name
+     * @return
+     */
+    public static SearchResponse getAllDocumentsInType(Client client, String index, String type) {
         return client.prepareSearch(index).setTypes(type).execute()
                 .actionGet();
     }
 
     /**
      * Return all the documents from a cluster.
-     *
-     * @param client
+     * @param client Elastic Client
      * @return
      */
     public static SearchResponse getAllDocuments(Client client) {
@@ -377,8 +378,7 @@ public class EsUtil {
 
     /**
      * Return all indices from cluster.
-     *
-     * @param client
+     * @param client Elastic Client
      * @return array of Indices
      */
     public static String[] getAllIndices(Client client) {
@@ -389,7 +389,6 @@ public class EsUtil {
 
     /**
      * Return all mappings of given index
-     *
      * @param client Elastic Client
      * @param index  Index Name
      * @return
@@ -404,7 +403,6 @@ public class EsUtil {
 
     /**
      * Get all types in given index
-     *
      * @param client Elastic Client
      * @param index  Index Name
      * @return array of Elastic types
@@ -416,7 +414,6 @@ public class EsUtil {
 
     /**
      * Index given document.
-     *
      * @param client:   Client used to index data
      * @param index:    Document is stored in this index
      * @param type:     Document stored in this type
@@ -432,7 +429,6 @@ public class EsUtil {
 
     /**
      * Index given object
-     *
      * @param client: Client used to index data
      * @param index:  Document is stored in this index
      * @param type:   Document stored in this type
@@ -443,5 +439,9 @@ public class EsUtil {
     public static IndexResponse indexData(Client client, String index,
                                           String type, String id, Object obj) throws JsonProcessingException {
         return indexData(client, index, type, id, new ObjectMapper().writeValueAsString(obj));
+    }
+
+    private static GetResponse getGetResponse(Client client, String indexName, String documentType, String id) {
+        return client.get((new GetRequest(indexName, documentType, id))).actionGet();
     }
 }

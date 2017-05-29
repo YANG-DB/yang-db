@@ -137,7 +137,7 @@
             "buckets": [
               {
                 "start": "a",
-                "end": "z"
+                "end": "zzzzz"
               }
             ]
           }
@@ -156,7 +156,7 @@
             "buckets": [
               {
                 "start": "a",
-                "end": "z"
+                "end": "zzzzz"
               }
             ]
           }

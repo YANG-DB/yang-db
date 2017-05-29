@@ -44,8 +44,8 @@ public class StatCalculatorTest {
 
     private static final int NUM_OF_DRAGONS_IN_INDEX_1 = 1000;
     private static final int NUM_OF_DRAGONS_IN_INDEX_2 = 555;
-    private static final int NUM_OF_FIRES_IN_INDEX_3 = 200;
-    private static final int NUM_OF_FIRES_IN_INDEX_4 = 100;
+    private static final int NUM_OF_DRAGONS_IN_INDEX_3 = 200;
+    private static final int NUM_OF_DRAGONS_IN_INDEX_4 = 100;
 
     private static final String STAT_INDEX_NAME = "stat";
     private static final String STAT_TYPE_NUMERIC_NAME = "bucketNumeric";
@@ -183,6 +183,20 @@ public class StatCalculatorTest {
         assertNotNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_4).get(DATA_TYPE_FIRE).getSourceAsMap());
         assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_1).get(DATA_TYPE_FIRE));
         assertNull(EsUtil.getMappingsOfIndex(dataClient, DATA_INDEX_NAME_2).get(DATA_TYPE_FIRE));
+
+
+        //Check that we have documents and they are in the right place
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE).getHits().getTotalHits() > 0);
+
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_FIRE).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_FIRE).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_DRAGON).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_DRAGON).getHits().getTotalHits() == 0);
+
+
     }
 
     @BeforeClass
@@ -244,7 +258,7 @@ public class StatCalculatorTest {
                 DATA_TYPE_FIRE,
                 "id",
                 () -> StatTestUtil.createDragonFireDragonEdges(
-                        NUM_OF_FIRES_IN_INDEX_3,
+                        NUM_OF_DRAGONS_IN_INDEX_3,
                         DRAGON_START_DATE,
                         DRAGON_END_DATE,
                         DRAGON_MIN_TEMP,
@@ -257,7 +271,7 @@ public class StatCalculatorTest {
                 DATA_TYPE_FIRE,
                 "id",
                 () -> StatTestUtil.createDragonFireDragonEdges(
-                        NUM_OF_FIRES_IN_INDEX_4,
+                        NUM_OF_DRAGONS_IN_INDEX_4,
                         DRAGON_START_DATE,
                         DRAGON_END_DATE,
                         DRAGON_MIN_TEMP,
