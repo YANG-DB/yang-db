@@ -46,7 +46,7 @@ public class ElasticStatProviderTest {
 
     private static Iterable<Map<String, Object>> dragonsList;
 
-    private static final String MAPPING_DATA_FILE_PATH = "src\\test\\resources\\elastic.test.data.mapping.json";
+    private static final String MAPPING_DATA_FILE_PATH = "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
     private static final String MAPPING_STAT_FILE_PATH = "src\\test\\resources\\elastic.test.stat.mapping.json";
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
 
@@ -246,7 +246,7 @@ public class ElasticStatProviderTest {
 
         Type typeDragon = new Type(DATA_TYPE_NAME, Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
 
-        Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList(DATA_INDEX_NAME))
+        Mapping mapping = Mapping.Builder.aMapping().withIndices(Arrays.asList(DATA_INDEX_NAME))
                 .withTypes(Collections.singletonList(DATA_TYPE_NAME)).build();
 
         return StatContainer.Builder.aStatContainer()

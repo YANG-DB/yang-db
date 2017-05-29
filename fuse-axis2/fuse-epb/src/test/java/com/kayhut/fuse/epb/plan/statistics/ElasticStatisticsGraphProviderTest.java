@@ -23,6 +23,8 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.ElasticIndexConfigurer;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import javaslang.Tuple2;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
@@ -40,32 +42,56 @@ import static org.mockito.Mockito.when;
  */
 public class ElasticStatisticsGraphProviderTest {
 
+
     private static TransportClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
 
+    private static final String MAPPING_DATA_FILE_DRAGON_PATH = "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
+    private static final String MAPPING_DATA_FILE_FIRE_PATH = "src\\test\\resources\\elastic.test.data.fire.mapping.json";
+    private static final String MAPPING_STAT_FILE_PATH = "src\\test\\resources\\elastic.test.stat.mapping.json";
 
-    static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
-    static final long NUM_OF_DRAGONS_IN_INDEX_2 = 555L; //HAMSA HAMSA HAMSA
 
-    static final String DRAGON_TYPE_NAME = "Dragon";
-    static final String AGE_FIELD_NAME = "age";
-    static final List<String> VERTEX_INDICES = ImmutableList.of("vertexIndex1", "vertexIndex2");
-    static final List<String> EDGE_INDICES = ImmutableList.of("edgeIndex1", "edgeIndex2");
+    private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
+    private static final long NUM_OF_DRAGONS_IN_INDEX_2 = 555L; //HAMSA HAMSA HAMSA
+
+    private static final String DATA_TYPE_DRAGON = "dragon";
+    private static final String DATA_TYPE_FIRE = "fire";
+
+    private static final String DATA_INDEX_NAME_1 = "index1";
+    private static final String DATA_INDEX_NAME_2 = "index2";
+    private static final String DATA_INDEX_NAME_3 = "index3";
+    private static final String DATA_INDEX_NAME_4 = "index4";
+
+    private static final String DATA_FIELD_NAME_NAME = "name"; //Dragon Name
+    private static final String DATA_FIELD_NAME_AGE = "age";
+    private static final String DATA_FIELD_NAME_ADDRESS = "address";
+    private static final String DATA_FIELD_NAME_COLOR = "color";
+    private static final String DATA_FIELD_NAME_GENDER = "gender";
+    private static final String DATA_FIELD_NAME_TYPE = "_type";
+
+
+    private static final List<String> DRAGON_COLORS =
+            Arrays.asList("red", "green", "yellow", "blue", "00", "11", "22", "33", "44", "55");
+    private static final List<String> DRAGON_GENDERS =
+            Arrays.asList("male", "female");
+
+    private static final List<String> VERTEX_INDICES = ImmutableList.of(DATA_INDEX_NAME_1, DATA_INDEX_NAME_2);
+    private static final List<String> EDGE_INDICES = ImmutableList.of(DATA_INDEX_NAME_3, DATA_INDEX_NAME_4);
 
 
     @Test
     public void getVertexCardinality() throws Exception {
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(getOntology());
-        GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema("Dragon").get();
+        GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig);
 
         Map<String, Tuple2<Long, Long>> termStatistics = new HashMap<>();
         //We have 1000 dragons in index1, cardinality is 1
-        termStatistics.put(DRAGON_TYPE_NAME, new Tuple2<>(NUM_OF_DRAGONS_IN_INDEX_1, 1L));
+        termStatistics.put(DATA_TYPE_DRAGON, new Tuple2<>(NUM_OF_DRAGONS_IN_INDEX_1, 1L));
 
         //Populating the Elastic Stat Engine index: 'stat' type: 'termBucket', buckets of statistics
-        populateTermStatDocs(VERTEX_INDICES, DRAGON_TYPE_NAME, "_type", termStatistics);
+        populateTermStatDocs(VERTEX_INDICES, DATA_TYPE_DRAGON, DATA_FIELD_NAME_TYPE, termStatistics);
         //Checking that the ELASTIC STAT TERM TYPE created
         assertTrue(EsUtil.checkIfEsTypeExists(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName()));
 
@@ -82,7 +108,7 @@ public class ElasticStatisticsGraphProviderTest {
         assertEquals(statConfig.getStatTermTypeName(), allTypesFromIndex[0]);
 
         //Check that the bucket term exists (the bucket is calculated on the field _type which is value is 'Dragon')
-        String docId = StatUtil.hashString(VERTEX_INDICES.get(0) + DRAGON_TYPE_NAME + "_type" + DRAGON_TYPE_NAME);
+        String docId = StatUtil.hashString(VERTEX_INDICES.get(0) + DATA_TYPE_DRAGON + DATA_FIELD_NAME_TYPE + DATA_TYPE_DRAGON);
         Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName(), docId);
         assertTrue(doc6Result.isPresent());
 
@@ -139,7 +165,23 @@ public class ElasticStatisticsGraphProviderTest {
 
         statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
         statClient = new ElasticClientProvider(statConfig).getStatClient();
+
+//        MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH);
+//        MappingFileElasticConfigurer configurerIndex2 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH);
+//        MappingFileElasticConfigurer configurerIndex3 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH);
+//        MappingFileElasticConfigurer configurerIndex4 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH);
+//
+//        MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH);
+//
+//        elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{
+//                configurerIndex1,
+//                configurerIndex2,
+//                configurerIndex3,
+//                configurerIndex4,
+//                configurerStat});
+
         elasticEmbeddedNode = new ElasticEmbeddedNode();
+
 
         Thread.sleep(4000);
     }
@@ -179,7 +221,11 @@ public class ElasticStatisticsGraphProviderTest {
      * @param field          Elastic Field Name (e.g., gender, _type)
      * @param termStatistics Map <Key = 'Term', Tuple<Count, Cardinality>, (e.g < 'Key = female', Value = [500, 1] >
      */
-    private static void populateTermStatDocs(List<String> indices, String type, String field, Map<String, Tuple2<Long, Long>> termStatistics) throws IOException {
+    private static void populateTermStatDocs(List<String> indices,
+                                             String type,
+                                             String field,
+                                             Map<String, Tuple2<Long, Long>> termStatistics
+    ) throws IOException {
         new ElasticDataPopulator(
                 statClient,
                 statConfig.getStatIndexName(),
@@ -225,26 +271,26 @@ public class ElasticStatisticsGraphProviderTest {
 
         HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
                 .withDataType(DataType.string).withBuckets(Arrays.asList(
-                        new BucketTerm("male"),
-                        new BucketTerm("female")
+                        new BucketTerm(DRAGON_GENDERS.get(0)),
+                        new BucketTerm(DRAGON_GENDERS.get(1))
                 )).build();
 
         HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
                 .withDataType(DataType.string).withBuckets(Collections.singletonList(
-                        new BucketTerm("dragon")
+                        new BucketTerm(DATA_TYPE_DRAGON)
                 )).build();
 
 
-        Type typeDragon = new Type("dragon", Arrays.asList(
-                new Field("age", histogramDragonAge),
-                new Field("name", histogramDragonName),
-                new Field("address", histogramDragonAddress),
-                new Field("color", histogramDragonColor),
-                new Field("gender", histogramTerm),
-                new Field("_type", histogramDocType)));
+        Type typeDragon = new Type(DATA_TYPE_DRAGON, Arrays.asList(
+                new Field(DATA_FIELD_NAME_AGE, histogramDragonAge),
+                new Field(DATA_FIELD_NAME_NAME, histogramDragonName),
+                new Field(DATA_FIELD_NAME_ADDRESS, histogramDragonAddress),
+                new Field(DATA_FIELD_NAME_COLOR, histogramDragonColor),
+                new Field(DATA_FIELD_NAME_GENDER, histogramTerm),
+                new Field(DATA_FIELD_NAME_TYPE, histogramDocType)));
 
-        Mapping mapping = Mapping.MappingBuilder.aMapping().withIndices(Arrays.asList("index1", "index2"))
-                .withTypes(Collections.singletonList("dragon")).build();
+        Mapping mapping = Mapping.Builder.aMapping().withIndices(VERTEX_INDICES)
+                .withTypes(Collections.singletonList(DATA_TYPE_DRAGON)).build();
 
         return StatContainer.Builder.aStatContainer()
                 .withMappings(Collections.singletonList(mapping))
@@ -274,10 +320,10 @@ public class ElasticStatisticsGraphProviderTest {
         }});
 
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
-                .withRType(1).withName("Fire").withEPairs(ePairs).build();
+                .withRType(1).withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
 
-        Property nameProp = new Property("name", 1, "string");
-        Property ageProp = new Property("age", 2, "int");
+        Property nameProp = new Property(DATA_FIELD_NAME_NAME, 1, "string");
+        Property ageProp = new Property(DATA_FIELD_NAME_AGE, 2, "int");
 
         when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
 
@@ -285,11 +331,7 @@ public class ElasticStatisticsGraphProviderTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(1).withName("Person")
-                            .withProperties(Collections.singletonList(nameProp.getpType()))
-                            .build());
-                    entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
-                            .withEType(2).withName("Dragon")
+                            .withEType(2).withName(DATA_TYPE_DRAGON)
                             .withProperties(Collections.singletonList(ageProp.getpType()))
                             .build());
                     return entityTypes;
@@ -316,12 +358,12 @@ public class ElasticStatisticsGraphProviderTest {
      * @param numOfBins
      * @return List of documents where each numeric bucket count & cardinality = index of bucket
      */
-    public static Iterable<Map<String, Object>> prepareNumericStatisticsDocs(List<String> indices,
-                                                                             String type,
-                                                                             String field,
-                                                                             long min,
-                                                                             long max,
-                                                                             int numOfBins) {
+    private static Iterable<Map<String, Object>> prepareNumericStatisticsDocs(List<String> indices,
+                                                                              String type,
+                                                                              String field,
+                                                                              long min,
+                                                                              long max,
+                                                                              int numOfBins) {
         List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
         List<StatRangeResult> statRangeResults = new ArrayList<>();
         int j = 0;
@@ -343,10 +385,10 @@ public class ElasticStatisticsGraphProviderTest {
      * @param termStatistics Map <Key = 'Term', Tuple<Count, Cardinality>, (e.g < 'Key = female', Value = [500, 1] >
      * @return list of documents
      */
-    public static Iterable<Map<String, Object>> prepareTermStatisticsDocs(List<String> indices,
-                                                                          String type,
-                                                                          String field,
-                                                                          Map<String, Tuple2<Long, Long>> termStatistics) {
+    private static Iterable<Map<String, Object>> prepareTermStatisticsDocs(List<String> indices,
+                                                                           String type,
+                                                                           String field,
+                                                                           Map<String, Tuple2<Long, Long>> termStatistics) {
         List<StatTermResult> statRangeResults = new ArrayList<>();
         for (Map.Entry<String, Tuple2<Long, Long>> entry : termStatistics.entrySet()) {
             String term = entry.getKey();

@@ -12,6 +12,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -26,7 +27,7 @@ import java.util.*;
  */
 public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
-    //todo move it to global enun
+    //todo move it to a global enun across modules
     private static final String DATE = "date";
     private static final String ENUM = "enum";
     private static final String INT = "int";
@@ -67,33 +68,13 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                                                                              GraphElementPropertySchema graphElementPropertySchema,
                                                                                              Constraint constraint,
                                                                                              T value) {
-        String statTypeName = null;
+        List<Statistics.HistogramStatistics<T>> histograms = new ArrayList<>();
+
         String fieldType = graphElementPropertySchema.getType();
-        switch (fieldType) {
-            case STRING: { //String
-                statTypeName = statConfig.getStatStringTypeName();
-                break;
-            }
-            case INT: { //Numeric
-                statTypeName = statConfig.getStatStringTypeName();
-                break;
-            }
-            case ENUM: { //Enum
-                statTypeName = statConfig.getStatTermTypeName();
-                break;
-            }
-            case DATE: { //Enum
-                statTypeName = statConfig.getStatTermTypeName();
-                break;
-            }
-            default:
-                ;//todo
+        String statTypeName = getStatTypeName(fieldType);
 
-        }
 
-        List<Statistics.HistogramStatistics> histograms = new ArrayList<>();
-
-        List<Statistics.BucketInfo> fieldStatistics = elasticStatProvider.getFieldStatistics(
+        Map<String, List<Statistics.BucketInfo>> fieldStatisticsPerIndex = elasticStatProvider.getFieldStatisticsPerIndex(
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statTypeName,
@@ -102,16 +83,17 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 Arrays.asList(graphElementPropertySchema.getName())
         );
 
-        for(Statistics.BucketInfo bucket : fieldStatistics) {
-            //Statistics.HistogramStatistics histogramStatistics = new Statistics.HistogramStatistics();
+        for (Map.Entry<String, List<Statistics.BucketInfo>> entry : fieldStatisticsPerIndex.entrySet()) {
+            List<Statistics.BucketInfo> sortedBuckets = Stream.ofAll(entry.getValue())
+                    .sorted((o1, o2) -> o1.getLowerBound().compareTo(o2.getLowerBound())).toJavaList();
 
+            histograms.add(new Statistics.HistogramStatistics(
+                    sortedBuckets
+            ));
         }
-
-//        Statistics.HistogramStatistics.combine()
-
-
-        return null;
+        return Statistics.HistogramStatistics.combine(histograms);
     }
+
 
     @Override
     public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphEdgeSchema,
@@ -127,7 +109,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         return 0;
     }
 
-
     private Statistics.Cardinality getStatResultsForType(String docType, Iterable<String> indices) {
         List<Statistics.BucketInfo> buckets = elasticStatProvider.getFieldStatistics(
                 elasticClient,
@@ -142,17 +123,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
             totalCount += bucket.getTotal();
         }
         return new Statistics.Cardinality(totalCount, 1);
-    }
-
-    private <T extends Comparable<T>> Statistics.HistogramStatistics<T> getCombinedStatResultsForType(String docType, Iterable<String> indices) {
-        List<Statistics.BucketInfo<T>> buckets = new ArrayList<>();
-        for (String index : indices) {
-            String docId = StatUtil.hashString(index + docType + "_type" + docType);
-            buckets.add(getTermStatBucket(docId));
-        }
-
-        Statistics.HistogramStatistics histogram = new Statistics.HistogramStatistics<>(buckets);
-        return Statistics.HistogramStatistics.<T>combine(Collections.singletonList(histogram));
     }
 
     private long getTermBucketCount(String indexName, String docType, String term) {
@@ -194,44 +164,32 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         return bucketInfo;
     }
 
-    private SearchRequestBuilder getFieldStatisticsRequestBuilder(List<String> indices,
-                                                                          String type,
-                                                                          List<String> fields,
-                                                                          String statIndexName,
-                                                                          String statTypeName) {
-        return elasticClient.prepareSearch(statIndexName)
-                .setTypes(statTypeName)
-                .setQuery(QueryBuilders.boolQuery()
-                        .must(new TermQueryBuilder("type", type))
-                        .must(new TermsQueryBuilder("field", fields))
-                        .must(new TermsQueryBuilder("index", indices)))
-                .setSize(Integer.MAX_VALUE);
-    }
-
-    private SearchRequestBuilder getTypeStatisticsRequestBuilder(List<String> indices,
-                                                                         List<String> types,
-                                                                         String statIndexName,
-                                                                         String statTypeName){
-        return elasticClient.prepareSearch(statIndexName)
-                .setTypes(statTypeName)
-                .setQuery(QueryBuilders.boolQuery()
-                        .must(new TermsQueryBuilder("index", indices))
-                        .must(new TermsQueryBuilder("type", types)))
-                .setSize(Integer.MAX_VALUE);
-    }
-
-    public void getStatistics(SearchRequestBuilder searchQuery) {
-
-        SearchResponse searchResponse = searchQuery.execute().actionGet();
-
-        if(searchResponse.getHits().getTotalHits() == 0){
-            ;//return getDefaultFieldStatistics();
+    private String getStatTypeName(String fieldType) {
+        String statTypeName;
+        switch (fieldType) {
+            case STRING: { //String
+                statTypeName = statConfig.getStatStringTypeName();
+                break;
+            }
+            case INT: { //Numeric
+                statTypeName = statConfig.getStatStringTypeName();
+                break;
+            }
+            case ENUM: { //Enum
+                statTypeName = statConfig.getStatTermTypeName();
+                break;
+            }
+            case DATE: { //Enum
+                statTypeName = statConfig.getStatTermTypeName();
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Field type is missing/invalid" + fieldType);
         }
-
-        //return getHitFieldStatistics(searchResponse.getHits());
+        return statTypeName;
     }
 
-    //region Fields
+   //region Fields
     private StatConfig statConfig;
     private ElasticStatProvider elasticStatProvider;
     private TransportClient elasticClient;

@@ -8,6 +8,15 @@
       "types": [
         "dragon"
       ]
+    },
+    {
+      "indices": [
+        "index3",
+        "index4"
+      ],
+      "types": [
+        "fire"
+      ]
     }
   ],
   "types": [
@@ -105,6 +114,49 @@
             "buckets": [
               {
                 "term": "dragon"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "fire",
+      "fields": [
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "a",
+                "end": "z"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "a",
+                "end": "z"
               }
             ]
           }

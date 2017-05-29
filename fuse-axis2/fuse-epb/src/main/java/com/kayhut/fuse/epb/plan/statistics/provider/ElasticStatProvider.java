@@ -10,10 +10,8 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 24-May-17.
@@ -58,13 +56,56 @@ public class ElasticStatProvider {
         return Optional.empty();
     }
 
+    /**
+     * @param client Elastic client
+     * @param statIndexName statistics Index Name
+     * @param statTypeName Statistics Type Name
+     * @param indices Data indices
+     * @param types Data types
+     * @param fields Data Fields
+     * @return List of all buckets satisfying the input arguments
+     */
     public List<Statistics.BucketInfo> getFieldStatistics(TransportClient client,
                                                           String statIndexName,
                                                           String statTypeName,
                                                           List<String> indices,
                                                           List<String> types,
                                                           List<String> fields) {
-        List<Statistics.BucketInfo> buckets = new ArrayList<>();
+
+        Map<String, List<Statistics.BucketInfo>> fieldStatisticsPerIndex = getFieldStatisticsPerIndex(
+                client,
+                statIndexName,
+                statTypeName,
+                indices,
+                types,
+                fields);
+
+
+        return fieldStatisticsPerIndex.entrySet()
+                .stream()
+                .map(Map.Entry::getValue)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * @param client Elastic client
+     * @param statIndexName statistics Index Name
+     * @param statTypeName Statistics Type Name
+     * @param indices Data indices
+     * @param types Data types
+     * @param fields Data Fields
+     * @return Map<Index Name, List of buckets> of buckets group by Index name
+     */
+    public Map<String, List<Statistics.BucketInfo>> getFieldStatisticsPerIndex(TransportClient client,
+                                                                               String statIndexName,
+                                                                               String statTypeName,
+                                                                               List<String> indices,
+                                                                               List<String> types,
+                                                                               List<String> fields) {
+
+        Map<String, List<Statistics.BucketInfo>> bucketsPerIndex = new HashMap<>();
         SearchRequestBuilder searchRequestBuilder = getFieldsStatisticsElasticRequestBuilder(
                 client,
                 statIndexName,
@@ -76,43 +117,38 @@ public class ElasticStatProvider {
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
         if (searchResponse.getHits().getTotalHits() == 0) {
-            return buckets;
+            return bucketsPerIndex;
         }
 
         for (SearchHit sh : searchResponse.getHits().getHits()) {
             String statType = getStatTypeValueFromHit(sh);
+            String statIndex = getStatIndexValueFromHit(sh);
+            long cardinality = getCardinalityValueFromHit(sh);
+            long count = getCountValueFromHit(sh);
+            Statistics.BucketInfo bucket = new Statistics.BucketInfo();
             if (STAT_TYPE_TERM_NAME.equals(statType)) {
                 String term = getTermValueFromHit(sh);
-                buckets.add(new Statistics.BucketInfo(
-                        getCountValueFromHit(sh),
-                        getCardinalityValueFromHit(sh),
-                        term, term));
+                bucket = new Statistics.BucketInfo(
+                        count,
+                        cardinality,
+                        term, term);
             }
             if (STAT_TYPE_NUMERIC_NAME.equals(statType)) {
-                buckets.add(new Statistics.BucketInfo(
-                        getCountValueFromHit(sh),
-                        getCardinalityValueFromHit(sh),
-                        (getLowerBoundNumericValueFromHit(sh)), getUpperBoundNumericValueFromHit(sh)));
+                bucket = new Statistics.BucketInfo(
+                        count,
+                        cardinality,
+                        (getLowerBoundNumericValueFromHit(sh)), getUpperBoundNumericValueFromHit(sh));
             }
             if (STAT_TYPE_STRING_NAME.equals(statType)) {
-                buckets.add(new Statistics.BucketInfo(
-                        getCountValueFromHit(sh),
-                        getCardinalityValueFromHit(sh),
-                        getLowerBoundStringValueFromHit(sh), getUpperBoundStringValueFromHit(sh)));
+                bucket = new Statistics.BucketInfo(
+                        count,
+                        cardinality,
+                        getLowerBoundStringValueFromHit(sh), getUpperBoundStringValueFromHit(sh));
             }
+
+            bucketsPerIndex.computeIfAbsent(statIndex, k -> new ArrayList<>()).add(bucket);
         }
-        return buckets;
-    }
-
-
-    public Map<String, List<Statistics.BucketInfo>> getFieldStatisticsPerIndex(TransportClient client,
-                                                                               String statIndexName,
-                                                                               String statTypeName,
-                                                                               List<String> indices,
-                                                                               List<String> types,
-                                                                               List<String> fields) {
-
-        return null;
+        return bucketsPerIndex;
     }
 
     private Object getFieldValueFromHit(final SearchHit hit, final String field) {
@@ -137,6 +173,10 @@ public class ElasticStatProvider {
 
     private String getStatTypeValueFromHit(final SearchHit hit) {
         return hit.getType();
+    }
+
+    private String getStatIndexValueFromHit(final SearchHit hit) {
+        return (getFieldValueFromHit(hit, "index")).toString();
     }
 
     private String getTermValueFromHit(final SearchHit hit) {

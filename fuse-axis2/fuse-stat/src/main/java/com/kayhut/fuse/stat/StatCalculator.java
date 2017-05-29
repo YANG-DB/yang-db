@@ -107,15 +107,21 @@ public class StatCalculator {
                                                        String indexName,
                                                        String typeName) {
         try {
-            Optional<List<Field>> fieldsWithNumericHistogram = StatUtil.getFieldsWithNumericHistogramOfType(statContainer, typeName);
-            if (fieldsWithNumericHistogram.isPresent()) {
-                for (Field field : fieldsWithNumericHistogram.get()) {
+            Optional<List<Field>> fields = StatUtil.getFieldsWithNumericHistogramOfType(statContainer, typeName);
+            if (fields.isPresent() && !fields.get().isEmpty()) {
+                for (Field field : fields.get()) {
                     String fieldName = field.getField();
                     HistogramNumeric histogramNumeric = ((HistogramNumeric) field.getHistogram());
                     double min = histogramNumeric.getMin();
                     double max = histogramNumeric.getMax();
                     long numOfBins = histogramNumeric.getNumOfBins();
-                    List<StatRangeResult> buckets = EsUtil.getNumericHistogramResults(dataClient, indexName, typeName, fieldName, min, max, numOfBins);
+                    List<StatRangeResult> buckets = EsUtil.getNumericHistogramResults(dataClient,
+                            indexName,
+                            typeName,
+                            fieldName,
+                            min,
+                            max,
+                            numOfBins);
                     populateBuckets(statIndexName, statTypeNumericName, statClient, buckets);
                 }
             }
@@ -131,10 +137,10 @@ public class StatCalculator {
                                                       String indexName,
                                                       String typeName) {
         try {
-            Optional<List<Field>> fieldsWithManualHistogram = StatUtil.getFieldsWithManualHistogramOfType(statContainer, typeName);
-            if (fieldsWithManualHistogram.isPresent()) {
+            Optional<List<Field>> fields = StatUtil.getFieldsWithManualHistogramOfType(statContainer, typeName);
+            if (fields.isPresent() && !fields.get().isEmpty()) {
 
-                for (Field field : fieldsWithManualHistogram.get()) {
+                for (Field field : fields.get()) {
                     String fieldName = field.getField();
                     HistogramManual histogramManual = ((HistogramManual) field.getHistogram());
                     DataType dataType = histogramManual.getDataType();
@@ -159,10 +165,10 @@ public class StatCalculator {
                                                       String indexName,
                                                       String typeName) {
         try {
-            Optional<List<Field>> fieldsWithStringHistogram = StatUtil.getFieldsWithStringHistogramOfType(statContainer, typeName);
+            Optional<List<Field>> fields = StatUtil.getFieldsWithStringHistogramOfType(statContainer, typeName);
 
-            if (fieldsWithStringHistogram.isPresent()) {
-                for (Field field : fieldsWithStringHistogram.get()) {
+            if (fields.isPresent() && !fields.get().isEmpty()) {
+                for (Field field : fields.get()) {
                     String fieldName = field.getField();
                     HistogramString histogram = (HistogramString) field.getHistogram();
                     List<BucketRange<String>> stringBuckets = StatUtil.calculateAlphabeticBuckets(
@@ -187,10 +193,10 @@ public class StatCalculator {
                                                          String indexName,
                                                          String typeName) {
         try {
-            Optional<List<Field>> fieldsWithCompositeHistogram = StatUtil.getFieldsWithCompositeHistogramOfType(statContainer, typeName);
-            if (fieldsWithCompositeHistogram.isPresent()) {
+            Optional<List<Field>> fields = StatUtil.getFieldsWithCompositeHistogramOfType(statContainer, typeName);
+            if (fields.isPresent() && !fields.get().isEmpty()) {
 
-                for (Field field : fieldsWithCompositeHistogram.get()) {
+                for (Field field : fields.get()) {
                     String fieldName = field.getField();
                     HistogramComposite histogramComposite = ((HistogramComposite) field.getHistogram());
                     DataType dataType = histogramComposite.getDataType();
@@ -232,10 +238,10 @@ public class StatCalculator {
                                                     String indexName,
                                                     String typeName) {
         try {
-            Optional<List<Field>> fieldsWithTermHistogram = StatUtil.getFieldsWithTermHistogramOfType(statContainer, typeName);
+            Optional<List<Field>> fields = StatUtil.getFieldsWithTermHistogramOfType(statContainer, typeName);
 
-            if (fieldsWithTermHistogram.isPresent()) {
-                for (Field field : fieldsWithTermHistogram.get()) {
+            if (fields.isPresent() && !fields.get().isEmpty()) {
+                for (Field field : fields.get()) {
                     String fieldName = field.getField();
                     HistogramTerm histogramTerm = (HistogramTerm) field.getHistogram();
                     DataType dataType = histogramTerm.getDataType();
@@ -269,8 +275,6 @@ public class StatCalculator {
                 configuration.getString("statistics.type.term.name")
         );
     }
-
-
 
 
     private static boolean isValidNumberOfArguments(String[] args, Logger logger) {
