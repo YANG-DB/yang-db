@@ -104,10 +104,16 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
-
         for(RelProp relProp : relFilter.getProps()){
             Property property = ont.$property$(Integer.parseInt( relProp.getpType()));
-            GraphElementPropertySchema graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
+
+            GraphElementPropertySchema graphElementPropertySchema;
+            if (relProp instanceof PushdownRelProp){
+                graphElementPropertySchema = graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
+            }else {
+                graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
+            }
+
             Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
             if(conditionCardinality.isPresent() &&  minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
                 minEdgeCardinality = conditionCardinality.get();
@@ -115,27 +121,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         }
         return minEdgeCardinality;
     }
-
-//    @Override
-    /*public Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup, Direction direction) {
-
-        List<PushdownRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof PushdownRelProp).
-                                                        map(PushdownRelProp.class::cast).collect(Collectors.toList());
-
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(OntologyUtil.getRelationTypeNameById(ontology, rel.getrType())).get();
-        List<String> relevantIndices = getRelevantIndicesForEdge(relPropGroup, graphEdgeSchema);
-        GraphEdgeSchema.End destination = graphEdgeSchema.getDestination().get();
-        Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
-
-        for(PushdownRelProp pushdownRelProp : pushdownProps){
-            Optional<GraphRedundantPropertySchema> pushdownVertexProperty = destination.getOriginalProperty(pushdownRelProp.getPushdownPropName());
-            Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, pushdownVertexProperty.get(), pushdownRelProp.getCon(), relevantIndices, pushdownVertexProperty.get().getType());
-            if (conditionCardinality.isPresent() && minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
-                minEdgeCardinality = conditionCardinality.get();
-        }
-        return minEdgeCardinality;
-
-    }*/
 
     @Override
     public Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
@@ -202,26 +187,6 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return minVertexCardinality;
     }
 
-    private Statistics.Cardinality estimateVertexRedundantPropertyGroup(String vertexType, EPropGroup entityFilter, Rel rel) {
-        GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
-        List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
-
-        // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
-        // When we add an OR condition (and a complex condition tree), we need to take a different approach
-        Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
-        for(EProp eProp : entityFilter.getProps()){
-            Property property = ont.$property$(Integer.parseInt( eProp.getpType()));
-            Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
-            if(graphElementPropertySchema.isPresent() && graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementPropertySchema.get()).isPresent()) {
-                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
-                if (conditionCardinality.isPresent() && minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
-                    minVertexCardinality = conditionCardinality.get();
-            }
-        }
-        return minVertexCardinality == null ? new Statistics.Cardinality(0,0): minVertexCardinality;
-    }
-
     private List<String> getVertexRelevantIndices(EPropGroup entityFilter, GraphVertexSchema graphVertexSchema) {
         IndexPartition indexPartition = graphVertexSchema.getIndexPartition();
         List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
@@ -231,7 +196,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return relevantIndices;
     }
 
-    private Optional<Statistics.Cardinality> getConditionCardinality(GraphVertexSchema graphVertexSchema,
+    private Optional<Statistics.Cardinality> getConditionCardinality(GraphElementSchema graphElementSchema,
                                                                      GraphElementPropertySchema graphElementPropertySchema,
                                                                      Constraint constraint,
                                                                      List<String> relevantIndices,
@@ -243,35 +208,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         Optional<PrimitiveType> primitiveType = ont.primitiveType(pType);
         if(primitiveType.isPresent()) {
-            return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
+            return getValueConditionCardinality(graphElementSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
         }else{
             Optional<EnumeratedType> enumeratedType = ont.enumeratedType(graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
                 Value value = (Value) constraint.getExpr();
-                return getValueConditionCardinality(graphVertexSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
-            }
-        }
-        return Optional.empty();
-    }
-
-    private Optional<Statistics.Cardinality> getConditionCardinality(GraphEdgeSchema graphEdgeSchema,
-                                                                     GraphElementPropertySchema graphElementPropertySchema,
-                                                                     Constraint constraint,
-                                                                     List<String> relevantIndices,
-                                                                     String pType) {
-
-        if(!supportedOps.contains(constraint.getOp())){
-            return Optional.empty();
-        }
-
-        Optional<PrimitiveType> primitiveType = ont.primitiveType(pType);
-        if(primitiveType.isPresent()) {
-            return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, constraint.getExpr(), relevantIndices, primitiveType.get().getJavaType());
-        }else{
-            Optional<EnumeratedType> enumeratedType = ont.enumeratedType(graphElementPropertySchema.getType());
-            if(enumeratedType.isPresent()) {
-                Value value = (Value) constraint.getExpr();
-                return getValueConditionCardinality(graphEdgeSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
+                return getValueConditionCardinality(graphElementSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
             }
         }
         return Optional.empty();

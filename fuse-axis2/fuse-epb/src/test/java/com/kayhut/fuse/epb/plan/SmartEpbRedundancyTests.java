@@ -1,9 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
-import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -17,6 +15,7 @@ import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.Value;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
@@ -26,7 +25,6 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 import javaslang.collection.Stream;
-import org.elasticsearch.common.collect.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,12 +44,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by moti on 24/05/2017.
+ * Created by moti on 5/28/2017.
  */
-public class SmartEpbSelectivityTests {
+public class SmartEpbRedundancyTests {
 
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
     private Ontology.Accessor ont;
     private PhysicalIndexProvider physicalIndexProvider;
     private GraphStatisticsProvider graphStatisticsProvider;
@@ -60,30 +57,28 @@ public class SmartEpbSelectivityTests {
     private EBaseStatisticsProvider eBaseStatisticsProvider;
     private StatisticsCostEstimator statisticsCostEstimator;
 
-    private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
-    private long startTime;
+    protected BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+    protected long startTime;
 
     private static String INDEX_PREFIX = "idx-";
     private static String INDEX_FORMAT = "idx-%s";
     private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
     private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-    private Map<Tuple<String, Rel.Direction>, Long> globalSelectivityMap;
 
     @Before
     public void setup() throws ParseException {
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
         Map<String, Integer> typeCard = new HashMap<>();
         typeCard.put(OWN.getName(), 1000);
-        typeCard.put(MEMBER_OF.getName(), 400);
-        typeCard.put(OntologyTestUtils.DRAGON.name, 1000);
-        typeCard.put(OntologyTestUtils.PERSON.name, 200);
-        typeCard.put(OntologyTestUtils.GUILD.name, 100);
-
-        globalSelectivityMap = new HashMap<>();
-        globalSelectivityMap.put(new Tuple<>(OWN.getName(), Rel.Direction.R), 10l);
-        globalSelectivityMap.put(new Tuple<>(OWN.getName(), Rel.Direction.L), 1l);
-        globalSelectivityMap.put(new Tuple<>(MEMBER_OF.getName(), Rel.Direction.R), 3l);
-        globalSelectivityMap.put(new Tuple<>(MEMBER_OF.getName(), Rel.Direction.L), 50l);
+        typeCard.put(REGISTERED.getName(), 5000);
+        typeCard.put(MEMBER_OF.getName(), 100);
+        typeCard.put(FIRE.getName(), 10000);
+        typeCard.put(FREEZE.getName(), 10000);
+        typeCard.put(DRAGON.name, 1000000);
+        typeCard.put(PERSON.name, 200);
+        typeCard.put(HORSE.name, 4600);
+        typeCard.put(GUILD.name, 50);
+        typeCard.put(KINGDOM.name, 15);
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
@@ -110,14 +105,7 @@ public class SmartEpbSelectivityTests {
             return new Statistics.Cardinality(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
         });
 
-        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> {
-            GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            Rel.Direction direction = invocationOnMock.getArgumentAt(1, Rel.Direction.class);
-            Tuple<String, Rel.Direction> edge = new Tuple<>(edgeSchema.getType(), direction);
-            return globalSelectivityMap.getOrDefault(edge, 10l);
-        });
-
-
+        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10l);
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(List.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
@@ -138,8 +126,13 @@ public class SmartEpbSelectivityTests {
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(String.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            int card = typeCard.get(elementSchema.getType());
-            return createStringHistogram(card, indices.size());
+            GraphElementPropertySchema graphElementPropertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
+            if(graphElementPropertySchema instanceof GraphRedundantPropertySchema){
+                return createStringHistogram(10, indices.size());
+            }else {
+                int card = typeCard.get(elementSchema.getType());
+                return createStringHistogram(card, indices.size());
+            }
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(Long.class))).thenAnswer(invocationOnMock -> {
@@ -206,11 +199,34 @@ public class SmartEpbSelectivityTests {
         });
 
         layoutProvider = mock(GraphLayoutProvider.class);
-        when(layoutProvider.getRedundantProperty(any(), any())).thenReturn(Optional.empty());
+        when(layoutProvider.getRedundantProperty(any(), any())).thenAnswer(invocationOnMock -> {
+            String edgeType = invocationOnMock.getArgumentAt(0, String.class);
+            GraphElementPropertySchema property = invocationOnMock.getArgumentAt(1, GraphElementPropertySchema.class);
+            if(edgeType.equals(FREEZE.getName())){
+                if(property.getName().equals(NAME.name)){
+                    return Optional.of(new GraphRedundantPropertySchema() {
+                        @Override
+                        public String getPropertyRedundantName() {
+                            return "entityB.name";
+                        }
 
-        ontology = OntologyTestUtils.createDragonsOntologyShort();
-        ont = new Ontology.Accessor(ontology);
-        graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
+                        @Override
+                        public String getName() {
+                            return NAME.name;
+                        }
+
+                        @Override
+                        public String getType() {
+                            return property.getType();
+                        }
+                    });
+                }
+            }
+            return Optional.empty();
+        });
+
+        ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyLong());
+        graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), physicalIndexProvider, layoutProvider);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         statisticsCostEstimator = new StatisticsCostEstimator(
@@ -224,10 +240,8 @@ public class SmartEpbSelectivityTests {
 
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
-
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
-                //new M1NonRedundantPlanExtensionStrategy(),
+                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -278,44 +292,22 @@ public class SmartEpbSelectivityTests {
     }
 
     @Test
-    public void testThreeEntityPathSourceCondition(){
+    public void redundantPropertyPathSelectionTest(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(1, PERSON.type)).
+                next(typed(1, DRAGON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
-                        rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
+                in(eProp(3, EProp.of(Integer.toString(NAME.type),3, Constraint.of(ConstraintOp.eq,"abc"))),
+                        rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
+                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(Integer.toString(GENDER.type),11, Constraint.of(ConstraintOp.ge,new Value(1,"abc")))))),
+                        rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7))),
-                        rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, GUILD.type).next(eProp(11)))).
+                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type),7, Constraint.of(ConstraintOp.ge,"abc")))))).
                 build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).goTo(1).rel(4).relFilter(5).entity(6).entityFilter(7).plan();
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(43.36, first.getCost().getGlobalCost().cost, 0.1);
-    }
 
-    @Test
-    public void testThreeEntityPathSourceConditionDestFilter(){
-        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
-                next(typed(1, PERSON.type)).
-                next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
-                        rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
-                                next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type),7, Constraint.of(ConstraintOp.eq,"abc"))))),
-                        rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, GUILD.type).next(eProp(11)))).
-                build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Assert.assertNotNull(plans);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(21.47, first.getCost().getGlobalCost().cost, 0.1);
+        PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
     }
-
 
 }

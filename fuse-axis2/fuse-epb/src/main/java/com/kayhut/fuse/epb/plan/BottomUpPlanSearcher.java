@@ -12,11 +12,10 @@ import javaslang.collection.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by moti on 2/21/2017.
@@ -72,7 +71,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
     public Iterable<PlanWithCost<P, C>> search(Q query) {
         Iterable<PlanWithCost<P, C>> selectedPlans;
 
-        Set<PlanWithCost<P, C>> currentPlans = new HashSet<>();
+        Set<PlanWithCost<P, C>> currentPlans = new TreeSet<>((o1, o2) -> o1.getPlan().toString().compareTo(o2.getPlan().toString()));
 
         // Generate seed plans (plan is null)
         for (P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)) {
@@ -110,7 +109,6 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
             for (PlanWithCost<P, C> planWithCost : globalPruneStrategy.prunePlans(newPlans)) {
                 currentPlans.add(planWithCost);
             }
-//            selectedPlans = currentPlans.stream().filter(Objects::nonNull).collect(Collectors.toSet());
             selectedPlans = Stream.ofAll(selectedPlans).appendAll(localPlanSelector.select(query, currentPlans)).toJavaList();
         }
 

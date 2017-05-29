@@ -23,6 +23,12 @@ public class PlanOpWithCost<C> {
         this(cost, countEstimates);
         this.opBase = new ArrayList<>(ops);
     }
+
+    public PlanOpWithCost(C cost, Stack<Double> countEstimates, List<PlanOpBase> ops){
+        this.cost = cost;
+        this.countEstimates = (Stack<Double>) countEstimates.clone();
+        this.opBase = new ArrayList<>(ops);
+    }
     //endregion
 
     //region Methods

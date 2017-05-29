@@ -115,8 +115,8 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
 
         assertEquals(extendedPlans.size(), 1);
 
-        assertEquals(PlanUtil.first$(extendedPlans.get(0), EntityFilterOp.class).getAsgEBase().geteBase().getProps().size(),1);
-        assertEquals(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().size(),3);
+        assertEquals(0,PlanUtil.first$(extendedPlans.get(0), EntityFilterOp.class).getAsgEBase().geteBase().getProps().size());
+        assertEquals(4,PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().size());
 
         //first eProp is the old eprop filter condition (non pushdown)
         assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().get(1) instanceof PushdownRelProp);

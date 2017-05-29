@@ -39,7 +39,11 @@ public class QueryAssert {
         }
 
         Assert.assertTrue(expectedUntyped != null && actualUntyped != null);
-        Assert.assertTrue(expectedUntyped.geteTag().equals(actualUntyped.geteTag()));
+        if(expectedUntyped.geteTag() == null){
+            Assert.assertNull(actualUntyped.geteTag());
+        }else {
+            Assert.assertTrue(expectedUntyped.geteTag().equals(actualUntyped.geteTag()));
+        }
         Assert.assertTrue(expectedUntyped.geteNum() == actualUntyped.geteNum());
     }
 
