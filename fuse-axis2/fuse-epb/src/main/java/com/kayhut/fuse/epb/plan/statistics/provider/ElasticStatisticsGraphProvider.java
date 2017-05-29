@@ -7,6 +7,7 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.util.StatUtil;
 import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
@@ -122,13 +123,14 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     @Override
-    public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices) {
+    public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema, Rel.Direction direction, List<String> relevantIndices) {
         return 0;
     }
 
+
     private Statistics.Cardinality getStatResultsForType(String docType, Iterable<String> indices) {
         List<Statistics.BucketInfo> buckets = elasticStatProvider.getFieldStatistics(
-                this.elasticClient,
+                elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
                 Lists.newArrayList(indices),
