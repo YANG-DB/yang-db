@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.epb.plan.statistics.util.ElasticStatUtil;
 import com.kayhut.fuse.epb.plan.statistics.util.StatUtil;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
@@ -26,6 +25,7 @@ import java.util.*;
  */
 public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
+    //todo move it to global enun
     private static final String DATE = "date";
     private static final String ENUM = "enum";
     private static final String INT = "int";
@@ -34,7 +34,8 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Inject
     public ElasticStatisticsGraphProvider(StatConfig config) {
         this.statConfig = config;
-        elasticClient = new ElasticClientProvider(config).getStatClient();
+        this.elasticStatProvider = new ElasticStatProvider(config);
+        this.elasticClient = new ElasticClientProvider(config).getStatClient();
     }
 
     @Override
@@ -91,7 +92,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
         List<Statistics.HistogramStatistics> histograms = new ArrayList<>();
 
-        List<Statistics.BucketInfo> fieldStatistics = ElasticStatUtil.getFieldStatistics(
+        List<Statistics.BucketInfo> fieldStatistics = elasticStatProvider.getFieldStatistics(
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statTypeName,
@@ -126,7 +127,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     private Statistics.Cardinality getStatResultsForType(String docType, Iterable<String> indices) {
-        List<Statistics.BucketInfo> buckets = ElasticStatUtil.getFieldStatistics(
+        List<Statistics.BucketInfo> buckets = elasticStatProvider.getFieldStatistics(
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
@@ -164,7 +165,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     private long getStatBucketCount(String docId) {
         long count = 0;
-        Optional<Map<String, Object>> statDoc = ElasticStatUtil.getDocumentById(
+        Optional<Map<String, Object>> statDoc = elasticStatProvider.getDocumentById(
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
@@ -175,10 +176,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         return count;
     }
 
-
     private <T extends Comparable<T>> Statistics.BucketInfo getTermStatBucket(String docId) {
         Statistics.BucketInfo<T> bucketInfo = new Statistics.BucketInfo();
-        Optional<Map<String, Object>> statDoc = ElasticStatUtil.getDocumentById(
+        Optional<Map<String, Object>> statDoc = elasticStatProvider.getDocumentById(
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
@@ -191,7 +191,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         }
         return bucketInfo;
     }
-
 
     private SearchRequestBuilder getFieldStatisticsRequestBuilder(List<String> indices,
                                                                           String type,
@@ -219,7 +218,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 .setSize(Integer.MAX_VALUE);
     }
 
-
     public void getStatistics(SearchRequestBuilder searchQuery) {
 
         SearchResponse searchResponse = searchQuery.execute().actionGet();
@@ -233,6 +231,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     //region Fields
     private StatConfig statConfig;
+    private ElasticStatProvider elasticStatProvider;
     private TransportClient elasticClient;
     //endregion
 

@@ -14,10 +14,13 @@ import java.util.List;
  */
 public class ElasticClientProvider {
 
+    //region Ctrs
     public ElasticClientProvider(StatConfig config) {
         this.config = config;
     }
+    //endregion
 
+    //region Public Methods
     public TransportClient getStatClient() {
         List<String> hosts = config.getStatNodesHosts();
         Settings settings = Settings.builder().put("client.transport.sniff", true).put("cluster.name", config.getStatClusterName()).build();
@@ -31,6 +34,7 @@ public class ElasticClientProvider {
         }
         return esClient;
     }
+    //endregion
 
     //region Fields
     private StatConfig config;

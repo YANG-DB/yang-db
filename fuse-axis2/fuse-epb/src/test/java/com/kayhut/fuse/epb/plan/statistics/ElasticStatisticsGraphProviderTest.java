@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
+import com.kayhut.fuse.epb.plan.statistics.util.StatConfigTestUtil;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
@@ -42,14 +43,11 @@ public class ElasticStatisticsGraphProviderTest {
     private static TransportClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
+
+
     static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
     static final long NUM_OF_DRAGONS_IN_INDEX_2 = 555L; //HAMSA HAMSA HAMSA
-    static final String STAT_INDEX_NAME = "stat";
-    static final String STAT_TERM_TYPE_NAME = "bucketTerm";
-    static final String STAT_STRING_TYPE_NAME = "bucketString";
-    static final String STAT_NUMERIC_TYPE_NAME = "bucketNumeric";
-    static final String STAT_COUNT_FIELD_NAME = "count";
-    static final String STAT_CARDINALITY_FIELD_NAME = "cardinality";
+
     static final String DRAGON_TYPE_NAME = "Dragon";
     static final String AGE_FIELD_NAME = "age";
     static final List<String> VERTEX_INDICES = ImmutableList.of("vertexIndex1", "vertexIndex2");
@@ -67,29 +65,29 @@ public class ElasticStatisticsGraphProviderTest {
         termStatistics.put(DRAGON_TYPE_NAME, new Tuple2<>(NUM_OF_DRAGONS_IN_INDEX_1, 1L));
 
         //Populating the Elastic Stat Engine index: 'stat' type: 'termBucket', buckets of statistics
-        populateTermStatDocs(VERTEX_INDICES, DRAGON_TYPE_NAME,"_type", termStatistics);
+        populateTermStatDocs(VERTEX_INDICES, DRAGON_TYPE_NAME, "_type", termStatistics);
         //Checking that the ELASTIC STAT TERM TYPE created
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TERM_TYPE_NAME));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName()));
 
         //Sanity Checks
         //We have only 1 index ('stat') in the STAT Elastic Engine
         String[] allIndices = EsUtil.getAllIndices(statClient);
         assertEquals(1, allIndices.length);
-        assertEquals(allIndices[0], STAT_INDEX_NAME);
+        assertEquals(allIndices[0], statConfig.getStatIndexName());
 
         //We have only 1 type in the Elastic Index 'stat' = 'termBucket'
-        String[] allTypesFromIndex = EsUtil.getAllTypesFromIndex(statClient, STAT_INDEX_NAME);
+        String[] allTypesFromIndex = EsUtil.getAllTypesFromIndex(statClient, statConfig.getStatIndexName());
         Arrays.asList(allTypesFromIndex).forEach(type -> System.out.println(type));
         assertEquals(1, allTypesFromIndex.length);
-        assertEquals(STAT_TERM_TYPE_NAME, allTypesFromIndex[0]);
+        assertEquals(statConfig.getStatTermTypeName(), allTypesFromIndex[0]);
 
         //Check that the bucket term exists (the bucket is calculated on the field _type which is value is 'Dragon')
-        String docId = StatUtil.hashString(VERTEX_INDICES.get(0) + DRAGON_TYPE_NAME + "_type"  + DRAGON_TYPE_NAME);
-        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TERM_TYPE_NAME, docId);
+        String docId = StatUtil.hashString(VERTEX_INDICES.get(0) + DRAGON_TYPE_NAME + "_type" + DRAGON_TYPE_NAME);
+        Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName(), docId);
         assertTrue(doc6Result.isPresent());
 
-        assertEquals(1, (int)doc6Result.get().get(STAT_CARDINALITY_FIELD_NAME));
-        assertEquals((int)doc6Result.get().get(STAT_COUNT_FIELD_NAME), NUM_OF_DRAGONS_IN_INDEX_1);
+        assertEquals(1, (int) doc6Result.get().get(statConfig.getStatCardinalityFieldName()));
+        assertEquals((int) doc6Result.get().get(statConfig.getStatCountFieldName()), NUM_OF_DRAGONS_IN_INDEX_1);
 
         Statistics.Cardinality vertexCardinality = statisticsGraphProvider.getVertexCardinality(vertexDragonSchema);
     }
@@ -133,22 +131,13 @@ public class ElasticStatisticsGraphProviderTest {
     /**
      * (1) Starting Elastic engine in-memory
      * (2) Loading statistics configuration
+     *
      * @throws Exception
      */
     @BeforeClass
     public static void setup() throws Exception {
 
-        statConfig = new StatConfig("fuse.test_elastic",
-                Collections.singletonList("localhost"),
-                9300,
-                STAT_INDEX_NAME,
-                STAT_TERM_TYPE_NAME,
-                STAT_STRING_TYPE_NAME,
-                STAT_NUMERIC_TYPE_NAME,
-                STAT_COUNT_FIELD_NAME,
-                STAT_CARDINALITY_FIELD_NAME,
-                buildStatContainer());
-
+        statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
         statClient = new ElasticClientProvider(statConfig).getStatClient();
         elasticEmbeddedNode = new ElasticEmbeddedNode();
 
@@ -169,8 +158,8 @@ public class ElasticStatisticsGraphProviderTest {
     private static void populateNumericStatDocs(List<String> indices, String type, String field, long min, long max, int numOfBins) throws IOException {
         new ElasticDataPopulator(
                 statClient,
-                STAT_INDEX_NAME,
-                STAT_NUMERIC_TYPE_NAME,
+                statConfig.getStatIndexName(),
+                statConfig.getStatNumericTypeName(),
                 "id",
                 () -> prepareNumericStatisticsDocs(
                         indices,
@@ -184,16 +173,17 @@ public class ElasticStatisticsGraphProviderTest {
 
     /**
      * Populating elastic statistics documents for terms
-     * @param indices Elastic Indices Names
-     * @param type Elastic Type Name (e.g., Person)
-     * @param field Elastic Field Name (e.g., gender, _type)
+     *
+     * @param indices        Elastic Indices Names
+     * @param type           Elastic Type Name (e.g., Person)
+     * @param field          Elastic Field Name (e.g., gender, _type)
      * @param termStatistics Map <Key = 'Term', Tuple<Count, Cardinality>, (e.g < 'Key = female', Value = [500, 1] >
      */
     private static void populateTermStatDocs(List<String> indices, String type, String field, Map<String, Tuple2<Long, Long>> termStatistics) throws IOException {
         new ElasticDataPopulator(
                 statClient,
-                STAT_INDEX_NAME,
-                STAT_TERM_TYPE_NAME,
+                statConfig.getStatIndexName(),
+                statConfig.getStatTermTypeName(),
                 "id",
                 () -> prepareTermStatisticsDocs(
                         indices,
@@ -347,9 +337,9 @@ public class ElasticStatisticsGraphProviderTest {
     }
 
     /**
-     * @param indices Elastic Indices Names
-     * @param type Elastic Type Name (e.g., Person)
-     * @param field Elastic Field Name (e.g., gender, _type)
+     * @param indices        Elastic Indices Names
+     * @param type           Elastic Type Name (e.g., Person)
+     * @param field          Elastic Field Name (e.g., gender, _type)
      * @param termStatistics Map <Key = 'Term', Tuple<Count, Cardinality>, (e.g < 'Key = female', Value = [500, 1] >
      * @return list of documents
      */
