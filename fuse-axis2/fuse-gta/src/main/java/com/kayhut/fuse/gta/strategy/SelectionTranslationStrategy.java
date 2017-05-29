@@ -80,7 +80,10 @@ public class SelectionTranslationStrategy extends PlanOpTranslationStrategyBase 
             return traversal;
         }
 
-        return traversal.otherV();
+        Stream.ofAll(TraversalUtil.<Step>lastSteps(traversal, step -> step.getLabels().contains(lastEntityOp.get().getAsgEBase().geteBase().geteTag())))
+                .forEach(step -> step.removeLabel(lastEntityOp.get().getAsgEBase().geteBase().geteTag()));
+
+        return traversal.otherV().as(lastEntityOp.get().getAsgEBase().geteBase().geteTag());
     }
     //endregion
 

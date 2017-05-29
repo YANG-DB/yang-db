@@ -18,15 +18,19 @@ import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeOtherVertexStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.kayhut.fuse.gta.strategy.utils.TraversalUtil.last;
 
 /**
  * Created by Roman on 09/05/2017.
@@ -48,17 +52,14 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         }
 
         TraversalUtil.remove(traversal, TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class));
-
-        if (HasStep.class.isAssignableFrom(traversal.asAdmin().getEndStep().getClass())) {
-            traversal.asAdmin().removeStep(traversal.asAdmin().getSteps().indexOf(traversal.asAdmin().getEndStep()));
-        }
-
-        if (VertexStep.class.isAssignableFrom(traversal.asAdmin().getEndStep().getClass())) {
-            VertexStep vertexStep = (VertexStep)traversal.asAdmin().getEndStep();
-            if (vertexStep.getEdgeLabels() != null && vertexStep.getEdgeLabels().length == 1 &&
-                    vertexStep.getEdgeLabels()[0].equals(GlobalConstants.Labels.PROMISE_FILTER)) {
-                traversal.asAdmin().removeStep(traversal.asAdmin().getSteps().indexOf(traversal.asAdmin().getEndStep()));
+        Optional<VertexStep> lastVertexStep = TraversalUtil.last(traversal, VertexStep.class);
+        if (lastVertexStep.isPresent() && isFilterVertexStep(lastVertexStep.get())) {
+            Optional<EdgeOtherVertexStep> nextOtherStep = TraversalUtil.next(traversal, lastVertexStep.get(), EdgeOtherVertexStep.class);
+            if (nextOtherStep.isPresent()) {
+                TraversalUtil.remove(traversal, nextOtherStep.get());
             }
+            TraversalUtil.remove(traversal, TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class));
+            TraversalUtil.remove(traversal, lastVertexStep.get());
         }
 
         EntityOp entityOp = (EntityOp)previousPlanOp.get();
@@ -73,6 +74,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
             traversal = appendPropertyGroup(
                     traversal,
+                    entityOp.getAsgEBase().geteBase(),
                     entityFilterOp.getAsgEBase().geteBase(),
                     context.getOnt());
         }
@@ -119,6 +121,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
     private GraphTraversal appendPropertyGroup(
             GraphTraversal traversal,
+            EEntityBase entity,
             EPropGroup ePropGroup,
             Ontology.Accessor ont) {
 
@@ -130,9 +133,12 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
                 epropTraversals.get(0) :
                 __.and(Stream.ofAll(epropTraversals).toJavaArray(Traversal.class));
 
+        Stream.ofAll(TraversalUtil.<Step>lastSteps(traversal, step -> step.getLabels().contains(entity.geteTag())))
+                .forEach(step -> step.removeLabel(entity.geteTag()));
+
         return traversal.outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(constraintTraversal))
-                .otherV();
+                .otherV().as(entity.geteTag());
     }
 
     private Traversal convertEPropToTraversal(EProp eProp, Ontology.Accessor ont) {
@@ -142,6 +148,13 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
          }
 
          return __.has(property.get().getName(), ConverstionUtil.convertConstraint(eProp.getCon()));
+    }
+
+    private boolean isFilterVertexStep(VertexStep vertexStep) {
+        return !Stream.of(vertexStep.getEdgeLabels())
+                .filter(edgeLabel -> edgeLabel.equals(GlobalConstants.Labels.PROMISE_FILTER))
+                .isEmpty();
+
     }
     //endregion
 }

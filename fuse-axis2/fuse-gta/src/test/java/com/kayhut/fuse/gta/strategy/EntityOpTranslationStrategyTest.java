@@ -178,10 +178,10 @@ public class EntityOpTranslationStrategyTest {
 
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.filterEntity);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(2), context);
-        GraphTraversal expectedTraversal = __.start().otherV().as("B")
+        GraphTraversal expectedTraversal = __.start().otherV()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")))
-                .otherV();
+                .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

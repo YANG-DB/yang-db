@@ -131,7 +131,7 @@ public class SelectionTranslationStrategyTest {
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
                 .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name))
-                .otherV();
+                .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -157,7 +157,7 @@ public class SelectionTranslationStrategyTest {
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
                 .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name))
-                .otherV();
+                .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

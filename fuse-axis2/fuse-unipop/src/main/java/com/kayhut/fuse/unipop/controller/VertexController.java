@@ -164,9 +164,9 @@ class VertexController implements SearchQuery.SearchController {
         return convert(searchHits, new SearchHitPromiseVertexConverter(graph));
     }
 
-    private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable ,ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {
+    private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable, ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {
         return Stream.ofAll(searchHitIterable)
-                .map(hit -> searchHitPromiseVertexConverter.convert(hit))
+                .map(searchHitPromiseVertexConverter::convert)
                 .filter(Objects::nonNull).iterator();
     }
 

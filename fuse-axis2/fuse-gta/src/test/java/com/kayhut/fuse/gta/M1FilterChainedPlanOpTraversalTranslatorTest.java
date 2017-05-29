@@ -67,10 +67,10 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                 .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                .otherV().as("B")
+                .otherV()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "Dragon"))))
-                .otherV()
+                .otherV().as("B")
                 .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -87,10 +87,10 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                         .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                        .otherV().as("B")
+                        .otherV()
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                        .otherV()
+                        .otherV().as("B")
                         .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -107,10 +107,10 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                        .otherV().as("A")
+                        .otherV()
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
-                        .otherV()
+                        .otherV().as("A")
                         .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -129,10 +129,10 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
-                        .otherV().as("B")
+                        .otherV()
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                        .otherV()
+                        .otherV().as("B")
                         .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
@@ -151,18 +151,18 @@ public class M1FilterChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
-                        .otherV().as("B")
+                        .otherV()
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
-                        .otherV()
+                        .otherV().as("B")
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->C")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
-                        .otherV().as("C")
+                        .otherV()
                         .outE(GlobalConstants.Labels.PROMISE_FILTER)
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "Dragon"))))
-                        .otherV()
+                        .otherV().as("C")
                         .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);

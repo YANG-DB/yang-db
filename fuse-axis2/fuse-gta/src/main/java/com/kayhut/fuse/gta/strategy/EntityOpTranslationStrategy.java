@@ -52,10 +52,10 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
                 switch (this.options) {
                     case none: return traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                     case filterEntity:
-                        traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
+                        traversal.otherV();
                         traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
                         appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
-                        traversal.otherV();
+                        traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                 }
             }
         }
