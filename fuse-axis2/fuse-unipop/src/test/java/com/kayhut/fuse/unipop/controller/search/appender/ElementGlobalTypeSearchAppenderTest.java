@@ -38,6 +38,7 @@ public class ElementGlobalTypeSearchAppenderTest {
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.has("name", "Sasson"))),
+                Collections.emptyList(),
                 schemaProvider,
                 ElementType.vertex,
                 mock(SearchQuery.class)));

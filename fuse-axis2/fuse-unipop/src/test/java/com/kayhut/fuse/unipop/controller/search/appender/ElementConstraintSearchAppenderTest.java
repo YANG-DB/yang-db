@@ -33,6 +33,7 @@ public class ElementConstraintSearchAppenderTest {
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
                 Collections.emptyList(),
                 Optional.empty(),
+                Collections.emptyList(),
                 EmptyGraphElementSchemaProvider.instance,
                 ElementType.vertex,
                 mock(SearchQuery.class)));
@@ -52,6 +53,7 @@ public class ElementConstraintSearchAppenderTest {
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.has(T.label, "dragon"))),
+                Collections.emptyList(),
                 EmptyGraphElementSchemaProvider.instance,
                 ElementType.vertex,
                 mock(SearchQuery.class)));
@@ -71,6 +73,7 @@ public class ElementConstraintSearchAppenderTest {
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.and(__.has(T.label, "dragon"), __.has("name", "Drogar")))),
+                Collections.emptyList(),
                 EmptyGraphElementSchemaProvider.instance,
                 ElementType.vertex,
                 mock(SearchQuery.class)));

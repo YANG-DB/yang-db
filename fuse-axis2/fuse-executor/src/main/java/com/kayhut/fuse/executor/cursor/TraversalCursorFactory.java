@@ -12,18 +12,18 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.model.results.Assignment;
-import com.kayhut.fuse.model.results.Entity;
-import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.results.Relationship;
+import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
@@ -110,25 +110,31 @@ public class TraversalCursorFactory implements CursorFactory {
             IdPromise idPromise = (IdPromise)vertex.getPromise();
 
             int eType = idPromise.getLabel().isPresent() ? ont.eType$(idPromise.getLabel().get()) : 0;
+            List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
 
-            return toEntity(vertex.id().toString(),eType,element.geteTag());
+            return toEntity(vertex.id().toString(),eType,element.geteTag(), properties);
         }
 
         private Entity toEntity(Path path, EConcrete element) {
             PromiseVertex vertex = path.get(element.geteTag());
-            return toEntity(vertex.id().toString(),element.geteType(),element.geteTag());
+            List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+
+            return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
         }
 
         private Entity toEntity(Path path, ETyped element) {
             PromiseVertex vertex = path.get(element.geteTag());
-            return toEntity(vertex.id().toString(),element.geteType(),element.geteTag());
+            List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+
+            return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
         }
 
-        private Entity toEntity(String eId,int eType, String eTag ) {
+        private Entity toEntity(String eId, int eType, String eTag, List<Property> properties) {
             Entity.Builder builder = Entity.Builder.instance();
             builder.withEID(eId);
             builder.withEType(eType);
             builder.withETag(Collections.singletonList(eTag));
+            builder.withProperties(properties);
             return builder.build();
         }
 
@@ -154,6 +160,10 @@ public class TraversalCursorFactory implements CursorFactory {
             }
 
             return builder.build();
+        }
+
+        private Property toProperty(VertexProperty vertexProperty) {
+            return new Property(ont.property$(vertexProperty.key()).getpType(), "raw", vertexProperty.value());
         }
         //endregion
 

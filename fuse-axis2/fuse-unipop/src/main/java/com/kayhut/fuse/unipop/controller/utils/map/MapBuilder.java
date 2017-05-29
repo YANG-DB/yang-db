@@ -15,7 +15,10 @@ public class MapBuilder<TKey, TValue> implements Supplier<Map<TKey, TValue>> {
 
     public MapBuilder(Map<TKey, TValue> map) {
         this();
-        this.map.putAll(map);
+
+        if (map != null) {
+            this.map.putAll(map);
+        }
     }
     //endregion
 

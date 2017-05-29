@@ -9,15 +9,17 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 /**
  * Created by Roman on 09/05/2017.
  */
-public class GoToEntityOpTranslationStrategy implements PlanOpTranslationStrategy {
+public class GoToEntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
+    //region Constructors
+    //endregion
+    public GoToEntityOpTranslationStrategy() {
+        super(GoToEntityOp.class);
+    }
+
     //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
-        if (planOp instanceof GoToEntityOp) {
-            traversal.select(((GoToEntityOp)planOp).getAsgEBase().geteBase().geteTag());
-        }
-
-        return traversal;
+    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+        return traversal.select(((GoToEntityOp)planOp).getAsgEBase().geteBase().geteTag());
     }
     //endregion
 }

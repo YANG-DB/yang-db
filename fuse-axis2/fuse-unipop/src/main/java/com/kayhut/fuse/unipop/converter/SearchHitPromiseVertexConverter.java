@@ -21,7 +21,7 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
 
     @Override
     public Element convert(SearchHit element) {
-        return new PromiseVertex(Promise.as(element.id(), element.getType()), Optional.empty(), graph);
+        return new PromiseVertex(Promise.as(element.id(), element.getType()), Optional.empty(), graph, element.sourceAsMap());
     }
     //endregion
 

@@ -45,6 +45,7 @@ public class CompositeAllAppendersTest {
                 PromiseElementControllerContext(
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
+                    Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
                     searchQuery);
@@ -98,6 +99,7 @@ public class CompositeAllAppendersTest {
                 PromiseElementControllerContext(
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
+                    Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
                     searchQuery);
@@ -164,6 +166,7 @@ public class CompositeAllAppendersTest {
                 PromiseElementControllerContext(
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
+                    Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
                     searchQuery);
