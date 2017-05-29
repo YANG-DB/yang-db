@@ -148,18 +148,11 @@ public abstract class EntityRelationEntityTest {
     //region Tests
     @Test
     public void test_Dragon_Fire_Dragon() throws Exception {
-        /*boolean a = true;
-        while(a) {
-            Thread.sleep(10000);
-            a = !a;
-            a = !a;
-        }*/
-
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), Collections.singletonList(Integer.toString(NAME.type)), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), 0, 0)
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), Collections.singletonList(Integer.toString(NAME.type)), 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(

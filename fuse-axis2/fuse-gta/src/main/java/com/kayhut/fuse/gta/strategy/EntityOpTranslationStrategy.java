@@ -22,7 +22,7 @@ import java.util.Optional;
 /**
  * Created by Roman on 10/05/2017.
  */
-public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase<EntityOp> {
+public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     public enum Options {
         none,
         filterEntity
@@ -37,10 +37,12 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase<E
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, EntityOp planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+        EntityOp entityOp = (EntityOp)planOp;
+
         if (PlanUtil.isFirst(plan, planOp)) {
-            traversal = context.getGraphTraversalSource().V().as(planOp.getAsgEBase().geteBase().geteTag());
-            appendEntity(traversal, planOp.getAsgEBase().geteBase(), context.getOnt());
+            traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEBase().geteBase().geteTag());
+            appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
         } else {
             Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
             if (previousPlanOp.isPresent() &&
@@ -48,11 +50,11 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase<E
                      previousPlanOp.get() instanceof RelationFilterOp)) {
 
                 switch (this.options) {
-                    case none: return traversal.otherV().as(planOp.getAsgEBase().geteBase().geteTag());
+                    case none: return traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                     case filterEntity:
-                        traversal.otherV().as(planOp.getAsgEBase().geteBase().geteTag());
+                        traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                         traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
-                        appendEntity(traversal, planOp.getAsgEBase().geteBase(), context.getOnt());
+                        appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
                         traversal.otherV();
                 }
             }

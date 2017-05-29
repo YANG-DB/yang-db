@@ -2,6 +2,7 @@ package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
+import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -27,23 +28,23 @@ import java.util.Optional;
 /**
  * Created by Roman on 09/05/2017.
  */
-public class RelationFilterOpTranslationStrategy implements PlanOpTranslationStrategy {
+public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrategyBase {
+    //region Constructors
+    public RelationFilterOpTranslationStrategy() {
+        super(RelationFilterOp.class);
+    }
+    //endregion
+
     //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
-        if (!(planOp instanceof RelationFilterOp)) {
-            return traversal;
-        }
-
+    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         RelationFilterOp relationFilterOp = (RelationFilterOp)planOp;
         Optional<RelationOp> relationOp = PlanUtil.adjacentPrev(plan, relationFilterOp);
         if (!relationOp.isPresent()) {
             return traversal;
         }
 
-        if (HasStep.class.isAssignableFrom(traversal.asAdmin().getEndStep().getClass())) {
-            traversal.asAdmin().removeStep(traversal.asAdmin().getSteps().indexOf(traversal.asAdmin().getEndStep()));
-        }
+        TraversalUtil.remove(traversal, TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class));
 
         traversal = appendRelationAndPropertyGroup(
                 traversal,

@@ -12,8 +12,11 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
+import javaslang.collection.Array;
+import javaslang.collection.Stream;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by benishue on 23-Feb-17.
@@ -128,12 +131,17 @@ public class AsgQuery {
         }
 
         public static AsgEBase<EConcrete> concrete(int eNum, String eID, int eType, String eName, String eTag) {
+            return concrete(eNum, eID, eType, eName, eTag, new String[0]);
+        }
+
+        public static AsgEBase<EConcrete> concrete(int eNum, String eID, int eType, String eName, String eTag, String...reportProps) {
             EConcrete concrete = new EConcrete();
             concrete.seteNum(eNum);
             concrete.seteType(eType);
             concrete.seteID(eID);
             concrete.seteName(eName);
             concrete.seteTag(eTag);
+            concrete.setReportProps(Stream.of(reportProps).toJavaList());
 
             return new AsgEBase<>(concrete);
         }
@@ -171,10 +179,15 @@ public class AsgQuery {
         }
 
         public static AsgEBase<ETyped> typed(int eNum, int eType, String eTag) {
+            return typed(eNum, eType, eTag, new String[0]);
+        }
+
+        public static AsgEBase<ETyped> typed(int eNum, int eType, String eTag, String...reportProps) {
             ETyped eTyped = new ETyped();
             eTyped.seteNum(eNum);
             eTyped.seteType(eType);
             eTyped.seteTag(eTag);
+            eTyped.setReportProps(Stream.of(reportProps).toJavaList());
 
             return new AsgEBase<>(eTyped);
         }
@@ -191,6 +204,16 @@ public class AsgQuery {
             untyped.setNvTypes(Arrays.asList(vTypes));
             untyped.seteTag(eTag);
             untyped.seteNum(eNum);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> reportProps, Integer ... vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setNvTypes(Arrays.asList(vTypes));
+            untyped.seteTag(eTag);
+            untyped.seteNum(eNum);
+            untyped.setReportProps(Stream.ofAll(reportProps).toJavaList());
 
             return new AsgEBase<>(untyped);
         }

@@ -3,6 +3,7 @@ package com.kayhut.fuse.gta.strategy;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
+import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -30,7 +31,7 @@ import java.util.Optional;
 /**
  * Created by Roman on 09/05/2017.
  */
-public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategyBase<EntityFilterOp> {
+public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
     public EntityFilterOpTranslationStrategy() {
         super(EntityFilterOp.class);
@@ -38,11 +39,15 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
     //endregion
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, EntityFilterOp planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+        EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
+
         Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
+
+        TraversalUtil.remove(traversal, TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class));
 
         if (HasStep.class.isAssignableFrom(traversal.asAdmin().getEndStep().getClass())) {
             traversal.asAdmin().removeStep(traversal.asAdmin().getSteps().indexOf(traversal.asAdmin().getEndStep()));
@@ -61,14 +66,14 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             traversal = appendEntityAndPropertyGroup(
                     traversal,
                     entityOp.getAsgEBase().geteBase(),
-                    planOp.getAsgEBase().geteBase(),
+                    entityFilterOp.getAsgEBase().geteBase(),
                     context.getOnt());
 
-        } else if (!planOp.getAsgEBase().geteBase().getProps().isEmpty()) {
+        } else if (!entityFilterOp.getAsgEBase().geteBase().getProps().isEmpty()) {
 
             traversal = appendPropertyGroup(
                     traversal,
-                    planOp.getAsgEBase().geteBase(),
+                    entityFilterOp.getAsgEBase().geteBase(),
                     context.getOnt());
         }
 

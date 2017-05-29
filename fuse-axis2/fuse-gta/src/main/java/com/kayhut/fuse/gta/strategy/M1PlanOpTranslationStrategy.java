@@ -1,18 +1,27 @@
 package com.kayhut.fuse.gta.strategy;
 
+import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.EntityOp;
+
 /**
  * Created by Roman on 11/05/2017.
  */
 public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrategy {
     private static class EntityOpStrategies extends CompositePlanOpTranslationStrategy {
         public EntityOpStrategies() {
-            super(new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.none));
+            super(
+                    new EntityOpTranslationStrategy(EntityOpTranslationStrategy.Options.none)//,
+                    //new SelectionTranslationStrategy(EntityOp.class)
+            );
         }
     }
 
     private static class EntityFilterOpStrategies extends CompositePlanOpTranslationStrategy {
         public EntityFilterOpStrategies() {
-            super(new EntityFilterOpTranslationStrategy());
+            super(
+                    new EntityFilterOpTranslationStrategy()//,
+                    //new SelectionTranslationStrategy(EntityFilterOp.class)
+            );
         }
     }
 
