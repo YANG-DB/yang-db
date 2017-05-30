@@ -21,7 +21,6 @@ import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
-import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 
 /**
  * Created by User on 08/03/2017.
@@ -72,17 +71,19 @@ public class Neo4jOperationContextProcessor implements
             return context;
         }
 
+        //TODO: called twice !!
+
         //Compile the query and get the cursor ready
-        String cypherQuery = null;
+        String cypherQuery;
         try {
             cypherQuery = CypherCompiler.compile(
                     context.getQueryResource().getAsgQuery(),
                     ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get());
         } catch (Exception ex) {
-
+            throw new RuntimeException("Failed parsing cypher query " + ex);
         }
 
-        Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(), null));
+        Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(), cypherQuery));
 
         return submit(eventBus, context.of(cursor));
 
@@ -93,18 +94,17 @@ public class Neo4jOperationContextProcessor implements
     @Override
     @Subscribe
     public PageCreationOperationContext process(PageCreationOperationContext context) {
-        if (context.getPageResource() != null) {
-            return context;
+
+        //TODO: called twice !!
+
+        if (context.getPageResource() == null || context.getPageResource().getData() == null) {
+            QueryResult queryResult = context.getCursorResource().getCursor().getNextResults(context.getPageSize());
+            context = context.of(new PageResource(context.getPageId(), queryResult, context.getPageSize()));
+            submit(eventBus, context);
         }
 
-        Cursor cursor = context.getCursorResource().getCursor();
-        QueryResult result = cursor.getNextResults(context.getPageSize());
+        return context;
 
-        if (result == null) {
-            result = instance().build();
-        }
-
-        return submit(eventBus, context.of(new PageResource(context.getPageId(), result, context.getPageSize())));
     }
     //endregion
 

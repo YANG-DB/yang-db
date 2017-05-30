@@ -27,9 +27,10 @@ public class CypherMatch {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        paths.values().forEach(p -> sb.append(String.format("MATCH %s,\n",p)));
-        sb.deleteCharAt(sb.lastIndexOf("\n"));
+        sb.append("MATCH\n");
+        paths.values().forEach(p -> sb.append(String.format("%s\n,",p)));
         sb.deleteCharAt(sb.lastIndexOf(","));
+        sb.deleteCharAt(sb.lastIndexOf("\n"));
         return sb.toString();
     }
 
