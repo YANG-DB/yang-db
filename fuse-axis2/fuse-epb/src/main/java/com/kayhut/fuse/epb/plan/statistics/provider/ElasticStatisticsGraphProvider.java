@@ -33,13 +33,16 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     private static final String INT = "int";
     private static final String STRING = "string";
 
+    //region Constructors
     @Inject
     public ElasticStatisticsGraphProvider(StatConfig config) {
         this.statConfig = config;
         this.elasticStatProvider = new ElasticStatProvider(config);
         this.elasticClient = new ElasticClientProvider(config).getStatClient();
     }
+    //endregion
 
+    //region GraphStatisticsProvider Implementation
     @Override
     public Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema) {
         return getVertexCardinality(graphVertexSchema,
@@ -63,7 +66,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphVertexSchema,
+    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphElementSchema,
                                                                                              List<String> relevantIndices,
                                                                                              GraphElementPropertySchema graphElementPropertySchema,
                                                                                              Constraint constraint,
@@ -79,7 +82,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 statConfig.getStatIndexName(),
                 statTypeName,
                 relevantIndices,
-                Arrays.asList(graphVertexSchema.getType()),
+                Arrays.asList(graphElementSchema.getType()),
                 Arrays.asList(graphElementPropertySchema.getName())
         );
 
@@ -91,6 +94,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                     sortedBuckets
             ));
         }
+
         return Statistics.HistogramStatistics.combine(histograms);
     }
 
@@ -109,7 +113,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema, Rel.Direction direction, List<String> relevantIndices) {
         return 0;
     }
+    //endregion
 
+    //region Private Methods
     private Statistics.Cardinality getStatResultsForType(String docType, Iterable<String> indices) {
         List<Statistics.BucketInfo> buckets = elasticStatProvider.getFieldStatistics(
                 elasticClient,
@@ -189,6 +195,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         }
         return statTypeName;
     }
+    //endregion
 
    //region Fields
     private StatConfig statConfig;

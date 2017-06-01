@@ -119,8 +119,9 @@ public class EsUtil {
         FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
         buckets.forEach(bucket -> {
             String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
-            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery(field).
-                    from(bucket.getStart())
+            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.boolQuery()
+                    .must(QueryBuilders.rangeQuery(field)
+                    .from(bucket.getStart())
                     .to(bucket.getEnd())
                     .includeLower(true)
                     .includeUpper(true))// in this case - inclusive
@@ -502,9 +503,7 @@ public class EsUtil {
 
         RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(field);
         buckets.forEach(bucket -> {
-            Double start = bucket.getStart();
-            Double end = bucket.getEnd();
-            rangesAggregationBuilder.addRange(start, end);
+            rangesAggregationBuilder.addRange(bucket.getStart(), bucket.getEnd());
         });
 
         SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder

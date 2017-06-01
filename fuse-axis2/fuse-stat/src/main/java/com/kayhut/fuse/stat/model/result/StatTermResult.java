@@ -12,7 +12,14 @@ public class StatTermResult <T> extends StatResultBase{
         super();
     }
 
-    public StatTermResult(String index, String type, String field, String key, DataType dataType, T term, long count, long cardinality) {
+    public StatTermResult(String index,
+                          String type,
+                          String field,
+                          String key,
+                          DataType dataType,
+                          T term,
+                          long count,
+                          long cardinality) {
         super(index, type, field, key, dataType, count, cardinality);
         this.term = term;
     }

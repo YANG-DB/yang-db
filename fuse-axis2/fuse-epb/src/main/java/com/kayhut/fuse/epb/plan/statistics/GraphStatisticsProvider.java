@@ -19,12 +19,12 @@ public interface GraphStatisticsProvider {
     Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
     Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
 
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphVertexSchema,
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphElementSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       Constraint constraint, T value);
 
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphEdgeSchema,
+    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphElementSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
                                                                                       Constraint constraint, List<T> values);
