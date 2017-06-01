@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.bucket.BucketTerm;
+import com.kayhut.fuse.stat.model.configuration.Filter;
 import com.kayhut.fuse.stat.model.enums.DataType;
+import com.kayhut.fuse.stat.model.result.StatGlobalCardinalityResult;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import org.apache.commons.io.FileUtils;
@@ -97,6 +99,49 @@ public class EsUtil {
             List<BucketRange<Double>> numericBucketRanges = new ArrayList<>();
             buckets.forEach(bucketRange -> numericBucketRanges.add(new BucketRange<>((Double) bucketRange.getStart(), (Double) bucketRange.getEnd())));
             bucketStatResults = getNumericBucketsStatResults(client, index, type, field, numericBucketRanges);
+        }
+        return bucketStatResults;
+    }
+
+    public static <T> List<StatGlobalCardinalityResult> getGlobalCardinalityHistogramResults(TransportClient client,
+                                                                                  String index,
+                                                                                  String type,
+                                                                                  String field,
+                                                                                  String direction,
+                                                                                  List<BucketRange<T>> buckets) {
+
+        List<StatGlobalCardinalityResult> bucketStatResults = new ArrayList<>();
+
+        String aggName = buildAggName(index, type, field + "_direction_" + direction);
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
+                .setTypes(type);
+
+        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
+        buckets.forEach(bucket -> {
+            String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
+            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.boolQuery().must(QueryBuilders.rangeQuery(field).
+                    from(bucket.getStart())
+                    .to(bucket.getEnd())
+                    .includeLower(true)
+                    .includeUpper(true))// in this case - inclusive
+                    .must(QueryBuilders.termQuery("direction", direction)));
+        });
+
+        SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
+                .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(field)))
+                .setSize(0).execute().actionGet();
+
+        Filters aggregation = sr.getAggregations().get(aggName);
+
+        for (Filters.Bucket entry : aggregation.getBuckets()) {
+            InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
+
+            StatGlobalCardinalityResult bucketStatResult = new StatGlobalCardinalityResult(index, type, field,
+                    direction,
+                    entry.getDocCount(),
+                    cardinality.getValue());
+
+            bucketStatResults.add(bucketStatResult);
         }
         return bucketStatResults;
     }
@@ -373,6 +418,11 @@ public class EsUtil {
                 .prepareState().execute().actionGet();
         return clusterStateResponse.getState().getMetaData().index(index)
                 .getMappings();
+    }
+
+
+    public static boolean checkMappingExistsInIndex(Client client, String index, String mappingName) {
+        return getMappingsOfIndex(client, index).get(mappingName) != null;
     }
 
     /**

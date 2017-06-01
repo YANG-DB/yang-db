@@ -5,6 +5,7 @@ import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.enums.HistogramType;
+import com.kayhut.fuse.stat.model.result.StatGlobalCardinalityResult;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatResultBase;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
@@ -105,9 +106,13 @@ public class StatUtil {
         List<Map<String, Object>> buckets = new ArrayList<>();
         for (StatResultBase bucketStatResult : bucketStatResults) {
             Map<String, Object> bucket = new HashedMap();
+            //Deafualt fields for all statistics documents
             bucket.put("index", bucketStatResult.getIndex());
             bucket.put("type", bucketStatResult.getType());
             bucket.put("field", bucketStatResult.getField());
+
+            //Statics Document for range - we are intrested in knowing if its a string range or a numeric range
+            // In order to create separate statistics fields per each
             if (bucketStatResult instanceof StatRangeResult) {
                 String bucketId = createRangeBucketUniqueId(bucketStatResult.getIndex(),
                         bucketStatResult.getType(),
@@ -122,6 +127,7 @@ public class StatUtil {
                 }
             }
 
+            //Statistics Document for term (we do not care about bounds)
             if (bucketStatResult instanceof StatTermResult) {
                 String bucketId = createTermBucketUniqueId(bucketStatResult.getIndex(),
                         bucketStatResult.getType(),
@@ -130,6 +136,17 @@ public class StatUtil {
                 bucket.put("id", bucketId);
                 bucket.put("term", ((StatTermResult) bucketStatResult).getTerm());
             }
+
+            //Global Cardinality Statistic document
+            if (bucketStatResult instanceof StatGlobalCardinalityResult)  {
+                String bucketId = createGlobalBucketUniqueId(bucketStatResult.getIndex(),
+                        bucketStatResult.getType(),
+                        bucketStatResult.getField(),
+                        ((StatGlobalCardinalityResult) bucketStatResult).getDirection());
+                bucket.put("id", bucketId);
+                bucket.put("direction", ((StatGlobalCardinalityResult) bucketStatResult).getDirection());
+            }
+
             bucket.put("count", bucketStatResult.getDocCount());
             bucket.put("cardinality", bucketStatResult.getCardinality());
             buckets.add(bucket);
@@ -143,6 +160,10 @@ public class StatUtil {
 
     public static String createTermBucketUniqueId(String indexName, String typeName, String fieldName, Object term) {
         return hashString(indexName + typeName + fieldName + term);
+    }
+
+    public static String createGlobalBucketUniqueId(String indexName, String typeName, String fieldName, String direction) {
+        return hashString(indexName + typeName + fieldName + direction);
     }
 
     public static Optional<Field> getFieldByName(StatContainer statContainer, String typeName, String fieldName) {

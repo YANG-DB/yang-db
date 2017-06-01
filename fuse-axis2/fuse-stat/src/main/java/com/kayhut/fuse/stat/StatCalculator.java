@@ -4,10 +4,7 @@ import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.configuration.Field;
-import com.kayhut.fuse.stat.model.configuration.Mapping;
-import com.kayhut.fuse.stat.model.configuration.StatContainer;
-import com.kayhut.fuse.stat.model.configuration.Type;
+import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
@@ -57,6 +54,7 @@ public class StatCalculator {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
         } finally {
             if (dataClient != null) {
                 dataClient.close();
@@ -91,11 +89,27 @@ public class StatCalculator {
     public static void loadDefaultStatParameters(String statIndex,
                                                  String statTypeNumeric,
                                                  String statTypeString,
-                                                 String statTypeTerm) {
+                                                 String statTypeTerm,
+                                                 String statTypeGlobal) {
+        if (statIndex == null ||
+                statTypeNumeric == null ||
+                statTypeString == null ||
+                statTypeTerm == null ||
+                statTypeGlobal == null) {
+
+            throw new IllegalArgumentException("Missing Arguments for the Statistics type names - " +
+                    "\nStat Index: " + statIndex +
+                    "\nStat Type Numeric Name: " + statTypeNumeric +
+                    "\nStat Type String Name: " + statTypeString +
+                    "\nStat Type Term Name: " + statTypeTerm +
+                    "\nStat Type Global Name: " + statTypeGlobal
+            );
+        }
         statIndexName = statIndex;
         statTypeNumericName = statTypeNumeric;
         statTypeStringName = statTypeString;
         statTypeTermName = statTypeTerm;
+        statTypeGlobalName = statTypeGlobal;
     }
     //endregion
 
@@ -125,6 +139,7 @@ public class StatCalculator {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -142,22 +157,36 @@ public class StatCalculator {
 
                 for (Field field : fields.get()) {
                     HistogramManual hist = ((HistogramManual) field.getHistogram());
-                    List<StatRangeResult> buckets = EsUtil.getManualHistogramResults(dataClient,
-                            index,
-                            type,
-                            field.getField(),
-                            hist.getDataType(),
-                            hist.getBuckets());
-                    if (hist.getDataType() == DataType.string) {
-                        populateBuckets(statIndexName, statTypeStringName, statClient, buckets);
-                    }
-                    if (hist.getDataType() == DataType.numeric) {
-                        populateBuckets(statIndexName, statTypeNumericName, statClient, buckets);
+                    if (field.getFilter() != null && !field.getFilter().isEmpty()) { //Use for global cardinality
+                        Filter direction = field.getFilter().stream()
+                                .filter(filter -> filter.getName().equals("direction"))
+                                .findFirst().get();
+                        List<StatRangeResult> buckets = EsUtil.getGlobalCardinalityHistogramResults(
+                                dataClient,
+                                index,
+                                type,
+                                field.getField(),
+                                direction.getValue(), hist.getBuckets());
+                        populateBuckets(statIndexName, statTypeGlobalName, statClient, buckets);
+                    } else {
+                        List<StatRangeResult> buckets = EsUtil.getManualHistogramResults(dataClient,
+                                index,
+                                type,
+                                field.getField(),
+                                hist.getDataType(),
+                                hist.getBuckets());
+                        if (hist.getDataType() == DataType.string) {
+                            populateBuckets(statIndexName, statTypeStringName, statClient, buckets);
+                        }
+                        if (hist.getDataType() == DataType.numeric) {
+                            populateBuckets(statIndexName, statTypeNumericName, statClient, buckets);
+                        }
                     }
                 }
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -192,6 +221,7 @@ public class StatCalculator {
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -256,6 +286,7 @@ public class StatCalculator {
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -285,6 +316,7 @@ public class StatCalculator {
             }
         } catch (IOException e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -306,7 +338,8 @@ public class StatCalculator {
         loadDefaultStatParameters(configuration.getString("statistics.index.name"),
                 configuration.getString("statistics.type.numeric.name"),
                 configuration.getString("statistics.type.string.name"),
-                configuration.getString("statistics.type.term.name")
+                configuration.getString("statistics.type.term.name"),
+                configuration.getString("statistics.type.global.name")
         );
     }
 
@@ -328,6 +361,7 @@ public class StatCalculator {
     private static String statTypeNumericName;
     private static String statTypeStringName;
     private static String statTypeTermName;
+    private static String statTypeGlobalName;
     //endregion
 }
 

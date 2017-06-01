@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat;
 
+import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
@@ -18,12 +19,18 @@ import com.kayhut.test.framework.index.ElasticIndexConfigurer;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.configuration.Configuration;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
+import org.elasticsearch.common.collect.ImmutableOpenMap;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.parboiled.support.Var;
 
 import java.util.*;
 
@@ -54,6 +61,8 @@ public class StatCalculatorTest {
     private static final String STAT_TYPE_NUMERIC_NAME = "bucketNumeric";
     private static final String STAT_TYPE_STRING_NAME = "bucketString";
     private static final String STAT_TYPE_TERM_NAME = "bucketTerm";
+    private static final String STAT_TYPE_GLOBAL_NAME = "bucketGlobal";
+
     private static final String DATA_INDEX_NAME_1 = "index1";
     private static final String DATA_INDEX_NAME_2 = "index2";
     private static final String DATA_INDEX_NAME_3 = "index3";
@@ -95,6 +104,8 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME));
         assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME));
         assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
+        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
+
 
         //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
         String docId1 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_AGE + "10.0" + "19.0");
@@ -133,6 +144,21 @@ public class StatCalculatorTest {
         assertTrue(doc6Result.isPresent());
         assertEquals(1, (int) doc6Result.get().get("cardinality"));
         assertEquals((int) doc6Result.get().get("count"), 1000);
+    }
+
+    @Test
+    public void globalCardinalityTest() throws Exception {
+        //Check to see if the mapping for Stat results for global was created
+        assertTrue(EsUtil.checkMappingExistsInIndex(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
+        StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
+        for (String type : EsUtil.getAllTypesFromIndex(statClient, STAT_INDEX_NAME)) {
+            System.out.println(type);
+        }
+        for (ObjectObjectCursor<String, MappingMetaData> mapping : EsUtil.getMappingsOfIndex(statClient, STAT_INDEX_NAME)) {
+            System.out.println(mapping.key + ": \n" + mapping.value.getSourceAsMap() + "\n");
+        }
+        StatTestUtil.printAllDocs(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME);
+        SearchResponse firstNDocumentsInType = EsUtil.getFirstNDocumentsInType(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME, 1);
     }
 
 
@@ -366,4 +392,6 @@ public class StatCalculatorTest {
                 .withType(typeDragon)
                 .build();
     }
+
+
 }

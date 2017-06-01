@@ -101,6 +101,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                                                                              GraphElementPropertySchema graphElementPropertySchema,
                                                                                              Constraint constraint,
                                                                                              List<T> values) {
+        //Not needed
         return null;
     }
 

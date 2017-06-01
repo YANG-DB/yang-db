@@ -1,6 +1,10 @@
 package com.kayhut.fuse.stat.util;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 
 import java.text.ParseException;
 import java.util.*;
@@ -129,6 +133,38 @@ public class StatTestUtil {
     }
 
 
+    public static List<Map<String, Object>> getAllDocs(TransportClient client, String index, String type) {
+        int scrollSize = 1000;
+        List<Map<String, Object>> esData = new ArrayList<>();
+        SearchResponse response = null;
+        int i = 0;
+        while (response == null || response.getHits().hits().length != 0) {
+            response = client.prepareSearch(index)
+                    .setTypes(type)
+                    .setQuery(QueryBuilders.matchAllQuery())
+                    .setSize(scrollSize)
+                    .setFrom(i * scrollSize)
+                    .execute()
+                    .actionGet();
+            for (SearchHit hit : response.getHits()) {
+                esData.add(hit.getSource());
+            }
+            i++;
+        }
+        return esData;
+    }
 
+
+    public static void printAllDocs(TransportClient client, String index, String type) {
+        List<Map<String, Object>> allDocs = getAllDocs(client, index, type);
+        for ( Map<String, Object> doc : allDocs) {
+            for (Map.Entry<String, Object> entry : doc.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue().toString();
+                System.out.println(key + ": " + value);
+                // do stuff
+            }
+        }
+    }
 
 }
