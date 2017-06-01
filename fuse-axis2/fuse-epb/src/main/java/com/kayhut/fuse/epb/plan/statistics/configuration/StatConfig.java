@@ -32,9 +32,7 @@ public class StatConfig {
         this.statFieldStringUpperName = config.getString("elasticsearch.stat.field.stringUpperName.name");
 
         Optional<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
-        if (statJsonConfiguration.isPresent()) {
-            this.statContainer = statJsonConfiguration.get();
-        }
+        statJsonConfiguration.ifPresent(statContainer -> this.statContainer = statContainer);
     }
 
     //Used only in the Step Builder
@@ -45,6 +43,7 @@ public class StatConfig {
                       String statTermTypeName,
                       String statStringTypeName,
                       String statNumericTypeName,
+                      String statGlobalTypeName,
                       String statCountFieldName,
                       String statCardinalityFieldName,
                       String statFieldTermName,
@@ -60,6 +59,7 @@ public class StatConfig {
         this.statTermTypeName = statTermTypeName;
         this.statStringTypeName = statStringTypeName;
         this.statNumericTypeName = statNumericTypeName;
+        this.statGlobalTypeName = statGlobalTypeName;
         this.statCountFieldName = statCountFieldName;
         this.statCardinalityFieldName = statCardinalityFieldName;
         this.statFieldTermName = statFieldTermName;
@@ -119,6 +119,10 @@ public class StatConfig {
         return statNumericTypeName;
     }
 
+    public String getStatGlobalTypeName() {
+        return statGlobalTypeName;
+    }
+
     public String getStatCountFieldName() {
         return statCountFieldName;
     }
@@ -161,6 +165,7 @@ public class StatConfig {
     private String statTermTypeName;
     private String statStringTypeName;
     private String statNumericTypeName;
+    private String statGlobalTypeName;
     private String statCountFieldName;
     private String statCardinalityFieldName;
     private String statFieldTermName;
@@ -169,6 +174,8 @@ public class StatConfig {
     private String statFieldStringLowerName;
     private String statFieldStringUpperName;
     private StatContainer statContainer;
+
+
     //endregion
 
     //region Step Builder
@@ -197,7 +204,11 @@ public class StatConfig {
     }
 
     public interface StatNumericTypeNameStep {
-        StatCountFieldNameStep withStatNumericTypeName(String statNumericTypeName);
+        StatGlobalTypeNameStep withStatNumericTypeName(String statNumericTypeName);
+    }
+
+    public interface StatGlobalTypeNameStep {
+        StatCountFieldNameStep withStatGlobalTypeName(String statGlobalTypeName);
     }
 
     public interface StatCountFieldNameStep {
@@ -236,24 +247,7 @@ public class StatConfig {
         StatConfig build();
     }
 
-    public static class Builder implements
-            StatClusterNameStep,
-            StatNodesHostsStep,
-            StatTransportPortStep,
-            StatIndexNameStep,
-            StatTermTypeNameStep,
-            StatStringTypeNameStep,
-            StatNumericTypeNameStep,
-            StatCountFieldNameStep,
-            StatCardinalityFieldNameStep,
-            StatFieldTermNameStep,
-            StatFieldNumericLowerNameStep,
-            StatFieldNumericUpperNameStep,
-            StatFieldStringLowerNameStep,
-            StatFieldStringUpperNameStep,
-            StatContainerStep,
-            BuildStep {
-
+    public static class Builder implements StatClusterNameStep, StatNodesHostsStep, StatTransportPortStep, StatIndexNameStep, StatTermTypeNameStep, StatStringTypeNameStep, StatNumericTypeNameStep, StatGlobalTypeNameStep, StatCountFieldNameStep, StatCardinalityFieldNameStep, StatFieldTermNameStep, StatFieldNumericLowerNameStep, StatFieldNumericUpperNameStep, StatFieldStringLowerNameStep, StatFieldStringUpperNameStep, StatContainerStep, BuildStep {
         private String statClusterName;
         private List<String> statNodesHosts;
         private int statTransportPort;
@@ -261,6 +255,7 @@ public class StatConfig {
         private String statTermTypeName;
         private String statStringTypeName;
         private String statNumericTypeName;
+        private String statGlobalTypeName;
         private String statCountFieldName;
         private String statCardinalityFieldName;
         private String statFieldTermName;
@@ -314,8 +309,14 @@ public class StatConfig {
         }
 
         @Override
-        public StatCountFieldNameStep withStatNumericTypeName(String statNumericTypeName) {
+        public StatGlobalTypeNameStep withStatNumericTypeName(String statNumericTypeName) {
             this.statNumericTypeName = statNumericTypeName;
+            return this;
+        }
+
+        @Override
+        public StatCountFieldNameStep withStatGlobalTypeName(String statGlobalTypeName) {
+            this.statGlobalTypeName = statGlobalTypeName;
             return this;
         }
 
@@ -377,6 +378,7 @@ public class StatConfig {
                     this.statTermTypeName,
                     this.statStringTypeName,
                     this.statNumericTypeName,
+                    this.statGlobalTypeName,
                     this.statCountFieldName,
                     this.statCardinalityFieldName,
                     this.statFieldTermName,

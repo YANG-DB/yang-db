@@ -173,7 +173,8 @@ public class ElasticStatProviderTest {
                 statConfig.getStatIndexName(),
                 statConfig.getStatNumericTypeName(),
                 statConfig.getStatStringTypeName(),
-                statConfig.getStatTermTypeName());
+                statConfig.getStatTermTypeName(),
+                statConfig.getStatGlobalTypeName());
         StatCalculator.buildStatisticsBasedOnConfiguration(dataClient, statClient, buildStatContainer());
         Thread.sleep(3000);
 

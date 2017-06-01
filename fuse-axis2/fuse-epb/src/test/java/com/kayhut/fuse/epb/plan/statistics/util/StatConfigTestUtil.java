@@ -14,6 +14,7 @@ public class StatConfigTestUtil {
     static final String STAT_TERM_TYPE_NAME = "bucketTerm";
     static final String STAT_STRING_TYPE_NAME = "bucketString";
     static final String STAT_NUMERIC_TYPE_NAME = "bucketNumeric";
+    static final String STAT_GLOBAL_TYPE_NAME = "bucketGlobal";
     static final String STAT_COUNT_FIELD_NAME = "count";
     static final String STAT_CARDINALITY_FIELD_NAME = "cardinality";
     static final String STAT_FIELD_TERM_NAME = "term";
@@ -30,6 +31,7 @@ public class StatConfigTestUtil {
                 .withStatTermTypeName(STAT_TERM_TYPE_NAME)
                 .withStatStringTypeName(STAT_STRING_TYPE_NAME)
                 .withStatNumericTypeName(STAT_NUMERIC_TYPE_NAME)
+                .withStatGlobalTypeName(STAT_GLOBAL_TYPE_NAME)
                 .withStatCountFieldName(STAT_COUNT_FIELD_NAME)
                 .withStatCardinalityFieldName(STAT_CARDINALITY_FIELD_NAME)
                 .withStatFieldTermName(STAT_FIELD_TERM_NAME)
