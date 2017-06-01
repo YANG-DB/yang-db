@@ -15,9 +15,7 @@ import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Roman on 02/04/2017.
@@ -86,8 +84,7 @@ public class Neo4jCursorFactory implements CursorFactory {
         public QueryResult getNextResults(int numResults) {
 
             if (session != null && !session.isOpen()) {
-                //TODO: currently returning last results. need to fix when pageProcessor called only once.
-                return lastResult;
+                return QueryResult.Builder.instance().withAssignments(Collections.emptyList()).build();
             }
 
             if (session == null) {
@@ -129,9 +126,7 @@ public class Neo4jCursorFactory implements CursorFactory {
                 session.close();
             }
 
-            lastResult = QueryResult.Builder.instance().withAssignments(assignments).build();
-
-            return lastResult;
+            return QueryResult.Builder.instance().withAssignments(assignments).build();
 
         }
         //endregion
@@ -147,7 +142,6 @@ public class Neo4jCursorFactory implements CursorFactory {
         private GraphProvider graphProvider;
         private StatementResult statementResult;
         private Session session;
-        private QueryResult lastResult;
-        //endregion
+        //endregion+
     }
 }

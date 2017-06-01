@@ -27,7 +27,6 @@ import static com.kayhut.fuse.model.Utils.submit;
  */
 public class Neo4jOperationContextProcessor implements
         CursorCreationOperationContext.Processor,
-        PageCreationOperationContext.Processor,
         QueryCreationOperationContext.Processor {
 
     //region Constructors
@@ -67,6 +66,7 @@ public class Neo4jOperationContextProcessor implements
     @Override
     @Subscribe
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
+
         if (context.getCursor() != null) {
             return context;
         }
@@ -86,24 +86,6 @@ public class Neo4jOperationContextProcessor implements
         Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(), cypherQuery));
 
         return submit(eventBus, context.of(cursor));
-
-    }
-    //endregion
-
-    //region PageCreationOperationContext.Processor Implementation
-    @Override
-    @Subscribe
-    public PageCreationOperationContext process(PageCreationOperationContext context) {
-
-        //TODO: called twice !!
-
-        if (context.getPageResource() == null || context.getPageResource().getData() == null) {
-            QueryResult queryResult = context.getCursorResource().getCursor().getNextResults(context.getPageSize());
-            context = context.of(new PageResource(context.getPageId(), queryResult, context.getPageSize()));
-            submit(eventBus, context);
-        }
-
-        return context;
 
     }
     //endregion
