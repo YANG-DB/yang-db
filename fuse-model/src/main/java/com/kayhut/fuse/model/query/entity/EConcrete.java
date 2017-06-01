@@ -3,6 +3,9 @@ package com.kayhut.fuse.model.query.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by user on 16-Feb-17.
  */
@@ -12,7 +15,11 @@ public class EConcrete extends ETyped implements Typed.eTyped{
     public EConcrete() {}
 
     public EConcrete(int eNum, String eTag, int eType, String eID, String eName, int next, int b) {
-        super(eNum, eTag, eType, next, b);
+        this(eNum, eTag, eType, eID, eName, Collections.emptyList(), next, b);
+    }
+
+    public EConcrete(int eNum, String eTag, int eType, String eID, String eName, List<String> reportProps, int next, int b) {
+        super(eNum, eTag, eType, reportProps, next, b);
         this.eID = eID;
         this.eName = eName;
     }

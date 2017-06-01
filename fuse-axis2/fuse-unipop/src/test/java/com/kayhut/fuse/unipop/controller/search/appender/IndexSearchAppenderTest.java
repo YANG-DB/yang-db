@@ -36,6 +36,7 @@ public class IndexSearchAppenderTest {
                 PromiseElementControllerContext(
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
+                    Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
                     mock(SearchQuery.class));
@@ -60,6 +61,7 @@ public class IndexSearchAppenderTest {
                 PromiseElementControllerContext(
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
+                    Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
                     mock(SearchQuery.class));
@@ -84,6 +86,7 @@ public class IndexSearchAppenderTest {
                 PromiseElementControllerContext(
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
+                    Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
                     mock(SearchQuery.class));

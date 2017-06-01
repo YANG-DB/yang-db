@@ -46,9 +46,9 @@ public class EntityFilterOpTranslationStrategyTest {
 
     static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, 1))
+                .next(typed(1, 1, "A"))
                 .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(typed(3, 2))
+                .next(typed(3, 2, "B"))
                 .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("2", 9, of(eq, 30)))
                         , rel(5, 4, R)
@@ -95,7 +95,7 @@ public class EntityFilterOpTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
-        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy();
+        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(
                 __.start().has("willBeDeleted", "doesnt matter"),
                 plan,
@@ -148,7 +148,7 @@ public class EntityFilterOpTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
-        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy();
+        EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(3), context);
         GraphTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
@@ -156,7 +156,7 @@ public class EntityFilterOpTranslationStrategyTest {
                         Constraint.by(__.and(
                                 __.has("name", "value1"),
                                 __.has("age", 30))))
-                .otherV();
+                .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

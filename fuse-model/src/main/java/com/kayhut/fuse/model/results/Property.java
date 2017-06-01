@@ -9,6 +9,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Property {
+    //region Constructors
+    public Property() {
+
+    }
+
+    public Property(int pType, Object value) {
+        this(pType, null, value);
+    }
+
+    public Property(int pType, String agg, Object value) {
+        this.pType = pType;
+        this.agg = agg;
+        this.value = value;
+    }
+    //endregion
 
     //region Properties
     public int getpType() {

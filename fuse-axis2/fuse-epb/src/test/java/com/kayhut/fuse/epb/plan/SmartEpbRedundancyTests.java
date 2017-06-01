@@ -310,4 +310,22 @@ public class SmartEpbRedundancyTests {
         PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
     }
 
+    @Test
+    public void redundantPropertyPathSelectionTest2(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, DRAGON.type)).
+                next(quant1(2, QuantType.all)).
+                in(eProp(3, EProp.of(Integer.toString(NAME.type),3, Constraint.of(ConstraintOp.le,"abc"))),
+                        rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
+                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(Integer.toString(NAME.type),11, Constraint.of(ConstraintOp.eq,"abc"))))),
+                        rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
+                                next(typed(6, DRAGON.type)
+                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type),7, Constraint.of(ConstraintOp.eq,"abc")))))).
+                build();
+
+        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        Assert.assertNotNull(plans);
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(6).entityFilter(7).rel(4, Rel.Direction.L).relFilter(5).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
+        PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
+    }
 }

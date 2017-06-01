@@ -2,14 +2,12 @@ package com.kayhut.fuse.unipop.controller;
 
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.EdgeConstraintSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.FilterVerticesSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.SizeSearchAppender;
+import com.kayhut.fuse.unipop.controller.search.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
+import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
@@ -24,6 +22,8 @@ import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
+
+import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 
 /**
  * Created by Elad on 4/27/2017.
@@ -69,23 +69,37 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
             constraint = Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
         }
 
-        return filterPromiseVertices(searchVertexQuery.getVertices(), constraint, searchVertexQuery);
+        List<HasContainer> selectPHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() != null)
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
+                .toJavaList();
+
+        return filterPromiseVertices(searchVertexQuery, constraint, selectPHasContainers);
     }
     //endregion
 
     //region Private Methods
-    private Iterator<Edge> filterPromiseVertices(List<Vertex> vertices, Optional<TraversalConstraint> constraint, SearchVertexQuery searchVertexQuery) {
+    private Iterator<Edge> filterPromiseVertices(
+            SearchVertexQuery searchVertexQuery,
+            Optional<TraversalConstraint> constraint,
+            List<HasContainer> selectPHasContainers) {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
         PromiseVertexFilterControllerContext context =
-                new PromiseVertexFilterControllerContext(vertices, constraint, schemaProvider, searchVertexQuery);
+                new PromiseVertexFilterControllerContext(
+                        searchVertexQuery.getVertices(),
+                        constraint,
+                        selectPHasContainers,
+                        schemaProvider,
+                        searchVertexQuery);
 
         CompositeSearchAppender<PromiseVertexFilterControllerContext> appender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
-                    new FilterVerticesSearchAppender(),
-                    SearchAppenderUtil.wrap(new SizeSearchAppender(configuration)),
-                    SearchAppenderUtil.wrap(new EdgeConstraintSearchAppender()));
+                    wrap(new FilterVerticesSearchAppender()),
+                    wrap(new SizeSearchAppender(configuration)),
+                    wrap(new EdgeConstraintSearchAppender()),
+                    wrap(new FilterSourceSearchAppender()));
 
         appender.append(searchBuilder, context);
 

@@ -22,28 +22,20 @@ import java.util.Optional;
 /**
  * Created by Roman on 10/05/2017.
  */
-public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
-    public enum Options {
-        none,
-        filterEntity
-    }
-
+public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
-    public EntityOpTranslationStrategy(Options options) {
+    public EntityOpTranslationStrategy(EntityTranslationOptions options) {
+        super(EntityOp.class);
         this.options = options;
     }
     //endregion
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
-        if (!(planOp instanceof EntityOp)) {
-            return traversal;
-        }
-
+    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         EntityOp entityOp = (EntityOp)planOp;
 
-        if (PlanUtil.isFirst(plan, entityOp)) {
+        if (PlanUtil.isFirst(plan, planOp)) {
             traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEBase().geteBase().geteTag());
             appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
         } else {
@@ -55,10 +47,10 @@ public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
                 switch (this.options) {
                     case none: return traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                     case filterEntity:
-                        traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
+                        traversal.otherV();
                         traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
                         appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
-                        traversal.otherV();
+                        traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                 }
             }
         }
@@ -96,6 +88,6 @@ public class EntityOpTranslationStrategy implements PlanOpTranslationStrategy {
     //endregion
 
     //region Fields
-    private Options options;
+    private EntityTranslationOptions options;
     //endregion
 }
