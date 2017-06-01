@@ -139,18 +139,16 @@ public class EsUtil {
         Filters aggregation = sr.getAggregations().get(aggName);
 
         for (Filters.Bucket entry : aggregation.getBuckets()) {
-            String key = entry.getKeyAsString();            // bucket key
-            long docCount = entry.getDocCount();            // Doc count
-            String start = key.split("_")[0];          // Bucket start
-            String end = key.split("_")[1];              // Bucket end
+            String start = entry.getKeyAsString().split("_")[0];          // Bucket start
+            String end = entry.getKeyAsString().split("_")[1];              // Bucket end
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
 
             StatRangeResult bucketStatResult = new StatRangeResult(index, type, field,
-                    key,
+                    entry.getKeyAsString(),
                     DataType.string,
                     start,
                     end,
-                    docCount,
+                    entry.getDocCount(),
                     cardinality.getValue());
 
             bucketStatResults.add(bucketStatResult);
@@ -181,15 +179,13 @@ public class EsUtil {
         Filters aggregation = sr.getAggregations().get(aggName);
 
         for (Filters.Bucket entry : aggregation.getBuckets()) {
-            String key = entry.getKeyAsString();            // bucket key
-            long docCount = entry.getDocCount();            // Doc count
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
 
             StatTermResult bucketStatResult = new StatTermResult(index, type, field,
-                    key,
+                    entry.getKeyAsString(),
                     dataType,
-                    key,
-                    docCount,
+                    entry.getKeyAsString(),
+                    entry.getDocCount(),
                     cardinality.getValue());
 
             bucketStatResults.add(bucketStatResult);
@@ -471,7 +467,6 @@ public class EsUtil {
             String key = entry.getKeyAsString();             // Range as key
             Number from = (Number) entry.getFrom();          // Bucket from
             Number to = (Number) entry.getTo();              // Bucket to
-            long docCount = entry.getDocCount();    // Doc count
 
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
             StatRangeResult bucketStatResult = new StatRangeResult(index, type, field,
@@ -479,7 +474,7 @@ public class EsUtil {
                     DataType.numeric,
                     from,
                     to,
-                    docCount,
+                    entry.getDocCount(),
                     cardinality.getValue());
 
             bucketStatResults.add(bucketStatResult);
