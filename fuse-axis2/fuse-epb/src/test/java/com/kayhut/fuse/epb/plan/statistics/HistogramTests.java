@@ -87,8 +87,8 @@ public class HistogramTests {
     @Test
     public void combineHistogramSimpleTest(){
         Statistics.HistogramStatistics<String> histogram1 = new Statistics.HistogramStatistics<>(
-                        Arrays.asList(new Statistics.BucketInfo<>(100l, 10l, "a", "m"),
-                                new Statistics.BucketInfo<>(50l, 15l, "m", "z")));
+                        Arrays.asList(new Statistics.BucketInfo<>(100L, 10L, "a", "m"),
+                                new Statistics.BucketInfo<>(50L, 15L, "m", "z")));
         Statistics.HistogramStatistics<String> mergedHistogram = Statistics.HistogramStatistics.combine(Arrays.asList(histogram1, histogram1));
 
         Assert.assertNotNull(mergedHistogram);
@@ -97,17 +97,17 @@ public class HistogramTests {
         Assert.assertEquals("m",mergedHistogram.getBuckets().get(0).getHigherBound());
         Assert.assertEquals("m",mergedHistogram.getBuckets().get(1).getLowerBound());
         Assert.assertEquals("z",mergedHistogram.getBuckets().get(1).getHigherBound());
-        Assert.assertEquals(200l ,(long)mergedHistogram.getBuckets().get(0).getTotal());
-        Assert.assertEquals(100l ,(long)mergedHistogram.getBuckets().get(1).getTotal());
-        Assert.assertEquals(10l ,(long)mergedHistogram.getBuckets().get(0).getCardinality());
-        Assert.assertEquals(15l ,(long)mergedHistogram.getBuckets().get(1).getCardinality());
+        Assert.assertEquals(200L,(long)mergedHistogram.getBuckets().get(0).getTotal());
+        Assert.assertEquals(100L,(long)mergedHistogram.getBuckets().get(1).getTotal());
+        Assert.assertEquals(10L,(long)mergedHistogram.getBuckets().get(0).getCardinality());
+        Assert.assertEquals(15L,(long)mergedHistogram.getBuckets().get(1).getCardinality());
     }
 
     @Test
     public void combineHistogramSingleValueTest(){
         Statistics.HistogramStatistics<String> histogram1 = new Statistics.HistogramStatistics<>(
-                Arrays.asList(new Statistics.BucketInfo<>(100l, 1l, "a", "a"),
-                        new Statistics.BucketInfo<>(50l, 1l, "b", "b")));
+                Arrays.asList(new Statistics.BucketInfo<>(100L, 1L, "a", "a"),
+                        new Statistics.BucketInfo<>(50L, 1L, "b", "b")));
         Statistics.HistogramStatistics<String> mergedHistogram = Statistics.HistogramStatistics.combine(Arrays.asList(histogram1, histogram1));
 
         Assert.assertNotNull(mergedHistogram);
@@ -116,24 +116,24 @@ public class HistogramTests {
         Assert.assertEquals("a",mergedHistogram.getBuckets().get(0).getHigherBound());
         Assert.assertEquals("b",mergedHistogram.getBuckets().get(1).getLowerBound());
         Assert.assertEquals("b",mergedHistogram.getBuckets().get(1).getHigherBound());
-        Assert.assertEquals(200l ,(long)mergedHistogram.getBuckets().get(0).getTotal());
-        Assert.assertEquals(100l ,(long)mergedHistogram.getBuckets().get(1).getTotal());
-        Assert.assertEquals(1l ,(long)mergedHistogram.getBuckets().get(0).getCardinality());
-        Assert.assertEquals(1l ,(long)mergedHistogram.getBuckets().get(1).getCardinality());
+        Assert.assertEquals(200L,(long)mergedHistogram.getBuckets().get(0).getTotal());
+        Assert.assertEquals(100L,(long)mergedHistogram.getBuckets().get(1).getTotal());
+        Assert.assertEquals(1L,(long)mergedHistogram.getBuckets().get(0).getCardinality());
+        Assert.assertEquals(1L,(long)mergedHistogram.getBuckets().get(1).getCardinality());
     }
 
     @Test
     public void combineHistogramComplexTest(){
         Statistics.HistogramStatistics<String> histogram1 = new Statistics.HistogramStatistics<>(
-                Arrays.asList(new Statistics.BucketInfo<>(100l, 1l, "a", "a"),
-                        new Statistics.BucketInfo<>(50l, 10l, "b", "e"),
-                        new Statistics.BucketInfo<>(50l, 10l, "e", "f"),
-                        new Statistics.BucketInfo<>(100l, 1l, "g", "g")));
+                Arrays.asList(new Statistics.BucketInfo<>(100L, 1L, "a", "a"),
+                        new Statistics.BucketInfo<>(50L, 10L, "b", "e"),
+                        new Statistics.BucketInfo<>(50L, 10L, "e", "f"),
+                        new Statistics.BucketInfo<>(100L, 1L, "g", "g")));
         Statistics.HistogramStatistics<String> histogram2 = new Statistics.HistogramStatistics<>(
                 Arrays.asList(
-                        new Statistics.BucketInfo<>(50l, 10l, "b", "e"),
-                        new Statistics.BucketInfo<>(100l, 1l, "g", "g"),
-                        new Statistics.BucketInfo<>(100l, 20l, "h", "i")));
+                        new Statistics.BucketInfo<>(50L, 10L, "b", "e"),
+                        new Statistics.BucketInfo<>(100L, 1L, "g", "g"),
+                        new Statistics.BucketInfo<>(100L, 20L, "h", "i")));
         Statistics.HistogramStatistics<String> mergedHistogram = Statistics.HistogramStatistics.combine(Arrays.asList(histogram1, histogram2));
 
         Assert.assertNotNull(mergedHistogram);
@@ -148,16 +148,16 @@ public class HistogramTests {
         Assert.assertEquals("g",mergedHistogram.getBuckets().get(3).getHigherBound());
         Assert.assertEquals("h",mergedHistogram.getBuckets().get(4).getLowerBound());
         Assert.assertEquals("i",mergedHistogram.getBuckets().get(4).getHigherBound());
-        Assert.assertEquals(100l ,(long)mergedHistogram.getBuckets().get(0).getTotal());
-        Assert.assertEquals(100l ,(long)mergedHistogram.getBuckets().get(1).getTotal());
-        Assert.assertEquals(50l ,(long)mergedHistogram.getBuckets().get(2).getTotal());
-        Assert.assertEquals(200l ,(long)mergedHistogram.getBuckets().get(3).getTotal());
-        Assert.assertEquals(100l ,(long)mergedHistogram.getBuckets().get(4).getTotal());
-        Assert.assertEquals(1l ,(long)mergedHistogram.getBuckets().get(0).getCardinality());
-        Assert.assertEquals(10l ,(long)mergedHistogram.getBuckets().get(1).getCardinality());
-        Assert.assertEquals(10l ,(long)mergedHistogram.getBuckets().get(2).getCardinality());
-        Assert.assertEquals(1l ,(long)mergedHistogram.getBuckets().get(3).getCardinality());
-        Assert.assertEquals(20l ,(long)mergedHistogram.getBuckets().get(4).getCardinality());
+        Assert.assertEquals(100L,(long)mergedHistogram.getBuckets().get(0).getTotal());
+        Assert.assertEquals(100L,(long)mergedHistogram.getBuckets().get(1).getTotal());
+        Assert.assertEquals(50L,(long)mergedHistogram.getBuckets().get(2).getTotal());
+        Assert.assertEquals(200L,(long)mergedHistogram.getBuckets().get(3).getTotal());
+        Assert.assertEquals(100L,(long)mergedHistogram.getBuckets().get(4).getTotal());
+        Assert.assertEquals(1L,(long)mergedHistogram.getBuckets().get(0).getCardinality());
+        Assert.assertEquals(10L,(long)mergedHistogram.getBuckets().get(1).getCardinality());
+        Assert.assertEquals(10L,(long)mergedHistogram.getBuckets().get(2).getCardinality());
+        Assert.assertEquals(1L,(long)mergedHistogram.getBuckets().get(3).getCardinality());
+        Assert.assertEquals(20L,(long)mergedHistogram.getBuckets().get(4).getCardinality());
     }
 
 }

@@ -40,8 +40,8 @@ public class EBaseStatisticsProviderBasicTests {
     public void setUp() throws Exception {
         List<Statistics.BucketInfo<Date>> dateBuckets = new ArrayList<>();
         long now = System.currentTimeMillis();
-        dateBuckets.add(new Statistics.BucketInfo<>(10l,5l,new Date(now -2*1000*60*60),new Date(now -1000*60*60)));
-        dateBuckets.add(new Statistics.BucketInfo<>(50l,10l,new Date(now -1000*60*60),new Date(now +1000*60*60)));
+        dateBuckets.add(new Statistics.BucketInfo<>(10L, 5L,new Date(now -2*1000*60*60),new Date(now -1000*60*60)));
+        dateBuckets.add(new Statistics.BucketInfo<>(50L, 10L,new Date(now -1000*60*60),new Date(now +1000*60*60)));
 
         List<Statistics.BucketInfo<Long>> longBuckets = new ArrayList<>();
         longBuckets.add(new Statistics.BucketInfo<>(100L,10L, 0L, 100L ));
@@ -62,10 +62,10 @@ public class EBaseStatisticsProviderBasicTests {
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
-        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
-        when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(1000l, 1000l));
-        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
-        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000l, 1000l));
+        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
+        when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(1000L, 1000L));
+        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
+        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000L, 1000L));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Long.class))).thenReturn(new Statistics.HistogramStatistics<>(longBuckets));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
@@ -241,7 +241,7 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterNeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ne, 10L));;
+        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ne, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -280,7 +280,7 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterLtHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.lt, 10L));;
+        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.lt, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -293,7 +293,7 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedLongFilterLeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop =EProp.of("6", 0, Constraint.of(ConstraintOp.le , 10L));;
+        EProp prop =EProp.of("6", 0, Constraint.of(ConstraintOp.le , 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -315,7 +315,7 @@ public class EBaseStatisticsProviderBasicTests {
     public void eUnTypedDateFilterEqHistogramTest() {
         EUntyped eUntyped = new EUntyped();
         eUntyped.setvTypes(Collections.singletonList(1));
-        EProp prop = EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date()));;
+        EProp prop = EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eUntyped,propGroup);
@@ -341,7 +341,7 @@ public class EBaseStatisticsProviderBasicTests {
         List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "female", "female"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "male", "male"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -360,7 +360,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -379,11 +379,11 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.le, "edf"));;
+        EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.le, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
@@ -513,7 +513,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ga"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ga", "z"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -532,7 +532,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "a", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "f", "ga"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "ga", "z"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -550,7 +550,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "c", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ga"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ga", "z"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -568,7 +568,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "egh", "egh"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -591,7 +591,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "egh", "egh"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);

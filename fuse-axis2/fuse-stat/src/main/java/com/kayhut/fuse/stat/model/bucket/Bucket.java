@@ -6,5 +6,6 @@ package com.kayhut.fuse.stat.model.bucket;
 public class Bucket {
 
     public Bucket() {
+        //needed for Jackson
     }
 }

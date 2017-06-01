@@ -14,7 +14,7 @@ import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 /**
  * Created by moti on 3/19/2017.
  */
-public class ElasticEmbeddedNode implements AutoCloseable{
+public class ElasticEmbeddedNode implements AutoCloseable {
     //region Members
     private final int httpPort;
     private final int httpTransportPort;
@@ -29,18 +29,18 @@ public class ElasticEmbeddedNode implements AutoCloseable{
         this("target/es", 9200, 9300, "fuse.test_elastic");
     }
 
-    public ElasticEmbeddedNode(ElasticIndexConfigurer...configurers) throws Exception {
+    public ElasticEmbeddedNode(ElasticIndexConfigurer... configurers) throws Exception {
         this("target/es", 9200, 9300, "fuse.test_elastic", configurers);
     }
 
-    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer...configurers) throws Exception {
+    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.httpTransportPort = httpTransportPort;
         this.nodeName = nodeName;
         prepare();
 
-        for(ElasticIndexConfigurer configurer : configurers) {
+        for (ElasticIndexConfigurer configurer : configurers) {
             configurer.configure(this.getClient());
         }
     }
@@ -48,7 +48,7 @@ public class ElasticEmbeddedNode implements AutoCloseable{
     //endregion
 
     //region Methods
-    public TransportClient getClient(){
+    public TransportClient getClient() {
         if (this.client == null) {
             try {
                 Settings settings = Settings.settingsBuilder()

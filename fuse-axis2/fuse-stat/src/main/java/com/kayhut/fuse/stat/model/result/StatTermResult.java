@@ -9,6 +9,7 @@ public class StatTermResult <T> extends StatResultBase{
 
     //region Ctors
     public StatTermResult() {
+        super();
     }
 
     public StatTermResult(String index, String type, String field, String key, DataType dataType, T term, long count, long cardinality) {

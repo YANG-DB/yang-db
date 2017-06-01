@@ -140,12 +140,12 @@ public class EBaseStatisticsProviderRedundantTests {
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000,1000));
-        when(graphStatisticsProvider.getConditionHistogram(isA(GraphEdgeSchema.class), any(), any(), any(), isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(100l,100l,"a","z"))));
+        when(graphStatisticsProvider.getConditionHistogram(isA(GraphEdgeSchema.class), any(), any(), any(), isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(100L, 100L,"a","z"))));
         when(graphStatisticsProvider.getConditionHistogram(isA(GraphVertexSchema.class), any(), any(), any(), isA(String.class))).thenAnswer(invocationOnMock -> {
             GraphElementPropertySchema graphElementPropertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
             if(graphElementPropertySchema.getName().equals("firstName"))
-                return new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(100l,100l,"a","z")));
-            return new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(200l,200l,"a","z")));
+                return new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(100L, 100L,"a","z")));
+            return new Statistics.HistogramStatistics<>(Arrays.asList(new Statistics.BucketInfo<String>(200L, 200L,"a","z")));
         });
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(500,50));
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, new Ontology.Accessor(ontology), graphStatisticsProvider);
@@ -171,7 +171,7 @@ public class EBaseStatisticsProviderRedundantTests {
 
         Statistics.Cardinality redundantEdgeStatistics = statisticsProvider.getRedundantNodeStatistics(eTyped, relFilter);
         Assert.assertNotNull(redundantEdgeStatistics);
-        Assert.assertEquals(200l, redundantEdgeStatistics.getTotal(), 0.1);
+        Assert.assertEquals(200L, redundantEdgeStatistics.getTotal(), 0.1);
     }
 
 }

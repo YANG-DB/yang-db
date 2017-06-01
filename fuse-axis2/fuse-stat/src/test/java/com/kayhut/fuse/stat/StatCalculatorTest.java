@@ -38,9 +38,12 @@ public class StatCalculatorTest {
     private static TransportClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
-    private static final String MAPPING_DATA_FILE_DRAGON_PATH = "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
-    private static final String MAPPING_DATA_FILE_FIRE_PATH = "src\\test\\resources\\elastic.test.data.fire.mapping.json";
-    private static final String MAPPING_STAT_FILE_PATH = "src\\test\\resources\\elastic.test.stat.mapping.json";
+    private static final String MAPPING_DATA_FILE_DRAGON_PATH =
+            "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
+    private static final String MAPPING_DATA_FILE_FIRE_PATH =
+            "src\\test\\resources\\elastic.test.data.fire.mapping.json";
+    private static final String MAPPING_STAT_FILE_PATH =
+            "src\\test\\resources\\elastic.test.stat.mapping.json";
 
     private static final int NUM_OF_DRAGONS_IN_INDEX_1 = 1000;
     private static final int NUM_OF_DRAGONS_IN_INDEX_2 = 555;
@@ -139,13 +142,13 @@ public class StatCalculatorTest {
             StatCalculator.main(new String[]{});
             fail("Exception not thrown");
         } catch (Exception expected) {
-          // we should have reach here
+            // we should have reach here
         }
     }
 
     @Test
     public void statDataValidationTest() throws Exception {
-        //Used only to test that the data is populated correctly
+        //Used only to test that the data is populated and indexed correctly
 
         //Check if all indices exists: index1, index2, index3, index4
         assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_1));
@@ -186,16 +189,15 @@ public class StatCalculatorTest {
 
 
         //Check that we have documents and they are in the right place
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON).getHits().getTotalHits() > 0);
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON).getHits().getTotalHits() > 0);
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE).getHits().getTotalHits() > 0);
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE, 10).getHits().getTotalHits() > 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE, 10).getHits().getTotalHits() > 0);
 
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_FIRE).getHits().getTotalHits() == 0);
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_FIRE).getHits().getTotalHits() == 0);
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_DRAGON).getHits().getTotalHits() == 0);
-        assertTrue(EsUtil.getAllDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_DRAGON).getHits().getTotalHits() == 0);
-
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_FIRE, 10).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_FIRE, 10).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() == 0);
+        assertTrue(EsUtil.getFirstNDocumentsInType(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_DRAGON, 10).getHits().getTotalHits() == 0);
 
     }
 
@@ -300,11 +302,17 @@ public class StatCalculatorTest {
 
     private StatContainer buildStatContainer() {
         HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.aHistogramNumeric()
-                .withMin(10).withMax(100).withNumOfBins(10).build();
+                .withMin(10)
+                .withMax(100)
+                .withNumOfBins(10)
+                .build();
 
         HistogramString histogramDragonName = HistogramString.Builder.aHistogramString()
                 .withPrefixSize(3)
-                .withInterval(10).withNumOfChars(26).withFirstCharCode("97").build();
+                .withInterval(10)
+                .withNumOfChars(26)
+                .withFirstCharCode("97")
+                .build();
 
         HistogramManual histogramDragonAddress = HistogramManual.Builder.aHistogramManual()
                 .withBuckets(Arrays.asList(
@@ -315,11 +323,10 @@ public class StatCalculatorTest {
                 .build();
 
         HistogramComposite histogramDragonColor = HistogramComposite.Builder.aHistogramComposite()
-                .withManualBuckets(Arrays.asList(
-                        new BucketRange("00", "11"),
-                        new BucketRange("22", "33"),
-                        new BucketRange("44", "55")
-                )).withDataType(DataType.string)
+                .withBucket(new BucketRange("00", "11"))
+                .withBucket(new BucketRange("22", "33"))
+                .withBucket(new BucketRange("44", "55"))
+                .withDataType(DataType.string)
                 .withAutoBuckets(HistogramString.Builder.aHistogramString()
                         .withFirstCharCode("97")
                         .withInterval(10)
@@ -328,33 +335,35 @@ public class StatCalculatorTest {
                 .build();
 
         HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
-                .withDataType(DataType.string).withBuckets(Arrays.asList(
-                        new BucketTerm("male"),
-                        new BucketTerm("female")
-                )).build();
+                .withDataType(DataType.string)
+                .withTerm("male")
+                .withTerm("female")
+                .build();
 
         HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
-                .withDataType(DataType.string).withBuckets(Collections.singletonList(
-                        new BucketTerm("dragon")
-                )).build();
+                .withDataType(DataType.string)
+                .withTerm(DATA_TYPE_DRAGON)
+                .build();
 
 
-        Field nameField = new Field("name", histogramDragonName);
-        Field ageField = new Field("age", histogramDragonAge);
-        Field addressField = new Field("address", histogramDragonAddress);
-        Field colorField = new Field("color", histogramDragonColor);
-        Field genderField = new Field("gender", histogramTerm);
-        Field dragonTypeField = new Field("_type", histogramDocType);
+        Type typeDragon = Type.Builder.aType()
+                .withType(DATA_TYPE_DRAGON)
+                .withField(new Field("age", histogramDragonAge))
+                .withField(new Field("name", histogramDragonName))
+                .withField(new Field("address", histogramDragonAddress))
+                .withField(new Field("color", histogramDragonColor))
+                .withField(new Field("gender", histogramTerm))
+                .withField(new Field("_type", histogramDocType))
+                .build();
 
-
-        Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
-
-        Mapping mapping = Mapping.Builder.aMapping().withIndices(Arrays.asList("index1", "index2"))
-                .withTypes(Collections.singletonList("dragon")).build();
+        Mapping mapping = Mapping.Builder.aMapping()
+                .withIndex(DATA_INDEX_NAME_1)
+                .withIndex(DATA_INDEX_NAME_2)
+                .withType(DATA_TYPE_DRAGON).build();
 
         return StatContainer.Builder.aStatContainer()
-                .withMappings(Collections.singletonList(mapping))
-                .withTypes(Collections.singletonList(typeDragon))
+                .withMapping(mapping)
+                .withType(typeDragon)
                 .build();
     }
 }

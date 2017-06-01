@@ -45,9 +45,9 @@ public class EBaseStatisticsProviderIndicesTests {
     public void setUp() throws Exception {
         List<Statistics.BucketInfo<Date>> secondDateBuckets = new ArrayList<>();
         nowTime  = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").parse("2017-01-01-10-30-00").getTime();
-        secondDateBuckets.add(new Statistics.BucketInfo<>(500l,10l,new Date(nowTime -1000*60),new Date(nowTime +1000*60)));
+        secondDateBuckets.add(new Statistics.BucketInfo<>(500L, 10L,new Date(nowTime -1000*60),new Date(nowTime +1000*60)));
         List<Statistics.BucketInfo<Date>> firstDateBuckets = new ArrayList<>();
-        firstDateBuckets.add(new Statistics.BucketInfo<>(10l,5l,new Date(nowTime -2*1000*60*60),new Date(nowTime -2*1000*59*60)));
+        firstDateBuckets.add(new Statistics.BucketInfo<>(10L, 5L,new Date(nowTime -2*1000*60*60),new Date(nowTime -2*1000*59*60)));
 
         List<Statistics.BucketInfo<Long>> longBuckets = new ArrayList<>();
         longBuckets.add(new Statistics.BucketInfo<>(100L,10L, 0L, 100L ));
@@ -107,9 +107,9 @@ public class EBaseStatisticsProviderIndicesTests {
         graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
-        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
-        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1l, 1l));
-        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000l, 1000l));
+        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
+        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
+        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000L, 1000L));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),isA(Date.class))).thenAnswer(invocationOnMock -> {
             List<String> providedIndices = (List<String>) invocationOnMock.getArgumentAt(1, List.class );
             List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();

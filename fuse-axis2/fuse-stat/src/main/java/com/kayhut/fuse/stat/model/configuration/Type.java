@@ -53,4 +53,44 @@ public class Type {
     private List<Field> fields;
     //endregion
 
+
+    //region Builder
+    public static final class Builder {
+        //region Fields
+        private String typeName;
+        private List<Field> fields;
+
+        private Builder() {
+            this.fields = new ArrayList<>();
+        }
+
+        public static Builder aType() {
+            return new Builder();
+        }
+
+        public Builder withType(String type) {
+            this.typeName = type;
+            return this;
+        }
+
+        public Builder withFields(List<Field> fields) {
+            this.fields = fields;
+            return this;
+        }
+
+        public Builder withField(Field field) {
+            this.fields.add(field);
+            return this;
+        }
+
+        public Type build() {
+            Type type = new Type();
+            type.setType(typeName);
+            type.setFields(fields);
+            return type;
+        }
+    }
+    //endregion
+
+
 }

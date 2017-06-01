@@ -72,7 +72,7 @@ public class StatUtil {
         return fieldElement;
     }
 
-    public static Optional<List<Field>> getFieldsWithHistogramOfType(StatContainer statContainer, String typeName, HistogramType histogramType) {
+    public static Optional<List<Field>> getFieldsWithHistogram(StatContainer statContainer, String typeName, HistogramType histogramType) {
         Optional<List<Field>> fields = Optional.empty();
         Optional<Type> typeElement = getTypeConfiguration(statContainer, typeName);
         if (typeElement.isPresent()) {
@@ -81,24 +81,24 @@ public class StatUtil {
         return fields;
     }
 
-    public static Optional<List<Field>> getFieldsWithNumericHistogramOfType(StatContainer statContainer, String typeName) {
-        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.numeric);
+    public static Optional<List<Field>> getFieldsWithNumericHistogram(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogram(statContainer, typeName, HistogramType.numeric);
     }
 
-    public static Optional<List<Field>> getFieldsWithStringHistogramOfType(StatContainer statContainer, String typeName) {
-        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.string);
+    public static Optional<List<Field>> getFieldsWithStringHistogram(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogram(statContainer, typeName, HistogramType.string);
     }
 
-    public static Optional<List<Field>> getFieldsWithCompositeHistogramOfType(StatContainer statContainer, String typeName) {
-        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.composite);
+    public static Optional<List<Field>> getFieldsWithCompositeHistogram(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogram(statContainer, typeName, HistogramType.composite);
     }
 
-    public static Optional<List<Field>> getFieldsWithManualHistogramOfType(StatContainer statContainer, String typeName) {
-        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.manual);
+    public static Optional<List<Field>> getFieldsWithManualHistogram(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogram(statContainer, typeName, HistogramType.manual);
     }
 
-    public static Optional<List<Field>> getFieldsWithTermHistogramOfType(StatContainer statContainer, String typeName) {
-        return getFieldsWithHistogramOfType(statContainer, typeName, HistogramType.term);
+    public static Optional<List<Field>> getFieldsWithTermHistogram(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogram(statContainer, typeName, HistogramType.term);
     }
 
     public static Iterable<Map<String, Object>> prepareStatDocs(List<? extends StatResultBase> bucketStatResults) {
@@ -176,7 +176,12 @@ public class StatUtil {
 
         return buckets;
     }
-    //Create a MD5 hash of a given message. Used for creating unique document IDs.
+
+    /**
+     * Create a MD5 hash of a given message. Used for creating unique document IDs.
+     * @param message String to hash
+     * @return Hash string
+     */
     public static String hashString(String message) {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -206,6 +211,12 @@ public class StatUtil {
         }
     }
 
+    /**
+     * @param min lowest value
+     * @param max highest value
+     * @param numOfBins number of bins. Must be strictly positive.
+     * @return a list of buckets of evenly distributed bins between the minimum and maximum values
+     */
     public static List<BucketRange<Double>> createNumericBuckets(double min, double max, int numOfBins) {
         double[] bucketsData = new double[numOfBins + 1];
         for (int i = 0; i <= numOfBins ; i++) {
@@ -241,6 +252,5 @@ public class StatUtil {
         return String.valueOf(chars);
     }
     //endregion
-
 
 }

@@ -8,7 +8,6 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Map;
 
 

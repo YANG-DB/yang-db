@@ -38,6 +38,7 @@ public class HistogramTerm extends Histogram {
         private DataType dataType;
 
         private Builder() {
+            this.buckets = new ArrayList<>();
         }
 
         public static Builder aHistogramTerm() {
@@ -50,9 +51,17 @@ public class HistogramTerm extends Histogram {
         }
 
         public Builder withTerms(List<String> terms) {
-            List<BucketTerm> buckets = new ArrayList<>();
-            terms.forEach(term -> buckets.add(new BucketTerm<>(term)));
-            this.buckets = buckets;
+            terms.forEach(term -> this.buckets.add(new BucketTerm<>(term)));
+            return this;
+        }
+
+        public Builder withTerm(String term) {
+            this.buckets.add(new BucketTerm<>(term));
+            return this;
+        }
+
+        public Builder withBucket(BucketTerm bucket) {
+            this.buckets.add(bucket);
             return this;
         }
 
@@ -67,6 +76,8 @@ public class HistogramTerm extends Histogram {
             histogramTerm.setDataType(dataType);
             return histogramTerm;
         }
+
+
     }
     //endregion
 

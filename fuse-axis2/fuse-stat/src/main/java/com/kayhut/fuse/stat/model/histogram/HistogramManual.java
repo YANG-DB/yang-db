@@ -4,6 +4,7 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.enums.HistogramType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,6 +40,7 @@ public class HistogramManual <T> extends Histogram {
         private DataType dataType;
 
         private Builder() {
+            this.buckets = new ArrayList<>();
         }
 
         public static Builder aHistogramManual() {
@@ -47,6 +49,11 @@ public class HistogramManual <T> extends Histogram {
 
         public Builder withBuckets(List<BucketRange> buckets) {
             this.buckets = buckets;
+            return this;
+        }
+
+        public Builder withBucket(BucketRange bucket) {
+            this.buckets.add(bucket);
             return this;
         }
 

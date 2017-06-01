@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat.model.configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,6 +37,8 @@ public class StatContainer {
         private List<Type> types;
 
         private Builder() {
+            this.mappings = new ArrayList<>();
+            this.types = new ArrayList<>();
         }
 
         public static Builder aStatContainer() {
@@ -47,8 +50,18 @@ public class StatContainer {
             return this;
         }
 
+        public Builder withMapping(Mapping mapping) {
+            this.mappings.add(mapping);
+            return this;
+        }
+
         public Builder withTypes(List<Type> types) {
             this.types = types;
+            return this;
+        }
+
+        public Builder withType(Type type) {
+            this.types.add(type);
             return this;
         }
 
@@ -61,4 +74,5 @@ public class StatContainer {
     }
     //endregion
 
+    
 }

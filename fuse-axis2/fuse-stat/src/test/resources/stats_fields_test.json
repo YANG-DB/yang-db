@@ -136,8 +136,8 @@
             "dataType": "string",
             "buckets": [
               {
-                "start": "a",
-                "end": "zzzzz"
+                "start": "0",
+                "end": "~"
               }
             ]
           }
@@ -155,8 +155,8 @@
             "dataType": "string",
             "buckets": [
               {
-                "start": "a",
-                "end": "zzzzz"
+                "start": "0",
+                "end": "~"
               }
             ]
           }

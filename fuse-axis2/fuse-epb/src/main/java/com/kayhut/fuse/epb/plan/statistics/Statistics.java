@@ -210,8 +210,9 @@ public interface Statistics {
             return total;
         }
 
-        public T getLowerBound() { return lowerBound; };
-        public T getHigherBound() { return higherBound; };
+        public T getLowerBound() { return lowerBound; }
+
+        public T getHigherBound() { return higherBound; }
 
         //lower bound - inclusive, higher bound - non-inclusive
         public boolean isValueInRange(T value) {

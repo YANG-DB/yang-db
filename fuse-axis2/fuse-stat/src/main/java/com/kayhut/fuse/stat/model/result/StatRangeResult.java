@@ -9,6 +9,7 @@ public class StatRangeResult<T> extends StatResultBase {
 
     //region Ctors
     public StatRangeResult() {
+        super();
     }
 
     public StatRangeResult(String index, String type, String field, String key, DataType dataType, T lowerBound, T upperBound, long count, long cardinality) {

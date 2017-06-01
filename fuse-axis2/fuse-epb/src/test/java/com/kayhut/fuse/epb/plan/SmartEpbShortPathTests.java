@@ -1,10 +1,8 @@
 package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -13,14 +11,16 @@ import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.epb.tests.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanAssert;
+import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -30,7 +30,6 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -109,7 +108,7 @@ public class SmartEpbShortPathTests {
             return new Statistics.Cardinality(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
         });
 
-        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10l);
+        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10L);
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(List.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
@@ -251,9 +250,9 @@ public class SmartEpbShortPathTests {
     private Statistics.HistogramStatistics<Long> createLongHistogram(int card, int numIndices) {
         long bucketSize = card * numIndices / 3;
         List<Statistics.BucketInfo<Long>> bucketInfos = new ArrayList<>();
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0l,1000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000l,2000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000l,3000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0L, 1000L));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000L, 2000L));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000L, 3000L));
         return new Statistics.HistogramStatistics<>(bucketInfos);
     }
 

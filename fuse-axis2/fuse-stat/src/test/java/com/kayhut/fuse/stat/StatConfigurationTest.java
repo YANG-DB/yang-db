@@ -78,7 +78,7 @@ public class StatConfigurationTest {
 
         HistogramManual histogramFireEntity = HistogramManual.Builder.aHistogramManual()
                 .withBuckets(Arrays.asList(
-                        new BucketRange("a", "zzzzz")
+                        new BucketRange("0", "~")
                 )).withDataType(DataType.string)
                 .build();
 

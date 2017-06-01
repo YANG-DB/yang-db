@@ -37,7 +37,7 @@ public class StatConfig {
         }
     }
 
-    //Used in the Step Builder
+    //Used only in the Step Builder
     private StatConfig(String statClusterName,
                       List<String> statNodesHosts,
                       int statTransportPort,
@@ -172,71 +172,88 @@ public class StatConfig {
     //endregion
 
     //region Step Builder
-    public static interface StatClusterNameStep {
+    public interface StatClusterNameStep {
         StatNodesHostsStep withStatClusterName(String statClusterName);
     }
 
-    public static interface StatNodesHostsStep {
+    public interface StatNodesHostsStep {
         StatTransportPortStep withStatNodesHosts(List<String> statNodesHosts);
     }
 
-    public static interface StatTransportPortStep {
+    public interface StatTransportPortStep {
         StatIndexNameStep withStatTransportPort(int statTransportPort);
     }
 
-    public static interface StatIndexNameStep {
+    public interface StatIndexNameStep {
         StatTermTypeNameStep withStatIndexName(String statIndexName);
     }
 
-    public static interface StatTermTypeNameStep {
+    public interface StatTermTypeNameStep {
         StatStringTypeNameStep withStatTermTypeName(String statTermTypeName);
     }
 
-    public static interface StatStringTypeNameStep {
+    public interface StatStringTypeNameStep {
         StatNumericTypeNameStep withStatStringTypeName(String statStringTypeName);
     }
 
-    public static interface StatNumericTypeNameStep {
+    public interface StatNumericTypeNameStep {
         StatCountFieldNameStep withStatNumericTypeName(String statNumericTypeName);
     }
 
-    public static interface StatCountFieldNameStep {
+    public interface StatCountFieldNameStep {
         StatCardinalityFieldNameStep withStatCountFieldName(String statCountFieldName);
     }
 
-    public static interface StatCardinalityFieldNameStep {
+    public interface StatCardinalityFieldNameStep {
         StatFieldTermNameStep withStatCardinalityFieldName(String statCardinalityFieldName);
     }
 
-    public static interface StatFieldTermNameStep {
+    public interface StatFieldTermNameStep {
         StatFieldNumericLowerNameStep withStatFieldTermName(String statFieldTermName);
     }
 
-    public static interface StatFieldNumericLowerNameStep {
+    public interface StatFieldNumericLowerNameStep {
         StatFieldNumericUpperNameStep withStatFieldNumericLowerName(String statFieldNumericLowerName);
     }
 
-    public static interface StatFieldNumericUpperNameStep {
+    public interface StatFieldNumericUpperNameStep {
         StatFieldStringLowerNameStep withStatFieldNumericUpperName(String statFieldNumericUpperName);
     }
 
-    public static interface StatFieldStringLowerNameStep {
+    public interface StatFieldStringLowerNameStep {
         StatFieldStringUpperNameStep withStatFieldStringLowerName(String statFieldStringLowerName);
     }
 
-    public static interface StatFieldStringUpperNameStep {
+    public interface StatFieldStringUpperNameStep {
         StatContainerStep withStatFieldStringUpperName(String statFieldStringUpperName);
     }
 
-    public static interface StatContainerStep {
+    public interface StatContainerStep {
         BuildStep withStatContainer(StatContainer statContainer);
     }
 
-    public static interface BuildStep {
+    public interface BuildStep {
         StatConfig build();
     }
 
-    public static class Builder implements StatClusterNameStep, StatNodesHostsStep, StatTransportPortStep, StatIndexNameStep, StatTermTypeNameStep, StatStringTypeNameStep, StatNumericTypeNameStep, StatCountFieldNameStep, StatCardinalityFieldNameStep, StatFieldTermNameStep, StatFieldNumericLowerNameStep, StatFieldNumericUpperNameStep, StatFieldStringLowerNameStep, StatFieldStringUpperNameStep, StatContainerStep, BuildStep {
+    public static class Builder implements
+            StatClusterNameStep,
+            StatNodesHostsStep,
+            StatTransportPortStep,
+            StatIndexNameStep,
+            StatTermTypeNameStep,
+            StatStringTypeNameStep,
+            StatNumericTypeNameStep,
+            StatCountFieldNameStep,
+            StatCardinalityFieldNameStep,
+            StatFieldTermNameStep,
+            StatFieldNumericLowerNameStep,
+            StatFieldNumericUpperNameStep,
+            StatFieldStringLowerNameStep,
+            StatFieldStringUpperNameStep,
+            StatContainerStep,
+            BuildStep {
+
         private String statClusterName;
         private List<String> statNodesHosts;
         private int statTransportPort;

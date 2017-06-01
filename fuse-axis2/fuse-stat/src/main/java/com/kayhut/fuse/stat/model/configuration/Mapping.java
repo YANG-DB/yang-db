@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat.model.configuration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +48,8 @@ public class Mapping {
         private List<String> types;
 
         private Builder() {
+            this.indices = new ArrayList<>();
+            this.types = new ArrayList<>();
         }
 
         public static Builder aMapping() {
@@ -58,8 +61,18 @@ public class Mapping {
             return this;
         }
 
+        public Builder withIndex(String index) {
+            this.indices.add(index);
+            return this;
+        }
+
         public Builder withTypes(List<String> types) {
             this.types = types;
+            return this;
+        }
+
+        public Builder withType(String type) {
+            this.types.add(type);
             return this;
         }
 

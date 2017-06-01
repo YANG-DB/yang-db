@@ -144,7 +144,7 @@ public class ElasticStatProviderTest {
         MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME, MAPPING_DATA_FILE_PATH);
         MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH);
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{configurerIndex1, configurerStat});
+        elasticEmbeddedNode = new ElasticEmbeddedNode(configurerIndex1, configurerStat);
 
 
         dataClient = ClientProvider.getTransportClient(DATA_CLUSTER_NAME, DATA_TRANSPORT_PORT, DATA_HOSTS);
@@ -174,7 +174,7 @@ public class ElasticStatProviderTest {
                 statConfig.getStatNumericTypeName(),
                 statConfig.getStatStringTypeName(),
                 statConfig.getStatTermTypeName());
-        StatCalculator.buildStatisticsBasedOnConfiguration(logger, dataClient, statClient, buildStatContainer());
+        StatCalculator.buildStatisticsBasedOnConfiguration(dataClient, statClient, buildStatContainer());
         Thread.sleep(3000);
 
     }
@@ -203,14 +203,18 @@ public class ElasticStatProviderTest {
 
         HistogramString histogramDragonName = HistogramString.Builder.aHistogramString()
                 .withPrefixSize(3)
-                .withInterval(10).withNumOfChars(26).withFirstCharCode("97").build();
+                .withInterval(10)
+                .withNumOfChars(26)
+                .withFirstCharCode("97")
+                .build();
 
         HistogramManual histogramDragonAddress = HistogramManual.Builder.aHistogramManual()
                 .withBuckets(Arrays.asList(
                         new BucketRange("abc", "dzz"),
                         new BucketRange("efg", "hij"),
                         new BucketRange("klm", "xyz")
-                )).withDataType(DataType.string)
+                ))
+                .withDataType(DataType.string)
                 .build();
 
         HistogramComposite histogramDragonColor = HistogramComposite.Builder.aHistogramComposite()
@@ -227,31 +231,34 @@ public class ElasticStatProviderTest {
                 .build();
 
         HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
-                .withDataType(DataType.string).withTerms(DRAGON_GENDERS)
+                .withDataType(DataType.string)
+                .withTerms(DRAGON_GENDERS)
                 .build();
 
         HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
-                .withDataType(DataType.string).withBuckets(Collections.singletonList(
-                        new BucketTerm(DATA_TYPE_NAME) // "Dragon"
-                )).build();
+                .withDataType(DataType.string)
+                .withTerm(DATA_TYPE_NAME) // "Dragon"
+                .build();
 
 
-        Field nameField = new Field(DATA_FIELD_NAME_NAME, histogramDragonName);
-        Field ageField = new Field(DATA_FIELD_NAME_AGE, histogramDragonAge);
-        Field addressField = new Field(DATA_FIELD_NAME_ADDRESS, histogramDragonAddress);
-        Field colorField = new Field(DATA_FIELD_NAME_COLOR, histogramDragonColor);
-        Field genderField = new Field(DATA_FIELD_NAME_GENDER, histogramTerm);
-        Field dragonTypeField = new Field(DATA_FIELD_NAME_TYPE, histogramDocType);
+        Type typeDragon = Type.Builder.aType()
+                .withType(DATA_TYPE_NAME)
+                .withField(new Field(DATA_FIELD_NAME_AGE, histogramDragonAge))
+                .withField(new Field(DATA_FIELD_NAME_NAME, histogramDragonName))
+                .withField(new Field(DATA_FIELD_NAME_ADDRESS, histogramDragonAddress))
+                .withField(new Field(DATA_FIELD_NAME_COLOR, histogramDragonColor))
+                .withField(new Field(DATA_FIELD_NAME_GENDER, histogramTerm))
+                .withField(new Field(DATA_FIELD_NAME_TYPE, histogramDocType))
+                .build();
 
-
-        Type typeDragon = new Type(DATA_TYPE_NAME, Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
-
-        Mapping mapping = Mapping.Builder.aMapping().withIndices(Arrays.asList(DATA_INDEX_NAME))
-                .withTypes(Collections.singletonList(DATA_TYPE_NAME)).build();
+        Mapping mapping = Mapping.Builder.aMapping()
+                .withIndex(DATA_INDEX_NAME)
+                .withType(DATA_TYPE_NAME)
+                .build();
 
         return StatContainer.Builder.aStatContainer()
-                .withMappings(Collections.singletonList(mapping))
-                .withTypes(Collections.singletonList(typeDragon))
+                .withMapping(mapping)
+                .withType(typeDragon)
                 .build();
     }
 }
