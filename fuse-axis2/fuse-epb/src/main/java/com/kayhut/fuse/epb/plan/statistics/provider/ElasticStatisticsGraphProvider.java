@@ -13,6 +13,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -110,8 +111,22 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     @Override
-    public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema, Rel.Direction direction, List<String> relevantIndices) {
-        return 0;
+    public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema,
+                                     Rel.Direction direction,
+                                     List<String> relevantIndices) {
+        List<Statistics.BucketInfo> buckets = elasticStatProvider.getEdgeGlobalStatistics(
+                elasticClient,
+                statConfig.getStatIndexName(),
+                statConfig.getStatGlobalTypeName(),
+                relevantIndices,
+                Arrays.asList(graphEdgeSchema.getType()),
+                Arrays.asList("entityA.id"),
+                convertDirection(direction)
+            );
+        Long cardinality = buckets.get(0).getCardinality();
+        Long total = buckets.get(0).getTotal();
+
+        return Math.round(total / cardinality);
     }
     //endregion
 
@@ -194,6 +209,17 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 throw new IllegalArgumentException("Field type is missing/invalid" + fieldType);
         }
         return statTypeName;
+    }
+
+    public static String convertDirection(Rel.Direction dir) {
+        switch (dir) {
+            case R:
+                return "OUT";
+            case L:
+                return "IN";
+            default:
+                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+        }
     }
     //endregion
 

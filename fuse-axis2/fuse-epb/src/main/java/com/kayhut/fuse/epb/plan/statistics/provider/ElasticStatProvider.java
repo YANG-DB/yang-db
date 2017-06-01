@@ -7,7 +7,10 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.*;
@@ -57,12 +60,12 @@ public class ElasticStatProvider {
     }
 
     /**
-     * @param client Elastic client
+     * @param client        Elastic client
      * @param statIndexName statistics Index Name
-     * @param statTypeName Statistics Type Name
-     * @param indices Data indices
-     * @param types Data types
-     * @param fields Data Fields
+     * @param statTypeName  Statistics Type Name
+     * @param indices       Data indices
+     * @param types         Data types
+     * @param fields        Data Fields
      * @return List of all buckets satisfying the input arguments
      */
     public List<Statistics.BucketInfo> getFieldStatistics(TransportClient client,
@@ -90,12 +93,12 @@ public class ElasticStatProvider {
 
 
     /**
-     * @param client Elastic client
+     * @param client        Elastic client
      * @param statIndexName statistics Index Name
-     * @param statTypeName Statistics Type Name
-     * @param indices Data indices
-     * @param types Data types
-     * @param fields Data Fields
+     * @param statTypeName  Statistics Type Name
+     * @param indices       Data indices
+     * @param types         Data types
+     * @param fields        Data Fields
      * @return Map<Index Name, List of buckets> of buckets group by Index name
      */
     public Map<String, List<Statistics.BucketInfo>> getFieldStatisticsPerIndex(TransportClient client,
@@ -106,7 +109,7 @@ public class ElasticStatProvider {
                                                                                List<String> fields) {
 
         Map<String, List<Statistics.BucketInfo>> bucketsPerIndex = new HashMap<>();
-        SearchRequestBuilder searchRequestBuilder = getFieldsStatisticsElasticRequestBuilder(
+        SearchRequestBuilder searchRequestBuilder = getFieldsStatisticsRequestBuilder(
                 client,
                 statIndexName,
                 statTypeName,
@@ -149,6 +152,40 @@ public class ElasticStatProvider {
             bucketsPerIndex.computeIfAbsent(statIndex, k -> new ArrayList<>()).add(bucket);
         }
         return bucketsPerIndex;
+    }
+
+
+    public List<Statistics.BucketInfo> getEdgeGlobalStatistics(TransportClient client,
+                                                               String statIndexName,
+                                                               String statTypeName,
+                                                               List<String> indices,
+                                                               List<String> types,
+                                                               List<String> fields,
+                                                               String direction) {
+        List<Statistics.BucketInfo> buckets = new ArrayList<>();
+        SearchRequestBuilder searchRequestBuilder = getEdgeGlobalStatisticsRequestBuilder(
+                client,
+                statIndexName,
+                statTypeName,
+                indices,
+                types,
+                fields,
+                direction
+        );
+        SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+
+        if (searchResponse.getHits().getTotalHits() == 0) {
+            return buckets;
+        }
+
+        for (SearchHit sh : searchResponse.getHits().getHits()) {
+            Statistics.BucketInfo bucket = new Statistics.BucketInfo(
+                    getCountValueFromHit(sh),
+                    getCardinalityValueFromHit(sh),
+                    "0", "~"); // This is the global selectivity range
+            buckets.add(bucket);
+        }
+        return buckets;
     }
 
     private Object getFieldValueFromHit(final SearchHit hit, final String field) {
@@ -199,12 +236,13 @@ public class ElasticStatProvider {
         return ((Double) getFieldValueFromHit(hit, STAT_FIELD_NUMERIC_LOWER_NAME));
     }
 
-    private SearchRequestBuilder getFieldsStatisticsElasticRequestBuilder(TransportClient client,
-                                                                          String statIndexName,
-                                                                          String statTypeName,
-                                                                          List<String> indices,
-                                                                          List<String> types,
-                                                                          List<String> fields) {
+    private SearchRequestBuilder getFieldsStatisticsRequestBuilder(TransportClient client,
+                                                                   String statIndexName,
+                                                                   String statTypeName,
+                                                                   List<String> indices,
+                                                                   List<String> types,
+                                                                   List<String> fields) {
+
         return client.prepareSearch(statIndexName)
                 .setTypes(statTypeName)
                 .setQuery(QueryBuilders.boolQuery()
@@ -212,6 +250,27 @@ public class ElasticStatProvider {
                                 .must(QueryBuilders.termsQuery("index", indices))
                                 .must(QueryBuilders.termsQuery("type", types))
                                 .must(QueryBuilders.termsQuery("field", fields))
+
+                        ))
+                .setSize(RESULT_SIZE);
+    }
+
+
+    private SearchRequestBuilder getEdgeGlobalStatisticsRequestBuilder(TransportClient client,
+                                                                       String statIndexName,
+                                                                       String statTypeName,
+                                                                       List<String> indices,
+                                                                       List<String> types,
+                                                                       List<String> fields,
+                                                                       String direction) {
+        return client.prepareSearch(statIndexName)
+                .setTypes(statTypeName)
+                .setQuery(QueryBuilders.boolQuery()
+                        .filter(QueryBuilders.boolQuery()
+                                .must(QueryBuilders.termsQuery("index", indices))
+                                .must(QueryBuilders.termsQuery("type", types))
+                                .must(QueryBuilders.termsQuery("field", fields))
+                                .must(QueryBuilders.termQuery("direction", direction))
 
                         ))
                 .setSize(RESULT_SIZE);

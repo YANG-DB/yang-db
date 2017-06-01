@@ -12,7 +12,7 @@ public interface GraphElementSchema {
     Class getSchemaElementType();
 
     /**
-     * @return vertex type (e.g., Dragon, Person)
+     * @return vertex/edge type (e.g., Dragon, Person, fire)
      */
     String getType();
 
