@@ -23,6 +23,7 @@ public class StatConfig {
         this.statTermTypeName = config.getString("elasticsearch.stat.type.term.name");
         this.statStringTypeName = config.getString("elasticsearch.stat.type.string.name");
         this.statNumericTypeName = config.getString("elasticsearch.stat.type.numeric.name");
+        this.statGlobalTypeName = config.getString("elasticsearch.stat.type.global.name");
         this.statCountFieldName = config.getString("elasticsearch.stat.count.field");
         this.statCardinalityFieldName = config.getString("elasticsearch.stat.cardinality.field");
         this.statFieldTermName = config.getString("elasticsearch.stat.field.term.name");
