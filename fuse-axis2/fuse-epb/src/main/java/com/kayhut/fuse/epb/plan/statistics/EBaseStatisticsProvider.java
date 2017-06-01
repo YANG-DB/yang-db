@@ -271,7 +271,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 double total = 0;
                 double count = 0;
                 for(T v : valueList){
-                    bucketContaining = histogramStatistics.findBucketContaining((T)v);
+                    bucketContaining = histogramStatistics.findBucketContaining(v);
                     total += ((double)bucketContaining.get().getTotal()) / bucketContaining.get().getCardinality();
                     count += 1;
                 }
@@ -281,7 +281,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 bucketInfos = histogramStatistics.getBuckets();
 
                 for(T v : valueList){
-                    bucketContaining = histogramStatistics.findBucketContaining((T)v);
+                    bucketContaining = histogramStatistics.findBucketContaining(v);
                     if(bucketContaining.isPresent() && bucketContaining.get().isSingleValue()){
                         bucketInfos.remove(bucketContaining.get());
                     }

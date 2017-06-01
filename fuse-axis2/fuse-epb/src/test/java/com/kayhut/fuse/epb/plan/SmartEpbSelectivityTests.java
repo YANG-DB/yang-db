@@ -81,10 +81,10 @@ public class SmartEpbSelectivityTests {
         typeCard.put(OntologyTestUtils.GUILD.name, 100);
 
         globalSelectivityMap = new HashMap<>();
-        globalSelectivityMap.put(new Tuple<>(OWN.getName(), Rel.Direction.R), 10l);
-        globalSelectivityMap.put(new Tuple<>(OWN.getName(), Rel.Direction.L), 1l);
-        globalSelectivityMap.put(new Tuple<>(MEMBER_OF.getName(), Rel.Direction.R), 3l);
-        globalSelectivityMap.put(new Tuple<>(MEMBER_OF.getName(), Rel.Direction.L), 50l);
+        globalSelectivityMap.put(new Tuple<>(OWN.getName(), Rel.Direction.R), 10L);
+        globalSelectivityMap.put(new Tuple<>(OWN.getName(), Rel.Direction.L), 1L);
+        globalSelectivityMap.put(new Tuple<>(MEMBER_OF.getName(), Rel.Direction.R), 3L);
+        globalSelectivityMap.put(new Tuple<>(MEMBER_OF.getName(), Rel.Direction.L), 50L);
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
@@ -115,7 +115,7 @@ public class SmartEpbSelectivityTests {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
             Rel.Direction direction = invocationOnMock.getArgumentAt(1, Rel.Direction.class);
             Tuple<String, Rel.Direction> edge = new Tuple<>(edgeSchema.getType(), direction);
-            return globalSelectivityMap.getOrDefault(edge, 10l);
+            return globalSelectivityMap.getOrDefault(edge, 10L);
         });
 
 
@@ -263,9 +263,9 @@ public class SmartEpbSelectivityTests {
     private Statistics.HistogramStatistics<Long> createLongHistogram(int card, int numIndices) {
         long bucketSize = card * numIndices / 3;
         List<Statistics.BucketInfo<Long>> bucketInfos = new ArrayList<>();
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0l,1000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000l,2000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000l,3000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0L, 1000L));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000L, 2000L));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000L, 3000L));
         return new Statistics.HistogramStatistics<>(bucketInfos);
     }
 

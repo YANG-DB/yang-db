@@ -192,6 +192,9 @@ public interface Statistics {
      */
     class BucketInfo<T extends Comparable<T>> {
 
+        public BucketInfo() {
+        }
+
         public BucketInfo(Long total, Long cardinality, T lowerBound, T higherBound) {
             this.total = total;
             this.cardinality = cardinality;
@@ -207,8 +210,9 @@ public interface Statistics {
             return total;
         }
 
-        public T getLowerBound() { return lowerBound; };
-        public T getHigherBound() { return higherBound; };
+        public T getLowerBound() { return lowerBound; }
+
+        public T getHigherBound() { return higherBound; }
 
         //lower bound - inclusive, higher bound - non-inclusive
         public boolean isValueInRange(T value) {

@@ -7,7 +7,6 @@ import java.util.List;
  */
 public class CompositeType {
 
-
     public String getcType() {
         return cType;
     }

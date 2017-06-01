@@ -10,6 +10,15 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Property {
 
+    public Property() {
+    }
+
+    public Property(String name, int pType, String type) {
+        this.pType = pType;
+        this.name = name;
+        this.type = type;
+    }
+
     public int getpType() {
         return pType;
     }

@@ -11,6 +11,9 @@ import java.util.Optional;
 public interface GraphElementSchema {
     Class getSchemaElementType();
 
+    /**
+     * @return vertex type (e.g., Dragon, Person)
+     */
     String getType();
 
     Optional<GraphElementRouting> getRouting();

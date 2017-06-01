@@ -19,5 +19,6 @@
         <module>fuse-gta</module>
         <module>fuse-epb</module>
         <module>fuse-unipop</module>
+        <module>fuse-stat</module>
     </modules>
 </project>

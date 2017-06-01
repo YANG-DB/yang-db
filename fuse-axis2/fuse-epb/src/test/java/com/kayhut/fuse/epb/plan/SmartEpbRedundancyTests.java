@@ -105,7 +105,7 @@ public class SmartEpbRedundancyTests {
             return new Statistics.Cardinality(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
         });
 
-        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10l);
+        when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10L);
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(List.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
@@ -276,9 +276,9 @@ public class SmartEpbRedundancyTests {
     private Statistics.HistogramStatistics<Long> createLongHistogram(int card, int numIndices) {
         long bucketSize = card * numIndices / 3;
         List<Statistics.BucketInfo<Long>> bucketInfos = new ArrayList<>();
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0l,1000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000l,2000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000l,3000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0L, 1000L));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000L, 2000L));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000L, 3000L));
         return new Statistics.HistogramStatistics<>(bucketInfos);
     }
 

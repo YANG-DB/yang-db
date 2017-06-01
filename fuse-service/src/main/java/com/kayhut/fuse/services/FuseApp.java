@@ -123,8 +123,6 @@ public class FuseApp extends Jooby {
                         urlSupplier.queryStoreUrl(),
                         "/fuse/search",
                         "/fuse/catalog"));
-
-
     }
 
     private void registerHealthApi(AppUrlSupplier urlSupplier) {
@@ -132,7 +130,6 @@ public class FuseApp extends Jooby {
         use("/fuse/health")
                 /** check health */
                 .get(() -> "Alive And Well...");
-
     }
 
     private void registerCatalogApi(AppUrlSupplier urlSupplier) {
@@ -143,8 +140,6 @@ public class FuseApp extends Jooby {
                     ContentResponse response = catalogCtrl().get(req.param("id").value());
                     return Results.with(response, response.status());
                 });
-
-
     }
 
     private void registerQueryApi(AppUrlSupplier urlSupplier) {
@@ -180,8 +175,6 @@ public class FuseApp extends Jooby {
                     //temporary fix for jason serialization of object graphs
                     return Results.with(JsonWriter.objectToJson(response), response.status());
                 });
-
-
     }
 
     private void registerCursorApi(AppUrlSupplier urlSupplier) {
@@ -250,8 +243,6 @@ public class FuseApp extends Jooby {
                     ContentResponse search = searchCtrl().search(req.body(CreateQueryRequest.class));
                     return Results.with(search, search.status());
                 });
-
-
     }
     //endregion
 

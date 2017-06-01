@@ -41,23 +41,10 @@ public interface StatisticsProvider {
      */
     Statistics.Cardinality getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
 
-    /**
-     *
-     * @param rel
-     * @param entityFilter
-     * @param direction
-     * @return
-     */
+
     //Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,Direction direction);
 
-    /**
-     *
-     * @param rel
-     * @param entity
-     * @param entityFilter
-     * @param direction
-     * @return
-     */
+
     Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup);
 
     /**

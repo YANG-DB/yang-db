@@ -24,7 +24,6 @@ import java.util.Collections;
  */
 public class AsgQuery {
 
-
     //region Getters & Setters
 
     public String getOnt() {

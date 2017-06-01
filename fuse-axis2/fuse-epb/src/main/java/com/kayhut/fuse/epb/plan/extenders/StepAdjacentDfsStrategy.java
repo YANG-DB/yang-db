@@ -39,7 +39,7 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.nextDescendant(nextRelation.get(), EEntityBase.class);
 
         Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtil.nextAdjacentDescendant(toEntity.get(), Quant1.class);
-        Optional<AsgEBase<EPropGroup>> toEntityPropGroup = Optional.empty();
+        Optional<AsgEBase<EPropGroup>> toEntityPropGroup;
         if (toEntityQuant.isPresent()) {
             toEntityPropGroup = AsgQueryUtil.nextAdjacentDescendant(toEntityQuant.get(), EPropGroup.class);
         } else {

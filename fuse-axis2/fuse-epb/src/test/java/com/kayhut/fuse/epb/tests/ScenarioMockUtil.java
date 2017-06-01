@@ -147,8 +147,8 @@ public class ScenarioMockUtil {
     }
 
     private Statistics.Cardinality getCardinality(GraphElementSchema graphElementSchema, List<String> indices,long scale) {
-        return new Statistics.Cardinality(cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000l)*indices.size()* scale,
-                cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000l)*indices.size());
+        return new Statistics.Cardinality(cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size()* scale,
+                cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size());
     }
 
     public ScenarioMockUtil withLayoutRedundancy(String edgeType, String propertyName, String redundantPropertyName){
