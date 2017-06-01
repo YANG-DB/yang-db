@@ -2,7 +2,7 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -11,15 +11,13 @@ import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.epb.tests.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanAssert;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.Value;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
@@ -27,7 +25,6 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -37,9 +34,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.ConstraintOp.ge;
+import static com.kayhut.fuse.model.query.ConstraintOp.le;
 import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
@@ -209,7 +206,7 @@ public class SmartEpbComplexQueries {
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         statisticsCostEstimator = new StatisticsCostEstimator(
                 (ont) -> eBaseStatisticsProvider,
-                new BasicStepEstimator(1.0,0.001),
+                M1StepEstimator.getStepEstimator(1.0,0.001),
                 (id) -> Optional.of(ont.get()));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
@@ -227,6 +224,7 @@ public class SmartEpbComplexQueries {
                 validator,
                 statisticsCostEstimator);
     }
+
 
     private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {
         List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();

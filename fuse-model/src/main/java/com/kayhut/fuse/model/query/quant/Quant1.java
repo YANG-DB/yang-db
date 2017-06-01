@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Next;
 import javaslang.collection.Stream;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,6 +16,7 @@ public class Quant1 extends QuantBase implements Next<List<Integer>> {
     //region Constructors
     public Quant1() {
         super();
+        this.next = Collections.emptyList();
     }
 
     public Quant1(int eNum, QuantType qType, Iterable<Integer> next, int b) {

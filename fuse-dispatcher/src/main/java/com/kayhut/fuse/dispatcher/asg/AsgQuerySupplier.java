@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.builder;
+package com.kayhut.fuse.dispatcher.asg;
 
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -14,11 +14,13 @@ import java.util.Map;
 /**
  * Created by benishue on 27-Feb-17.
  */
-public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
+public class AsgQuerySupplier implements Supplier<AsgQuery> {
 
     //region Constructor
-    public RecTwoPassAsgQuerySupplier(Query query) {
+    public AsgQuerySupplier(Query query, NextFactory nextFactory, BellowFactory bellowFactory) {
         this.query = query;
+        this.factory = nextFactory;
+        this.bellowFactory = bellowFactory;
     }
     //endregion
 
@@ -50,7 +52,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
     private void buildSubGraphRec(AsgEBase asgEBaseCurrent, Map<Integer, EBase> queryElements) {
         EBase eBaseCurrent = asgEBaseCurrent.geteBase();
 
-        Stream.ofAll(new NextEbaseFactory().supply(eBaseCurrent)).forEach(eNum -> {
+        Stream.ofAll(factory.supplyNext(eBaseCurrent)).forEach(eNum -> {
              EBase eBaseNext =  queryElements.get(eNum);
              AsgEBase asgEBaseNext = AsgEBase.Builder.get()
                         .withEBase(eBaseNext)
@@ -62,7 +64,7 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
         });
 
 
-        Stream.ofAll(new BEbaseFactory().supply(eBaseCurrent)).forEach(
+        Stream.ofAll(bellowFactory.supplyBellow(eBaseCurrent)).forEach(
                 eNum -> {
                     EBase eBaseB =  queryElements.get(eNum);
                     AsgEBase asgEBaseB = AsgEBase.Builder.get()
@@ -79,6 +81,8 @@ public class RecTwoPassAsgQuerySupplier implements Supplier<AsgQuery> {
 
     //region Fields
     private Query query;
+    private NextFactory factory;
+    private BellowFactory bellowFactory;
     private Map<Integer, AsgEBase> queryAsgElements = new HashMap<>();
 
     //endregion

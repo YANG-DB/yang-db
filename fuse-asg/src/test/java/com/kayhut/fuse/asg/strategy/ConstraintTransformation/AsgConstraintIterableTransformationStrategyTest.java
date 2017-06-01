@@ -3,8 +3,10 @@ package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
-import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
+import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -136,7 +138,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
 
         //endregion
 
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory());
         AsgQuery asgQuery = asgSupplier.get();
         return asgQuery;
     }

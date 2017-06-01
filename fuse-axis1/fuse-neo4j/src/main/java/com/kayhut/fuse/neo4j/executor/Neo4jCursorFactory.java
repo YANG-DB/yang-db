@@ -4,8 +4,18 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.model.results.Assignment;
+import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.neo4j.GraphProvider;
+import org.neo4j.driver.internal.InternalNode;
+import org.neo4j.driver.internal.InternalRelationship;
+import org.neo4j.driver.v1.Record;
+import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.StatementResult;
+
+import java.util.*;
 
 /**
  * Created by Roman on 02/04/2017.
@@ -55,7 +65,6 @@ public class Neo4jCursorFactory implements CursorFactory {
         //region Fields
         private QueryResource queryResource;
         private String cypher;
-        private boolean isValid;
         //endregion
     }
 
@@ -73,7 +82,52 @@ public class Neo4jCursorFactory implements CursorFactory {
         //region Cursor Implementation
         @Override
         public QueryResult getNextResults(int numResults) {
-            return NeoGraphUtils.query(graphProvider, this);
+
+            if (session != null && !session.isOpen()) {
+                return QueryResult.Builder.instance().withAssignments(Collections.emptyList()).build();
+            }
+
+            if (session == null) {
+                session = graphProvider.getSession();
+                statementResult = session.run(context.getCypher());
+            }
+
+            int resCount = 0;
+            List<Assignment> assignments = new ArrayList<>();
+            ArrayList<Entity> ents = new ArrayList<>();
+            ArrayList<Relationship> rels = new ArrayList<>();
+
+            while (statementResult.hasNext() && resCount < numResults) {
+
+                Record record = statementResult.next();
+                for (Map.Entry<String, Object> entry :
+                        record.asMap().entrySet()) {
+                    if (entry.getValue() instanceof InternalNode) {
+                        ents.add(NeoGraphUtils.entityFromNodeValue(entry.getKey(), (InternalNode) entry.getValue()));
+                    } else if (entry.getValue() instanceof InternalRelationship) {
+                        rels.add(NeoGraphUtils.relFromRelValue(entry.getKey(), (InternalRelationship) entry.getValue()));
+                    } else {
+                        //TODO: ?
+                    }
+                }
+
+                Assignment assignment = Assignment.Builder.instance()
+                        .withEntities(ents)
+                        .withRelationships(rels)
+                        .build();
+
+                assignments.add(assignment);
+
+                resCount++;
+
+            }
+
+            if (!statementResult.hasNext()) {
+                session.close();
+            }
+
+            return QueryResult.Builder.instance().withAssignments(assignments).build();
+
         }
         //endregion
 
@@ -86,6 +140,8 @@ public class Neo4jCursorFactory implements CursorFactory {
         //region Fields
         private Neo4jCursorContext context;
         private GraphProvider graphProvider;
-        //endregion
+        private StatementResult statementResult;
+        private Session session;
+        //endregion+
     }
 }

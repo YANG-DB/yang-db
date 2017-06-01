@@ -5,10 +5,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import javaslang.collection.Stream;
 
@@ -52,7 +55,7 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
 
 
         AsgStrategyContext asgStrategyContext =  new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
-        AsgQuery asgQuery = new RecTwoPassAsgQuerySupplier(context.getQuery()).get();
+        AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(),new NextEbaseFactory(), new BNextFactory() ).get();
         Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery,asgStrategyContext));
         return submit(eventBus, context.of(asgQuery));
     }

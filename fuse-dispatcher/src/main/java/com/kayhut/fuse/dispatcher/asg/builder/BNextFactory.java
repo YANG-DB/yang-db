@@ -1,5 +1,6 @@
-package com.kayhut.fuse.asg.builder;
+package com.kayhut.fuse.dispatcher.asg.builder;
 
+import com.kayhut.fuse.dispatcher.asg.BellowFactory;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -19,10 +20,10 @@ import java.util.function.Function;
  * Created by benishue on 01-Mar-17.
  */
 
-public class BEbaseFactory {
+public class BNextFactory implements BellowFactory{
 
     //region Constructor
-    public BEbaseFactory() {
+    public BNextFactory() {
         this.map = new HashMap<>() ;
         this.map.put(AggM5.class, (ebase) -> ((AggM5)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggM5) ebase).getB()));
         this.map.put(AggM4.class, (ebase) -> ((AggM4)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggM4) ebase).getB()));
@@ -49,12 +50,13 @@ public class BEbaseFactory {
     //endregion
 
     //region Public Methods
-    public List<Integer> supply(EBase eBase) {
+    public List<Integer> supplyBellow(EBase eBase) {
         return this.map.get(eBase.getClass()).apply(eBase);
     }
     //endregion
 
     //region Fields
     private Map<Class, Function<EBase, List<Integer>>> map;
+
     //endregion
 }

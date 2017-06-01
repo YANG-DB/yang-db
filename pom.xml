@@ -11,6 +11,7 @@
     <modules>
         <module>data-gen</module>
         <module>fuse-model</module>
+        <module>fuse-validator</module>
         <module>fuse-asg</module>
         <module>fuse-dispatcher</module>
         <module>fuse-service</module>
