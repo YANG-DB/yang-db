@@ -29,14 +29,16 @@ import java.util.Optional;
  *                  .as(source(<EEntityBase.Etag>)-->target(<EEntityBase.Etag></EEntityBase.Etag>))  // A-->B
  *
  */
-public class RelationOpTranslationStrategy implements PlanOpTranslationStrategy {
+public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase {
+    //region Constructors
+    public RelationOpTranslationStrategy() {
+        super(RelationOp.class);
+    }
+    //endregion
+
     //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
-        if (!(planOp instanceof RelationOp)) {
-            return traversal;
-        }
-
+    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         Optional<EntityOp> prev = PlanUtil.prev(plan, planOp, EntityOp.class);
         Optional<EntityOp> next = PlanUtil.next(plan, planOp, EntityOp.class);
 
@@ -48,6 +50,7 @@ public class RelationOpTranslationStrategy implements PlanOpTranslationStrategy 
                         Constraint.by(__.and(
                                 __.has(T.label, P.eq(rTypeName)),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, ConverstionUtil.convertDirection(rel.getDir())))));
+
     }
     //endregion
 

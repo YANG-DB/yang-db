@@ -1,6 +1,8 @@
 package com.kayhut.fuse.neo4j.cypher.compile;
 
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
@@ -8,7 +10,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
 import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadQuery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -24,7 +25,7 @@ public class KnownQueriesCompilerTest {
     @Before
     public void setUp() throws Exception {
         //ontology = loadOntology("dragons.json");
-        asgQuery = new RecTwoPassAsgQuerySupplier(loadQuery("Q003-1.json")).get();
+        asgQuery = new AsgQuerySupplier(loadQuery("Q003-1.json"),new NextEbaseFactory(), new BNextFactory() ).get();
     }
 
     @Test

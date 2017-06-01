@@ -2,7 +2,9 @@ package com.kayhut.fuse.asg;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Supplier;
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
@@ -27,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by benishue on 27-Feb-17.
  */
-public class RecTwoPassAsgQuerySupplierTest {
+public class AsgQuerySupplierTest {
 
     private static Query q1Obj = new Query();
     private static Query q5Obj = new Query();
@@ -38,7 +40,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     @Test
     public void transformQuery1ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q1Obj);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q1Obj,new NextEbaseFactory(), new BNextFactory());
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -62,7 +64,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     @Test
     public void transformQuery5ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q5Obj);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q5Obj,new NextEbaseFactory(), new BNextFactory() );
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -86,7 +88,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     @Test
     public void transformQuery9ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q9Obj);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q9Obj,new NextEbaseFactory(), new BNextFactory());
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -115,7 +117,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     @Test
     public void transformQuery187ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q187Obj);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q187Obj,new NextEbaseFactory(), new BNextFactory() );
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -159,7 +161,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     @Test
     public void transformQuery3_1ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q3_1Obj);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q3_1Obj,new NextEbaseFactory(), new BNextFactory() );
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 
@@ -182,7 +184,7 @@ public class RecTwoPassAsgQuerySupplierTest {
 
     @Test
     public void transformQuery11ToAsgQuery() throws Exception {
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(q11Obj);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(q11Obj,new NextEbaseFactory(), new BNextFactory());
         AsgQuery asgQuery = asgSupplier.get();
         assertEquals(asgQuery.getStart().geteBase().geteNum(), 0);
 

@@ -8,7 +8,9 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.unipop.structure.UniGraph;
 import org.unipop.structure.UniVertex;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -17,7 +19,11 @@ import java.util.Optional;
 public class PromiseVertex extends UniVertex {
     //region Constructor
     public PromiseVertex(Promise promise, Optional<Constraint> constraint, UniGraph graph) {
-        super(new MapBuilder<String, Object>().put(T.id.getAccessor(), promise.getId()).get(), graph);
+        this(promise, constraint, graph, Collections.emptyMap());
+    }
+
+    public PromiseVertex(Promise promise, Optional<Constraint> constraint, UniGraph graph, Map<String, Object> properties) {
+        super(new MapBuilder<>(properties).put(T.id.getAccessor(), promise.getId()).get(), graph);
 
         this.promise = promise;
         this.constraint = constraint;

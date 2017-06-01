@@ -4,6 +4,9 @@ package com.kayhut.fuse.model.query.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Below;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by user on 16-Feb-17.
  */
@@ -14,7 +17,12 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
     public ETyped() {}
 
     public ETyped(int eNum, String eTag, int eType, int next, int b) {
-        super(eNum, eTag, next, b);
+        this(eNum, eTag, eType, Collections.emptyList(), next, b);
+        this.eType = eType;
+    }
+
+    public ETyped(int eNum, String eTag, int eType, List<String> reportProps, int next, int b) {
+        super(eNum, eTag, reportProps, next, b);
         this.eType = eType;
     }
     //endregion

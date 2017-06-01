@@ -4,19 +4,34 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Below;
 import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.query.EBase;
+import javaslang.collection.Stream;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by User on 27/02/2017.
  */
 public abstract class EEntityBase extends EBase implements Next<Integer>, Below<Integer> {
     //region Constructors
-    public EEntityBase() {}
+    public EEntityBase() {
+        this.reportProps = Collections.emptyList();
+    }
 
     public EEntityBase(int eNum, String eTag, int next, int b) {
+        this(eNum, eTag, Collections.emptyList(), next, b);
+    }
+
+    public EEntityBase(int eNum, String eTag, List<String> reportProps, int next, int b) {
         super(eNum);
+
         this.eTag = eTag;
         this.next = next;
         this.b = b;
+
+        this.reportProps = reportProps != null ?
+                Stream.ofAll(reportProps).toJavaList() :
+                Collections.emptyList();
     }
     //endregion
 
@@ -33,7 +48,18 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
             if (!eTag.equals(that.eTag)) return false;
         }
         if (next != that.next) return false;
-        return b == that.b;
+        if (b != that.b) return false;
+
+        if ((reportProps == null && that.reportProps != null) ||
+                (reportProps != null && that.reportProps == null)) {
+            return false;
+        }
+
+        if (reportProps != null) {
+            return reportProps.equals(that.reportProps);
+        }
+
+        return true;
     }
 
     @Override
@@ -42,6 +68,7 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         result = 31 * result + eTag.hashCode();
         result = 31 * result + next;
         result = 31 * result + b;
+        result = 31 * result + reportProps.hashCode();
         return result;
     }
     //endregion
@@ -70,6 +97,14 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
     public void setB(Integer b) {
         this.b = b;
     }
+
+    public List<String> getReportProps() {
+        return reportProps;
+    }
+
+    public void setReportProps(List<String> reportProps) {
+        this.reportProps = reportProps;
+    }
     //endregion
 
     //region Fields
@@ -78,5 +113,7 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
     private	int next;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private	int b;
+
+    private List<String> reportProps;
     //endregion
 }
