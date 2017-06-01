@@ -4,6 +4,7 @@ import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
@@ -197,7 +198,7 @@ public class StatisticalCostEstimatorTests {
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
         StatisticsCostEstimator estimator = new StatisticsCostEstimator(
                 (ont) -> provider,
-                new BasicStepEstimator(1, 0.001),
+                M1StepEstimator.getStepEstimator(1, 0.001),
                 (id) -> Optional.of(ont.get()));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
@@ -242,7 +243,7 @@ public class StatisticalCostEstimatorTests {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
         StatisticsCostEstimator estimator = new StatisticsCostEstimator(
                 (ont) -> provider,
-                new BasicStepEstimator(1, 0.001),
+                M1StepEstimator.getStepEstimator(1, 0.001),
                 (id) -> Optional.of(ont.get()));
 
         AsgQuery query = AsgQuery.Builder.start("name", "ont").

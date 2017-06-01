@@ -100,7 +100,7 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
-        BasicStepEstimator estimator = new BasicStepEstimator(1, 0.001);
+        StepEstimator estimator = M1StepEstimator.getStepEstimator(1, 0.001);
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
 
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
@@ -120,7 +120,7 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
 
     @Test
     public void calculateFullStepNotNull() throws Exception {
-        BasicStepEstimator estimator = new BasicStepEstimator(1, 0.001);
+        StepEstimator estimator = M1StepEstimator.getStepEstimator(1, 0.001);
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, PERSON.type)
                 .entityFilter(0.2,7,FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, OWN.getrType(), 100)
