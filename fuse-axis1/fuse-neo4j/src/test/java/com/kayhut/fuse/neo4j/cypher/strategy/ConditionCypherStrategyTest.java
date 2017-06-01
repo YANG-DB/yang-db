@@ -1,7 +1,9 @@
 package com.kayhut.fuse.neo4j.cypher.strategy;
 
 import com.google.common.base.Supplier;
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -13,7 +15,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
 import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadQuery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,7 +29,7 @@ public class ConditionCypherStrategyTest {
     @Before
     public void setUp() throws Exception {
         //ontology = loadOntology("dragons.json");
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(loadQuery("Q003-1.json"));
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(loadQuery("Q003-1.json"),new NextEbaseFactory(), new BNextFactory() );
         asgQuery = asgSupplier.get();
 
     }

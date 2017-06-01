@@ -1,5 +1,6 @@
-package com.kayhut.fuse.asg.builder;
+package com.kayhut.fuse.dispatcher.asg.builder;
 
+import com.kayhut.fuse.dispatcher.asg.NextFactory;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 /**
  * Created by benishue on 01-Mar-17.
  */
-public class NextEbaseFactory {
+public class NextEbaseFactory implements NextFactory {
 
     //region Constructor
     public NextEbaseFactory() {
@@ -48,7 +49,8 @@ public class NextEbaseFactory {
     //endregion
 
     //region Public Methods
-    public List<Integer> supply(EBase eBase) {
+    @Override
+    public List<Integer> supplyNext(EBase eBase) {
         return this.map.get(eBase.getClass()).apply(eBase);
     }
     //endregion

@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.ConstraintTransformation;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
-import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
+import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Property;

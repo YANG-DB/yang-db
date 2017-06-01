@@ -1,21 +1,15 @@
 package com.kayhut.fuse.neo4j.cypher.strategy;
 
-import com.google.common.base.Supplier;
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
-import com.kayhut.fuse.neo4j.cypher.CypherStatement;
-import javaslang.Tuple2;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.HashMap;
-
-import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadOntology;
 import static com.kayhut.fuse.neo4j.cypher.TestUtils.loadQuery;
 import static org.junit.Assert.*;
 
@@ -30,7 +24,7 @@ public class Quant1CypherStrategyTest {
     @Before
     public void setUp() throws Exception {
         //ontology = loadOntology("dragons.json");
-        asgQuery = new RecTwoPassAsgQuerySupplier(loadQuery("Q008.json")).get();
+        asgQuery = new AsgQuerySupplier(loadQuery("Q008.json"),new NextEbaseFactory(), new BNextFactory() ).get();
     }
 
     @Test

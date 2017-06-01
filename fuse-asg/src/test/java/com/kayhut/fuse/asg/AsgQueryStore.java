@@ -1,32 +1,22 @@
 package com.kayhut.fuse.asg;
 
 import com.google.common.base.Supplier;
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
-import com.kayhut.fuse.model.OntologyTest;
-import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.HQuant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.ConstraintOp.gt;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
-import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 /**
@@ -147,7 +137,7 @@ public class AsgQueryStore {
         query.setElements(elements);
 
 
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory() );
         AsgQuery asgQuery = asgSupplier.get();
         return asgQuery;
     }
@@ -218,7 +208,7 @@ public class AsgQueryStore {
         query.setElements(elements);
 
 
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory() );
         AsgQuery asgQuery = asgSupplier.get();
         return asgQuery;
     }

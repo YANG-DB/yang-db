@@ -5,9 +5,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
-import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -15,7 +15,6 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import javaslang.collection.Stream;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
@@ -24,19 +23,19 @@ import static com.kayhut.fuse.model.Utils.submit;
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperationContext.Processor {
+public class ValidatorStrategyRegisteredAsgDriver implements QueryCreationOperationContext.Processor {
 
     //region Constructors
     @Inject
-    public SimpleStrategyRegisteredAsgDriver(
+    public ValidatorStrategyRegisteredAsgDriver(
             EventBus eventBus,
-            AsgStrategyRegistrar registrar,
+            AsgValidatorStrategyRegistrar registrar,
             OntologyProvider ontologyProvider) {
         this.eventBus = eventBus;
         this.eventBus.register(this);
         this.ontologyProvider = ontologyProvider;
 
-        this.strategies = registrar != null ? registrar.register() : Collections.emptyList();
+        this.strategies = registrar.register();
     }
     //endregion
 
@@ -63,7 +62,7 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
 
     //region Fields
     private EventBus eventBus;
-    private Iterable<AsgStrategy> strategies;
+    private Iterable<AsgValidatorStrategy> strategies;
     private OntologyProvider ontologyProvider;
     //endregion
 }

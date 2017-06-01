@@ -2,8 +2,10 @@ package com.kayhut.fuse.asg.strategy.PropertiesGrouping;
 
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.AsgQueryStore;
-import com.kayhut.fuse.asg.builder.RecTwoPassAsgQuerySupplier;
-import com.kayhut.fuse.asg.strategy.AsgStrategyContext;
+import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
+import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
+import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -66,7 +68,7 @@ public class AsgPropsGroupingStrategyTest {
         elements.add(eProp);
         query.setElements(elements);
         //endregion
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory());
         AsgQuery asgQuery = asgSupplier.get();
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtil.element(asgQuery, 4).get();
         AsgEntityPropertiesGroupingStrategy asgEntityPropertiesGroupingStrategy = new AsgEntityPropertiesGroupingStrategy();
@@ -142,7 +144,7 @@ public class AsgPropsGroupingStrategyTest {
         elements.add(eProp2);
         query.setElements(elements);
         //endregion
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory() );
         AsgQuery asgQuery = asgSupplier.get();
         AsgEBase<EBase> originalEProp1AsgEbase = AsgQueryUtil.element(asgQuery, 5).get();
         AsgEBase<EBase> originalEProp2AsgEbase = AsgQueryUtil.element(asgQuery, 6).get();
@@ -214,7 +216,7 @@ public class AsgPropsGroupingStrategyTest {
         elements.add(eTyped2);
         query.setElements(elements);
         //endregion
-        Supplier<AsgQuery> asgSupplier = new RecTwoPassAsgQuerySupplier(query);
+        Supplier<AsgQuery> asgSupplier = new AsgQuerySupplier(query,new NextEbaseFactory(), new BNextFactory() );
         AsgQuery asgQuery = asgSupplier.get();
         AsgEBase<EBase> originalEPropAsgEbase = AsgQueryUtil.element(asgQuery, 3).get();
         AsgQuant1PropertiesGroupingStrategy asgQuant1PropertiesGroupingStrategy = new AsgQuant1PropertiesGroupingStrategy();
