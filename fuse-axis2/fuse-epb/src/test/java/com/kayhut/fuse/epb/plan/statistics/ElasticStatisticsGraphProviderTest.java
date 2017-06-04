@@ -23,8 +23,6 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.ElasticIndexConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import javaslang.Tuple2;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
@@ -93,7 +91,7 @@ public class ElasticStatisticsGraphProviderTest {
         //Populating the Elastic Stat Engine index: 'stat' type: 'termBucket', buckets of statistics
         populateTermStatDocs(VERTEX_INDICES, DATA_TYPE_DRAGON, DATA_FIELD_NAME_TYPE, termStatistics);
         //Checking that the ELASTIC STAT TERM TYPE created
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName()));
+        assertTrue(EsUtil.isTypeExists(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName()));
 
         //Sanity Checks
         //We have only 1 index ('stat') in the STAT Elastic Engine
@@ -241,14 +239,14 @@ public class ElasticStatisticsGraphProviderTest {
 
     //region Private Methods
     private static StatContainer buildStatContainer() {
-        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.aHistogramNumeric()
+        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
                 .withMin(10).withMax(100).withNumOfBins(10).build();
 
-        HistogramString histogramDragonName = HistogramString.Builder.aHistogramString()
+        HistogramString histogramDragonName = HistogramString.Builder.get()
                 .withPrefixSize(3)
                 .withInterval(10).withNumOfChars(26).withFirstCharCode("97").build();
 
-        HistogramManual histogramDragonAddress = HistogramManual.Builder.aHistogramManual()
+        HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
                 .withBuckets(Arrays.asList(
                         new BucketRange("abc", "dzz"),
                         new BucketRange("efg", "hij"),
@@ -256,26 +254,26 @@ public class ElasticStatisticsGraphProviderTest {
                 )).withDataType(DataType.string)
                 .build();
 
-        HistogramComposite histogramDragonColor = HistogramComposite.Builder.aHistogramComposite()
+        HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
                 .withManualBuckets(Arrays.asList(
                         new BucketRange("00", "11"),
                         new BucketRange("22", "33"),
                         new BucketRange("44", "55")
                 )).withDataType(DataType.string)
-                .withAutoBuckets(HistogramString.Builder.aHistogramString()
+                .withAutoBuckets(HistogramString.Builder.get()
                         .withFirstCharCode("97")
                         .withInterval(10)
                         .withNumOfChars(26)
                         .withPrefixSize(3).build())
                 .build();
 
-        HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramTerm = HistogramTerm.Builder.get()
                 .withDataType(DataType.string).withBuckets(Arrays.asList(
                         new BucketTerm(DRAGON_GENDERS.get(0)),
                         new BucketTerm(DRAGON_GENDERS.get(1))
                 )).build();
 
-        HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramDocType = HistogramTerm.Builder.get()
                 .withDataType(DataType.string).withBuckets(Collections.singletonList(
                         new BucketTerm(DATA_TYPE_DRAGON)
                 )).build();
@@ -289,10 +287,10 @@ public class ElasticStatisticsGraphProviderTest {
                 new Field(DATA_FIELD_NAME_GENDER, histogramTerm),
                 new Field(DATA_FIELD_NAME_TYPE, histogramDocType)));
 
-        Mapping mapping = Mapping.Builder.aMapping().withIndices(VERTEX_INDICES)
+        Mapping mapping = Mapping.Builder.get().withIndices(VERTEX_INDICES)
                 .withTypes(Collections.singletonList(DATA_TYPE_DRAGON)).build();
 
-        return StatContainer.Builder.aStatContainer()
+        return StatContainer.Builder.get()
                 .withMappings(Collections.singletonList(mapping))
                 .withTypes(Collections.singletonList(typeDragon))
                 .build();
@@ -330,7 +328,7 @@ public class ElasticStatisticsGraphProviderTest {
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
-                    entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
+                    entityTypes.add(EntityType.Builder.get()
                             .withEType(2).withName(DATA_TYPE_DRAGON)
                             .withProperties(Collections.singletonList(ageProp.getpType()))
                             .build());

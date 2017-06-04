@@ -63,7 +63,7 @@ public interface Statistics {
                 for (int i = 0; i < this.buckets.size();i++){
                     BucketInfo<T> myBucket = this.buckets.get(i);
                     BucketInfo<T> otherBucket = otherHistogram.getBuckets().get(i);
-                    BucketInfo<T>  bucketInfo = new BucketInfo<T>(myBucket.getTotal() + otherBucket.getTotal(),
+                    BucketInfo<T>  bucketInfo = new BucketInfo<>(myBucket.getTotal() + otherBucket.getTotal(),
                             myBucket.getCardinality() + otherBucket.cardinality,
                             myBucket.getLowerBound(),
                             myBucket.getHigherBound());
@@ -71,14 +71,14 @@ public interface Statistics {
                 }
 
 
-                return new HistogramStatistics<T>(buckets);
+                return new HistogramStatistics<>(buckets);
             }
 
             throw new IllegalArgumentException();
         }
 
         public Optional<BucketInfo<T>> findBucketContaining(T value){
-            BucketInfo<T> dummyInfo = new BucketInfo<T>(0L,0L,value, value);
+            BucketInfo<T> dummyInfo = new BucketInfo<>(0L, 0L, value, value);
             int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
                 if(o1.getLowerBound().equals(o2.getLowerBound()) && o1.getHigherBound().equals(o2.getHigherBound()))
                     return 0;
@@ -152,7 +152,7 @@ public interface Statistics {
                 buckets.add(mergeBucketList(bucketsToMerge));
             }
 
-            return new HistogramStatistics<T>(buckets);
+            return new HistogramStatistics<>(buckets);
         }
 
         private static <T extends Comparable<T>> boolean haveBucketsToHandle(List<HistogramStatistics<T>> histograms, List<Integer> indices) {
@@ -167,9 +167,9 @@ public interface Statistics {
             if(bucketsToMerge.size() == 0)
                 return null;
 
-            long total = bucketsToMerge.stream().mapToLong(b -> b.getTotal()).sum();
-            long card = bucketsToMerge.get(0).isSingleValue() ? 1 : Math.round(bucketsToMerge.stream().mapToDouble(b -> b.getCardinality()).average().getAsDouble());
-            BucketInfo<T> newBucket = new BucketInfo<T>(total, card, bucketsToMerge.get(0).getLowerBound(),bucketsToMerge.get(0).getHigherBound());
+            long total = bucketsToMerge.stream().mapToLong(BucketInfo::getTotal).sum();
+            long card = bucketsToMerge.get(0).isSingleValue() ? 1 : Math.round(bucketsToMerge.stream().mapToDouble(BucketInfo::getCardinality).average().getAsDouble());
+            BucketInfo<T> newBucket = new BucketInfo<>(total, card, bucketsToMerge.get(0).getLowerBound(), bucketsToMerge.get(0).getHigherBound());
             return newBucket;
         }
 

@@ -64,7 +64,7 @@ public class Type {
             this.fields = new ArrayList<>();
         }
 
-        public static Builder aType() {
+        public static Builder instance() {
             return new Builder();
         }
 

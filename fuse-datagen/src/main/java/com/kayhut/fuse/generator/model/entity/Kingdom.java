@@ -90,7 +90,7 @@ public class Kingdom extends EntityBase {
     //endregion
 
     //region Builder
-    public static final class KingdomBuilder {
+    public static final class Builder {
         private String id;
         private String name;
         private String king;
@@ -98,39 +98,39 @@ public class Kingdom extends EntityBase {
         private Date independenceDay;
         private double funds;
 
-        private KingdomBuilder() {
+        private Builder() {
         }
 
-        public static KingdomBuilder aKingdom() {
-            return new KingdomBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public KingdomBuilder withId(String id) {
+        public Builder withId(String id) {
             this.id = id;
             return this;
         }
 
-        public KingdomBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public KingdomBuilder withKing(String king) {
+        public Builder withKing(String king) {
             this.king = king;
             return this;
         }
 
-        public KingdomBuilder withQueen(String queen) {
+        public Builder withQueen(String queen) {
             this.queen = queen;
             return this;
         }
 
-        public KingdomBuilder withIndependenceDay(Date independenceDay) {
+        public Builder withIndependenceDay(Date independenceDay) {
             this.independenceDay = independenceDay;
             return this;
         }
 
-        public KingdomBuilder withFunds(double funds) {
+        public Builder withFunds(double funds) {
             this.funds = funds;
             return this;
         }

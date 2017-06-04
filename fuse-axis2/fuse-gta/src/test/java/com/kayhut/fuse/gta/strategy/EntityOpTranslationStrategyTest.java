@@ -119,7 +119,7 @@ public class EntityOpTranslationStrategyTest {
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     return Arrays.asList(
-                            EntityType.EntityTypeBuilder.anEntityType()
+                            EntityType.Builder.get()
                                     .withEType(1).withName("Person").build()
                     );
                 }
@@ -167,7 +167,7 @@ public class EntityOpTranslationStrategyTest {
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     return Arrays.asList(
-                            EntityType.EntityTypeBuilder.anEntityType()
+                            EntityType.Builder.get()
                                     .withEType(2).withName("Person").build()
                     );
                 }

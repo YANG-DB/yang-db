@@ -63,19 +63,14 @@ public class EsUtil {
      * @param index     Elastic index name (e.g., index1)
      * @param type      Elastic type name (e.g., Dragon)
      * @param field     Elastic field name
-     * @param min       The lower bound of the left most range bucket
-     * @param max       the upper bound of the right most range bucket
-     * @param numOfBins number of buckets
      * @return List of numeric range buckets with lower (inclusive) and upper bound (exclusive)
      */
     public static List<StatRangeResult> getNumericHistogramResults(TransportClient client,
                                                                    String index,
                                                                    String type,
                                                                    String field,
-                                                                   double min, double max,
-                                                                   long numOfBins) {
+                                                                   List<BucketRange<Double>> buckets) {
 
-        List<BucketRange<Double>> buckets = StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
 
         return getNumericBucketsStatResults(client, index, type, field, buckets);
     }
@@ -299,7 +294,7 @@ public class EsUtil {
      * @param index  Index Name
      * @return true if an index exists
      */
-    public static boolean checkIfEsIndexExists(Client client, String index) {
+    public static boolean isIndexExists(Client client, String index) {
 
         IndexMetaData indexMetaData = client.admin().cluster()
                 .state(Requests.clusterStateRequest())
@@ -318,14 +313,14 @@ public class EsUtil {
      * @param type   Type Name
      * @return true if type exists in the index
      */
-    public static boolean checkIfEsTypeExists(Client client, String index, String type) {
+    public static boolean isTypeExists(Client client, String index, String type) {
         ClusterStateResponse resp =
                 client.admin().cluster().prepareState().execute().actionGet();
         ImmutableOpenMap<String, MappingMetaData> mappings = resp.getState().metaData().index(index).getMappings();
         return mappings.containsKey(type);
     }
 
-    public static boolean checkIfEsDocExists(Client client, String index, String type, String docId) {
+    public static boolean isDocExists(Client client, String index, String type, String docId) {
         // Check if a document exists
         GetResponse response = client.prepareGet(index, type, docId).setRefresh(true).execute().actionGet();
         return response.isExists();
@@ -422,7 +417,7 @@ public class EsUtil {
     }
 
 
-    public static boolean checkMappingExistsInIndex(Client client, String index, String mappingName) {
+    public static boolean isMappingExistsInIndex(Client client, String index, String mappingName) {
         return getMappingsOfIndex(client, index).get(mappingName) != null;
     }
 
@@ -502,9 +497,7 @@ public class EsUtil {
                 .setTypes(type);
 
         RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(field);
-        buckets.forEach(bucket -> {
-            rangesAggregationBuilder.addRange(bucket.getStart(), bucket.getEnd());
-        });
+        buckets.forEach(bucket -> rangesAggregationBuilder.addRange(bucket.getStart(), bucket.getEnd()));
 
         SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(field)))

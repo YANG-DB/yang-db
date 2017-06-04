@@ -3,7 +3,6 @@ package com.kayhut.fuse.generator.model.entity;
 import com.kayhut.fuse.generator.model.enums.Gender;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by benishue on 15-May-17.
@@ -100,7 +99,7 @@ public class Person extends EntityBase {
     //endregion
 
 
-    public static final class PersonBuilder {
+    public static final class Builder {
         private String id;
         private String firstName;
         private String lastName;
@@ -109,44 +108,44 @@ public class Person extends EntityBase {
         private Date deathDate;
         private int height;
 
-        private PersonBuilder() {
+        private Builder() {
         }
 
-        public static PersonBuilder aPerson() {
-            return new PersonBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public PersonBuilder withId(String id) {
+        public Builder withId(String id) {
             this.id = id;
             return this;
         }
 
-        public PersonBuilder withFirstName(String firstName) {
+        public Builder withFirstName(String firstName) {
             this.firstName = firstName;
             return this;
         }
 
-        public PersonBuilder withLastName(String lastName) {
+        public Builder withLastName(String lastName) {
             this.lastName = lastName;
             return this;
         }
 
-        public PersonBuilder withGender(Gender gender) {
+        public Builder withGender(Gender gender) {
             this.gender = gender;
             return this;
         }
 
-        public PersonBuilder withBirthDate(Date birthDate) {
+        public Builder withBirthDate(Date birthDate) {
             this.birthDate = birthDate;
             return this;
         }
 
-        public PersonBuilder withDeathDate(Date deathDate) {
+        public Builder withDeathDate(Date deathDate) {
             this.deathDate = deathDate;
             return this;
         }
 
-        public PersonBuilder withHeight(int height) {
+        public Builder withHeight(int height) {
             this.height = height;
             return this;
         }

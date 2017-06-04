@@ -75,7 +75,7 @@ public class Guild extends EntityBase {
     //endregion
 
     //region Builder
-    public static final class GuildBuilder {
+    public static final class Builder {
         String name;
         String description;
         String iconId;
@@ -83,39 +83,39 @@ public class Guild extends EntityBase {
         Date establishDate;
         private String id;
 
-        private GuildBuilder() {
+        private Builder() {
         }
 
-        public static GuildBuilder aGuild() {
-            return new GuildBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public GuildBuilder withId(String id) {
+        public Builder withId(String id) {
             this.id = id;
             return this;
         }
 
-        public GuildBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public GuildBuilder withDescription(String description) {
+        public Builder withDescription(String description) {
             this.description = description;
             return this;
         }
 
-        public GuildBuilder withIconId(String iconId) {
+        public Builder withIconId(String iconId) {
             this.iconId = iconId;
             return this;
         }
 
-        public GuildBuilder withUrl(String url) {
+        public Builder withUrl(String url) {
             this.url = url;
             return this;
         }
 
-        public GuildBuilder withEstablishDate(Date establishDate) {
+        public Builder withEstablishDate(Date establishDate) {
             this.establishDate = establishDate;
             return this;
         }

@@ -64,7 +64,7 @@ public class HistogramString extends Histogram {
         private Builder() {
         }
 
-        public static Builder aHistogramString() {
+        public static Builder get() {
             return new Builder();
         }
 

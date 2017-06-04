@@ -247,7 +247,7 @@ public class BAGraphGenerator {
         int i = 5;
     }
 
-    public static ArrayList<Tuple2> generateMassiveBAgraph(int numOfNodes, int edgesPerNode, SamplingMode samplingMode, String filePath){
+    public static List<Tuple2> generateMassiveBAgraph(int numOfNodes, int edgesPerNode, SamplingMode samplingMode, String filePath){
         try {
             BAGraphGenerator generator = new BAGraphGenerator(numOfNodes);
             BAGraphGenerator.m = edgesPerNode;

@@ -48,7 +48,7 @@ public interface StatisticsProvider {
     Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup);
 
     /**
-     * get avarage number of eadges per node (by label context)
+     * get average number of edges per node (by label context)
      * @return
      */
     long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) ;

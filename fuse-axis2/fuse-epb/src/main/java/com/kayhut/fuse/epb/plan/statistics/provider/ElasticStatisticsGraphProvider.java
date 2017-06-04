@@ -13,13 +13,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 
 import java.util.*;
 
@@ -28,11 +22,15 @@ import java.util.*;
  */
 public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
-    //todo move it to a global enun across modules
+    //todo move it to a global enum across modules
     private static final String DATE = "date";
     private static final String ENUM = "enum";
     private static final String INT = "int";
     private static final String STRING = "string";
+
+    private static final String FIELD_NAME_TYPE = "_type";
+    private static final String FIELD_NAME_EDGE = "entityA.id";
+    private static final String FIELD_NAME_TERM = "term";
 
     //region Constructors
     @Inject
@@ -83,8 +81,8 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 statConfig.getStatIndexName(),
                 statTypeName,
                 relevantIndices,
-                Arrays.asList(graphElementSchema.getType()),
-                Arrays.asList(graphElementPropertySchema.getName())
+                Collections.singletonList(graphElementSchema.getType()),
+                Collections.singletonList(graphElementPropertySchema.getName())
         );
 
         for (Map.Entry<String, List<Statistics.BucketInfo>> entry : fieldStatisticsPerIndex.entrySet()) {
@@ -114,19 +112,23 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema,
                                      Rel.Direction direction,
                                      List<String> relevantIndices) {
+        long globalSelectivity = 0 ;
         List<Statistics.BucketInfo> buckets = elasticStatProvider.getEdgeGlobalStatistics(
                 elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatGlobalTypeName(),
                 relevantIndices,
-                Arrays.asList(graphEdgeSchema.getType()),
-                Arrays.asList("entityA.id"),
+                Collections.singletonList(graphEdgeSchema.getType()),
+                Collections.singletonList(FIELD_NAME_EDGE),
                 convertDirection(direction)
             );
-        Long cardinality = buckets.get(0).getCardinality();
-        Long total = buckets.get(0).getTotal();
+        if (!buckets.isEmpty()) {
+            Long cardinality = buckets.get(0).getCardinality();
+            Long total = buckets.get(0).getTotal();
+            globalSelectivity = (long) (total / (double)cardinality);
+        }
 
-        return Math.round(total / cardinality);
+        return globalSelectivity;
     }
     //endregion
 
@@ -137,8 +139,8 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
                 Lists.newArrayList(indices),
-                Arrays.asList(docType),
-                Arrays.asList("_type"));
+                Collections.singletonList(docType),
+                Collections.singletonList(FIELD_NAME_TYPE));
 
         long totalCount = 0;
         for (Statistics.BucketInfo bucket : buckets) {
@@ -148,7 +150,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     private long getTermBucketCount(String indexName, String docType, String term) {
-        String docId = StatUtil.hashString(indexName + docType + "_type" + term);
+        String docId = StatUtil.hashString(indexName + docType + FIELD_NAME_TYPE + term);
         return getStatBucketCount(docId);
     }
 
@@ -180,7 +182,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         if (statDoc.isPresent()) {
             long count = ((Number) statDoc.get().get(statConfig.getStatCountFieldName())).longValue();
             long cardinality = ((Number) statDoc.get().get(statConfig.getStatCardinalityFieldName())).longValue();
-            T term = (T) statDoc.get().get("term");
+            T term = (T) statDoc.get().get(FIELD_NAME_TERM);
             bucketInfo = new Statistics.BucketInfo(count, cardinality, term, term);
         }
         return bucketInfo;
@@ -194,14 +196,14 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 break;
             }
             case INT: { //Numeric
-                statTypeName = statConfig.getStatStringTypeName();
+                statTypeName = statConfig.getStatNumericTypeName();
                 break;
             }
             case ENUM: { //Enum
                 statTypeName = statConfig.getStatTermTypeName();
                 break;
             }
-            case DATE: { //Enum
+            case DATE: { //Enum ? string //todo decide?
                 statTypeName = statConfig.getStatTermTypeName();
                 break;
             }
@@ -211,7 +213,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         return statTypeName;
     }
 
-    public static String convertDirection(Rel.Direction dir) {
+    public String convertDirection(Rel.Direction dir) {
         switch (dir) {
             case R:
                 return "OUT";
@@ -224,9 +226,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     //endregion
 
    //region Fields
-    private StatConfig statConfig;
-    private ElasticStatProvider elasticStatProvider;
-    private TransportClient elasticClient;
+    private final StatConfig statConfig;
+    private final ElasticStatProvider elasticStatProvider;
+    private final TransportClient elasticClient;
     //endregion
 
 }

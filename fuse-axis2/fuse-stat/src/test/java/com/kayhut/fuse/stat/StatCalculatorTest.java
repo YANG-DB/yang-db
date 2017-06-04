@@ -4,7 +4,6 @@ import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.bucket.BucketTerm;
 import com.kayhut.fuse.stat.model.configuration.Field;
 import com.kayhut.fuse.stat.model.configuration.Mapping;
 import com.kayhut.fuse.stat.model.configuration.StatContainer;
@@ -22,15 +21,11 @@ import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
-import org.elasticsearch.common.collect.ImmutableOpenMap;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.parboiled.support.Var;
 
 import java.util.*;
 
@@ -100,24 +95,24 @@ public class StatCalculatorTest {
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
 
         //Check if Stat index created
-        assertTrue(EsUtil.checkIfEsIndexExists(statClient, STAT_INDEX_NAME));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
-        assertTrue(EsUtil.checkIfEsTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
+        assertTrue(EsUtil.isIndexExists(statClient, STAT_INDEX_NAME));
+        assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME));
+        assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME));
+        assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
+        assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
 
 
         //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
         String docId1 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_AGE + "10.0" + "19.0");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME, docId1));
+        assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_NUMERIC_NAME, docId1));
 
         //Check if address bucket exists (bucket #1 "abc" + "dzz")
         String docId2 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_ADDRESS + "abc" + "dzz");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId2));
+        assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId2));
 
         //Check if color bucket exists (bucket with lower_bound: "grc", upper_bound: "grl")
         String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "grc" + "grl");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3));
+        assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3));
 
         //Check that the bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
         Optional<Map<String, Object>> doc3Result = EsUtil.getDocumentSourceById(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3);
@@ -126,7 +121,7 @@ public class StatCalculatorTest {
 
         //Check that the manual bucket ("00", "11"] exists for the composite histogram
         String docId4 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "00" + "11");
-        assertTrue(EsUtil.checkIfEsDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId4));
+        assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId4));
 
         //Check term buckets (Gender male) - cardinality should be 1
         String docId5 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_GENDER + "male");
@@ -149,7 +144,7 @@ public class StatCalculatorTest {
     @Test
     public void globalCardinalityTest() throws Exception {
         //Check to see if the mapping for Stat results for global was created
-        assertTrue(EsUtil.checkMappingExistsInIndex(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
+        assertTrue(EsUtil.isMappingExistsInIndex(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
         for (String type : EsUtil.getAllTypesFromIndex(statClient, STAT_INDEX_NAME)) {
             System.out.println(type);
@@ -184,18 +179,18 @@ public class StatCalculatorTest {
         //Used only to test that the data is populated and indexed correctly
 
         //Check if all indices exists: index1, index2, index3, index4
-        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_1));
-        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_2));
-        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_3));
-        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME_4));
+        assertTrue(EsUtil.isIndexExists(dataClient, DATA_INDEX_NAME_1));
+        assertTrue(EsUtil.isIndexExists(dataClient, DATA_INDEX_NAME_2));
+        assertTrue(EsUtil.isIndexExists(dataClient, DATA_INDEX_NAME_3));
+        assertTrue(EsUtil.isIndexExists(dataClient, DATA_INDEX_NAME_4));
 
         //Check if Type= Dragon exists in indices: index1, index2
-        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON));
-        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON));
+        assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME_1, DATA_TYPE_DRAGON));
+        assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME_2, DATA_TYPE_DRAGON));
 
         //Check if Type= Dragon exists in indices: index1, index2
-        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE));
-        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE));
+        assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME_3, DATA_TYPE_FIRE));
+        assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME_4, DATA_TYPE_FIRE));
 
         //Check on types
         assertEquals(1, EsUtil.getAllTypesFromIndex(dataClient, DATA_INDEX_NAME_1).length);
@@ -334,20 +329,20 @@ public class StatCalculatorTest {
     }
 
     private StatContainer buildStatContainer() {
-        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.aHistogramNumeric()
+        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
                 .withMin(10)
                 .withMax(100)
                 .withNumOfBins(10)
                 .build();
 
-        HistogramString histogramDragonName = HistogramString.Builder.aHistogramString()
+        HistogramString histogramDragonName = HistogramString.Builder.get()
                 .withPrefixSize(3)
                 .withInterval(10)
                 .withNumOfChars(26)
                 .withFirstCharCode("97")
                 .build();
 
-        HistogramManual histogramDragonAddress = HistogramManual.Builder.aHistogramManual()
+        HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
                 .withBuckets(Arrays.asList(
                         new BucketRange("abc", "dzz"),
                         new BucketRange("efg", "hij"),
@@ -355,31 +350,31 @@ public class StatCalculatorTest {
                 )).withDataType(DataType.string)
                 .build();
 
-        HistogramComposite histogramDragonColor = HistogramComposite.Builder.aHistogramComposite()
+        HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
                 .withBucket(new BucketRange("00", "11"))
                 .withBucket(new BucketRange("22", "33"))
                 .withBucket(new BucketRange("44", "55"))
                 .withDataType(DataType.string)
-                .withAutoBuckets(HistogramString.Builder.aHistogramString()
+                .withAutoBuckets(HistogramString.Builder.get()
                         .withFirstCharCode("97")
                         .withInterval(10)
                         .withNumOfChars(26)
                         .withPrefixSize(3).build())
                 .build();
 
-        HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramTerm = HistogramTerm.Builder.get()
                 .withDataType(DataType.string)
                 .withTerm("male")
                 .withTerm("female")
                 .build();
 
-        HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramDocType = HistogramTerm.Builder.get()
                 .withDataType(DataType.string)
                 .withTerm(DATA_TYPE_DRAGON)
                 .build();
 
 
-        Type typeDragon = Type.Builder.aType()
+        Type typeDragon = Type.Builder.instance()
                 .withType(DATA_TYPE_DRAGON)
                 .withField(new Field("age", histogramDragonAge))
                 .withField(new Field("name", histogramDragonName))
@@ -389,12 +384,12 @@ public class StatCalculatorTest {
                 .withField(new Field("_type", histogramDocType))
                 .build();
 
-        Mapping mapping = Mapping.Builder.aMapping()
+        Mapping mapping = Mapping.Builder.get()
                 .withIndex(DATA_INDEX_NAME_1)
                 .withIndex(DATA_INDEX_NAME_2)
                 .withType(DATA_TYPE_DRAGON).build();
 
-        return StatContainer.Builder.aStatContainer()
+        return StatContainer.Builder.get()
                 .withMapping(mapping)
                 .withType(typeDragon)
                 .build();

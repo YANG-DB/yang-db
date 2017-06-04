@@ -9,6 +9,7 @@ import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatTestUtil;
+import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -65,14 +66,16 @@ public class EsUtilTest {
         final double min = DRAGON_MIN_AGE;
         final double max = DRAGON_MAX_AGE;
 
+        List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(
+                min,
+                max,
+                numOfBins);
         List<StatRangeResult> numericHistogramResults = EsUtil.getNumericHistogramResults(
                 dataClient,
                 DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
                 DATA_FIELD_NAME_AGE,
-                min,
-                max,
-                numOfBins);
+                numericBuckets);
 
         //Checking that we have 1o buckets
         assertEquals(numOfBins, numericHistogramResults.size());
@@ -197,18 +200,18 @@ public class EsUtilTest {
 
     @Test
     public void checkIfEsIndexExistsTest() throws Exception {
-        assertTrue(EsUtil.checkIfEsIndexExists(dataClient, DATA_INDEX_NAME));
+        assertTrue(EsUtil.isIndexExists(dataClient, DATA_INDEX_NAME));
     }
 
     @Test
     public void checkIfEsTypeExistsTest() throws Exception {
-        assertTrue(EsUtil.checkIfEsTypeExists(dataClient, DATA_INDEX_NAME, DATA_TYPE_NAME));
+        assertTrue(EsUtil.isTypeExists(dataClient, DATA_INDEX_NAME, DATA_TYPE_NAME));
 
     }
 
     @Test
     public void checkIfEsDocExistsTest() throws Exception {
-        assertTrue(EsUtil.checkIfEsDocExists(dataClient,
+        assertTrue(EsUtil.isDocExists(dataClient,
                 DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
                 Integer.toString(StatTestUtil.randomInt(0, NUM_OF_DRAGONS_IN_INDEX - 1))

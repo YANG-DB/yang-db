@@ -56,7 +56,7 @@ public class HistogramNumeric extends Histogram {
             super();
         }
 
-        public static Builder aHistogramNumeric() {
+        public static Builder get() {
             return new Builder();
         }
 

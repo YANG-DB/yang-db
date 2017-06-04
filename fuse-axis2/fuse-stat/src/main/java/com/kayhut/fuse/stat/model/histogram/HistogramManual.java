@@ -43,7 +43,7 @@ public class HistogramManual <T> extends Histogram {
             this.buckets = new ArrayList<>();
         }
 
-        public static Builder aHistogramManual() {
+        public static Builder get() {
             return new Builder();
         }
 

@@ -53,7 +53,7 @@ public class HistogramComposite <T> extends Histogram {
             this.manualBuckets = new ArrayList<>();
         }
 
-        public static Builder aHistogramComposite() {
+        public static Builder get() {
             return new Builder();
         }
 

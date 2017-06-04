@@ -41,7 +41,7 @@ public class HistogramTerm extends Histogram {
             this.buckets = new ArrayList<>();
         }
 
-        public static Builder aHistogramTerm() {
+        public static Builder get() {
             return new Builder();
         }
 

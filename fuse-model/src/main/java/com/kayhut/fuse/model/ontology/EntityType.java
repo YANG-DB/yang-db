@@ -1,7 +1,6 @@
 package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -65,35 +64,35 @@ public class EntityType {
     //endregion
 
     //region Builder
-    public static final class EntityTypeBuilder {
+    public static final class Builder {
         private int eType;
         private String name;
         private List<Integer> properties;
         private List<String> display;
 
-        private EntityTypeBuilder() {
+        private Builder() {
         }
 
-        public static EntityTypeBuilder anEntityType() {
-            return new EntityTypeBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public EntityTypeBuilder withEType(int eType) {
+        public Builder withEType(int eType) {
             this.eType = eType;
             return this;
         }
 
-        public EntityTypeBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public EntityTypeBuilder withProperties(List<Integer> properties) {
+        public Builder withProperties(List<Integer> properties) {
             this.properties = properties;
             return this;
         }
 
-        public EntityTypeBuilder withDisplay(List<String> display) {
+        public Builder withDisplay(List<String> display) {
             this.display = display;
             return this;
         }

@@ -7,7 +7,6 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 
 /**
  * Created by benishue on 24-May-17.
@@ -36,7 +35,7 @@ public class ElasticClientProvider {
     //endregion
 
     //region Fields
-    private StatConfig config;
+    private final StatConfig config;
     //endregion
 
 }

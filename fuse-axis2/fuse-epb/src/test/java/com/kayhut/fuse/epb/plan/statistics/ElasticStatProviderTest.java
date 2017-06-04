@@ -7,7 +7,6 @@ import com.kayhut.fuse.epb.plan.statistics.util.StatTestUtil;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
-import com.kayhut.fuse.stat.model.bucket.BucketTerm;
 import com.kayhut.fuse.stat.model.configuration.Field;
 import com.kayhut.fuse.stat.model.configuration.Mapping;
 import com.kayhut.fuse.stat.model.configuration.StatContainer;
@@ -15,7 +14,6 @@ import com.kayhut.fuse.stat.model.configuration.Type;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.ElasticIndexConfigurer;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.client.transport.TransportClient;
@@ -25,7 +23,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -199,17 +196,17 @@ public class ElasticStatProviderTest {
 
     //Per test
     private static StatContainer buildStatContainer() {
-        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.aHistogramNumeric()
+        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
                 .withMin(DRAGON_MIN_AGE).withMax(DRAGON_MAX_AGE).withNumOfBins(10).build();
 
-        HistogramString histogramDragonName = HistogramString.Builder.aHistogramString()
+        HistogramString histogramDragonName = HistogramString.Builder.get()
                 .withPrefixSize(3)
                 .withInterval(10)
                 .withNumOfChars(26)
                 .withFirstCharCode("97")
                 .build();
 
-        HistogramManual histogramDragonAddress = HistogramManual.Builder.aHistogramManual()
+        HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
                 .withBuckets(Arrays.asList(
                         new BucketRange("abc", "dzz"),
                         new BucketRange("efg", "hij"),
@@ -218,31 +215,31 @@ public class ElasticStatProviderTest {
                 .withDataType(DataType.string)
                 .build();
 
-        HistogramComposite histogramDragonColor = HistogramComposite.Builder.aHistogramComposite()
+        HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
                 .withManualBuckets(Arrays.asList(
                         new BucketRange("00", "11"),
                         new BucketRange("22", "33"),
                         new BucketRange("44", "55")
                 )).withDataType(DataType.string)
-                .withAutoBuckets(HistogramString.Builder.aHistogramString()
+                .withAutoBuckets(HistogramString.Builder.get()
                         .withFirstCharCode("97")
                         .withInterval(10)
                         .withNumOfChars(26)
                         .withPrefixSize(3).build())
                 .build();
 
-        HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramTerm = HistogramTerm.Builder.get()
                 .withDataType(DataType.string)
                 .withTerms(DRAGON_GENDERS)
                 .build();
 
-        HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramDocType = HistogramTerm.Builder.get()
                 .withDataType(DataType.string)
                 .withTerm(DATA_TYPE_NAME) // "Dragon"
                 .build();
 
 
-        Type typeDragon = Type.Builder.aType()
+        Type typeDragon = Type.Builder.instance()
                 .withType(DATA_TYPE_NAME)
                 .withField(new Field(DATA_FIELD_NAME_AGE, histogramDragonAge))
                 .withField(new Field(DATA_FIELD_NAME_NAME, histogramDragonName))
@@ -252,12 +249,12 @@ public class ElasticStatProviderTest {
                 .withField(new Field(DATA_FIELD_NAME_TYPE, histogramDocType))
                 .build();
 
-        Mapping mapping = Mapping.Builder.aMapping()
+        Mapping mapping = Mapping.Builder.get()
                 .withIndex(DATA_INDEX_NAME)
                 .withType(DATA_TYPE_NAME)
                 .build();
 
-        return StatContainer.Builder.aStatContainer()
+        return StatContainer.Builder.get()
                 .withMapping(mapping)
                 .withType(typeDragon)
                 .build();

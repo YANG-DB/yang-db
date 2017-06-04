@@ -7,10 +7,7 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
 import java.util.*;
@@ -35,20 +32,20 @@ public class ElasticStatProvider {
     private final String STAT_TYPE_STRING_NAME;
     private final String STAT_TYPE_TERM_NAME;
 
-    public ElasticStatProvider(StatConfig statConfig) {
-        STAT_INDEX_NAME = statConfig.getStatIndexName();
-        COUNT_FIELD_NAME = statConfig.getStatCountFieldName();
-        CARDINALITY_FIELD_NAME = statConfig.getStatCardinalityFieldName();
+    public ElasticStatProvider(StatConfig conf) {
+        STAT_INDEX_NAME = conf.getStatIndexName();
+        COUNT_FIELD_NAME = conf.getStatCountFieldName();
+        CARDINALITY_FIELD_NAME = conf.getStatCardinalityFieldName();
 
-        STAT_TYPE_TERM_NAME = statConfig.getStatTermTypeName();
-        STAT_TYPE_NUMERIC_NAME = statConfig.getStatNumericTypeName();
-        STAT_TYPE_STRING_NAME = statConfig.getStatStringTypeName();
+        STAT_TYPE_TERM_NAME = conf.getStatTermTypeName();
+        STAT_TYPE_NUMERIC_NAME = conf.getStatNumericTypeName();
+        STAT_TYPE_STRING_NAME = conf.getStatStringTypeName();
 
-        STAT_FIELD_TERM_NAME = statConfig.getStatFieldTermName();
-        STAT_FIELD_NUMERIC_LOWER_NAME = statConfig.getStatFieldNumericLowerName();
-        STAT_FIELD_NUMERIC_UPPER_NAME = statConfig.getStatFieldNumericUpperName();
-        STAT_FIELD_STRING_LOWER_NAME = statConfig.getStatFieldStringLowerName();
-        STAT_FIELD_STRING_UPPER_NAME = statConfig.getStatFieldStringUpperName();
+        STAT_FIELD_TERM_NAME = conf.getStatFieldTermName();
+        STAT_FIELD_NUMERIC_LOWER_NAME = conf.getStatFieldNumericLowerName();
+        STAT_FIELD_NUMERIC_UPPER_NAME = conf.getStatFieldNumericUpperName();
+        STAT_FIELD_STRING_LOWER_NAME = conf.getStatFieldStringLowerName();
+        STAT_FIELD_STRING_UPPER_NAME = conf.getStatFieldStringUpperName();
     }
 
     public Optional<Map<String, Object>> getDocumentById(TransportClient client, String indexName, String documentType, String id) {

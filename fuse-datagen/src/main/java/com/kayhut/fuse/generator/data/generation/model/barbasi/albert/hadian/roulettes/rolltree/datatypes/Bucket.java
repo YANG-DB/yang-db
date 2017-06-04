@@ -9,8 +9,7 @@ public class Bucket {
 	
 	@Override
 	public String toString() {
-		String result = "(D:" + degree + ", S:" + nodeIDs.size() + ")"; 
-		return result;
+		return "(D:" + degree + ", S:" + nodeIDs.size() + ")";
 	}
 
 	public Bucket(int bdegree) {

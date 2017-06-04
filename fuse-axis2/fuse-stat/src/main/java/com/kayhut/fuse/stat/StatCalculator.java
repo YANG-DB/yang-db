@@ -53,8 +53,7 @@ public class StatCalculator {
                 throw new IllegalArgumentException("Statistics Configuration is Invalid / Empty");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } finally {
             if (dataClient != null) {
                 dataClient.close();
@@ -91,25 +90,12 @@ public class StatCalculator {
                                                  String statTypeString,
                                                  String statTypeTerm,
                                                  String statTypeGlobal) {
-        if (statIndex == null ||
-                statTypeNumeric == null ||
-                statTypeString == null ||
-                statTypeTerm == null ||
-                statTypeGlobal == null) {
 
-            throw new IllegalArgumentException("Missing Arguments for the Statistics type names - " +
-                    "\nStat Index: " + statIndex +
-                    "\nStat Type Numeric Name: " + statTypeNumeric +
-                    "\nStat Type String Name: " + statTypeString +
-                    "\nStat Type Term Name: " + statTypeTerm +
-                    "\nStat Type Global Name: " + statTypeGlobal
-            );
-        }
-        statIndexName = statIndex;
-        statTypeNumericName = statTypeNumeric;
-        statTypeStringName = statTypeString;
-        statTypeTermName = statTypeTerm;
-        statTypeGlobalName = statTypeGlobal;
+        statIndexName = statIndex == null ? "stat" : statIndex;
+        statTypeNumericName = statTypeNumeric == null ? "bucketNumeric" : statTypeNumeric;
+        statTypeStringName = statTypeString == null ? "bucketString" : statTypeString;
+        statTypeTermName = statTypeTerm == null ? "bucketTerm" : statTypeTerm;
+        statTypeGlobalName = statTypeGlobal == null ? "bucketGlobal" : statTypeGlobal;
     }
     //endregion
 
@@ -127,19 +113,20 @@ public class StatCalculator {
             if (fields.isPresent() && !fields.get().isEmpty()) {
                 for (Field field : fields.get()) {
                     HistogramNumeric hist = ((HistogramNumeric) field.getHistogram());
-                    List<StatRangeResult> buckets = EsUtil.getNumericHistogramResults(dataClient,
+                    List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(
+                            hist.getMin(),
+                            hist.getMax(),
+                            hist.getNumOfBins());
+                    List<StatRangeResult> bucketsResults = EsUtil.getNumericHistogramResults(dataClient,
                             index,
                             type,
                             field.getField(),
-                            hist.getMin(),
-                            hist.getMax(),
-                            (long) hist.getNumOfBins());
-                    populateBuckets(statIndexName, statTypeNumericName, statClient, buckets);
+                            numericBuckets);
+                    populateBuckets(statIndexName, statTypeNumericName, statClient, bucketsResults);
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -159,34 +146,33 @@ public class StatCalculator {
                     HistogramManual hist = ((HistogramManual) field.getHistogram());
                     if (field.getFilter() != null && !field.getFilter().isEmpty()) { //Use for global cardinality
                         Filter direction = field.getFilter().stream()
-                                .filter(filter -> filter.getName().equals("direction"))
+                                .filter(filter -> "direction".equals(filter.getName()))
                                 .findFirst().get();
-                        List<StatRangeResult> buckets = EsUtil.getGlobalCardinalityHistogramResults(
+                        List<StatRangeResult> bucketsResults = EsUtil.getGlobalCardinalityHistogramResults(
                                 dataClient,
                                 index,
                                 type,
                                 field.getField(),
                                 direction.getValue(), hist.getBuckets());
-                        populateBuckets(statIndexName, statTypeGlobalName, statClient, buckets);
+                        populateBuckets(statIndexName, statTypeGlobalName, statClient, bucketsResults);
                     } else {
-                        List<StatRangeResult> buckets = EsUtil.getManualHistogramResults(dataClient,
+                        List<StatRangeResult> bucketsResults = EsUtil.getManualHistogramResults(dataClient,
                                 index,
                                 type,
                                 field.getField(),
                                 hist.getDataType(),
                                 hist.getBuckets());
                         if (hist.getDataType() == DataType.string) {
-                            populateBuckets(statIndexName, statTypeStringName, statClient, buckets);
+                            populateBuckets(statIndexName, statTypeStringName, statClient, bucketsResults);
                         }
                         if (hist.getDataType() == DataType.numeric) {
-                            populateBuckets(statIndexName, statTypeNumericName, statClient, buckets);
+                            populateBuckets(statIndexName, statTypeNumericName, statClient, bucketsResults);
                         }
                     }
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -210,18 +196,17 @@ public class StatCalculator {
                             hist.getPrefixSize(),
                             hist.getInterval());
 
-                    List<StatRangeResult> buckets = EsUtil.getStringBucketsStatResults(
+                    List<StatRangeResult> bucketsResults = EsUtil.getStringBucketsStatResults(
                             dataClient,
                             index,
                             type,
                             field.getField(),
                             stringBuckets);
-                    populateBuckets(statIndexName, statTypeStringName, statClient, buckets);
+                    populateBuckets(statIndexName, statTypeStringName, statClient, bucketsResults);
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -268,14 +253,16 @@ public class StatCalculator {
                     }
                     if (hist.getDataType() == DataType.numeric) {
                         HistogramNumeric subHist = (HistogramNumeric) hist.getAutoBuckets();
+                        List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(
+                                subHist.getMin(),
+                                subHist.getMax(),
+                                subHist.getNumOfBins());
                         List<StatRangeResult> autoBuckets = EsUtil.getNumericHistogramResults(
                                 dataClient,
                                 index,
                                 type,
                                 field.getField(),
-                                subHist.getMin(),
-                                subHist.getMax(),
-                                (long) subHist.getNumOfBins());
+                                numericBuckets);
 
                         List<StatRangeResult> combinedBuckets = Stream.
                                 concat(autoBuckets.stream(), manualBuckets.stream())
@@ -285,8 +272,7 @@ public class StatCalculator {
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -304,19 +290,18 @@ public class StatCalculator {
             if (fields.isPresent() && !fields.get().isEmpty()) {
                 for (Field field : fields.get()) {
                     HistogramTerm hist = (HistogramTerm) field.getHistogram();
-                    List<StatTermResult> buckets = EsUtil.getTermHistogramResults(
+                    List<StatTermResult> bucketsResults = EsUtil.getTermHistogramResults(
                             dataClient,
                             index,
                             type,
                             field.getField(),
                             hist.getDataType(),
                             hist.getBuckets());
-                    populateBuckets(statIndexName, statTypeTermName, statClient, buckets);
+                    populateBuckets(statIndexName, statTypeTermName, statClient, bucketsResults);
                 }
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 

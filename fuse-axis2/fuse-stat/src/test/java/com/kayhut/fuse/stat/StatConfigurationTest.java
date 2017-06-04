@@ -7,7 +7,6 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.stat.model.configuration.*;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -36,14 +35,14 @@ public class StatConfigurationTest {
     }
 
     private StatContainer buildStatContainer() {
-        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.aHistogramNumeric()
+        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
                 .withMin(10).withMax(100).withNumOfBins(10).build();
 
-        HistogramString histogramDragonName = HistogramString.Builder.aHistogramString()
+        HistogramString histogramDragonName = HistogramString.Builder.get()
                 .withPrefixSize(3)
                 .withInterval(10).withNumOfChars(26).withFirstCharCode("97").build();
 
-        HistogramManual histogramDragonAddress = HistogramManual.Builder.aHistogramManual()
+        HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
                 .withBuckets(Arrays.asList(
                         new BucketRange("abc", "dzz"),
                         new BucketRange("efg", "hij"),
@@ -51,32 +50,32 @@ public class StatConfigurationTest {
                 )).withDataType(DataType.string)
                 .build();
 
-        HistogramComposite histogramDragonColor = HistogramComposite.Builder.aHistogramComposite()
+        HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
                 .withManualBuckets(Arrays.asList(
                         new BucketRange("00", "11"),
                         new BucketRange("22", "33"),
                         new BucketRange("44", "55")
                 )).withDataType(DataType.string)
-                .withAutoBuckets(HistogramString.Builder.aHistogramString()
+                .withAutoBuckets(HistogramString.Builder.get()
                         .withFirstCharCode("97")
                         .withInterval(10)
                         .withNumOfChars(26)
                         .withPrefixSize(3).build())
                 .build();
 
-        HistogramTerm histogramTerm = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramTerm = HistogramTerm.Builder.get()
                 .withDataType(DataType.string).withBuckets(Arrays.asList(
                         new BucketTerm("male"),
                         new BucketTerm("female")
                 )).build();
 
-        HistogramTerm histogramDocType = HistogramTerm.Builder.aHistogramTerm()
+        HistogramTerm histogramDocType = HistogramTerm.Builder.get()
                 .withDataType(DataType.string).withBuckets(Collections.singletonList(
                         new BucketTerm("dragon")
                 )).build();
 
 
-        HistogramManual histogramFireEntity = HistogramManual.Builder.aHistogramManual()
+        HistogramManual histogramFireEntity = HistogramManual.Builder.get()
                 .withBuckets(Arrays.asList(
                         new BucketRange("0", "~")
                 )).withDataType(DataType.string)
@@ -101,14 +100,14 @@ public class StatConfigurationTest {
         Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
         Type typeFire = new Type("fire", Arrays.asList(fireEntityAInField, fireEntityAOutField));
 
-        Mapping mappingDragon = Mapping.Builder.aMapping().withIndices(Arrays.asList("index1", "index2"))
+        Mapping mappingDragon = Mapping.Builder.get().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();
 
-        Mapping mappingFire = Mapping.Builder.aMapping().withIndices(Arrays.asList("index3", "index4"))
+        Mapping mappingFire = Mapping.Builder.get().withIndices(Arrays.asList("index3", "index4"))
                 .withTypes(Collections.singletonList("fire")).build();
 
 
-        return StatContainer.Builder.aStatContainer()
+        return StatContainer.Builder.get()
                 .withMappings(Arrays.asList(mappingDragon, mappingFire))
                 .withTypes(Arrays.asList(typeDragon, typeFire))
                 .build();

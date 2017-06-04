@@ -19,7 +19,7 @@ public class KingdomGenerator extends EntityGeneratorBase<KingdomConfiguration, 
     @Override
     public Kingdom generate() {
         Date startDateOfStory = configuration.getStartDateOfStory();
-        return Kingdom.KingdomBuilder.aKingdom()
+        return Kingdom.Builder.get()
                 .withKing(String.format("King %s %s", faker.name().firstName(), faker.name().lastName()))
                 .withQueen(String.format("Queen %s %s", faker.name().firstName(), faker.name().lastName()))
                 .withFunds(RandomUtil.uniform(10000, 9999999))

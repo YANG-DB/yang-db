@@ -41,7 +41,7 @@ public class StatContainer {
             this.types = new ArrayList<>();
         }
 
-        public static Builder aStatContainer() {
+        public static Builder get() {
             return new Builder();
         }
 

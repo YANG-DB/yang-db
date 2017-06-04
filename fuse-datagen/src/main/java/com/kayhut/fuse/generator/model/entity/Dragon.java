@@ -56,29 +56,29 @@ public class Dragon extends EntityBase {
     //endregion
 
     //region Builder
-    public static final class DragonBuilder {
+    public static final class Builder {
         private String id;
         private String name;
         private int power;
 
-        private DragonBuilder() {
+        private Builder() {
         }
 
-        public static DragonBuilder aDragon() {
-            return new DragonBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public DragonBuilder withId(String id) {
+        public Builder withId(String id) {
             this.id = id;
             return this;
         }
 
-        public DragonBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public DragonBuilder withPower(int power) {
+        public Builder withPower(int power) {
             this.power = power;
             return this;
         }

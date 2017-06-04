@@ -9,7 +9,6 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.json.JSONException;
@@ -85,9 +84,9 @@ public class ElementGlobalTypeSearchAppenderTest {
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
-                    entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
+                    entityTypes.add(EntityType.Builder.get()
                             .withEType(1).withName("Person").build());
-                    entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
+                    entityTypes.add(EntityType.Builder.get()
                             .withEType(2).withName("Dragon").build());
                     return entityTypes;
                 }

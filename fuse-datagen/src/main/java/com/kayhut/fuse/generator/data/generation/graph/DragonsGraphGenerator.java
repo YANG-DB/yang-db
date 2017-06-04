@@ -61,7 +61,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
 
     @Override
     public void generateMassiveGraph() {
-        ArrayList<Tuple2> edgesList = BAGraphGenerator.generateMassiveBAgraph(
+        List<Tuple2> edgesList = BAGraphGenerator.generateMassiveBAgraph(
                 model.getNumOfNodes(),
                 ((ScaleFreeModel) model).getEdgesPerNode(),
                 BAGraphGenerator.SamplingMode.ROLL_TREE,

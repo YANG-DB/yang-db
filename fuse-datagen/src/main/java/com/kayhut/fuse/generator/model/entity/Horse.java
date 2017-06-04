@@ -92,7 +92,7 @@ public class Horse extends EntityBase {
     //endregion
 
     //region Builder
-    public static final class HorseBuilder {
+    public static final class Builder {
         private String id;
         private String name;
         private Color color;
@@ -100,39 +100,39 @@ public class Horse extends EntityBase {
         private int maxSpeed;
         private int maxDistance;
 
-        private HorseBuilder() {
+        private Builder() {
         }
 
-        public static HorseBuilder aHorse() {
-            return new HorseBuilder();
+        public static Builder get() {
+            return new Builder();
         }
 
-        public HorseBuilder withId(String id) {
+        public Builder withId(String id) {
             this.id = id;
             return this;
         }
 
-        public HorseBuilder withName(String name) {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public HorseBuilder withColor(Color color) {
+        public Builder withColor(Color color) {
             this.color = color;
             return this;
         }
 
-        public HorseBuilder withWeight(int weight) {
+        public Builder withWeight(int weight) {
             this.weight = weight;
             return this;
         }
 
-        public HorseBuilder withMaxSpeed(int maxSpeed) {
+        public Builder withMaxSpeed(int maxSpeed) {
             this.maxSpeed = maxSpeed;
             return this;
         }
 
-        public HorseBuilder withMaxDistance(int maxDistance) {
+        public Builder withMaxDistance(int maxDistance) {
             this.maxDistance = maxDistance;
             return this;
         }

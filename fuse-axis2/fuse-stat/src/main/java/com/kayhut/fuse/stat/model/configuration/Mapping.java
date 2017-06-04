@@ -52,7 +52,7 @@ public class Mapping {
             this.types = new ArrayList<>();
         }
 
-        public static Builder aMapping() {
+        public static Builder get() {
             return new Builder();
         }
 

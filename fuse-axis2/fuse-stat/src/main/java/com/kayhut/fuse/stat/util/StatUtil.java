@@ -1,6 +1,7 @@
 package com.kayhut.fuse.stat.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.enums.DataType;
@@ -12,6 +13,8 @@ import com.kayhut.fuse.stat.model.result.StatTermResult;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,6 +29,8 @@ import java.util.*;
  */
 public class StatUtil {
 
+    private static final Logger logger = LoggerFactory.getLogger(StatUtil.class);
+
     private StatUtil() {
         throw new IllegalAccessError("Utility class");
     }
@@ -36,7 +41,7 @@ public class StatUtil {
         try {
             contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return contents;
     }
@@ -48,7 +53,7 @@ public class StatUtil {
             String statJson = readJsonToString(statConfigurationFilePath);
             resultObj = Optional.of(new ObjectMapper().readValue(statJson, StatContainer.class));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
         return resultObj;
     }
@@ -213,20 +218,20 @@ public class StatUtil {
 
         } catch (NoSuchAlgorithmException e) {
 
-//            logger.error("Could not hash the message: {}", message);
-//            logger.error("The hash algorithm used is not supported. Stack trace follows.", e);
+            logger.error("Could not hash the message: {}", message);
+            logger.error("The hash algorithm used is not supported. Stack trace follows.", e);
 
             return null;
         } catch (UnsupportedEncodingException e) {
 
-//            logger.error("Could not hash the message: {}", message);
-//            logger.error("The character encoding used is not supported. Stack trace follows.", e);
+            logger.error("Could not hash the message: {}", message);
+            logger.error("The character encoding used is not supported. Stack trace follows.", e);
 
             return null;
         } catch (IOException e) {
 
-//            logger.error("Could not hash the message: {}", message);
-//            logger.error("A problem occurred when encoding as URL safe hash. Stack trace follows.", e);
+            logger.error("Could not hash the message: {}", message);
+            logger.error("A problem occurred when encoding as URL safe hash. Stack trace follows.", e);
 
             return null;
         }

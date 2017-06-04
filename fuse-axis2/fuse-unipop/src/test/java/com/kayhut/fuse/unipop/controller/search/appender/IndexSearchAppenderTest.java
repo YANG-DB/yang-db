@@ -134,9 +134,9 @@ public class IndexSearchAppenderTest {
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
-                    entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
+                    entityTypes.add(EntityType.Builder.get()
                             .withEType(1).withName("Person").build());
-                    entityTypes.add(EntityType.EntityTypeBuilder.anEntityType()
+                    entityTypes.add(EntityType.Builder.get()
                             .withEType(2).withName("Dragon").build());
                     return entityTypes;
                 }

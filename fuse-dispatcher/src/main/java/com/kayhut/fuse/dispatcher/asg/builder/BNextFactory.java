@@ -25,27 +25,27 @@ public class BNextFactory implements BellowFactory{
     //region Constructor
     public BNextFactory() {
         this.map = new HashMap<>() ;
-        this.map.put(AggM5.class, (ebase) -> ((AggM5)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggM5) ebase).getB()));
-        this.map.put(AggM4.class, (ebase) -> ((AggM4)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggM4) ebase).getB()));
-        this.map.put(AggM3.class, (ebase) -> ((AggM3)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggM3) ebase).getB()));
-        this.map.put(AggM2.class, (ebase) -> ((AggM2)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggM2) ebase).getB()));
-        this.map.put(AggM1.class, (ebase) -> ((AggM1)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggM1) ebase).getB()));
-        this.map.put(AggL3.class, (ebase) -> ((AggL3)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggL3) ebase).getB()));
-        this.map.put(AggL2.class, (ebase) -> ((AggL2)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggL2) ebase).getB()));
-        this.map.put(AggL1.class, (ebase) -> ((AggL1)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((AggL1) ebase).getB()));
-        this.map.put(HComb.class, (ebase) -> ((HComb)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((HComb) ebase).getB()));
-        this.map.put(HQuant.class, (ebase) -> ((HQuant)ebase).getB());
-        this.map.put(Quant1.class, (ebase) -> ((Quant1)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((Quant1) ebase).getB()));
-        this.map.put(Quant2.class, (ebase) -> (Collections.emptyList()));
-        this.map.put(Rel.class, (ebase) -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((Rel) ebase).getB()));
-        this.map.put(RelProp.class, (ebase) -> ((RelProp)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((RelProp) ebase).getB()));
-        this.map.put(ETyped.class, (ebase) -> ((ETyped)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((ETyped) ebase).getB()));
-        this.map.put(EUntyped.class, (ebase) -> (Collections.emptyList()));
-        this.map.put(EAgg.class, (ebase) -> (Collections.emptyList()));
-        this.map.put(EProp.class, (ebase) -> (Collections.emptyList()));
-        this.map.put(EConcrete.class, (ebase) -> (Collections.emptyList()));
-        this.map.put(ELog.class, (ebase) -> (Collections.emptyList()));
-        this.map.put(Start.class, (ebase) -> ((Start)ebase).getB() == 0 ? Collections.emptyList() : Arrays.asList(((Start) ebase).getB()));
+        this.map.put(AggM5.class, ebase -> ((AggM5)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM5) ebase).getB()));
+        this.map.put(AggM4.class, ebase -> ((AggM4)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM4) ebase).getB()));
+        this.map.put(AggM3.class, ebase -> ((AggM3)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM3) ebase).getB()));
+        this.map.put(AggM2.class, ebase -> ((AggM2)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM2) ebase).getB()));
+        this.map.put(AggM1.class, ebase -> ((AggM1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggM1) ebase).getB()));
+        this.map.put(AggL3.class, ebase -> ((AggL3)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggL3) ebase).getB()));
+        this.map.put(AggL2.class, ebase -> ((AggL2)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggL2) ebase).getB()));
+        this.map.put(AggL1.class, ebase -> ((AggL1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((AggL1) ebase).getB()));
+        this.map.put(HComb.class, ebase -> ((HComb)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((HComb) ebase).getB()));
+        this.map.put(HQuant.class, ebase -> ((HQuant)ebase).getB());
+        this.map.put(Quant1.class, ebase -> ((Quant1)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Quant1) ebase).getB()));
+        this.map.put(Quant2.class, ebase -> (Collections.emptyList()));
+        this.map.put(Rel.class, ebase -> ((Rel)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Rel) ebase).getB()));
+        this.map.put(RelProp.class, ebase -> ((RelProp)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((RelProp) ebase).getB()));
+        this.map.put(ETyped.class, ebase -> ((ETyped)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((ETyped) ebase).getB()));
+        this.map.put(EUntyped.class, ebase -> (Collections.emptyList()));
+        this.map.put(EAgg.class, ebase -> (Collections.emptyList()));
+        this.map.put(EProp.class, ebase -> (Collections.emptyList()));
+        this.map.put(EConcrete.class, ebase -> (Collections.emptyList()));
+        this.map.put(ELog.class, ebase -> (Collections.emptyList()));
+        this.map.put(Start.class, ebase -> ((Start)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Start) ebase).getB()));
     }
     //endregion
 

@@ -19,7 +19,7 @@ public class GuildGenerator extends EntityGeneratorBase<GuildConfiguration, Guil
     @Override
     public Guild generate() {
         Date startDateOfStory = configuration.getStartDateOfStory();
-        return Guild.GuildBuilder.aGuild()
+        return Guild.Builder.get()
                 .withDescription(faker.lorem().sentence(10, 5))
                 .withEstablishDate(RandomUtil.randomDate(startDateOfStory, DateUtil.addYearsToDate(startDateOfStory, 5)))
                 .withUrl(faker.internet().url())

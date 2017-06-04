@@ -13,14 +13,16 @@ import java.net.UnknownHostException;
  */
 public class ClientProvider {
 
+    private ClientProvider() {
+        throw new IllegalAccessError("Utility class");
+    }
+
     public static TransportClient getDataClient(Configuration configuration) throws UnknownHostException {
         String clusterName = configuration.getString("es.cluster.name");
         int transportPort = configuration.getInt("es.client.transport.port");
         String[] hosts = configuration.getStringArray("es.nodes.hosts");
 
-        TransportClient esClient = getTransportClient(clusterName, transportPort, hosts);
-
-        return esClient;
+        return getTransportClient(clusterName, transportPort, hosts);
     }
 
     public static TransportClient getStatClient(Configuration configuration) throws UnknownHostException {
@@ -28,9 +30,7 @@ public class ClientProvider {
         int transportPort = configuration.getInt("statistics.client.transport.port");
         String[] hosts = configuration.getStringArray("statistics.nodes.hosts");
 
-        TransportClient esClient = getTransportClient(clusterName, transportPort, hosts);
-
-        return esClient;
+        return getTransportClient(clusterName, transportPort, hosts);
     }
 
     public static TransportClient getTransportClient(String clusterName, int transportPort, String[] hosts) throws UnknownHostException {

@@ -21,7 +21,7 @@ public class HuffmanCodeLenCalculator {
 			freqHufNodeSet.remove(left);
 			freqHufNodeSet.add(new HufNode(right, left));
 		}
-		HufNode root = (HufNode) freqHufNodeSet.firstEntry().getElement();
+		HufNode root = freqHufNodeSet.firstEntry().getElement();
 		long totalFreq = root.freq;
 		long codeLen = computeCodeLen(root,0);
 		return 1.0 * codeLen / totalFreq;
