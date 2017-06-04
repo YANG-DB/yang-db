@@ -62,7 +62,12 @@ public class Guild extends EntityBase {
     //region Public Methods
     @Override
     public String[] getRecord() {
-        return new String[0];
+        return new String[] { this.getId(),
+                this.name,
+                this.description,
+                this.iconId,
+                this.url,
+                Long.toString(this.establishDate.getTime())};
     }
     //endregion
 

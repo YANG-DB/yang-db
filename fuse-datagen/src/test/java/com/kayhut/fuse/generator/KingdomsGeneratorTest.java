@@ -35,15 +35,13 @@ public class KingdomsGeneratorTest {
 
     @Test
     public void generateKingdomsTest() throws Exception {
-        List<Kingdom> kingdoms = DataGenerator.generateKingdoms(logger, configuration);
+        List<Kingdom> kingdoms = DataGenerator.generateKingdoms(configuration);
         KingdomConfiguration kingdomConfiguration = new KingdomConfiguration(configuration);
         assertEquals(kingdomConfiguration.getNumberOfNodes(), kingdoms.size());
         assertEquals("0", kingdoms.get(0).getId());
         assertTrue(Arrays.asList(kingdomConfiguration.getKingdoms()).
                 contains(RandomUtil.getRandomElementFromList(kingdoms).getName()));
     }
-
-
 
     @BeforeClass
     public static void setup() throws Exception {

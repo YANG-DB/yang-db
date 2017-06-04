@@ -59,7 +59,7 @@ public class Person extends EntityBase {
     }
     //endregion
 
-
+    //region Public Methods
     @Override
     public String toString() {
         return "Person{" +
@@ -79,6 +79,7 @@ public class Person extends EntityBase {
                 Long.toString(this.birthDate.getTime()), Long.toString(this.deathDate.getTime()),
                 Integer.toString(this.height)};
     }
+    //endregion
 
     //region Fields
     private String firstName;
@@ -98,7 +99,7 @@ public class Person extends EntityBase {
 //    private int birthYear ;
     //endregion
 
-
+    //region Builder
     public static final class Builder {
         private String id;
         private String firstName;
@@ -162,5 +163,6 @@ public class Person extends EntityBase {
             return person;
         }
     }
+    //endregion
 
 }

@@ -35,7 +35,7 @@ public class DragonsGraphDataGeneratorTest {
         loadConfigurations(CONFIGURATION_SMALL_FILE_PATH);
         File dragonsFile = new File(dragonsFilePath);
         Files.deleteIfExists(dragonsFile.toPath());
-        DataGenerator.generateSmallDragonsGraph(logger, configuration, false);
+        DataGenerator.generateSmallDragonsGraph(configuration, false);
         assertTrue(isFileExists(dragonsFilePath));
         List<String[]> dragonsLines = CSVUtil.readCSV(dragonsFilePath, ',');
         assertTrue(dragonsLines.size() > dragonConfiguration.getNumberOfNodes() - 1);
@@ -49,7 +49,7 @@ public class DragonsGraphDataGeneratorTest {
         loadConfigurations(CONFIGURATION_MASSIVE_FILE_PATH);
         File dragonsFile = new File(dragonsFilePath);
         Files.deleteIfExists(dragonsFile.toPath());
-        DataGenerator.generateMassiveDragonsGraph(logger, configuration);
+        DataGenerator.generateMassiveDragonsGraph(configuration);
         assertTrue(isFileExists(dragonsFilePath));
         List<String[]> dragonsLines = CSVUtil.readCSV(dragonsFilePath, ',');
         assertTrue(dragonsLines.size() > dragonConfiguration.getNumberOfNodes() - 1);

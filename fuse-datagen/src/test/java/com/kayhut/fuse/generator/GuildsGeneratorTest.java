@@ -34,7 +34,7 @@ public class GuildsGeneratorTest {
 
     @Test
     public void generateGuildsTest() throws Exception {
-        List<Guild> guilds = DataGenerator.generateGuilds(logger, configuration);
+        List<Guild> guilds = DataGenerator.generateGuilds(configuration);
         GuildConfiguration guildConfiguration = new GuildConfiguration(configuration);
         assertEquals(guildConfiguration.getNumberOfNodes(), guilds.size());
         assertEquals("0", guilds.get(0).getId());
@@ -42,16 +42,11 @@ public class GuildsGeneratorTest {
                 contains(RandomUtil.getRandomElementFromList(guilds).getName()));
     }
 
-
-
-
    @BeforeClass
     public static void setup() throws Exception {
         configuration = new DataGenConfiguration(CONFIGURATION_FILE_PATH).getInstance();
         logger = org.slf4j.LoggerFactory.getLogger(DataGenerator.class);
     }
-
-
 
     //region Private Methods
 

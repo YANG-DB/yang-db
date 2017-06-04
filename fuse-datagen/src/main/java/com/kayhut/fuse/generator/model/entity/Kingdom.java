@@ -64,7 +64,12 @@ public class Kingdom extends EntityBase {
     //region Public Methods
     @Override
     public String[] getRecord() {
-        return new String[]{this.getId(), this.name, this.king, this.queen, Long.toString(this.independenceDay.getTime()), Double.toString(this.funds)};
+        return new String[]{this.getId(),
+                this.name,
+                this.king,
+                this.queen,
+                Long.toString(this.independenceDay.getTime()),
+                Double.toString(this.funds)};
     }
 
     @Override

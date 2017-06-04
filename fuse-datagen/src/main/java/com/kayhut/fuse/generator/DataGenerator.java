@@ -16,11 +16,13 @@ import javaslang.Tuple2;
 import org.apache.commons.configuration.Configuration;
 import org.graphstream.graph.Graph;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
@@ -28,18 +30,26 @@ import java.util.stream.Collectors;
  */
 public class DataGenerator {
 
+    private static final Logger logger = LoggerFactory.getLogger(DataGenerator.class);
+    private final static int MIN_NUM_OF_ARGUMENTS = 1;
+
+    //Not all of the population is member of guild
+    private static final double NOT_ASSIGNED_TO_GUILD_RATIO = 0.025;
+    //The shape parameter in  Exponential distribution
+    private static final double LAMBDA_EXP_DIST = 0.5;
+    //Used to skew the results
+    private static final double LARGEST_KINGDOM_RATIO = 0.3;
+
     public static void main(String[] args) {
-        Logger logger = org.slf4j.LoggerFactory.getLogger(DataGenerator.class);
-        if (!isValidNumberOfArguments(args, logger))
+
+        if (!isValidNumberOfArguments(args))
             System.exit(-1);
         Configuration configuration = new DataGenConfiguration(args[0]).getInstance();
         //GenerateSmallDragonsGraph(logger, configuration, false);
         //generateMassiveDragonsGraph(logger, configuration);
     }
 
-    public static void generateSmallDragonsGraph(Logger logger,
-                                                 Configuration configuration,
-                                                 boolean drawGraph) {
+    public static void generateSmallDragonsGraph(Configuration configuration, boolean drawGraph) {
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
             DragonsGraphGenerator dragonsGraphGenerator = new DragonsGraphGenerator(new DragonConfiguration(configuration));
@@ -54,11 +64,11 @@ public class DataGenerator {
                 System.in.read();
             }
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
-    public static void generateMassiveDragonsGraph(Logger logger, Configuration configuration) {
+    public static void generateMassiveDragonsGraph(Configuration configuration) {
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
             DragonsGraphGenerator massiveDragonsGraphGenerator = new DragonsGraphGenerator(new DragonConfiguration(configuration));
@@ -67,11 +77,11 @@ public class DataGenerator {
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
             logger.info("Dragons massive graph generation took (seconds): %d", elapsed);
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
-    public static List<Kingdom> generateKingdoms(Logger logger, Configuration configuration) {
+    public static List<Kingdom> generateKingdoms(Configuration configuration) {
         List<Kingdom> kingdomsList = new ArrayList<>();
         try {
             KingdomConfiguration kingdomConfiguration = new KingdomConfiguration(configuration);
@@ -88,13 +98,12 @@ public class DataGenerator {
                 kingdomsList.add(kingdom);
             }
         } catch (Exception e) {
-            logger.error(e.toString());
+            logger.error(e.toString(), e);
         }
         return kingdomsList;
     }
 
-
-    public static List<Guild> generateGuilds(Logger logger, Configuration configuration) {
+    public static List<Guild> generateGuilds(Configuration configuration) {
         List<Guild> guildsList = new ArrayList<>();
 
         try {
@@ -112,7 +121,7 @@ public class DataGenerator {
                 guildsList.add(guild);
             }
         } catch (Exception e) {
-            logger.error(e.toString());
+            logger.error(e.toString(), e);
         }
         return guildsList;
     }
@@ -123,13 +132,13 @@ public class DataGenerator {
      * @return EdgeSet ( List of Tuple<Person Id, Kingdom ID>) of relationships between Persons and Kingdoms.
      */
     public static List<Tuple2> attachPersonsToKingdoms(List<Integer> kingdomsIdList, List<Integer> personsIdList) {
-        final double largestKingdomRatio = 0.3; //Used to skew the distribution
         int totalPopulationSize = personsIdList.size();
         List<Tuple2> personsToKingdomsSet = new ArrayList<>();
         //We are creating a distribution of kingdoms population size summed up to the kingdoms number
-        List<Double> kingdomsPopulationDist = Arrays.stream(RandomUtil.getRandDistArray(kingdomsIdList.size() - 1, 1 - largestKingdomRatio)).boxed().collect(Collectors.toList());
+        List<Double> kingdomsPopulationDist = Arrays.stream(RandomUtil.getRandDistArray(kingdomsIdList.size() - 1, 1 - LARGEST_KINGDOM_RATIO))
+                .boxed().collect(Collectors.toList());
         // Adding a Kingdom with a large population to skew the kingdom sizes
-        kingdomsPopulationDist.add(largestKingdomRatio);
+        kingdomsPopulationDist.add(LARGEST_KINGDOM_RATIO);
 
         int startPerosnId = 0;
         for (int i = 0; i < kingdomsPopulationDist.size(); i++) {
@@ -144,55 +153,48 @@ public class DataGenerator {
         return personsToKingdomsSet;
     }
 
-    public static List<Tuple2> attachPersonsToGuilds(List<Integer> guildsIdList, List<Integer> personsIdList) {
-        final double notAssignedRatio = 0.025; //precentage of persons not assigned to any guild
-        int totalPopulationSize = personsIdList.size();
-        Map<Integer, List<Integer>> personsToGuildsSet = new HashMap<>();
+    public static Map<Integer, List<Integer>> attachPersonsToGuilds(List<Integer> guildsIdList, List<Integer> personsIdList) {
+        int membersPopulationSize = Math.toIntExact(Math.round(personsIdList.size() * (1 - NOT_ASSIGNED_TO_GUILD_RATIO)));
+        //One person can be belong to several guilds <Guild Id, List of persons Ids>
+        Map<Integer, List<Integer>> guildToPersonsSet = new HashMap<>();
 
         //We are creating an exp distribution of guild size summed up to the kingdoms number
-        double[] expDistArray = RandomUtil.getExpDistArray(guildsIdList.size() - 1, 1 - notAssignedRatio, 0.5);
+        double[] expDistArray = RandomUtil.getExpDistArray(guildsIdList.size(), 1.0 - NOT_ASSIGNED_TO_GUILD_RATIO, LAMBDA_EXP_DIST);
         List<Double> guildsMembersDist = Arrays.stream(expDistArray).boxed().collect(Collectors.toList());
         double[] cumulativeDistArray = RandomUtil.getCumulativeDistArray(expDistArray);
 
-        // Adding a 'artificial - not member' guild - the persons belong to this
-        guildsMembersDist.add(notAssignedRatio);
 
-        int startPerosnId = 0;
-        for (int i = 0; i < guildsMembersDist.size(); i++) {
-            int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * totalPopulationSize));
-            for (int personId = startPerosnId; personId < totalPopulationSize * (1 - notAssignedRatio); personId++) {
-                //The last persons do not belong to any guild
-                if (personsToGuildsSet.get(i) == null) {
-                    personsToGuildsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
-                } else {
-                    personsToGuildsSet.get(i).add(personId);
-                }
+        List<Integer> shuffledPersonsIds = IntStream.rangeClosed(0, membersPopulationSize)
+                .boxed().collect(Collectors.toList());
+        for (int k = 0; k < 10; k++) { //Adding the same persons to several guilds - without changing the ratio of each guild
+            Collections.shuffle(shuffledPersonsIds);
+            int startIndex = 0;
+            for (int i = 0; i < guildsMembersDist.size(); i++) {
+                int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * membersPopulationSize));
+                for (int j = startIndex; j < membersPopulationSize; j++) {
 
-                int randomNumOfGuildsMembership = RandomUtil.randomInt(1, 8);
-                for (int j = 0; j < randomNumOfGuildsMembership; j++) {
-                    int randomGuild = RandomUtil.randomInt(0, guildsMembersDist.size() - 1);
-                    List<Integer> personsInGuild = personsToGuildsSet.get(randomGuild);
-                    if (personsInGuild != null && !personsInGuild.contains(personId)) {
-                        personsToGuildsSet.get(i).add(personId);
-                        personsInGuild.add(personId);
-                        personsToGuildsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
+                    Integer personId = shuffledPersonsIds.get(j);
+
+                    if (guildToPersonsSet.get(i) == null) {
+                        guildToPersonsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
+                    } else {
+                        List<Integer> personsInGuild = guildToPersonsSet.get(i);
+                        if (!personsInGuild.contains(j)) {
+                            guildToPersonsSet.get(i).add(personId);
+                        }
                     }
-
+                    if (j == startIndex + guildMembersSize)
+                        break;
                 }
-                if (personId == startPerosnId + guildMembersSize)
-                    break;
+                startIndex += guildMembersSize + 1;
             }
-            startPerosnId += guildMembersSize + 1;
         }
-
-        //Adding the same persons to several guilds - without changing the ratio of each guild
-
-        return null;
+        return guildToPersonsSet;
     }
 
 
     //region Private Methods
-    private static boolean isValidNumberOfArguments(String[] args, Logger logger) {
+    private static boolean isValidNumberOfArguments(String[] args) {
         if (args.length < MIN_NUM_OF_ARGUMENTS) {
             logger.error("Expected %d argument(s): ", MIN_NUM_OF_ARGUMENTS);
             logger.error("\n\t<path to field configuration file>");
@@ -211,7 +213,5 @@ public class DataGenerator {
 
     //endregion
 
-    //region static fields
-    private final static int MIN_NUM_OF_ARGUMENTS = 1;
-    //endregion
+
 }

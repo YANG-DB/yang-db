@@ -1,5 +1,8 @@
 package com.kayhut.fuse.generator.model.entity;
 
+import com.kayhut.fuse.generator.model.enums.Color;
+import com.kayhut.fuse.generator.model.enums.Gender;
+
 /**
  * Created by benishue on 15-May-17.
  */
@@ -33,26 +36,49 @@ public class Dragon extends EntityBase {
         this.power = power;
     }
 
+    public Gender getGender() {
+        return gender;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     //endregion
 
     //region Public Methods
     @Override
     public String toString() {
         return "Dragon{" +
-                "id='" + getId() + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", power=" + power +
+                ", gender=" + gender +
+                ", color=" + color +
                 '}';
     }
 
     public String[] getRecord(){
-        return new String[] { this.getId(), this.name, Integer.toString(this.getPower())};
+        return new String[] { this.getId(),
+                this.name,
+                Integer.toString(this.getPower()),
+                this.getGender().toString(),
+                this.getColor().toString()};
     }
     //endregion
 
     //region Fields
     private String name;
     private int power;
+    private Gender gender;
+    private Color color;
     //endregion
 
     //region Builder
@@ -60,6 +86,8 @@ public class Dragon extends EntityBase {
         private String id;
         private String name;
         private int power;
+        private Gender gender;
+        private Color color;
 
         private Builder() {
         }
@@ -83,11 +111,23 @@ public class Dragon extends EntityBase {
             return this;
         }
 
+        public Builder withGender(Gender gender) {
+            this.gender = gender;
+            return this;
+        }
+
+        public Builder withColor(Color color) {
+            this.color = color;
+            return this;
+        }
+
         public Dragon build() {
             Dragon dragon = new Dragon();
             dragon.setId(id);
             dragon.setName(name);
             dragon.setPower(power);
+            dragon.setGender(gender);
+            dragon.setColor(color);
             return dragon;
         }
     }
