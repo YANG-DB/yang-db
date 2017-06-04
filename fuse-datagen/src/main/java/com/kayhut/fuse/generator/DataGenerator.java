@@ -161,8 +161,6 @@ public class DataGenerator {
         //We are creating an exp distribution of guild size summed up to the kingdoms number
         double[] expDistArray = RandomUtil.getExpDistArray(guildsIdList.size(), 1.0 - NOT_ASSIGNED_TO_GUILD_RATIO, LAMBDA_EXP_DIST);
         List<Double> guildsMembersDist = Arrays.stream(expDistArray).boxed().collect(Collectors.toList());
-        double[] cumulativeDistArray = RandomUtil.getCumulativeDistArray(expDistArray);
-
 
         List<Integer> shuffledPersonsIds = IntStream.rangeClosed(0, membersPopulationSize)
                 .boxed().collect(Collectors.toList());
