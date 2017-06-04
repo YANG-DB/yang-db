@@ -179,7 +179,7 @@ public class DataGenerator {
                         guildToPersonsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
                     } else {
                         List<Integer> personsInGuild = guildToPersonsSet.get(i);
-                        if (!personsInGuild.contains(j)) {
+                        if (!personsInGuild.contains(personId)) {
                             guildToPersonsSet.get(i).add(personId);
                         }
                     }
