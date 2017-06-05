@@ -20,17 +20,21 @@ public class DuplicateEdgeTransformer implements Transformer {
         this.id1Field = id1Field;
         this.id2Field = id2Field;
     }
-
+    
     @Override
-    public List<Map<String, String>> transform(Map<String, String> document) {
-        document.put(DIRECTION_FIELD, Direction.out.toString());
+    public List<Map<String, String>> transform(List<Map<String, String>> documents) {
         List<Map<String, String>> docs = new ArrayList<>();
-        docs.add(document);
-        Map<String, String> newDoc = new HashMap<>(document);
-        newDoc.put(id1Field, document.get(id2Field));
-        newDoc.put(id2Field, document.get(id1Field));
-        newDoc.put(DIRECTION_FIELD, Direction.in.toString());
-        docs.add(newDoc);
+        for (Map<String, String> document : documents) {
+            Map<String, String> newDoc = new HashMap<>(document);
+            newDoc.put(DIRECTION_FIELD, Direction.out.toString());
+            docs.add(newDoc);
+
+            newDoc = new HashMap<>(document);
+            newDoc.put(id1Field, document.get(id2Field));
+            newDoc.put(id2Field, document.get(id1Field));
+            newDoc.put(DIRECTION_FIELD, Direction.in.toString());
+            docs.add(newDoc);
+        }
 
         return docs;
     }
