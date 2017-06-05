@@ -10,7 +10,10 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import net.minidev.json.JSONArray;
 
 import javax.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.model.Utils.readJsonFile;
 
@@ -75,9 +78,11 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
 
     class TimeBasedIndexPartition implements TimeSeriesIndexPartition {
         private Map values;
+        private SimpleDateFormat dateFormat;
 
         public TimeBasedIndexPartition(Map values) {
             this.values = values;
+            this.dateFormat = new SimpleDateFormat(getDateFormat());
         }
 
 
@@ -103,12 +108,15 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
 
         @Override
         public String getIndexName(Date date) {
-            return null;
+            String format = String.format(getIndexFormat(), dateFormat.format(date));
+            return StreamSupport.stream(getIndices().spliterator(), false)
+                    .filter(s -> s.equals(format)).findFirst().orElse(null);
         }
 
         @Override
         public Iterable<String> getIndices() {
-            return indices(values);
+            return StreamSupport.stream(indices(values).spliterator(), false)
+                    .map(p->getIndexFormat().replace("%s",p)).collect(Collectors.toSet());
         }
     }
 }
