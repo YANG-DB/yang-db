@@ -35,6 +35,8 @@ public class CSVUtil {
     }
 
     public static void appendResults(List<String[]> records, String filePath) {
+        new File(filePath).getParentFile().mkdirs();
+
         try {
             CSVUtil.writeCSV(filePath, records, ',', '\"');
         } catch (IOException e) {

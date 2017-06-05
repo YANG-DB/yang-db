@@ -68,7 +68,6 @@ public class DragonsGraphDataGeneratorTest {
         configuration = new DataGenConfiguration(configurationFilePath).getInstance();
         dragonConfiguration = new DragonConfiguration(configuration);
         dragonsFilePath = dragonConfiguration.getEntitiesFilePath();
-        dragonsFireRelationFilePath = configuration.getString("resultsPath") + "//" + configuration.getString("dragon.dragonsResultsCsvFileName");
         dragonsFireRelationFilePath = dragonConfiguration.getRelationsFilePath().replace(".csv","") + "_" + RelationType.FIRES + ".csv";
         dragonsFreezRelationFilePath = dragonConfiguration.getRelationsFilePath().replace(".csv","") + "_" + RelationType.FREEZES + ".csv";
     }

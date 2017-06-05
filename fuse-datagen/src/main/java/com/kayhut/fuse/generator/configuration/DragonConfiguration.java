@@ -3,6 +3,7 @@ package com.kayhut.fuse.generator.configuration;
 
 import org.apache.commons.configuration.Configuration;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -15,9 +16,9 @@ public class DragonConfiguration extends EntityConfigurationBase {
         super(
                 configuration.getInt("dragon.numberOfNodes"),
                 configuration.getInt("dragon.edgesPerNode"),
-                configuration.getString("resultsPath") + "//"
+                System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath") + File.separator
                         + configuration.getString("dragon.dragonsResultsCsvFileName"),
-                configuration.getString("resultsPath") + "//"
+                System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath") + File.separator
                         + configuration.getString("dragon.dragonsRelationsCsvFileName")
         );
 
