@@ -121,7 +121,6 @@
 
 
     <build>
-        <finalName>fuse-engine</finalName>
         <plugins>
             <!--<plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -145,6 +144,25 @@
                     </execution>
                 </executions>
             </plugin>-->
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>assembly/fuse-service-package.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>fuse-service-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
