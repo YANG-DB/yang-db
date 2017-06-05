@@ -27,6 +27,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -40,12 +42,9 @@ public class StatCalculatorTest {
     private static TransportClient statClient;
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
-    private static final String MAPPING_DATA_FILE_DRAGON_PATH =
-            "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
-    private static final String MAPPING_DATA_FILE_FIRE_PATH =
-            "src\\test\\resources\\elastic.test.data.fire.mapping.json";
-    private static final String MAPPING_STAT_FILE_PATH =
-            "src\\test\\resources\\elastic.test.stat.mapping.json";
+    private static final String MAPPING_DATA_FILE_DRAGON_PATH = Paths.get("src", "test", "resources", "elastic.test.data.dragon.mapping.json").toString();
+    private static final String MAPPING_DATA_FILE_FIRE_PATH = Paths.get("src", "test", "resources", "elastic.test.data.fire.mapping.json").toString();
+    private static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
 
     private static final int NUM_OF_DRAGONS_IN_INDEX_1 = 1000;
     private static final int NUM_OF_DRAGONS_IN_INDEX_2 = 555;

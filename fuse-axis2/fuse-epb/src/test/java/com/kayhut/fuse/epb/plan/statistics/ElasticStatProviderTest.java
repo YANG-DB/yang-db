@@ -22,6 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +44,8 @@ public class ElasticStatProviderTest {
 
     private static Iterable<Map<String, Object>> dragonsList;
 
-    private static final String MAPPING_DATA_FILE_PATH = "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
-    private static final String MAPPING_STAT_FILE_PATH = "src\\test\\resources\\elastic.test.stat.mapping.json";
-    private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
+    private static final String MAPPING_DATA_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.data.dragon.mapping.json").toString();
+    private static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
 
     private static final int NUM_OF_DRAGONS_IN_INDEX = 1000;
 

@@ -21,7 +21,7 @@ public class SimpleOntologyProvider implements OntologyProvider {
 
     public SimpleOntologyProvider() throws IOException {
         ontologyMap = new HashMap<>();
-        Ontology ontology = asObject(readJsonFile("catalog/"+DRAGONS), Ontology.class);
+        Ontology ontology = asObject(readJsonFile("catalog/"+DRAGONS+".json"), Ontology.class);
         ontology = OntologyFinalizer.finalize(ontology);
         ontologyMap.put(DRAGONS, ontology);
     }

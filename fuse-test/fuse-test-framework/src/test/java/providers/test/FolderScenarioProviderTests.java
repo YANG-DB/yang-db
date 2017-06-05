@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
  * Created by moti on 3/19/2017.
  */
 public class FolderScenarioProviderTests {
-    private String docsFile = "src\\test\\resources\\IndexDocs\\docs.txt";
+    private String docsFile = Paths.get("src", "test", "resources", "IndexDocs", "docs.txt").toString();
 
 
     @Test

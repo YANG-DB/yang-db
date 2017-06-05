@@ -14,16 +14,17 @@ import org.neo4j.graphdb.Transaction;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 /**
  * Created by moti on 3/22/2017.
  */
 public class Neo4jGenericPopulationTests {
-    private String dragonsFolder = new File("src\\test\\resources\\dragons\\").getAbsolutePath().replace('\\','/') + "/";
-    private String neoFolder = "target\\neo";
+    private String dragonsFolder = new File(Paths.get("src", "test", "resources", "dragons").toString()).getAbsolutePath() + File.separator;
+    private String neoFolder = Paths.get("target", "neo").toString();
     private Neo4jInMemoryIndex index;
     private GraphDatabaseService graphDatabaseService;
-    private String docsFile = "src\\test\\resources\\IndexDocs\\docs.txt";
+    private String docsFile = Paths.get("src", "test", "resources", "IndexDocs", "docs.txt").toString();
 
     @Before
     public void initialize(){

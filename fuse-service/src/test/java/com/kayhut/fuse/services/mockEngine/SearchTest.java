@@ -54,6 +54,7 @@ public class SearchTest {
     public void search() {
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body("{\"id\":1," +
                         "\"name\": \"hezi\"," +
                         "\"type\": \"search\"," +

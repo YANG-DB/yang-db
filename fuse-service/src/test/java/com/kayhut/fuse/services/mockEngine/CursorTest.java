@@ -70,6 +70,7 @@ public class CursorTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -96,6 +97,7 @@ public class CursorTest {
         cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
                 .then()
@@ -119,6 +121,7 @@ public class CursorTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
                 .assertThat()
@@ -150,6 +153,7 @@ public class CursorTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -176,6 +180,7 @@ public class CursorTest {
         cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
                 .then()
@@ -199,6 +204,7 @@ public class CursorTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
                 .assertThat()
@@ -221,6 +227,7 @@ public class CursorTest {
         //delete cursor
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .delete("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
                 .assertThat()
@@ -231,6 +238,7 @@ public class CursorTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
                 .assertThat()
