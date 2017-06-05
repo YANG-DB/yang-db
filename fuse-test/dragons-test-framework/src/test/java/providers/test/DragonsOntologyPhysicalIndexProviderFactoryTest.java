@@ -11,6 +11,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
 
@@ -26,11 +28,13 @@ public class DragonsOntologyPhysicalIndexProviderFactoryTest {
 
         TimeSeriesIndexPartition freez = (TimeSeriesIndexPartition) provider.getIndexPartitionByLabel("Freez", ElementType.edge);
 
-        Assert.assertEquals(freez.getIndices(), Arrays.asList("2017-1","2017-2","2017-4"));
+        Assert.assertEquals(freez.getIndices(), new HashSet<>(Arrays.asList("idx_freez_2017-2","idx_freez_2017-4","idx_freez_2017-1")));
         Assert.assertEquals(freez.getDateFormat(), "YYYY-W");
         Assert.assertEquals(freez.getIndexFormat(), "idx_freez_%s");
         Assert.assertEquals(freez.getIndexPrefix(), "idx_freez");
         Assert.assertEquals(freez.getTimeField(), "time");
+        Assert.assertEquals(freez.getIndexName(new Date(2017-1900,1,4)), "idx_freez_2017-1");
+        Assert.assertEquals(freez.getIndexName(new Date(2017-1900,1,25)), "idx_freez_2017-4");
     }
 
     @Test
