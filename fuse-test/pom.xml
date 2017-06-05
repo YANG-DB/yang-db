@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>fuse-test-framework</module>
+        <module>dragons-test-framework</module>
     </modules>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>

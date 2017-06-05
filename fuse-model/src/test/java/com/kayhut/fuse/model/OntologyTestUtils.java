@@ -38,6 +38,7 @@ public class OntologyTestUtils {
 
 
     public static final RelationshipType OWN = new RelationshipType("own", 101, true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType KNOW = new RelationshipType("know", 108, true).withProperty(START_DATE.type, END_DATE.type);
     public static final RelationshipType MEMBER_OF = new RelationshipType("memberOf", 102, true).withProperty(START_DATE.type, END_DATE.type);
     public static final RelationshipType FIRE = new RelationshipType("fire", 103, true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type,TIMESTAMP.type);
     public static final RelationshipType FREEZE = new RelationshipType("freeze", 104, true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type);
@@ -59,20 +60,31 @@ public class OntologyTestUtils {
 
     public static class Property {
         public String name;
+        public boolean redundant;
         public String className;
         public int type;
 
         public Property(String name, String className, int type) {
+            this(name,className,type,false);
+        }
+
+        public Property(String name, String className, int type, boolean redundant) {
             this.name = name;
             this.className = className;
             this.type = type;
+            this.redundant = redundant;
         }
+
+        public Property redundant() {
+            return new Property(name,className,type,true);
+        }
+
     }
 
     public static class DRAGON implements Entity {
         public static String name = "Dragon";
         public static int type = 2;
-        public static List<Property> propertyList = Arrays.asList(NAME, GENDER, COLOR);
+        public static List<Property> propertyList = Arrays.asList(NAME.redundant(), GENDER, COLOR);
 
         public static List<RelationshipType> relationshipList = Arrays.asList(
                 REGISTERED.addPair(new EPair(type, GUILD.type)),
@@ -104,7 +116,7 @@ public class OntologyTestUtils {
     public static class HORSE implements Entity {
         public static String name = "Horse";
         public static int type = 3;
-        public static List<Property> propertyList = Arrays.asList(NAME, GENDER);
+        public static List<Property> propertyList = Arrays.asList(NAME.redundant(), GENDER);
 
         public static List<RelationshipType> relationshipList = Collections.singletonList(
                 REGISTERED.addPair(new EPair(type, GUILD.type)));
@@ -194,6 +206,7 @@ public class OntologyTestUtils {
         public static List<Property> propertyList = Arrays.asList(FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, DEATH_DATE, HEIGHT, NAME);
 
         public static List<RelationshipType> relationshipList = Arrays.asList(
+                KNOW.addPair(new EPair(type, PERSON.type)),
                 SUBJECT.addPair(new EPair(type, KINGDOM.type)),
                 OWN.addPair(new EPair(type, DRAGON.type)),
                 OWN.addPair(new EPair(type, HORSE.type)),
