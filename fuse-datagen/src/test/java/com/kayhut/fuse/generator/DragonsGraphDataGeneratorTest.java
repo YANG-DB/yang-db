@@ -2,6 +2,7 @@ package com.kayhut.fuse.generator;
 
 import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
 import com.kayhut.fuse.generator.configuration.DragonConfiguration;
+import com.kayhut.fuse.generator.helper.TestUtil;
 import com.kayhut.fuse.generator.model.enums.RelationType;
 import com.kayhut.fuse.generator.util.CSVUtil;
 import org.apache.commons.configuration.Configuration;
@@ -36,7 +37,7 @@ public class DragonsGraphDataGeneratorTest {
         File dragonsFile = new File(dragonsFilePath);
         Files.deleteIfExists(dragonsFile.toPath());
         DataGenerator.generateSmallDragonsGraph(configuration, false);
-        assertTrue(isFileExists(dragonsFilePath));
+        assertTrue(TestUtil.isFileExists(dragonsFilePath));
         List<String[]> dragonsLines = CSVUtil.readCSV(dragonsFilePath, ',');
         assertTrue(dragonsLines.size() > dragonConfiguration.getNumberOfNodes() - 1);
         assertTrue(dragonsLines.get(0)[0].equals("0")); //[0] = graph Id
@@ -50,13 +51,12 @@ public class DragonsGraphDataGeneratorTest {
         File dragonsFile = new File(dragonsFilePath);
         Files.deleteIfExists(dragonsFile.toPath());
         DataGenerator.generateMassiveDragonsGraph(configuration);
-        assertTrue(isFileExists(dragonsFilePath));
+        assertTrue(TestUtil.isFileExists(dragonsFilePath));
         List<String[]> dragonsLines = CSVUtil.readCSV(dragonsFilePath, ',');
         assertTrue(dragonsLines.size() > dragonConfiguration.getNumberOfNodes() - 1);
         assertTrue(dragonsLines.get(0)[0].equals("0")); //[0] = graph Id
         assertTrue(dragonsLines.get(1)[0].equals("1")); // No weird 'Jumps'
     }
-
 
 
     @BeforeClass
@@ -72,9 +72,6 @@ public class DragonsGraphDataGeneratorTest {
         dragonsFreezRelationFilePath = dragonConfiguration.getRelationsFilePath().replace(".csv","") + "_" + RelationType.FREEZES + ".csv";
     }
 
-    private static boolean isFileExists(String filePath){
-        File file = new File(filePath);
-        return file.exists();
-    }
+
 
 }

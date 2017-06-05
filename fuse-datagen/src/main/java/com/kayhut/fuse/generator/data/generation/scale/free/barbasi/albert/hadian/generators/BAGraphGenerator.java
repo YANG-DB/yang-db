@@ -35,7 +35,8 @@ public class BAGraphGenerator {
 
     public enum SamplingMode {SIMPLE, ROLL_BUCKET, ROLL_TREE, SA, ROLL_BUCKET_SORTED, ROLL_TREE_REDUCED}
 
-    public static SamplingMode samplingMode = SamplingMode.SIMPLE;
+    //public static SamplingMode samplingMode = SamplingMode.SIMPLE;
+    public static SamplingMode samplingMode = SamplingMode.ROLL_TREE;
     public static int numNodesFinal = 0;
     public static int m = 2;
     public static Integer m_0 = null;
@@ -253,6 +254,7 @@ public class BAGraphGenerator {
             BAGraphGenerator.m = edgesPerNode;
             BAGraphGenerator.samplingMode = samplingMode;
             BAGraphGenerator.graphFileWriter = new BufferedWriter(new FileWriter(new File(filePath)));
+            BAGraphGenerator.graphDistributionOutputFileName = filePath.replace(".csv", "") + "_scaleFreeSummary.txt";;
             generator.createGraph();
 
         } catch (Exception e) {

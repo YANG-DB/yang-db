@@ -16,7 +16,7 @@ public class DragonGenerator extends EntityGeneratorBase<DragonConfiguration, Dr
 
     @Override
     public Dragon generate() {
-        return Dragon.Builder.get().withName(faker.gameOfThrones().dragon())
+        return Dragon.Builder.get().withName(faker.name().firstName() + " " + faker.gameOfThrones().dragon())
                 .withPower(faker.number()
                         .numberBetween(configuration.getMinPower(), configuration.getMaxPower()))
                 .withGender(PropertiesGenerator.generateGender())

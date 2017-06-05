@@ -44,8 +44,9 @@ public abstract class GraphGeneratorBase<C,E> {
      * author = {Hadian, Ali and Nobari, Sadegh and Minaei-Bidgoli, Behrooz and Qu, Qiang},
      * Title = {ROLL: Fast In-Memory Generation of Gigantic Scale-free Networks}
      * Source Code: https://github.com/alihadian/ROLL
+     * @return List of node ids
      */
-    protected abstract void generateMassiveGraph();
+    protected abstract  List<String> generateMassiveGraph();
 
     /**
      * @param id Entity (Node) id
@@ -56,9 +57,10 @@ public abstract class GraphGeneratorBase<C,E> {
     /**
      * @param sourceId Source Node Id
      * @param targetId Target Node Id
+     * @param edgeId Target Node Id
      * @return Relation between the source node (Entity X) and the target node (Entity Y)
      */
-    protected abstract RelationBase buildEntityRelation(String sourceId, String targetId);
+    protected abstract RelationBase buildEntityRelation(String sourceId, String targetId, String edgeId);
 
     /**
      * Write the graph to the file system

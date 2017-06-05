@@ -75,8 +75,6 @@ public class RandomUtil {
         return randArray;
     }
 
-
-
     public static double[] getCumulativeDistArray(double[] array) {
         double cumulativeArray[] = new double[array.length];
 
@@ -90,7 +88,6 @@ public class RandomUtil {
         }
         return cumulativeArray;
     }
-
 
     /**
      * @param n num of random numbers

@@ -2,6 +2,7 @@ package com.kayhut.fuse.generator.helper;
 
 import com.google.common.collect.LinkedHashMultiset;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,5 +27,10 @@ public class TestUtil {
         // indicates that a duplicate element has been added.
         for (T each: all) if (!set.add(each)) return true;
         return false;
+    }
+
+    public static boolean isFileExists(String filePath){
+        File file = new File(filePath);
+        return file.exists();
     }
 }

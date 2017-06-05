@@ -34,6 +34,8 @@ public class DragonConfiguration extends EntityConfigurationBase {
         this.maxPower = configuration.getInt("dragon.maxPower");
         this.minPower = configuration.getInt("dragon.minPower");
         this.idPrefix = configuration.getString("dragon.idPrefix");
+        this.fireMaxTemperature = configuration.getInt("dragon.fireMaxTemperature");
+        this.fireMinTemperature = configuration.getInt("dragon.fireMinTemperature");
 
     }
     //endregion
@@ -75,6 +77,14 @@ public class DragonConfiguration extends EntityConfigurationBase {
         return freezMaxDuraution;
     }
 
+    public int getFireMaxTemperature() {
+        return fireMaxTemperature;
+    }
+
+    public int getFireMinTemperature() {
+        return fireMinTemperature;
+    }
+
     public String getIdPrefix() {
         return idPrefix;
     }
@@ -90,6 +100,8 @@ public class DragonConfiguration extends EntityConfigurationBase {
     private final double freezProbability;
     private final double fireProbability;
     private final int freezMaxDuraution;
+    private final int fireMaxTemperature;
+    private final int fireMinTemperature;
     private final String idPrefix;
     //endregion
 }
