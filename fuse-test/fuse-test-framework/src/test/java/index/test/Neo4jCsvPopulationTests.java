@@ -12,6 +12,7 @@ import org.neo4j.graphdb.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
  * Created by moti on 3/21/2017.
  */
 public class Neo4jCsvPopulationTests {
-    private String dragonsFolder = new File("src\\test\\resources\\dragons\\").getAbsolutePath().replace('\\','/') + "/";
-    private String neoFolder = "target\\neo";
+    private String dragonsFolder = new File(Paths.get("src", "test", "resources", "dragons").toString()).getAbsolutePath() + File.separator;
+    private String neoFolder = Paths.get("target", "neo").toString();
     private Neo4jInMemoryIndex index;
     private GraphDatabaseService graphDatabaseService;
 

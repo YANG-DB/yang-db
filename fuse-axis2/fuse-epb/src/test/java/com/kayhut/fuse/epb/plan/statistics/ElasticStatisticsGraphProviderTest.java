@@ -45,11 +45,6 @@ public class ElasticStatisticsGraphProviderTest {
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
 
-    private static final String MAPPING_DATA_FILE_DRAGON_PATH = "src\\test\\resources\\elastic.test.data.dragon.mapping.json";
-    private static final String MAPPING_DATA_FILE_FIRE_PATH = "src\\test\\resources\\elastic.test.data.fire.mapping.json";
-    private static final String MAPPING_STAT_FILE_PATH = "src\\test\\resources\\elastic.test.stat.mapping.json";
-
-
     private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
     private static final long NUM_OF_DRAGONS_IN_INDEX_2 = 555L; //HAMSA HAMSA HAMSA
 

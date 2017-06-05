@@ -12,15 +12,16 @@ import org.elasticsearch.search.SearchHits;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
  * Created by moti on 3/27/2017.
  */
 public class ElasticIndexTests {
-    private String docsFile = "src\\test\\resources\\IndexDocs\\docs.txt";
-    private String loadFolder = "src\\test\\resources\\dragons_dual\\";
-    private String mappingFile =  "src\\test\\resources\\dragon_mapping.json";
+    private String docsFile = Paths.get("src", "test", "resources", "IndexDocs", "docs.txt").toString();
+    private String loadFolder = Paths.get("src", "test", "resources", "dragons_dual").toString();
+    private String mappingFile =  Paths.get("src", "test", "resources", "dragon_mapping.json").toString();
 
     @Test
     public void testSimpleElastic() throws Exception {
