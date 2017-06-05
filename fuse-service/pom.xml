@@ -3,7 +3,7 @@
     <parent>
         <artifactId>fuse</artifactId>
         <groupId>org.kayhut</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,35 +25,35 @@
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-dispatcher</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-neo4j</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-epb</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-executor</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-gta</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
         </dependency>
 
        <!-- Server -->
@@ -105,13 +105,13 @@
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-test-framework</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
