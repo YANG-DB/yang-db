@@ -21,6 +21,11 @@
         <module>geojson-jackson</module>
         <module>fuse-datagen</module>
     </modules>
+
+    <scm>
+        <developerConnection>scm:git:http://gita.westeurope.cloudapp.azure.com/fuse/Fuse.git</developerConnection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -140,6 +145,11 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
