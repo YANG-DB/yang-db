@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes.rolltree.datatypes;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.rolltree.datatypes;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 

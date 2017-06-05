@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes.rolltree.cwlength;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.rolltree.cwlength;
 
 /**
  * Element of a Huffman tree, used for computing the Huffman Code word length 

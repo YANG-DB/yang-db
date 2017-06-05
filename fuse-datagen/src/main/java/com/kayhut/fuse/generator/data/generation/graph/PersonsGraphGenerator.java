@@ -2,16 +2,15 @@ package com.kayhut.fuse.generator.data.generation.graph;
 
 import com.kayhut.fuse.generator.configuration.PersonConfiguration;
 import com.kayhut.fuse.generator.data.generation.entity.PersonGenerator;
-import com.kayhut.fuse.generator.data.generation.model.ScaleFreeModel;
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.graphstream.GraphstreamHelper;
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.generators.BAGraphGenerator;
+import com.kayhut.fuse.generator.data.generation.scale.free.ScaleFreeModel;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream.GraphstreamHelper;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators.BAGraphGenerator;
 import com.kayhut.fuse.generator.model.entity.Person;
 import com.kayhut.fuse.generator.model.relation.RelationBase;
 import javaslang.Tuple2;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;

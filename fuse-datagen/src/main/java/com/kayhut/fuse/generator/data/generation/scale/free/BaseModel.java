@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model;
+package com.kayhut.fuse.generator.data.generation.scale.free;
 
 /**
  * Created by benishue on 15-May-17.

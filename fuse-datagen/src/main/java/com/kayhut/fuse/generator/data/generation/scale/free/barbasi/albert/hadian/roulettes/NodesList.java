@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes;
 
 /**
  * The general interface for roulette wheel selection for generating Barabasi-Albert Graphs.

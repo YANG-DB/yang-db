@@ -19,6 +19,8 @@ public class GuildConfiguration extends EntityConfigurationBase {
         );
         this.guilds = configuration.getStringArray("guild.guilds");
         this.startDateOfStory = new Date(configuration.getLong("guild.startDateOfStory"));
+        this.idPrefix = configuration.getString("guild.idPrefix");
+
     }
     //endregion
 
@@ -31,11 +33,16 @@ public class GuildConfiguration extends EntityConfigurationBase {
         return startDateOfStory;
     }
 
+    public String getIdPrefix() {
+        return idPrefix;
+    }
     //endregion
 
     //region Fields
     private String[] guilds;
     private Date startDateOfStory;
+    private final String idPrefix;
+
     //endregion
 
 }

@@ -1,14 +1,11 @@
 package com.kayhut.fuse.generator;
 
 import com.google.common.base.Stopwatch;
-import com.kayhut.fuse.generator.configuration.DragonConfiguration;
-import com.kayhut.fuse.generator.configuration.GuildConfiguration;
-import com.kayhut.fuse.generator.configuration.KingdomConfiguration;
+import com.kayhut.fuse.generator.configuration.*;
 import com.kayhut.fuse.generator.data.generation.entity.GuildGenerator;
 import com.kayhut.fuse.generator.data.generation.entity.KingdomGenerator;
 import com.kayhut.fuse.generator.data.generation.graph.DragonsGraphGenerator;
-import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.graphstream.GraphstreamHelper;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream.GraphstreamHelper;
 import com.kayhut.fuse.generator.model.entity.Guild;
 import com.kayhut.fuse.generator.model.entity.Kingdom;
 import com.kayhut.fuse.generator.util.RandomUtil;
@@ -32,6 +29,7 @@ public class DataGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(DataGenerator.class);
     private final static int MIN_NUM_OF_ARGUMENTS = 1;
+    private static Configuration configuration;
 
     //Not all of the population is member of guild
     private static final double NOT_ASSIGNED_TO_GUILD_RATIO = 0.025;
@@ -42,11 +40,16 @@ public class DataGenerator {
 
     public static void main(String[] args) {
 
-        if (!isValidNumberOfArguments(args))
+        if (!isValidNumberOfArguments(args)) {
             System.exit(-1);
-        Configuration configuration = new DataGenConfiguration(args[0]).getInstance();
+        }
+        loadConfiguration(args[0]);
         //GenerateSmallDragonsGraph(logger, configuration, false);
         //generateMassiveDragonsGraph(logger, configuration);
+    }
+
+    public static void loadConfiguration(String path) {
+        configuration = new DataGenConfiguration(path).getInstance();
     }
 
     public static void generateSmallDragonsGraph(Configuration configuration, boolean drawGraph) {
@@ -140,32 +143,35 @@ public class DataGenerator {
         // Adding a Kingdom with a large population to skew the kingdom sizes
         kingdomsPopulationDist.add(LARGEST_KINGDOM_RATIO);
 
-        int startPerosnId = 0;
+        int startPersonId = 0;
         for (int i = 0; i < kingdomsPopulationDist.size(); i++) {
             int kingdomPopulationSize = Math.toIntExact(Math.round(kingdomsPopulationDist.get(i) * totalPopulationSize));
-            for (int personId = startPerosnId; personId < totalPopulationSize; personId++) {
+            for (int personId = startPersonId; personId < totalPopulationSize; personId++) {
                 personsToKingdomsSet.add(new Tuple2<>(personId, i));
-                if (personId == startPerosnId + kingdomPopulationSize)
+                if (personId == startPersonId + kingdomPopulationSize)
                     break;
             }
-            startPerosnId += kingdomPopulationSize + 1;
+            startPersonId += kingdomPopulationSize + 1;
         }
         return personsToKingdomsSet;
     }
 
     public static Map<Integer, List<Integer>> attachPersonsToGuilds(List<Integer> guildsIdList, List<Integer> personsIdList) {
-        int membersPopulationSize = Math.toIntExact(Math.round(personsIdList.size() * (1 - NOT_ASSIGNED_TO_GUILD_RATIO)));
-        //One person can be belong to several guilds <Guild Id, List of persons Ids>
         Map<Integer, List<Integer>> guildToPersonsSet = new HashMap<>();
 
-        //We are creating an exp distribution of guild size summed up to the kingdoms number
+        PersonConfiguration personConf = new PersonConfiguration(configuration);
+        int maxGuildMembership = personConf.getMaxGuildMembership();
+        int membersPopulationSize = Math.toIntExact(Math.round(personsIdList.size() * (1 - NOT_ASSIGNED_TO_GUILD_RATIO)));
+        //One person can be belong to several guilds <Guild Id, List of persons Ids>
+
+        //We are creating an Exp distribution of guild size summed up to the guilds number
         double[] expDistArray = RandomUtil.getExpDistArray(guildsIdList.size(), 1.0 - NOT_ASSIGNED_TO_GUILD_RATIO, LAMBDA_EXP_DIST);
         List<Double> guildsMembersDist = Arrays.stream(expDistArray).boxed().collect(Collectors.toList());
 
         List<Integer> shuffledPersonsIds = IntStream.rangeClosed(0, membersPopulationSize)
                 .boxed().collect(Collectors.toList());
-        for (int k = 0; k < 10; k++) { //Adding the same persons to several guilds - without changing the ratio of each guild
-            Collections.shuffle(shuffledPersonsIds);
+        //Adding the same persons to several guilds - without changing the ratio of each guild
+        for (int k = 0; k < maxGuildMembership; k++) {
             int startIndex = 0;
             for (int i = 0; i < guildsMembersDist.size(); i++) {
                 int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * membersPopulationSize));
@@ -177,7 +183,7 @@ public class DataGenerator {
                         guildToPersonsSet.put(i, new ArrayList<>(Arrays.asList(personId)));
                     } else {
                         List<Integer> personsInGuild = guildToPersonsSet.get(i);
-                        if (!personsInGuild.contains(personId)) {
+                        if (!personsInGuild.contains(personId)) { //avoiding duplicate members in a Guild
                             guildToPersonsSet.get(i).add(personId);
                         }
                     }
@@ -186,10 +192,46 @@ public class DataGenerator {
                 }
                 startIndex += guildMembersSize + 1;
             }
+            Collections.shuffle(shuffledPersonsIds);
         }
         return guildToPersonsSet;
     }
 
+    public static Map<Integer, List<Integer>> attachDragonsToPersons(List<Integer> dragonsIdList, List<Integer> personsIdList) {
+        Map<Integer, List<Integer>> dragonsToPersonsSet = new HashMap<>();
+
+        //Deep Copy
+        List<Integer> dragonsIdsClone = new ArrayList<>();
+        for(int d : dragonsIdList) {
+            dragonsIdsClone.add(d);
+        }
+
+        int meanDragonsPerPerson = (int)(dragonsIdList.size() / (double)personsIdList.size());
+        //Generate Gaussian of numbers that will represent the ownership of dragons by person
+        List<Double> gaussianDist = RandomUtil.randomGaussianNumbers(meanDragonsPerPerson, 2, personsIdList.size());
+
+        //Shuffle the clone list to make it randomize
+        Collections.shuffle(dragonsIdsClone);
+
+        int startSelectNum = 0;
+        //The gaussian Dist list is the same size of the persons ids
+        for (int i = 0; i < gaussianDist.size(); i++) {
+            int randNumOfDragonsPerPerson = (int) Math.floor(gaussianDist.get(i));
+            int personId = personsIdList.get(i);
+            List<Integer> selectedDragonsIds = dragonsIdsClone.subList(startSelectNum, startSelectNum + randNumOfDragonsPerPerson);
+            startSelectNum = randNumOfDragonsPerPerson;
+
+            if (dragonsToPersonsSet.get(personId) == null) {
+                dragonsToPersonsSet.put(personId, new ArrayList<>(selectedDragonsIds));
+            } else {
+                List<Integer> personDragons = dragonsToPersonsSet.get(personId);
+//                if (!personDragons.containsAll()ins(personId)) { //avoiding duplicate members in a Guild
+//                    guildToPersonsSet.get(i).add(personId);
+//                }
+            }
+        }
+        return null;
+    }
 
     //region Private Methods
     private static boolean isValidNumberOfArguments(String[] args) {

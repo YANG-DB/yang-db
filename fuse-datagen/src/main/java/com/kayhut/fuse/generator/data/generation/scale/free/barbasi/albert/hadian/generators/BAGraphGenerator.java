@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.generators;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,8 +12,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes.*;
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes.rolltree.datatypes.Bucket;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.rolltree.datatypes.Bucket;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.*;
 import javaslang.Tuple2;
 
 

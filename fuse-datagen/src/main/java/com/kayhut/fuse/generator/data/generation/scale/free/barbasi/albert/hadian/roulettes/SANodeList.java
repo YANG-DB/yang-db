@@ -1,27 +1,25 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes;
 
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.generators.BAGraphGenerator;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators.BAGraphGenerator;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
- * Simple roulette wheel, which performs linear scans
- * 
+ * Compared method: Roulette wheel using stochastic acceptance (Lipowski & Lipowska, 2012)
  * @author Ali Hadian
  *
  */
-public class SimpleRWNodeList implements NodesList {
-	public static
+public class SANodeList implements NodesList {
 	Random random = new Random();
 	int[] degrees;
+	int maxDeg;
 
-	public SimpleRWNodeList() {
+	public SANodeList() {
 		this.degrees = new int[BAGraphGenerator.numNodesFinal];
 	}
-	
+
 	@Override
 	public void createInitNodes(int m) {	
 		//System.out.print("+Node: \t");
@@ -30,8 +28,9 @@ public class SimpleRWNodeList implements NodesList {
 			BAGraphGenerator.addEdge(i, m);
 			//System.out.printf("(%d,%d)\t", i, m);
 		}
-		//System.out.println();
+		//		System.out.println();
 		degrees[m] = m;
+		maxDeg = m;
 	}
 
 	@Override
@@ -42,29 +41,27 @@ public class SimpleRWNodeList implements NodesList {
 		for (int mCount=0; mCount<m; mCount++){  //selecting candidateNodes[mCount]
 			int selectedNode = -1;
 			do{
-				long randNum = ThreadLocalRandom.current().nextLong(BAGraphGenerator.numEdges * 2);
-
-				long cumSum = 0;
-				//select corresponding node
-				for(int i=0; i<numNodes; i++){
-					cumSum += degrees[i];
+				while(true){
+					selectedNode = random.nextInt(numNodes);
 					BAGraphGenerator.numComparisons++;
-					if(cumSum > randNum){
-						selectedNode = i;
+					if(random.nextDouble() < ((double) degrees[selectedNode]) / maxDeg)
 						break;
-					}
 				}
 			}while(candidateNodes.contains(selectedNode));	//no double-links
 			candidateNodes.add(selectedNode);
 		}
+		
 		BAGraphGenerator.samplingTime += System.nanoTime() - t;
 		t = System.nanoTime();
+		
 		degrees[numNodes] += m;	//degree of the current node
 		for(int nodeID : candidateNodes){
 			BAGraphGenerator.addEdge(nodeID, numNodes);
 			//System.out.printf("(%d,%d) \t", nodeID, numNodes);
 			degrees[nodeID]++;
+			maxDeg = Math.max(degrees[nodeID],maxDeg); 
 		}
+		
 		BAGraphGenerator.maintenanceTime += System.nanoTime() - t;
 	}
 }

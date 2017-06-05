@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.generators;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators;
 
 import org.apache.commons.lang3.math.NumberUtils;
 

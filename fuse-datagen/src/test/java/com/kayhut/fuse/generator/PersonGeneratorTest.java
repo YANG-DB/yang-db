@@ -31,7 +31,7 @@ public class PersonGeneratorTest {
             assertTrue(!personA.getLastName().isEmpty());
             assertTrue(personA.getBirthDate().compareTo(personA.getDeathDate()) < 0);
             assertTrue(personA.getGender() == Gender.FEMALE || personA.getGender() == Gender.MALE);
-            System.out.println(personA);
+            //System.out.println(personA);
         }
     }
 

@@ -1,7 +1,7 @@
 package com.kayhut.fuse.generator.data.generation.graph;
 
 import com.kayhut.fuse.generator.data.generation.entity.EntityGeneratorBase;
-import com.kayhut.fuse.generator.data.generation.model.BaseModel;
+import com.kayhut.fuse.generator.data.generation.scale.free.BaseModel;
 import com.kayhut.fuse.generator.model.relation.RelationBase;
 import javaslang.Tuple2;
 import org.graphstream.graph.Graph;
