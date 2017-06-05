@@ -21,6 +21,10 @@ import static com.kayhut.fuse.model.Utils.readJsonFile;
 public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutProviderFactory {
 
     //region Constructors
+    public DragonsOntologyGraphLayoutProviderFactory() throws IOException {
+        this("GraphLayoutProviderFactory.conf");
+    }
+
     @Inject
     public DragonsOntologyGraphLayoutProviderFactory(String configFile) throws IOException {
         this.graphLayoutProviders = new HashMap<>();

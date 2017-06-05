@@ -28,6 +28,8 @@ public class Bootstrap implements Jooby.Module  {
 
     private void loadModules(Env env, Config conf, Binder binder) {
         String profile = conf.getString("application.profile");
+        System.out.println("Active Profile "+profile);
+        System.out.println("Loading modules: "+"modules."+profile);
         List<String> modules = conf.getStringList("modules."+profile);
         modules.forEach(value -> {
             try {

@@ -24,7 +24,13 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
     public static final String PROPS = "props";
     public static final String VALUES = "values";
 
+
     //region Constructors
+    public DragonsOntologyPhysicalIndexProviderFactory() {
+        this("DragonsIndexProvider.conf");
+    }
+
+
     @Inject
     public DragonsOntologyPhysicalIndexProviderFactory(String configFile) {
         this.physicalIndexProviders = new HashMap<>();

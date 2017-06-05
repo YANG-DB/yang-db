@@ -245,15 +245,4 @@ public class FuseApp extends Jooby {
                 });
     }
     //endregion
-
-    public static void main(final String[] args) {
-        final String applicationConfFilePath = args.length > 0 ?
-                args[0] : "application.conf";
-
-        final String activeProfile = args.length > 1 ?
-                args[1] : "activeProfile";
-
-        run(() -> new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(applicationConfFilePath, activeProfile), args);
-    }
 }
