@@ -28,6 +28,8 @@ public class PersonConfiguration extends EntityConfigurationBase {
         this.lifeExpectancySD = configuration.getDouble("person.lifeExpectancySD");
         this.startDateOfStory = new Date(configuration.getLong("person.startDateOfStory"));
         this.endDateOfStory = new Date(configuration.getLong("person.endDateOfStory"));
+        this.idPrefix = configuration.getString("person.idPrefix");
+        this.maxGuildMembership = configuration.getInt("person.maxGuildMembership");
     }
     //endregion
 
@@ -60,6 +62,14 @@ public class PersonConfiguration extends EntityConfigurationBase {
         return endDateOfStory;
     }
 
+    public String getIdPrefix() {
+        return idPrefix;
+    }
+
+    public int getMaxGuildMembership() {
+        return maxGuildMembership;
+    }
+
     //endregion
 
     //region Fields
@@ -70,5 +80,7 @@ public class PersonConfiguration extends EntityConfigurationBase {
     private final double lifeExpectancySD;
     private final Date startDateOfStory;
     private final Date endDateOfStory;
+    private final int maxGuildMembership;
+    private final String idPrefix;
     //endregion
 }

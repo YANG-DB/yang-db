@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.util;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.util;
 
 /**
  * XOrShift is a very fast random number generator, used in ROLL-tree.

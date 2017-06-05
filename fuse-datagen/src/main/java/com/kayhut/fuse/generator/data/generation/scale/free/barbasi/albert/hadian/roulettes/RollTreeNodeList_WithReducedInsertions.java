@@ -1,7 +1,7 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes;
 
 
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes.rolltree.datatypes.Bucket;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.rolltree.datatypes.Bucket;
 
 /**
  * ROLL-tree with reduced insertions. Plz refer to the ROLL paper, under section 4.2.2 -> "Decreasing tree operations"

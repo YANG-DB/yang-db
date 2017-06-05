@@ -1,4 +1,4 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.graphstream;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream;
 
 import com.kayhut.fuse.generator.util.CSVUtil;
 import org.graphstream.graph.Graph;

@@ -24,7 +24,7 @@ public class RandomUtilTest {
 
         List<Double> list = Arrays.stream(expDistArray).boxed().collect(Collectors.toList());
         double sum = list.stream().mapToDouble(d -> d).sum();
-        System.out.println(sum);
+        //System.out.println(sum);
         assertEquals(1.0, sum, 0.1);
     }
 

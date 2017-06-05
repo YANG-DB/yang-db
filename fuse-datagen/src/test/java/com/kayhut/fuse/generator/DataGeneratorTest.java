@@ -4,9 +4,12 @@ import com.google.common.collect.LinkedHashMultiset;
 import com.kayhut.fuse.generator.helper.TestUtil;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +24,7 @@ import static org.junit.Assert.*;
  */
 public class DataGeneratorTest {
 
+    static final String CONFIGURATION_FILE_PATH = "test.generator.properties";
 
     @Test
     public void attachPersonsToKingdomsTest() throws Exception {
@@ -51,8 +55,6 @@ public class DataGeneratorTest {
         assertEquals(TestUtil.findDuplicates(personsIdsInEdges).size(), 0);
     }
 
-
-    @Ignore
     @Test
     public void attachPersonsToGuildsTest() throws Exception {
         List<Integer> personsIdList = IntStream.rangeClosed(0, 9999)
@@ -63,11 +65,15 @@ public class DataGeneratorTest {
 
         Map<Integer, List<Integer>> personsToGuildsEdges = DataGenerator.attachPersonsToGuilds(guildsIdList, personsIdList);
 
+
+        //Check there are no duplicates
         for (Map.Entry<Integer, List<Integer>> entry : personsToGuildsEdges.entrySet()) {
             List<Integer> listOfMembers = entry.getValue();
-            //assertFalse(TestUtil.hasDuplicate(listOfMembers));
-            TestUtil.findDuplicates(listOfMembers);
+            assertFalse(TestUtil.hasDuplicate(listOfMembers));
+            //System.out.println("Guild Id=" + entry.getKey() + ", #Person: " + entry.getValue().size());
         }
+
+
         //Checking that the size of the EdgeSet is the size of persons population less 0.025% (not belong to any guild)
         //assertEquals(9750, personsToGuildsEdges.size());
 
@@ -87,4 +93,20 @@ public class DataGeneratorTest {
 
     }
 
+    @Test
+    public void attachDragonsToPersonsTest() throws Exception {
+        List<Integer> personsIdList = IntStream.rangeClosed(0, 999)
+                .boxed().collect(Collectors.toList());
+
+        List<Integer> dragonsIdList = IntStream.rangeClosed(0, 9999)
+                .boxed().collect(Collectors.toList());
+
+        Map<Integer, List<Integer>> dragonsToPersonsSet = DataGenerator.attachDragonsToPersons(dragonsIdList, personsIdList);
+    }
+
+    @BeforeClass
+    public static void setUp() throws Exception {
+        DataGenerator.loadConfiguration(CONFIGURATION_FILE_PATH);
+
+    }
 }

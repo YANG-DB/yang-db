@@ -28,6 +28,8 @@ public class HorseConfiguration extends EntityConfigurationBase {
         this.maxDistance = configuration.getInt("horse.maxDistance");
         this.minSpeed = configuration.getInt("horse.minSpeed");
         this.maxSpeed = configuration.getInt("horse.maxSpeed");
+        this.idPrefix = configuration.getString("horse.idPrefix");
+
     }
     //endregion
 
@@ -59,6 +61,10 @@ public class HorseConfiguration extends EntityConfigurationBase {
     public double getWeightSD() {
         return weightSD;
     }
+
+    public String getIdPrefix() {
+        return idPrefix;
+    }
     //endregion
 
     //region Fields
@@ -69,5 +75,6 @@ public class HorseConfiguration extends EntityConfigurationBase {
     private int maxDistance;
     private double weightMean;
     private double weightSD;
+    private final String idPrefix;
     //endregion
 }

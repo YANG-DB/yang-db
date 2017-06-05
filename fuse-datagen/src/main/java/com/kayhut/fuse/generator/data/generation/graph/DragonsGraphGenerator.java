@@ -2,9 +2,9 @@ package com.kayhut.fuse.generator.data.generation.graph;
 
 import com.kayhut.fuse.generator.configuration.DragonConfiguration;
 import com.kayhut.fuse.generator.data.generation.entity.DragonGenerator;
-import com.kayhut.fuse.generator.data.generation.model.ScaleFreeModel;
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.graphstream.GraphstreamHelper;
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.generators.BAGraphGenerator;
+import com.kayhut.fuse.generator.data.generation.scale.free.ScaleFreeModel;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream.GraphstreamHelper;
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators.BAGraphGenerator;
 import com.kayhut.fuse.generator.model.entity.Dragon;
 import com.kayhut.fuse.generator.model.enums.RelationType;
 import com.kayhut.fuse.generator.model.relation.Fires;

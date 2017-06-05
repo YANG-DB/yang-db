@@ -1,36 +1,30 @@
-package com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.roulettes;
+package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Map.Entry;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.concurrent.ThreadLocalRandom;
-
-import com.kayhut.fuse.generator.data.generation.model.barbasi.albert.hadian.generators.BAGraphGenerator;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.collections4.map.MultiValueMap;
-
+import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators.BAGraphGenerator;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+
 /**
- * This class is a specific implementation of {@link RollBucketNodeList} in which the buckets are sorted by their weight (not by their bucket degree).
- * As shown in the ROLL paper (Fig 3), the sorting overhead is too much.
  * RollBucket roulette wheel. The nodes are stored in simple `IntArrayList` lists.
  * @author Ali Hadian
  *
  */
-
-public class RollBucketNodeList_SORTED implements NodesList {
+public class RollBucketNodeList implements NodesList {
 	public static final Random random = new Random();
 	
 	/**
 	 * Map of all groups (buckets). KEYs = available degrees, value(key) = {node | deg(node) == key}
 	 */
 	private Int2ObjectRBTreeMap<IntArrayList> groups = new Int2ObjectRBTreeMap<IntArrayList>();
-	MultiValueMap<Long, Integer> sortedMinusWeightsMap = MapUtils.multiValueMap(new TreeMap(), LinkedHashSet.class);
+
+	public int getNumBuckets(){
+		return groups.size();
+	}
 
 	@Override
 	public void createInitNodes(int m) {
@@ -38,15 +32,14 @@ public class RollBucketNodeList_SORTED implements NodesList {
 		if(m > 1)
 			groups.put(m, new IntArrayList());
 
-		// System.out.print("+Node: \t");
+		//System.out.print("+Node: \t");
 		for(int i = 0; i< BAGraphGenerator.m; i++){
 			groups.get(1).add(i);
 			BAGraphGenerator.addEdge(i, BAGraphGenerator.m);
 		}
 		groups.get(m).add(m);
-		sortedMinusWeightsMap.put(-1l * m, m);
-		sortedMinusWeightsMap.put(-1l * m, 1);
 	}
+
 
 	@Override
 	public void connectMRandomNodeToThisNewNode(int m, int numNodes) {
@@ -55,6 +48,7 @@ public class RollBucketNodeList_SORTED implements NodesList {
 
 		//selecting the node
 		for (int mCount=0; mCount<m; mCount++){  //selecting candidateNodes[mCount]
+			
 			//meanwhile in this loop, some nodes have already been selected and stored in allSelectedNodes. The model is also updated according to these nodes,
 			//  so total weights in the roulette wheel is increased after selecting each node, therefore SUM(degrees) > (#edges*2). Therefore we should increase the Max weight in the roulette wheel to compensate it.
 			long effectiveRouletteWheelTotalWeight =  BAGraphGenerator.numEdges * 2 + allSelectedNodes.size();
@@ -63,9 +57,8 @@ public class RollBucketNodeList_SORTED implements NodesList {
 				long randNum = ThreadLocalRandom.current().nextLong(effectiveRouletteWheelTotalWeight);
 				long cumSum = 0;
 				//select corresponding node
-				for (Iterator iterator = sortedMinusWeightsMap.iterator(); iterator.hasNext();){
-					Entry<Long,Integer> e = (Entry<Long, Integer>) iterator.next();
-					int i = e.getValue();
+				for (int i : groups.keySet()) {
+					//System.out.print(i  + " (" + groups.get(i).size() + ")\t");
 					cumSum += i * groups.get(i).size();					
 					BAGraphGenerator.numComparisons++;
 					if(cumSum > randNum){	//data is in the current bucket
@@ -85,43 +78,31 @@ public class RollBucketNodeList_SORTED implements NodesList {
 				}
 			}
 		}
-
+		
 		BAGraphGenerator.samplingTime += System.nanoTime() - t;
 		t = System.nanoTime();
 		//updating weights
 		//insert the new node in the wheel (other nodes are inserted to the wheel inside 'removeNodeAndUpdateGraph'
 		if(!groups.containsKey(m)) 
 			groups.put(m, new IntArrayList());
-		updateSortedMinusWeightsMap(groups.get(m).size() * m, m, m);
+		
 		groups.get(m).add(numNodes);		
-		for(int nodeID : allSelectedNodes){
+		for(int nodeID : allSelectedNodes)
 			BAGraphGenerator.addEdge(nodeID, numNodes);
-		}
+			//System.out.printf("(%d,%d) \t", nodeID, numNodes);
+		//System.out.println();
 		BAGraphGenerator.maintenanceTime += System.nanoTime() - t;
 	}
 
 	private void moveNodeToHigherBucket(int selectedNodeId, int selectedNodePositionInBucket, int bucketId) {
-		if(!groups.containsKey(bucketId+1)){
+		if(!groups.containsKey(bucketId+1))
 			groups.put(bucketId+1, new IntArrayList());
-		}
-		updateSortedMinusWeightsMap(groups.get(bucketId+1).size() * (bucketId+1), (bucketId+1), (bucketId+1));
 		groups.get(bucketId+1).add(selectedNodeId);
 		
 		//removing node in the prev. bucket. (By replacing it with the last element in the list and deleting the list
 		IntArrayList prevBuket = groups.get(bucketId);
-		updateSortedMinusWeightsMap(groups.get(bucketId).size() * bucketId, -1 * bucketId, bucketId);
 		prevBuket.set(selectedNodePositionInBucket, prevBuket.get(prevBuket.size()-1));
-		prevBuket.remove(prevBuket.size()-1); 	
+		prevBuket.remove(prevBuket.size()-1);		
 	}
-	
-	private void updateSortedMinusWeightsMap(long prevWeight, long increment, int deg){
-		if(prevWeight != 0)
-			if(!sortedMinusWeightsMap.removeMapping(-1l * prevWeight, deg)) 
-				System.err.println("wasn't there!");
-		long newWeight = prevWeight + increment;
-		if(newWeight != 0)
-			sortedMinusWeightsMap.put(-1l * newWeight, deg);
-	}
-
 
 }
