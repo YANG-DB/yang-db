@@ -34,11 +34,11 @@ public interface Utils {
     static String readJsonFile(String name) {
         String result = "{}";
         try {
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + name + ".json");
+            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + name );
             if (stream != null) {
                 result = loadJsonString(stream);
             } else {
-                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name + ".json");
+                stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name );
                 result = loadJsonString(stream);
             }
         } catch (Exception e) {
