@@ -71,6 +71,7 @@ public class PageTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -97,6 +98,7 @@ public class PageTest {
         cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
                 .then()
@@ -120,6 +122,7 @@ public class PageTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
                 .assertThat()
@@ -145,6 +148,7 @@ public class PageTest {
         AtomicReference<String> pageId = new AtomicReference<>();
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(pageRequest)
                 .post("/fuse/query/1/cursor/"+cursorId.get()+"/page")
                 .then()
@@ -168,6 +172,7 @@ public class PageTest {
         //get cursor page resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get() +"/page/"+pageId.get())
                 .then()
                 .assertThat()
@@ -199,6 +204,7 @@ public class PageTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -225,6 +231,7 @@ public class PageTest {
         cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
                 .then()
@@ -250,6 +257,7 @@ public class PageTest {
         pageRequest.setPageSize(100);
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(pageRequest)
                 .post("/fuse/query/1/cursor/"+cursorId.get()+"/page")
                 .then()
@@ -273,6 +281,7 @@ public class PageTest {
         //get cursor pages resource
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
                 .assertThat()
@@ -295,6 +304,7 @@ public class PageTest {
         //get cursor page resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get()+"/page")
                 .then()
                 .assertThat()

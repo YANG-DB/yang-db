@@ -71,6 +71,7 @@ public class DataTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -97,6 +98,7 @@ public class DataTest {
         cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(cursorRequest)
                 .post("/fuse/query/1/cursor")
                 .then()
@@ -120,6 +122,7 @@ public class DataTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get())
                 .then()
                 .assertThat()
@@ -145,6 +148,7 @@ public class DataTest {
         AtomicReference<String> pageId = new AtomicReference<>();
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(pageRequest)
                 .post("/fuse/query/1/cursor/"+cursorId.get()+"/page")
                 .then()
@@ -168,6 +172,7 @@ public class DataTest {
         //get page data resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor/"+cursorId.get() +"/page/"+pageId.get() +"/data")
                 .then()
                 .assertThat()

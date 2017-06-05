@@ -68,6 +68,7 @@ public class PlanTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -91,6 +92,7 @@ public class PlanTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/plan")
                 .then()
                 .assertThat()

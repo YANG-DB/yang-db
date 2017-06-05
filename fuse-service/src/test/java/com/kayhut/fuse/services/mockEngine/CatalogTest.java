@@ -61,6 +61,7 @@ public class CatalogTest {
         Ontology ontology = TestUtils.loadOntology("Dragons.json");
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/catalog/ontology/Dragons")
                 .then()
                 .assertThat()

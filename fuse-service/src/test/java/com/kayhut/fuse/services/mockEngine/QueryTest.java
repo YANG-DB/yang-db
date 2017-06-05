@@ -64,6 +64,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -95,6 +96,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -117,6 +119,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
                 .assertThat()
@@ -138,6 +141,7 @@ public class QueryTest {
         //get cursor resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1/cursor")
                 .then()
                 .assertThat()
@@ -168,6 +172,7 @@ public class QueryTest {
         //submit query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .body(request)
                 .post("/fuse/query")
                 .then()
@@ -190,6 +195,7 @@ public class QueryTest {
         //get query resource by id
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
                 .assertThat()
@@ -211,6 +217,7 @@ public class QueryTest {
         //delete query
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .delete("/fuse/query/1")
                 .then()
                 .assertThat()
@@ -220,6 +227,7 @@ public class QueryTest {
         //validate resource deleted
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse/query/1")
                 .then()
                 .assertThat()

@@ -58,6 +58,7 @@ public class ApiDescriptorTest {
     public void api() {
         given()
                 .contentType("application/json")
+                .with().port(8888)
                 .get("/fuse")
                 .then()
                 .assertThat()
@@ -70,7 +71,10 @@ public class ApiDescriptorTest {
 
     @Test
     public void checkHealth() {
-        get("/fuse/health")
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .get("/fuse/health")
                 .then()
                 .assertThat()
                 .body(equalTo("\"Alive And Well...\""))
