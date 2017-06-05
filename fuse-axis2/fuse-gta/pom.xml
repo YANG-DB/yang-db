@@ -3,7 +3,7 @@
     <parent>
         <artifactId>fuse-axis2</artifactId>
         <groupId>org.kayhut</groupId>
-        <version>1.0</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,17 +20,17 @@
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-unipop</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-executor</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jooby</groupId>
@@ -62,34 +62,34 @@
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-dispatcher</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-unipop</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
-            <version>1.0</version>
+            <version>1.0-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
