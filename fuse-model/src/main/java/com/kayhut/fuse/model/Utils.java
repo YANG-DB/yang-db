@@ -3,7 +3,6 @@ package com.kayhut.fuse.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import org.apache.commons.io.IOUtils;
 
@@ -12,7 +11,8 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.stream.Collector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +47,17 @@ public interface Utils {
         } finally {
             return result;
         }
+    }
+
+    static Optional<String> match(String step,String ... supportedPattern) {
+        for (String pattern : supportedPattern) {
+            Pattern compile = Pattern.compile(pattern);
+            Matcher matcher = compile.matcher(step);
+            if (matcher.find()) {
+                return Optional.of(matcher.group());
+            }
+        }
+        return Optional.empty();
     }
 
     static String asString(Object value) throws JsonProcessingException {
