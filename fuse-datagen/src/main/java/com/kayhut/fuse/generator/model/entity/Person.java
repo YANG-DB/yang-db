@@ -75,8 +75,13 @@ public class Person extends EntityBase {
 
     @Override
     public String[] getRecord() {
-        return new String[]{this.getId(), this.firstName, this.lastName, this.gender.toString(),
-                Long.toString(this.birthDate.getTime()), Long.toString(this.deathDate.getTime()),
+        return new String[]{
+                this.getId(),
+                this.firstName,
+                this.lastName,
+                this.gender.toString(),
+                Long.toString(this.birthDate.getTime()),
+                Long.toString(this.deathDate.getTime()),
                 Integer.toString(this.height)};
     }
     //endregion

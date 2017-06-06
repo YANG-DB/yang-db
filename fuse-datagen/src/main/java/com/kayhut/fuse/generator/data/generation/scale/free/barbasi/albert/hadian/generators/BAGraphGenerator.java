@@ -12,9 +12,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
+import com.kayhut.fuse.generator.DataGenerator;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.rolltree.datatypes.Bucket;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.*;
 import javaslang.Tuple2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -28,6 +31,8 @@ import javaslang.Tuple2;
  * @author Ali Hadian
  */
 public class BAGraphGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(BAGraphGenerator.class);
+
     public NodesList nodesRouletteWheel = new SimpleRWNodeList();
     public Random random = new Random();
     public static long numEdges = 0;
@@ -254,11 +259,11 @@ public class BAGraphGenerator {
             BAGraphGenerator.m = edgesPerNode;
             BAGraphGenerator.samplingMode = samplingMode;
             BAGraphGenerator.graphFileWriter = new BufferedWriter(new FileWriter(new File(filePath)));
-            BAGraphGenerator.graphDistributionOutputFileName = filePath.replace(".csv", "") + "_scaleFreeSummary.txt";;
+            BAGraphGenerator.graphDistributionOutputFileName = filePath.replace(".csv", "") + "_scaleFreeSummary.txt";
             generator.createGraph();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return edgesSet;
     }

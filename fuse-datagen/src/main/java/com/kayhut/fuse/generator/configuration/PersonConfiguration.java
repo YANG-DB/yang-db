@@ -2,6 +2,7 @@ package com.kayhut.fuse.generator.configuration;
 
 import org.apache.commons.configuration.Configuration;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -15,9 +16,10 @@ public class PersonConfiguration extends EntityConfigurationBase {
         super(
                 configuration.getInt("person.numberOfNodes"),
                 configuration.getInt("person.edgesPerNode"),
-                configuration.getString("resultsPath") + "//"
+                System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath") + File.separator
                         + configuration.getString("person.personsResultsCsvFileName"),
-                configuration.getString("resultsPath") + "//"
+                System.getProperty("user.dir") + File.separator +
+                        configuration.getString("resultsPath") + File.separator
                         + configuration.getString("person.personsRelationsCsvFileName")
         );
 
@@ -30,6 +32,10 @@ public class PersonConfiguration extends EntityConfigurationBase {
         this.endDateOfStory = new Date(configuration.getLong("person.endDateOfStory"));
         this.idPrefix = configuration.getString("person.idPrefix");
         this.maxGuildMembership = configuration.getInt("person.maxGuildMembership");
+        this.meanDragonsPerPerson = configuration.getDouble("person.meanDragonsPerPerson");
+        this.sdDragonsPerPerson = configuration.getDouble("person.sdDragonsPerPerson");
+        this.meanHorsesPerPerson = configuration.getDouble("person.meanHorsesPerPerson");
+        this.sdHorsesPerPerson = configuration.getDouble("person.sdHorsesPerPerson");
     }
     //endregion
 
@@ -70,6 +76,22 @@ public class PersonConfiguration extends EntityConfigurationBase {
         return maxGuildMembership;
     }
 
+    public double getMeanDragonsPerPerson() {
+        return meanDragonsPerPerson;
+    }
+
+    public double getSdDragonsPerPerson() {
+        return sdDragonsPerPerson;
+    }
+
+    public double getMeanHorsesPerPerson() {
+        return meanHorsesPerPerson;
+    }
+
+    public double getSdHorsesPerPerson() {
+        return sdHorsesPerPerson;
+    }
+
     //endregion
 
     //region Fields
@@ -81,6 +103,10 @@ public class PersonConfiguration extends EntityConfigurationBase {
     private final Date startDateOfStory;
     private final Date endDateOfStory;
     private final int maxGuildMembership;
+    private final double meanDragonsPerPerson;
+    private final double sdDragonsPerPerson;
+    private final double meanHorsesPerPerson;
+    private final double sdHorsesPerPerson;
     private final String idPrefix;
     //endregion
 }

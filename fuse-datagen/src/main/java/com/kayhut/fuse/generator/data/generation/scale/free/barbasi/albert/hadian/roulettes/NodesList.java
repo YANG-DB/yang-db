@@ -12,11 +12,11 @@ public interface NodesList {
 	 * @param m
 	 * @param numNodes
 	 */
-	public void connectMRandomNodeToThisNewNode(int m, int numNodes);
+	void connectMRandomNodeToThisNewNode(int m, int numNodes);
 	
 	/**
 	 * adds (m_0 + 1) nodes and connects the last m_0 nodes to the first nodes. 
 	 * @param m
 	 */
-	public void createInitNodes(int m); 
+	void createInitNodes(int m);
 }
