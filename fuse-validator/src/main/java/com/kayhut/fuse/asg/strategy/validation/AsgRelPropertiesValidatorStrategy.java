@@ -2,25 +2,20 @@ package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgValidatorStrategy;
 import com.kayhut.fuse.asg.strategy.ValidationContext;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
-import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.model.query.entity.Typed;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import javaslang.collection.Stream;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.asg.strategy.ValidationContext.OK;

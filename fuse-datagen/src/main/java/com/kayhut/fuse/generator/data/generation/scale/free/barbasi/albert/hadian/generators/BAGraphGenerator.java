@@ -12,9 +12,12 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Stopwatch;
+import com.kayhut.fuse.generator.DataGenerator;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.rolltree.datatypes.Bucket;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.roulettes.*;
 import javaslang.Tuple2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -28,6 +31,8 @@ import javaslang.Tuple2;
  * @author Ali Hadian
  */
 public class BAGraphGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(BAGraphGenerator.class);
+
     public NodesList nodesRouletteWheel = new SimpleRWNodeList();
     public Random random = new Random();
     public static long numEdges = 0;
@@ -35,7 +40,8 @@ public class BAGraphGenerator {
 
     public enum SamplingMode {SIMPLE, ROLL_BUCKET, ROLL_TREE, SA, ROLL_BUCKET_SORTED, ROLL_TREE_REDUCED}
 
-    public static SamplingMode samplingMode = SamplingMode.SIMPLE;
+    //public static SamplingMode samplingMode = SamplingMode.SIMPLE;
+    public static SamplingMode samplingMode = SamplingMode.ROLL_TREE;
     public static int numNodesFinal = 0;
     public static int m = 2;
     public static Integer m_0 = null;
@@ -253,10 +259,11 @@ public class BAGraphGenerator {
             BAGraphGenerator.m = edgesPerNode;
             BAGraphGenerator.samplingMode = samplingMode;
             BAGraphGenerator.graphFileWriter = new BufferedWriter(new FileWriter(new File(filePath)));
+            BAGraphGenerator.graphDistributionOutputFileName = filePath.replace(".csv", "") + "_scaleFreeSummary.txt";
             generator.createGraph();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return edgesSet;
     }

@@ -65,8 +65,13 @@ public class Horse extends EntityBase {
     //region Public Methods
     @Override
     public String[] getRecord() {
-        return new String[]{this.getId(), this.name, Integer.toString(this.weight),
-                Integer.toString(this.maxSpeed), Integer.toString(this.maxDistance)};
+        return new String[]{
+                this.getId(),
+                this.name,
+                Integer.toString(this.weight),
+                Integer.toString(this.maxSpeed),
+                Integer.toString(this.maxDistance)
+        };
     }
 
     @Override

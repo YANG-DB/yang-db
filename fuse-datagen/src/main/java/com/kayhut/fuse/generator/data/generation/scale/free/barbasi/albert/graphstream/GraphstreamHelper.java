@@ -1,6 +1,6 @@
 package com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream;
 
-import com.kayhut.fuse.generator.util.CSVUtil;
+import com.kayhut.fuse.generator.util.CsvUtil;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -68,7 +68,7 @@ public class GraphstreamHelper {
                 File fileToSave = fileChooser.getSelectedFile();
                 String filePath = fileToSave.getAbsolutePath();
                 exportGraphMLFile(g,filePath);
-                logger.info("GraphML file exported to: %s", filePath);
+                logger.info("GraphML file exported to: {}", filePath);
             }
 
         });
@@ -115,8 +115,8 @@ public class GraphstreamHelper {
 
         String filePath = URLDecoder.decode(path + "//ScaleFreeSummary_" + g.getId() + ".csv", "UTF-8");
 
-        CSVUtil.appendResult(new String[] { "NumberOfNodes", "Degree" }, filePath);
-        sortedMap.forEach((degree, count) -> CSVUtil.appendResult(new String[]{count + "", degree + ""}, filePath));
+        CsvUtil.appendResult(new String[] { "NumberOfNodes", "Degree" }, filePath);
+        sortedMap.forEach((degree, count) -> CsvUtil.appendResult(new String[]{count + "", degree + ""}, filePath));
         System.out.println("\nFile Created Successfully: " + filePath);
     }
 

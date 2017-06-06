@@ -4,11 +4,11 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -335,6 +335,22 @@ public class AsgQueryUtil {
         }
 
         return newValues;
+    }
+
+    public static String pattern(AsgQuery query) {
+        List<AsgEBase> elements = elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, truePredicate, truePredicate, Collections.EMPTY_LIST);
+        StringJoiner joiner = new StringJoiner(":","","");
+        elements.forEach(e-> {
+            if(e.geteBase() instanceof EEntityBase)
+                joiner.add(EEntityBase.class.getSimpleName());
+            else if(e.geteBase() instanceof Rel)
+                joiner.add(Rel.class.getSimpleName());
+            else if(e.geteBase() instanceof EPropGroup)
+                joiner.add(EPropGroup.class.getSimpleName());
+            else if(e.geteBase() instanceof RelPropGroup)
+                joiner.add(RelPropGroup.class.getSimpleName());
+        });
+        return joiner.toString();
     }
 
     private static List<AsgEBase<? extends EBase>> path(
