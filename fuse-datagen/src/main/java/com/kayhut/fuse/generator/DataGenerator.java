@@ -74,7 +74,7 @@ public class DataGenerator {
     //region Private Methods
     private static boolean isValidNumberOfArguments(String[] args) {
         if (args.length < MIN_NUM_OF_ARGUMENTS) {
-            logger.debug("Expected {} argument(s): <path to field configuration file>", MIN_NUM_OF_ARGUMENTS);
+            logger.error("Expected {} argument(s): <path to field configuration file>", MIN_NUM_OF_ARGUMENTS);
             return false;
         }
         return true;
