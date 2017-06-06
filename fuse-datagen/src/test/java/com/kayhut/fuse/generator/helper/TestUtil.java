@@ -30,8 +30,7 @@ public class TestUtil {
     }
 
     public static boolean isFileExists(String filePath){
-        File file = new File(filePath);
-        return file.exists();
+        return new File(filePath).exists();
     }
 
 
