@@ -32,14 +32,13 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
                 e -> e.geteBase() instanceof Rel,
                 asgEBase -> true, Collections.emptyList());
 
-        list.forEach(e -> {
-            Optional<AsgEBase<EEntityBase>> sideA = AsgQueryUtil.nextAdjacentAncestor(e, EEntityBase.class);
-            Optional<AsgEBase<EEntityBase>> sideB = AsgQueryUtil.nextAdjacentDescendant(e, EEntityBase.class);
+        list.forEach(rel -> {
+            Optional<AsgEBase<EEntityBase>> sideA = AsgQueryUtil.nextAdjacentAncestor(rel, EEntityBase.class);
+            Optional<AsgEBase<EEntityBase>> sideB = AsgQueryUtil.nextAdjacentDescendant(rel, EEntityBase.class);
             if (!sideA.isPresent() || !sideB.isPresent())
-                errors.add(ERROR_1 + ":" + e);
+                errors.add(ERROR_1 + ":" + rel);
 
-
-            List<EPair> relAllowedPairs = accessor.$relation$(e.geteBase().getrType()).getePairs();
+            List<EPair> relAllowedPairs = accessor.$relation$(rel.geteBase().getrType()).getePairs();
 
             EPair ePair = new EPair();
 
@@ -57,11 +56,13 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
 
             if (ePair.geteTypeA() > 0)
                 if (relAllowedPairs.stream().noneMatch(p -> p.geteTypeA() == ePair.geteTypeA()))
-                    errors.add(ERROR_2 + ":" + ValidationContext.print(sideA.get(), e, sideB.get()));
+                    errors.add(ERROR_2 + ":" + ValidationContext.print(sideA.get(), rel, sideB.get()));
 
             if (ePair.geteTypeB() > 0)
                 if (relAllowedPairs.stream().noneMatch(p -> p.geteTypeB() == ePair.geteTypeB()))
-                    errors.add(ERROR_2 + ":" + ValidationContext.print(sideA.get(), e, sideB.get()));
+                    errors.add(ERROR_2 + ":" + ValidationContext.print(sideA.get(), rel, sideB.get()));
+
+
 
         });
 
