@@ -11,8 +11,10 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.search.SearchHit;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -41,25 +43,33 @@ public class RedundantFieldTransformer implements Transformer{
     public List<Map<String, String>> transform(List<Map<String, String>> documents) {
         List<String> idValues = new ArrayList<>();
         documents.forEach(doc -> idValues.add(doc.get(dupIdField)));
+        String[] arr = new String[indices.size()];
+        indices.toArray(arr);
+        String[]ids = new String[idValues.size()];
+        idValues.toArray(ids);
 
-        SearchRequestBuilder searchRequestBuilder = client.prepareSearch((String[]) indices.toArray()).
-                                                            setTypes(type).
-                                                            setSearchType(SearchType.DEFAULT)
-                                                            .setQuery(QueryBuilders.idsQuery(type).addIds(idValues));
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(arr).setTypes(type).
+                                                                            setQuery(QueryBuilders.idsQuery(ids)).
+                                                                            setSize(ids.length);
+        dupFields.keySet().forEach(k -> searchRequestBuilder.addField(k));
+        SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+        Map<String, Map<String, String>> dupsMap = new HashMap<>();
 
-        //dupFields.keySet().forEach(k -> searchRequestBuilder.addField(k));
-        try {
-            SearchResponse searchResponse = searchRequestBuilder.setSize(idValues.size()).execute().get();
-
-            System.out.println(searchResponse);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        for (SearchHit hit : searchResponse.getHits()) {
+            Map<String,String> fields = new HashMap<>();
+            dupFields.keySet().forEach(f -> fields.put(f, hit.getFields().get(f).getValue().toString()));
+            dupsMap.put(hit.getId(), fields);
         }
-
-
-        return null;
+        List<Map<String, String>> newDocuments = new ArrayList<>(documents.size());
+        for (Map<String, String> document : documents) {
+            Map<String, String> newDocument = new HashMap<>(document);
+            Map<String, String> fields = dupsMap.get(document.get(dupIdField));
+            dupFields.forEach((k,v) -> {
+                newDocument.put(v, fields.get(k));
+            });
+            newDocuments.add(newDocument);
+        }
+        return newDocuments;
     }
 
     @Override

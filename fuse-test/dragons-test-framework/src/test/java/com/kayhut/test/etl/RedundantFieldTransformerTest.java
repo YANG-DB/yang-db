@@ -2,6 +2,8 @@ package com.kayhut.test.etl;
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import com.kayhut.test.framework.providers.FileCsvDataProvider;
 import org.junit.Ignore;
@@ -17,9 +19,9 @@ public class RedundantFieldTransformerTest {
     @Test
     @Ignore
     public void test() throws Exception {
-        ElasticEmbeddedNode embeddedNode = new ElasticEmbeddedNode();
+        ElasticEmbeddedNode embeddedNode = new ElasticEmbeddedNode(new MappingFileElasticConfigurer("dragons", "src\\test\\resources\\dragon_mapping.json"));
         FileCsvDataProvider csvDataProvider = new FileCsvDataProvider("C:\\Users\\moti\\Downloads\\data\\dragonsTEST.csv",
-                CsvSchema.builder().addColumn("id").addColumn( "name").addColumn("age").addColumn("gender").addColumn("color").build());
+                CsvSchema.builder().addColumn("id").addColumn("name").addColumn("age").addColumn("gender").addColumn("color").build());
         ElasticDataPopulator populator = new ElasticDataPopulator(embeddedNode.getClient(), "dragons","dragon","id", csvDataProvider);
         populator.populate();
 

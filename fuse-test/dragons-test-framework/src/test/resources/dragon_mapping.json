@@ -3,7 +3,10 @@
     "dragon":{
       "_all":       { "enabled": false  },
       "properties": {
-        "name":    { "type": "string"  }
+        "name":    { "type": "string"  },
+        "gender": {"type": "string"  },
+        "age": {"type": "string"  },
+        "color": {"type": "string"  }
       }
     },
     "horse":{
