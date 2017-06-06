@@ -1,5 +1,7 @@
 package com.kayhut.fuse.generator.util;
 
+import com.kayhut.fuse.generator.DataGenerator;
+
 import java.io.File;
 
 /**
@@ -7,10 +9,4 @@ import java.io.File;
  */
 public class FileUtil {
 
-//    private static String getFilePath(String path) {
-//        File file = new File(path);
-//        if (file.isAbsolute()) {
-//
-//        }
-//    }
 }

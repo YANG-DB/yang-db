@@ -12,9 +12,9 @@ import java.util.Set;
  */
 public class TestUtil {
 
-    public static Set<Integer> findDuplicates(List<Integer> input) {
+    public static <T> Set<T> findDuplicates(List<T> input) {
         // Linked* preserves insertion order so the returned Sets iteration order is somewhat like the original list
-        LinkedHashMultiset<Integer> duplicates = LinkedHashMultiset.create(input);
+        LinkedHashMultiset<T> duplicates = LinkedHashMultiset.create(input);
 
         // Remove all entries with a count of 1
         duplicates.entrySet().removeIf(entry -> entry.getCount() == 1);
@@ -32,5 +32,13 @@ public class TestUtil {
     public static boolean isFileExists(String filePath){
         File file = new File(filePath);
         return file.exists();
+    }
+
+
+    public static void cleanDirectory(File dir) {
+        for (File file: dir.listFiles()) {
+            if (file.isDirectory()) cleanDirectory(file);
+            file.delete();
+        }
     }
 }

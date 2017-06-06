@@ -2,6 +2,7 @@ package com.kayhut.fuse.generator.configuration;
 
 import org.apache.commons.configuration.Configuration;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -15,9 +16,10 @@ public class PersonConfiguration extends EntityConfigurationBase {
         super(
                 configuration.getInt("person.numberOfNodes"),
                 configuration.getInt("person.edgesPerNode"),
-                configuration.getString("resultsPath") + "//"
+                System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath") + File.separator
                         + configuration.getString("person.personsResultsCsvFileName"),
-                configuration.getString("resultsPath") + "//"
+                System.getProperty("user.dir") + File.separator +
+                        configuration.getString("resultsPath") + File.separator
                         + configuration.getString("person.personsRelationsCsvFileName")
         );
 

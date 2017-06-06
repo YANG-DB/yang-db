@@ -17,7 +17,6 @@ import static org.junit.Assert.*;
  */
 public class RandomUtilTest {
 
-
     @Test
     public void expDistTest() throws Exception {
         double[] expDistArray = RandomUtil.getExpDistArray(100, 1.0, 0.5);

@@ -1,7 +1,9 @@
-package com.kayhut.fuse.generator.data.generation.graph;
+package com.kayhut.fuse.generator.data.generation;
 
+import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.generator.configuration.DragonConfiguration;
 import com.kayhut.fuse.generator.data.generation.entity.DragonGenerator;
+import com.kayhut.fuse.generator.data.generation.graph.GraphGeneratorBase;
 import com.kayhut.fuse.generator.data.generation.scale.free.ScaleFreeModel;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream.GraphstreamHelper;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators.BAGraphGenerator;
@@ -14,21 +16,26 @@ import com.kayhut.fuse.generator.util.DateUtil;
 import com.kayhut.fuse.generator.util.RandomUtil;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.commons.math3.util.Pair;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.apache.commons.math3.util.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static com.kayhut.fuse.generator.util.CSVUtil.appendResults;
+import static com.kayhut.fuse.generator.util.CsvUtil.appendResults;
 
 
 /**
  * Created by benishue on 15-May-17.
  */
 public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguration, Dragon> {
+
+    private  final Logger logger = LoggerFactory.getLogger(DragonsGraphGenerator.class);
 
     //region Ctrs
     public DragonsGraphGenerator(final DragonConfiguration dragonConfiguration) {
@@ -41,13 +48,52 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
                 ),
                 new DragonGenerator(dragonConfiguration)
         );
+        this.dragonConf = dragonConfiguration;
     }
     //endregion
 
     //region Public Methods
 
+
+    public void generateSmallDragonsGraph(String resultsPath, boolean drawGraph) {
+        try {
+            Stopwatch stopwatch = Stopwatch.createStarted();
+            DragonsGraphGenerator dragonsGraphGenerator = new DragonsGraphGenerator(dragonConf);
+            Graph dragonsInteractionGraph = dragonsGraphGenerator.generateGraph();
+            stopwatch.stop();
+            long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
+            logger.info("Dragons model V1 generation took (seconds): %d", elapsed);
+
+            GraphstreamHelper.printScaleFreeDataSummary(dragonsInteractionGraph, resultsPath);
+            if (drawGraph) {
+                GraphstreamHelper.drawGraph(dragonsInteractionGraph, logger);
+                System.in.read();
+            }
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    public List<String> generateMassiveDragonsGraph() {
+        List<String> nodesIds = new ArrayList<>();
+        try {
+            Stopwatch stopwatch = Stopwatch.createStarted();
+            DragonsGraphGenerator dragonsGraphGenerator = new DragonsGraphGenerator(dragonConf);
+            nodesIds = dragonsGraphGenerator.generateMassiveGraph();
+            stopwatch.stop();
+            long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
+            logger.info("Dragons massive graph generation took (seconds): %d", elapsed);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return nodesIds;
+    }
+
+    //endregion
+
+    //region Overridden Methods
     @Override
-    public Graph generateGraph() {
+    protected Graph generateGraph() {
         Graph graph = GraphstreamHelper.generateGraph(getModel().getModelName() + "_Dragons"
                 , getModel().getNumOfNodes(), ((ScaleFreeModel) getModel()).getEdgesPerNode());
 
@@ -61,7 +107,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
 
 
     @Override
-    public List<String> generateMassiveGraph() {
+    protected List<String> generateMassiveGraph() {
         List<Tuple2> edgesList = BAGraphGenerator.generateMassiveBAgraph(
                 model.getNumOfNodes(),
                 ((ScaleFreeModel) model).getEdgesPerNode(),
@@ -109,7 +155,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
     }
 
     @Override
-    public void writeGraph(List<String> nodesList, List<Tuple2> edgesList) {
+    protected void writeGraph(List<String> nodesList, List<Tuple2> edgesList) {
         List<String[]> dragonsRecords = new ArrayList<>();
         List<String[]> dragonsFiresRecords = new ArrayList<>();
         List<String[]> dragonsFreezeRecords = new ArrayList<>();
@@ -157,5 +203,9 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
 
     //region Private Methods
 
+    //endregion
+
+    //region Fields
+    private final DragonConfiguration dragonConf;
     //endregion
 }

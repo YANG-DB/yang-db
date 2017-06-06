@@ -2,6 +2,7 @@ package com.kayhut.fuse.generator.configuration;
 
 import org.apache.commons.configuration.Configuration;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -13,7 +14,7 @@ public class GuildConfiguration extends EntityConfigurationBase {
     public GuildConfiguration(final Configuration configuration) {
         super(configuration.getInt("guild.numOfGuilds"),
                 0,
-                configuration.getString("resultsPath") + "//"
+                System.getProperty("user.dir") + File.separator +configuration.getString("resultsPath") + File.separator
                         + configuration.getString("guild.guildsResultsCsvFileName"),
                 ""
         );
