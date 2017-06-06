@@ -26,7 +26,7 @@ public class ValidationContext {
     }
 
     public static String print(Object ... elements) {
-        StringJoiner joiner = new StringJoiner("[",":","]");
+        StringJoiner joiner = new StringJoiner(":","[","]");
         Arrays.asList(elements).forEach(element -> joiner.add(element.toString()));
         return joiner.toString();
     }
