@@ -29,10 +29,12 @@ public class Originated extends RelationBase {
     //region Public Methods
     @Override
     public String[] getRecord() {
-        return new String[]{this.getId(),
+        return new String[]{
+                this.getId(),
                 this.getSource(),
                 this.getTarget(),
-                Long.toString(this.getSince().getTime())};
+                Long.toString(this.getSince().getTime())
+        };
     }
     //endregion
 
