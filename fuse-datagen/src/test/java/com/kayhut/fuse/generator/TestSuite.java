@@ -31,15 +31,19 @@ public class TestSuite {
     static Configuration configuration;
 
     @BeforeClass
-    public static void setUp() {
-        System.out.println("setting up");
+    public static void setUp() throws Exception{
+        System.out.println("Setting up - fuse-datagen");
         configuration = new DataGenConfiguration(CONFIGURATION_FILE_PATH).getInstance();
-
+        clearDataFolder();
     }
 
     @AfterClass
     public static void tearDown() throws Exception{
-        System.out.println("tearing down");
+        System.out.println("Tearing down - fuse-datagen");
+        clearDataFolder();
+    }
+
+    public static void clearDataFolder() throws InterruptedException {
         String dir = System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath");
         TestUtil.cleanDirectory(new File(dir));
         Thread.sleep(1000);

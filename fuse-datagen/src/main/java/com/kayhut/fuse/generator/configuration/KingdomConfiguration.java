@@ -16,10 +16,12 @@ public class KingdomConfiguration extends EntityConfigurationBase {
                 0,
                 System.getProperty("user.dir") + File.separator +configuration.getString("resultsPath") + File.separator
                         + configuration.getString("kingdom.kingdomsResultsCsvFileName"),
-                ""
+                System.getProperty("user.dir") + File.separator +configuration.getString("resultsPath") + File.separator
+                        + configuration.getString("kingdom.kingdomsRelationsCsvFileName")
         );
         this.kingdoms = configuration.getStringArray("kingdom.kingdoms");
         this.startDateOfStory = new Date(configuration.getLong("kingdom.startDateOfStory"));
+        this.endDateOfStory = new Date(configuration.getLong("kingdom.endDateOfStory"));
         this.idPrefix = configuration.getString("kingdom.idPrefix");
 
     }
@@ -34,6 +36,10 @@ public class KingdomConfiguration extends EntityConfigurationBase {
         return startDateOfStory;
     }
 
+    public Date getEndDateOfStory() {
+        return endDateOfStory;
+    }
+
     public String getIdPrefix() {
         return idPrefix;
     }
@@ -42,6 +48,7 @@ public class KingdomConfiguration extends EntityConfigurationBase {
     //region Fields
     private String[] kingdoms;
     private Date startDateOfStory;
+    private Date endDateOfStory;
     private final String idPrefix;
     //endregion
 

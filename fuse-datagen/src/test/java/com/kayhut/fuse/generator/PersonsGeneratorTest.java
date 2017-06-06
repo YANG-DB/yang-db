@@ -10,7 +10,6 @@ import com.kayhut.fuse.generator.model.enums.Gender;
 import com.kayhut.fuse.generator.model.enums.RelationType;
 import com.kayhut.fuse.generator.util.CsvUtil;
 import org.apache.commons.configuration.Configuration;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -37,8 +36,6 @@ public class PersonsGeneratorTest {
     static String CONFIGURATION_MASSIVE_FILE_PATH = "test.generator.massive.properties";
 
     private final static int NUM_OF_PERSONS = 1000;
-    private final static int NUM_OF_KINGDOMS = 8;
-    private final static int NUM_OF_GUILDS = 100;
     private final static int NUM_OF_DRAGONS = 10000;
     private final static int NUM_OF_HORSES = 6500;
 
@@ -91,7 +88,7 @@ public class PersonsGeneratorTest {
         double sdDragonsPerPerson = 2;
 
         PersonsGraphGenerator personsGraphGenerator = new PersonsGraphGenerator(new PersonConfiguration(configuration));
-        Map<String, List<String>> dragonsToPersonsSet = personsGraphGenerator.attachDragonsToPersons(
+        Map<String, List<String>> dragonsToPersonsSet = personsGraphGenerator.attachDragonsToPerson(
                 dragonsIdList,
                 personsIdList,
                 meanDragonsPerPerson,
@@ -155,7 +152,7 @@ public class PersonsGeneratorTest {
 
         PersonsGraphGenerator personsGraphGenerator = new PersonsGraphGenerator(new PersonConfiguration(configuration));
 
-        Map<String, List<String>> horsesToPersonsSet = personsGraphGenerator.attachHorsesToPersons(horsesIdList,
+        Map<String, List<String>> horsesToPersonsSet = personsGraphGenerator.attachHorsesToPerson(horsesIdList,
                 personsIdList,
                 meanHorsesPerPerson,
                 sdHorsesPerPerson);
@@ -206,6 +203,7 @@ public class PersonsGeneratorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         logger = org.slf4j.LoggerFactory.getLogger(DataGenerator.class);
+        loadConfigurations(CONFIGURATION_MASSIVE_FILE_PATH);
     }
 
     private static void loadConfigurations(String configurationFilePath) {

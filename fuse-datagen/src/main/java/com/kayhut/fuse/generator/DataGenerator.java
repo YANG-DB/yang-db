@@ -1,31 +1,16 @@
 package com.kayhut.fuse.generator;
 
-import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.generator.configuration.*;
 import com.kayhut.fuse.generator.data.generation.*;
-import com.kayhut.fuse.generator.data.generation.entity.GuildGenerator;
-import com.kayhut.fuse.generator.data.generation.entity.KingdomGenerator;
-import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream.GraphstreamHelper;
-import com.kayhut.fuse.generator.model.entity.EntityBase;
-import com.kayhut.fuse.generator.model.entity.Guild;
-import com.kayhut.fuse.generator.model.entity.Kingdom;
-import com.kayhut.fuse.generator.util.CsvUtil;
-import com.kayhut.fuse.generator.util.RandomUtil;
 import javaslang.Tuple2;
-import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
-import org.graphstream.graph.Graph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 /**
@@ -38,10 +23,6 @@ public class DataGenerator {
     private static Configuration configuration;
 
 
-    //The shape parameter in  Exponential distribution
-    private static final double LAMBDA_EXP_DIST = 0.5;
-
-
     public static void main(String[] args) {
         if (!isValidNumberOfArguments(args)) {
             System.exit(-1);
@@ -51,17 +32,26 @@ public class DataGenerator {
         DragonsGraphGenerator dgg = new DragonsGraphGenerator(new DragonConfiguration(configuration));
         List<String> dragonsIds = dgg.generateMassiveDragonsGraph();
 
-        PersonsGraphGenerator pgg = new PersonsGraphGenerator(new PersonConfiguration(configuration));
-        List<String> personsIds = pgg.generatePersonsGraph();
-
         HorsesGraphGenerator hgg = new HorsesGraphGenerator(new HorseConfiguration(configuration));
         List<String> horsesIds = hgg.generateHorsesGraph();
 
-        KingdomsGraphGenerator kgg = new KingdomsGraphGenerator(new KingdomConfiguration(configuration));
-        List<String> kingdomsIds = kgg.generateKingdomsGraph();
+        PersonConfiguration personConf = new PersonConfiguration(configuration);
+        PersonsGraphGenerator pgg = new PersonsGraphGenerator(personConf);
+        List<String> personsIds = pgg.generatePersonsGraph();
+        pgg.attachDragonsToPerson(dragonsIds, personsIds, personConf.getMeanDragonsPerPerson(), personConf.getSdDragonsPerPerson());
+        pgg.attachHorsesToPerson(horsesIds, personsIds, personConf.getMeanHorsesPerPerson(), personConf.getSdHorsesPerPerson());
+
 
         GuildsGraphGenerator ggg = new GuildsGraphGenerator(configuration);
         List<String> guildsIds = ggg.generateGuildsGraph();
+        ggg.attachPersonsToGuilds(guildsIds, personsIds);
+
+        KingdomsGraphGenerator kgg = new KingdomsGraphGenerator(new KingdomConfiguration(configuration));
+        List<String> kingdomsIds = kgg.generateKingdomsGraph();
+        kgg.attachDragonToKingdom(kingdomsIds, dragonsIds);
+        kgg.attachHorseToKingdom(kingdomsIds, horsesIds);
+        kgg.attachGuildToKingdom(kingdomsIds, guildsIds);
+        kgg.attachPersonToKingdom(kingdomsIds, personsIds);
     }
 
     public static void loadConfiguration(String path) {
@@ -69,7 +59,7 @@ public class DataGenerator {
             configuration = new DataGenConfiguration(path).getInstance();
             String resultsPath = System.getProperty("user.dir") + File.separator +
                     configuration.getString("resultsPath");
-            logger.info("Creating Results Folder: " + resultsPath);
+            logger.info("Creating Results Folder: %s", resultsPath);
             Files.createDirectories(Paths.get(resultsPath));
         } catch (Exception e) {
             logger.error("Failed to load configuration", e);

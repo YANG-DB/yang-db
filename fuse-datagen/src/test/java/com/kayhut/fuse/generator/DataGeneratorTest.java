@@ -27,16 +27,10 @@ import static org.junit.Assert.*;
 public class DataGeneratorTest {
 
     static final String CONFIGURATION_FILE_PATH = "test.generator.properties";
-    private final static int NUM_OF_PERSONS = 1000;
-    private final static int NUM_OF_KINGDOMS = 8;
-    private final static int NUM_OF_GUILDS = 100;
-    private final static int NUM_OF_DRAGONS = 10000;
-    private final static int NUM_OF_HORSES = 6500;
 
     @Test
     public void dataGenerationTest() throws Exception {
         DataGenerator.main(new String [] {CONFIGURATION_FILE_PATH});
-        int i =5;
     }
 
     @BeforeClass

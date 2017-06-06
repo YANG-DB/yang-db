@@ -2,22 +2,18 @@
 
 <configuration>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- encoders are assigned the type
-         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
-    </encoder>
-  </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+        </encoder>
+    </appender>
 
-  <logger name="com.kayhut.fuse.generator" level="INFO" additivity="false">
-  	<appender-ref ref="STDOUT" />
-  </logger>
+    <logger name="com.kayhut.fuse.generator" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
 
-  <!-- Strictly speaking, the level attribute is not necessary since -->
-  <!-- the level of the root level is set to DEBUG by default.       -->
-  <root level="INFO">
-    <appender-ref ref="STDOUT" />
-  </root>  
-  
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
 </configuration>

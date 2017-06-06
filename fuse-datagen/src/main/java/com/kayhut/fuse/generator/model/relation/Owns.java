@@ -7,12 +7,13 @@ import java.util.Date;
 /**
  * Created by benishue on 05-Jun-17.
  */
-public class Knows extends RelationBase {
+public class Owns extends RelationBase {
 
     //region Ctrs
-    public Knows(String id, String source, String target, Date since) {
-        super(id, source, target, RelationType.KNOWS);
+    public Owns(String id, String source, String target, Date since, Date till) {
+        super(id, source, target, RelationType.OWNS);
         this.since = since;
+        this.till = till;
     }
     //endregion
 
@@ -24,6 +25,15 @@ public class Knows extends RelationBase {
     public void setSince(Date since) {
         this.since = since;
     }
+
+    public Date getTill() {
+        return till;
+    }
+
+    public void setTill(Date till) {
+        this.till = till;
+    }
+
     //endregion
 
     //region Public Methods
@@ -32,12 +42,15 @@ public class Knows extends RelationBase {
         return new String[]{this.getId(),
                 this.getSource(),
                 this.getTarget(),
-                Long.toString(this.getSince().getTime())};
+                Long.toString(this.getSince().getTime()),
+                Long.toString(this.getTill().getTime()),
+        };
     }
     //endregion
 
     //region Fields
     private Date since;
+    private Date till;
     //endregion
 }
 

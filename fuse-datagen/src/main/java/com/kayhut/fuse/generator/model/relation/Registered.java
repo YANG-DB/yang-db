@@ -7,11 +7,11 @@ import java.util.Date;
 /**
  * Created by benishue on 05-Jun-17.
  */
-public class Knows extends RelationBase {
+public class Registered extends RelationBase {
 
     //region Ctrs
-    public Knows(String id, String source, String target, Date since) {
-        super(id, source, target, RelationType.KNOWS);
+    public Registered(String id, String source, String target, Date since) {
+        super(id, source, target, RelationType.REGISTERED);
         this.since = since;
     }
     //endregion
@@ -29,10 +29,12 @@ public class Knows extends RelationBase {
     //region Public Methods
     @Override
     public String[] getRecord() {
-        return new String[]{this.getId(),
+        return new String[]{
+                this.getId(),
                 this.getSource(),
                 this.getTarget(),
-                Long.toString(this.getSince().getTime())};
+                Long.toString(this.getSince().getTime())
+        };
     }
     //endregion
 

@@ -58,22 +58,22 @@ public class KingdomsGeneratorTest {
                 .mapToObj(Integer::toString).collect(Collectors.toList());
 
         KingdomsGraphGenerator kingdomsGraphGenerator = new KingdomsGraphGenerator(new KingdomConfiguration(configuration));
-        List<Tuple2> personsToKingdomsEdges = kingdomsGraphGenerator.attachPersonToKingdoms(kingdomsIdList, personsIdList);
+        List<Tuple2> personsToKingdomsEdges = kingdomsGraphGenerator.attachPersonToKingdom(kingdomsIdList, personsIdList);
         //Checking that the size of the EdgeSet is the size of persons list
         assertEquals(personsIdList.size(), personsToKingdomsEdges.size());
 
-        List<Integer> personsIdsInEdges = Stream.ofAll(personsToKingdomsEdges).map(tuple2 -> (Integer) tuple2._1).toJavaList();
+        List<String> personsIdsInEdges = Stream.ofAll(personsToKingdomsEdges).map(tuple2 -> (String) tuple2._1).toJavaList();
 
-        List<Integer> kingdmsIdsInEdges = Stream.ofAll(personsToKingdomsEdges).map(tuple2 -> (Integer) tuple2._2).toJavaList();
+        List<String> kingdmsIdsInEdges = Stream.ofAll(personsToKingdomsEdges).map(tuple2 -> (String) tuple2._2).toJavaList();
 
         //Check that all Persons belong to kingdoms
         for (int i = 0; i < personsIdList.size(); i++) {
-            assertThat(personsIdsInEdges, hasItem(i));
+            assertThat(personsIdsInEdges, hasItem(Integer.toString(i)));
         }
 
 
         for (int i = 0; i < kingdomsIdList.size(); i++) {
-            assertThat(kingdmsIdsInEdges, hasItem(i));
+            assertThat(kingdmsIdsInEdges, hasItem(Integer.toString(i)));
         }
 
         assertEquals(TestUtil.findDuplicates(personsIdsInEdges).size(), 0);
@@ -92,18 +92,18 @@ public class KingdomsGeneratorTest {
         //Checking that the size of the EdgeSet is the size of horses list
         assertEquals(horsesIdList.size(), horsesToKingdomsEdges.size());
 
-        List<Integer> horsesIdsInEdges = Stream.ofAll(horsesToKingdomsEdges).map(tuple2 -> (Integer) tuple2._1).toJavaList();
+        List<String> horsesIdsInEdges = Stream.ofAll(horsesToKingdomsEdges).map(tuple2 -> (String) tuple2._1).toJavaList();
 
-        List<Integer> kingdmsIdsInEdges = Stream.ofAll(horsesToKingdomsEdges).map(tuple2 -> (Integer) tuple2._2).toJavaList();
+        List<String> kingdmsIdsInEdges = Stream.ofAll(horsesToKingdomsEdges).map(tuple2 -> (String) tuple2._2).toJavaList();
 
         //Check that all horses belong to kingdoms
         for (int i = 0; i < horsesIdList.size(); i++) {
-            assertThat(horsesIdsInEdges, hasItem(i));
+            assertThat(horsesIdsInEdges, hasItem(Integer.toString(i)));
         }
 
 
         for (int i = 0; i < kingdomsIdList.size(); i++) {
-            assertThat(kingdmsIdsInEdges, hasItem(i));
+            assertThat(kingdmsIdsInEdges, hasItem(Integer.toString(i)));
         }
 
         assertEquals(TestUtil.findDuplicates(horsesIdsInEdges).size(), 0);
@@ -122,18 +122,18 @@ public class KingdomsGeneratorTest {
         //Checking that the size of the EdgeSet is the size of horses list
         assertEquals(guildsIdList.size(), guildsToKingdomsEdges.size());
 
-        List<Integer> guildIdsInEdges = Stream.ofAll(guildsToKingdomsEdges).map(tuple2 -> (Integer) tuple2._1).toJavaList();
+        List<String> guildIdsInEdges = Stream.ofAll(guildsToKingdomsEdges).map(tuple2 ->  (String)tuple2._1).toJavaList();
 
-        List<Integer> kingdmsIdsInEdges = Stream.ofAll(guildsToKingdomsEdges).map(tuple2 -> (Integer) tuple2._2).toJavaList();
+        List<String> kingdmsIdsInEdges = Stream.ofAll(guildsToKingdomsEdges).map(tuple2 ->  (String)tuple2._2).toJavaList();
 
         //Check that all guilds belong to kingdoms
         for (int i = 0; i < guildsIdList.size(); i++) {
-            assertThat(guildIdsInEdges, hasItem(i));
+            assertThat(guildIdsInEdges, hasItem(Integer.toString(i)));
         }
 
 
         for (int i = 0; i < kingdomsIdList.size(); i++) {
-            assertThat(kingdmsIdsInEdges, hasItem(i));
+            assertThat(kingdmsIdsInEdges, hasItem(Integer.toString(i)));
         }
 
         assertEquals(TestUtil.findDuplicates(guildIdsInEdges).size(), 0);

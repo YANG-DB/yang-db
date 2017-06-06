@@ -8,13 +8,15 @@ import com.kayhut.fuse.generator.data.generation.scale.free.ScaleFreeModel;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.graphstream.GraphstreamHelper;
 import com.kayhut.fuse.generator.data.generation.scale.free.barbasi.albert.hadian.generators.BAGraphGenerator;
 import com.kayhut.fuse.generator.model.entity.Person;
+import com.kayhut.fuse.generator.model.enums.EntityType;
 import com.kayhut.fuse.generator.model.enums.RelationType;
 import com.kayhut.fuse.generator.model.relation.Knows;
+import com.kayhut.fuse.generator.model.relation.Owns;
 import com.kayhut.fuse.generator.model.relation.RelationBase;
+import com.kayhut.fuse.generator.util.CsvUtil;
 import com.kayhut.fuse.generator.util.RandomUtil;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
-import org.apache.commons.configuration.Configuration;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.slf4j.Logger;
@@ -32,7 +34,7 @@ import static com.kayhut.fuse.generator.util.CsvUtil.appendResults;
  */
 public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguration, Person> {
 
-    private  final Logger logger = LoggerFactory.getLogger(PersonsGraphGenerator.class);
+    private final Logger logger = LoggerFactory.getLogger(PersonsGraphGenerator.class);
 
     //region Ctrs
     public PersonsGraphGenerator(final PersonConfiguration personConfiguration) {
@@ -44,7 +46,6 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
                         personConfiguration.getNumberOfNodes()),
                 new PersonGenerator(personConfiguration)
         );
-        personConf = personConfiguration;
     }
     //endregion
 
@@ -53,7 +54,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
         List<String> nodesIds = new ArrayList<>();
         try {
             Stopwatch stopwatch = Stopwatch.createStarted();
-            PersonsGraphGenerator personsGraphGenerator = new PersonsGraphGenerator(personConf);
+            PersonsGraphGenerator personsGraphGenerator = new PersonsGraphGenerator(configuration);
             nodesIds = personsGraphGenerator.generateMassiveGraph();
             stopwatch.stop();
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
@@ -64,21 +65,32 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
         return nodesIds;
     }
 
-    public Map<String, List<String>> attachDragonsToPersons(List<String> dragonsIdList,
-                                                              List<String> personsIdList,
-                                                              double meanDragonsPerPerson,
-                                                              double sdDragonsPerPerson) {
+    public Map<String, List<String>> attachDragonsToPerson(List<String> dragonsIdList,
+                                                           List<String> personsIdList,
+                                                           double meanDragonsPerPerson,
+                                                           double sdDragonsPerPerson) {
 
 
-        return attachAnimalToPersons(dragonsIdList, personsIdList, meanDragonsPerPerson, sdDragonsPerPerson);
+        Map<String, List<String>> dragonsToPerson = attachAnimalsToPerson(dragonsIdList,
+                personsIdList,
+                meanDragonsPerPerson,
+                sdDragonsPerPerson);
+        printAnimalsToPerson(dragonsToPerson, EntityType.DRAGON);
+        return dragonsToPerson;
     }
 
-    public Map<String, List<String>> attachHorsesToPersons(List<String> horsesIdList,
-                                                             List<String> personsIdList,
-                                                             double meanHorsesPerPerson,
-                                                             double sdHorsesPerPerson) {
+    public Map<String, List<String>> attachHorsesToPerson(List<String> horsesIdList,
+                                                          List<String> personsIdList,
+                                                          double meanHorsesPerPerson,
+                                                          double sdHorsesPerPerson) {
 
-        return attachAnimalToPersons(horsesIdList, personsIdList, meanHorsesPerPerson, sdHorsesPerPerson);
+        Map<String, List<String>> horsesToPersom = attachAnimalsToPerson(horsesIdList,
+                personsIdList,
+                meanHorsesPerPerson,
+                sdHorsesPerPerson);
+
+        printAnimalsToPerson(horsesToPersom, EntityType.HORSE);
+        return horsesToPersom;
     }
 
     //endregion
@@ -163,10 +175,10 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
     //endregion
 
     //region Private Methods
-    private Map<String, List<String>> attachAnimalToPersons(List<String> animalsIdList,
-                                                              List<String> personsIdList,
-                                                              double meanAnimalsPerPerson,
-                                                              double sdAnimalsPerPerson) {
+    private Map<String, List<String>> attachAnimalsToPerson(List<String> animalsIdList,
+                                                            List<String> personsIdList,
+                                                            double meanAnimalsPerPerson,
+                                                            double sdAnimalsPerPerson) {
         Map<String, List<String>> animalsToPersonsSet = new HashMap<>();
 
         //Deep Copy
@@ -217,10 +229,26 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
     }
 
 
-    //endregion
+    private void printAnimalsToPerson(Map<String, List<String>> animalsToPerson, EntityType entityType) {
+        List<String[]> d2pRecords = new ArrayList<>();
 
-    //region Fields
-    private final PersonConfiguration personConf;
+        for (Map.Entry<String, List<String>> p2A : animalsToPerson.entrySet()) {
+            String personId = p2A.getKey();
+            List<String> animalsIds = p2A.getValue();
+            for (String dragonId : animalsIds) {
+                String edgeId = personId + "_" + dragonId;
+                Date since = RandomUtil.randomDate(configuration.getStartDateOfStory(), configuration.getEndDateOfStory());
+                Date till = RandomUtil.randomDate(since, configuration.getEndDateOfStory());
+                RelationBase personOwnsAnimalsRel = new Owns(edgeId, personId, dragonId, since, till);
+                d2pRecords.add(personOwnsAnimalsRel.getRecord());
+            }
+        }
+        //Write graph
+        String ownsRelationsFile = String.format("%s_%s_%s.csv",
+                configuration.getRelationsFilePath().replace(".csv", ""),
+                RelationType.OWNS,
+                entityType);
+        CsvUtil.appendResults(d2pRecords, ownsRelationsFile);
+    }
     //endregion
-
 }

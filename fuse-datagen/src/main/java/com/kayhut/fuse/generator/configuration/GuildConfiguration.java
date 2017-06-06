@@ -14,9 +14,10 @@ public class GuildConfiguration extends EntityConfigurationBase {
     public GuildConfiguration(final Configuration configuration) {
         super(configuration.getInt("guild.numOfGuilds"),
                 0,
-                System.getProperty("user.dir") + File.separator +configuration.getString("resultsPath") + File.separator
+                System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath") + File.separator
                         + configuration.getString("guild.guildsResultsCsvFileName"),
-                ""
+                System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath") + File.separator
+                        + configuration.getString("guild.guildsRelationsCsvFileName")
         );
         this.guilds = configuration.getStringArray("guild.guilds");
         this.startDateOfStory = new Date(configuration.getLong("guild.startDateOfStory"));
