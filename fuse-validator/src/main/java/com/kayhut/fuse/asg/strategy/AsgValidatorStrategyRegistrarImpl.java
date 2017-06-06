@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.asg.strategy.validation.AsgEntityPropertiesValidationValidatorStrategy;
+import com.kayhut.fuse.asg.strategy.validation.AsgEntityPropertiesValidatorStrategy;
 
 import java.util.Arrays;
 
@@ -9,7 +9,7 @@ public class AsgValidatorStrategyRegistrarImpl implements AsgValidatorStrategyRe
     @Override
     public Iterable<AsgValidatorStrategy> register() {
         return Arrays.asList(
-                new AsgEntityPropertiesValidationValidatorStrategy()
+                new AsgEntityPropertiesValidatorStrategy()
         );
     }
     //endregion
