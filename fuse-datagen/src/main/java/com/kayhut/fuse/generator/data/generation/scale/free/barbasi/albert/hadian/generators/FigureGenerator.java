@@ -6,8 +6,6 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
-import static java.util.stream.Collectors.groupingBy;
-
 /**
  * Created by ali on 18/01/17.
  */
@@ -15,9 +13,9 @@ public class FigureGenerator {
     private final static int NUM_TESTS = 10;
     private final static String[] columns = {"SamplingMode", "NumNodes", "m", "NumEdges", "NumComparisons", "TotalTime", "SamplingTime", "MaintenanceTime", "NumBuckets", "TreeCodeWordLength", "TreeOptimalHuffmanCodeWordLength", "TotalBucketsInserted", "TotalBucketsRemoved"};
     private final static int MAX_COLUMNS = columns.length;
-    private static List<String> baseParams = Arrays.asList(new String[]{"java", "-Xmx4g", "-jar", "target/ROLL-0.3-SNAPSHOT-jar-with-dependencies.jar"});
+    private static final List<String> baseParams = Arrays.asList(new String[]{"java", "-Xmx4g", "-jar", "target/ROLL-0.3-SNAPSHOT-jar-with-dependencies.jar"});
     private static final DecimalFormat df = new DecimalFormat("#.0000000");
-    private static String FIGURES_PARAM_PREFIX = "-fig";
+    private static final String FIGURES_PARAM_PREFIX = "-fig";
     private static final Map<String, String> ALG_TO_FILE_NAMES_MAP = new LinkedHashMap<String, String>() {{
         put("roll-tree", "RWBT");
         put("roll-bucket", "RWB");

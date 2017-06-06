@@ -5,13 +5,13 @@ import com.kayhut.fuse.generator.model.enums.RelationType;
 import java.util.Date;
 
 /**
- * Created by benishue on 15-May-17.
+ * Created by benishue on 05-Jun-17.
  */
-public class Freezes extends RelationBase {
+public class MemberOf extends RelationBase {
 
     //region Ctrs
-    public Freezes(String id, String source, String target, Date since, Date till) {
-        super(id, source, target, RelationType.FREEZES);
+    public MemberOf(String id, String source, String target, Date since, Date till) {
+        super(id, source, target, RelationType.MEMBER_OF);
         this.since = since;
         this.till = till;
     }
@@ -33,13 +33,12 @@ public class Freezes extends RelationBase {
     public void setTill(Date till) {
         this.till = till;
     }
-
     //endregion
 
     //region Public Methods
     @Override
-    public String[] getRecord(){
-        return new String[] {
+    public String[] getRecord() {
+        return new String[]{
                 this.getId(),
                 this.getSource(),
                 this.getTarget(),
@@ -54,3 +53,4 @@ public class Freezes extends RelationBase {
     private Date till;
     //endregion
 }
+

@@ -10,9 +10,9 @@ import java.util.List;
 /**
  * Created by benishue on 15-May-17.
  */
-public class CSVUtil {
+public class CsvUtil {
 
-    private CSVUtil() {
+    private CsvUtil() {
         throw new IllegalAccessError("Utility class");
     }
 
@@ -28,7 +28,7 @@ public class CSVUtil {
         ArrayList<String[]> records = new ArrayList<>();
         records.add(record);
         try {
-            CSVUtil.writeCSV(filePath, records, ',', '\"');
+            CsvUtil.writeCSV(filePath, records, ',', '\"');
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,7 +38,7 @@ public class CSVUtil {
         new File(filePath).getParentFile().mkdirs();
 
         try {
-            CSVUtil.writeCSV(filePath, records, ',', '\"');
+            CsvUtil.writeCSV(filePath, records, ',', '\"');
         } catch (IOException e) {
             e.printStackTrace();
         }

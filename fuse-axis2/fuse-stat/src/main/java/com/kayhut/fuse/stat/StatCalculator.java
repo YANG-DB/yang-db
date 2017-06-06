@@ -332,8 +332,7 @@ public class StatCalculator {
     private static boolean isValidNumberOfArguments(String[] args) {
         boolean result = true;
         if (args.length != NUM_OF_ARGUMENTS) {
-            logger.error("Expected %d argument(s): ", NUM_OF_ARGUMENTS);
-            logger.error("\n\t<path to field configuration file>");
+            logger.error("Expected {} argument(s): <path to field configuration file>", NUM_OF_ARGUMENTS);
             result = false;
         }
         return result;

@@ -1,11 +1,8 @@
 package com.kayhut.fuse.generator;
 
-import com.google.common.primitives.Doubles;
 import com.kayhut.fuse.generator.util.RandomUtil;
-import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +13,6 @@ import static org.junit.Assert.*;
  * Created by benishue on 22-May-17.
  */
 public class RandomUtilTest {
-
 
     @Test
     public void expDistTest() throws Exception {
