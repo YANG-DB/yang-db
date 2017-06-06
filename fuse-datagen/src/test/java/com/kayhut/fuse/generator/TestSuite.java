@@ -25,7 +25,7 @@ import java.io.File;
 })
 public class TestSuite {
 
-    static String CONFIGURATION_FILE_PATH = "test.generator.properties";
+    static final String CONFIGURATION_FILE_PATH = "test.generator.properties";
 
 
     static Configuration configuration;

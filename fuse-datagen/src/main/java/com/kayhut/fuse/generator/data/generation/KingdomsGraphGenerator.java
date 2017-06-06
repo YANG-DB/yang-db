@@ -147,6 +147,7 @@ public class KingdomsGraphGenerator {
                 entityToKingdomRel = new SubjectOf(edgeId, entityId, kingdomId, since);
             }
 
+            assert entityToKingdomRel != null;
             e2kRecords.add(entityToKingdomRel.getRecord());
         }
         //Write graph

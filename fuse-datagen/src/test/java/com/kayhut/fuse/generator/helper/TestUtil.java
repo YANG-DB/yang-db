@@ -36,9 +36,11 @@ public class TestUtil {
 
 
     public static void cleanDirectory(File dir) {
-        for (File file: dir.listFiles()) {
-            if (file.isDirectory()) cleanDirectory(file);
-            file.delete();
+        if (dir.exists()) {
+            for (File file : dir.listFiles()) {
+                if (file.isDirectory()) cleanDirectory(file);
+                file.delete();
+            }
         }
     }
 }

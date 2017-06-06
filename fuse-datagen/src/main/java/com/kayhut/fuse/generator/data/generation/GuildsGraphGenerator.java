@@ -5,7 +5,11 @@ import com.kayhut.fuse.generator.configuration.PersonConfiguration;
 import com.kayhut.fuse.generator.data.generation.entity.GuildGenerator;
 import com.kayhut.fuse.generator.model.entity.EntityBase;
 import com.kayhut.fuse.generator.model.entity.Guild;
-import com.kayhut.fuse.generator.model.entity.Kingdom;
+import com.kayhut.fuse.generator.model.enums.EntityType;
+import com.kayhut.fuse.generator.model.enums.RelationType;
+import com.kayhut.fuse.generator.model.relation.MemberOf;
+import com.kayhut.fuse.generator.model.relation.Owns;
+import com.kayhut.fuse.generator.model.relation.RelationBase;
 import com.kayhut.fuse.generator.util.CsvUtil;
 import com.kayhut.fuse.generator.util.RandomUtil;
 import javaslang.collection.Stream;
@@ -62,6 +66,11 @@ public class GuildsGraphGenerator {
         return guildsList;
     }
 
+    /**
+     * @param guildsIdList
+     * @param personsIdList
+     * @return Map <Guild Id, List of Persons Ids>
+     */
     public Map<String, List<String>> attachPersonsToGuilds(List<String> guildsIdList,
                                                                     List<String> personsIdList) {
         Map<String, List<String>> guildToPersonsSet = new HashMap<>();
@@ -80,17 +89,17 @@ public class GuildsGraphGenerator {
         for (int k = 0; k < maxGuildMembership; k++) {
             int startIndex = 0;
             for (int i = 0; i < guildsMembersDist.size(); i++) {
+                String guildId =  guildsIdList.get(i);
                 int guildMembersSize = Math.toIntExact(Math.round(guildsMembersDist.get(i) * membersPopulationSize));
                 for (int j = startIndex; j < membersPopulationSize; j++) {
-
                     String personId = shuffledPersonsIds.get(j);
 
-                    if (guildToPersonsSet.get(i) == null) {
-                        guildToPersonsSet.put(Integer.toString(i), new ArrayList<>(Arrays.asList(personId)));
+                    if (guildToPersonsSet.get(guildId) == null) {
+                        guildToPersonsSet.put(guildId, new ArrayList<>(Arrays.asList(personId)));
                     } else {
-                        List<String> personsInGuild = guildToPersonsSet.get(i);
+                        List<String> personsInGuild = guildToPersonsSet.get(guildId);
                         if (!personsInGuild.contains(personId)) { //avoiding duplicate members in a Guild
-                            guildToPersonsSet.get(i).add(personId);
+                            guildToPersonsSet.get(guildId).add(personId);
                         }
                     }
                     if (j == startIndex + guildMembersSize)
@@ -100,7 +109,30 @@ public class GuildsGraphGenerator {
             }
             Collections.shuffle(shuffledPersonsIds);
         }
+        printPersonsToGuild(guildToPersonsSet, EntityType.GUILD);
         return guildToPersonsSet;
+    }
+
+    private void printPersonsToGuild(Map<String, List<String>> personsToGuild, EntityType entityType) {
+        List<String[]> p2gRecords = new ArrayList<>();
+
+        for (Map.Entry<String, List<String>> p2g : personsToGuild.entrySet()) {
+            String guildId = p2g.getKey();
+            List<String> personsIds = p2g.getValue();
+            for (String personId : personsIds) {
+                String edgeId = guildId + "_" + personId;
+                Date since = RandomUtil.randomDate(guildConf.getStartDateOfStory(), guildConf.getEndDateOfStory());
+                Date till = RandomUtil.randomDate(since, guildConf.getEndDateOfStory());
+                RelationBase personMemberOfGuildsRel = new MemberOf(edgeId, guildId, personId, since, till);
+                p2gRecords.add(personMemberOfGuildsRel.getRecord());
+            }
+        }
+        //Write graph
+        String memberOfRelationsFile = String.format("%s_%s_%s.csv",
+                guildConf.getRelationsFilePath().replace(".csv", ""),
+                RelationType.MEMBER_OF,
+                entityType);
+        CsvUtil.appendResults(p2gRecords, memberOfRelationsFile);
     }
 
     //region Fields

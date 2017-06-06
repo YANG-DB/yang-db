@@ -1,16 +1,11 @@
 package com.kayhut.fuse.generator;
 
-import com.google.common.collect.LinkedHashMultiset;
 import com.kayhut.fuse.generator.configuration.DataGenConfiguration;
 import com.kayhut.fuse.generator.configuration.GuildConfiguration;
-import com.kayhut.fuse.generator.configuration.KingdomConfiguration;
 import com.kayhut.fuse.generator.data.generation.GuildsGraphGenerator;
 import com.kayhut.fuse.generator.helper.TestUtil;
 import com.kayhut.fuse.generator.model.entity.Guild;
-import com.kayhut.fuse.generator.model.entity.Kingdom;
 import com.kayhut.fuse.generator.util.RandomUtil;
-import javaslang.Tuple2;
-import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,11 +14,9 @@ import org.slf4j.Logger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.*;
 
 /**

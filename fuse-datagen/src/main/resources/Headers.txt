@@ -1,0 +1,6 @@
+#Person Header
+Id,firstName,lastName,gender,birthDate,deathDate,height
+
+#Dragon Header
+Id,name,Power,Gender,Color
+

@@ -2,7 +2,6 @@ package com.kayhut.fuse.generator;
 
 import com.kayhut.fuse.generator.configuration.*;
 import com.kayhut.fuse.generator.data.generation.*;
-import javaslang.Tuple2;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

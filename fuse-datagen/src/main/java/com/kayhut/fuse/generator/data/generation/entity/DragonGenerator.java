@@ -3,7 +3,6 @@ package com.kayhut.fuse.generator.data.generation.entity;
 import com.kayhut.fuse.generator.configuration.DragonConfiguration;
 import com.kayhut.fuse.generator.data.generation.other.PropertiesGenerator;
 import com.kayhut.fuse.generator.model.entity.Dragon;
-import com.kayhut.fuse.generator.util.RandomUtil;
 
 /**
  * Created by benishue on 19/05/2017.
