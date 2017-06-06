@@ -143,7 +143,7 @@ public class StatUtil {
             }
 
             //Global Cardinality Statistic document
-            if (bucketStatResult instanceof StatGlobalCardinalityResult)  {
+            if (bucketStatResult instanceof StatGlobalCardinalityResult) {
                 String bucketId = createGlobalBucketUniqueId(bucketStatResult.getIndex(),
                         bucketStatResult.getType(),
                         bucketStatResult.getField(),
@@ -205,6 +205,7 @@ public class StatUtil {
 
     /**
      * Create a MD5 hash of a given message. Used for creating unique document IDs.
+     *
      * @param message String to hash
      * @return Hash string
      */
@@ -238,14 +239,14 @@ public class StatUtil {
     }
 
     /**
-     * @param min lowest value
-     * @param max highest value
+     * @param min       lowest value
+     * @param max       highest value
      * @param numOfBins number of bins. Must be strictly positive.
      * @return a list of buckets of evenly distributed bins between the minimum and maximum values
      */
     public static List<BucketRange<Double>> createNumericBuckets(double min, double max, int numOfBins) {
         double[] bucketsData = new double[numOfBins + 1];
-        for (int i = 0; i <= numOfBins ; i++) {
+        for (int i = 0; i <= numOfBins; i++) {
             bucketsData[i] = min + i * (max - min) / (numOfBins);
         }
         List<BucketRange<Double>> buckets = new ArrayList<>();

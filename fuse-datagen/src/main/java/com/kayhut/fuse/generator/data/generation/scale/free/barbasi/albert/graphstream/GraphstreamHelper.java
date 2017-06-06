@@ -68,7 +68,7 @@ public class GraphstreamHelper {
                 File fileToSave = fileChooser.getSelectedFile();
                 String filePath = fileToSave.getAbsolutePath();
                 exportGraphMLFile(g,filePath);
-                logger.info("GraphML file exported to: %s", filePath);
+                logger.info("GraphML file exported to: {}", filePath);
             }
 
         });

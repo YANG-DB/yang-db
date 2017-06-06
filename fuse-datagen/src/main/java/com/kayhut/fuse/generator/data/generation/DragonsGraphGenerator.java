@@ -35,7 +35,7 @@ import static com.kayhut.fuse.generator.util.CsvUtil.appendResults;
  */
 public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguration, Dragon> {
 
-    private  final Logger logger = LoggerFactory.getLogger(DragonsGraphGenerator.class);
+    private final Logger logger = LoggerFactory.getLogger(DragonsGraphGenerator.class);
 
     //region Ctrs
     public DragonsGraphGenerator(final DragonConfiguration dragonConfiguration) {
@@ -62,7 +62,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
             Graph dragonsInteractionGraph = dragonsGraphGenerator.generateGraph();
             stopwatch.stop();
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
-            logger.info("Dragons model V1 generation took (seconds): %d", elapsed);
+            logger.info("Dragons model V1 generation took (seconds): {}", elapsed);
 
             GraphstreamHelper.printScaleFreeDataSummary(dragonsInteractionGraph, resultsPath);
             if (drawGraph) {
@@ -82,7 +82,7 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
             nodesIds = dragonsGraphGenerator.generateMassiveGraph();
             stopwatch.stop();
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
-            logger.info("Dragons massive graph generation took (seconds): %d", elapsed);
+            logger.info("Dragons massive graph generation took (seconds): {}", elapsed);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -115,8 +115,8 @@ public class DragonsGraphGenerator extends GraphGeneratorBase<DragonConfiguratio
                 configuration.getRelationsFilePath());
 
 
-        Set<Long> tempSet = new LinkedHashSet<>(Stream.ofAll(edgesList).map(tuple2 -> (Long)tuple2._1).toJavaList());
-        tempSet.addAll(Stream.ofAll(edgesList).map(tuple2 -> (Long)tuple2._2).toJavaList());
+        Set<Long> tempSet = new LinkedHashSet<>(Stream.ofAll(edgesList).map(tuple2 -> (Long) tuple2._1).toJavaList());
+        tempSet.addAll(Stream.ofAll(edgesList).map(tuple2 -> (Long) tuple2._2).toJavaList());
         List<Long> nodeNumericIds = new ArrayList<>(tempSet);
         Collections.sort(nodeNumericIds);
         List<String> nodesList = nodeNumericIds.stream().map(Object::toString).collect(Collectors.toList());

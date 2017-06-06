@@ -58,7 +58,7 @@ public class PersonsGraphGenerator extends GraphGeneratorBase<PersonConfiguratio
             nodesIds = personsGraphGenerator.generateMassiveGraph();
             stopwatch.stop();
             long elapsed = stopwatch.elapsed(TimeUnit.SECONDS);
-            logger.info("Persons massive graph generation took (seconds): %d", elapsed);
+            logger.info("Persons massive graph generation took (seconds): {}", elapsed);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
