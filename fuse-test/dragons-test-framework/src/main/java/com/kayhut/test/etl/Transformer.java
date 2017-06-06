@@ -9,7 +9,6 @@ import java.util.Map;
  * Created by moti on 6/5/2017.
  */
 public interface Transformer {
-    List<Map<String, String>> transform(Map<String, String> document);
-
+    List<Map<String, String>> transform(List<Map<String, String>> documents);
     CsvSchema getNewSchema(CsvSchema oldSchema);
 }

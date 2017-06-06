@@ -288,7 +288,7 @@ public class AsgQueryUtil {
         return Optional.empty();
     }
 
-    private static <T extends EBase> List<AsgEBase<T>> elements(
+    public static <T extends EBase> List<AsgEBase<T>> elements(
             AsgEBase<? extends EBase> asgEBase,
             Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> vElementProvider,
             Function<AsgEBase<? extends EBase>,Iterable<AsgEBase<? extends EBase>>> hElementProvider,

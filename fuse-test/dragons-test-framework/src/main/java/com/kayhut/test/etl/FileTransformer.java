@@ -44,7 +44,7 @@ public class FileTransformer {
         try(OutputStream out = new FileOutputStream(outputFile)) {
             while (mappingIterator.hasNext()) {
                 Map<String, String> document = mappingIterator.next();
-                List<Map<String, String>> transformed = transformer.transform(document);
+                List<Map<String, String>> transformed = transformer.transform(Arrays.asList(document));
                 for (Map<String, String> doc : transformed) {
                     writer.writeValue(out, doc);
                 }
