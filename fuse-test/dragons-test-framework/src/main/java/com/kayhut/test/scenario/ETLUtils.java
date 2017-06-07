@@ -51,7 +51,7 @@ public abstract class ETLUtils {
     public static SimpleDateFormat sdf;
     public static final String DIRECTION_FIELD = "dir";
 
-    static String confGraphLayoutProviderFactory = readJsonFile("schema/" + "GraphLayoutProviderFactory.conf");
+    static String confGraphLayoutProviderFactory = readJsonFile("schema/" + "ETLGraphLayoutFactory.conf");
     static String confDragonsIndexProvider = readJsonFile("schema/" + "DragonsIndexProvider.conf");
 
     static {
