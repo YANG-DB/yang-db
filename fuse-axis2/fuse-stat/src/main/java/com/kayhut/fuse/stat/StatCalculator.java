@@ -13,6 +13,7 @@ import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.elasticsearch.client.transport.TransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class StatCalculator {
 
         try {
             Configuration configuration = new StatConfiguration(args[0]).getInstance();
+            logger.info( "Loading configuration file at : '{}'",((PropertiesConfiguration)configuration).getPath());
             dataClient = ClientProvider.getDataClient(configuration);
             statClient = ClientProvider.getStatClient(configuration);
             loadDefaultStatParameters(configuration);
@@ -126,6 +128,7 @@ public class StatCalculator {
                 }
             }
         } catch (Exception e) {
+            logger.error("Error occurred while trying to calculate statistics for Index: {}, Type: {}", index, type);
             logger.error(e.getMessage(), e);
         }
     }
@@ -171,7 +174,8 @@ public class StatCalculator {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            logger.error("Error occurred while trying to calculate statistics for Index: {}, Type: {}", index, type);
             logger.error(e.getMessage(), e);
         }
     }
@@ -205,7 +209,8 @@ public class StatCalculator {
                     populateBuckets(statIndexName, statTypeStringName, statClient, bucketsResults);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            logger.error("Error occurred while trying to calculate statistics for Index: {}, Type: {}", index, type);
             logger.error(e.getMessage(), e);
         }
     }
@@ -271,7 +276,8 @@ public class StatCalculator {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            logger.error("Error occurred while trying to calculate statistics for Index: {}, Type: {}", index, type);
             logger.error(e.getMessage(), e);
         }
     }
@@ -300,7 +306,8 @@ public class StatCalculator {
                     populateBuckets(statIndexName, statTypeTermName, statClient, bucketsResults);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            logger.error("Error occurred while trying to calculate statistics for Index: {}, Type: {}", index, type);
             logger.error(e.getMessage(), e);
         }
     }

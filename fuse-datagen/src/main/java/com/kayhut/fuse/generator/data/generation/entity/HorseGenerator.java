@@ -16,7 +16,8 @@ public class HorseGenerator extends EntityGeneratorBase<HorseConfiguration, Hors
 
     @Override
     public Horse generate() {
-        long weight = Math.round(RandomUtil.randomGaussianNumber(configuration.getWeightMean(), configuration.getWeightSD()));
+        //Avoiding negative weights
+        long weight = Math.max(Math.round(RandomUtil.randomGaussianNumber(configuration.getWeightMean(), configuration.getWeightSD())) ,1);
 
         return Horse.Builder.get()
                 .withName(faker.cat().name().concat(" " + faker.gameOfThrones().character()))

@@ -18,6 +18,5 @@ public class DataGeneratorTest {
     @BeforeClass
     public static void setUp() throws Exception {
         DataGenerator.loadConfiguration(CONFIGURATION_FILE_PATH);
-
     }
 }

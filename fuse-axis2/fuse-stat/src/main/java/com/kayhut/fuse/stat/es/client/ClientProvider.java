@@ -34,7 +34,7 @@ public class ClientProvider {
     }
 
     public static TransportClient getTransportClient(String clusterName, int transportPort, String[] hosts) throws UnknownHostException {
-        Settings settings = Settings.builder().put("client.transport.sniff", true).put("cluster.name", clusterName).build();
+        Settings settings = Settings.builder().put("client.transport.sniff", false).put("cluster.name", clusterName).build();
         TransportClient esClient = TransportClient.builder().settings(settings).build();
         for(String node: hosts){
             esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), transportPort));

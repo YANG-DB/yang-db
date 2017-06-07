@@ -21,7 +21,7 @@ public class ElasticClientProvider {
 
     //region Public Methods
     public TransportClient getStatClient() {
-        Settings settings = Settings.builder().put("client.transport.sniff", true).put("cluster.name", config.getStatClusterName()).build();
+        Settings settings = Settings.builder().put("client.transport.sniff", false).put("cluster.name", config.getStatClusterName()).build();
         TransportClient esClient = TransportClient.builder().settings(settings).build();
         for (String node : config.getStatNodesHosts()) {
             try {

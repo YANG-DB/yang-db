@@ -25,11 +25,11 @@ public class TestUtil {
         Set<T> set = new HashSet<T>();
         // Set#add returns false if the set does not change, which
         // indicates that a duplicate element has been added.
-        for (T each: all) if (!set.add(each)) return true;
+        for (T each : all) if (!set.add(each)) return true;
         return false;
     }
 
-    public static boolean isFileExists(String filePath){
+    public static boolean isFileExists(String filePath) {
         return new File(filePath).exists();
     }
 

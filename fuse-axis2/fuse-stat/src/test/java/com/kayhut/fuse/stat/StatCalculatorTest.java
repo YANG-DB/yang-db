@@ -174,6 +174,15 @@ public class StatCalculatorTest {
     }
 
     @Test
+    public void statAlphabetBucketsTest() throws Exception{
+        List<BucketRange<String>> bucketRanges = StatUtil.calculateAlphabeticBuckets(65, 56, 2, 10);
+//        bucketRanges.forEach(bucket -> {
+//            System.out.println(bucket.getStart() + "," + bucket.getEnd());
+//        });
+    }
+
+
+    @Test
     public void statDataValidationTest() throws Exception {
         //Used only to test that the data is populated and indexed correctly
 
