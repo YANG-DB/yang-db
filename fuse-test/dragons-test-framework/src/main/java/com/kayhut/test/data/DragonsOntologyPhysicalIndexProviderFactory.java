@@ -76,7 +76,7 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
     //region Fields
     private Map<String, PhysicalIndexProvider> physicalIndexProviders;
 
-    class TimeBasedIndexPartition implements TimeSeriesIndexPartition {
+    public static class TimeBasedIndexPartition implements TimeSeriesIndexPartition {
         private Map values;
         private SimpleDateFormat dateFormat;
 

@@ -8,11 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.kayhut.test.scenario.ETLUtils.DIRECTION_FIELD;
+
 /**
  * Created by moti on 6/5/2017.
  */
 public class DuplicateEdgeTransformer implements Transformer {
-    public static final String DIRECTION_FIELD = "dir";
+
     private String id1Field;
     private String id2Field;
 
