@@ -28,32 +28,30 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Roman on 07/06/2017.
  */
-public class IngestFireToES {
+public class IngestFreezeToES {
     public static void main(String[] args) throws IOException, InterruptedException {
         Client client = getClientDataOnly();
         BulkProcessor processor = getBulkProcessor(client);
 
-        String filePath = "E:\\fuse_data\\edges\\dragonsRelations_FIRES_chunks\\dragonsRelations_FIRES-out.200012.csv";
+        String filePath = "E:\\fuse_data\\edges\\dragonsRelations_FREEZES_chunks\\dragonsRelations_FREEZES-out.200012.csv";
         ObjectReader reader = new CsvMapper().reader(
                 CsvSchema.builder().setColumnSeparator(',')
                         .addColumn("id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
-                        .addColumn("timestamp", CsvSchema.ColumnType.NUMBER)
-                        .addColumn("temperature", CsvSchema.ColumnType.NUMBER)
+                        .addColumn("startDate", CsvSchema.ColumnType.STRING)
+                        .addColumn("endDate", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.type", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.type", CsvSchema.ColumnType.STRING)
                         .addColumn("direction", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityA.color", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.name", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityB.color", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.name", CsvSchema.ColumnType.STRING)
                         .build()
         ).forType(new TypeReference<Map<String, Object>>() {
         });
 
         String index = "dp200012";
-        String type = "fire";
+        String type = "freeze";
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -66,13 +64,11 @@ public class IngestFireToES {
                 Map<String, Object> entityA = new HashMap<>();
                 entityA.put("type", fire.remove("entityA.type"));
                 entityA.put("id", entityA.get("type").toString() + "_" + fire.remove("entityA.id"));
-                entityA.put("color", fire.remove("entityA.color"));
                 entityA.put("name", fire.remove("entityA.name"));
 
                 Map<String, Object> entityB = new HashMap<>();
                 entityB.put("type", fire.remove("entityB.type"));
                 entityB.put("id", entityB.get("type").toString() + "_" + fire.remove("entityB.id"));
-                entityB.put("color", fire.remove("entityB.color"));
                 entityB.put("name", fire.remove("entityB.name"));
 
                 fire.put("entityA", entityA);

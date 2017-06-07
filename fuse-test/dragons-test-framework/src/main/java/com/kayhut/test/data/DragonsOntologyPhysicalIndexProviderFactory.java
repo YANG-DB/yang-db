@@ -103,7 +103,7 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
 
         @Override
         public String getTimeField() {
-            return values.get("partition").toString();
+            return ((Map)(values.get(PROPS))).get("partition.field").toString();
         }
 
         @Override
@@ -116,7 +116,7 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
         @Override
         public Iterable<String> getIndices() {
             return StreamSupport.stream(indices(values).spliterator(), false)
-                    .map(p->getIndexFormat().replace("%s",p)).collect(Collectors.toSet());
+                    .map(p->String.format(getIndexFormat(), p)).collect(Collectors.toSet());
         }
     }
 }

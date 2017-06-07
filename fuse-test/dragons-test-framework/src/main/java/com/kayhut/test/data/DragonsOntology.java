@@ -1,7 +1,11 @@
 package com.kayhut.test.data;
 
+import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.ontology.*;
+import org.apache.commons.io.IOUtils;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -371,4 +375,8 @@ public class DragonsOntology {
         return properties.stream().filter(p -> p.type == type).findFirst().get();
     }
 
+    public static void main(String[] args) throws IOException {
+        String json = Utils.asString(createDragonsOntology());
+        IOUtils.write(json,new FileWriter("Dragons.json"));
+    }
 }
