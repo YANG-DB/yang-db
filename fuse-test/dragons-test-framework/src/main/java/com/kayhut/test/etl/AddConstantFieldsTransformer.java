@@ -36,7 +36,7 @@ public class AddConstantFieldsTransformer implements Transformer {
     public CsvSchema getNewSchema(CsvSchema oldSchema) {
         CsvSchema.Builder builder = CsvSchema.builder();
         oldSchema.forEach(c -> builder.addColumn(c));
-        fields.keySet().forEach(c ->{
+        fields.keySet().stream().sorted().forEach(c ->{
             if(oldSchema.column(c) == null)
                 builder.addColumn(c);
         });
