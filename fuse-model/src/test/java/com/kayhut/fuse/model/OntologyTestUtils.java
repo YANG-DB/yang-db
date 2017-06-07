@@ -1,7 +1,12 @@
 package com.kayhut.fuse.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kayhut.fuse.model.ontology.*;
+import org.apache.commons.io.IOUtils;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -263,6 +268,7 @@ public class OntologyTestUtils {
                 get().build(TEMPERATURE.type,TEMPERATURE.name,INT)));
 
         ontologyShortObj.setRelationshipTypes(Arrays.asList(
+                KNOW,
                 REGISTERED,
                 SUBJECT,
                 ORIGIN,
@@ -302,4 +308,8 @@ public class OntologyTestUtils {
         return properties.stream().filter(p -> p.type == type).findFirst().get();
     }
 
+    public static void main(String[] args) throws IOException {
+        String json = Utils.asString(createDragonsOntologyLong());
+        IOUtils.write(json,new FileWriter("Dragons.json"));
+    }
 }

@@ -34,6 +34,13 @@
                 <include>*.xml</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/../fuse-test/dragons-test-framework/src/main/resources/schema</directory>
+            <outputDirectory>schema</outputDirectory>
+            <includes>
+                <include>*.conf</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <dependencySets>

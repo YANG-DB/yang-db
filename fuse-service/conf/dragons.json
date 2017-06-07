@@ -33,7 +33,7 @@
     },
     {
       "eType": 5,
-      "name": "kingdom",
+      "name": "Kingdom",
       "properties": [
         7
       ]
@@ -47,6 +47,21 @@
     }
   ],
   "relationshipTypes": [
+    {
+      "rType": 108,
+      "name": "know",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 1
+        }
+      ],
+      "properties": [
+        9,
+        10
+      ]
+    },
     {
       "rType": 107,
       "name": "registered",
@@ -218,12 +233,12 @@
     {
       "pType": 12,
       "name": "timestamp",
-      "type": "long"
+      "type": "date"
     },
     {
       "pType": 11,
       "name": "temperature",
-      "type": "long"
+      "type": "int"
     },
     {
       "pType": 2147483647,

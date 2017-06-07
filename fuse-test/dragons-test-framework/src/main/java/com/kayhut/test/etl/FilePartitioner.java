@@ -68,7 +68,7 @@ public class FilePartitioner {
                                                                         "c:\\dataout\\",
                                                                        "fires-%s.csv",
                                                                         Arrays.asList("id", "id1","id2", START_DATE, DURATION),
-                                                                        new DateFieldPartitioner(START_DATE, "%s","yyyy" ));
+                                                                        new DateFieldPartitioner(START_DATE, "%s", "", "yyyy" ));
         dataFilePartitioner.partition();
     }
 }
