@@ -41,9 +41,6 @@
                 <include>*.conf</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory></directory>
-        </fileSet>
     </fileSets>
 
     <dependencySets>
