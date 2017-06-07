@@ -35,7 +35,7 @@ public interface Utils {
         String result = "{}";
         try {
             InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("/" + name );
-            if (stream != null) {
+                if (stream != null) {
                 result = loadJsonString(stream);
             } else {
                 stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name );

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import javaslang.collection.Stream;
 import org.jooby.Jooby;
 
 /**
@@ -8,6 +9,9 @@ import org.jooby.Jooby;
  */
 public class FuseRunner {
     public static void main(final String[] args) {
+        System.out.println("Args:");
+        Stream.of(args).forEach(System.out::println);
+
         final String applicationConfFilePath = args.length > 0 ?
                 args[0] : "application.conf";
 
