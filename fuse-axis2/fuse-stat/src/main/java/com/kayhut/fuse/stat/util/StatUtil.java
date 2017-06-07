@@ -41,7 +41,7 @@ public class StatUtil {
         try {
             contents = new String(Files.readAllBytes(Paths.get(jsonRelativePath)));
         } catch (IOException e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         return contents;
     }
@@ -51,9 +51,10 @@ public class StatUtil {
         try {
             String statConfigurationFilePath = configuration.getString("statistics.configuration.file");
             String statJson = readJsonToString(statConfigurationFilePath);
+            logger.info("Statistics Configuration: \n {}", statJson);
             resultObj = Optional.of(new ObjectMapper().readValue(statJson, StatContainer.class));
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         return resultObj;
     }

@@ -6,7 +6,10 @@ import javaslang.collection.Stream;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import static com.kayhut.fuse.model.execution.plan.Direction.both;
 import static com.kayhut.test.scenario.ETLUtils.*;
 
 /**
@@ -20,8 +23,10 @@ public interface FireEdge {
         // redundant field
         // dup + add direction
 
-        AddConstantFieldTransformer entityBFieldTransformer = new AddConstantFieldTransformer(ENTITY_B_TYPE, DRAGON);
-        AddConstantFieldTransformer entityAFieldTransformer = new AddConstantFieldTransformer(ENTITY_A_TYPE, DRAGON);
+        Map<String, String> constFields=  new HashMap<>();
+        constFields.put(ENTITY_A_TYPE, DRAGON);
+        constFields.put(ENTITY_B_TYPE, DRAGON);
+        AddConstantFieldsTransformer constantFieldsTransformer = new AddConstantFieldsTransformer(constFields, both);
         RedundantFieldTransformer redundantFieldTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(FIRE, Direction.out,"A"),
                 ENTITY_A_ID,
@@ -35,8 +40,7 @@ public interface FireEdge {
 
         DateFieldTransformer dateFieldTransformer = new DateFieldTransformer(START_DATE);
         IdFieldTransformer idFieldTransformer = new IdFieldTransformer(ID, DIRECTION_FIELD, FIRE);
-        ChainedTransformer chainedTransformer = new ChainedTransformer(entityAFieldTransformer,
-                entityBFieldTransformer,
+        ChainedTransformer chainedTransformer = new ChainedTransformer(constantFieldsTransformer,
                 duplicateEdgeTransformer,
                 redundantFieldTransformer,
                 dateFieldTransformer,

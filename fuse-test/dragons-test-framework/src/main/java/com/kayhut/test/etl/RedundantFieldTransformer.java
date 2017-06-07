@@ -102,7 +102,12 @@ public class RedundantFieldTransformer implements Transformer{
             Map<String, String> newDocument = new HashMap<>(document);
             Map<String, String> fields = dupsMap.get(id(entityType,document.get(entityDupIdField)));
             entityDupFields.forEach((k, v) -> {
-                newDocument.put(v, fields.get(k));
+                try {
+                    newDocument.put(v, fields.get(k));
+                }catch(Exception ex)
+                {
+                    throw ex;
+                }
             });
             newDocuments.add(newDocument);
         }
@@ -113,8 +118,8 @@ public class RedundantFieldTransformer implements Transformer{
     public CsvSchema getNewSchema(CsvSchema oldSchema) {
         CsvSchema.Builder builder = CsvSchema.builder();
         oldSchema.forEach(c -> builder.addColumn(c));
-        entityADupFields.values().forEach(v -> builder.addColumn(v));
-        entityBDupFields.values().forEach(v -> builder.addColumn(v));
+        entityADupFields.values().stream().sorted().forEach(v -> builder.addColumn(v));
+        entityBDupFields.values().stream().sorted().forEach(v -> builder.addColumn(v));
         return builder.build();
     }
 }

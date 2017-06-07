@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.fasterxml.jackson.dataformat.smile.SmileGenerator;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,11 +46,12 @@ public class FileTransformer {
 
         ObjectWriter writer = mapper.writerFor(new TypeReference<Map<String, Object>>() {
         }).with(newSchema).without(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+
         MappingIterator<Map<String, String>> mappingIterator = mapper.readerFor(new TypeReference<Map<String, Object>>() {
         }).with(schema).readValues(new File(inputFile));
 
         try (OutputStream out = new FileOutputStream(outputFile)) {
-
+            newSchema.getColumnDesc();
             for (List<Map<String, String>> batch : new Splitter(mappingIterator, batchSize)) {
                 System.out.println(count.incrementAndGet());
                 transformer.transform(batch).forEach(doc -> {

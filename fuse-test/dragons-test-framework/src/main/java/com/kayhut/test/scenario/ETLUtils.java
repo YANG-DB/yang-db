@@ -42,6 +42,9 @@ public abstract class ETLUtils {
     public static final String PERSON = "Person";
     public static final String KINGDOM = "Kingdom";
     public static final String MEMBER_OF_GUILD = "MemberOf";
+    public static final String OWN = "Own";
+    public static final String ORIGINATED = "Origin";
+    public static final String KNOWS = "Know";
     public static final String GUILD = "Guild";
     public static final String HORSE = "Horse";
     public static final String FIRE = "Fire";

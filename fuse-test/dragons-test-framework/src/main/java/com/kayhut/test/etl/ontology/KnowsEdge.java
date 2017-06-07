@@ -15,30 +15,31 @@ import static com.kayhut.test.scenario.ETLUtils.*;
 /**
  * Created by moti on 6/7/2017.
  */
-public interface FreezEdge {
+public interface KnowsEdge {
     static void main(String args[]) throws IOException {
 
-        // FREEZE
+        // Fires
         // Add sideB type
         // redundant field
         // dup + add direction
+
         Map<String, String> constFields=  new HashMap<>();
-        constFields.put(ENTITY_A_TYPE, DRAGON);
-        constFields.put(ENTITY_B_TYPE, DRAGON);
+        constFields.put(ENTITY_A_TYPE, PERSON);
+        constFields.put(ENTITY_B_TYPE, PERSON);
         AddConstantFieldsTransformer constantFieldsTransformer = new AddConstantFieldsTransformer(constFields, both);
         RedundantFieldTransformer redundantFieldTransformer = new RedundantFieldTransformer(getClient(),
-                redundant(FREEZE, Direction.out,"A"),
+                redundant(KNOWS, Direction.out,"A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(DRAGON).getIndices()).toJavaList(),
-                DRAGON,
-                redundant(FREEZE, Direction.out,"B"),
+                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                PERSON,
+                redundant(KNOWS, Direction.out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(DRAGON).getIndices()).toJavaList(),
-                DRAGON);
+                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                PERSON);
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 
-        DateFieldTransformer dateFieldTransformer = new DateFieldTransformer(START_DATE, END_DATE);
-        IdFieldTransformer idFieldTransformer = new IdFieldTransformer(ID, DIRECTION_FIELD, FREEZE);
+        DateFieldTransformer dateFieldTransformer = new DateFieldTransformer(START_DATE);
+        IdFieldTransformer idFieldTransformer = new IdFieldTransformer(ID, DIRECTION_FIELD, KNOWS);
         ChainedTransformer chainedTransformer = new ChainedTransformer(constantFieldsTransformer,
                 duplicateEdgeTransformer,
                 redundantFieldTransformer,
@@ -46,10 +47,10 @@ public interface FreezEdge {
                 idFieldTransformer
         );
 
-        FileTransformer transformer = new FileTransformer("C:\\demo_data_6June2017\\dragonsRelations_FREEZES.csv",
-                "C:\\demo_data_6June2017\\dragonsRelations_FREEZES-out.csv",
+        FileTransformer transformer = new FileTransformer("C:\\demo_data_6June2017\\personsRelations_KNOWS.csv",
+                "C:\\demo_data_6June2017\\personsRelations_KNOWS-out.csv",
                 chainedTransformer,
-                Arrays.asList(ID, ENTITY_A_ID, ENTITY_B_ID, START_DATE, END_DATE),
+                Arrays.asList(ID, ENTITY_A_ID, ENTITY_B_ID, START_DATE),
                 5000);
         transformer.transform();
     }

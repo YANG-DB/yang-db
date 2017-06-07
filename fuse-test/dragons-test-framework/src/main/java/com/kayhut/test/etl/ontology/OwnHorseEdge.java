@@ -9,72 +9,62 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.kayhut.fuse.model.execution.plan.Direction.both;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
 import static com.kayhut.test.scenario.ETLUtils.*;
-import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal.Symbols.in;
 
 /**
  * Created by moti on 6/7/2017.
  */
-public interface MemberOfGuildEdge {
-
-
+public interface OwnHorseEdge {
     static void main(String args[]) throws IOException {
-
-        // FREEZE
-        // Add sideB type
-        // redundant field
-        // dup + add direction
         Map<String, String> outConstFields=  new HashMap<>();
         outConstFields.put(ENTITY_A_TYPE, PERSON);
-        outConstFields.put(ENTITY_B_TYPE, GUILD);
+        outConstFields.put(ENTITY_B_TYPE, HORSE);
         AddConstantFieldsTransformer outFieldsTransformer = new AddConstantFieldsTransformer(outConstFields, out);
         Map<String, String> inConstFields=  new HashMap<>();
-        inConstFields.put(ENTITY_A_TYPE, GUILD);
+        inConstFields.put(ENTITY_A_TYPE, HORSE);
         inConstFields.put(ENTITY_B_TYPE, PERSON);
         AddConstantFieldsTransformer inFieldsTransformer = new AddConstantFieldsTransformer(inConstFields, Direction.in);
 
         RedundantFieldTransformer redundantOutTransformer = new RedundantFieldTransformer(getClient(),
-                redundant(MEMBER_OF_GUILD, out, "A"),
+                redundant(OWN, out, "A"),
                 ENTITY_A_ID,
                 Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
                 PERSON,
-                redundant(MEMBER_OF_GUILD, out,"B"),
+                redundant(OWN, out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(GUILD).getIndices()).toJavaList(),
-                GUILD,
+                Stream.ofAll(indexPartition(HORSE).getIndices()).toJavaList(),
+                HORSE,
                 out.name());
         RedundantFieldTransformer redundantInTransformer = new RedundantFieldTransformer(getClient(),
-                redundant(MEMBER_OF_GUILD,  Direction.in, "A"),
+                redundant(OWN,  Direction.in, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(GUILD).getIndices()).toJavaList(),
-                GUILD,
-                redundant(MEMBER_OF_GUILD, Direction.in,"B"),
+                Stream.ofAll(indexPartition(HORSE).getIndices()).toJavaList(),
+                HORSE,
+                redundant(OWN, Direction.in,"B"),
                 ENTITY_B_ID,
                 Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
                 PERSON, Direction.in.name());
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 
         DateFieldTransformer dateFieldTransformer = new DateFieldTransformer(START_DATE, END_DATE);
-        IdFieldTransformer idFieldTransformer = new IdFieldTransformer(ID, DIRECTION_FIELD, MEMBER_OF_GUILD);
+        IdFieldTransformer idFieldTransformer = new IdFieldTransformer(ID, DIRECTION_FIELD, OWN + "H");
         ChainedTransformer chainedTransformer = new ChainedTransformer(
                 duplicateEdgeTransformer,
                 outFieldsTransformer,
                 inFieldsTransformer,
-                redundantOutTransformer,
                 redundantInTransformer,
+                redundantOutTransformer,
                 dateFieldTransformer,
                 idFieldTransformer
         );
 
-        FileTransformer transformer = new FileTransformer("C:\\demo_data_6June2017\\guildsRelations_MEMBER_OF_GUILD.csv",
-                "C:\\demo_data_6June2017\\guildsRelations_MEMBER_OF_GUILD-out.csv",
+        FileTransformer transformer = new FileTransformer("C:\\demo_data_6June2017\\personsRelations_OWNS_HORSE.csv",
+                "C:\\demo_data_6June2017\\personsRelations_OWNS_HORSE-out.csv",
                 chainedTransformer,
                 Arrays.asList(ID, ENTITY_B_ID, ENTITY_A_ID,  START_DATE, END_DATE),
                 5000);
         transformer.transform();
-
     }
 
 }

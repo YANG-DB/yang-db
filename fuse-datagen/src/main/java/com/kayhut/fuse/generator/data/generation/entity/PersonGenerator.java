@@ -24,7 +24,7 @@ public class PersonGenerator extends EntityGeneratorBase<PersonConfiguration, Pe
         Date birthDate = RandomUtil.randomDate(configuration.getStartDateOfStory(), configuration.getEndDateOfStory());
         long lifeExpectancy = Math.round(RandomUtil.randomGaussianNumber(configuration.getLifeExpectancyMean(), configuration.getLifeExpectancySD()));
         Date deathDate = DateUtil.addYearsToDate(birthDate, (int) lifeExpectancy);
-        long height = Math.round(RandomUtil.randomGaussianNumber(configuration.getHeightMean(), configuration.getHeightSD()));
+        long height = Math.max(1, Math.round(RandomUtil.randomGaussianNumber(configuration.getHeightMean(), configuration.getHeightSD())));
 
         return Person.Builder.get()
                 .withFirstName(fakeName.firstName())
