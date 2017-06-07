@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.kayhut.test.scenario.ETLUtils.DURATION;
+import static com.kayhut.test.scenario.ETLUtils.START_DATE;
+
 /**
  * Created by moti on 6/5/2017.
  */
@@ -64,8 +67,8 @@ public class FilePartitioner {
         FilePartitioner dataFilePartitioner = new FilePartitioner("C:\\Users\\moti\\Downloads\\data\\dragonsRelationsTEST_FIRES.csv",
                                                                         "c:\\dataout\\",
                                                                        "fires-%s.csv",
-                                                                        Arrays.asList("id", "id1","id2", "startDate","duration"),
-                                                                        new DateFieldPartitioner("startDate", "%s", "", "yyyy" ));
+                                                                        Arrays.asList("id", "id1","id2", START_DATE, DURATION),
+                                                                        new DateFieldPartitioner(START_DATE, "%s", "", "yyyy" ));
         dataFilePartitioner.partition();
     }
 }

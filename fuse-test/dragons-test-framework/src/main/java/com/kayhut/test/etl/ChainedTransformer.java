@@ -30,6 +30,10 @@ public class ChainedTransformer implements Transformer{
 
     @Override
     public CsvSchema getNewSchema(CsvSchema oldSchema) {
-        return null;
+        CsvSchema schema = oldSchema;
+        for (Transformer transformer : transformers) {
+            schema = transformer.getNewSchema(schema);
+        }
+        return schema;
     }
 }

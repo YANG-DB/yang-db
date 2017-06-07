@@ -5,34 +5,26 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.unit.ByteSizeUnit;
-import org.elasticsearch.common.unit.ByteSizeValue;
-import org.elasticsearch.common.unit.TimeValue;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+
+import static com.kayhut.test.scenario.ETLUtils.*;
 
 /**
  * Created by Roman on 06/06/2017.
  */
 public class IngestGuildsToES {
+
+
     public static void main(String[] args) throws IOException, InterruptedException {
-        Client client = getClientDataOnly();
+        Client client = getClient();
         BulkProcessor processor = getBulkProcessor(client);
 
         String filePath = "E:\\fuse_data\\demo_data_6June2017\\guilds.csv";
@@ -48,62 +40,21 @@ public class IngestGuildsToES {
         ).forType(new TypeReference<Map<String, Object>>() {});
 
         String index = "misc";
-        String type = "Guild";
+        String type = GUILD;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
                 Map<String, Object> guild = reader.readValue(line);
-                String id = "Guild_" + guild.remove("id");
+                String id = id(type, guild.remove("id").toString());
 
-                guild.put("establishDate", sdf.format(new Date(Long.parseLong(guild.get("establishDate").toString()))));
+                guild.put(ESTABLISH_DATE, sdf.format(new Date(Long.parseLong(guild.get("establishDate").toString()))));
 
                 processor.add(new IndexRequest(index, type, id).source(guild));
             }
         }
 
         processor.awaitClose(5, TimeUnit.MINUTES);
-    }
-
-    private static Client getClient() throws UnknownHostException {
-        Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "fuse-test")
-                .build();
-
-        return TransportClient.builder().settings(settings).build()
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.174.90.109"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.93.93.10"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.93.93.190"), 9300));
-    }
-
-    private static Client getClientDataOnly() throws UnknownHostException {
-        Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "fuse-test")
-                .build();
-
-        return TransportClient.builder().settings(settings).build()
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
-    }
-
-    private static BulkProcessor getBulkProcessor(Client client) {
-        return BulkProcessor.builder(client,
-                new BulkProcessor.Listener() {
-                    @Override
-                    public void beforeBulk(long l, BulkRequest bulkRequest) {}
-                    @Override
-                    public void afterBulk(long l, BulkRequest bulkRequest, BulkResponse bulkResponse) {}
-                    @Override
-                    public void afterBulk(long l, BulkRequest bulkRequest, Throwable throwable) {}
-                })
-                .setBulkActions(1000)
-                .setBulkSize(new ByteSizeValue(1, ByteSizeUnit.GB))
-                .setFlushInterval(TimeValue.timeValueSeconds(5))
-                .setConcurrentRequests(1)
-                .build();
     }
 }
