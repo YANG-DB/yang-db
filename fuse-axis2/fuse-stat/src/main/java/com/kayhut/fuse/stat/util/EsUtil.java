@@ -38,7 +38,9 @@ import org.elasticsearch.search.aggregations.bucket.filters.Filters;
 import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
+import org.elasticsearch.search.aggregations.metrics.MetricsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
+import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStats;
 
 import java.io.File;
 import java.io.IOException;
@@ -232,6 +234,44 @@ public class EsUtil {
             bucketStatResults.add(bucketStatResult);
         }
         return bucketStatResults;
+    }
+
+    /**
+     * @param client  Elastic client
+     * @param index   Elastic index name (e.g., index1)
+     * @param type    Elastic type name (e.g., Dragon)
+     * @param field   Elastic field name
+     * @param dataType
+     * @param numOfBins
+     * @return
+     */
+    public static List<StatRangeResult> getDynamicHistogramResults(TransportClient client,
+                                                                   String index,
+                                                                   String type,
+                                                                   String field,
+                                                                   DataType dataType,
+                                                                   int numOfBins) {
+
+        SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
+                .setTypes(type);
+
+        MetricsAggregationBuilder metricAgg = AggregationBuilders
+                .extendedStats(AGG_EXTENDED_STATS)
+                .field(field);
+
+        SearchResponse sr = searchRequestBuilder.addAggregation(metricAgg)
+                .setSize(0)
+                .execute()
+                .actionGet();
+
+        ExtendedStats agg = sr.getAggregations().get(AGG_EXTENDED_STATS);
+
+        List<StatRangeResult> statResults = new ArrayList<>();
+        if (dataType == DataType.numeric) {
+            List<BucketRange<Double>> buckets = StatUtil.createNumericBuckets(agg.getMin(), agg.getMax(), numOfBins);
+            statResults = getNumericBucketsStatResults(client, index, type, field, buckets);
+        }
+        return statResults;
     }
 
     public static void bulkIndexingFromFile(TransportClient client,
@@ -524,6 +564,4 @@ public class EsUtil {
 
         return bucketStatResults;
     }
-
-
 }

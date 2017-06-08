@@ -14,7 +14,6 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.results.QueryResult;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import static com.kayhut.fuse.model.Utils.submit;
 
@@ -66,7 +65,7 @@ public class QueryCursorPageTestProcessor implements
     public PageCreationOperationContext process(PageCreationOperationContext context) throws IOException {
         if (context.getPageResource() == null) {
             QueryResult queryResult = context.getCursorResource().getCursor().getNextResults(context.getPageSize());
-            context = context.of(new PageResource(context.getPageId(), queryResult, context.getPageSize()));
+            context = context.of(new PageResource(context.getPageId(), queryResult, context.getPageSize(),0));
             submit(eventBus, context);
         }
 

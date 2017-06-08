@@ -35,6 +35,7 @@ public abstract class ETLUtils {
     public static final String ENTITY_A_ID = "EntityA.Id";
     public static final String DURATION = "duration";
     public static final String START_DATE = "startDate";
+    public static final String SINCE = "since";
     public static final String END_DATE = "endDate";
     public static final String ID = "id";
     public static final String ESTABLISH_DATE = "establishDate";
@@ -44,6 +45,8 @@ public abstract class ETLUtils {
     public static final String MEMBER_OF_GUILD = "MemberOf";
     public static final String OWN = "Own";
     public static final String ORIGINATED = "Origin";
+    public static final String REGISTERED = "Registered";
+    public static final String SUBJECT_OF_KINGDOM = "Subject";
     public static final String KNOWS = "Know";
     public static final String GUILD = "Guild";
     public static final String HORSE = "Horse";

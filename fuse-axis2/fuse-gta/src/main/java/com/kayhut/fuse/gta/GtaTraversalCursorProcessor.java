@@ -1,9 +1,12 @@
 package com.kayhut.fuse.gta;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
+import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
@@ -19,6 +22,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -26,6 +30,9 @@ import static com.kayhut.fuse.model.Utils.submit;
  */
 public class GtaTraversalCursorProcessor implements CursorCreationOperationContext.Processor {
     //region Constructors
+    @Inject
+    private MetricRegistry metricRegistry;
+
     @Inject
     public GtaTraversalCursorProcessor(
             EventBus eventBus,
@@ -49,6 +56,10 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
         if (context.getCursor() != null) {
             return context;
         }
+        Timer.Context time = metricRegistry.timer(
+                name(QueryCreationOperationContext.class.getSimpleName(),
+                        context.getQueryResource().getQueryMetadata().getId(),
+                        GtaTraversalCursorProcessor.class.getSimpleName())).time();
 
         //execute gta plan ==> traversal extraction
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = context.getQueryResource().getExecutionPlan();
@@ -62,6 +73,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
 
         //submit
         Cursor cursor = this.cursorFactory.createCursor(new TraversalCursorFactory.TraversalCursorContext(ontology, context.getQueryResource(), traversal));
+        time.stop();
         return submit(eventBus, context.of(cursor));
 
     }

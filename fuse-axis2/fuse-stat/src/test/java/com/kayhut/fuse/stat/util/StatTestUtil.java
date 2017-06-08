@@ -1,5 +1,11 @@
 package com.kayhut.fuse.stat.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.stat.model.configuration.Field;
+import com.kayhut.fuse.stat.model.configuration.StatContainer;
+import com.kayhut.fuse.stat.model.configuration.Type;
+import com.kayhut.fuse.stat.model.histogram.Histogram;
+import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -96,7 +102,7 @@ public class StatTestUtil {
             for (int j = 0; j < i; j++) {
                 Map<String, Object> fireEdge = new HashMap<>();
                 fireEdge.put("id", "fire_" + counter);
-                fireEdge.put("time", randomLong(startDate, endDate));
+                fireEdge.put("timestamp", randomLong(startDate, endDate));
                 fireEdge.put("direction", "OUT");
                 fireEdge.put("temperature", randomInt(minTemp, maxTemp));
 
@@ -165,6 +171,43 @@ public class StatTestUtil {
                 // do stuff
             }
         }
+    }
+
+    public static Optional<Histogram> getHistogram(String statJsonConfRelativePath, String type, String field) throws Exception{
+        Optional<Histogram> histogram = Optional.empty();
+
+        String statFieldsJson = StatUtil.
+                readJsonToString(statJsonConfRelativePath);
+
+        StatContainer statContainer = new ObjectMapper().
+                readValue(statFieldsJson, StatContainer.class);
+        List<Type> types = Stream.ofAll(statContainer.getTypes()).filter(type1 -> type1.getType().equals(type)).toJavaList();
+        List<Field> fields1 = Stream.ofAll(types).flatMap(type1 -> type1.getFields()).filter(field1 -> field1.getField().equals(field)).toJavaList();
+
+        if (!fields1.isEmpty()) {
+            histogram = Optional.of(fields1.get(0).getHistogram());
+        }
+
+        return histogram;
+    }
+
+    public static Set<Map<String, Object>> searchByTerm(TransportClient client, String[] indices, String[] types, String field, String term) {
+        SearchResponse response;
+        try {
+            response = client.prepareSearch()
+                    .setIndices(indices)
+                    .setTypes(types)
+                    .setQuery(QueryBuilders.termQuery(field, term))
+                    .execute().actionGet();
+        } catch (Throwable e) {
+            return new HashSet<>();
+        }
+        Set<Map<String, Object>> results = new HashSet<>();
+        for (SearchHit hit : response.getHits()) {
+            Map<String, Object> doc = hit.getSource();
+            results.add(doc);
+        }
+        return results;
     }
 
 }

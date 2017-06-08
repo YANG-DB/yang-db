@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
+import javax.management.relation.Relation;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,6 +18,10 @@ import java.util.function.Predicate;
  */
 public class AsgQueryUtil {
     //region Public Methods
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> get(AsgEBase<T> asgEBase, int eNum) {
+        return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, p->p.geteBase().geteNum()==eNum, truePredicate);
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, truePredicate);
     }
@@ -344,7 +349,7 @@ public class AsgQueryUtil {
             if(e.geteBase() instanceof EEntityBase)
                 joiner.add(EEntityBase.class.getSimpleName());
             else if(e.geteBase() instanceof Rel)
-                joiner.add(Rel.class.getSimpleName());
+                joiner.add(Relation.class.getSimpleName());
             else if(e.geteBase() instanceof EPropGroup)
                 joiner.add(EPropGroup.class.getSimpleName());
             else if(e.geteBase() instanceof RelPropGroup)

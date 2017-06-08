@@ -1,10 +1,13 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.ValidationContext;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,5 +63,22 @@ public class AsgStartEntityValidatorStrategyTest {
         ValidationContext validationContext = strategy.apply(AsgQuery.Builder.start("Q1", "Dragon").build(), new AsgStrategyContext(new Ontology.Accessor(ontology)));
         Assert.assertFalse(validationContext.valid());
         Assert.assertEquals(validationContext.errors()[0],AsgStartEntityValidatorStrategy.ERROR_2);
+    }
+
+    @Test
+    public void testWrongPositionStartElementQuery() {
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(unTyped(1))
+                .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
+                        RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                .next(unTyped(3))
+                .build();
+
+        AsgQueryUtil.get(query.getStart(),3).get().addNextChild(new AsgEBase<>(new Start()));
+
+        AsgStartEntityValidatorStrategy strategy = new AsgStartEntityValidatorStrategy();
+        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationContext.valid());
+        Assert.assertEquals(validationContext.errors()[0],AsgStartEntityValidatorStrategy.ERROR_3);
     }
 }

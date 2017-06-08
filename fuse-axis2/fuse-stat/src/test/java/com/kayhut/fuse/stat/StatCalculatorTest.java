@@ -162,7 +162,6 @@ public class StatCalculatorTest {
         }*/
     }
 
-
     @Test
     public void statCalculatorInvalidArgumentsTest() {
         try {
@@ -180,7 +179,6 @@ public class StatCalculatorTest {
 //            System.out.println(bucket.getStart() + "," + bucket.getEnd());
 //        });
     }
-
 
     @Test
     public void statDataValidationTest() throws Exception {
