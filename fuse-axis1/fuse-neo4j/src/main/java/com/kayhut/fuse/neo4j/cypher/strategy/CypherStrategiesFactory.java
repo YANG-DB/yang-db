@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.aggregation.AggL1;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -35,6 +36,7 @@ public class CypherStrategiesFactory {
         cypherStrategyMap.put(Quant2.class, new Quant2CypherStrategy(compilationState, ont));
         cypherStrategyMap.put(EConcrete.class, new ConcreteNodeCypherStrategy(compilationState, ont));
         cypherStrategyMap.put(AggL1.class, new AggL1CypherStrategy(compilationState, ont));
+        cypherStrategyMap.put(EUntyped.class, new UnTypedNodeCypherStrategy(compilationState, ont));
         defaultStrategy = new DefaultCypherStrategy(compilationState, ont);
     }
 
