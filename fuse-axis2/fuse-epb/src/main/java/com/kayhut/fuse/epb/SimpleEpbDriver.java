@@ -1,5 +1,7 @@
 package com.kayhut.fuse.epb;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -10,6 +12,7 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -19,6 +22,9 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
 
     private EventBus bus;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+
+    @Inject
+    private MetricRegistry metricRegistry;
 
     @Inject
     public SimpleEpbDriver(EventBus bus, PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
@@ -31,18 +37,24 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
     @Subscribe
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         //if asg not ready yet -> return
-        if(context.getAsgQuery()==null) {
+        if (context.getAsgQuery() == null) {
             return context;
         }
         //if execution plan already exist -> return
-        if(context.getExecutionPlan()!=null) {
+        if (context.getExecutionPlan() != null) {
             return context;
         }
+
+        Timer.Context time = metricRegistry.timer(
+                name(QueryCreationOperationContext.class.getSimpleName(),
+                        context.getQueryMetadata().getId(),
+                        SimpleEpbDriver.class.getSimpleName())).time();
 
         AsgQuery query = context.getAsgQuery();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         //get first
         PlanWithCost<Plan, PlanDetailedCost> first = plans.iterator().next();
+        time.stop();
         return submit(bus, context.of(first));
     }
 }

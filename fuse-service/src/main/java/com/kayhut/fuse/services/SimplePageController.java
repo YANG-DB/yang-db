@@ -37,21 +37,21 @@ public class SimplePageController implements PageController {
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryid, String cursorId) {
-        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+        return Builder.<StoreResourceInfo>builder(randomUUID().toString(), FOUND, NOT_FOUND)
                 .data(this.driver.getInfo(queryid, cursorId))
                 .compose();
     }
 
     @Override
     public ContentResponse<PageResourceInfo> getInfo(String queryId, String cursorId, String pageId) {
-        return Builder.<PageResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+        return Builder.<PageResourceInfo>builder(randomUUID().toString(), FOUND, NOT_FOUND)
                 .data(this.driver.getInfo(queryId, cursorId, pageId))
                 .compose();
     }
 
     @Override
     public ContentResponse<Object> getData(String queryId, String cursorId, String pageId) {
-        return builder(randomUUID().toString(),FOUND, NOT_FOUND)
+        return builder(randomUUID().toString(), FOUND, NOT_FOUND)
                 .data(this.driver.getData(queryId, cursorId, pageId))
                 .compose();
     }

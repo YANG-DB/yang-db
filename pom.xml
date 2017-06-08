@@ -108,6 +108,12 @@
                 <version>${jooby.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby-metrics</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
+
             <!-- logging -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>

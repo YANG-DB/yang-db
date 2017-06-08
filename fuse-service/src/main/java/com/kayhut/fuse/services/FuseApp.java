@@ -1,6 +1,10 @@
 package com.kayhut.fuse.services;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
+import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
+import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
+import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
@@ -19,6 +23,7 @@ import org.jooby.Result;
 import org.jooby.Results;
 import org.jooby.Status;
 import org.jooby.json.Jackson;
+import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 
 import java.util.Optional;
@@ -52,6 +57,15 @@ public class FuseApp extends Jooby {
 
     //region Consructors
     public FuseApp(AppUrlSupplier urlSupplier) {
+        //metrics statistics
+        use(new Metrics()
+                .request()
+                .threadDump()
+                .ping()
+                .metric("memory", new MemoryUsageGaugeSet())
+                .metric("threads", new ThreadStatesGaugeSet())
+                .metric("gc", new GarbageCollectorMetricSet())
+                .metric("fs", new FileDescriptorRatioGauge()));
 
         use(new Scanner());
         use(new Jackson());
