@@ -17,7 +17,8 @@ import com.kayhut.fuse.stat.model.enums.HistogramType;
         @JsonSubTypes.Type(name = "string", value = HistogramString.class),
         @JsonSubTypes.Type(name = "manual", value = HistogramManual.class),
         @JsonSubTypes.Type(name = "term", value = HistogramTerm.class),
-        @JsonSubTypes.Type(name = "composite", value = HistogramComposite.class)
+        @JsonSubTypes.Type(name = "composite", value = HistogramComposite.class),
+        @JsonSubTypes.Type(name = "dynamic", value = HistogramDynamic.class)
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)

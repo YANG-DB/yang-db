@@ -43,7 +43,7 @@ public class StatCalculator {
 
         try {
             Configuration configuration = new StatConfiguration(args[0]).getInstance();
-            logger.info( "Loading configuration file at : '{}'",((PropertiesConfiguration)configuration).getPath());
+            logger.info("Loading configuration file at : '{}'", ((PropertiesConfiguration) configuration).getPath());
             dataClient = ClientProvider.getDataClient(configuration);
             statClient = ClientProvider.getStatClient(configuration);
             loadDefaultStatParameters(configuration);
@@ -81,6 +81,7 @@ public class StatCalculator {
                         buildHistogramForStringFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForCompositeFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForTermFields(dataClient, statClient, statContainer, index, type);
+                        buildHistogramForDynamicFields(dataClient, statClient, statContainer, index, type);
                     }
                 }
             }
@@ -312,10 +313,41 @@ public class StatCalculator {
         }
     }
 
+    private static void buildHistogramForDynamicFields(
+            TransportClient dataClient,
+            TransportClient statClient,
+            StatContainer statContainer,
+            String index,
+            String type) {
+        try {
+            Optional<List<Field>> fields = StatUtil.getFieldsWithDynamicHistogram(
+                    statContainer,
+                    type);
+
+            if (fields.isPresent() && !fields.get().isEmpty()) {
+                for (Field field : fields.get()) {
+                    HistogramDynamic hist = (HistogramDynamic) field.getHistogram();
+                    // !! Currently we support only dynamic histogram of numeric !!
+                    List<StatRangeResult> bucketsResults = EsUtil.getDynamicHistogramResults(
+                            dataClient,
+                            index,
+                            type,
+                            field.getField(),
+                            hist.getDataType(),
+                            hist.getNumOfBins());
+                    populateBuckets(statIndexName, statTypeNumericName, statClient, bucketsResults);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while trying to calculate statistics for Index: {}, Type: {}", index, type);
+            logger.error(e.getMessage(), e);
+        }
+    }
+
     private static void populateBuckets(String statIndex,
                                         String statType,
                                         TransportClient statClient,
-                                        List<? extends StatResultBase> buckets) throws IOException {
+                                        List<? extends StatResultBase> buckets) throws Exception {
 
         new ElasticDataPopulator(
                 statClient,

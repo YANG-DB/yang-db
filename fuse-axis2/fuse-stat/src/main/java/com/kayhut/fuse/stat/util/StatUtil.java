@@ -108,6 +108,10 @@ public class StatUtil {
         return getFieldsWithHistogram(statContainer, typeName, HistogramType.term);
     }
 
+    public static Optional<List<Field>> getFieldsWithDynamicHistogram(StatContainer statContainer, String typeName) {
+        return getFieldsWithHistogram(statContainer, typeName, HistogramType.dynamic);
+    }
+
     public static Iterable<Map<String, Object>> prepareStatDocs(List<? extends StatResultBase> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
         for (StatResultBase bucketStatResult : bucketStatResults) {

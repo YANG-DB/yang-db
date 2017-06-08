@@ -8,5 +8,6 @@ public enum HistogramType {
     string,
     manual,
     composite,
-    term
+    term,
+    dynamic
 }
