@@ -51,7 +51,8 @@ public class Assignment {
     public static final class Builder {
         //region Constructors
         private Builder() {
-            entities = new HashMap<>();
+            //entities = new HashMap<>();
+            entities = new ArrayList<>();
             relationships = new ArrayList<>();
         }
         //endregion
@@ -64,17 +65,20 @@ public class Assignment {
 
         //region Public Methods
         public Builder withEntity(Entity entity) {
-            Entity entityToMerge = this.entities.get(entity.hashCode());
+            // currently merging is disabled due to request from the UI
+            /*Entity entityToMerge = this.entities.get(entity.hashCode());
             if (entityToMerge != null) {
                 entity = Entity.Builder.instance().withEntity(entity).withEntity(entityToMerge).build();
-            }
+            }*/
 
-            entities.put(entity.hashCode(), entity);
+            //entities.put(entity.hashCode(), entity);
+            entities.add(entity);
             return this;
         }
 
         public Builder withEntities(List<Entity> entities) {
-            entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
+            //entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
+            this.entities.addAll(entities);
             return this;
         }
 
@@ -90,14 +94,15 @@ public class Assignment {
 
         public Assignment build() {
             Assignment assignment = new Assignment();
-            assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
+            //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
+            assignment.setEntities(entities);
             assignment.setRelationships(relationships);
             return assignment;
         }
         //endregion
 
         //region Fields
-        private Map<Integer, Entity> entities;
+        private List<Entity> entities;
         private List<Relationship> relationships;
         //endregion
     }
