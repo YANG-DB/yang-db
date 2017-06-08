@@ -12,6 +12,10 @@ import java.util.Date;
  */
 public class KingdomGenerator extends EntityGeneratorBase<KingdomConfiguration, Kingdom> {
 
+    private final int MIN_FUND = 10000;
+    private final int MAX_FUND = 9999999;
+    private final int INDEPENDENCE_DAY_INTERVAL = 15;
+
     public KingdomGenerator(KingdomConfiguration configuration) {
         super(configuration);
     }
@@ -22,8 +26,9 @@ public class KingdomGenerator extends EntityGeneratorBase<KingdomConfiguration, 
         return Kingdom.Builder.get()
                 .withKing(String.format("King %s %s", faker.name().firstName(), faker.name().lastName()))
                 .withQueen(String.format("Queen %s %s", faker.name().firstName(), faker.name().lastName()))
-                .withFunds(RandomUtil.uniform(10000, 9999999))
-                .withIndependenceDay(RandomUtil.randomDate(startDateOfStory, DateUtil.addYearsToDate(startDateOfStory, 15)))
+                .withFunds(RandomUtil.uniform(MIN_FUND, MAX_FUND))
+                .withIndependenceDay(RandomUtil.randomDate(startDateOfStory, DateUtil.addYearsToDate(startDateOfStory,
+                        INDEPENDENCE_DAY_INTERVAL)))
                 .build();
     }
 }

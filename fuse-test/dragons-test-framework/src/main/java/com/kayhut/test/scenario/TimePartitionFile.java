@@ -21,8 +21,8 @@ import java.util.Map;
  */
 public class TimePartitionFile {
     public static void main(String[] args) {
-        String filePath = "E:\\fuse_data\\edgesAfterEtl\\dragonsRelations_FIRES-out.csv";
-        String destFolder = "E:\\fuse_data\\edgesAfterEtl\\dragonsRelations_chunks";
+        String filePath = "E:\\fuse_data\\edges\\dragonsRelations_FREEZES-out.csv";
+        String destFolder = "E:\\fuse_data\\edges\\dragonsRelations_FREEZES_chunks";
 
         new File(destFolder).mkdirs();
 
@@ -31,17 +31,18 @@ public class TimePartitionFile {
                         .addColumn("id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
-                        .addColumn("timestamp", CsvSchema.ColumnType.NUMBER)
-                        .addColumn("temperature", CsvSchema.ColumnType.NUMBER)
+                        .addColumn("startDate", CsvSchema.ColumnType.STRING)
+                        .addColumn("endDate", CsvSchema.ColumnType.STRING)
+                        .addColumn("entityA.type", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.type", CsvSchema.ColumnType.STRING)
                         .addColumn("direction", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityB.color", CsvSchema.ColumnType.STRING)
+                        .addColumn("entityA.name", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.name", CsvSchema.ColumnType.STRING)
                         .build()
         ).forType(new TypeReference<Map<String, String>>() {
         });
 
-        Partitioner partitioner = new DateFieldPartitioner("timestamp", "%s", "yyyy-MM-dd HH:mm:ss.SSS", "yyyyMM");
+        Partitioner partitioner = new DateFieldPartitioner("startDate", "%s", "yyyy-MM-dd HH:mm:ss.SSS", "yyyyMM");
 
         Map<String, List<String>> bufferedPartitions = new HashMap<>();
         int maxBufferedLines = 100000;

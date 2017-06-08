@@ -130,7 +130,7 @@
                 <version>3.0.0</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>assembly/fuse-service-package.xml</descriptor>
+                        <descriptor>assembly/fuse-service-test-package.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

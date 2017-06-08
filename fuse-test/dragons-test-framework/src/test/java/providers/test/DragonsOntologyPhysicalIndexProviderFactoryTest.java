@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.data.DragonsOntologyPhysicalIndexProviderFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import static com.kayhut.fuse.model.OntologyTestUtils.createDragonsOntologyLong;
 public class DragonsOntologyPhysicalIndexProviderFactoryTest {
 
     @Test
+    @Ignore
     public void testTimeSeriesIndexPartition() throws IOException {
         DragonsOntologyPhysicalIndexProviderFactory factory = new DragonsOntologyPhysicalIndexProviderFactory("DragonsIndexProvider.conf");
         PhysicalIndexProvider provider = factory.get(createDragonsOntologyLong());
@@ -38,6 +40,7 @@ public class DragonsOntologyPhysicalIndexProviderFactoryTest {
     }
 
     @Test
+    @Ignore
     public void testStaticIndexPartition() throws IOException {
         DragonsOntologyPhysicalIndexProviderFactory factory = new DragonsOntologyPhysicalIndexProviderFactory("DragonsIndexProvider.conf");
         PhysicalIndexProvider provider = factory.get(createDragonsOntologyLong());

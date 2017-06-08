@@ -5,28 +5,33 @@
       "eType": 1,
       "name": "Person",
       "properties": [
+        13,
         1,
         2,
         3,
         4,
         5,
-        6,
-        7
+        6
       ]
     },
     {
       "eType": 3,
       "name": "Horse",
       "properties": [
+        13,
         7,
-        3
+        22,
+        23,
+        24
       ]
     },
     {
       "eType": 2,
       "name": "Dragon",
       "properties": [
+        13,
         7,
+        14,
         3,
         8
       ]
@@ -35,18 +40,48 @@
       "eType": 5,
       "name": "Kingdom",
       "properties": [
-        7
+        13,
+        7,
+        18,
+        19,
+        20,
+        21
       ]
     },
     {
       "eType": 4,
       "name": "Guild",
       "properties": [
-        7
+        13,
+        7,
+        15,
+        16,
+        17,
+        25
       ]
     }
   ],
   "relationshipTypes": [
+    {
+      "rType": 101,
+      "name": "owns",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 2
+        },
+        {
+          "eTypeA": 1,
+          "eTypeB": 3
+        }
+      ],
+      "properties": [
+        13,
+        26,
+        10
+      ]
+    },
     {
       "rType": 108,
       "name": "know",
@@ -58,13 +93,91 @@
         }
       ],
       "properties": [
-        9,
+        13,
+        26
+      ]
+    },
+    {
+      "rType": 102,
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 4
+        }
+      ],
+      "properties": [
+        13,
+        26,
         10
       ]
     },
     {
+      "rType": 103,
+      "name": "fire",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        13,
+        9,
+        11
+      ]
+    },
+    {
+      "rType": 104,
+      "name": "freeze",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 2
+        }
+      ],
+      "properties": [
+        13,
+        26,
+        10
+      ]
+    },
+    {
+      "rType": 105,
+      "name": "originatedIn",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 2,
+          "eTypeB": 5
+        }
+      ],
+      "properties": [
+        13,
+        26
+      ]
+    },
+    {
+      "rType": 106,
+      "name": "subjectOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 5
+        }
+      ],
+      "properties": [
+        13,
+        26
+      ]
+    },
+    {
       "rType": 107,
-      "name": "registered",
+      "name": "registeredIn",
       "directional": true,
       "ePairs": [
         {
@@ -81,109 +194,17 @@
         }
       ],
       "properties": [
-        9,
-        10
-      ]
-    },
-    {
-      "rType": 106,
-      "name": "subject",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 5
-        }
-      ],
-      "properties": [
-        9,
-        10
-      ]
-    },
-    {
-      "rType": 105,
-      "name": "origin",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 2,
-          "eTypeB": 5
-        }
-      ],
-      "properties": [
-        9,
-        10
-      ]
-    },
-    {
-      "rType": 104,
-      "name": "freeze",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 2,
-          "eTypeB": 2
-        }
-      ],
-      "properties": [
-        9,
-        10,
-        11
-      ]
-    },
-    {
-      "rType": 103,
-      "name": "fire",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 2,
-          "eTypeB": 2
-        }
-      ],
-      "properties": [
-        9,
-        10,
-        11,
-        12
-      ]
-    },
-    {
-      "rType": 102,
-      "name": "memberOf",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 4
-        }
-      ],
-      "properties": [
-        9,
-        10
-      ]
-    },
-    {
-      "rType": 101,
-      "name": "own",
-      "directional": true,
-      "ePairs": [
-        {
-          "eTypeA": 1,
-          "eTypeB": 2
-        },
-        {
-          "eTypeA": 1,
-          "eTypeB": 3
-        }
-      ],
-      "properties": [
-        9,
-        10
+        13,
+        26
       ]
     }
   ],
   "properties": [
+    {
+      "pType": 13,
+      "name": "id",
+      "type": "string"
+    },
     {
       "pType": 1,
       "name": "firstName",
@@ -207,13 +228,7 @@
     {
       "pType": 5,
       "name": "deathDate",
-      "type": "date"
-    },
-    {
-      "pType": 6,
-      "name": "height",
-      "type": "int",
-      "units": "cm"
+      "type": "string"
     },
     {
       "pType": 7,
@@ -221,7 +236,77 @@
       "type": "string"
     },
     {
+      "pType": 6,
+      "name": "height",
+      "type": "int"
+    },
+    {
+      "pType": 22,
+      "name": "weight",
+      "type": "int"
+    },
+    {
+      "pType": 23,
+      "name": "maxSpeed",
+      "type": "int"
+    },
+    {
+      "pType": 24,
+      "name": "distance",
+      "type": "int"
+    },
+    {
+      "pType": 25,
+      "name": "establishDate",
+      "type": "date"
+    },
+    {
+      "pType": 15,
+      "name": "description",
+      "type": "string"
+    },
+    {
+      "pType": 16,
+      "name": "iconId",
+      "type": "string"
+    },
+    {
+      "pType": 17,
+      "name": "url",
+      "type": "string"
+    },
+    {
+      "pType": 18,
+      "name": "king",
+      "type": "string"
+    },
+    {
+      "pType": 19,
+      "name": "queen",
+      "type": "string"
+    },
+    {
+      "pType": 20,
+      "name": "independenceDay",
+      "type": "string"
+    },
+    {
+      "pType": 21,
+      "name": "funds",
+      "type": "float"
+    },
+    {
+      "pType": 8,
+      "name": "color",
+      "type": "TYPE_Color"
+    },
+    {
       "pType": 9,
+      "name": "date",
+      "type": "date"
+    },
+    {
+      "pType": 26,
       "name": "startDate",
       "type": "date"
     },
@@ -231,13 +316,18 @@
       "type": "date"
     },
     {
+      "pType": 11,
+      "name": "temperature",
+      "type": "int"
+    },
+    {
       "pType": 12,
       "name": "timestamp",
       "type": "date"
     },
     {
-      "pType": 11,
-      "name": "temperature",
+      "pType": 14,
+      "name": "power",
       "type": "int"
     },
     {
