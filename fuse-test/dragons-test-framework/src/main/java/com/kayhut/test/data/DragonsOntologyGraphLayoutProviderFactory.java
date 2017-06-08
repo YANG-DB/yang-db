@@ -22,7 +22,7 @@ public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutPro
 
     //region Constructors
     public DragonsOntologyGraphLayoutProviderFactory() throws IOException {
-        this("ETLGraphLayoutFactory.conf");
+        this("GraphLayoutProviderFactory.conf");
     }
 
     @Inject
