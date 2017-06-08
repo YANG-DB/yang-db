@@ -43,7 +43,7 @@ public class FileTransformer {
 
         CsvSchema newSchema = transformer.getNewSchema(schema);
         ObjectMapper mapper = new CsvMapper();
-
+        System.out.println(newSchema.getColumnDesc());
         ObjectWriter writer = mapper.writerFor(new TypeReference<Map<String, Object>>() {
         }).with(newSchema).without(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
 
