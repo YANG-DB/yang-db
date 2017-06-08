@@ -1,25 +1,25 @@
 package com.kayhut.fuse.neo4j.executor;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
-import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 
 import java.util.Optional;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -28,6 +28,9 @@ import static com.kayhut.fuse.model.Utils.submit;
 public class Neo4jOperationContextProcessor implements
         CursorCreationOperationContext.Processor,
         QueryCreationOperationContext.Processor {
+
+    @Inject
+    private MetricRegistry metricRegistry;
 
     //region Constructors
     @Inject
@@ -52,12 +55,19 @@ public class Neo4jOperationContextProcessor implements
             return context;
         }
 
+        Timer.Context time = metricRegistry.timer(
+                name(QueryCreationOperationContext.class.getSimpleName(),
+                        context.getQueryMetadata().getId(),
+                        Neo4jOperationContextProcessor.class.getSimpleName())).time();
+
         Optional<Ontology> ont = ontologyProvider.get(context.getAsgQuery().getOnt());
         if(!ont.isPresent()) {
             throw new RuntimeException("Query ontology not present in catalog.");
         }
 
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = new PlanWithCost<>(new Plan(), new PlanDetailedCost());
+
+        time.stop();
         return submit(eventBus, context.of(planWithCost));
     }
     //endregion
@@ -72,6 +82,10 @@ public class Neo4jOperationContextProcessor implements
         }
 
         //TODO: called twice !!
+        Timer.Context time = metricRegistry.timer(
+                name(QueryCreationOperationContext.class.getSimpleName(),
+                        context.getQueryResource().getQueryMetadata().getId(),
+                        Neo4jOperationContextProcessor.class.getSimpleName())).time();
 
         //Compile the query and get the cursor ready
         String cypherQuery;
@@ -85,6 +99,7 @@ public class Neo4jOperationContextProcessor implements
 
         Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(), cypherQuery));
 
+        time.stop();
         return submit(eventBus, context.of(cursor));
 
     }

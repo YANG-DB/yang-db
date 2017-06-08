@@ -76,6 +76,11 @@
             <groupId>org.jooby</groupId>
             <artifactId>jooby-jackson</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.jooby</groupId>
+            <artifactId>jooby-metrics</artifactId>
+        </dependency>
         <!--serialization-->
         <dependency>
             <groupId>com.cedarsoftware</groupId>

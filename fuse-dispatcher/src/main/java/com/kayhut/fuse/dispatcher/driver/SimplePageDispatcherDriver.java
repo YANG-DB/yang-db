@@ -44,9 +44,9 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
 
         String pageId = cursorResource.get().getNextPageId();
         submit(this.eventBus, new PageCreationOperationContext(cursorResource.get(), pageId, pageSize)
-                .of(new PageResource(pageId, null, pageSize)));
+                .of(new PageResource(pageId, null, pageSize,0)));
 
-        return Optional.of(new PageResourceInfo(urlSupplier.resourceUrl(queryId, cursorId, pageId), pageId, pageSize, 0, false));
+        return Optional.of(new PageResourceInfo(urlSupplier.resourceUrl(queryId, cursorId, pageId), pageId, pageSize, 0,0, false));
     }
 
     @Override
@@ -91,6 +91,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
                 pageId,
                 pageResource.get().getRequestedSize(),
                 pageResource.get().getActualSize(),
+                pageResource.get().getExecutionTime(),
                 pageResource.get().isAvailable()));
     }
 

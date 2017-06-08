@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * Created by moti on 2/21/2017.
@@ -71,7 +69,7 @@ public class BottomUpPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q>, Tra
     public Iterable<PlanWithCost<P, C>> search(Q query) {
         Iterable<PlanWithCost<P, C>> selectedPlans;
 
-        Set<PlanWithCost<P, C>> currentPlans = new TreeSet<>((o1, o2) -> o1.getPlan().toString().compareTo(o2.getPlan().toString()));
+        Set<PlanWithCost<P, C>> currentPlans = new TreeSet<>(Comparator.comparing(o -> o.getPlan().toString()));
 
         // Generate seed plans (plan is null)
         for (P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)) {
