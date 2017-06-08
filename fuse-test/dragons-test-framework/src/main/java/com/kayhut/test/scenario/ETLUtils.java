@@ -1,11 +1,20 @@
 package com.kayhut.test.scenario;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.jayway.jsonpath.JsonPath;
+import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
 import com.kayhut.test.data.DragonsOntologyPhysicalIndexProviderFactory;
+import com.kayhut.test.etl.DateFieldPartitioner;
+import com.kayhut.test.etl.Partitioner;
 import net.minidev.json.JSONArray;
+import org.apache.commons.io.FilenameUtils;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -17,10 +26,15 @@ import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.Utils.readJsonFile;
 import static com.kayhut.test.data.DragonsOntologyPhysicalIndexProviderFactory.*;
@@ -71,6 +85,24 @@ public abstract class ETLUtils {
 
     public static String id(String type, String id) {
         return type+"_"+id;
+    }
+
+    public static void createIndices(String fileName,String type, String index, Client client) throws IOException, ExecutionException, InterruptedException {
+        String s = Utils.readJsonFile(fileName);
+        List<String> indices = IntStream.range(1, 13).mapToObj(i -> index + String.format("%02d", i)).collect(Collectors.toList());
+        indices.forEach(idx -> {
+                    try {
+                        CreateIndexResponse own = client.admin().indices().prepareCreate(idx).addMapping(type, s).execute().get();
+                        System.out.println(own);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+        );
+        //PutMappingResponse putMappingResponse = client.admin().indices().preparePutMapping(indices.toArray(new String[indices.size()])).setType("own").setSource(s).execute().get();
+        //System.out.println(putMappingResponse);
     }
 
     static BulkProcessor getBulkProcessor(Client client) {
@@ -129,5 +161,66 @@ public abstract class ETLUtils {
         return Arrays.asList(array.toArray(new String[array.size()]));
     }
 
+    public static void splitFileToChunks(String filePath , String destFolder, CsvSchema schema, String partitionField) {
+        new File(destFolder).mkdirs();
+
+        ObjectReader reader = new CsvMapper().reader(schema).forType(new TypeReference<Map<String, String>>() {
+        });
+
+        Partitioner partitioner = new DateFieldPartitioner(partitionField, "%s", "yyyy-MM-dd HH:mm:ss.SSS", "yyyyMM");
+
+        Map<String, List<String>> bufferedPartitions = new HashMap<>();
+        int maxBufferedLines = 100000;
+
+        int numLines = 0;
+        int totalNumLinesScanned = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                Map<String, String> fire = reader.readValue(line);
+                String partitionKey = partitioner.getPartition(fire);
+
+                List<String> bufferedPartition = bufferedPartitions.get(partitionKey);
+                if (bufferedPartition == null) {
+                    bufferedPartition = new ArrayList<>();
+                    bufferedPartitions.put(partitionKey, bufferedPartition);
+                }
+
+                bufferedPartition.add(line);
+                numLines++;
+
+                if (numLines == maxBufferedLines) {
+                    flushBufferedPartitions(bufferedPartitions, filePath, destFolder);
+                    totalNumLinesScanned += numLines;
+                    numLines = 0;
+                    bufferedPartitions.clear();
+
+                    System.out.println("total # lines: " + totalNumLinesScanned);
+                }
+            }
+
+            flushBufferedPartitions(bufferedPartitions, filePath, destFolder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void flushBufferedPartitions(Map<String, List<String>> bufferedPartitions, String filePath, String destFolder) throws IOException {
+        String fileName = FilenameUtils.removeExtension(FilenameUtils.getName(filePath));
+        String fileExtension = FilenameUtils.getExtension(filePath);
+
+        for(Map.Entry<String, List<String>> entry : bufferedPartitions.entrySet()) {
+            String partitionFileName = getPartitionFileName(destFolder, fileName, entry.getKey(), fileExtension);
+            try (BufferedWriter wr = new BufferedWriter(new FileWriter(partitionFileName, true))) {
+                for (String line : entry.getValue()) {
+                    wr.write(line + System.lineSeparator());
+                }
+            }
+        }
+    }
+
+    private static String getPartitionFileName(String destFolder, String fileName, String partitionKey, String fileExtension) {
+        return Paths.get(destFolder, fileName + "." + partitionKey + "." + fileExtension).toString();
+    }
 
 }

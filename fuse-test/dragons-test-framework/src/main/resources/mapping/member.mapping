@@ -1,0 +1,58 @@
+{
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "direction": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "endDate": {
+          "type": "date",
+          "format": "epoch_millis||yyyy-MM-dd HH:mm:ss.SSS"
+        },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "index": "not_analyzed"
+            },
+            "name": {
+              "type": "string"
+            },
+            "firstName": {
+              "type": "string",
+              "index": "not_analyzed"
+
+            },
+            "type": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "index": "not_analyzed"
+            },
+            "name": {
+              "type": "string"
+            },
+            "firstName": {
+              "type": "string",
+              "index": "not_analyzed"
+            },
+            "type": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "startDate": {
+          "type": "date",
+          "format": "epoch_millis||yyyy-MM-dd HH:mm:ss.SSS"
+        }
+      }
+}
