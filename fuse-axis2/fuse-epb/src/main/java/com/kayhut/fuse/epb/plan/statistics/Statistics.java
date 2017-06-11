@@ -10,11 +10,11 @@ import java.util.*;
 public interface Statistics {
     Statistics merge(Statistics other);
 
-    class Cardinality implements Statistics{
+    class SummaryStatistics implements Statistics{
         private double total;
         private double cardinality;
 
-        public Cardinality(double total, double cardinality) {
+        public SummaryStatistics(double total, double cardinality) {
             this.total = total;
             this.cardinality = cardinality;
         }
@@ -29,8 +29,8 @@ public interface Statistics {
 
         @Override
         public Statistics merge(Statistics other) {
-            Cardinality otherCard = (Cardinality) other;
-            return new Cardinality(this.getTotal() + otherCard.getTotal(),this.getCardinality() + otherCard.getCardinality());
+            SummaryStatistics otherCard = (SummaryStatistics) other;
+            return new SummaryStatistics(this.getTotal() + otherCard.getTotal(),this.getCardinality() + otherCard.getCardinality());
         }
     }
 
@@ -227,8 +227,8 @@ public interface Statistics {
             return true;
         }
 
-        public Cardinality getCardinalityObject(){
-            return new Cardinality(total, cardinality);
+        public SummaryStatistics getCardinalityObject(){
+            return new SummaryStatistics(total, cardinality);
         }
 
         public boolean isSingleValue(){

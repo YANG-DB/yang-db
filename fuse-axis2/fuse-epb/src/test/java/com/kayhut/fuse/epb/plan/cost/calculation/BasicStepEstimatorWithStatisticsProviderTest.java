@@ -145,10 +145,10 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
 
     private GraphStatisticsProvider getStatisticsProvider(PlanMockUtils.PlanMockBuilder builder) {
         GraphStatisticsProvider mock = GraphStatisticsProviderMock.mock(builder);
-        when(mock.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(100,10));
-        when(mock.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(100,10));
-        when(mock.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(100,10));
-        when(mock.getVertexCardinality(any(),any())).thenReturn(new Statistics.Cardinality(100,10));
+        when(mock.getEdgeCardinality(any())).thenReturn(new Statistics.SummaryStatistics(100,10));
+        when(mock.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(100,10));
+        when(mock.getVertexCardinality(any())).thenReturn(new Statistics.SummaryStatistics(100,10));
+        when(mock.getVertexCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(100,10));
         return mock;
     }
 

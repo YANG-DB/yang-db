@@ -13,10 +13,10 @@ import java.util.List;
  * Created by liorp on 4/27/2017.
  */
 public interface GraphStatisticsProvider {
-    Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema);
-    Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices);
-    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
-    Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
+    Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema);
+    Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices);
+    Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
+    Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
 
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphElementSchema,
                                                                                       List<String> relevantIndices,

@@ -40,7 +40,6 @@ import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -91,7 +90,7 @@ public class SmartEpbRedundancyTests {
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.Cardinality(typeCard.get(edgeSchema.getType())* indices.size(), typeCard.get(edgeSchema.getType())* indices.size());
+            return new Statistics.SummaryStatistics(typeCard.get(edgeSchema.getType())* indices.size(), typeCard.get(edgeSchema.getType())* indices.size());
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
@@ -103,7 +102,7 @@ public class SmartEpbRedundancyTests {
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.Cardinality(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
+            return new Statistics.SummaryStatistics(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
         });
 
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10L);

@@ -2,7 +2,6 @@ package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
-import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -48,24 +47,24 @@ public class StatisticsMockUtils {
             }
 
             double total = factor * cost;
-            return new Statistics.Cardinality(total, total);
+            return new Statistics.SummaryStatistics(total, total);
         });
 
         when(mock.getNodeStatistics(any())).thenAnswer(invocationOnMock -> {
             Object argument = invocationOnMock.getArguments()[0];
 
             if (argument instanceof EConcrete)
-                return new Statistics.Cardinality(1,1);
+                return new Statistics.SummaryStatistics(1,1);
 
             if (argument instanceof EUntyped)
-                return new Statistics.Cardinality(maxCardinalityNode, maxCardinalityNode);
+                return new Statistics.SummaryStatistics(maxCardinalityNode, maxCardinalityNode);
 
             if (argument instanceof ETyped) {
                 long cost = statistics.get(PlanMockUtils.NODE_STATISTICS).get(((ETyped) argument).geteType()).longValue();
-                return new Statistics.Cardinality(cost, cost);
+                return new Statistics.SummaryStatistics(cost, cost);
             }
             //default
-            return new Statistics.Cardinality(1, 1);
+            return new Statistics.SummaryStatistics(1, 1);
 
 
         });
@@ -83,10 +82,10 @@ public class StatisticsMockUtils {
             if (item != null) {
                 long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(item.getrType()).longValue();
                 double total = factor * cost;
-                return new Statistics.Cardinality(total, total);
+                return new Statistics.SummaryStatistics(total, total);
             }
 
-            return new Statistics.Cardinality(1, 1);
+            return new Statistics.SummaryStatistics(1, 1);
         });
 
         when(mock.getEdgeStatistics(any())).thenAnswer(invocationOnMock -> {
@@ -94,11 +93,11 @@ public class StatisticsMockUtils {
 
             if (item != null) {
                 long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(item.getrType()).longValue();
-                return new Statistics.Cardinality(cost, cost);
+                return new Statistics.SummaryStatistics(cost, cost);
             }
 
             //default
-            return new Statistics.Cardinality(1, 1);
+            return new Statistics.SummaryStatistics(1, 1);
 
 
         });
@@ -112,7 +111,7 @@ public class StatisticsMockUtils {
 
 
             long cost = statistics.get(PlanMockUtils.NODE_STATISTICS).get(etype.geteType()).longValue();
-            return new Statistics.Cardinality(cost, cost);
+            return new Statistics.SummaryStatistics(cost, cost);
         });
 
 
@@ -125,7 +124,7 @@ public class StatisticsMockUtils {
 
 
             long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(rel.getrType()).longValue();
-            return new Statistics.Cardinality(cost, cost);
+            return new Statistics.SummaryStatistics(cost, cost);
         });*/
 
 

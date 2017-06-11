@@ -108,7 +108,7 @@ public class ElasticStatisticsGraphProviderTest {
         assertEquals(1, (int) doc6Result.get().get(statConfig.getStatCardinalityFieldName()));
         assertEquals((int) doc6Result.get().get(statConfig.getStatCountFieldName()), NUM_OF_DRAGONS_IN_INDEX_1);
 
-        Statistics.Cardinality vertexCardinality = statisticsGraphProvider.getVertexCardinality(vertexDragonSchema);
+        Statistics.SummaryStatistics vertexSummaryStatistics = statisticsGraphProvider.getVertexCardinality(vertexDragonSchema);
     }
 
     @Test
@@ -212,7 +212,7 @@ public class ElasticStatisticsGraphProviderTest {
      * @param indices        Elastic Indices Names
      * @param type           Elastic Type Name (e.g., Person)
      * @param field          Elastic Field Name (e.g., gender, _type)
-     * @param termStatistics Map <Key = 'Term', Tuple<Count, Cardinality>, (e.g < 'Key = female', Value = [500, 1] >
+     * @param termStatistics Map <Key = 'Term', Tuple<Count, SummaryStatistics>, (e.g < 'Key = female', Value = [500, 1] >
      */
     private static void populateTermStatDocs(List<String> indices,
                                              String type,
@@ -375,7 +375,7 @@ public class ElasticStatisticsGraphProviderTest {
      * @param indices        Elastic Indices Names
      * @param type           Elastic Type Name (e.g., Person)
      * @param field          Elastic Field Name (e.g., gender, _type)
-     * @param termStatistics Map <Key = 'Term', Tuple<Count, Cardinality>, (e.g < 'Key = female', Value = [500, 1] >
+     * @param termStatistics Map <Key = 'Term', Tuple<Count, SummaryStatistics>, (e.g < 'Key = female', Value = [500, 1] >
      * @return list of documents
      */
     private static Iterable<Map<String, Object>> prepareTermStatisticsDocs(List<String> indices,

@@ -19,12 +19,10 @@ import org.mockito.Mockito;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.when;
 
 /**
@@ -107,9 +105,9 @@ public class EBaseStatisticsProviderIndicesTests {
         graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
-        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
-        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
-        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000L, 1000L));
+        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
+        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
+        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(1000L, 1000L));
         when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),eq(Date.class))).thenAnswer(invocationOnMock -> {
             List<String> providedIndices = (List<String>) invocationOnMock.getArgumentAt(1, List.class );
             List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
@@ -166,7 +164,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(250, nodeStatistics.getTotal(), 0.1);
     }
@@ -185,7 +183,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(500/120d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10/120d, nodeStatistics.getCardinality(), 0.1);
@@ -204,7 +202,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
@@ -224,7 +222,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(500d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10, nodeStatistics.getCardinality(), 0.1);
@@ -243,7 +241,7 @@ public class EBaseStatisticsProviderIndicesTests {
         prop.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(150, nodeStatistics.getTotal(), 0.1);
     }
@@ -267,7 +265,7 @@ public class EBaseStatisticsProviderIndicesTests {
         stringProp.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(dateProp,stringProp));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50, nodeStatistics.getTotal(), 0.1);
     }
@@ -292,7 +290,7 @@ public class EBaseStatisticsProviderIndicesTests {
         stringProp.setCon(constraint);
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(dateProp,stringProp));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50, nodeStatistics.getTotal(), 0.1);
     }

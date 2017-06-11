@@ -18,7 +18,6 @@ import java.util.stream.IntStream;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -130,8 +129,8 @@ public class ScenarioMockUtil {
         });
     }
 
-    private Statistics.Cardinality getCardinality(GraphElementSchema graphElementSchema, List<String> indices,long scale) {
-        return new Statistics.Cardinality(cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size()* scale,
+    private Statistics.SummaryStatistics getCardinality(GraphElementSchema graphElementSchema, List<String> indices, long scale) {
+        return new Statistics.SummaryStatistics(cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size()* scale,
                 cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size());
     }
 
