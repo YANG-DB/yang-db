@@ -23,7 +23,7 @@ import java.util.List;
 public class DfsRedundantEntityRelationEntityTest extends EntityRelationEntityTest {
     @ClassRule
     public static JoobyRule createApp() {
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"), new DefaultAppUrlSupplier("/fuse"))
+        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf("application.engine2.dev.conf", "m1.dfs.redundant"));
     }
 

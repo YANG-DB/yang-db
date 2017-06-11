@@ -20,12 +20,7 @@ public class FuseRunner {
         final String activeProfile = args.length > 1 ?
                 args[1] : "activeProfile";
 
-        Config config = ConfigFactory.parseResources(applicationConfFilePath);
-        String appUrlSupplierPublicBaseUri = config.getString("appUrlSupplier.public.baseUri");
-
-        Jooby.run(() -> new FuseApp(
-                new DefaultAppUrlSupplier("/fuse"),
-                new DefaultAppUrlSupplier(appUrlSupplierPublicBaseUri))
+        Jooby.run(() -> new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(applicationConfFilePath, activeProfile), args);
     }
 }

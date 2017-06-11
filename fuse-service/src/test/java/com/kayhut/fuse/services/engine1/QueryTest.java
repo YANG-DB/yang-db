@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 public class QueryTest extends com.kayhut.fuse.services.mockEngine.QueryTest {
     @ClassRule
     public static JoobyRule createApp() {
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"), new DefaultAppUrlSupplier("/fuse"))
+        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf("application.engine1.dev.conf"));
     }
 }

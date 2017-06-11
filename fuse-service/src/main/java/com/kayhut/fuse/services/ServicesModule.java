@@ -15,6 +15,7 @@ public class ServicesModule implements Jooby.Module {
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
         //service controllers
+        binder.bind(ApiDescriptionController.class).to(SimpleApiDescriptionController.class).asEagerSingleton();
         binder.bind(QueryController.class).to(SimpleQueryController.class).asEagerSingleton();
         binder.bind(CursorController.class).to(SimpleCursorController.class).asEagerSingleton();
         binder.bind(PageController.class).to(SimplePageController.class).asEagerSingleton();

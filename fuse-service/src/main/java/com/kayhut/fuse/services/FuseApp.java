@@ -56,7 +56,7 @@ public class FuseApp extends Jooby {
             .type("html");
 
     //region Consructors
-    public FuseApp(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    public FuseApp(AppUrlSupplier localUrlSupplier) {
         //metrics statistics
         use(new Metrics()
                 .request()
@@ -71,14 +71,14 @@ public class FuseApp extends Jooby {
         use(new Jackson());
         get("/", () -> HOME);
 
-        registerCors(localUrlSupplier, publicUrlSupplier);
-        registerFuseApiDescription(localUrlSupplier, publicUrlSupplier);
-        registerHealthApi(localUrlSupplier, publicUrlSupplier);
-        registerCatalogApi(localUrlSupplier, publicUrlSupplier);
-        registerQueryApi(localUrlSupplier, publicUrlSupplier);
-        registerCursorApi(localUrlSupplier, publicUrlSupplier);
-        registerPageApi(localUrlSupplier, publicUrlSupplier);
-        registerSearchApi(localUrlSupplier, publicUrlSupplier);
+        registerCors(localUrlSupplier);
+        registerFuseApiDescription(localUrlSupplier);
+        registerHealthApi(localUrlSupplier);
+        registerCatalogApi(localUrlSupplier);
+        registerQueryApi(localUrlSupplier);
+        registerCursorApi(localUrlSupplier);
+        registerPageApi(localUrlSupplier);
+        registerSearchApi(localUrlSupplier);
     }
     //endregion
 
@@ -93,6 +93,10 @@ public class FuseApp extends Jooby {
     //endregion
 
     //region Controllers
+    private ApiDescriptionController apiDescriptionCtrl() {
+        return require(ApiDescriptionController.class);
+    }
+
     private QueryController queryCtrl() {
         return require(QueryController.class);
     }
@@ -115,7 +119,7 @@ public class FuseApp extends Jooby {
     //endregion
 
     //region Private Methods
-    private void registerCors(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerCors(AppUrlSupplier localUrlSupplier) {
         /** CORS: */
         use("*", (req, rsp) -> {
             rsp.header("Access-Control-Allow-Origin", "*");
@@ -129,24 +133,19 @@ public class FuseApp extends Jooby {
         });
     }
 
-    private void registerFuseApiDescription(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerFuseApiDescription(AppUrlSupplier localUrlSupplier) {
         use("/fuse")
-                .get(() -> new FuseResourceInfo(
-                        "/fuse",
-                        "/fuse/health",
-                        publicUrlSupplier.queryStoreUrl(),
-                        "/fuse/search",
-                        publicUrlSupplier.catalogStoreUrl()));
+                .get(() -> apiDescriptionCtrl().getInfo());
     }
 
-    private void registerHealthApi(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerHealthApi(AppUrlSupplier localUrlSupplier) {
         /** get the health status of the service */
         use("/fuse/health")
                 /** check health */
                 .get(() -> "Alive And Well...");
     }
 
-    private void registerCatalogApi(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerCatalogApi(AppUrlSupplier localUrlSupplier) {
         /** get the ontology by id */
         use("/fuse/catalog/ontology/:id")
                 /** check health */
@@ -156,7 +155,7 @@ public class FuseApp extends Jooby {
                 });
     }
 
-    private void registerQueryApi(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerQueryApi(AppUrlSupplier localUrlSupplier) {
         /** get the query store info */
         use(localUrlSupplier.queryStoreUrl())
                 .get(req -> Results.with(queryCtrl().getInfo(), Status.FOUND));
@@ -191,7 +190,7 @@ public class FuseApp extends Jooby {
                 });
     }
 
-    private void registerCursorApi(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerCursorApi(AppUrlSupplier localUrlSupplier) {
         /** get the query cursor store info */
         use(localUrlSupplier.cursorStoreUrl(":queryId"))
                 .get(req -> {
@@ -220,7 +219,7 @@ public class FuseApp extends Jooby {
                 });
     }
 
-    private void registerPageApi(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerPageApi(AppUrlSupplier localUrlSupplier) {
         /** get the cursor page store info*/
         use(localUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .get(req -> {
@@ -250,7 +249,7 @@ public class FuseApp extends Jooby {
                 });
     }
 
-    private void registerSearchApi(AppUrlSupplier localUrlSupplier, AppUrlSupplier publicUrlSupplier) {
+    private void registerSearchApi(AppUrlSupplier localUrlSupplier) {
         /** submit a search */
         use("/fuse/search")
                 .post(req -> {
