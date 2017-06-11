@@ -18,6 +18,7 @@
         <module>fuse-test</module>
         <module>geojson-jackson</module>
         <module>fuse-datagen</module>
+        <module>fuse-assembly</module>
     </modules>
 
     <scm>
