@@ -171,7 +171,7 @@ public class RealClusterTest {
                 new EProp(8, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "gideon")),
                 new Rel(9, FREEZE.getrType(), Rel.Direction.L, null, 11, 10),
                 new RelProp(10, Integer.toString(START_DATE.type),
-                        Constraint.of(ConstraintOp.lt, sdf.parse("2000-09-01 00:00:00.000").getTime()), 0),
+                        Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
                 new ETyped(11, "C", $ont.eType$(DRAGON.name),
                         Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 0, 0)
         )).build();
@@ -179,6 +179,8 @@ public class RealClusterTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+
+        long start = System.currentTimeMillis();
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -189,7 +191,9 @@ public class RealClusterTest {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        int x = 5;
+
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println(elapsed);
     }
 
 

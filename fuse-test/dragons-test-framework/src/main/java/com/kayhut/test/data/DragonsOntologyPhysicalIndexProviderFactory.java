@@ -7,6 +7,7 @@ import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import javaslang.collection.Stream;
 import net.minidev.json.JSONArray;
 
 import javax.inject.Inject;
@@ -115,8 +116,10 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
 
         @Override
         public Iterable<String> getIndices() {
-            return StreamSupport.stream(indices(values).spliterator(), false)
-                    .map(p->String.format(getIndexFormat(), p)).collect(Collectors.toSet());
+            return Stream.ofAll(indices(values))
+                    .map(p -> String.format(getIndexFormat(), p))
+                    .distinct().sorted()
+                    .toJavaList();
         }
     }
 }

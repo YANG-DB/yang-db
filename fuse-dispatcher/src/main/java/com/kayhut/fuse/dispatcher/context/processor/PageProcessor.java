@@ -48,8 +48,8 @@ public class PageProcessor implements PageCreationOperationContext.Processor {
         Cursor cursor = context.getCursorResource().getCursor();
         QueryResult results = cursor.getNextResults(context.getPageSize());
 
-        long stop = TimeUnit.NANOSECONDS.convert(time.stop(),TimeUnit.SECONDS);
-        return submit(eventBus, context.of(new PageResource(context.getPageId(), results, context.getPageSize(), stop)
+        long elapsedMillis = TimeUnit.MILLISECONDS.convert(time.stop(), TimeUnit.NANOSECONDS);
+        return submit(eventBus, context.of(new PageResource(context.getPageId(), results, context.getPageSize(), elapsedMillis)
                 .withActualSize(results.getAssignments().size())
                 .available()));
     }
