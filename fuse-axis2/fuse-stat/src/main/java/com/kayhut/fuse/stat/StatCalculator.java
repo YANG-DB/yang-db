@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat;
 
+import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,12 +78,20 @@ public class StatCalculator {
                 for (String type : mapping.getTypes()) {
                     Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, type);
                     if (typeConfiguration.isPresent()) {
+                        Stopwatch stopwatch = Stopwatch.createStarted();
+                        logger.info("Starting to calculate statistics for Index: {}, Type: {}", index, type);
                         buildHistogramForNumericFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForManualFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForStringFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForCompositeFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForTermFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForDynamicFields(dataClient, statClient, statContainer, index, type);
+                        stopwatch.stop();
+                        logger.info("Finished to calculate statistics for Index: {}, Type: {}, took {} Seconds",
+                                index,
+                                type,
+                                stopwatch.elapsed(TimeUnit.SECONDS));
+
                     }
                 }
             }
