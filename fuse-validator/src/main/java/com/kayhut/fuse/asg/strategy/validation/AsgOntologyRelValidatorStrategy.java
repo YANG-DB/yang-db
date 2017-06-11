@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgValidatorStrategy;
-import com.kayhut.fuse.asg.strategy.ValidationContext;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.asg.strategy.ValidationContext.OK;
+import static com.kayhut.fuse.dispatcher.utils.ValidationContext.OK;
 import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
 
 public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
@@ -33,7 +33,7 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
                 asgEBase -> true, Collections.emptyList());
 
         list.forEach(rel -> {
-            Optional<AsgEBase<EEntityBase>> sideA = AsgQueryUtil.nextAdjacentAncestor(rel, EEntityBase.class);
+            Optional<AsgEBase<EEntityBase>> sideA = AsgQueryUtil.ancestor(rel,v->v.geteBase() instanceof EEntityBase);
             Optional<AsgEBase<EEntityBase>> sideB = AsgQueryUtil.nextAdjacentDescendant(rel, EEntityBase.class);
             if (!sideA.isPresent() || !sideB.isPresent())
                 errors.add(ERROR_1 + ":" + rel);

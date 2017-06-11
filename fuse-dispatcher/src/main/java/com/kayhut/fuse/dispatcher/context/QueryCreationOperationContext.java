@@ -3,7 +3,6 @@ package com.kayhut.fuse.dispatcher.context;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
@@ -11,7 +10,7 @@ import com.kayhut.fuse.model.query.QueryMetadata;
 /**
  * Created by lior on 22/02/2017.
  */
-public final class QueryCreationOperationContext extends OperationContextBase<QueryCreationOperationContext>{
+public final class QueryCreationOperationContext extends OperationContextBase<QueryCreationOperationContext> {
 
 
     public interface Processor {

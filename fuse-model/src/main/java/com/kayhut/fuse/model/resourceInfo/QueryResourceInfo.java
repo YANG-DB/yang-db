@@ -15,11 +15,16 @@ public class QueryResourceInfo extends ResourceInfoBase{
         super(resourceUrl,resourceId);
         this.cursorStoreUrl = cursorStoreUrl;
     }
+
     //endregion
 
     //region Properties
     public String getCursorStoreUrl() {
         return cursorStoreUrl;
+    }
+
+    public FuseError getError() {
+        return error;
     }
 
     public void setCursorStoreUrl(String cursorStoreUrl) {
@@ -28,7 +33,15 @@ public class QueryResourceInfo extends ResourceInfoBase{
 
     //endregion
 
+    public QueryResourceInfo error(FuseError error) {
+        QueryResourceInfo clone  = new QueryResourceInfo(this.getResourceUrl(), this.getResourceId(),cursorStoreUrl);
+        clone.error = error;
+        return clone ;
+    }
+
     //region Fields
     private String cursorStoreUrl;
+
+    private FuseError error;
     //endregion
 }

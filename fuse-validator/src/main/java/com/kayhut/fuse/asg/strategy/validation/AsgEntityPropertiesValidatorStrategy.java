@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgValidatorStrategy;
-import com.kayhut.fuse.asg.strategy.ValidationContext;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.asg.strategy.ValidationContext.OK;
-import static com.kayhut.fuse.asg.strategy.ValidationContext.print;
+import static com.kayhut.fuse.dispatcher.utils.ValidationContext.OK;
+import static com.kayhut.fuse.dispatcher.utils.ValidationContext.print;
 
 public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrategy {
 
@@ -34,7 +34,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         Ontology.Accessor accessor = context.getOntologyAccessor();
         Stream.ofAll(AsgQueryUtil.elements(query, EProp.class))
                 .forEach(property -> {
-                    Optional<AsgEBase<EEntityBase>> parent = AsgQueryUtil.nextAdjacentAncestor(property, EEntityBase.class);
+                    Optional<AsgEBase<EEntityBase>> parent = AsgQueryUtil.ancestor(property,v->v.geteBase() instanceof EEntityBase);
                     if (!parent.isPresent()) {
                         errors.add(ERROR_1 + ":" + property);
                     } else {
@@ -44,7 +44,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
 
         Stream.ofAll(AsgQueryUtil.elements(query, EPropGroup.class))
                 .forEach(group -> {
-                    Optional<AsgEBase<EEntityBase>> parent = AsgQueryUtil.nextAdjacentAncestor(group, EEntityBase.class);
+                    Optional<AsgEBase<EEntityBase>> parent = AsgQueryUtil.ancestor(group,v->v.geteBase() instanceof EEntityBase);
                     if (!parent.isPresent()) {
                         errors.add(ERROR_1 + group);
                     } else {

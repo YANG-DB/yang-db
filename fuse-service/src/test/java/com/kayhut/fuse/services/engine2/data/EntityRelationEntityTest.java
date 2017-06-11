@@ -48,9 +48,8 @@ import java.util.function.Predicate;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
-import static java.util.Collections.*;
-
-import com.kayhut.test.framework.index.Mappings.Mapping.Property;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 
 
 /**

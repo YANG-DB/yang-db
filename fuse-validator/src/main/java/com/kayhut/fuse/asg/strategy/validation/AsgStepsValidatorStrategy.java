@@ -1,23 +1,21 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgValidatorStrategy;
-import com.kayhut.fuse.asg.strategy.ValidationContext;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
-import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.sun.org.apache.regexp.internal.RE;
 
 import javax.management.relation.Relation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.asg.strategy.ValidationContext.OK;
+import static com.kayhut.fuse.dispatcher.utils.ValidationContext.OK;
 
 public class AsgStepsValidatorStrategy implements AsgValidatorStrategy {
 

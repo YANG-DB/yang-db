@@ -89,7 +89,7 @@ public class OntologyTestUtils {
     public static class DRAGON implements Entity {
         public static String name = "Dragon";
         public static int type = 2;
-        public static List<Property> propertyList = Arrays.asList(NAME.redundant(), GENDER, COLOR);
+        public static List<Property> propertyList = Arrays.asList(NAME.redundant(),BIRTH_DATE, GENDER, COLOR);
 
         public static List<RelationshipType> relationshipList = Arrays.asList(
                 REGISTERED.addPair(new EPair(type, GUILD.type)),

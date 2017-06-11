@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgValidatorStrategy;
-import com.kayhut.fuse.asg.strategy.ValidationContext;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.asg.strategy.ValidationContext.OK;
-import static com.kayhut.fuse.asg.strategy.ValidationContext.print;
+import static com.kayhut.fuse.dispatcher.utils.ValidationContext.OK;
+import static com.kayhut.fuse.dispatcher.utils.ValidationContext.print;
 import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
 
 public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {

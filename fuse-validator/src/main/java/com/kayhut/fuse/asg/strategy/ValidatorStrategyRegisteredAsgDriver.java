@@ -11,13 +11,18 @@ import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
+import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import javaslang.collection.Stream;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
@@ -26,7 +31,7 @@ import static com.kayhut.fuse.model.Utils.submit;
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class ValidatorStrategyRegisteredAsgDriver implements QueryCreationOperationContext.Processor {
+public class ValidatorStrategyRegisteredAsgDriver implements QueryValidationOperationContext.Processor {
 
     //region Constructors
     @Inject
@@ -48,28 +53,36 @@ public class ValidatorStrategyRegisteredAsgDriver implements QueryCreationOperat
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    public QueryCreationOperationContext process(QueryCreationOperationContext context) {
-        if(context.getAsgQuery() != null) {
-            return context;
-        }
-
+    public ValidationContext process(QueryValidationOperationContext context) {
         Optional<Ontology> ontology = this.ontologyProvider.get(context.getQuery().getOnt());
         if (!ontology.isPresent()) {
             throw new RuntimeException("No ontology provided");
         }
+        try {
 
-        Timer.Context time = metricRegistry.timer(
-                name(QueryCreationOperationContext.class.getSimpleName(),
-                        context.getQueryMetadata().getId(),
-                        ValidatorStrategyRegisteredAsgDriver.class.getSimpleName())).time();
+            Timer.Context time = metricRegistry.timer(
+                    name(QueryCreationOperationContext.class.getSimpleName(),
+                            context.getQueryMetadata().getId(),
+                            ValidatorStrategyRegisteredAsgDriver.class.getSimpleName())).time();
 
 
-        AsgStrategyContext asgStrategyContext =  new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
-        AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(),new NextEbaseFactory(), new BNextFactory() ).get();
-        Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery,asgStrategyContext));
+            AsgStrategyContext asgStrategyContext = new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
+            AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(), new NextEbaseFactory(), new BNextFactory()).get();
+            Stream<ValidationContext> validationContextStream = Stream.ofAll(this.strategies).toStream().map(strategy -> strategy.apply(asgQuery, asgStrategyContext));
 
-        time.stop();
-        return submit(eventBus, context.of(asgQuery));
+            time.stop();
+            //if valid continue flow - other return error to client
+            if (validationContextStream.toJavaStream().anyMatch(p -> !p.valid())) {
+                List<String> errors = validationContextStream.toJavaStream().filter(p -> !p.valid())
+                        .flatMap(k -> Arrays.stream(k.errors())).collect(Collectors.toList());
+                return new ValidationContext(false, errors.toArray(new String[errors.size()]));
+            } else {
+                submit(eventBus, new QueryCreationOperationContext(context.getQueryMetadata(), context.getQuery()));
+                return ValidationContext.OK;
+            }
+        } catch (Exception e) {
+            return new ValidationContext(false, "Query not valid " + e.getMessage());
+        }
     }
     //endregion
 
