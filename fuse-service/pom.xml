@@ -24,6 +24,11 @@
         <!--functional dependencies -->
         <dependency>
             <groupId>org.kayhut</groupId>
+            <artifactId>fuse-validator</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>

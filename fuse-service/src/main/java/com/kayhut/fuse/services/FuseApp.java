@@ -56,7 +56,7 @@ public class FuseApp extends Jooby {
             .type("html");
 
     //region Consructors
-    public FuseApp(AppUrlSupplier urlSupplier) {
+    public FuseApp(AppUrlSupplier localUrlSupplier) {
         //metrics statistics
         use(new Metrics()
                 .request()
@@ -71,14 +71,14 @@ public class FuseApp extends Jooby {
         use(new Jackson());
         get("/", () -> HOME);
 
-        registerCors(urlSupplier);
-        registerFuseApiDescription(urlSupplier);
-        registerHealthApi(urlSupplier);
-        registerCatalogApi(urlSupplier);
-        registerQueryApi(urlSupplier);
-        registerCursorApi(urlSupplier);
-        registerPageApi(urlSupplier);
-        registerSearchApi(urlSupplier);
+        registerCors(localUrlSupplier);
+        registerFuseApiDescription(localUrlSupplier);
+        registerHealthApi(localUrlSupplier);
+        registerCatalogApi(localUrlSupplier);
+        registerQueryApi(localUrlSupplier);
+        registerCursorApi(localUrlSupplier);
+        registerPageApi(localUrlSupplier);
+        registerSearchApi(localUrlSupplier);
     }
     //endregion
 
@@ -93,6 +93,10 @@ public class FuseApp extends Jooby {
     //endregion
 
     //region Controllers
+    private ApiDescriptionController apiDescriptionCtrl() {
+        return require(ApiDescriptionController.class);
+    }
+
     private QueryController queryCtrl() {
         return require(QueryController.class);
     }
@@ -115,7 +119,7 @@ public class FuseApp extends Jooby {
     //endregion
 
     //region Private Methods
-    private void registerCors(AppUrlSupplier urlSupplier) {
+    private void registerCors(AppUrlSupplier localUrlSupplier) {
         /** CORS: */
         use("*", (req, rsp) -> {
             rsp.header("Access-Control-Allow-Origin", "*");
@@ -129,24 +133,19 @@ public class FuseApp extends Jooby {
         });
     }
 
-    private void registerFuseApiDescription(AppUrlSupplier urlSupplier) {
+    private void registerFuseApiDescription(AppUrlSupplier localUrlSupplier) {
         use("/fuse")
-                .get(() -> new FuseResourceInfo(
-                        "/fuse",
-                        "/fuse/health",
-                        urlSupplier.queryStoreUrl(),
-                        "/fuse/search",
-                        "/fuse/catalog"));
+                .get(() -> apiDescriptionCtrl().getInfo());
     }
 
-    private void registerHealthApi(AppUrlSupplier urlSupplier) {
+    private void registerHealthApi(AppUrlSupplier localUrlSupplier) {
         /** get the health status of the service */
         use("/fuse/health")
                 /** check health */
                 .get(() -> "Alive And Well...");
     }
 
-    private void registerCatalogApi(AppUrlSupplier urlSupplier) {
+    private void registerCatalogApi(AppUrlSupplier localUrlSupplier) {
         /** get the ontology by id */
         use("/fuse/catalog/ontology/:id")
                 /** check health */
@@ -156,34 +155,34 @@ public class FuseApp extends Jooby {
                 });
     }
 
-    private void registerQueryApi(AppUrlSupplier urlSupplier) {
+    private void registerQueryApi(AppUrlSupplier localUrlSupplier) {
         /** get the query store info */
-        use(urlSupplier.queryStoreUrl())
+        use(localUrlSupplier.queryStoreUrl())
                 .get(req -> Results.with(queryCtrl().getInfo(), Status.FOUND));
 
         /** create a query */
-        use(urlSupplier.queryStoreUrl())
+        use(localUrlSupplier.queryStoreUrl())
                 .post(req -> {
                     ContentResponse<QueryResourceInfo> entity = queryCtrl().create(req.body(CreateQueryRequest.class));
                     return Results.with(entity, entity.status());
                 });
 
         /** get the query info */
-        use(urlSupplier.resourceUrl(":queryId"))
+        use(localUrlSupplier.resourceUrl(":queryId"))
                 .get(req -> {
                     ContentResponse response = queryCtrl().getInfo(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
 
         /** delete a query */
-        use(urlSupplier.resourceUrl(":queryId"))
+        use(localUrlSupplier.resourceUrl(":queryId"))
                 .delete(req -> {
                     ContentResponse response = queryCtrl().delete(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
 
         /** get the query execution plan */
-        use(urlSupplier.resourceUrl(":queryId") + "/plan")
+        use(localUrlSupplier.resourceUrl(":queryId") + "/plan")
                 .get(req -> {
                     ContentResponse response = queryCtrl().explain(req.param("queryId").value());
                     //temporary fix for jason serialization of object graphs
@@ -191,66 +190,66 @@ public class FuseApp extends Jooby {
                 });
     }
 
-    private void registerCursorApi(AppUrlSupplier urlSupplier) {
+    private void registerCursorApi(AppUrlSupplier localUrlSupplier) {
         /** get the query cursor store info */
-        use(urlSupplier.cursorStoreUrl(":queryId"))
+        use(localUrlSupplier.cursorStoreUrl(":queryId"))
                 .get(req -> {
                     ContentResponse response = cursorCtrl().getInfo(req.param("queryId").value());
                     return Results.with(response, response.status());
                 });
 
         /** create a query cursor */
-        use(urlSupplier.cursorStoreUrl(":queryId"))
+        use(localUrlSupplier.cursorStoreUrl(":queryId"))
                 .post(req -> {
                     ContentResponse response = cursorCtrl().create(req.param("queryId").value(), req.body(CreateCursorRequest.class));
                     return Results.with(response, response.status());
                 });
 
         /** get the cursor resource info */
-        use(urlSupplier.resourceUrl(":queryId", ":cursorId"))
+        use(localUrlSupplier.resourceUrl(":queryId", ":cursorId"))
                 .get(req -> {
                     ContentResponse response = cursorCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value());
                     return Results.with(response, response.status());
                 });
 
-        use(urlSupplier.resourceUrl(":queryId", ":cursorId"))
+        use(localUrlSupplier.resourceUrl(":queryId", ":cursorId"))
                 .delete(req -> {
                     ContentResponse response = cursorCtrl().delete(req.param("queryId").value(), req.param("cursorId").value());
                     return Results.with(response, response.status());
                 });
     }
 
-    private void registerPageApi(AppUrlSupplier urlSupplier) {
+    private void registerPageApi(AppUrlSupplier localUrlSupplier) {
         /** get the cursor page store info*/
-        use(urlSupplier.pageStoreUrl(":queryId", ":cursorId"))
+        use(localUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .get(req -> {
                     ContentResponse response = pageCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value());
                     return Results.with(response, response.status());
                 });
 
         /** create the next page */
-        use(urlSupplier.pageStoreUrl(":queryId", ":cursorId"))
+        use(localUrlSupplier.pageStoreUrl(":queryId", ":cursorId"))
                 .post(req -> {
                     ContentResponse<PageResourceInfo> entity = pageCtrl().create(req.param("queryId").value(), req.param("cursorId").value(), req.body(CreatePageRequest.class));
                     return Results.with(entity, entity.status());
                 });
 
         /** get page info by id */
-        use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
+        use(localUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId"))
                 .get(req -> {
                     ContentResponse response = pageCtrl().getInfo(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response.status());
                 });
 
         /** get page data by id */
-        use(urlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data")
+        use(localUrlSupplier.resourceUrl(":queryId", ":cursorId", ":pageId") + "/data")
                 .get(req -> {
                     ContentResponse response = pageCtrl().getData(req.param("queryId").value(), req.param("cursorId").value(), req.param("pageId").value());
                     return Results.with(response, response.status());
                 });
     }
 
-    private void registerSearchApi(AppUrlSupplier urlSupplier) {
+    private void registerSearchApi(AppUrlSupplier localUrlSupplier) {
         /** submit a search */
         use("/fuse/search")
                 .post(req -> {

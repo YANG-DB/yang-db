@@ -3,22 +3,23 @@ package com.kayhut.fuse.dispatcher.driver;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
+import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+import com.kayhut.fuse.model.resourceInfo.FuseError;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import javaslang.collection.Stream;
 
+import java.util.Arrays;
 import java.util.Optional;
-
-import static com.kayhut.fuse.model.Utils.submit;
 
 /**
  * Created by lior on 20/02/2017.
@@ -26,6 +27,9 @@ import static com.kayhut.fuse.model.Utils.submit;
 @Singleton
 public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
     //region Constructors
+    @Inject
+    private QueryValidationOperationContext.Processor validator;
+
     @Inject
     public SimpleQueryDispatcherDriver(EventBus eventBus, ResourceStore resourceStore, AppUrlSupplier urlSupplier) {
         this.eventBus = eventBus;
@@ -43,8 +47,12 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
                 metadata.getId(),
                 urlSupplier.cursorStoreUrl(metadata.getId()));
 
-        submit(eventBus, new QueryCreationOperationContext(metadata, query));
-        return Optional.of(resourceInfo);
+        ValidationContext process = validator.process(new QueryValidationOperationContext(metadata, query));
+        if (!process.valid())
+            return Optional.of(resourceInfo.error(
+                    new FuseError(Query.class.getSimpleName(), Arrays.toString(process.errors()))));
+        else
+            return Optional.of(resourceInfo);
     }
 
     @Override
@@ -55,7 +63,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
                 .map(this.urlSupplier::resourceUrl)
                 .toJavaList();
 
-        return Optional.of(new StoreResourceInfo(this.urlSupplier.queryStoreUrl(),null, resourceUrls));
+        return Optional.of(new StoreResourceInfo(this.urlSupplier.queryStoreUrl(), null, resourceUrls));
     }
 
     @Override
@@ -65,7 +73,7 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
             return Optional.empty();
         }
 
-        QueryResourceInfo resourceInfo = new QueryResourceInfo(urlSupplier.resourceUrl(queryId),queryId, urlSupplier.cursorStoreUrl(queryId));
+        QueryResourceInfo resourceInfo = new QueryResourceInfo(urlSupplier.resourceUrl(queryId), queryId, urlSupplier.cursorStoreUrl(queryId));
         return Optional.of(resourceInfo);
     }
 

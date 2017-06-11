@@ -41,10 +41,10 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         if (!super.equals(o)) return false;
 
         EEntityBase that = (EEntityBase) o;
-        if(eTag == null){
-            if(that.eTag != null )
+        if (eTag == null) {
+            if (that.eTag != null)
                 return false;
-        }else {
+        } else {
             if (!eTag.equals(that.eTag)) return false;
         }
         if (next != that.next) return false;
@@ -65,10 +65,12 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + eTag.hashCode();
+
         result = 31 * result + next;
         result = 31 * result + b;
-        result = 31 * result + reportProps.hashCode();
+
+        result = 31 * result + (eTag != null ? eTag.hashCode() : 0);
+        result = 31 * result + (reportProps!=null ? reportProps.hashCode() : 0);
         return result;
     }
     //endregion
@@ -108,11 +110,11 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
     //endregion
 
     //region Fields
-    private	String eTag;
+    private String eTag;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private	int next;
+    private int next;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private	int b;
+    private int b;
 
     private List<String> reportProps;
     //endregion

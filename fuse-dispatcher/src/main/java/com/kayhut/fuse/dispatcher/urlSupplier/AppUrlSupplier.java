@@ -11,4 +11,6 @@ public interface AppUrlSupplier {
     String queryStoreUrl();
     String cursorStoreUrl(String queryId);
     String pageStoreUrl(String queryId, String cursorId);
+
+    String catalogStoreUrl();
 }

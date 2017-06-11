@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
-import com.kayhut.fuse.asg.strategy.ValidationContext;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.HORSE;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;

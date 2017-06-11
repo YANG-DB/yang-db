@@ -76,9 +76,10 @@ public class BaseProp extends EBase{
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + pType.hashCode();
-        result = 31 * result + pTag.hashCode();
-        result = 31 * result + con.hashCode();
+
+        result = 31 * result + (pType!=null ? pType.hashCode() : 0);
+        result = 31 * result + (pTag!=null ? pTag.hashCode() : 0);
+        result = 31 * result + (con!=null ? con.hashCode() : 0);
         result = 31 * result + (f != null ? f.hashCode() : 0);
         return result;
     }
