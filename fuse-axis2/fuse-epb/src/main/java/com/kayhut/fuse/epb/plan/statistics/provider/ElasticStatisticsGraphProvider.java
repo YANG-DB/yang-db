@@ -69,7 +69,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                                                                              List<String> relevantIndices,
                                                                                              GraphElementPropertySchema graphElementPropertySchema,
                                                                                              Constraint constraint,
-                                                                                             T value) {
+                                                                                             Class<T> tp) {
         List<Statistics.HistogramStatistics<T>> histograms = new ArrayList<>();
 
         String fieldType = graphElementPropertySchema.getType();
@@ -95,17 +95,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         }
 
         return Statistics.HistogramStatistics.combine(histograms);
-    }
-
-
-    @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphEdgeSchema,
-                                                                                             List<String> relevantIndices,
-                                                                                             GraphElementPropertySchema graphElementPropertySchema,
-                                                                                             Constraint constraint,
-                                                                                             List<T> values) {
-        //Not needed
-        return null;
     }
 
     @Override

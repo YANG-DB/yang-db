@@ -42,6 +42,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -110,38 +111,22 @@ public class SmartEpbComplexQueries {
         });
 
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10L);
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(List.class))).thenAnswer(invocationOnMock -> {
-            GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
-            int card = typeCard.get(elementSchema.getType());
-            if(propertySchema.getType().equals(STRING)){
-                return createStringHistogram(card, indices.size());
-            }
-            if(propertySchema.getType().equals(INT)){
-                return createLongHistogram(card, indices.size());
-            }
-            if(propertySchema.getType().equals(DATE)){
-                return createDateHistogram(card, elementSchema,propertySchema, indices);
-            }
-            return null;
-        });
 
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(String.class))).thenAnswer(invocationOnMock -> {
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(String.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             int card = typeCard.get(elementSchema.getType());
             return createStringHistogram(card, indices.size());
         });
 
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(Long.class))).thenAnswer(invocationOnMock -> {
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Long.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             int card = typeCard.get(elementSchema.getType());
             return createLongHistogram(card, indices.size());
         });
 
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(Date.class))).thenAnswer(invocationOnMock -> {
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Date.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             int card = typeCard.get(elementSchema.getType());

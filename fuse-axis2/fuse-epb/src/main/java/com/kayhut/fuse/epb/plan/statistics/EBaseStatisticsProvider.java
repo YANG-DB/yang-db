@@ -220,15 +220,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
         Statistics.HistogramStatistics<T> histogramStatistics = null;
-        if(tp.isInstance(expression) ){
-            T expr = (T) expression;
-            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
-        }
-        else if (expression instanceof List)
-        {
-            List<T> values = (List<T>) expression;
-            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, values);
-        }
+
+        histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, tp);
         if(histogramStatistics != null) {
             return Optional.of(estimateCardinality(histogramStatistics, expression, constraintOp));
         }

@@ -21,12 +21,7 @@ public interface GraphStatisticsProvider {
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphElementSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,
-                                                                                      Constraint constraint, T value);
-
-    <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphElementSchema,
-                                                                                      List<String> relevantIndices,
-                                                                                      GraphElementPropertySchema graphElementPropertySchema,
-                                                                                      Constraint constraint, List<T> values);
+                                                                                      Constraint constraint, Class<T> javaType);
 
     long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema, Rel.Direction direction, List<String> relevantIndices);
 
