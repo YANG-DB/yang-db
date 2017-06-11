@@ -178,9 +178,9 @@
             </plugin>
         </plugins>
 
-        <!--<resources>
+        <resources>
             <resource>
-                <directory>conf</directory>
+                <directory>src/test/conf</directory>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
@@ -188,7 +188,7 @@
                     <exclude>version/*.properties</exclude>
                 </excludes>
             </resource>
-        </resources>-->
+        </resources>
     </build>
 
 </project>
