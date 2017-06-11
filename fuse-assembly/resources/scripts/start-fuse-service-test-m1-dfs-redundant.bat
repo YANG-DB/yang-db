@@ -1,0 +1,1 @@
+java -cp ".;lib/*" com.kayhut.fuse.services.FuseRunner application.engine2.m1.test.conf m1.dfs.redundant

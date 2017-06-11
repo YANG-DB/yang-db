@@ -31,7 +31,7 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
 
     //region Constructors
     public DragonsOntologyPhysicalIndexProviderFactory() {
-        this("DragonsIndexProvider.conf");
+        this("DragonsIndexProvider.json");
     }
 
 
