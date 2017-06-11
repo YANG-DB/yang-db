@@ -38,7 +38,7 @@ public class PlanTest {
         CursorFactory cursorFactory = mock(CursorFactory.class);
         when(cursorFactory.createCursor(any())).thenReturn(cursor);
 
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"), new DefaultAppUrlSupplier("/fuse"))
                 .conf("application.mockEngine.dev.conf")
                 .injector((stage, module) -> {
                     return Guice.createInjector(stage, Modules.override(module).with(new AbstractModule() {

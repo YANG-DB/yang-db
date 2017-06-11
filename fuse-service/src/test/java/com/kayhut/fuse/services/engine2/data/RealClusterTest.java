@@ -33,9 +33,9 @@ import static java.util.Collections.singletonList;
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        fuseClient = new FuseClient("http://40.118.108.95/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/ontology/Dragons"));
+        $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
     }
 
     @Test

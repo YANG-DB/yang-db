@@ -28,7 +28,7 @@ public class DispatcherModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(AppUrlSupplier.class).toInstance(new DefaultAppUrlSupplier(baseUrl(conf.getString("application.port"))));
+        binder.bind(AppUrlSupplier.class).toInstance(new DefaultAppUrlSupplier(conf.getString("appUrlSupplier.public.baseUri")));
 
         // resource store and persist processor
         binder.bind(ResourceStore.class).to(InMemoryResourceStore.class).asEagerSingleton();

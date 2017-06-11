@@ -11,7 +11,7 @@ import org.junit.ClassRule;
 public class DataTest extends com.kayhut.fuse.services.mockEngine.DataTest {
     @ClassRule
     public static JoobyRule createApp() {
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"), new DefaultAppUrlSupplier("/fuse"))
                 .conf("application.engine1.dev.conf"));
     }
 }

@@ -11,7 +11,7 @@ import org.junit.ClassRule;
 public class CursorTest extends com.kayhut.fuse.services.mockEngine.CursorTest {
     @ClassRule
     public static JoobyRule createApp() {
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"), new DefaultAppUrlSupplier("/fuse"))
                 .conf("application.engine2.dev.conf", "m1.dfs.non_redundant"));
     }
 }
