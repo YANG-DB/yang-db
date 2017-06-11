@@ -90,7 +90,8 @@
                 <version>3.0.0</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>assembly/fuse-service-test-assembly.xml</descriptor>
+                        <descriptor>assembly/fuse-service-test-assembly.public.xml</descriptor>
+                        <descriptor>assembly/fuse-service-test-assembly.private.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
