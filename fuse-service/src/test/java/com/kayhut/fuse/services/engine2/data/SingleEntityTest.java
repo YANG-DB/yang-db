@@ -35,7 +35,7 @@ public class SingleEntityTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        fuseClient = new FuseClient("/fuse");
+        fuseClient = new FuseClient("http://localhost:8888/fuse");
 
         String idField = "id";
 

@@ -74,7 +74,6 @@ public class FuseClient {
     //region Protected Methods
     protected String postRequest(String url, Object body) throws IOException {
         return given().contentType("application/json")
-                .with().port(8888)
                 .body(body)
                 .post(url)
                 .thenReturn()
@@ -83,7 +82,6 @@ public class FuseClient {
 
     protected String getRequest(String url) {
         return given().contentType("application/json")
-                .with().port(8888)
                 .get(url)
                 .thenReturn()
                 .print();

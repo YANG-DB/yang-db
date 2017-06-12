@@ -249,6 +249,8 @@ public class EsUtilTest {
         statClient = ClientProvider.getDataClient(configuration);
         elasticEmbeddedNode = new ElasticEmbeddedNode();
 
+        Thread.sleep(4000);
+
         dragonsList = StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
                 DRAGON_MIN_AGE,
                 DRAGON_MAX_AGE,
@@ -266,6 +268,7 @@ public class EsUtilTest {
         ).populate();
 
         dataClient.admin().indices().refresh(new RefreshRequest(DATA_INDEX_NAME)).actionGet();
+        Thread.sleep(4000);
     }
 
     @AfterClass

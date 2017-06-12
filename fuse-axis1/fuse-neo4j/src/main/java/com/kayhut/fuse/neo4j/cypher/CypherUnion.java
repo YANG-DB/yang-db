@@ -1,6 +1,7 @@
 package com.kayhut.fuse.neo4j.cypher;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
  */
 public class CypherUnion {
 
-    List<CypherStatement> statements = new ArrayList<>();
+    List<CypherStatement> statements = new LinkedList<>();
     List<String> knownReturnTags = new ArrayList<>();
 
     private CypherUnion() {
@@ -21,7 +22,7 @@ public class CypherUnion {
     }
 
     public CypherUnion add(CypherStatement statement) {
-        //if the new statement has unknown returm elements, they must be removed for a successful union!
+        //if the new statement has unknown return elements, they must be removed for a successful union!
         if(statements.size() == 0) {
             knownReturnTags.addAll(statement.getReturns().getElements().stream().map(cre -> cre.getTag()).collect(Collectors.toList()));
         } else {
