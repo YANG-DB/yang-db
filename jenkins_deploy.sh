@@ -2,7 +2,7 @@
 sudo docker login nexuss.westeurope.cloudapp.azure.com:5000 --username admin --password admin123
 sudo docker pull nexuss.westeurope.cloudapp.azure.com:5000/fuse-engine:latest
 
-COUNT=`sudo docker ps | grep fuse-engine | wc -l`
+COUNT=`sudo docker ps -a | grep fuse-engine | wc -l`
 if [ $COUNT = 1 ]; then
 	sudo docker rm -f fuse-engine
 fi
