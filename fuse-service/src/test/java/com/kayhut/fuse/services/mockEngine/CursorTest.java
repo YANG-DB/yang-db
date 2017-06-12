@@ -137,7 +137,7 @@ public class CursorTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
 
@@ -220,7 +220,7 @@ public class CursorTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
 

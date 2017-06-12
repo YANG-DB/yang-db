@@ -184,7 +184,7 @@ public class QueryTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
         //get cursor resource by id
@@ -205,7 +205,7 @@ public class QueryTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
 
@@ -260,7 +260,7 @@ public class QueryTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
         //delete query
