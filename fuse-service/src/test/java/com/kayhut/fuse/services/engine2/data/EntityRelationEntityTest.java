@@ -48,9 +48,8 @@ import java.util.function.Predicate;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
-import static java.util.Collections.*;
-
-import com.kayhut.test.framework.index.Mappings.Mapping.Property;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 
 
 /**
@@ -61,7 +60,7 @@ public abstract class EntityRelationEntityTest {
     public static void setup() throws Exception {
         fuseClient = new FuseClient("/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/ontology/Dragons"));
+        $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
 
         String idField = "id";
 

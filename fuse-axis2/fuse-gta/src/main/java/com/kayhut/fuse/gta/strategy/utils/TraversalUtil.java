@@ -41,51 +41,51 @@ public class TraversalUtil {
     }
 
     public static <S extends Step> Optional<S> next(Traversal<?, ?> traversal, Step step, Predicate<Step> predicate) {
-        return step(traversal, predicate, nextDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return step(traversal, predicate, nextDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Optional<S> next(Traversal<?, ?> traversal, Step step, Class<S> klass) {
-        return step(traversal, classPredicateFunction.apply(klass), nextDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return step(traversal, classPredicateFunction.apply(klass), nextDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> nextSteps(Traversal<?, ?> traversal, Step step, Predicate<Step> predicate) {
-        return steps(traversal, predicate, falsePredicate, nextDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, predicate, falsePredicate, nextDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> nextSteps(Traversal<?, ?> traversal, Step step, Class<S> klass) {
-        return steps(traversal, classPredicateFunction.apply(klass), falsePredicate, nextDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, classPredicateFunction.apply(klass), falsePredicate, nextDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> nextConsecutiveSteps(Traversal<?, ?> traversal, Step step, Predicate<Step> predicate) {
-        return steps(traversal, predicate, negatePredicateFunction.apply(predicate), nextDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, predicate, negatePredicateFunction.apply(predicate), nextDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> nextConsecutiveSteps(Traversal<?, ?> traversal, Step step, Class<S> klass) {
-        return steps(traversal, classPredicateFunction.apply(klass), negatePredicateFunction.apply(classPredicateFunction.apply(klass)), nextDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, classPredicateFunction.apply(klass), negatePredicateFunction.apply(classPredicateFunction.apply(klass)), nextDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Optional<S> prev(Traversal<?, ?> traversal, Step step, Predicate<Step> predicate) {
-        return step(traversal, predicate, prevDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return step(traversal, predicate, prevDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Optional<S> prev(Traversal<?, ?> traversal, Step step, Class<S> klass) {
-        return step(traversal, classPredicateFunction.apply(klass), prevDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return step(traversal, classPredicateFunction.apply(klass), prevDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> prevSteps(Traversal<?, ?> traversal, Step step, Predicate<Step> predicate) {
-        return steps(traversal, predicate, falsePredicate, prevDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, predicate, falsePredicate, prevDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> prevSteps(Traversal<?, ?> traversal, Step step, Class<S> klass) {
-        return steps(traversal, classPredicateFunction.apply(klass), falsePredicate, prevDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, classPredicateFunction.apply(klass), falsePredicate, prevDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> prevConsecutiveSteps(Traversal<?, ?> traversal, Step step, Predicate<Step> predicate) {
-        return steps(traversal, predicate, negatePredicateFunction.apply(predicate), prevDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, predicate, negatePredicateFunction.apply(predicate), prevDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Iterable<S> prevConsecutiveSteps(Traversal<?, ?> traversal, Step step, Class<S> klass) {
-        return steps(traversal, classPredicateFunction.apply(klass), negatePredicateFunction.apply(classPredicateFunction.apply(klass)), prevDirection, traversal.asAdmin().getSteps().indexOf(step));
+        return steps(traversal, classPredicateFunction.apply(klass), negatePredicateFunction.apply(classPredicateFunction.apply(klass)), prevDirection, indexOf(traversal, step));
     }
 
     public static <S extends Step> Optional<S> last(Traversal<?, ?> traversal, Predicate<Step> predicate) {
@@ -221,6 +221,19 @@ public class TraversalUtil {
         }
 
         return steps;
+    }
+
+    private static int indexOf(Traversal<?, ?> traversal, Step step) {
+        List<Step> steps = traversal.asAdmin().getSteps();
+        for(int index = 0 ; index < steps.size() ; index++) {
+            Step currentStep = steps.get(index);
+
+            if (currentStep.getId().equals(step.getId())) {
+                return index;
+            }
+        }
+
+        return -1;
     }
     //endregion
 

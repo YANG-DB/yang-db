@@ -105,7 +105,7 @@ public class ElasticStatProviderTest {
 
         assertEquals(DRAGON_GENDERS.size(), genderStatistics.size());
         assertNotNull(genderStatistics.get(0));
-        //Cardinality of specific gender should be 1
+        //SummaryStatistics of specific gender should be 1
         assertEquals(new Long(1), genderStatistics.get(0).getCardinality());
         genderStatistics.forEach(bucketInfo -> {
             //Since this is a term: Lower bound value == Upper bound value

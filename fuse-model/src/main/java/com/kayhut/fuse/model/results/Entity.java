@@ -66,7 +66,10 @@ public class Entity {
     //region Override Methods
     @Override
     public int hashCode() {
-        return eID.hashCode() * 31 + eType;
+        int hashCode = eID.hashCode() * 31;
+        hashCode = hashCode * 31 + eType;
+        hashCode = hashCode * 31 + eTag.hashCode();
+        return hashCode;
     }
 
     @Override

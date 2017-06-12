@@ -24,6 +24,11 @@
         <!--functional dependencies -->
         <dependency>
             <groupId>org.kayhut</groupId>
+            <artifactId>fuse-validator</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
             <artifactId>fuse-asg</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -76,6 +81,11 @@
             <groupId>org.jooby</groupId>
             <artifactId>jooby-jackson</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.jooby</groupId>
+            <artifactId>jooby-metrics</artifactId>
+        </dependency>
         <!--serialization-->
         <dependency>
             <groupId>com.cedarsoftware</groupId>
@@ -126,25 +136,6 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>assembly/fuse-service-test-package.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>fuse-service-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
@@ -153,8 +144,6 @@
                     <threadCount>1</threadCount>
                 </configuration>
             </plugin>
-
-
 
             <!-- Parent module has the same plugin and does the work of
                  generating -sources.jar for each project. But without the
@@ -196,7 +185,7 @@
 
         <resources>
             <resource>
-                <directory>conf</directory>
+                <directory>src/test/conf</directory>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>

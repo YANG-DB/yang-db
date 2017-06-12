@@ -95,7 +95,7 @@ public class DragonsOntology {
      * #Freeze Header
      * id,Source,Target,Since,Till
      */
-    public static final RelationshipType FREEZ = new RelationshipType("freeze", 104, true)
+    public static final RelationshipType FREEZE = new RelationshipType("freeze", 104, true)
             .withProperty(ID.type, START_DATE.type, END_DATE.type);
 
     /**
@@ -122,7 +122,7 @@ public class DragonsOntology {
 
     public static List<RelationshipType> relationships = Arrays.asList(
             OWN, KNOW, MEMBER_OF,
-            FIRE, FREEZ, ORIGIN,
+            FIRE, FREEZE, ORIGIN,
             SUBJECT,REGISTERED);
 
     public interface Entity {
@@ -167,7 +167,7 @@ public class DragonsOntology {
         public static List<RelationshipType> relationshipList = Arrays.asList(
                 REGISTERED.addPair(new EPair(type, GUILD.type)),
                 FIRE.addPair(new EPair(type, DRAGON.type)),
-                FREEZ.addPair(new EPair(type, DRAGON.type)),
+                FREEZE.addPair(new EPair(type, DRAGON.type)),
                 ORIGIN.addPair(new EPair(type, KINGDOM.type)));
 
         @Override

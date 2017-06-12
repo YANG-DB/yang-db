@@ -23,8 +23,7 @@
       "types": [
         "Person"
       ]
-    }
-	,
+    },
 	{
       "indices": [
         "misc"
@@ -32,14 +31,46 @@
       "types": [
         "Kingdom"
       ]
-    }
-	,
+    },
 	{
       "indices": [
         "misc"
       ],
       "types": [
         "Guild"
+      ]
+    },
+    {
+      "indices": [
+        "dp200001","dp200002","dp200003",
+        "dp200004","dp200005", "dp200006",
+        "dp200007","dp200008","dp200009",
+        "dp200010", "dp200011","dp200012"
+      ],
+      "types": [
+        "fire", "freeze"
+      ]
+    },
+    {
+      "indices": [
+        "ors200001","ors200002","ors200003",
+        "ors200004","ors200005", "ors200006",
+        "ors200007","ors200008","ors200009",
+        "ors200010", "ors200011","ors200012"
+      ],
+      "types": [
+        "originatedIn", "registeredIn", "subjectOf"
+      ]
+    },
+    {
+      "indices": [
+        "own200001","own200002","own200003",
+        "own200004","own200005", "own200006",
+        "own200007","own200008","own200009",
+        "own200010", "own200011","own200012"
+      ],
+      "types": [
+        "own"
       ]
     }
   ],
@@ -186,8 +217,7 @@
           }
         }
       ]
-    }
-	,
+    },
 	{
       "type": "Person",
       "fields": [
@@ -267,8 +297,7 @@
           }
         }
       ]
-    }
-	,
+    },
 	{
       "type": "Kingdom",
       "fields": [
@@ -333,8 +362,7 @@
           }
         }
       ]
-    }
-    ,
+    },
 	{
       "type": "Guild",
       "fields": [
@@ -393,6 +421,682 @@
             "histogramType": "term",
             "dataType": "string",
             "buckets": [
+              {
+                "term": "Guild"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "fire",
+      "fields": [
+        {
+          "field": "temperature",
+          "histogram": {
+            "histogramType": "numeric",
+            "min": 100,
+            "max": 700,
+            "numOfBins": 70
+          }
+        },
+        {
+          "field": "timestamp",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.color",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "BLACK"
+              },
+              {
+                "term": "BLUE"
+              },
+              {
+                "term": "BROWN"
+              }
+            ,
+              {
+                "term": "GRAY"
+              }
+            ,
+              {
+                "term": "GREEN"
+              }
+            ,
+              {
+                "term": "RED"
+              }
+            ,
+              {
+                "term": "WHITE"
+              }
+            ,
+              {
+                "term": "YELLOW"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Dragon"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "freeze",
+      "fields": [
+        {
+          "field": "startDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "endDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Dragon"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "subjectOf",
+      "fields": [
+        {
+          "field": "startDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.firstName",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Person"
+              },
+              {
+                "term":"Kingdom"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "originatedIn",
+      "fields": [
+        {
+          "field": "startDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Kingdom"
+              },
+              {
+                "term" :"Dragon"
+              },
+              {
+                "term" :"Horse"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "registeredIn",
+      "fields": [
+        {
+          "field": "startDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Kingdom"
+              },
+              {
+                "term": "Guild"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "own",
+      "fields": [
+        {
+          "field": "startDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "endDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Dragon"
+              },
+              {
+                "term": "Horse"
+              },
+              {
+                "term": "Person"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "know",
+      "fields": [
+        {
+          "field": "startDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Person"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "memberOf",
+      "fields": [
+        {
+          "field": "startDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "endDate",
+          "histogram": {
+            "dataType": "numeric",
+            "histogramType": "dynamic",
+            "numOfBins": 800
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Person"
+              },
               {
                 "term": "Guild"
               }

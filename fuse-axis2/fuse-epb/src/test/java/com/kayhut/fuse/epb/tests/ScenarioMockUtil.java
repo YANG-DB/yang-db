@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -104,24 +104,7 @@ public class ScenarioMockUtil {
             return getCardinality(edge, indices,edgeScaleFactor);
         });
 
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(List.class))).thenAnswer(invocationOnMock -> {
-            List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
-            if(propertySchema.getType().equals("string")) {
-                List<Statistics.HistogramStatistics<String>> histograms = IntStream.range(0, indices.size()).mapToObj(i -> (Statistics.HistogramStatistics<String>)histogramPerPropPerIndex.get(propertySchema.getName())).collect(Collectors.toList());
-                return Statistics.HistogramStatistics.combine(histograms);
-            }
-
-            if(propertySchema.getType().equals("date")){
-                List<Statistics.HistogramStatistics<Date>> histograms = IntStream.range(0, indices.size()).mapToObj(i -> (Statistics.HistogramStatistics<Date>)histogramPerPropPerIndex.get(propertySchema.getName())).collect(Collectors.toList());
-                return Statistics.HistogramStatistics.combine(histograms);
-            }
-
-            List<Statistics.HistogramStatistics<Long>> histograms = IntStream.range(0, indices.size()).mapToObj(i -> (Statistics.HistogramStatistics<Long>)histogramPerPropPerIndex.get(propertySchema.getName())).collect(Collectors.toList());
-            return Statistics.HistogramStatistics.combine(histograms);
-        });
-
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(String.class))).thenAnswer(invocationOnMock -> {
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(String.class))).thenAnswer(invocationOnMock -> {
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
 
@@ -129,7 +112,7 @@ public class ScenarioMockUtil {
                 return Statistics.HistogramStatistics.combine(histograms);
         });
 
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(Date.class))).thenAnswer(invocationOnMock -> {
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Date.class))).thenAnswer(invocationOnMock -> {
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
 
@@ -137,7 +120,7 @@ public class ScenarioMockUtil {
             return Statistics.HistogramStatistics.combine(histograms);
         });
 
-        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), isA(Long.class))).thenAnswer(invocationOnMock -> {
+        when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Long.class))).thenAnswer(invocationOnMock -> {
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
 
@@ -146,8 +129,8 @@ public class ScenarioMockUtil {
         });
     }
 
-    private Statistics.Cardinality getCardinality(GraphElementSchema graphElementSchema, List<String> indices,long scale) {
-        return new Statistics.Cardinality(cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size()* scale,
+    private Statistics.SummaryStatistics getCardinality(GraphElementSchema graphElementSchema, List<String> indices, long scale) {
+        return new Statistics.SummaryStatistics(cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size()* scale,
                 cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size());
     }
 

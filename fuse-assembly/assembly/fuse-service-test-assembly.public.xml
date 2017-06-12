@@ -5,6 +5,7 @@
     <formats>
         <format>dir</format>
     </formats>
+    <baseDirectory>fuse-service-test-public</baseDirectory>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
@@ -24,36 +25,49 @@
             <excludes>
                 <exclude>*sources.jar</exclude>
                 <exclude>*test-sources.jar</exclude>
+                <exclude>fuse-assembly*.jar</exclude>
             </excludes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/conf</directory>
-            <outputDirectory>config</outputDirectory>
-            <includes>
-                <include>*.conf</include>
-                <include>*.xml</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.basedir}/../fuse-test/dragons-test-framework/src/main/resources/schema</directory>
-            <outputDirectory>schema</outputDirectory>
-            <includes>
-                <include>*.conf</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.basedir}/conf</directory>
+            <directory>${project.basedir}/resources/ontology</directory>
             <outputDirectory>catalog</outputDirectory>
             <includes>
                 <include>Dragons.json</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/resources/schema</directory>
+            <outputDirectory>schema</outputDirectory>
+            <includes>
+                <include>DragonsIndexProvider.json</include>
+                <include>DragonsGraphLayoutProviderFactory.json</include>
+            </includes>
+        </fileSet>
     </fileSets>
+
+    <files>
+        <file>
+            <source>${project.basedir}/resources/applicationConfig/application.engine2.m1.test.public.conf</source>
+            <outputDirectory>./config</outputDirectory>
+            <destName>application.conf</destName>
+        </file>
+        <file>
+            <source>${project.basedir}/resources/scripts/start-fuse-service.bat</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/resources/scripts/start-fuse-service.sh</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+    </files>
 
     <dependencySets>
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
             <scope>runtime</scope>
+            <excludes>
+                <exclude>org.kayhut:fuse-assembly:*</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
 </assembly>

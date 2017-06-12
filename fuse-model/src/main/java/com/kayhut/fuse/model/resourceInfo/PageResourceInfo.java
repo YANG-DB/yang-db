@@ -4,11 +4,13 @@ package com.kayhut.fuse.model.resourceInfo;
  * Created by User on 08/03/2017.
  */
 public class PageResourceInfo extends ResourceInfoBase{
-    //region Constructor
+
     public PageResourceInfo() {}
 
-    public PageResourceInfo(String resourceUrl,String resourceId, int requestedPageSize, int actualPageSize, boolean isAvailable) {
+    //region Constructor
+    public PageResourceInfo(String resourceUrl,String resourceId, int requestedPageSize, int actualPageSize,long executionTime, boolean isAvailable) {
         super(resourceUrl,resourceId);
+        this.executionTime = executionTime;
         this.dataUrl = this.getResourceUrl() + "/data";
         this.requestedPageSize = requestedPageSize;
         this.actualPageSize = actualPageSize;
@@ -25,6 +27,10 @@ public class PageResourceInfo extends ResourceInfoBase{
 
     public int getActualPageSize() {
         return this.actualPageSize;
+    }
+
+    public long getExecutionTime() {
+        return executionTime;
     }
 
     public boolean isAvailable() {
@@ -50,6 +56,7 @@ public class PageResourceInfo extends ResourceInfoBase{
     //endregion
 
     //region Fields
+    private long executionTime;
     private String dataUrl;
     private int requestedPageSize;
     private int actualPageSize;

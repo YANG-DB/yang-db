@@ -1,0 +1,1 @@
+java -cp ".;lib/*" com.kayhut.fuse.services.FuseRunner config/application.conf

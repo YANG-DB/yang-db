@@ -25,7 +25,7 @@ public class StatConfigurationTest {
         ObjectMapper mapper = new ObjectMapper();
         String statActualJson = mapper.writeValueAsString(statContainer);
         System.out.println(statActualJson);
-        String statExpectedJson = StatUtil.readJsonToString("src/test/resources/stats_fields_test.json");
+        String statExpectedJson = StatUtil.readJsonToString("src/test/resources/stats_fields_test_with_dynamics.json");
 
         JSONAssert.assertEquals(statExpectedJson, statActualJson, false);
 
@@ -82,6 +82,12 @@ public class StatConfigurationTest {
                 .build();
 
 
+        HistogramDynamic histogramFireTimestampEntity = HistogramDynamic.Builder.get()
+                .withNumOfBins(10)
+                .withDataType(DataType.numeric)
+                .build();
+
+
         Field nameField = new Field("name", histogramDragonName);
         Field ageField = new Field("age", histogramDragonAge);
         Field addressField = new Field("address", histogramDragonAddress);
@@ -97,8 +103,11 @@ public class StatConfigurationTest {
                 histogramFireEntity,
                 Arrays.asList(new Filter("direction", "IN")));
 
+
+        Field fireTimestampField = new Field("timestamp", histogramFireTimestampEntity);
+
         Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
-        Type typeFire = new Type("fire", Arrays.asList(fireEntityAInField, fireEntityAOutField));
+        Type typeFire = new Type("fire", Arrays.asList(fireEntityAInField, fireEntityAOutField, fireTimestampField));
 
         Mapping mappingDragon = Mapping.Builder.get().withIndices(Arrays.asList("index1", "index2"))
                 .withTypes(Collections.singletonList("dragon")).build();

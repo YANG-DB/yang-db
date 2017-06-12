@@ -12,11 +12,16 @@ public class PromiseEdgeAggregationAppender implements SearchAppender<PromiseVer
     public boolean append(SearchBuilder searchBuilder, PromiseVertexControllerContext promiseVertexControllerContext) {
         searchBuilder.getAggregationBuilder().seekRoot()
                      .terms(GlobalConstants.EdgeSchema.SOURCE)
-                     .field(GlobalConstants.EdgeSchema.SOURCE_ID)
-                     .executionHint("map")
+                        .field(GlobalConstants.EdgeSchema.SOURCE_ID)
+                        .size(1000)
+                        .shardSize(1000)
+                        .executionHint("map")
                      .terms(GlobalConstants.EdgeSchema.DEST)
-                     .field(GlobalConstants.EdgeSchema.DEST_ID)
-                     .executionHint("map");
+                        .field(GlobalConstants.EdgeSchema.DEST_ID)
+                        .size(1000)
+                        .shardSize(1000)
+                        .executionHint("map");
+
         return true;
     }
 }

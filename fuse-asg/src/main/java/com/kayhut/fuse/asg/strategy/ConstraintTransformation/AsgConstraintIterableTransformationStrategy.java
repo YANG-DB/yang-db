@@ -58,7 +58,7 @@ public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTr
             Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(relProp.getpType()));
             Object expr = relProp.getCon().getExpr();
             ConstraintOp op = relProp.getCon().getOp();
-            if (isArray(expr) && isMultivaluedOp(op) && property.isPresent()) {
+            if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
                 List<Object> newList = transformToNewList(property.get(), expr);
                 Constraint newCon = new Constraint(relProp.getCon().getOp(), newList);
                 relProp.setCon(newCon);

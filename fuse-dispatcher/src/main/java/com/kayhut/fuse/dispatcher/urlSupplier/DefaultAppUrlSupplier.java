@@ -40,6 +40,11 @@ public class DefaultAppUrlSupplier implements AppUrlSupplier {
     public String pageStoreUrl(String queryId, String cursorId) {
         return new ResourceStoreUrlSupplier(this.baseUrl, ResourceStoreUrlSupplier.Store.Page).queryId(queryId).cursorId(cursorId).get();
     }
+
+    @Override
+    public String catalogStoreUrl() {
+        return this.baseUrl + "/catalog/ontology";
+    }
     //endregion
 
     //region Fields

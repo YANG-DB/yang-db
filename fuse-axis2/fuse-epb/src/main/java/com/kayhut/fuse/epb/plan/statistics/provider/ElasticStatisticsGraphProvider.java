@@ -43,24 +43,24 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     //region GraphStatisticsProvider Implementation
     @Override
-    public Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema) {
+    public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema) {
         return getVertexCardinality(graphVertexSchema,
                 Lists.newArrayList(graphVertexSchema.getIndexPartition().getIndices()));
     }
 
     @Override
-    public Statistics.Cardinality getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
+    public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
         return getStatResultsForType(graphVertexSchema.getType(), relevantIndices);
     }
 
     @Override
-    public Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema) {
+    public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema) {
         return getEdgeCardinality(graphEdgeSchema,
                 Lists.newArrayList(graphEdgeSchema.getIndexPartition().getIndices()));
     }
 
     @Override
-    public Statistics.Cardinality getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices) {
+    public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices) {
         return getStatResultsForType(graphEdgeSchema.getType(), relevantIndices);
     }
 
@@ -69,7 +69,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                                                                              List<String> relevantIndices,
                                                                                              GraphElementPropertySchema graphElementPropertySchema,
                                                                                              Constraint constraint,
-                                                                                             T value) {
+                                                                                             Class<T> tp) {
         List<Statistics.HistogramStatistics<T>> histograms = new ArrayList<>();
 
         String fieldType = graphElementPropertySchema.getType();
@@ -97,17 +97,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         return Statistics.HistogramStatistics.combine(histograms);
     }
 
-
-    @Override
-    public <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphEdgeSchema,
-                                                                                             List<String> relevantIndices,
-                                                                                             GraphElementPropertySchema graphElementPropertySchema,
-                                                                                             Constraint constraint,
-                                                                                             List<T> values) {
-        //Not needed
-        return null;
-    }
-
     @Override
     public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema,
                                      Rel.Direction direction,
@@ -133,7 +122,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     //endregion
 
     //region Private Methods
-    private Statistics.Cardinality getStatResultsForType(String docType, Iterable<String> indices) {
+    private Statistics.SummaryStatistics getStatResultsForType(String docType, Iterable<String> indices) {
         List<Statistics.BucketInfo> buckets = elasticStatProvider.getFieldStatistics(
                 elasticClient,
                 statConfig.getStatIndexName(),
@@ -146,7 +135,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         for (Statistics.BucketInfo bucket : buckets) {
             totalCount += bucket.getTotal();
         }
-        return new Statistics.Cardinality(totalCount, 1);
+        return new Statistics.SummaryStatistics(totalCount, 1);
     }
 
     private long getTermBucketCount(String indexName, String docType, String term) {

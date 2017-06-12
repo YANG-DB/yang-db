@@ -33,7 +33,7 @@ public class FuseClient {
 
     //region Public Methods
     public FuseResourceInfo getFuseInfo() throws IOException {
-        return new ObjectMapper().readValue(getRequest(this.fuseUrl), FuseResourceInfo.class);
+        return new ObjectMapper().readValue(unwrap(getRequest(this.fuseUrl)), FuseResourceInfo.class);
     }
 
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException {

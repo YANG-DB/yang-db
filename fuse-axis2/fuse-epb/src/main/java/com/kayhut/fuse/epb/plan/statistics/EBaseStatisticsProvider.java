@@ -56,7 +56,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public Statistics.Cardinality getNodeStatistics(EEntityBase entity) {
+    public Statistics.SummaryStatistics getNodeStatistics(EEntityBase entity) {
         // EConcrete == single entity, no querying, assuming the entity exists
         if (entity instanceof EConcrete) {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
@@ -65,10 +65,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         // We estimate each vertex type's statistics, and combine all statistics together
         List<String> vertexTypes = getVertexTypes(entity, ont, graphElementSchemaProvider.getVertexTypes());
-        Statistics.Cardinality entityStats = getVertexStatistics(vertexTypes.get(0));
+        Statistics.SummaryStatistics entityStats = getVertexStatistics(vertexTypes.get(0));
 
         for (int i = 1; i < vertexTypes.size(); i++) {
-            entityStats = (Statistics.Cardinality) entityStats.merge( getVertexStatistics(vertexTypes.get(i)));
+            entityStats = (Statistics.SummaryStatistics) entityStats.merge( getVertexStatistics(vertexTypes.get(i)));
         }
 
         return entityStats;
@@ -76,33 +76,33 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public Statistics.Cardinality getNodeFilterStatistics(EEntityBase entity, EPropGroup entityFilter) {
+    public Statistics.SummaryStatistics getNodeFilterStatistics(EEntityBase entity, EPropGroup entityFilter) {
         if (entity instanceof EConcrete) {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
             return bucketInfos.get(0).getCardinalityObject();
         }
         List<String> vertexTypes = getVertexTypes(entity,ont,graphElementSchemaProvider.getVertexTypes());
 
-        Statistics.Cardinality entityStats = estimateVertexPropertyGroup(vertexTypes.get(0),entityFilter);
+        Statistics.SummaryStatistics entityStats = estimateVertexPropertyGroup(vertexTypes.get(0),entityFilter);
 
         for (int i = 1; i < vertexTypes.size(); i++) {
-            entityStats = (Statistics.Cardinality) entityStats.merge( estimateVertexPropertyGroup(vertexTypes.get(i), entityFilter));
+            entityStats = (Statistics.SummaryStatistics) entityStats.merge( estimateVertexPropertyGroup(vertexTypes.get(i), entityFilter));
         }
 
         return entityStats;
     }
 
     @Override
-    public Statistics.Cardinality getEdgeStatistics(Rel rel) {
+    public Statistics.SummaryStatistics getEdgeStatistics(Rel rel) {
         GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         return getEdgeStatistics(edgeSchema);
     }
 
     @Override
-    public Statistics.Cardinality getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
+    public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
-        Statistics.Cardinality minEdgeCardinality = getEdgeStatistics(graphEdgeSchema, relevantIndices);
+        Statistics.SummaryStatistics minEdgeSummaryStatistics = getEdgeStatistics(graphEdgeSchema, relevantIndices);
         for(RelProp relProp : relFilter.getProps()){
             Property property = ont.$property$(Integer.parseInt( relProp.getpType()));
 
@@ -113,16 +113,16 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             }
 
-            Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
-            if(conditionCardinality.isPresent() &&  minEdgeCardinality.getTotal() > conditionCardinality.get().getTotal())
-                minEdgeCardinality = conditionCardinality.get();
+            Optional<Statistics.SummaryStatistics> conditionCardinality = getConditionCardinality(graphEdgeSchema, graphElementPropertySchema, relProp.getCon(), relevantIndices, property.getType());
+            if(conditionCardinality.isPresent() &&  minEdgeSummaryStatistics.getTotal() > conditionCardinality.get().getTotal())
+                minEdgeSummaryStatistics = conditionCardinality.get();
 
         }
-        return minEdgeCardinality;
+        return minEdgeSummaryStatistics;
     }
 
     @Override
-    public Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
+    public Statistics.SummaryStatistics getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
         List<PushdownRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof PushdownRelProp).
                 map(PushdownRelProp.class::cast).collect(Collectors.toList());
 
@@ -147,43 +147,43 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return relevantIndices;
     }
 
-    private Statistics.Cardinality getEdgeStatistics(GraphEdgeSchema edgeSchema) {
+    private Statistics.SummaryStatistics getEdgeStatistics(GraphEdgeSchema edgeSchema) {
         return graphStatisticsProvider.getEdgeCardinality(edgeSchema);
     }
 
-    private Statistics.Cardinality getEdgeStatistics(GraphEdgeSchema edgeSchema, List<String> relevantIndices) {
+    private Statistics.SummaryStatistics getEdgeStatistics(GraphEdgeSchema edgeSchema, List<String> relevantIndices) {
         return graphStatisticsProvider.getEdgeCardinality(edgeSchema, relevantIndices);
     }
 
-    private Statistics.Cardinality getVertexStatistics(String vertexType) {
+    private Statistics.SummaryStatistics getVertexStatistics(String vertexType) {
         return graphStatisticsProvider.getVertexCardinality(graphElementSchemaProvider.getVertexSchema(vertexType).get());
     }
 
-    private Statistics.Cardinality getVertexStatistics(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
+    private Statistics.SummaryStatistics getVertexStatistics(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
         return graphStatisticsProvider.getVertexCardinality(graphVertexSchema, relevantIndices);
     }
 
-    private Statistics.Cardinality estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
+    private Statistics.SummaryStatistics estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
         GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
         List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
-        Statistics.Cardinality minVertexCardinality = getVertexStatistics(graphVertexSchema, relevantIndices);
+        Statistics.SummaryStatistics minVertexSummaryStatistics = getVertexStatistics(graphVertexSchema, relevantIndices);
         for(EProp eProp : entityFilter.getProps()){
             Property property = ont.$property$(Integer.parseInt( eProp.getpType()));
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
-                Optional<Statistics.Cardinality> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
-                if (conditionCardinality.isPresent() && minVertexCardinality.getTotal() > conditionCardinality.get().getTotal())
-                    minVertexCardinality = conditionCardinality.get();
+                Optional<Statistics.SummaryStatistics> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
+                if (conditionCardinality.isPresent() && minVertexSummaryStatistics.getTotal() > conditionCardinality.get().getTotal())
+                    minVertexSummaryStatistics = conditionCardinality.get();
 
             }else{
                 // If a property does not exist on the vertex, we return 0 cardinality (again, assuming AND behavior)
-                return new Statistics.Cardinality(0,0);
+                return new Statistics.SummaryStatistics(0,0);
             }
         }
-        return minVertexCardinality;
+        return minVertexSummaryStatistics;
     }
 
     private List<String> getVertexRelevantIndices(EPropGroup entityFilter, GraphVertexSchema graphVertexSchema) {
@@ -195,11 +195,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return relevantIndices;
     }
 
-    private Optional<Statistics.Cardinality> getConditionCardinality(GraphElementSchema graphElementSchema,
-                                                                     GraphElementPropertySchema graphElementPropertySchema,
-                                                                     Constraint constraint,
-                                                                     List<String> relevantIndices,
-                                                                     String pType) {
+    private Optional<Statistics.SummaryStatistics> getConditionCardinality(GraphElementSchema graphElementSchema,
+                                                                           GraphElementPropertySchema graphElementPropertySchema,
+                                                                           Constraint constraint,
+                                                                           List<String> relevantIndices,
+                                                                           String pType) {
 
         if(!supportedOps.contains(constraint.getOp())){
             return Optional.empty();
@@ -218,30 +218,23 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Optional<Statistics.Cardinality> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
+    private <T extends Comparable<T>> Optional<Statistics.SummaryStatistics> getValueConditionCardinality(GraphElementSchema graphElementSchema, GraphElementPropertySchema graphElementPropertySchema, Constraint constraintOp, Object expression, List<String> relevantIndices, Class<T> tp) {
         Statistics.HistogramStatistics<T> histogramStatistics = null;
-        if(tp.isInstance(expression) ){
-            T expr = (T) expression;
-            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, expr);
-        }
-        else if (expression instanceof List)
-        {
-            List<T> values = (List<T>) expression;
-            histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, values);
-        }
+
+        histogramStatistics = graphStatisticsProvider.getConditionHistogram(graphElementSchema, relevantIndices, graphElementPropertySchema, constraintOp, tp);
         if(histogramStatistics != null) {
             return Optional.of(estimateCardinality(histogramStatistics, expression, constraintOp));
         }
         return Optional.empty();
     }
 
-    private <T extends Comparable<T>> Statistics.Cardinality estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, Object value, Constraint constraint){
-        Statistics.Cardinality cardinality = null;
+    private <T extends Comparable<T>> Statistics.SummaryStatistics estimateCardinality(Statistics.HistogramStatistics<T> histogramStatistics, Object value, Constraint constraint){
+        Statistics.SummaryStatistics summaryStatistics = null;
         switch(constraint.getOp()){
             case eq:
                 Optional<Statistics.BucketInfo<T>> bucketContaining = histogramStatistics.findBucketContaining((T)value);
-                cardinality = bucketContaining.map(tBucketInfo -> new Statistics.Cardinality(((double)tBucketInfo.getTotal()) / tBucketInfo.getCardinality(), 1)).
-                        orElseGet(() -> new Statistics.Cardinality(0, 0));
+                summaryStatistics = bucketContaining.map(tBucketInfo -> new Statistics.SummaryStatistics(((double)tBucketInfo.getTotal()) / tBucketInfo.getCardinality(), 1)).
+                        orElseGet(() -> new Statistics.SummaryStatistics(0, 0));
                 break;
             case gt:
                 List<Statistics.BucketInfo<T>> bucketsAbove = histogramStatistics.findBucketsAbove((T)value, false);
@@ -274,7 +267,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                     total += ((double)bucketContaining.get().getTotal()) / bucketContaining.get().getCardinality();
                     count += 1;
                 }
-                return new Statistics.Cardinality(total,count);
+                return new Statistics.SummaryStatistics(total,count);
             case notInSet:
                 valueList = (List<T>) value;
                 bucketInfos = histogramStatistics.getBuckets();
@@ -300,7 +293,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 List<Statistics.BucketInfo<String>> notStartsWithBuckets = findNotStartsWithBuckets(stringValue, (Statistics.HistogramStatistics<String>) histogramStatistics);
                 return mergeBucketsCardinality(notStartsWithBuckets);
         }
-        return cardinality;
+        return summaryStatistics;
     }
 
     private List<Statistics.BucketInfo<String>> findNotStartsWithBuckets(String stringValue, Statistics.HistogramStatistics<String> histogramStatistics) {
@@ -348,14 +341,14 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return startsWithBuckets;
     }
 
-    private <T extends Comparable<T>> Statistics.Cardinality estimateRange(List<Statistics.BucketInfo<T>> bucketsAbove, List<Statistics.BucketInfo<T>> bucketsBelow, List<T> valueList, String iType) {
+    private <T extends Comparable<T>> Statistics.SummaryStatistics estimateRange(List<Statistics.BucketInfo<T>> bucketsAbove, List<Statistics.BucketInfo<T>> bucketsBelow, List<T> valueList, String iType) {
         List<Statistics.BucketInfo<T>> joinedBuckets = new LinkedList<>(bucketsAbove);
         joinedBuckets.retainAll(bucketsBelow);
         if(joinedBuckets.size() > 0){
-            Statistics.Cardinality cardinality = estimateGreaterThan(joinedBuckets, valueList.get(0), iType.startsWith("["));
-            Statistics.Cardinality greaterCardinality = estimateLessThan(joinedBuckets.subList(joinedBuckets.size() - 1, joinedBuckets.size()), valueList.get(1), iType.endsWith("]"));
+            Statistics.SummaryStatistics summaryStatistics = estimateGreaterThan(joinedBuckets, valueList.get(0), iType.startsWith("["));
+            Statistics.SummaryStatistics greaterSummaryStatistics = estimateLessThan(joinedBuckets.subList(joinedBuckets.size() - 1, joinedBuckets.size()), valueList.get(1), iType.endsWith("]"));
             Statistics.BucketInfo<T> last = Iterables.getLast(joinedBuckets);
-            return new Statistics.Cardinality(cardinality.getTotal() + greaterCardinality.getTotal() - last.getTotal(),  cardinality.getCardinality() + greaterCardinality.getCardinality() - last.getCardinality());
+            return new Statistics.SummaryStatistics(summaryStatistics.getTotal() + greaterSummaryStatistics.getTotal() - last.getTotal(),  summaryStatistics.getCardinality() + greaterSummaryStatistics.getCardinality() - last.getCardinality());
 
         }
         return mergeBucketsCardinality(joinedBuckets);
@@ -363,9 +356,9 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     // Currently lt and lte have the same costs
     // Also, in case we have a non numeric/date value, we take a pessimistic estimate of the bucket containing the given value (entire bucket, not relative part)
-    private <T extends Comparable<T>> Statistics.Cardinality estimateLessThan(List<Statistics.BucketInfo<T>> bucketsBelow, T value, boolean inclusive) {
+    private <T extends Comparable<T>> Statistics.SummaryStatistics estimateLessThan(List<Statistics.BucketInfo<T>> bucketsBelow, T value, boolean inclusive) {
         if(bucketsBelow.size() == 0)
-            return new Statistics.Cardinality(0,0);
+            return new Statistics.SummaryStatistics(0,0);
 
         Statistics.BucketInfo<T> lastBucket = Iterables.getLast(bucketsBelow);
         if(lastBucket.isValueInRange(value)){
@@ -389,15 +382,15 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 partialBucket = ((double)(v.getTime() - start.getTime())) / (end.getTime() - start.getTime());
 
             }
-            Statistics.Cardinality cardinality = mergeBucketsCardinality(bucketsBelow.subList(0, bucketsBelow.size() - 1));
-            return new Statistics.Cardinality(cardinality.getTotal() + lastBucket.getTotal() * partialBucket, cardinality.getCardinality() + lastBucket.getCardinality()*partialBucket);
+            Statistics.SummaryStatistics summaryStatistics = mergeBucketsCardinality(bucketsBelow.subList(0, bucketsBelow.size() - 1));
+            return new Statistics.SummaryStatistics(summaryStatistics.getTotal() + lastBucket.getTotal() * partialBucket, summaryStatistics.getCardinality() + lastBucket.getCardinality()*partialBucket);
         }
         return mergeBucketsCardinality(bucketsBelow);
     }
 
-    private <T extends Comparable<T>> Statistics.Cardinality estimateGreaterThan(List<Statistics.BucketInfo<T>> bucketsAbove, T value, boolean inclusive) {
+    private <T extends Comparable<T>> Statistics.SummaryStatistics estimateGreaterThan(List<Statistics.BucketInfo<T>> bucketsAbove, T value, boolean inclusive) {
         if (bucketsAbove.size() == 0)
-            return new Statistics.Cardinality(0,0);
+            return new Statistics.SummaryStatistics(0,0);
         Statistics.BucketInfo<T> firstBucket = bucketsAbove.get(0);
         if(firstBucket.isValueInRange(value)){
             double partialBucket = 1.0;
@@ -420,8 +413,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 partialBucket = ((double)(end.getTime() - v.getTime())) / (end.getTime() - start.getTime());
 
             }
-            Statistics.Cardinality cardinality = mergeBucketsCardinality(bucketsAbove.subList(1, bucketsAbove.size()));
-            return new Statistics.Cardinality(cardinality.getTotal() + firstBucket.getTotal() * partialBucket, cardinality.getCardinality() + firstBucket.getCardinality()*partialBucket);
+            Statistics.SummaryStatistics summaryStatistics = mergeBucketsCardinality(bucketsAbove.subList(1, bucketsAbove.size()));
+            return new Statistics.SummaryStatistics(summaryStatistics.getTotal() + firstBucket.getTotal() * partialBucket, summaryStatistics.getCardinality() + firstBucket.getCardinality()*partialBucket);
         }
         return mergeBucketsCardinality(bucketsAbove);
     }
@@ -534,12 +527,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return indicesToRemove;
     }
 
-    private <T extends Comparable<T>> Statistics.Cardinality mergeBucketsCardinality(List<Statistics.BucketInfo<T>> buckets){
-        Statistics.Cardinality cardinality = new Statistics.Cardinality(0,0);
+    private <T extends Comparable<T>> Statistics.SummaryStatistics mergeBucketsCardinality(List<Statistics.BucketInfo<T>> buckets){
+        Statistics.SummaryStatistics summaryStatistics = new Statistics.SummaryStatistics(0,0);
         for(Statistics.BucketInfo<T> bucketInfo : buckets){
-            cardinality = (Statistics.Cardinality) cardinality.merge(bucketInfo.getCardinalityObject());
+            summaryStatistics = (Statistics.SummaryStatistics) summaryStatistics.merge(bucketInfo.getCardinalityObject());
         }
-        return cardinality;
+        return summaryStatistics;
     }
 
     private List<String> getVertexTypes(EEntityBase entity, Ontology.Accessor ont, Iterable<String> vertexTypes) {

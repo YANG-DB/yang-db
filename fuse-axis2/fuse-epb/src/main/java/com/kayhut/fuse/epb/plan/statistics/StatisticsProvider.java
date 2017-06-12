@@ -16,7 +16,7 @@ public interface StatisticsProvider {
      * @param item
      * @return
      */
-    Statistics.Cardinality getNodeStatistics(EEntityBase item);
+    Statistics.SummaryStatistics getNodeStatistics(EEntityBase item);
 
     /**
      *
@@ -24,14 +24,14 @@ public interface StatisticsProvider {
      * @param entityFilter
      * @return
      */
-    Statistics.Cardinality getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter);
+    Statistics.SummaryStatistics getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter);
 
     /**
      *
      * @param item
      * @return
      */
-    Statistics.Cardinality getEdgeStatistics(Rel item);
+    Statistics.SummaryStatistics getEdgeStatistics(Rel item);
 
     /**
      *
@@ -39,13 +39,13 @@ public interface StatisticsProvider {
      * @param entityFilter
      * @return
      */
-    Statistics.Cardinality getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
+    Statistics.SummaryStatistics getEdgeFilterStatistics(Rel item, RelPropGroup entityFilter);
 
 
-    //Statistics.Cardinality getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,Direction direction);
+    //Statistics.SummaryStatistics getRedundantEdgeStatistics(Rel rel, RelPropGroup relPropGroup,Direction direction);
 
 
-    Statistics.Cardinality getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup);
+    Statistics.SummaryStatistics getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup);
 
     /**
      * get average number of edges per node (by label context)

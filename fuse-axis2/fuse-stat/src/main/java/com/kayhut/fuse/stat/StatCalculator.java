@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat;
 
+import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +45,7 @@ public class StatCalculator {
 
         try {
             Configuration configuration = new StatConfiguration(args[0]).getInstance();
-            logger.info( "Loading configuration file at : '{}'",((PropertiesConfiguration)configuration).getPath());
+            logger.info("Loading configuration file at : '{}'", ((PropertiesConfiguration) configuration).getPath());
             dataClient = ClientProvider.getDataClient(configuration);
             statClient = ClientProvider.getStatClient(configuration);
             loadDefaultStatParameters(configuration);
@@ -76,11 +78,20 @@ public class StatCalculator {
                 for (String type : mapping.getTypes()) {
                     Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, type);
                     if (typeConfiguration.isPresent()) {
+                        Stopwatch stopwatch = Stopwatch.createStarted();
+                        logger.info("Starting to calculate statistics for Index: {}, Type: {}", index, type);
                         buildHistogramForNumericFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForManualFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForStringFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForCompositeFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForTermFields(dataClient, statClient, statContainer, index, type);
+                        buildHistogramForDynamicFields(dataClient, statClient, statContainer, index, type);
+                        stopwatch.stop();
+                        logger.info("Finished to calculate statistics for Index: {}, Type: {}, took {} Seconds",
+                                index,
+                                type,
+                                stopwatch.elapsed(TimeUnit.SECONDS));
+
                     }
                 }
             }
@@ -312,10 +323,41 @@ public class StatCalculator {
         }
     }
 
+    private static void buildHistogramForDynamicFields(
+            TransportClient dataClient,
+            TransportClient statClient,
+            StatContainer statContainer,
+            String index,
+            String type) {
+        try {
+            Optional<List<Field>> fields = StatUtil.getFieldsWithDynamicHistogram(
+                    statContainer,
+                    type);
+
+            if (fields.isPresent() && !fields.get().isEmpty()) {
+                for (Field field : fields.get()) {
+                    HistogramDynamic hist = (HistogramDynamic) field.getHistogram();
+                    // !! Currently we support only dynamic histogram of numeric !!
+                    List<StatRangeResult> bucketsResults = EsUtil.getDynamicHistogramResults(
+                            dataClient,
+                            index,
+                            type,
+                            field.getField(),
+                            hist.getDataType(),
+                            hist.getNumOfBins());
+                    populateBuckets(statIndexName, statTypeNumericName, statClient, bucketsResults);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while trying to calculate statistics for Index: {}, Type: {}", index, type);
+            logger.error(e.getMessage(), e);
+        }
+    }
+
     private static void populateBuckets(String statIndex,
                                         String statType,
                                         TransportClient statClient,
-                                        List<? extends StatResultBase> buckets) throws IOException {
+                                        List<? extends StatResultBase> buckets) throws Exception {
 
         new ElasticDataPopulator(
                 statClient,

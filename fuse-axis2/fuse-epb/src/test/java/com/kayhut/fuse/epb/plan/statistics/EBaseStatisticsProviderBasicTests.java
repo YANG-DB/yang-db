@@ -23,7 +23,7 @@ import java.util.*;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
 
 /**
@@ -62,14 +62,14 @@ public class EBaseStatisticsProviderBasicTests {
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
-        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
-        when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.Cardinality(1000L, 1000L));
-        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.Cardinality(1L, 1L));
-        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.Cardinality(1000L, 1000L));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Long.class))).thenReturn(new Statistics.HistogramStatistics<>(longBuckets));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
+        when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenReturn(new Statistics.SummaryStatistics(1000L, 1000L));
+        when(graphStatisticsProvider.getEdgeCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
+        when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(1000L, 1000L));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphEdgeSchema.class),any(),any(),any(),eq(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(Long.class))).thenReturn(new Statistics.HistogramStatistics<>(longBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(Date.class))).thenReturn(new Statistics.HistogramStatistics<>(dateBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         statisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, new Ontology.Accessor(ontology), graphStatisticsProvider);
     }
@@ -78,7 +78,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eConcreteHistogramTest() {
         EConcrete eConcrete = new EConcrete();
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeStatistics(eConcrete);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeStatistics(eConcrete);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(1d, nodeStatistics.getTotal(), 0);
     }
@@ -86,7 +86,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eRelHistogramTest() {
         Rel rel = new Rel(0, OWN.getrType(), Rel.Direction.L, null, 0,0);
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeStatistics(rel);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeStatistics(rel);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(1d, nodeStatistics.getTotal(), 0);
     }
@@ -96,7 +96,7 @@ public class EBaseStatisticsProviderBasicTests {
         Rel rel = new Rel(0,REGISTERED.getrType(), Rel.Direction.L, null, 0, 0);
         RelProp prop = RelProp.of(START_DATE.type, 0, Constraint.of(ConstraintOp.eq, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5, nodeStatistics.getTotal(), 0.1);
     }
@@ -107,7 +107,7 @@ public class EBaseStatisticsProviderBasicTests {
         Rel rel = new Rel(0, SUBJECT.getrType(), Rel.Direction.L, null, 0, 0);
         RelProp prop = RelProp.of(END_DATE.type, 0, Constraint.of(ConstraintOp.gt, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(25, nodeStatistics.getTotal(), 0.1);
     }
@@ -119,7 +119,7 @@ public class EBaseStatisticsProviderBasicTests {
         RelProp prop = RelProp.of(END_DATE.type, 0, Constraint.of(ConstraintOp.ge, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(25, nodeStatistics.getTotal(), 0.1);
     }
@@ -131,7 +131,7 @@ public class EBaseStatisticsProviderBasicTests {
         RelProp prop = RelProp.of(START_DATE.type, 0, Constraint.of(ConstraintOp.lt, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(35, nodeStatistics.getTotal(), 0.1);
     }
@@ -143,7 +143,7 @@ public class EBaseStatisticsProviderBasicTests {
         RelProp prop = RelProp.of(END_DATE.type, 0, Constraint.of(ConstraintOp.le, new Date()));
         RelPropGroup relFilter = new RelPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getEdgeFilterStatistics(rel, relFilter);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(35, nodeStatistics.getTotal(), 0.1);
     }
@@ -152,7 +152,7 @@ public class EBaseStatisticsProviderBasicTests {
     public void eTypedHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeStatistics(eTyped);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeStatistics(eTyped);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(1d, nodeStatistics.getTotal(), 0);
     }
@@ -165,7 +165,7 @@ public class EBaseStatisticsProviderBasicTests {
         props.add(EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date())));
         EPropGroup propGroup = new EPropGroup(props);
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5d, nodeStatistics.getTotal(), 0.1);
     }
@@ -178,7 +178,7 @@ public class EBaseStatisticsProviderBasicTests {
         props.add(EProp.of("1", 0, Constraint.of(ConstraintOp.eq, "abc")));
         EPropGroup propGroup = new EPropGroup(props);
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(10d, nodeStatistics.getTotal(), 0.1);
     }
@@ -191,7 +191,7 @@ public class EBaseStatisticsProviderBasicTests {
         props.add(EProp.of("1", 0, Constraint.of(ConstraintOp.ge, "abc")));
         EPropGroup propGroup = new EPropGroup(props);
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
     }
@@ -204,7 +204,7 @@ public class EBaseStatisticsProviderBasicTests {
         props.add(EProp.of("1", 0, Constraint.of(ConstraintOp.ge, "m")));
         EPropGroup propGroup = new EPropGroup(props);
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
     }
@@ -219,7 +219,7 @@ public class EBaseStatisticsProviderBasicTests {
 
         EPropGroup propGroup = new EPropGroup(props);
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5d, nodeStatistics.getTotal(), 0.1);
     }
@@ -231,7 +231,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.eq, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(10d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -244,7 +244,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ne, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(20d, nodeStatistics.getCardinality(), 0.1);
@@ -257,7 +257,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.gt, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(140d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(19d, nodeStatistics.getCardinality(), 0.1);
@@ -270,7 +270,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ge, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(140d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(19d, nodeStatistics.getCardinality(), 0.1);
@@ -283,7 +283,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.lt, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(10d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -296,7 +296,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop =EProp.of("6", 0, Constraint.of(ConstraintOp.le , 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(10d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -306,7 +306,7 @@ public class EBaseStatisticsProviderBasicTests {
     public void eUnTypedHistogramTest() {
         EUntyped eUntyped = new EUntyped();
         eUntyped.setvTypes(Arrays.asList(1,2));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeStatistics(eUntyped);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeStatistics(eUntyped);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(2d, nodeStatistics.getTotal(), 0);
     }
@@ -318,7 +318,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop = EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eUntyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eUntyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5d, nodeStatistics.getTotal(), 0.1);
     }
@@ -330,7 +330,7 @@ public class EBaseStatisticsProviderBasicTests {
         EProp prop = EProp.of("3", 0, Constraint.of(ConstraintOp.eq, Value.ValueBuilder.aValue().withName("male").withVal(2).build()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(5d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -341,14 +341,14 @@ public class EBaseStatisticsProviderBasicTests {
         List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "female", "female"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "male", "male"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop =  EProp.of("3", 0, Constraint.of(ConstraintOp.eq, Value.ValueBuilder.aValue().withName("male").withVal(2).build()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -360,13 +360,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.ge, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
@@ -379,13 +379,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.le, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
@@ -398,13 +398,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.lt, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -417,13 +417,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.ne, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(150d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(2d, nodeStatistics.getCardinality(), 0.1);
@@ -436,13 +436,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.notInSet, Arrays.asList("edf", "abc")));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -456,13 +456,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.gt, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -475,13 +475,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ra"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ra", "z"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.inRange, Arrays.asList("f","r"), "[]"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
@@ -494,13 +494,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "r"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ra", "z"));
-        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(List.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.inRange, Arrays.asList("f","ra"), "[)"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
@@ -513,13 +513,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ga"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ga", "z"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "g"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(20d, nodeStatistics.getCardinality(), 0.1);
@@ -532,13 +532,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "a", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "f", "ga"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "ga", "z"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "f"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
@@ -550,13 +550,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "c", "f"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "f", "ga"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "ga", "z"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "a"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(0d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(0d, nodeStatistics.getCardinality(), 0.1);
@@ -568,13 +568,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "e"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(20d, nodeStatistics.getCardinality(), 0.1);
@@ -591,13 +591,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.notStartsWith, "e"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(100d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(10d, nodeStatistics.getCardinality(), 0.1);
@@ -614,13 +614,13 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "abc", "abc"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "edf", "edf"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,1L, "egh", "egh"));
-        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),isA(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
+        when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         EProp prop = EProp.of("1", 0, Constraint.of(ConstraintOp.startsWith, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
-        Statistics.Cardinality nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
+        Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);

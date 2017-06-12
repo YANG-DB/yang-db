@@ -191,6 +191,25 @@ public class PageTest {
                 .statusCode(302)
                 .contentType("application/json;charset=UTF-8");
 
+        //get cursor page resource by id
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .get("/sys/metrics/timer")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        assertTrue(o.toString().contains("QueryCreationOperationContext.1.SimpleStrategyRegisteredAsgDriver"));
+                        return true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+
 
     }
 
