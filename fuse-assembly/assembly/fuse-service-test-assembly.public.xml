@@ -30,7 +30,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/resources/ontology</directory>
-            <outputDirectory>catalog</outputDirectory>
+            <outputDirectory>ontology</outputDirectory>
             <includes>
                 <include>Dragons.json</include>
             </includes>
@@ -53,6 +53,10 @@
         </file>
         <file>
             <source>${project.basedir}/resources/scripts/start-fuse-service.bat</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/resources/scripts/start-fuse-service-debug.bat</source>
             <outputDirectory>./</outputDirectory>
         </file>
         <file>

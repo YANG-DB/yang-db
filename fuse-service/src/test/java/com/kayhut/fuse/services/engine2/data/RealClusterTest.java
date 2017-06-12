@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.TimeZone;
 
 import static com.kayhut.test.data.DragonsOntology.*;
@@ -30,10 +29,12 @@ import static java.util.Collections.singletonList;
 /**
  * Created by Roman on 07/06/2017.
  */
+@Ignore
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
-        fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
+        //fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
+        fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
     }
@@ -153,7 +154,6 @@ public class RealClusterTest {
     }
 
     @Test
-    @Ignore
     public void test5() throws IOException, InterruptedException, ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -194,6 +194,32 @@ public class RealClusterTest {
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
+    }
+
+    @Test
+    @Ignore
+    public void test6() throws IOException, InterruptedException, ParseException {
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", PERSON.type, singletonList(Integer.toString(FIRST_NAME.type)), 2, 0),
+                new Rel(2, OWN.getrType(), Rel.Direction.R, null, 3, 0),
+                new ETyped(3, "B", HORSE.type, singletonList(Integer.toString(FIRST_NAME.type)), 0, 0)))
+                .build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
     }
 
 

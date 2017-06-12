@@ -60,7 +60,7 @@
   "relationshipTypes": [
     {
       "rType": 101,
-      "name": "owns",
+      "name": "own",
       "directional": true,
       "ePairs": [
         {

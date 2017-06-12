@@ -80,6 +80,23 @@ public class AsgRelPropertiesValidationStrategyTest {
         Assert.assertFalse(validationContext.valid());
         Assert.assertTrue(validationContext.errors()[0].contains(AsgRelPropertiesValidatorStrategy.ERROR_2));
     }
+    @Test
+    public void testNoIntervalTypePropRelQuery() {
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(typed(1, PERSON.type))
+                .next(eProp(10, EProp.of(FIRST_NAME.type,11,of(eq, "Moshe"))))
+                .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
+                        RelProp.of(START_DATE.type, 10, of(eq, new Date(),null)),
+                        RelProp.of(NAME.type, 11, of(eq, new Date())))))
+                .next(unTyped(3, HORSE.type, DRAGON.type))
+                .next(eProp(12, EProp.of(FIRST_NAME.type,13,of(eq, "bubu"))))
+                .build();
+
+        AsgRelPropertiesValidatorStrategy strategy = new AsgRelPropertiesValidatorStrategy();
+        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationContext.valid());
+        Assert.assertEquals(validationContext.errors().length,2);
+    }
 
 
 }

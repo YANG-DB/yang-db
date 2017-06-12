@@ -25,6 +25,7 @@ import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
 public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
 
     public static final String ERROR_2 = "Property type mismatch parent Relation ";
+    public static final String ERROR_3 = "No %s type found for constraint %s";
 
     @Override
     public ValidationContext apply(AsgQuery query, AsgStrategyContext context) {
@@ -65,6 +66,22 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
         if (relationshipType.getProperties().stream().noneMatch(p -> p == pType)) {
             errors.add(ERROR_2 + ":" + print(base, property));
         }
+
+        //interval type
+        if(property.getCon().getiType()==null) {
+            errors.add(String.format(ERROR_3 ," interval type ",property));
+        }
+
+        //expresion
+        if(property.getCon().getExpr()==null) {
+            errors.add(String.format(ERROR_3 ," expression ",property));
+        }
+
+        //operation
+        if(property.getCon().getOp()==null) {
+            errors.add(String.format(ERROR_3 ," operation ",property));
+        }
+
         return errors;
     }
 }

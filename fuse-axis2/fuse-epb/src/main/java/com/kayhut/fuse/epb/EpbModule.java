@@ -6,14 +6,22 @@ import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.cost.CostEstimator;
-import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
+import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.CostEstimationConfig;
+import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
+import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
+import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -28,18 +36,23 @@ public class EpbModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+        StepEstimator stepEstimator = M1StepEstimator.getStepEstimator(
+                new CostEstimationConfig(conf.getDouble("epb.cost.alpha"),conf.getDouble("epb.cost.delta")));
+
         binder.bind(SimpleEpbDriver.class).asEagerSingleton();
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, AsgQuery>>(){})
-                .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
+        binder.bind(StatConfig.class).toInstance(new StatConfig(conf));
+        binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
-                .toInstance(
-                        new CompositePlanExtensionStrategy<>(
-                                new InitialPlanGeneratorExtensionStrategy(),
-                                new AllDirectionsPlanExtensionStrategy()));
+        binder.bind(GraphElementSchemaProviderFactory.class).to(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
+        binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();
+
+        binder.bind(StepEstimator.class).toInstance(stepEstimator);
+        binder.bind(new TypeLiteral<CostEstimator<Plan,PlanDetailedCost,AsgQuery>>(){}).to(StatisticsCostEstimator.class).asEagerSingleton();
+
+        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){}).to(M1PlanExtensionStrategy.class);
 
         binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                 .annotatedWith(Names.named("GlobalPruningStrategy"))
@@ -59,8 +72,6 @@ public class EpbModule extends ModuleBase {
 
         binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){}).to(M1PlanValidator.class).asEagerSingleton();
 
-        binder.bind(StatConfig.class).toInstance(new StatConfig(conf));
-        binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
 
     }
 }
