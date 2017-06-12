@@ -56,6 +56,10 @@
             <outputDirectory>./</outputDirectory>
         </file>
         <file>
+            <source>${project.basedir}/resources/scripts/start-fuse-service-debug.bat</source>
+            <outputDirectory>./</outputDirectory>
+        </file>
+        <file>
             <source>${project.basedir}/resources/scripts/start-fuse-service.sh</source>
             <outputDirectory>./</outputDirectory>
         </file>
