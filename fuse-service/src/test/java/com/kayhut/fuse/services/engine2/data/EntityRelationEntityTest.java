@@ -58,7 +58,7 @@ import static java.util.Collections.singletonList;
 public abstract class EntityRelationEntityTest {
     @BeforeClass
     public static void setup() throws Exception {
-        fuseClient = new FuseClient("/fuse");
+        fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
 
