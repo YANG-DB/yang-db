@@ -16,6 +16,7 @@ import javaslang.collection.Stream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.math3.random.EmpiricalDistribution;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -256,8 +257,6 @@ public class EsUtilTest {
                 DRAGON_GENDERS,
                 DRAGON_ADDRESS_LENGTH);
 
-        Thread.sleep(4000);
-
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME,
@@ -266,8 +265,7 @@ public class EsUtilTest {
                 () -> dragonsList
         ).populate();
 
-        Thread.sleep(2000);
-
+        dataClient.admin().indices().refresh(new RefreshRequest(DATA_INDEX_NAME)).actionGet();
     }
 
     @AfterClass
