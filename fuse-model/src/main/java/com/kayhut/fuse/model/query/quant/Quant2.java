@@ -4,6 +4,7 @@ package com.kayhut.fuse.model.query.quant;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Next;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class Quant2 extends QuantBase implements Next<List<Integer>> {
 
 
     //region Fields
-    private List<Integer> next;
+    private List<Integer> next = Collections.emptyList();
     //endregion
 
 

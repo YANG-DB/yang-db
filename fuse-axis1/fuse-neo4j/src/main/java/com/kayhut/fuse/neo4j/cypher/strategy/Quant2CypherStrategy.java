@@ -3,12 +3,10 @@ package com.kayhut.fuse.neo4j.cypher.strategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherElement;
-import com.kayhut.fuse.neo4j.cypher.CypherNode;
 import com.kayhut.fuse.neo4j.cypher.CypherRelationship;
 
 import java.util.List;
