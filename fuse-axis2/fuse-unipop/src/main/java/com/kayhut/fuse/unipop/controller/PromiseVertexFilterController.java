@@ -99,7 +99,8 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
                     wrap(new FilterVerticesSearchAppender()),
                     wrap(new SizeSearchAppender(configuration)),
                     wrap(new EdgeConstraintSearchAppender()),
-                    wrap(new FilterSourceSearchAppender()));
+                    wrap(new FilterSourceSearchAppender()),
+                    wrap(new FilterIndexSearchAppender()));
 
         appender.append(searchBuilder, context);
 
