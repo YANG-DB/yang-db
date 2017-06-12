@@ -158,7 +158,7 @@ public class FuseApp extends Jooby {
     private void registerQueryApi(AppUrlSupplier localUrlSupplier) {
         /** get the query store info */
         use(localUrlSupplier.queryStoreUrl())
-                .get(req -> Results.with(queryCtrl().getInfo(), Status.FOUND));
+                .get(req -> Results.with(queryCtrl().getInfo(), Status.OK));
 
         /** create a query */
         use(localUrlSupplier.queryStoreUrl())
