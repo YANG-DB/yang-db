@@ -46,14 +46,14 @@ public class SimpleQueryController implements QueryController {
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo() {
-        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
                 .data(this.driver.getInfo())
                 .compose();
     }
 
     @Override
     public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
-        return Builder.<QueryResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+        return Builder.<QueryResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId))
                 .compose();
     }

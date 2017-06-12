@@ -18,6 +18,7 @@ import com.kayhut.test.framework.index.ElasticIndexConfigurer;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.configuration.Configuration;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
@@ -258,9 +259,6 @@ public class StatCalculatorTest {
                 configurerIndex4,
                 configurerStat});
 
-
-        Thread.sleep(4000);
-
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_1,
@@ -314,7 +312,9 @@ public class StatCalculatorTest {
                         DRAGON_MAX_TEMP
                 )).populate();
 
-        Thread.sleep(4000);
+        dataClient.admin().indices().refresh(new RefreshRequest(
+                DATA_INDEX_NAME_1, DATA_INDEX_NAME_2, DATA_INDEX_NAME_3, DATA_INDEX_NAME_4))
+                .actionGet();
     }
 
     @AfterClass

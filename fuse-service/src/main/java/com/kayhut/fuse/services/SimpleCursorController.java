@@ -41,14 +41,14 @@ public class SimpleCursorController implements CursorController {
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
-        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+        return Builder.<StoreResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId))
                 .compose();
     }
 
     @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
-        return Builder.<CursorResourceInfo>builder(randomUUID().toString(),FOUND, NOT_FOUND)
+        return Builder.<CursorResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId, cursorId))
                 .compose();
     }

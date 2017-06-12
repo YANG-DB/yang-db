@@ -28,38 +28,42 @@ Fuse API:
 ##### POST: http/fuseHost:8080/fuse/query
   - Post V1 query to fuse engine  
 ```json
- {
-   "ont": "Dragons",
-   "name": "Q1",
-       "elements": [
-               {
-                 "eNum": 0,
-                 "type": "Start",
-                 "next": 1
-            },
-    {
-      "eNum": 1,
-      "type": "EConcrete",
-      "eTag": "A",
-      "eID": "12345678",
-      "eType": 1,
-      "eName": "Brandon Stark",
-      "next": 2
-    },
-    {
-      "eNum": 2,
-      "type": "Rel",
-      "rType": 101,
-      "dir": "R",
-      "next": 3
-    },
-    {
-      "eNum": 3,
-      "type": "ETyped",
-      "eTag": "B",
-      "eType": 2
-    }
-  ]
+{
+  "id": "1",
+  "name": "test",
+  "query": {
+    "ont": "Dragons",
+    "name": "Q1",
+    "elements": [
+      {
+        "type": "Start",
+        "eNum": 0,
+        "next": 1
+      },
+      {
+        "type": "EConcrete",
+        "eNum": 1,
+        "eTag": "A",
+        "next": 2,
+        "eType": 1,
+        "eID": "12345678",
+        "eName": "Brandon Stark"
+      },
+      {
+        "type": "Rel",
+        "eNum": 2,
+        "rType": 101,
+        "dir": "R",
+        "next": 3
+      },
+      {
+        "type": "ETyped",
+        "eNum": 3,
+        "eTag": "B",
+        "eType": 2
+      }
+    ]
+  }
 }
 ```
   - Response: 201 (resource Created)
@@ -84,10 +88,31 @@ Fuse API:
     "resourceUrl": "http://192.168.1.40:8888/fuse/query/1/cursor/0",
     "resourceId": "0",
     "cursorType": "graph",
-    "pageStoreUrl": "http://192.168.1.40:8888/fuse/query/1/cursor/0/page"
+    "pageStoreUrl": "http://192.168.1.40:8888/fuse/query/1/cursor/"
   }
 }
 ```
+
+##### POST: http/fuseHost:8080/fuse/query/1/cursor/0/page
+ - Create cursor resource (belongs to query resource) 
+
+```json
+{"cursorType":"graph"}
+```
+ - Response 201  -  cursor created
+```json
+{
+  "id": "d8d1c141-149d-4174-a36d-316714ad3ee4",
+  "data": {
+    "resourceUrl": "http://localhost:8888/fuse/query/1/cursor/0",
+    "resourceId": "0",
+    "cursorType": "graph",
+    "pageStoreUrl": "http://localhost:8888/fuse/query/1/cursor/0/page"
+  }
+}
+```
+
+
 ##### GET: http/fuseHost:8080/fuse/query/1/cursor/0/page
  - Fetch cursor resource (a child resource of query)
 ```json
@@ -105,6 +130,7 @@ Fuse API:
 ##### POST: http/fuseHost:8080/fuse/query/1/cursor/0/page
 - Fetch page resource (a child resource of cursor)
 ```json
+
 {
     "pageSize":100
 }
