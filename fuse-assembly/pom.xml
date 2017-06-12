@@ -92,6 +92,7 @@
                     <descriptors>
                         <descriptor>assembly/fuse-service-test-assembly.public.xml</descriptor>
                         <descriptor>assembly/fuse-service-test-assembly.private.xml</descriptor>
+                        <descriptor>assembly/fuse-engine1-service-test-assembly.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
