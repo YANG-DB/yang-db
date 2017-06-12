@@ -54,7 +54,7 @@ public class AggL1CypherStrategy extends CypherStrategy {
                 CypherCondition condition = CypherCondition.cypherCondition()
                                                            .withTarget(aggAlias)
                                                            .withOperator(CypherOps.getOp(con.getOp()))
-                                                           .withValue((String) con.getExpr())
+                                                           .withValue(con.getExpr() instanceof String ? "'" + con.getExpr() + "'" : String.valueOf(con.getExpr()))
                                                            .withType(CypherCondition.Condition.AND);
 
                 curState.getStatement().appendCondition(condition);

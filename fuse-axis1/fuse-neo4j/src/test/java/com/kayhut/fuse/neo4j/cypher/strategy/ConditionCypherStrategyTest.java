@@ -9,7 +9,6 @@ import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -24,17 +23,14 @@ public class ConditionCypherStrategyTest {
 
 
     @Test
-    @Ignore
     public void testConditionStrategy() {
-
-        //TODO: Check...
 
         EProp eProp = new EProp(1, "1", Constraint.of(ConstraintOp.eq, 12));
         eProp.setpTag("P");
 
         AsgQuery query = AsgQuery.Builder.start("condition", "dragons")
                 .next(unTyped(1,"A"))
-                .below(eProp(2,eProp))
+                .next(eProp(2,eProp))
                 .build();
 
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
@@ -49,8 +45,9 @@ public class ConditionCypherStrategyTest {
         String cypher = CypherCompiler.compile(query ,ontology);
 
         Assert.assertEquals(cypher, "MATCH\n" +
-                "p0 = (A)-[r1:knows]->(B)\n" +
-                "RETURN A,r1,B\n");
+                "p0 = (A)\n" +
+                "WHERE A.p1 = 12\n" +
+                "RETURN A\n");
 
     }
 

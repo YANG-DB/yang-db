@@ -4,22 +4,17 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherCondition;
 import com.kayhut.fuse.neo4j.cypher.CypherElement;
 import com.kayhut.fuse.neo4j.cypher.CypherStatement;
 
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Queue;
 
 import static com.kayhut.fuse.neo4j.cypher.CypherOps.getOp;
 
@@ -36,97 +31,82 @@ public class ConditionCypherStrategy extends CypherStrategy {
     @Override
     public CypherCompilationState apply(AsgEBase element) {
 
-        if (element.geteBase() instanceof EProp || element.geteBase() instanceof RelProp) {
+        if(element.geteBase() instanceof EPropGroup ||
+           element.geteBase() instanceof RelPropGroup) {
 
             CypherCompilationState curState = getRelevantState(element);
 
-            Optional<Property> property = getProperty(element, ontology);
-
-            if(!property.isPresent()) {
-                throw new RuntimeException("Unknown property.");
-            }
-
-            CypherCondition cond = buildPropertyCondition(element, property.get(), curState.getStatement(), curState.getPathTag(), ontology);
-
-            curState.getStatement().appendCondition(cond);
+            ((BasePropGroup)element.geteBase()).getProps().forEach(prop -> applySingleProp(element, (BaseProp) prop, curState));
 
             return context(element, new CypherCompilationState(curState.getStatement(), curState.getPathTag()));
+        }
 
+        if (element.geteBase() instanceof EProp ||
+            element.geteBase() instanceof RelProp) {
+
+            CypherCompilationState curState = getRelevantState(element);
+
+            applySingleProp(element, (BaseProp) element.geteBase(), curState);
+
+            return context(element, new CypherCompilationState(curState.getStatement(), curState.getPathTag()));
         }
 
         return getRelevantState(element);
 
     }
 
-    private String getPropertyType(EBase eBase) {
-        if(eBase instanceof EProp) {
-            return ((EProp)eBase).getpType();
-        } else {
-            return ((RelProp)eBase).getpType();
+    private void applySingleProp(AsgEBase element, BaseProp prop, CypherCompilationState curState) {
+
+        Optional<Property> property = getProperty(prop, ontology);
+
+        if (!property.isPresent()) {
+            throw new RuntimeException("Unknown property.");
         }
+
+        Constraint con = prop.getCon();
+
+        CypherCondition cond = buildPropertyCondition(element, con, property.get(), curState.getStatement(), curState.getPathTag());
+
+        curState.getStatement().appendCondition(cond);
+
     }
 
-    private Constraint getConstraint(EBase eBase) {
-        if(eBase instanceof EProp) {
-            return ((EProp)eBase).getCon();
-        } else {
-            return ((RelProp)eBase).getCon();
-        }
-    }
+    private Optional<Property> getProperty(BaseProp prop, Ontology ont) {
 
-    private Optional<Property> getProperty(AsgEBase asgNode, Ontology ont) {
         Ontology.Accessor $ont = new Ontology.Accessor(ont);
 
-        String pType = getPropertyType(asgNode.geteBase());
+        String pType = prop.getpType();
 
-        //Need to traverse the tree bottom-up, and find the first parent entity element.
+        return $ont.$property(Integer.parseInt(pType));
 
-        Queue<AsgEBase> parents = new LinkedList<>(asgNode.getParents());
-
-        while (!parents.isEmpty()) {
-
-            AsgEBase p = parents.poll();
-
-            if (asgNode.geteBase() instanceof EProp && p.geteBase() instanceof ETyped) {
-                return $ont.$property(Integer.parseInt(pType));
-            } else if (asgNode.geteBase() instanceof RelProp && p.geteBase() instanceof Rel) {
-                return $ont.$property(Integer.parseInt(pType));
-            } else {
-                parents.addAll(p.getParents());
-            }
-        }
-
-        return null;
     }
 
-    private CypherCondition buildPropertyCondition(AsgEBase asgNode,Property property, CypherStatement cypherStatement, String pathTag, Ontology ont) {
+    private CypherCondition buildPropertyCondition(AsgEBase asgNode,Constraint constraint, Property property, CypherStatement cypherStatement, String pathTag) {
 
         CypherElement lastElement = cypherStatement.getPath(pathTag).getElementFromEnd(1);
 
-        Constraint constraint = getConstraint(asgNode.geteBase());
-
         String val = property.getType().equals("int") || constraint.getExpr() == null ?
-                                                            (String)constraint.getExpr() :
-                                                            "'" + constraint.getExpr() + "'";
+                                                            String.valueOf(constraint.getExpr()) :
+                                                            "'" + String.valueOf(constraint.getExpr()) + "'";
 
-        Optional any = asgNode.getParents()
-                              .stream()
-                              .filter(p -> ((AsgEBase)p).geteBase() instanceof Quant1 ||
-                                           ((AsgEBase) p).geteBase() instanceof Quant2).findAny();
+        Optional<AsgEBase> any = asgNode.getParents()
+                                        .stream()
+                                        .filter(p -> ((AsgEBase)p).geteBase() instanceof Quant1 ||
+                                                     ((AsgEBase) p).geteBase() instanceof Quant2).findAny();
 
         CypherCondition.Condition condType = CypherCondition.Condition.AND;
 
         if(any.isPresent()) {
 
-            if(any.get() instanceof  Quant1) {
-                if (((Quant1) any.get()).getqType().equals("all")) {
+            if(any.get().geteBase() instanceof  Quant1) {
+                if (((Quant1) any.get().geteBase()).getqType().equals(QuantType.all)) {
                     condType = CypherCondition.Condition.AND;
                 } else {
                     condType = CypherCondition.Condition.OR;
                 }
             }
-            if(any.get() instanceof  Quant2) {
-                if (((Quant2) any.get()).getqType().equals("all")) {
+            if(any.get().geteBase() instanceof  Quant2) {
+                if (((Quant2) any.get().geteBase()).getqType().equals(QuantType.all)) {
                     condType = CypherCondition.Condition.AND;
                 } else {
                     condType = CypherCondition.Condition.OR;
