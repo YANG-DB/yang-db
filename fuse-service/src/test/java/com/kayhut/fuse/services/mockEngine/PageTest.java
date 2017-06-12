@@ -138,7 +138,7 @@ public class PageTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
 
@@ -188,7 +188,7 @@ public class PageTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
         //get cursor page resource by id
@@ -316,7 +316,7 @@ public class PageTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
 
@@ -339,7 +339,7 @@ public class PageTest {
                         return false;
                     }
                 }))
-                .statusCode(302)
+                .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
 
