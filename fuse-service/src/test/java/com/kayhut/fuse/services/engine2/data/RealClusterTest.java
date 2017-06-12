@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -36,7 +37,7 @@ public class RealClusterTest {
     public void setup() throws IOException {
         //fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
-        fuseClient = new FuseClient("http://192.168.1.118:8888/fuse");
+        fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
     }
