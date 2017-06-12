@@ -153,7 +153,17 @@ public class RealClusterTest {
         int x = 5;
     }
 
+    /**
+     * Plan: {plan=[11:12:9:10:6:8:4:5:1:3], cost=EntityOp(Asg(ETyped(11))):EntityFilterOp(Asg(EPropGroup(12))):RelationOp(Asg(Rel(9))):RelationFilterOp(Asg(RelPropGroup(10))):EntityOp(Asg(ETyped(6))):EntityFilterOp(Asg(EPropGroup(8))):RelationOp(Asg(Rel(4))):RelationFilterOp(Asg(RelPropGroup(5))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(3))) >> Cost{cost=1000000.0}}
+     * Traversal: [GraphStep(vertex,[])@[C], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Dragon)])])), name.raw(name), power.raw(power)]), VertexStep(OUT,[promise],edge)@[C-->B], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~label.eq(freeze)])], [HasStep([direction.eq(OUT)])], [HasStep([startDate.lt(Sat Jul 01 03:00:00 IDT 2000)])], [HasStep([entityB.type.within([Dragon])])], [HasStep([entityB.name.eq(gideon)])]])]))]), EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge), HasStep([name.raw(name)]), EdgeOtherVertexStep@[B], VertexStep(OUT,[promise],edge)@[B-->A], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~label.eq(fire)])], [HasStep([direction.eq(IN)])], [HasStep([timestamp.and(gte(Wed Apr 05 02:00:00 IST 2000), lt(Fri May 05 03:00:00 IDT 2000))])], [HasStep([entityB.type.within([Dragon])])], [HasStep([entityB.name.eq(lenora)])]])]))]), EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge), HasStep([name.raw(name)]), EdgeOtherVertexStep@[A], PathStep]
+     * ES-Query:
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws ParseException
+     */
     @Test
+    @Ignore
     public void test5() throws IOException, InterruptedException, ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

@@ -8,14 +8,12 @@ import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.util.StatUtil;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import com.kayhut.fuse.unipop.schemaProviders.*;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.transport.TransportClient;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 22-May-17.
@@ -72,8 +70,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                                                                              Class<T> tp) {
         List<Statistics.HistogramStatistics<T>> histograms = new ArrayList<>();
 
-        String fieldType = graphElementPropertySchema.getType();
-        String statTypeName = getStatTypeName(fieldType);
+        String statTypeName = getStatTypeName(graphElementPropertySchema);
 
 
         Map<String, List<Statistics.BucketInfo>> fieldStatisticsPerIndex = elasticStatProvider.getFieldStatisticsPerIndex(
@@ -82,8 +79,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 statTypeName,
                 relevantIndices,
                 Collections.singletonList(graphElementSchema.getType()),
-                Collections.singletonList(graphElementPropertySchema.getName())
-        );
+                Collections.singletonList(((graphElementPropertySchema instanceof GraphRedundantPropertySchema) ?
+                        ((GraphRedundantPropertySchema) graphElementPropertySchema).getPropertyRedundantName()
+                        : graphElementPropertySchema.getName())));
 
         for (Map.Entry<String, List<Statistics.BucketInfo>> entry : fieldStatisticsPerIndex.entrySet()) {
             List<Statistics.BucketInfo> sortedBuckets = Stream.ofAll(entry.getValue())
@@ -94,14 +92,48 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
             ));
         }
 
-        return Statistics.HistogramStatistics.combine(histograms);
+        Statistics.HistogramStatistics<T> combine = Statistics.HistogramStatistics.combine(histograms);
+        return transform(graphElementPropertySchema.getType(), combine);
+    }
+
+    /**
+     * convert to specific type boundaries
+     *
+     * @param fieldType
+     * @param statistics
+     * @param <T>
+     * @return
+     */
+    private <T extends Comparable<T>> Statistics.HistogramStatistics<T> transform(String fieldType, Statistics.HistogramStatistics<T> statistics) {
+        switch (fieldType) {
+            case STRING: { //String
+                break;
+            }
+            case INT: { //Numeric
+                break;
+            }
+            case ENUM: { //Enum
+                break;
+            }
+            case DATE: { //Enum ? string //todo decide?
+                List<Statistics.BucketInfo> collect = statistics.getBuckets().stream().map(b -> {
+                    long lowerBound = ((Double) b.getLowerBound()).longValue();
+                    long higherBound = ((Double) b.getHigherBound()).longValue();
+                    return new Statistics.BucketInfo<>(b.getTotal(), b.getCardinality(), new Date(lowerBound), new Date(higherBound));
+                }).collect(Collectors.toList());
+                statistics = new Statistics.HistogramStatistics(collect);
+                break;
+            }
+        }
+
+        return statistics;
     }
 
     @Override
     public long getGlobalSelectivity(GraphEdgeSchema graphEdgeSchema,
                                      Rel.Direction direction,
                                      List<String> relevantIndices) {
-        long globalSelectivity = 0 ;
+        long globalSelectivity = 0;
         List<Statistics.BucketInfo> buckets = elasticStatProvider.getEdgeGlobalStatistics(
                 elasticClient,
                 statConfig.getStatIndexName(),
@@ -110,11 +142,11 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 Collections.singletonList(graphEdgeSchema.getType()),
                 Collections.singletonList(FIELD_NAME_EDGE),
                 convertDirection(direction)
-            );
+        );
         if (!buckets.isEmpty()) {
             Long cardinality = buckets.get(0).getCardinality();
             Long total = buckets.get(0).getTotal();
-            globalSelectivity = (long) (total / (double)cardinality);
+            globalSelectivity = (long) (total / (double) cardinality);
         }
 
         return globalSelectivity;
@@ -177,9 +209,17 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         return bucketInfo;
     }
 
-    private String getStatTypeName(String fieldType) {
+    private String getStatTypeName(GraphElementPropertySchema propertySchema) {
+        String p = propertySchema.getName();
+        if(propertySchema instanceof GraphRedundantPropertySchema)
+            p = ((GraphRedundantPropertySchema) propertySchema).getPropertyRedundantName();
+
+        if (p.endsWith(".type"))
+            return statConfig.getStatTermTypeName();
+
         String statTypeName;
-        switch (fieldType) {
+
+        switch (propertySchema.getType()) {
             case STRING: { //String
                 statTypeName = statConfig.getStatStringTypeName();
                 break;
@@ -193,11 +233,11 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 break;
             }
             case DATE: { //Enum ? string //todo decide?
-                statTypeName = statConfig.getStatTermTypeName();
+                statTypeName = statConfig.getStatNumericTypeName();
                 break;
             }
             default:
-                throw new IllegalArgumentException("Field type is missing/invalid" + fieldType);
+                throw new IllegalArgumentException("Field type is missing/invalid" + propertySchema.getType());
         }
         return statTypeName;
     }
@@ -214,7 +254,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
     //endregion
 
-   //region Fields
+    //region Fields
     private final StatConfig statConfig;
     private final ElasticStatProvider elasticStatProvider;
     private final TransportClient elasticClient;
