@@ -7,7 +7,7 @@ if [ $COUNT = 1 ]; then
 	sudo docker rm -f fuse-engine
 fi
 
-sudo docker run -d -p 3000:3000 --name fuse-engine --restart always nexuss.westeurope.cloudapp.azure.com:5000/fuse-engine:latest
+sudo docker run -d -p 8888:8888 --name fuse-engine --restart always nexuss.westeurope.cloudapp.azure.com:5000/fuse-engine:latest
 
 COUNT=`sudo docker images | grep none | awk '{ print $3 }'`
 if [ ! -z "$COUNT" ]; then
