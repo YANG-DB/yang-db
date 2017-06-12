@@ -52,9 +52,9 @@ public class IngestKnowsToES {
                         .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("startDate", CsvSchema.ColumnType.STRING)
-                        .addColumn("direction", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.type", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.type", CsvSchema.ColumnType.STRING)
+                        .addColumn("direction", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.firstName", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.firstName", CsvSchema.ColumnType.STRING)
                         .build()
@@ -78,7 +78,7 @@ public class IngestKnowsToES {
                 Map<String, Object> entityB = new HashMap<>();
                 entityB.put("type", fire.remove("entityB.type"));
                 entityB.put("id", entityB.get("type").toString() + "_" + fire.remove("entityB.id"));
-                entityA.put("firstName", fire.remove("entityB.firstName"));
+                entityB.put("firstName", fire.remove("entityB.firstName"));
 
                 fire.put("entityA", entityA);
                 fire.put("entityB", entityB);

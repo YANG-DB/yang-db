@@ -99,9 +99,9 @@ public class TimePartitionFile {
                         .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("startDate", CsvSchema.ColumnType.STRING)
-                        .addColumn("direction", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.type", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.type", CsvSchema.ColumnType.STRING)
+                        .addColumn("direction", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.firstName", CsvSchema.ColumnType.STRING)
                         .addColumn("entityB.firstName", CsvSchema.ColumnType.STRING)
                         .build(),

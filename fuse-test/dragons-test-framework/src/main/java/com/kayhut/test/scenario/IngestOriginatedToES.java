@@ -28,7 +28,7 @@ import static com.kayhut.test.scenario.ETLUtils.getClient;
 public class IngestOriginatedToES {
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         TransportClient client = getClient();
-        loadHorses(client);
+        //loadHorses(client);
         loadDragons(client);
     }
 

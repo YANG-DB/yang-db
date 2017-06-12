@@ -83,7 +83,7 @@ public class IngestMemberOfToES {
                 entityB.put("type", fire.remove("entityB.type"));
                 entityB.put("id", entityB.get("type").toString() + "_" + fire.remove("entityB.id"));
                 entityB.put("name", fire.remove("entityB.name"));
-                entityA.put("firstName", fire.remove("entityB.firstName"));
+                entityB.put("firstName", fire.remove("entityB.firstName"));
 
                 fire.put("entityA", entityA);
                 fire.put("entityB", entityB);
