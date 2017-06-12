@@ -20,6 +20,8 @@ import static com.kayhut.fuse.model.Utils.readJsonFile;
  */
 public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutProviderFactory {
 
+    public static final String STRING = "string";
+
     //region Constructors
     public DragonsOntologyGraphLayoutProviderFactory() throws IOException {
         this("DragonsGraphLayoutProviderFactory.json");
@@ -74,7 +76,7 @@ public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutPro
 
         @Override
         public String getType() {
-            return "String";
+            return STRING;
         }
 
         @Override

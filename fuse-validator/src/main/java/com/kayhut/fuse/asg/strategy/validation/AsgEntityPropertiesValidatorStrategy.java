@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.sun.javafx.binding.StringFormatter;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
 
     public static final String ERROR_1 = "No Parent Element found  ";
     public static final String ERROR_2 = "Property type mismatch parent entity";
+    public static final String ERROR_3 = "No %s type found for constraint %s";
 
     @Override
     public ValidationContext apply(AsgQuery query, AsgStrategyContext context) {
@@ -80,6 +82,21 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
             if (types.toJavaStream().noneMatch(p -> p == pType)) {
                 errors.add(ERROR_2 + ":" + print(base, property));
             }
+        }
+
+        //interval type
+        if(property.getCon().getiType()==null) {
+            errors.add(String.format(ERROR_3 ," interval type ",property));
+        }
+
+        //expresion
+        if(property.getCon().getExpr()==null) {
+            errors.add(String.format(ERROR_3 ," expression ",property));
+        }
+
+        //operation
+        if(property.getCon().getOp()==null) {
+            errors.add(String.format(ERROR_3 ," operation ",property));
         }
         return errors;
     }

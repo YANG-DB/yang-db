@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 public abstract class TestUtils {
 
     public static Ontology loadOntology(String name) throws IOException {
-        String query = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("catalog/" + name));
+        String query = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream("ontology/" + name));
         return new ObjectMapper().readValue(query, Ontology.class);
     }
 

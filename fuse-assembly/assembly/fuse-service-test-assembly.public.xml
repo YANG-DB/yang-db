@@ -30,7 +30,7 @@
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/resources/ontology</directory>
-            <outputDirectory>catalog</outputDirectory>
+            <outputDirectory>ontology</outputDirectory>
             <includes>
                 <include>Dragons.json</include>
             </includes>

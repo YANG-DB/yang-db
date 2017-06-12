@@ -72,6 +72,17 @@
       "types": [
         "own"
       ]
+    },
+    {
+      "indices": [
+        "pr200001","pr200002","pr200003",
+        "pr200004","pr200005", "pr200006",
+        "pr200007","pr200008","pr200009",
+        "pr200010", "pr200011","pr200012"
+      ],
+      "types": [
+        "memberOf", "know"
+      ]
     }
   ],
   "types": [
@@ -998,7 +1009,7 @@
           }
         },
         {
-          "field": "entityB.name",
+          "field": "entityB.firstName",
           "histogram": {
             "histogramType": "string",
             "prefixSize": 3,
@@ -1080,6 +1091,16 @@
         },
         {
           "field": "entityB.name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 3,
+            "interval": 10,
+            "firstCharCode": "97",
+            "numOfChars": 26
+          }
+        },
+        {
+          "field": "entityB.firstName",
           "histogram": {
             "histogramType": "string",
             "prefixSize": 3,

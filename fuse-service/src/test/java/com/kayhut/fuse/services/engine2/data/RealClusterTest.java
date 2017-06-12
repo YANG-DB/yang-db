@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.TimeZone;
 
 import static com.kayhut.test.data.DragonsOntology.*;
@@ -30,6 +29,7 @@ import static java.util.Collections.singletonList;
 /**
  * Created by Roman on 07/06/2017.
  */
+@Ignore
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
@@ -155,7 +155,6 @@ public class RealClusterTest {
     }
 
     @Test
-    @Ignore
     public void test5() throws IOException, InterruptedException, ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

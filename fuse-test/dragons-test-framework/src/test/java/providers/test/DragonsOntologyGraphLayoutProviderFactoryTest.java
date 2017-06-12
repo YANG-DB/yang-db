@@ -23,7 +23,7 @@ public class DragonsOntologyGraphLayoutProviderFactoryTest {
         Optional<GraphRedundantPropertySchema> property = layoutProvider.getRedundantProperty("Freez", new DragonsOntologyGraphLayoutProviderFactory.DragonLayout("name", "name"));
 
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
-        Assert.assertEquals(property.get().getType(),"String");
+        Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"name");
     }
 
@@ -34,12 +34,12 @@ public class DragonsOntologyGraphLayoutProviderFactoryTest {
         Optional<GraphRedundantPropertySchema> property = layoutProvider.getRedundantProperty("Fire", new DragonsOntologyGraphLayoutProviderFactory.DragonLayout("color", "color"));
 
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.color");
-        Assert.assertEquals(property.get().getType(),"String");
+        Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"color");
 
         property = layoutProvider.getRedundantProperty("Fire", new DragonsOntologyGraphLayoutProviderFactory.DragonLayout("name", "name"));
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
-        Assert.assertEquals(property.get().getType(),"String");
+        Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"name");
     }
 
