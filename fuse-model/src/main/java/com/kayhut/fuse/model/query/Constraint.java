@@ -53,14 +53,12 @@ public class Constraint {
     //region Fields
     private ConstraintOp op;
     private Object expr;
-    private String iType;
+    //default - inclusive
+    private String iType = "[]";
     //endregion
 
-    public static Constraint of(ConstraintOp op,Object exp) {
-        Constraint constraint = new Constraint();
-        constraint.setExpr(exp);
-        constraint.setOp(op);
-        return constraint;
+    public static Constraint of(ConstraintOp op, Object exp) {
+        return of(op,exp,"[]");
     }
 
     public static Constraint of(ConstraintOp op,Object exp, String iType) {

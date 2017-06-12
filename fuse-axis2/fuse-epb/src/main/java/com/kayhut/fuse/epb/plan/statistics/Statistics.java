@@ -96,6 +96,9 @@ public interface Statistics {
 
         public List<BucketInfo<T>> findBucketsAbove(T value, boolean inclusive){
             int i = 0;
+            if(buckets.isEmpty())
+                return Collections.emptyList();
+
             BucketInfo<T> currentBucket = buckets.get(i);
             while(i < buckets.size() && ((currentBucket.getHigherBound().compareTo(value)<=0  && !currentBucket.isSingleValue())||
                                         (currentBucket.isSingleValue() &&
@@ -109,6 +112,8 @@ public interface Statistics {
         }
 
         public List<BucketInfo<T>> findBucketsBelow(T value, boolean inclusive){
+            if(buckets.isEmpty())
+                return Collections.emptyList();
             int i = buckets.size()-1;
             BucketInfo<T> currentBucket = buckets.get(i);
             while(i >=0 && ((currentBucket.getLowerBound().compareTo(value) > 0 && inclusive) || (currentBucket.getLowerBound().compareTo(value) >= 0 && !inclusive))){

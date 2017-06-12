@@ -1,5 +1,6 @@
 package com.kayhut.fuse.executor.ontology;
 
+import com.google.inject.Inject;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
@@ -9,6 +10,7 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
  */
 public class OntologyGraphElementSchemaProviderFactory implements GraphElementSchemaProviderFactory {
     //region Constructors
+    @Inject
     public OntologyGraphElementSchemaProviderFactory(
             PhysicalIndexProviderFactory physicalIndexProviderFactory,
             GraphLayoutProviderFactory graphLayoutProviderFactory) {
