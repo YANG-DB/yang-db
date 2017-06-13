@@ -117,6 +117,22 @@ public class AsgEntityPropertiesValidationStrategyTest {
         Assert.assertFalse(validationContext.valid());
         Assert.assertTrue(validationContext.errors()[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_2));
     }
+    @Test
+    public void testNotValidPropConstraintIntervalTypeQuery() {
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
+                .next(typed(1, OntologyTestUtils.PERSON.type))
+                .next(eProp(10, EProp.of(FIRST_NAME.type,11,of(eq, "Moshe",null))))
+                .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
+                        RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                .next(unTyped(3, OntologyTestUtils.HORSE.type, OntologyTestUtils.DRAGON.type))
+                .next(eProp(12, EProp.of(FIRST_NAME.type,13,of(eq, "bubu"))))
+                .build();
+
+        AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
+        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationContext.valid());
+        Assert.assertEquals(validationContext.errors().length,2);
+    }
 
 
 }

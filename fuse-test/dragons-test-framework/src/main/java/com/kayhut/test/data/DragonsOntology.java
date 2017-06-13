@@ -67,57 +67,57 @@ public class DragonsOntology {
      * #Owns Header
      * id,Source,Target,Since,Till
      */
-    public static final RelationshipType OWN = new RelationshipType("owns", 101, true)
-            .withProperty(ID.type, START_DATE.type, END_DATE.type);
+    public static final RelationshipType OWN = new RelationshipType("own", 101, true)
+            .withProperty(START_DATE.type, END_DATE.type);
 
     /**
      * #Knows Header
      * id,Source,Target,Since
      */
     public static final RelationshipType KNOW = new RelationshipType("know", 108, true)
-            .withProperty(ID.type, START_DATE.type);
+            .withProperty(START_DATE.type);
 
     /**
      * #MemberOf Header
      * id,Source,Target,Since,Till
      */
     public static final RelationshipType MEMBER_OF = new RelationshipType("memberOf", 102, true)
-            .withProperty(ID.type, START_DATE.type, END_DATE.type);
+            .withProperty(START_DATE.type, END_DATE.type);
 
     /**
      * #Fires Header
      * id,source,target,date,temperature
      */
     public static final RelationshipType FIRE = new RelationshipType("fire", 103, true)
-            .withProperty(ID.type, DATE.type, TEMPERATURE.type);
+            .withProperty(TIMESTAMP.type, TEMPERATURE.type);
 
     /**
      * #Freeze Header
      * id,Source,Target,Since,Till
      */
     public static final RelationshipType FREEZE = new RelationshipType("freeze", 104, true)
-            .withProperty(ID.type, START_DATE.type, END_DATE.type);
+            .withProperty(START_DATE.type, END_DATE.type);
 
     /**
      * #Originiated Header
      * id,Source,Target,Since
      */
-    public static final RelationshipType ORIGIN = new RelationshipType("originated", 105, true)
-            .withProperty(ID.type, START_DATE.type);
+    public static final RelationshipType ORIGIN = new RelationshipType("originatedIn", 105, true)
+            .withProperty(START_DATE.type);
 
      /**
      * #SubjectOf Header
      *   id,Source,Target,Since
      */
     public static final RelationshipType SUBJECT = new RelationshipType("subjectOf", 106, true)
-            .withProperty(ID.type,START_DATE.type);
+            .withProperty(START_DATE.type);
 
     /**
      * #Registered Header
      * id,Source,Target,Since
      */
-    public static final RelationshipType REGISTERED = new RelationshipType("registered", 107, true)
-            .withProperty(ID.type,START_DATE.type);
+    public static final RelationshipType REGISTERED = new RelationshipType("registeredIn", 107, true)
+            .withProperty(START_DATE.type);
 
 
     public static List<RelationshipType> relationships = Arrays.asList(
@@ -162,7 +162,7 @@ public class DragonsOntology {
     public static class DRAGON implements Entity {
         public static String name = "Dragon";
         public static int type = 2;
-        public static List<Property> propertyList = Arrays.asList(ID, NAME, POWER, GENDER, COLOR);
+        public static List<Property> propertyList = Arrays.asList(NAME, POWER, GENDER, COLOR);
 
         public static List<RelationshipType> relationshipList = Arrays.asList(
                 REGISTERED.addPair(new EPair(type, GUILD.type)),
@@ -198,7 +198,7 @@ public class DragonsOntology {
     public static class HORSE implements Entity {
         public static String name = "Horse";
         public static int type = 3;
-        public static List<Property> propertyList = Arrays.asList(ID, NAME, WEIGHT, MAX_SPEED, DISTANCE);
+        public static List<Property> propertyList = Arrays.asList(NAME, WEIGHT, MAX_SPEED, DISTANCE);
 
         public static List<RelationshipType> relationshipList = Collections.singletonList(
                 REGISTERED.addPair(new EPair(type, GUILD.type)));
@@ -231,7 +231,7 @@ public class DragonsOntology {
     public static class GUILD implements Entity {
         public static String name = "Guild";
         public static int type = 4;
-        public static List<Property> propertyList = Arrays.asList(ID, NAME, DESCRIPTION, ICON_ID, URL, ESTABLISH_DATE);
+        public static List<Property> propertyList = Arrays.asList(NAME, DESCRIPTION, ICON_ID, URL, ESTABLISH_DATE);
 
         public static List<RelationshipType> relationshipList = Collections.singletonList(
                 REGISTERED.addPair(new EPair(type, KINGDOM.type)));
@@ -265,7 +265,7 @@ public class DragonsOntology {
     public static class KINGDOM implements Entity {
         public static String name = "Kingdom";
         public static int type = 5;
-        public static List<Property> propertyList = Arrays.asList(ID, NAME, KING, QUEEN, INDEPENDENCE_DAY, FUNDS);
+        public static List<Property> propertyList = Arrays.asList(NAME, KING, QUEEN, INDEPENDENCE_DAY, FUNDS);
 
         @Override
         public String name() {
@@ -297,7 +297,7 @@ public class DragonsOntology {
         public static int type = 1;
 
 
-        public static List<Property> propertyList = Arrays.asList(ID, FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, DEATH_DATE, HEIGHT);
+        public static List<Property> propertyList = Arrays.asList(FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, DEATH_DATE, HEIGHT);
 
         public static List<RelationshipType> relationshipList = Arrays.asList(
                 KNOW.addPair(new EPair(type, PERSON.type)),

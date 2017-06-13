@@ -17,11 +17,13 @@ import static com.kayhut.fuse.model.Utils.readJsonFile;
  */
 public class SimpleOntologyProvider implements OntologyProvider {
     public static final String DRAGONS = "Dragons";
+    public static final String ONTOLOGY = "ontology";
+
     private Map<String,Ontology> ontologyMap;
 
     public SimpleOntologyProvider() throws IOException {
         ontologyMap = new HashMap<>();
-        Ontology ontology = asObject(readJsonFile("catalog/"+DRAGONS+".json"), Ontology.class);
+        Ontology ontology = asObject(readJsonFile(ONTOLOGY + "/" +DRAGONS+".json"), Ontology.class);
         ontology = OntologyFinalizer.finalize(ontology);
         ontologyMap.put(DRAGONS, ontology);
     }

@@ -26,14 +26,15 @@ public class StatConfig {
         this.statGlobalTypeName = config.getString("elasticsearch.stat.type.global.name");
         this.statCountFieldName = config.getString("elasticsearch.stat.count.field");
         this.statCardinalityFieldName = config.getString("elasticsearch.stat.cardinality.field");
-        this.statFieldTermName = config.getString("elasticsearch.stat.field.term.name");
-        this.statFieldNumericLowerName = config.getString("elasticsearch.stat.field.numericLowerName.name");
-        this.statFieldNumericUpperName = config.getString("elasticsearch.stat.field.numericUpperName.name");
-        this.statFieldStringLowerName = config.getString("elasticsearch.stat.field.stringLowerName.name");
-        this.statFieldStringUpperName = config.getString("elasticsearch.stat.field.stringUpperName.name");
+        //Hardcoded
+        this.statFieldTermName = "term" ;
+        this.statFieldNumericLowerName = "lower_bound_numeric";
+        this.statFieldNumericUpperName = "upper_bound_numeric";
+        this.statFieldStringLowerName = "lower_bound_string";
+        this.statFieldStringUpperName = "upper_bound_string";
 
-        Optional<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
-        statJsonConfiguration.ifPresent(statContainer -> this.statContainer = statContainer);
+//        Optional<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
+//        statJsonConfiguration.ifPresent(statContainer -> this.statContainer = statContainer);
     }
 
     //Used only in the Step Builder

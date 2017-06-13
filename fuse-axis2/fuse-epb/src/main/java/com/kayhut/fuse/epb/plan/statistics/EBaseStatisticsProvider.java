@@ -264,8 +264,12 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 double count = 0;
                 for(T v : valueList){
                     bucketContaining = histogramStatistics.findBucketContaining(v);
-                    total += ((double)bucketContaining.get().getTotal()) / bucketContaining.get().getCardinality();
-                    count += 1;
+                    if(bucketContaining.isPresent()) {
+                        total += ((double) bucketContaining.get().getTotal()) / bucketContaining.get().getCardinality();
+                        count += 1;
+                    } else {
+                        System.out.println("Bucket not found for "+v);
+                    }
                 }
                 return new Statistics.SummaryStatistics(total,count);
             case notInSet:
@@ -469,8 +473,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 switch(relProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();
-                        timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
-                        timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
+                        if(!values.isEmpty()) {
+                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("[") ? ConstraintOp.ge : ConstraintOp.gt, values.get(0))));
+                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("]") ? ConstraintOp.le : ConstraintOp.lt, values.get(1))));
+                        }
                         break;
                     case inSet:
                         values = (List<Date>)relProp.getCon().getExpr();

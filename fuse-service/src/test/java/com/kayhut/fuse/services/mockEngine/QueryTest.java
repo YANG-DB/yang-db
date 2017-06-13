@@ -119,8 +119,8 @@ public class QueryTest {
                     try {
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         Map data = (Map) contentResponse.getData();
-                        assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
-                        assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
+                        assertTrue(data.get("resourceUrl") == null);
+                        assertTrue(data.get("cursorStoreUrl") == null);
                         Map errorContent = (Map) data.get("error");
                         assertTrue(errorContent.get("errorCode").toString().endsWith(Query.class.getSimpleName()));
                         assertTrue(errorContent.get("errorDescription").toString().contains("Ontology Contains two adjacent Entities without relation inside"));
@@ -130,7 +130,7 @@ public class QueryTest {
                         return false;
                     }
                 }))
-                .statusCode(201)
+                .statusCode(500)
                 .contentType("application/json;charset=UTF-8");
 
     }

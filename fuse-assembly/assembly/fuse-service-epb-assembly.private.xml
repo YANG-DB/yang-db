@@ -5,7 +5,7 @@
     <formats>
         <format>dir</format>
     </formats>
-    <baseDirectory>fuse-service-test-private</baseDirectory>
+    <baseDirectory>fuse-service-epb-private</baseDirectory>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
@@ -47,7 +47,7 @@
 
     <files>
         <file>
-            <source>${project.basedir}/resources/applicationConfig/application.engine2.m1.test.private.conf</source>
+            <source>${project.basedir}/resources/applicationConfig/application.engine2.m1.epb.private.conf</source>
             <outputDirectory>./config</outputDirectory>
             <destName>application.conf</destName>
         </file>
