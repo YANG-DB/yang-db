@@ -35,9 +35,9 @@ import static java.util.Collections.singletonList;
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
-        //fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
+        fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        //fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
     }
@@ -256,6 +256,39 @@ public class RealClusterTest {
                         Constraint.of(ConstraintOp.gt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
                 new ETyped(15, "D", DRAGON.type,
                         Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 0, 0)))
+                .build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println(elapsed);
+    }
+
+    @Test
+    @Ignore
+    public void test8() throws IOException, InterruptedException, ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", DRAGON.type, singletonList(Integer.toString(FIRST_NAME.type)), 2, 0),
+                new Rel(2, OWN.getrType(), Rel.Direction.L, null, 3, 0),
+                new ETyped(3, "B", PERSON.type, singletonList(Integer.toString(NAME.type)), 0, 0)))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
