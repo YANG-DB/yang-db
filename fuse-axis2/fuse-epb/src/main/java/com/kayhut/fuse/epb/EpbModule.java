@@ -64,7 +64,7 @@ public class EpbModule extends ModuleBase {
 
         binder.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>(){})
                 .annotatedWith(Names.named("GlobalPlanSelector"))
-                .toInstance(new AllCompletePlanSelector<>());
+                .toInstance(new CheapestPlanSelector());
 
         binder.bind(new TypeLiteral<PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery>>(){})
                 .annotatedWith(Names.named("LocalPlanSelector"))
