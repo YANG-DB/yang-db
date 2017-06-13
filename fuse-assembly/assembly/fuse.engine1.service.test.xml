@@ -16,16 +16,14 @@
                 <include>NOTICE*</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory>${project.basedir}/resources/ontology</directory>
-            <outputDirectory>catalog</outputDirectory>
-            <includes>
-                <include>Dragons.json</include>
-            </includes>
-        </fileSet>
     </fileSets>
 
     <files>
+        <file>
+            <source>${project.basedir}/resources/ontology/Dragons_engine1.json</source>
+            <outputDirectory>./ontology</outputDirectory>
+            <destName>Dragons.json</destName>
+        </file>
         <file>
             <source>${project.basedir}/resources/applicationConfig/application.engine1.m1.test.conf</source>
             <outputDirectory>./config</outputDirectory>
