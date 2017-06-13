@@ -5,7 +5,7 @@
     <formats>
         <format>dir</format>
     </formats>
-    <baseDirectory>fuse-service-test-public</baseDirectory>
+    <baseDirectory>fuse-engine2-service-test-dfs-private</baseDirectory>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
@@ -47,16 +47,12 @@
 
     <files>
         <file>
-            <source>${project.basedir}/resources/applicationConfig/application.engine2.m1.test.public.conf</source>
+            <source>${project.basedir}/resources/applicationConfig/application.engine2.m1.test.dfs.private.conf</source>
             <outputDirectory>./config</outputDirectory>
             <destName>application.conf</destName>
         </file>
         <file>
             <source>${project.basedir}/resources/scripts/start-fuse-service.bat</source>
-            <outputDirectory>./</outputDirectory>
-        </file>
-        <file>
-            <source>${project.basedir}/resources/scripts/start-fuse-service-debug.bat</source>
             <outputDirectory>./</outputDirectory>
         </file>
         <file>

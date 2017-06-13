@@ -37,7 +37,7 @@ public class AsgQuant1PropertiesGroupingStrategy implements AsgStrategy {
                     if (ePropsGroupAsgChildren.isEmpty()) {
                         EPropGroup ePropGroup = new EPropGroup();
                         AsgEBase<? extends EBase> ePropGroupAsgEbase = new AsgEBase<>(ePropGroup);
-                        ePropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get());
+                        ePropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
                         quant.addNextChild(ePropGroupAsgEbase);
                     }
                 }

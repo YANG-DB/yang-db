@@ -12,7 +12,7 @@ public class AsgValidatorStrategyRegistrarImpl implements AsgValidatorStrategyRe
                 new AsgCycleValidatorStrategy(),
                 new AsgEntityPropertiesValidatorStrategy(),
                 new AsgOntologyEntityValidatorStrategy(),
-                new AsgOntologyRelValidatorStrategy(),
+               //new AsgOntologyRelValidatorStrategy(),
                 new AsgRelPropertiesValidatorStrategy(),
                 new AsgStartEntityValidatorStrategy(),
                 new AsgStepsValidatorStrategy()
