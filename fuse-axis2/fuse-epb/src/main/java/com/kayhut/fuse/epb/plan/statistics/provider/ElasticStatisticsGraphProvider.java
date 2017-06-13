@@ -144,9 +144,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 convertDirection(direction)
         );
         if (!buckets.isEmpty()) {
-            Long cardinality = buckets.get(0).getCardinality();
-            Long total = buckets.get(0).getTotal();
-            globalSelectivity = (long) (total / (double) cardinality);
+            long total = buckets.stream().mapToLong(b -> b.getTotal()).sum();
+            double cardinality = buckets.stream().mapToLong(b -> b.getCardinality()).average().getAsDouble();
+            globalSelectivity = (long) (total /  cardinality);
         }
 
         return globalSelectivity;
