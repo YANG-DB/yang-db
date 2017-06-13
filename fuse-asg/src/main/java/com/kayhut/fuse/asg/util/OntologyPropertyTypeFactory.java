@@ -12,21 +12,80 @@ public class OntologyPropertyTypeFactory {
     //region Constructor
     public OntologyPropertyTypeFactory() {
         this.map = new HashMap<>() ;
-        this.map.put("string", String::valueOf);
-        this.map.put("int", (exp) -> (new Long((Integer) exp)).longValue());
-        this.map.put("float", (exp) ->  ((Double) exp).doubleValue());
-        this.map.put("double", (exp) ->  ((Double) exp).doubleValue());
-        this.map.put("date", (exp) -> ((exp instanceof Long || exp instanceof Integer) ? new Date(Long.parseLong(exp.toString())) : exp)); //Supporting both conversion from Int & Long To Date
+        this.map.put("string", new StringFunction());
+        this.map.put("int", new LongFunction());
+        this.map.put("float", new DoubleFunction());
+        this.map.put("double", new DoubleFunction());
+        this.map.put("date", new DateFunction());
     }
     //endregion
 
     //region Public Methods
     public Object supply(Property prop, Object exp) {
-        return this.map.get(prop.getType()).apply(exp);
+        Function<Object, Object> tranformFunction = this.map.get(prop.getType());
+        if (tranformFunction != null) {
+            return tranformFunction.apply(exp);
+        }
+
+        return exp;
     }
     //endregion
 
     //region Fields
     private Map<String, Function<Object, Object>> map;
+    //endregion
+
+    //Functions
+    private class StringFunction implements Function<Object, Object> {
+
+        @Override
+        public Object apply(Object o) {
+            return o;
+        }
+    }
+
+    private class LongFunction implements Function<Object, Object> {
+
+        @Override
+        public Object apply(Object o) {
+            if (o instanceof String) {
+                return Integer.parseInt((String)o);
+            }
+
+            if (Number.class.isAssignableFrom(o.getClass())) {
+                return ((Number)o).longValue();
+            }
+
+            return o;
+        }
+    }
+
+    private class DoubleFunction implements Function<Object, Object> {
+
+        @Override
+        public Object apply(Object o) {
+            if (o instanceof String) {
+                return Double.parseDouble((String)o);
+            }
+
+            if (Number.class.isAssignableFrom(o.getClass())) {
+                return ((Number)o).doubleValue();
+            }
+
+            return o;
+        }
+    }
+
+    private class DateFunction implements Function<Object, Object> {
+
+        @Override
+        public Object apply(Object o) {
+            if (Number.class.isAssignableFrom(o.getClass())) {
+                return new Date(((Number)o).longValue());
+            }
+
+            return o;
+        }
+    }
     //endregion
 }

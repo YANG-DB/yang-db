@@ -92,10 +92,13 @@
                     <descriptors>
                         <descriptor>assembly/fuse.engine1.service.test.public.xml</descriptor>
                         <descriptor>assembly/fuse.engine1.service.test.private.xml</descriptor>
+                        <descriptor>assembly/fuse.engine1.service.test.private.private.xml</descriptor>
                         <descriptor>assembly/fuse.engine2.service.test.dfs.public.xml</descriptor>
                         <descriptor>assembly/fuse.engine2.service.test.dfs.private.xml</descriptor>
+                        <descriptor>assembly/fuse.engine2.service.test.dfs.private.private.xml</descriptor>
                         <descriptor>assembly/fuse.engine2.service.test.smartEPB.public.xml</descriptor>
                         <descriptor>assembly/fuse.engine2.service.test.smartEPB.private.xml</descriptor>
+                        <descriptor>assembly/fuse.engine2.service.test.smartEPB.private.private.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
