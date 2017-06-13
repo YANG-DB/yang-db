@@ -226,11 +226,11 @@ public class ElasticStatProvider {
     }
 
     private Double getUpperBoundNumericValueFromHit(final SearchHit hit) {
-        return ((Double) getFieldValueFromHit(hit, STAT_FIELD_NUMERIC_UPPER_NAME));
+        return ((Number) getFieldValueFromHit(hit, STAT_FIELD_NUMERIC_UPPER_NAME)).doubleValue();
     }
 
     private Double getLowerBoundNumericValueFromHit(final SearchHit hit) {
-        return ((Double) getFieldValueFromHit(hit, STAT_FIELD_NUMERIC_LOWER_NAME));
+        return ((Number) getFieldValueFromHit(hit, STAT_FIELD_NUMERIC_LOWER_NAME)).doubleValue();
     }
 
     private SearchRequestBuilder getFieldsStatisticsRequestBuilder(TransportClient client,
