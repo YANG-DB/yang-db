@@ -24,6 +24,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     private static final String DATE = "date";
     private static final String ENUM = "enum";
     private static final String INT = "int";
+    private static final String FLOAT = "float";
     private static final String STRING = "string";
 
     private static final String FIELD_NAME_TYPE = "_type";
@@ -77,6 +78,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statTypeName,
+                graphElementPropertySchema.getType(),
                 relevantIndices,
                 Collections.singletonList(graphElementSchema.getType()),
                 Collections.singletonList(((graphElementPropertySchema instanceof GraphRedundantPropertySchema) ?
@@ -159,6 +161,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
+                "string",
                 Lists.newArrayList(indices),
                 Collections.singletonList(docType),
                 Collections.singletonList(FIELD_NAME_TYPE));
@@ -225,6 +228,10 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 break;
             }
             case INT: { //Numeric
+                statTypeName = statConfig.getStatNumericTypeName();
+                break;
+            }
+            case FLOAT: { //numeric
                 statTypeName = statConfig.getStatNumericTypeName();
                 break;
             }

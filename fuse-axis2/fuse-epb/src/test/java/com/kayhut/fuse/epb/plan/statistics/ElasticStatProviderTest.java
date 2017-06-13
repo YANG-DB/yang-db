@@ -98,6 +98,7 @@ public class ElasticStatProviderTest {
         List<Statistics.BucketInfo> genderStatistics = elasticStatProvider.getFieldStatistics(statClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
+                "enum",
                 Arrays.asList(DATA_INDEX_NAME),
                 Arrays.asList(DATA_TYPE_NAME),
                 Arrays.asList(DATA_FIELD_NAME_GENDER));
@@ -120,6 +121,7 @@ public class ElasticStatProviderTest {
         List<Statistics.BucketInfo> ageStatistics = elasticStatProvider.getFieldStatistics(statClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatNumericTypeName(),
+                "float",
                 Arrays.asList(DATA_INDEX_NAME),
                 Arrays.asList(DATA_TYPE_NAME),
                 Arrays.asList(DATA_FIELD_NAME_AGE));
