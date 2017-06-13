@@ -557,6 +557,18 @@
               }
             ]
           }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "fire"
+              }
+            ]
+          }
         }
       ]
     },
@@ -638,6 +650,18 @@
               }
             ]
           }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "freeze"
+              }
+            ]
+          }
         }
       ]
     },
@@ -711,6 +735,18 @@
               },
               {
                 "term":"Kingdom"
+              }
+            ]
+          }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "subjectOf"
               }
             ]
           }
@@ -793,6 +829,18 @@
               }
             ]
           }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "originatedIn"
+              }
+            ]
+          }
         }
       ]
     },
@@ -866,6 +914,18 @@
               },
               {
                 "term": "Guild"
+              }
+            ]
+          }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "registeredIn"
               }
             ]
           }
@@ -956,6 +1016,18 @@
               }
             ]
           }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "own"
+              }
+            ]
+          }
         }
       ]
     },
@@ -1026,6 +1098,18 @@
             "buckets": [
               {
                 "term": "Person"
+              }
+            ]
+          }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "know"
               }
             ]
           }
@@ -1120,6 +1204,18 @@
               },
               {
                 "term": "Guild"
+              }
+            ]
+          }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "memberOf"
               }
             ]
           }

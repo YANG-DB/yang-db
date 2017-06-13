@@ -22,7 +22,6 @@ public interface Utils {
     ObjectMapper mapper = new ObjectMapper();
 
     static <T> T submit(EventBus eventBus, T data) {
-        System.out.println("EventBus[" + data.toString() + "]");
         eventBus.post(data);
         return data;
     }

@@ -70,6 +70,36 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test_EntityRelEntityWithFilters() throws IOException, InterruptedException {
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                new EProp(3, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "reagan")),
+                new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 5, 0),
+                new ETyped(5, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 6, 0),
+                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "erwin"))
+        )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+
+    @Test
+    @Ignore
     public void test2() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -156,7 +186,17 @@ public class RealClusterTest {
         int x = 5;
     }
 
+    /**
+     * Plan: {plan=[11:12:9:10:6:8:4:5:1:3], cost=EntityOp(Asg(ETyped(11))):EntityFilterOp(Asg(EPropGroup(12))):RelationOp(Asg(Rel(9))):RelationFilterOp(Asg(RelPropGroup(10))):EntityOp(Asg(ETyped(6))):EntityFilterOp(Asg(EPropGroup(8))):RelationOp(Asg(Rel(4))):RelationFilterOp(Asg(RelPropGroup(5))):EntityOp(Asg(ETyped(1))):EntityFilterOp(Asg(EPropGroup(3))) >> Cost{cost=1000000.0}}
+     * Traversal: [GraphStep(vertex,[])@[C], HasStep([constraint.eq(Constraint.by([HasStep([~label.eq(Dragon)])])), name.raw(name), power.raw(power)]), VertexStep(OUT,[promise],edge)@[C-->B], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~label.eq(freeze)])], [HasStep([direction.eq(OUT)])], [HasStep([startDate.lt(Sat Jul 01 03:00:00 IDT 2000)])], [HasStep([entityB.type.within([Dragon])])], [HasStep([entityB.name.eq(gideon)])]])]))]), EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge), HasStep([name.raw(name)]), EdgeOtherVertexStep@[B], VertexStep(OUT,[promise],edge)@[B-->A], HasStep([constraint.eq(Constraint.by([AndStep([[HasStep([~label.eq(fire)])], [HasStep([direction.eq(IN)])], [HasStep([timestamp.and(gte(Wed Apr 05 02:00:00 IST 2000), lt(Fri May 05 03:00:00 IDT 2000))])], [HasStep([entityB.type.within([Dragon])])], [HasStep([entityB.name.eq(lenora)])]])]))]), EdgeOtherVertexStep, VertexStep(OUT,[promiseFilter],edge), HasStep([name.raw(name)]), EdgeOtherVertexStep@[A], PathStep]
+     * ES-Query:
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws ParseException
+     */
     @Test
+    @Ignore
     public void test5() throws IOException, InterruptedException, ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -194,10 +234,53 @@ public class RealClusterTest {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println(elapsed);
+    }
+
+    @Test
+    @Ignore
+    public void test5_2() throws IOException, InterruptedException, ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "C", $ont.eType$(DRAGON.name),
+                        Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 2, 0),
+                new Rel(2, FREEZE.getrType(), Rel.Direction.R, null, 4, 3),
+                new RelProp(3, Integer.toString(START_DATE.type),
+                        Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
+                new ETyped(4, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 5, 0),
+                new Quant1(5, QuantType.all, Arrays.asList(6, 7), 0),
+                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "gideon")),
+                new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 9, 8),
+                new RelProp(8, Integer.toString(TIMESTAMP.type), Constraint.of(ConstraintOp.inRange,
+                        Arrays.asList(sdf.parse("2000-04-05 00:00:00.000").getTime(), sdf.parse("2000-05-05 00:00:00.000").getTime())), 0),
+                new ETyped(9, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 10, 0),
+                new EProp(10, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "lenora"))
+        )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
     }
+
 
     @Test
     public void test5_with_no_props() throws IOException, InterruptedException, ParseException {
