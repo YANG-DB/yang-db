@@ -70,6 +70,36 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test_EntityRelEntityWithFilters() throws IOException, InterruptedException {
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                new EProp(3, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "reagan")),
+                new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 5, 0),
+                new ETyped(5, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 6, 0),
+                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "erwin"))
+        )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+
+    @Test
+    @Ignore
     public void test2() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -204,10 +234,53 @@ public class RealClusterTest {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println(elapsed);
+    }
+
+    @Test
+    @Ignore
+    public void test5_2() throws IOException, InterruptedException, ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "C", $ont.eType$(DRAGON.name),
+                        Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 2, 0),
+                new Rel(2, FREEZE.getrType(), Rel.Direction.R, null, 4, 3),
+                new RelProp(3, Integer.toString(START_DATE.type),
+                        Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
+                new ETyped(4, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 5, 0),
+                new Quant1(5, QuantType.all, Arrays.asList(6, 7), 0),
+                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "gideon")),
+                new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 9, 8),
+                new RelProp(8, Integer.toString(TIMESTAMP.type), Constraint.of(ConstraintOp.inRange,
+                        Arrays.asList(sdf.parse("2000-04-05 00:00:00.000").getTime(), sdf.parse("2000-05-05 00:00:00.000").getTime())), 0),
+                new ETyped(9, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 10, 0),
+                new EProp(10, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "lenora"))
+        )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
 
         long elapsed = System.currentTimeMillis() - start;
         System.out.println(elapsed);
     }
+
 
     @Test
     @Ignore
