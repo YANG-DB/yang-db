@@ -390,6 +390,42 @@ public class RealClusterTest {
         System.out.println(elapsed);
     }
 
+    @Test
+    @Ignore
+    public void test10() throws IOException, InterruptedException, ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Query query = Query.Builder.instance().withName("2sw3sq").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "Sy7SLI6GZ", PERSON.type, Collections.emptyList(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(5, 6), 0),
+                new ETyped(3, "SJBS88TMƒ", DRAGON.type, Collections.emptyList(), 0, 0),
+                new ETyped(4, "SJwrUIpGW", HORSE.type, Collections.emptyList(), 0, 0),
+                new Rel(5, OWN.getrType(), Rel.Direction.R, null, 3, 0),
+                new Rel(6, OWN.getrType(), Rel.Direction.R, null, 4, 0)))
+                .build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, "BkIIIUaMZ", query.getName());
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println(elapsed);
+    }
+
     //region Fields
     private static FuseClient fuseClient;
     private static Ontology.Accessor $ont;

@@ -44,6 +44,14 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
+    public QueryResourceInfo postQuery(String queryStoreUrl, Query query, String id, String name) throws IOException {
+        CreateQueryRequest request = new CreateQueryRequest();
+        request.setId(id);
+        request.setName(name);
+        request.setQuery(query);
+        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
+    }
+
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
         CreateCursorRequest request = new CreateCursorRequest();
         request.setCursorType(CreateCursorRequest.CursorType.paths);
