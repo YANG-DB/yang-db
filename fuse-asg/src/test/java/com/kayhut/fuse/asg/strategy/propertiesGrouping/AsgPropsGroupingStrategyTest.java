@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.strategy.PropertiesGrouping;
+package com.kayhut.fuse.asg.strategy.propertiesGrouping;
 
 import com.google.common.base.Supplier;
 import com.kayhut.fuse.asg.AsgQueryStore;

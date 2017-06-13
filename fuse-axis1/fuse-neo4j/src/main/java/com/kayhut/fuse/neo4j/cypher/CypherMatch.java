@@ -21,6 +21,12 @@ public class CypherMatch {
         return this;
     }
 
+    public void removePath(String pathTag) {
+        if(paths.containsKey(pathTag)) {
+            paths.remove(pathTag);
+        }
+    }
+
     @Override
     public String toString() {
         if(paths.size() == 0) {

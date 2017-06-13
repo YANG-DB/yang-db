@@ -1,6 +1,10 @@
 package com.kayhut.fuse.neo4j.cypher;
 
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by elad on 06/03/2017.
  */
@@ -84,6 +88,20 @@ public class CypherStatement {
         return returns;
     }
 
+    private void removeRedundantPaths() {
+        if(match.getPaths().size() == 1) {
+            return;
+        }
+        List<String> redundantPaths = new ArrayList<>();
+        match.getPaths().forEach((tag, path) -> {
+            if(path.pathElements.size() == 1) {
+                //remove redundant path
+                redundantPaths.add(tag);
+            }
+        });
+        redundantPaths.forEach(tag -> match.removePath(tag));
+    }
+
     private void validateWithAndReturn() {
 
         if (with.getElements().size() == 0) {
@@ -125,6 +143,7 @@ public class CypherStatement {
     }
 
     public String toString() {
+        removeRedundantPaths();
         validateWithAndReturn();
         StringBuilder sb = new StringBuilder();
         sb.append(match.toString());

@@ -52,7 +52,7 @@ public class Assignment {
         //region Constructors
         private Builder() {
             //entities = new HashMap<>();
-            entities = new ArrayList<>();
+            entities = new HashMap<>();
             relationships = new ArrayList<>();
         }
         //endregion
@@ -72,13 +72,13 @@ public class Assignment {
             }*/
 
             //entities.put(entity.hashCode(), entity);
-            entities.add(entity);
+            entities.put(entity.geteTag().get(0), entity);
             return this;
         }
 
         public Builder withEntities(List<Entity> entities) {
             //entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
-            this.entities.addAll(entities);
+            entities.forEach(entity -> this.entities.put(entity.geteTag().get(0), entity));
             return this;
         }
 
@@ -95,14 +95,14 @@ public class Assignment {
         public Assignment build() {
             Assignment assignment = new Assignment();
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
-            assignment.setEntities(entities);
-            assignment.setRelationships(relationships);
+            assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(entity -> entity.geteTag().get(0)).toJavaList());
+            assignment.setRelationships(this.relationships);
             return assignment;
         }
         //endregion
 
         //region Fields
-        private List<Entity> entities;
+        private Map<String, Entity> entities;
         private List<Relationship> relationships;
         //endregion
     }

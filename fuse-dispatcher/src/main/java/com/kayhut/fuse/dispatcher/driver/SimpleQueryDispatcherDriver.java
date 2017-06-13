@@ -42,17 +42,18 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
     //region QueryDispatcherDriver Implementation
     @Override
     public Optional<QueryResourceInfo> create(QueryMetadata metadata, Query query) {
-        QueryResourceInfo resourceInfo = new QueryResourceInfo(
-                urlSupplier.resourceUrl(metadata.getId()),
-                metadata.getId(),
-                urlSupplier.cursorStoreUrl(metadata.getId()));
+        ValidationContext validationContext = validator.process(new QueryValidationOperationContext(metadata, query));
 
-        ValidationContext process = validator.process(new QueryValidationOperationContext(metadata, query));
-        if (!process.valid())
-            return Optional.of(resourceInfo.error(
-                    new FuseError(Query.class.getSimpleName(), Arrays.toString(process.errors()))));
-        else
-            return Optional.of(resourceInfo);
+        if (validationContext.valid())
+            return Optional.of(new QueryResourceInfo(
+                    urlSupplier.resourceUrl(metadata.getId()),
+                    metadata.getId(),
+                    urlSupplier.cursorStoreUrl(metadata.getId())));
+        else {
+            return Optional.of(new QueryResourceInfo().error(
+                    new FuseError(Query.class.getSimpleName(),
+                            Arrays.toString(validationContext.errors()))));
+        }
     }
 
     @Override

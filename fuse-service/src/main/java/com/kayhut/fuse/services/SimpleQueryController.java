@@ -41,6 +41,7 @@ public class SimpleQueryController implements QueryController {
 
         return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR )
                 .data(driver.create(metadata, request.getQuery()))
+                .successPredicate(response -> response.getData() != null && response.getData().getError() == null)
                 .compose();
     }
 
