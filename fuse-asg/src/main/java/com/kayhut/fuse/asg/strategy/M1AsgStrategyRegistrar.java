@@ -1,11 +1,11 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintIterableTransformationStrategy;
-import com.kayhut.fuse.asg.strategy.ConstraintTransformation.AsgConstraintTypeTransformationStrategy;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgEntityPropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgHQuantifierPropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgQuant1PropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.PropertiesGrouping.AsgRelPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.constraintTransformation.AsgConstraintIterableTransformationStrategy;
+import com.kayhut.fuse.asg.strategy.constraintTransformation.AsgConstraintTypeTransformationStrategy;
+import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgEntityPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgHQuantifierPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgQuant1PropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.strategy.type.AsgUntypedInferTypeLeftSideRelationStrategy;
 
 import java.util.Arrays;
