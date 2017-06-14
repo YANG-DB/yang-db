@@ -1,9 +1,13 @@
 package com.kayhut.fuse.neo4j.cypher;
 
 
+import javaslang.collection.Stream;
+import javaslang.control.Option;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by elad on 06/03/2017.
@@ -89,17 +93,60 @@ public class CypherStatement {
     }
 
     private void removeRedundantPaths() {
+
         if(match.getPaths().size() == 1) {
             return;
         }
+
         List<String> redundantPaths = new ArrayList<>();
-        match.getPaths().forEach((tag, path) -> {
-            if(path.pathElements.size() == 1) {
+
+        List<CypherPath> paths = Stream.ofAll(match.getPaths().values()).toJavaList();
+
+        for(int i=0; i<paths.size(); i++) {
+
+            CypherPath curPath = paths.get(i);
+
+            if (curPath.pathElements.size() == 1) {
+
+                CypherElement element = curPath.getElementFromEnd(1);
+
+                //check if this element also appears in other paths
+                List<CypherPath> otherPaths = Stream.ofAll(paths).filter(p -> !p.tag.equals(curPath.tag) && !Stream.ofAll(p.pathElements).find(e -> e.tag.equals(element.tag)).toJavaList().isEmpty()).toJavaList();
+
+                if (otherPaths.isEmpty()) {
+                    continue;
+                }
+
+                otherPaths.forEach(otherPath -> {
+
+                    Option<CypherElement> otherElement = Stream.ofAll(otherPath.pathElements).find(e -> e.tag.equals(element.tag));
+                    if (!otherElement.isEmpty()) {
+                        if (otherElement.get().label == null) {
+                            otherElement.get().label = element.label;
+                        }
+                        if (otherElement.get().inlineProps == null) {
+                            otherElement.get().inlineProps = element.inlineProps;
+                        } else {
+                            if (element.inlineProps != null) {
+                                element.inlineProps.forEach((k, v) -> {
+                                    if (!otherElement.get().inlineProps.containsKey(k)) {
+                                        otherElement.get().inlineProps.put(k, v);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+
                 //remove redundant path
-                redundantPaths.add(tag);
+                redundantPaths.add(curPath.tag);
+
             }
-        });
+
+        }
+
         redundantPaths.forEach(tag -> match.removePath(tag));
+
     }
 
     private void validateWithAndReturn() {
