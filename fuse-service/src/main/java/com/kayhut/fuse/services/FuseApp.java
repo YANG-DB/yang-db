@@ -6,8 +6,7 @@ import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
+import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -16,17 +15,18 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueFactory;
+import javaslang.Tuple2;
 import org.jooby.Jooby;
 import org.jooby.Result;
 import org.jooby.Results;
 import org.jooby.Status;
+import org.jooby.caffeine.CaffeineCache;
 import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 
-import java.util.Optional;
+import java.util.List;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -69,6 +69,7 @@ public class FuseApp extends Jooby {
 
         use(new Scanner());
         use(new Jackson());
+        use(use(new CaffeineCache<Tuple2<String , List<String>>, List<Statistics.BucketInfo>>() {}));
         get("/", () -> HOME);
 
         registerCors(localUrlSupplier);

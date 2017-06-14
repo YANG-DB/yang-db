@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;
 import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalRelationship;
+import org.neo4j.driver.internal.value.StringValue;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,7 @@ abstract class NeoGraphUtils {
         node.keys().forEach(propName -> {
             Property prop = new Property();
             prop.setAgg(propName);
-            prop.setValue(String.valueOf(node.get(propName)));
+            prop.setValue(node.get(propName) instanceof StringValue ? node.get(propName).asString() : String.valueOf(node.get(propName)));
             props.add(prop);
         });
 
@@ -34,7 +35,7 @@ abstract class NeoGraphUtils {
         rel.keys().forEach(propName -> {
             Property prop = new Property();
             prop.setAgg(propName);
-            prop.setValue(String.valueOf(rel.get(propName)));
+            prop.setValue(rel.get(propName) instanceof StringValue ? rel.get(propName).asString() :String.valueOf(rel.get(propName)));
             props.add(prop);
         });
 

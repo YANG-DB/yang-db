@@ -1,9 +1,10 @@
 package com.kayhut.fuse.unipop.controller;
 
+import com.codahale.metrics.*;
+import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
-import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
@@ -13,7 +14,6 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -23,6 +23,7 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 
 /**
@@ -35,13 +36,14 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 public class PromiseVertexFilterController extends PromiseVertexControllerBase {
 
     //region Constructors
-    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         super(Collections.singletonList(GlobalConstants.Labels.PROMISE_FILTER));
 
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
+        this.metricRegistry = metricRegistry;
     }
 
     //endregion
@@ -49,6 +51,7 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
     //region PromiseVertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
+        Timer.Context time = metricRegistry.timer(name(PromiseVertexFilterController.class.getSimpleName(),"search")).time();
         if (Stream.ofAll(edgeLabels).isEmpty()) {
             return Collections.emptyIterator();
         }
@@ -74,6 +77,7 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
                 .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
                 .toJavaList();
 
+        time.stop();
         return filterPromiseVertices(searchVertexQuery, constraint, selectPHasContainers);
     }
     //endregion
@@ -83,6 +87,7 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
             SearchVertexQuery searchVertexQuery,
             Optional<TraversalConstraint> constraint,
             List<HasContainer> selectPHasContainers) {
+        Timer.Context time = metricRegistry.timer(name(PromiseVertexFilterController.class.getSimpleName(),"filterPromiseVertices")).time();
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -114,6 +119,7 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
                 searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
+        time.stop();
         return Stream.ofAll(searchHits)
                 .map(converter::convert)
                 .filter(Objects::nonNull).iterator();
@@ -123,6 +129,7 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
     //region Fields
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private MetricRegistry metricRegistry;
     private Client client;
     private ElasticGraphConfiguration configuration;
     //endregion

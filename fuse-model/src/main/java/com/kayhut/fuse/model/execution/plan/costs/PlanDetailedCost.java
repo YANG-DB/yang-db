@@ -66,6 +66,9 @@ public class PlanDetailedCost {
 
     @Override
     public String toString() {
-        return fullPattern(getOps()) + " >> " + globalCost;
+        return " { " +
+                    "plan:" + fullPattern(getOps()) + "," + "\n" +
+                    "cost:" + globalCost.toString() + "\n" +
+                " } ";
     }
 }

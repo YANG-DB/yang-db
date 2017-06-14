@@ -1,10 +1,8 @@
 package com.kayhut.fuse.executor.ontology;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
-import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
-import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
-import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.PromiseElementController;
@@ -27,6 +25,10 @@ import java.util.Set;
  */
 public class M1ElasticUniGraphProvider implements UniGraphProvider {
     //region Constructors
+
+    @Inject
+    private MetricRegistry metricRegistry;
+
     @Inject
     public M1ElasticUniGraphProvider(
             Client client,
@@ -62,9 +64,9 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
-                        new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
-                        new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider)
+                        new PromiseElementController(client, elasticGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
+                        new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
+                        new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider ,metricRegistry)
                 );
             }
 
