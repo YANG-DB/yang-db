@@ -82,6 +82,10 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
             return areFilterAndRelationAdjacent(path, compositePlanOp);
         }
 
+        if (currentPlanOp instanceof GoToEntityOp) {
+            return true;
+        }
+
         if (currentPlanOp instanceof EntityOp) {
             Optional<RelationOp> previousRelationOp = getPreviousOp(compositePlanOp, opIndex, RelationOp.class);
             if (!previousRelationOp.isPresent()) {

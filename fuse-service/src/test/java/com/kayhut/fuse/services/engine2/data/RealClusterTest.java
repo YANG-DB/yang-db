@@ -587,6 +587,145 @@ public class RealClusterTest {
         int x = 5;
     }
 
+    @Test
+    @Ignore
+    public void test14() throws IOException, InterruptedException {
+        String queryString = "{\n" +
+                "    \"elements\": [\n" +
+                "      {\n" +
+                "        \"eNum\": 0,\n" +
+                "        \"type\": \"Start\",\n" +
+                "        \"next\": 1\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 1,\n" +
+                "        \"next\": 2,\n" +
+                "        \"eType\": 1,\n" +
+                "        \"eTag\": \"Sk6lKtCzb\",\n" +
+                "        \"type\": \"ETyped\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 2,\n" +
+                "        \"next\": [\n" +
+                "          10,\n" +
+                "          11\n" +
+                "        ],\n" +
+                "        \"qType\": \"all\",\n" +
+                "        \"type\": \"Quant1\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 3,\n" +
+                "        \"next\": 5,\n" +
+                "        \"eType\": 2,\n" +
+                "        \"eTag\": \"Hyy-FKCz-\",\n" +
+                "        \"type\": \"ETyped\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 4,\n" +
+                "        \"next\": 15,\n" +
+                "        \"eType\": 1,\n" +
+                "        \"eTag\": \"H1XmFY0fW\",\n" +
+                "        \"type\": \"ETyped\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 5,\n" +
+                "        \"next\": [\n" +
+                "          12,\n" +
+                "          13\n" +
+                "        ],\n" +
+                "        \"qType\": \"all\",\n" +
+                "        \"type\": \"Quant1\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 6,\n" +
+                "        \"eType\": 2,\n" +
+                "        \"eTag\": \"r1VbKFCGZ\",\n" +
+                "        \"type\": \"ETyped\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 7,\n" +
+                "        \"next\": 14,\n" +
+                "        \"eType\": 2,\n" +
+                "        \"eTag\": \"B1fWYYAf-\",\n" +
+                "        \"type\": \"ETyped\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 8,\n" +
+                "        \"eType\": 3,\n" +
+                "        \"eTag\": \"Hkr7FK0MZ\",\n" +
+                "        \"type\": \"ETyped\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 9,\n" +
+                "        \"eType\": 2,\n" +
+                "        \"eTag\": \"HJ17Yt0fZ\",\n" +
+                "        \"type\": \"ETyped\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 10,\n" +
+                "        \"type\": \"Rel\",\n" +
+                "        \"rType\": 101,\n" +
+                "        \"dir\": \"R\",\n" +
+                "        \"next\": 3\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 11,\n" +
+                "        \"type\": \"Rel\",\n" +
+                "        \"rType\": 108,\n" +
+                "        \"dir\": \"R\",\n" +
+                "        \"next\": 4\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 12,\n" +
+                "        \"type\": \"Rel\",\n" +
+                "        \"rType\": 103,\n" +
+                "        \"dir\": \"R\",\n" +
+                "        \"next\": 7\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 13,\n" +
+                "        \"type\": \"Rel\",\n" +
+                "        \"rType\": 104,\n" +
+                "        \"dir\": \"R\",\n" +
+                "        \"next\": 6\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 14,\n" +
+                "        \"type\": \"Rel\",\n" +
+                "        \"rType\": 103,\n" +
+                "        \"dir\": \"R\",\n" +
+                "        \"next\": 9\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"eNum\": 15,\n" +
+                "        \"type\": \"Rel\",\n" +
+                "        \"rType\": 101,\n" +
+                "        \"dir\": \"R\",\n" +
+                "        \"next\": 8\n" +
+                "      }\n" +
+                "    ],\n" +
+                "    \"name\": \"3ptuam\",\n" +
+                "    \"ont\": \"Dragons\"\n" +
+                "  }";
+
+        Query query = new ObjectMapper().readValue(queryString, Query.class);
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
     //region Fields
     private static FuseClient fuseClient;
     private static Ontology.Accessor $ont;
