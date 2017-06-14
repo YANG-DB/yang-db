@@ -137,7 +137,7 @@ public class ElasticStatProvider {
             Statistics.BucketInfo bucket = new Statistics.BucketInfo();
             if (STAT_TYPE_TERM_NAME.equals(statType)) {
                 String term = getTermValueFromHit(sh);
-                bucket = new Statistics.BucketInfo(
+                bucket = new Statistics.BucketInfo<>(
                         count,
                         cardinality,
                         term, term);
@@ -145,24 +145,32 @@ public class ElasticStatProvider {
             if (STAT_TYPE_NUMERIC_NAME.equals(statType)) {
                 switch (fieldType) {
                     case INT:
-                        bucket = new Statistics.BucketInfo(
+                        bucket = new Statistics.BucketInfo<>(
                                 count,
                                 cardinality,
                                 getNumericLongValueFromHit(sh, STAT_FIELD_NUMERIC_LOWER_NAME),
                                 getNumericLongValueFromHit(sh, STAT_FIELD_NUMERIC_UPPER_NAME));
                         break;
                     case FLOAT:
-                        bucket = new Statistics.BucketInfo(
+                    case DATE:
+                        bucket = new Statistics.BucketInfo<>(
                                 count,
                                 cardinality,
                                 getNumericDoubleValueFromHit(sh, STAT_FIELD_NUMERIC_LOWER_NAME),
                                 getNumericDoubleValueFromHit(sh, STAT_FIELD_NUMERIC_UPPER_NAME));
                         break;
+                    /*case DATE:
+                        bucket = new Statistics.BucketInfo<>(
+                                count,
+                                cardinality,
+                                getNumericDateValueFromHit(sh, STAT_FIELD_NUMERIC_LOWER_NAME),
+                                getNumericDateValueFromHit(sh, STAT_FIELD_NUMERIC_UPPER_NAME));
+                        break;*/
                 }
 
             }
             if (STAT_TYPE_STRING_NAME.equals(statType)) {
-                bucket = new Statistics.BucketInfo(
+                bucket = new Statistics.BucketInfo<>(
                         count,
                         cardinality,
                         getLowerBoundStringValueFromHit(sh), getUpperBoundStringValueFromHit(sh));
@@ -198,7 +206,7 @@ public class ElasticStatProvider {
         }
 
         for (SearchHit sh : searchResponse.getHits().getHits()) {
-            Statistics.BucketInfo bucket = new Statistics.BucketInfo(
+            Statistics.BucketInfo bucket = new Statistics.BucketInfo<>(
                     getCountValueFromHit(sh),
                     getCardinalityValueFromHit(sh),
                     "0", "~"); // This is the global selectivity range
@@ -254,7 +262,9 @@ public class ElasticStatProvider {
     private Long getNumericLongValueFromHit(final SearchHit hit, String fieldName) {
         return ((Number) getFieldValueFromHit(hit, fieldName)).longValue();
     }
-
+    private Date getNumericDateValueFromHit(final SearchHit hit, String fieldName) {
+        return new Date(getNumericLongValueFromHit(hit, fieldName));
+    }
     private Double getNumericDoubleValueFromHit(final SearchHit hit, String fieldName) {
         return ((Number) getFieldValueFromHit(hit, fieldName)).doubleValue();
     }
