@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics.provider;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -9,6 +10,7 @@ import com.kayhut.fuse.epb.plan.statistics.util.StatUtil;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.schemaProviders.*;
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.transport.TransportClient;
 
@@ -33,10 +35,11 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     //region Constructors
     @Inject
-    public ElasticStatisticsGraphProvider(StatConfig config) {
+    public ElasticStatisticsGraphProvider(StatConfig config, Cache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>> cache) {
         this.statConfig = config;
         this.elasticStatProvider = new ElasticStatProvider(config);
         this.elasticClient = new ElasticClientProvider(config).getStatClient();
+        this.cache = cache;
     }
     //endregion
 
@@ -78,7 +81,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statTypeName,
-                graphElementPropertySchema.getType(),
                 relevantIndices,
                 Collections.singletonList(graphElementSchema.getType()),
                 Collections.singletonList(((graphElementPropertySchema instanceof GraphRedundantPropertySchema) ?
@@ -148,7 +150,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         if (!buckets.isEmpty()) {
             long total = buckets.stream().mapToLong(b -> b.getTotal()).sum();
             double cardinality = buckets.stream().mapToLong(b -> b.getCardinality()).average().getAsDouble();
-            globalSelectivity = (long) (total /  cardinality);
+            globalSelectivity = (long) (total / cardinality);
         }
 
         return globalSelectivity;
@@ -161,7 +163,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
-                "string",
                 Lists.newArrayList(indices),
                 Collections.singletonList(docType),
                 Collections.singletonList(FIELD_NAME_TYPE));
@@ -171,6 +172,27 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
             totalCount += bucket.getTotal();
         }
         return new Statistics.SummaryStatistics(totalCount, 1);
+    }
+
+    private Statistics.SummaryStatistics getStatResultsForType(String docType, List<String> indices) {
+        List<Statistics.BucketInfo> buckets = getBuckets(docType, indices);
+
+        long totalCount = 0;
+        for (Statistics.BucketInfo bucket : buckets) {
+            totalCount += bucket.getTotal();
+        }
+        return new Statistics.SummaryStatistics(totalCount, 1);
+    }
+
+    public List<Statistics.BucketInfo> getBuckets(String docType, List<String> indices) {
+        return cache.get(new Tuple2<>(docType, indices),
+                stringListTuple2 -> elasticStatProvider.getFieldStatistics(
+                        elasticClient,
+                        statConfig.getStatIndexName(),
+                        statConfig.getStatTermTypeName(),
+                        indices,
+                        Collections.singletonList(docType),
+                        Collections.singletonList(FIELD_NAME_TYPE)));
     }
 
     private long getTermBucketCount(String indexName, String docType, String term) {
@@ -214,7 +236,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     private String getStatTypeName(GraphElementPropertySchema propertySchema) {
         String p = propertySchema.getName();
-        if(propertySchema instanceof GraphRedundantPropertySchema)
+        if (propertySchema instanceof GraphRedundantPropertySchema)
             p = ((GraphRedundantPropertySchema) propertySchema).getPropertyRedundantName();
 
         if (p.endsWith(".type"))
@@ -265,6 +287,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     private final StatConfig statConfig;
     private final ElasticStatProvider elasticStatProvider;
     private final TransportClient elasticClient;
+    private final Cache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>> cache;
     //endregion
 
 }

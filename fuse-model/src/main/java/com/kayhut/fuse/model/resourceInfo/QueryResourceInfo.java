@@ -8,12 +8,14 @@ package com.kayhut.fuse.model.resourceInfo;
  * http://domain/fuse/query/:id/cursor/:sequence/result/:sequence
  */
 public class QueryResourceInfo extends ResourceInfoBase{
+
     //region Constructors
     public QueryResourceInfo() {}
 
     public QueryResourceInfo(String resourceUrl,String resourceId, String cursorStoreUrl) {
         super(resourceUrl,resourceId);
         this.cursorStoreUrl = cursorStoreUrl;
+        this.explainPlanUrl = resourceUrl +"/plan";
     }
 
     //endregion
@@ -21,6 +23,10 @@ public class QueryResourceInfo extends ResourceInfoBase{
     //region Properties
     public String getCursorStoreUrl() {
         return cursorStoreUrl;
+    }
+
+    public String getExplainPlanUrl() {
+        return explainPlanUrl;
     }
 
     public FuseError getError() {
@@ -41,7 +47,9 @@ public class QueryResourceInfo extends ResourceInfoBase{
 
     //region Fields
     private String cursorStoreUrl;
+    private String explainPlanUrl;
 
     private FuseError error;
+
     //endregion
 }

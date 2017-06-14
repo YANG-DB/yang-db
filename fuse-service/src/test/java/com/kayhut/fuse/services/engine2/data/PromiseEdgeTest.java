@@ -1,15 +1,13 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.google.common.collect.Lists;
+import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -47,9 +45,11 @@ public class PromiseEdgeTest{
     static ElasticEmbeddedNode elasticEmbeddedNode;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
+    static MetricRegistry registry;
 
     @BeforeClass
     public static void setup() throws Exception {
+        registry = new MetricRegistry();
 
         String indexName = "v1";
         String idField = "id";
@@ -119,7 +119,7 @@ public class PromiseEdgeTest{
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
-        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
+        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider,registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
@@ -176,7 +176,7 @@ public class PromiseEdgeTest{
         when(configuration.getElasticGraphScrollTime()).thenReturn(100);
         when(configuration.getElasticGraphDefaultSearchSize()).thenReturn(100L);
 
-        PromiseVertexFilterController controller = new PromiseVertexFilterController(client, configuration, graph, schemaProvider);
+        PromiseVertexFilterController controller = new PromiseVertexFilterController(client, configuration, graph, schemaProvider, registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 

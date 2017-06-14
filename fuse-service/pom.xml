@@ -79,6 +79,11 @@
 
         <dependency>
             <groupId>org.jooby</groupId>
+            <artifactId>jooby-caffeine</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooby</groupId>
             <artifactId>jooby-jackson</artifactId>
         </dependency>
 

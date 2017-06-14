@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.engine2.data.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -76,6 +77,10 @@ public class FuseClient {
 
     public QueryResult getPageData(String pageDataUrl) throws IOException {
         return new ObjectMapper().readValue(unwrap(getRequest(pageDataUrl)), QueryResult.class);
+    }
+
+    public String getPlan(String planUrl) throws IOException {
+        return getRequest(planUrl);
     }
     //endregion
 

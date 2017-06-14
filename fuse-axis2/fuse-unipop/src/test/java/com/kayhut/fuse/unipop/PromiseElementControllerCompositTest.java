@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop;
 
+import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.PromiseElementController;
 import com.kayhut.fuse.unipop.promise.IdPromise;
@@ -83,6 +84,7 @@ public class PromiseElementControllerCompositTest {
 
     @Test
     public void testSingleIdPromiseVertexWithLimit() {
+        MetricRegistry registry = new MetricRegistry();
         UniGraph graph = mock(UniGraph.class);
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Collections.emptyList());
@@ -92,7 +94,7 @@ public class PromiseElementControllerCompositTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider());
+        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 10);

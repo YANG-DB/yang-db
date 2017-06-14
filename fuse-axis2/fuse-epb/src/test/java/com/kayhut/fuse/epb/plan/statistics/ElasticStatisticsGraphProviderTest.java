@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
@@ -25,11 +26,15 @@ import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import javaslang.Tuple2;
 import org.elasticsearch.client.transport.TransportClient;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -77,7 +82,11 @@ public class ElasticStatisticsGraphProviderTest {
     public void getVertexCardinality() throws Exception {
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(getOntology());
         GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
-        ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig);
+        ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
+                Caffeine.newBuilder()
+                        .maximumSize(10_000)
+                        .expireAfterWrite(5, TimeUnit.MINUTES)
+                        .build());
 
         Map<String, Tuple2<Long, Long>> termStatistics = new HashMap<>();
         //We have 1000 dragons in index1, cardinality is 1
