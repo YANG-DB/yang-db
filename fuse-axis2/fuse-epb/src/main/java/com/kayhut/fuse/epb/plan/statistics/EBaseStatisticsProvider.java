@@ -211,8 +211,20 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         }else{
             Optional<EnumeratedType> enumeratedType = ont.enumeratedType(graphElementPropertySchema.getType());
             if(enumeratedType.isPresent()) {
-                Value value = (Value) constraint.getExpr();
-                return getValueConditionCardinality(graphElementSchema, graphElementPropertySchema, constraint, value.getName(), relevantIndices, String.class);
+                //todo: Hack for present time, remove!!!
+                //Value value = (Value) constraint.getExpr();
+                GraphElementPropertySchema tmp  = new GraphElementPropertySchema() {
+                    @Override
+                    public String getName() {
+                        return graphElementPropertySchema.getName();
+                    }
+
+                    @Override
+                    public String getType() {
+                        return "string";
+                    }
+                };
+                return getValueConditionCardinality(graphElementSchema, tmp, constraint, constraint.getExpr(), relevantIndices, String.class);
             }
         }
         return Optional.empty();
