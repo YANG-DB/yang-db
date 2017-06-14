@@ -221,7 +221,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
                     @Override
                     public String getType() {
-                        return "string";
+                        return "enum";
                     }
                 };
                 return getValueConditionCardinality(graphElementSchema, tmp, constraint, constraint.getExpr(), relevantIndices, String.class);
