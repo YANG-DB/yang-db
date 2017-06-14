@@ -78,7 +78,11 @@ public interface Statistics {
         }
 
         public Optional<BucketInfo<T>> findBucketContaining(T value){
-            BucketInfo<T> dummyInfo = new BucketInfo<>(0L, 0L, value, value);
+            Object objValue = Number.class.isAssignableFrom(value.getClass()) ?
+                    ((Number)value).doubleValue() :
+                    value;
+
+            BucketInfo dummyInfo = new BucketInfo(0L, 0L, (Comparable)objValue, (Comparable)objValue);
             int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
                 if(o1.getLowerBound().equals(o2.getLowerBound()) && o1.getHigherBound().equals(o2.getHigherBound()))
                     return 0;

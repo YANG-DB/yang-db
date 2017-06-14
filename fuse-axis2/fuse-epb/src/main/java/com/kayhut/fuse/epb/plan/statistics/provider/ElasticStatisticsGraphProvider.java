@@ -78,7 +78,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 this.elasticClient,
                 statConfig.getStatIndexName(),
                 statTypeName,
-                graphElementPropertySchema.getType(),
                 relevantIndices,
                 Collections.singletonList(graphElementSchema.getType()),
                 Collections.singletonList(((graphElementPropertySchema instanceof GraphRedundantPropertySchema) ?
@@ -161,7 +160,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                 elasticClient,
                 statConfig.getStatIndexName(),
                 statConfig.getStatTermTypeName(),
-                "string",
                 Lists.newArrayList(indices),
                 Collections.singletonList(docType),
                 Collections.singletonList(FIELD_NAME_TYPE));

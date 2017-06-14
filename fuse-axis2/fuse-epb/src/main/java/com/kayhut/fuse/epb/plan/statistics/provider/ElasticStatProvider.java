@@ -32,12 +32,6 @@ public class ElasticStatProvider {
     private final String STAT_TYPE_STRING_NAME;
     private final String STAT_TYPE_TERM_NAME;
 
-    private static final String DATE = "date";
-    private static final String ENUM = "enum";
-    private static final String INT = "int";
-    private static final String FLOAT = "float";
-    private static final String STRING = "string";
-
     public ElasticStatProvider(StatConfig conf) {
         STAT_INDEX_NAME = conf.getStatIndexName();
         COUNT_FIELD_NAME = conf.getStatCountFieldName();
@@ -74,7 +68,6 @@ public class ElasticStatProvider {
     public List<Statistics.BucketInfo> getFieldStatistics(TransportClient client,
                                                           String statIndexName,
                                                           String statTypeName,
-                                                          String fieldType,
                                                           List<String> indices,
                                                           List<String> types,
                                                           List<String> fields) {
@@ -83,7 +76,6 @@ public class ElasticStatProvider {
                 client,
                 statIndexName,
                 statTypeName,
-                fieldType,
                 indices,
                 types,
                 fields);
@@ -109,7 +101,6 @@ public class ElasticStatProvider {
     public Map<String, List<Statistics.BucketInfo>> getFieldStatisticsPerIndex(TransportClient client,
                                                                                String statIndexName,
                                                                                String statTypeName,
-                                                                               String fieldType,
                                                                                List<String> indices,
                                                                                List<String> types,
                                                                                List<String> fields) {
@@ -143,31 +134,10 @@ public class ElasticStatProvider {
                         term, term);
             }
             if (STAT_TYPE_NUMERIC_NAME.equals(statType)) {
-                switch (fieldType) {
-                    case INT:
-                        bucket = new Statistics.BucketInfo<>(
-                                count,
-                                cardinality,
-                                getNumericLongValueFromHit(sh, STAT_FIELD_NUMERIC_LOWER_NAME),
-                                getNumericLongValueFromHit(sh, STAT_FIELD_NUMERIC_UPPER_NAME));
-                        break;
-                    case FLOAT:
-                    case DATE:
-                        bucket = new Statistics.BucketInfo<>(
-                                count,
-                                cardinality,
-                                getNumericDoubleValueFromHit(sh, STAT_FIELD_NUMERIC_LOWER_NAME),
-                                getNumericDoubleValueFromHit(sh, STAT_FIELD_NUMERIC_UPPER_NAME));
-                        break;
-                    /*case DATE:
-                        bucket = new Statistics.BucketInfo<>(
-                                count,
-                                cardinality,
-                                getNumericDateValueFromHit(sh, STAT_FIELD_NUMERIC_LOWER_NAME),
-                                getNumericDateValueFromHit(sh, STAT_FIELD_NUMERIC_UPPER_NAME));
-                        break;*/
-                }
-
+                bucket = new Statistics.BucketInfo(
+                        count,
+                        cardinality,
+                        (getLowerBoundNumericValueFromHit(sh)), getUpperBoundNumericValueFromHit(sh));
             }
             if (STAT_TYPE_STRING_NAME.equals(statType)) {
                 bucket = new Statistics.BucketInfo<>(
@@ -259,14 +229,12 @@ public class ElasticStatProvider {
         return (getFieldValueFromHit(hit, STAT_FIELD_STRING_UPPER_NAME)).toString();
     }
 
-    private Long getNumericLongValueFromHit(final SearchHit hit, String fieldName) {
-        return ((Number) getFieldValueFromHit(hit, fieldName)).longValue();
+    private Double getUpperBoundNumericValueFromHit(final SearchHit hit) {
+        return ((Number) getFieldValueFromHit(hit, STAT_FIELD_NUMERIC_UPPER_NAME)).doubleValue();
     }
-    private Date getNumericDateValueFromHit(final SearchHit hit, String fieldName) {
-        return new Date(getNumericLongValueFromHit(hit, fieldName));
-    }
-    private Double getNumericDoubleValueFromHit(final SearchHit hit, String fieldName) {
-        return ((Number) getFieldValueFromHit(hit, fieldName)).doubleValue();
+
+    private Double getLowerBoundNumericValueFromHit(final SearchHit hit) {
+        return ((Number) getFieldValueFromHit(hit, STAT_FIELD_NUMERIC_LOWER_NAME)).doubleValue();
     }
 
     private SearchRequestBuilder getFieldsStatisticsRequestBuilder(TransportClient client,
