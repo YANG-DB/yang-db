@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.query.EBase;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -20,6 +21,17 @@ import java.util.stream.Collectors;
  */
 public interface Utils {
     ObjectMapper mapper = new ObjectMapper();
+
+    static List<EBase> from(String elements) {
+        return Arrays.stream(elements.split("\\n")).map(e -> {
+            try {
+                return mapper.readValue(e, EBase.class);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return null;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
 
     static <T> T submit(EventBus eventBus, T data) {
         eventBus.post(data);
@@ -86,7 +98,7 @@ public interface Utils {
     }
 
     static String fullPattern(List<PlanOpBase> pattern) {
-        StringJoiner sj = new StringJoiner(":", "", "");
+        StringJoiner sj = new StringJoiner(":", "[", "]");
         pattern.forEach(op -> sj.add(op.toString()));
         return sj.toString();
     }

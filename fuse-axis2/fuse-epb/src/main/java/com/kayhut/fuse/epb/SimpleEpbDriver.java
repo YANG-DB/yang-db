@@ -54,6 +54,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         //get first
         PlanWithCost<Plan, PlanDetailedCost> first = plans.iterator().next();
+        System.out.println("Selected Plan "+first.getPlan().toString());
         time.stop();
         return submit(bus, context.of(first));
     }

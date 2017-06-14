@@ -18,6 +18,8 @@ public interface GraphStatisticsProvider {
     Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema);
     Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices);
 
+    List<Statistics.BucketInfo> getBuckets(String docType, List<String> indices);
+
     <T extends Comparable<T>> Statistics.HistogramStatistics<T> getConditionHistogram(GraphElementSchema graphElementSchema,
                                                                                       List<String> relevantIndices,
                                                                                       GraphElementPropertySchema graphElementPropertySchema,

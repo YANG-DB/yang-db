@@ -48,7 +48,7 @@ public class Plan extends CompositePlanOpBase implements Trace<String> {
 
     @Override
     public String toString() {
-        return toSimplePattern(this);
+        return toFullPattern(this);
     }
 
     public String toPattern() {

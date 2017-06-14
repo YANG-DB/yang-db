@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services.engine2.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -365,13 +366,13 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", PERSON.type, singletonList(Integer.toString(FIRST_NAME.type)), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, Integer.toString(HEIGHT.type), Constraint.of(ConstraintOp.inRange, new int[] {200, 205})),
+                new EProp(3, Integer.toString(HEIGHT.type), Constraint.of(ConstraintOp.inRange, new int[]{200, 205})),
                 new Rel(4, OWN.getrType(), Rel.Direction.R, null, 6, 5),
                 new RelProp(5, Integer.toString(START_DATE.type), Constraint.of(ConstraintOp.inRange,
                         Arrays.asList(sdf.parse("2000-01-01 00:00:00.000").getTime(), sdf.parse("2000-12-30 00:00:00.000").getTime())), 0),
                 new ETyped(6, "B", DRAGON.type, singletonList(Integer.toString(NAME.type)), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9, 12), 0),
-                new EProp(8, Integer.toString(POWER.type), Constraint.of(ConstraintOp.inRange, new int[] {25, 75})),
+                new EProp(8, Integer.toString(POWER.type), Constraint.of(ConstraintOp.inRange, new int[]{25, 75})),
                 new Rel(9, FREEZE.getrType(), Rel.Direction.R, null, 11, 10),
                 new RelProp(10, Integer.toString(START_DATE.type),
                         Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
@@ -584,7 +585,60 @@ public class RealClusterTest {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        String plan = fuseClient.getPlan(queryResourceInfo.getExplainPlanUrl());
         int x = 5;
+
+    }
+
+    @Test
+    @Ignore
+    public void test15() throws IOException, InterruptedException, ParseException {
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Utils.from(
+                "\t{\"eNum\":0,\"type\":\"Start\",\"next\":1},\n" +
+                        "\t{\"eNum\":1,\"next\":2,\"eType\":2,\"eTag\":\"D1\",\"type\":\"ETyped\"},\n" +
+                        "\t{\"eNum\":2,\"next\":[3,4,5,15],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
+                        "\t{\"eNum\":3,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"gt\",\"expr\":\"80\"}},\n" +
+                        "\t{\"eNum\":4,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"MALE\"}},\n" +
+                        "\t{\"eNum\":5,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"ne\",\"expr\":\"RED\"}},\n" +
+                        "\t{\"eNum\":6,\"next\":7,\"eType\":2,\"eTag\":\"D2\",\"type\":\"ETyped\"},\n" +
+                        "\t{\"eNum\":7,\"next\":[9,10,11,17],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
+                        "\t{\"eNum\":8,\"next\":18,\"eType\":5,\"eTag\":\"K\",\"type\":\"ETyped\"},\n" +
+                        "\t{\"eNum\":9,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"FEMALE\"}},\n" +
+                        "\t{\"eNum\":10,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"lt\",\"expr\":\"80\"}},\n" +
+                        "\t{\"eNum\":11,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"eq\",\"expr\":\"RED\"}},\n" +
+                        "\t{\"eNum\":12,\"next\":19,\"eType\":1,\"eTag\":\"P\",\"type\":\"ETyped\"},\n" +
+                        "\t{\"eNum\":13,\"eType\":3,\"eTag\":\"H\",\"type\":\"ETyped\",\"next\":14},\n" +
+                        "\t{\"eNum\":14,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"angel\"}},\n" +
+                        "\t{\"eNum\":16,\"type\":\"RelProp\",\"pType\":11,\"con\":{\"op\":\"gt\",\"expr\":\"600\"}},\n" +
+                        "\t{\"eNum\":15,\"type\":\"Rel\",\"rType\":103,\"dir\":\"R\",\"next\":6,\"b\":16},\n" +
+                        "\t{\"eNum\":17,\"type\":\"Rel\",\"rType\":105,\"dir\":\"R\",\"next\":8},\n" +
+                        "\t{\"eNum\":18,\"type\":\"Rel\",\"rType\":106,\"dir\":\"L\",\"next\":12},\n" +
+                        "\t{\"eNum\":19,\"type\":\"Rel\",\"rType\":101,\"dir\":\"R\",\"next\":13}\n"))
+                .build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        String plan = fuseClient.getPlan(queryResourceInfo.getExplainPlanUrl());
+
+        System.out.println(plan);
+        System.out.println("Assignments: ["+actualQueryResult.getAssignments().size()+"]");
+        actualQueryResult.getAssignments().forEach(a-> {
+            System.out.println("Assignment "+Arrays.toString(a.getEntities().toArray()));
+        });
+
+        int x = 5;
+
     }
 
     @Test

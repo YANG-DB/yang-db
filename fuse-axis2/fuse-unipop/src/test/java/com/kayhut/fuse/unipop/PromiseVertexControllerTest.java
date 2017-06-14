@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop;
 
+import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.PromiseVertexController;
@@ -98,6 +99,7 @@ public class PromiseVertexControllerTest {
 
     @Test
     public void testSingleIdPromiseVertexWithoutConstraint() throws ExecutionException, InterruptedException {
+        MetricRegistry registry = new MetricRegistry();
 
         UniGraph graph = mock(UniGraph.class);
 
@@ -131,7 +133,7 @@ public class PromiseVertexControllerTest {
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
-        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
+        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider,registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 

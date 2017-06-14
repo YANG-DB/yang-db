@@ -1,5 +1,7 @@
 package com.kayhut.fuse.unipop.controller;
 
+import com.codahale.metrics.*;
+import com.google.inject.Inject;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
@@ -23,6 +25,8 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static com.codahale.metrics.MetricRegistry.name;
+import static com.codahale.metrics.Timer.*;
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 
 /**
@@ -31,19 +35,21 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 public class PromiseVertexController extends PromiseVertexControllerBase {
 
     //region Constructors
-    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider,MetricRegistry metricRegistry) {
         super(Collections.singletonList(GlobalConstants.Labels.PROMISE));
 
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
     //region PromiseVertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
+        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"search")).time();
         if (Stream.ofAll(edgeLabels).isEmpty()) {
             return Collections.emptyIterator();
         }
@@ -72,13 +78,15 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyIterator();
+        } finally {
+            time.stop();
         }
     }
     //endregion
 
     //region Private Methods
     private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) throws Exception {
-
+        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges")).time();
         SearchBuilder searchBuilder = new SearchBuilder();
 
         PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices, constraint, schemaProvider);
@@ -107,6 +115,7 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
                 graph,
                 new PromiseEdgeIdProvider(constraint),
                 new PrefixedLabelProvider("_"));
+        time.stop();
         return converter.convert(response.getAggregations().asMap());
 
     }
@@ -117,5 +126,6 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
     private GraphElementSchemaProvider schemaProvider;
     private Client client;
     private ElasticGraphConfiguration configuration;
+    private MetricRegistry metricRegistry;
     //endregion
 }

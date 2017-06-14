@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.PromiseElementController;
@@ -48,13 +49,14 @@ public class TraversalTest {
 
     @Test
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX() throws Exception {
+        MetricRegistry registry = new MetricRegistry();
         //region ControllerManagerFactory Implementation
         UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
-                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()));
+                        new PromiseElementController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
+                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry));
             }
 
             @Override
@@ -84,13 +86,14 @@ public class TraversalTest {
 
     @Test
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX_hasXconstraint_Constraint_byX__hasXlabel_dragonXXX() throws Exception {
+        MetricRegistry registry = new MetricRegistry();
         //region ControllerManagerFactory Implementation
         UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()),
-                        new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider()));
+                        new PromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),registry),
+                        new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),new MetricRegistry()));
             }
 
             @Override

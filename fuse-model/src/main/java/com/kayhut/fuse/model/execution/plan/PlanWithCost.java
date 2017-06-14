@@ -63,8 +63,8 @@ public class PlanWithCost<P, C> {
     @Override
     public String toString() {
         return "{" +
-                "plan=" + plan.toString() +
-                ", cost=" + cost.toString() +
-                '}';
+                    " plan:" + plan.toString() + "," + "\n" +
+                    " cost:" + cost.toString() + "\n" +
+                "}";
     }
 }
