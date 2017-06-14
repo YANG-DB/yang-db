@@ -27,6 +27,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -276,6 +277,7 @@ public class SmartEpbRedundancyTests {
     }
 
     @Test
+    @Ignore
     public void redundantPropertyPathSelectionTest(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).

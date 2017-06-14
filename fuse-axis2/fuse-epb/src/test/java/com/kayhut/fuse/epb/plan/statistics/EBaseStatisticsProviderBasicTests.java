@@ -16,6 +16,7 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -324,6 +325,7 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
+    @Ignore
     public void eTypedEnumeratedFieldTest(){
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
@@ -337,6 +339,7 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
+    @Ignore
     public void eTypedEnumeratedSingleValueBucketFieldTest(){
         List<Statistics.BucketInfo<String>> stringBuckets = new LinkedList<>();
         stringBuckets.add(new Statistics.BucketInfo<>(100L,1L, "female", "female"));
