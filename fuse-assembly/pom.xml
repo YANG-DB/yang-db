@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>fuse-assembly</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
@@ -84,6 +85,7 @@
     </dependencies>
 
     <build>
+        <finalName>assembly</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -99,12 +101,13 @@
                         <descriptor>assembly/fuse.engine2.service.test.smartEPB.public.xml</descriptor>
                         <descriptor>assembly/fuse.engine2.service.test.smartEPB.private.xml</descriptor>
                         <descriptor>assembly/fuse.engine2.service.test.smartEPB.private.private.xml</descriptor>
+                        <descriptor>assembly/fuse.engine2.stat.test.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>fuse-service-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <id>fuse-service-assembly</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -112,12 +115,6 @@
                 </executions>
             </plugin>
         </plugins>
-
-        <resources>
-            <resource>
-                <directory>resources</directory>
-            </resource>
-        </resources>
     </build>
 
 </project>
