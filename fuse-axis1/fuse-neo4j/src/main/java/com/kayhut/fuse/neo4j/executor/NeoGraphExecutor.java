@@ -24,6 +24,8 @@ abstract class NeoGraphUtils {
         ArrayList<Property> props = new ArrayList<>();
         node.keys().forEach(propName -> {
             Property prop = new Property();
+            int pType = Stream.ofAll(ont.getProperties()).find(p -> p.getName().equals(propName)).get().getpType();
+            prop.setpType(pType);
             prop.setAgg(propName);
             prop.setValue(node.get(propName) instanceof StringValue ? node.get(propName).asString() : String.valueOf(node.get(propName)));
             props.add(prop);
@@ -45,6 +47,8 @@ abstract class NeoGraphUtils {
         ArrayList<Property> props = new ArrayList<>();
         rel.keys().forEach(propName -> {
             Property prop = new Property();
+            int pType = Stream.ofAll(ont.getProperties()).find(p -> p.getName().equals(propName)).get().getpType();
+            prop.setpType(pType);
             prop.setAgg(propName);
             prop.setValue(rel.get(propName) instanceof StringValue ? rel.get(propName).asString() :String.valueOf(rel.get(propName)));
             props.add(prop);
