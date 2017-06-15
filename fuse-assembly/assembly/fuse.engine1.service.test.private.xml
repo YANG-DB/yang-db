@@ -38,8 +38,9 @@
             <outputDirectory>./</outputDirectory>
         </file>
         <file>
-            <source>${project.basedir}/resources/scripts/start-fuse-service.sh</source>
+            <source>${project.basedir}/resources/scripts/start-fuse-service-10g.sh</source>
             <outputDirectory>./</outputDirectory>
+            <destName>start-fuse-service.sh</destName>
         </file>
     </files>
 

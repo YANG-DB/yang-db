@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -36,9 +37,9 @@ import static java.util.Collections.singletonList;
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
-        //fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
+        fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
-        fuseClient = new FuseClient("http://localhost:8888/fuse");
+        //fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
     }
@@ -592,57 +593,6 @@ public class RealClusterTest {
 
     @Test
     @Ignore
-    public void test15() throws IOException, InterruptedException, ParseException {
-        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Utils.from(
-                "\t{\"eNum\":0,\"type\":\"Start\",\"next\":1},\n" +
-                        "\t{\"eNum\":1,\"next\":2,\"eType\":2,\"eTag\":\"D1\",\"type\":\"ETyped\"},\n" +
-                        "\t{\"eNum\":2,\"next\":[3,4,5,15],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
-                        "\t{\"eNum\":3,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"gt\",\"expr\":\"80\"}},\n" +
-                        "\t{\"eNum\":4,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"MALE\"}},\n" +
-                        "\t{\"eNum\":5,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"ne\",\"expr\":\"RED\"}},\n" +
-                        "\t{\"eNum\":6,\"next\":7,\"eType\":2,\"eTag\":\"D2\",\"type\":\"ETyped\"},\n" +
-                        "\t{\"eNum\":7,\"next\":[9,10,11,17],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
-                        "\t{\"eNum\":8,\"next\":18,\"eType\":5,\"eTag\":\"K\",\"type\":\"ETyped\"},\n" +
-                        "\t{\"eNum\":9,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"FEMALE\"}},\n" +
-                        "\t{\"eNum\":10,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"lt\",\"expr\":\"80\"}},\n" +
-                        "\t{\"eNum\":11,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"eq\",\"expr\":\"RED\"}},\n" +
-                        "\t{\"eNum\":12,\"next\":19,\"eType\":1,\"eTag\":\"P\",\"type\":\"ETyped\"},\n" +
-                        "\t{\"eNum\":13,\"eType\":3,\"eTag\":\"H\",\"type\":\"ETyped\",\"next\":14},\n" +
-                        "\t{\"eNum\":14,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"angel\"}},\n" +
-                        "\t{\"eNum\":16,\"type\":\"RelProp\",\"pType\":11,\"con\":{\"op\":\"gt\",\"expr\":\"600\"}},\n" +
-                        "\t{\"eNum\":15,\"type\":\"Rel\",\"rType\":103,\"dir\":\"R\",\"next\":6,\"b\":16},\n" +
-                        "\t{\"eNum\":17,\"type\":\"Rel\",\"rType\":105,\"dir\":\"R\",\"next\":8},\n" +
-                        "\t{\"eNum\":18,\"type\":\"Rel\",\"rType\":106,\"dir\":\"L\",\"next\":12},\n" +
-                        "\t{\"eNum\":19,\"type\":\"Rel\",\"rType\":101,\"dir\":\"R\",\"next\":13}\n"))
-                .build();
-
-        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
-        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
-
-        while (!pageResourceInfo.isAvailable()) {
-            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
-            if (!pageResourceInfo.isAvailable()) {
-                Thread.sleep(10);
-            }
-        }
-
-        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        String plan = fuseClient.getPlan(queryResourceInfo.getExplainPlanUrl());
-
-        System.out.println(plan);
-        System.out.println("Assignments: ["+actualQueryResult.getAssignments().size()+"]");
-        actualQueryResult.getAssignments().forEach(a-> {
-            System.out.println("Assignment "+Arrays.toString(a.getEntities().toArray()));
-        });
-
-        int x = 5;
-
-    }
-
-    @Test
-    @Ignore
     public void test14() throws IOException, InterruptedException {
         String queryString = "{\n" +
                 "    \"elements\": [\n" +
@@ -801,8 +751,8 @@ public class RealClusterTest {
                 "\t{\"eNum\":12,\"next\":19,\"eType\":1,\"eTag\":\"P\",\"type\":\"ETyped\"},\n" +
                 "\t{\"eNum\":13,\"eType\":3,\"eTag\":\"H\",\"type\":\"ETyped\",\"next\":14},\n" +
                 "\t{\"eNum\":14,\"next\":[20,21],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
-                "\t{\"eNum\":20,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"angel\"}},\n" +
-                "\t{\"eNum\":21,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"rugen\"}},\n" +
+                "\t{\"eNum\":20,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"molly\"}},\n" +
+                "\t{\"eNum\":21,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"cotter\"}},\n" +
                 "\t{\"eNum\":16,\"type\":\"RelProp\",\"pType\":11,\"con\":{\"op\":\"gt\",\"expr\":\"100\"}},\n" +
                 "\t{\"eNum\":15,\"type\":\"Rel\",\"rType\":103,\"dir\":\"R\",\"next\":6,\"b\":16},\n" +
                 "\t{\"eNum\":17,\"type\":\"Rel\",\"rType\":105,\"dir\":\"R\",\"next\":8},\n" +
@@ -837,8 +787,8 @@ public class RealClusterTest {
                 new Rel(2, OWN.getrType(), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "H", HORSE.type, Collections.emptyList(), 4, 0),
                 new Quant1(4, QuantType.all, Arrays.asList(5, 6), 0),
-                new EProp(5, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "angel")),
-                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "rugen"))))
+                new EProp(5, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "molly")),
+                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "cotter"))))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -856,6 +806,34 @@ public class RealClusterTest {
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
         int x = 5;
     }
+
+    @Test
+    @Ignore
+    public void test17() throws IOException, InterruptedException, ParseException {
+        Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new EConcrete(1, "A", PERSON.type, "5", "5", Collections.emptyList(), 2, 0),
+                new Rel(2, KNOW.getrType(), Rel.Direction.R, null, 3, 0),
+                new ETyped(3, "H", PERSON.type, Collections.emptyList(), 0, 0)))
+                .build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+
 
     //region Fields
     private static FuseClient fuseClient;
