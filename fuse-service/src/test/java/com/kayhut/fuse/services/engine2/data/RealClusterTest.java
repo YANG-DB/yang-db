@@ -414,9 +414,9 @@ public class RealClusterTest {
 
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", DRAGON.type, singletonList(Integer.toString(FIRST_NAME.type)), 2, 0),
+                new ETyped(1, "A", DRAGON.type, Collections.emptyList(), 2, 0),
                 new Rel(2, OWN.getrType(), Rel.Direction.L, null, 3, 0),
-                new ETyped(3, "B", PERSON.type, singletonList(Integer.toString(NAME.type)), 0, 0)))
+                new ETyped(3, "B", PERSON.type, Collections.emptyList(), 0, 0)))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -820,6 +820,9 @@ public class RealClusterTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+
+        long start = System.currentTimeMillis();
+
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -833,7 +836,33 @@ public class RealClusterTest {
         int x = 5;
     }
 
+    @Test
+    @Ignore
+    public void testShimon1() throws IOException, InterruptedException, ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
+        String queryJson = "{\"ont\":\"Dragons\",\"name\":\"query14\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"next\":2,\"eType\":5,\"eTag\":\"SJlTeTCMb\",\"type\":\"ETyped\"},{\"eNum\":2,\"next\":[3,10],\"qType\":\"all\",\"type\":\"Quant1\"},{\"eNum\":3,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"chroyane\"}},{\"eNum\":4,\"next\":5,\"eType\":1,\"eTag\":\"rkHala0fb\",\"type\":\"ETyped\"},{\"eNum\":5,\"next\":[11,12],\"qType\":\"all\",\"type\":\"Quant1\"},{\"eNum\":6,\"eType\":4,\"eTag\":\"HJ4imaRGZ\",\"type\":\"ETyped\",\"next\":8},{\"eNum\":7,\"eType\":2,\"eTag\":\"SJ6KVT0GZ\",\"type\":\"ETyped\",\"next\":9},{\"eNum\":8,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"estren\"}},{\"eNum\":9,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"gt\",\"expr\":\"50\"}},{\"eNum\":10,\"type\":\"Rel\",\"rType\":106,\"dir\":\"L\",\"next\":4},{\"eNum\":11,\"type\":\"Rel\",\"rType\":102,\"dir\":\"R\",\"next\":6},{\"eNum\":12,\"type\":\"Rel\",\"rType\":101,\"dir\":\"R\",\"next\":7}]}";
+        Query query = new ObjectMapper().readValue(queryJson, Query.class);
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
+
+        long start = System.currentTimeMillis();
+
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
 
     //region Fields
     private static FuseClient fuseClient;

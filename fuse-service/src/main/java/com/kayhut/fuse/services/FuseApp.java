@@ -44,7 +44,7 @@ public class FuseApp extends Jooby {
                             "<h1>Fuse API</h1>\n" +
                             "<ul>\n" +
                             "<li>Resource Url: <a href=\"/fuse\">fuse</a></li>\n" +
-                            "<li>Health Url: <a href=\"/fuse/healthUrl\">healthUrl</a></li>\n" +
+                            "<li>Health Url: <a href=\"/fuse/health\">healthUrl</a></li>\n" +
                             "<li>Query Store Url: <a href=\"/fuse/query\">queryStoreUrl</a></li>\n" +
                             "<li>Search Store Url: <a href=\"/fuse/search\">searchStoreUrl</a></li>\n" +
                             "<li>Catalog Store Url: <a href=\"/fuse/catalog\">catalogStoreUrl</a></li>\n" +
