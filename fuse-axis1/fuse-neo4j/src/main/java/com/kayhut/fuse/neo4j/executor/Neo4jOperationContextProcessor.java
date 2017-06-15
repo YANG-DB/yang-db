@@ -97,9 +97,13 @@ public class Neo4jOperationContextProcessor implements
             throw new RuntimeException("Failed parsing cypher query " + ex);
         }
 
-        Cursor cursor = this.cursorFactory.createCursor(new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(), cypherQuery));
+        Cursor cursor = this.cursorFactory.createCursor(
+                new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(),
+                                                          cypherQuery,
+                                                          ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get()));
 
         time.stop();
+
         return submit(eventBus, context.of(cursor));
 
     }
