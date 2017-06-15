@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
@@ -45,9 +46,10 @@ public class Neo4jCursorFactory implements CursorFactory {
      */
     public static class Neo4jCursorContext implements Context {
         //region Constructors
-        public Neo4jCursorContext(QueryResource queryResource, String cypher) {
+        public Neo4jCursorContext(QueryResource queryResource, String cypher, Ontology ont) {
             this.queryResource = queryResource;
             this.cypher = cypher;
+            this.ont = ont;
         }
         //endregion
 
@@ -60,11 +62,17 @@ public class Neo4jCursorFactory implements CursorFactory {
         public String getCypher() {
             return cypher;
         }
+
+        public Ontology getOnt() {
+            return ont;
+        }
+
         //endregion
 
         //region Fields
         private QueryResource queryResource;
         private String cypher;
+        private Ontology ont;
         //endregion
     }
 
@@ -103,9 +111,9 @@ public class Neo4jCursorFactory implements CursorFactory {
                 for (Map.Entry<String, Object> entry :
                         record.asMap().entrySet()) {
                     if (entry.getValue() instanceof InternalNode) {
-                        ents.add(NeoGraphUtils.entityFromNodeValue(entry.getKey(), (InternalNode) entry.getValue()));
+                        ents.add(NeoGraphUtils.entityFromNodeValue(entry.getKey(), (InternalNode) entry.getValue(), context.getOnt()));
                     } else if (entry.getValue() instanceof InternalRelationship) {
-                        rels.add(NeoGraphUtils.relFromRelValue(entry.getKey(), (InternalRelationship) entry.getValue()));
+                        rels.add(NeoGraphUtils.relFromRelValue(entry.getKey(), (InternalRelationship) entry.getValue(), context.getOnt()));
                     } else {
                         //TODO: ?
                     }
