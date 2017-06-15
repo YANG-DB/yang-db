@@ -14,7 +14,7 @@ id, name, description, iconId, url, establishDate
 id, name, king, queen, independenceDay, funds
 
 #Horse Header
-id, name, weight, maxspeed, distance
+id, name, weight, maxSpeed, distance
 
 #Fires Header
 id, source(dragon_id), target(dragon_id), timestamp, temperature
