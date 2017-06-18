@@ -29,7 +29,7 @@ public class IngestOwnToES {
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 //        createIndices("mapping/owns.mapping", "own","own2000", getClient());
         TransportClient client = getClient();
-        loadHorses(client);
+        loadDragons(client);
     }
 
     private static void loadHorses(TransportClient client) {
@@ -64,8 +64,8 @@ public class IngestOwnToES {
         ObjectReader reader = new CsvMapper().reader(
                 CsvSchema.builder().setColumnSeparator(',')
                         .addColumn("id", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
+                        .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("startDate", CsvSchema.ColumnType.STRING)
                         .addColumn("endDate", CsvSchema.ColumnType.STRING)
                         .addColumn("direction", CsvSchema.ColumnType.STRING)

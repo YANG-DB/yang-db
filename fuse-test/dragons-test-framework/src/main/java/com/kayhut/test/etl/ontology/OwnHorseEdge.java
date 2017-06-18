@@ -62,7 +62,7 @@ public interface OwnHorseEdge {
         FileTransformer transformer = new FileTransformer("C:\\demo_data_6June2017\\personsRelations_OWNS_HORSE.csv",
                 "C:\\demo_data_6June2017\\personsRelations_OWNS_HORSE-out.csv",
                 chainedTransformer,
-                Arrays.asList(ID, ENTITY_B_ID, ENTITY_A_ID,  START_DATE, END_DATE),
+                Arrays.asList(ID, ENTITY_A_ID, ENTITY_B_ID,  START_DATE, END_DATE),
                 5000);
         transformer.transform();
     }

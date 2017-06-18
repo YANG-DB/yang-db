@@ -1,20 +1,6 @@
 package com.kayhut.test.scenario;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.kayhut.test.etl.ChunkPartitioner;
-import com.kayhut.test.etl.DateFieldPartitioner;
-import com.kayhut.test.etl.Partitioner;
-import org.apache.commons.io.FilenameUtils;
-
-import java.io.*;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static com.kayhut.test.scenario.ETLUtils.splitFileToChunks;
 
@@ -22,12 +8,12 @@ import static com.kayhut.test.scenario.ETLUtils.splitFileToChunks;
  * Created by Roman on 07/06/2017.
  */
 public class TimePartitionFile {
-    public static void mainDragons(String[] args) {
+    public static void mainOwnDragons(String[] args) {
         splitFileToChunks("C:\\demo_data_6June2017\\personsRelations_OWNS_DRAGON-out.csv", "C:\\demo_data_6June2017\\own_dragons_chunks",
                 CsvSchema.builder().setColumnSeparator(',')
                         .addColumn("id", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
+                        .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("startDate", CsvSchema.ColumnType.STRING)
                         .addColumn("endDate", CsvSchema.ColumnType.STRING)
                         .addColumn("direction", CsvSchema.ColumnType.STRING)
@@ -43,8 +29,8 @@ public class TimePartitionFile {
         splitFileToChunks("C:\\demo_data_6June2017\\personsRelations_OWNS_HORSE-out.csv", "C:\\demo_data_6June2017\\own_horses_chunks",
                 CsvSchema.builder().setColumnSeparator(',')
                         .addColumn("id", CsvSchema.ColumnType.STRING)
-                        .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("entityA.id", CsvSchema.ColumnType.STRING)
+                        .addColumn("entityB.id", CsvSchema.ColumnType.STRING)
                         .addColumn("startDate", CsvSchema.ColumnType.STRING)
                         .addColumn("endDate", CsvSchema.ColumnType.STRING)
                         .addColumn("direction", CsvSchema.ColumnType.STRING)
@@ -174,6 +160,6 @@ public class TimePartitionFile {
                 "startDate");
     }
     public static void main(String[] args) {
-        mainRegisteredIn(args);
+        mainOwnHorses(args);
     }
 }
