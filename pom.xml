@@ -26,46 +26,17 @@
       <tag>1.0</tag>
   </scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>RELEASE</version>
-        </dependency>
-    </dependencies>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <top.dir>${project.basedir}</top.dir>
         <version.major>1</version.major>
         <version.minor>11</version.minor>
 
-        <!-- maven checksum plugin -->
         <checksum-maven-plugin.version>1.2</checksum-maven-plugin.version>
-        <!-- maven static code analysis -->
         <findbugs.version>3.0.1</findbugs.version>
-        <!-- maven git tag plugin -->
         <git-commit-id-plugin.version>2.1.9</git-commit-id-plugin.version>
-        <!-- maven checkstyle plugin -->
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
-        <!-- maven dependency plugin -->
         <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
-        <!-- maven shade plugin (uber-jar)-->
         <maven-shade-plugin.version>2.1</maven-shade-plugin.version>
 
         <!-- logging -->
@@ -81,10 +52,33 @@
         <slf4j.version>1.7.13</slf4j.version>
         <rest-assured.version>3.0.1</rest-assured.version>
 
+        <jackson.version>2.8.1</jackson.version>
+        <commons.io.version>2.5</commons.io.version>
+        <commons.configuration.version>1.10</commons.configuration.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>${commons.configuration.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby</artifactId>
@@ -133,18 +127,19 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+                <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
                 <version>${easymock.version}</version>
+                <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${rest-assured.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
