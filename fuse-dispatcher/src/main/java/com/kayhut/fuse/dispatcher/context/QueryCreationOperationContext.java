@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.query.QueryMetadata;
 /**
  * Created by lior on 22/02/2017.
  */
-public final class QueryCreationOperationContext extends OperationContextBase<QueryCreationOperationContext> {
+public final class QueryCreationOperationContext extends OperationContextBase<QueryCreationOperationContext> implements QueryMetadata.QueryMetadataAble {
 
 
     public interface Processor {

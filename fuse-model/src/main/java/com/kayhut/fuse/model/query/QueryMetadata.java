@@ -4,6 +4,11 @@ package com.kayhut.fuse.model.query;
  * Created by lior on 21/02/2017.
  */
 public final class QueryMetadata {
+
+    public interface QueryMetadataAble {
+        QueryMetadata getQueryMetadata();
+    }
+
     private String id;
     private String name;
     private long time;

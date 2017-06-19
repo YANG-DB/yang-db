@@ -1,8 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -13,6 +11,7 @@ import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -34,8 +32,6 @@ import static com.kayhut.fuse.model.Utils.submit;
 public class ValidatorStrategyRegisteredAsgDriver implements QueryValidationOperationContext.Processor {
 
     //region Constructors
-    @Inject
-    private MetricRegistry metricRegistry;
 
     @Inject
     public ValidatorStrategyRegisteredAsgDriver(
@@ -53,6 +49,7 @@ public class ValidatorStrategyRegisteredAsgDriver implements QueryValidationOper
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @TimerAnnotation
     public ValidationContext process(QueryValidationOperationContext context) {
         Optional<Ontology> ontology = this.ontologyProvider.get(context.getQuery().getOnt());
         if (!ontology.isPresent()) {
@@ -60,17 +57,10 @@ public class ValidatorStrategyRegisteredAsgDriver implements QueryValidationOper
         }
         try {
 
-            Timer.Context time = metricRegistry.timer(
-                    name(QueryCreationOperationContext.class.getSimpleName(),
-                            context.getQueryMetadata().getId(),
-                            ValidatorStrategyRegisteredAsgDriver.class.getSimpleName())).time();
-
-
             AsgStrategyContext asgStrategyContext = new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
             AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(), new NextEbaseFactory(), new BNextFactory()).get();
             Stream<ValidationContext> validationContextStream = Stream.ofAll(this.strategies).toStream().map(strategy -> strategy.apply(asgQuery, asgStrategyContext));
 
-            time.stop();
             //if valid continue flow - other return error to client
             if (validationContextStream.toJavaStream().anyMatch(p -> !p.valid())) {
                 List<String> errors = validationContextStream.toJavaStream().filter(p -> !p.valid())

@@ -2,12 +2,19 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
 /**
  * Created by User on 07/03/2017.
  */
-public class CursorCreationOperationContext extends OperationContextBase<CursorCreationOperationContext> {
+public class CursorCreationOperationContext extends OperationContextBase<CursorCreationOperationContext> implements QueryMetadata.QueryMetadataAble {
+
+    @Override
+    public QueryMetadata getQueryMetadata() {
+        return getQueryResource().getQueryMetadata();
+    }
+
     public interface Processor {
         CursorCreationOperationContext process(CursorCreationOperationContext context) throws Exception;
     }

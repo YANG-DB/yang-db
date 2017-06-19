@@ -1,17 +1,16 @@
 package com.kayhut.fuse.asg.strategy;
 
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
-import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -20,7 +19,6 @@ import javaslang.collection.Stream;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -28,8 +26,6 @@ import static com.kayhut.fuse.model.Utils.submit;
  */
 @Singleton
 public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperationContext.Processor {
-    @Inject
-    private MetricRegistry metricRegistry;
 
     //region Constructors
     @Inject
@@ -48,6 +44,7 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @TimerAnnotation
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         if(context.getAsgQuery() != null) {
             return context;
@@ -58,17 +55,10 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
             throw new RuntimeException("No ontology provided");
         }
 
-        Timer.Context time = metricRegistry.timer(
-                name(QueryCreationOperationContext.class.getSimpleName(),
-                        context.getQueryMetadata().getId(),
-                        SimpleStrategyRegisteredAsgDriver.class.getSimpleName())).time();
-
-
         AsgStrategyContext asgStrategyContext =  new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
         AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(),new NextEbaseFactory(), new BNextFactory() ).get();
         Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery,asgStrategyContext));
 
-        time.stop();
         return submit(eventBus, context.of(asgQuery));
     }
     //endregion

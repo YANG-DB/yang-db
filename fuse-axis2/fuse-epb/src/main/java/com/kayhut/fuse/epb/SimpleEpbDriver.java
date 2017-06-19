@@ -1,18 +1,16 @@
 package com.kayhut.fuse.epb;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
+import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.epb.plan.PlanSearcher;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
-import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
 
 /**
@@ -24,9 +22,6 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
 
     @Inject
-    private MetricRegistry metricRegistry;
-
-    @Inject
     public SimpleEpbDriver(EventBus bus, PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
         this.bus = bus;
         this.planSearcher = planSearcher;
@@ -35,6 +30,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
 
     @Override
     @Subscribe
+    @TimerAnnotation
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         //if asg not ready yet -> return
         if (context.getAsgQuery() == null) {
@@ -45,17 +41,11 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
             return context;
         }
 
-        Timer.Context time = metricRegistry.timer(
-                name(QueryCreationOperationContext.class.getSimpleName(),
-                        context.getQueryMetadata().getId(),
-                        SimpleEpbDriver.class.getSimpleName())).time();
-
         AsgQuery query = context.getAsgQuery();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         //get first
         PlanWithCost<Plan, PlanDetailedCost> first = plans.iterator().next();
         System.out.println("Selected Plan: " + first.getPlan().toString());
-        time.stop();
         return submit(bus, context.of(first));
     }
 }

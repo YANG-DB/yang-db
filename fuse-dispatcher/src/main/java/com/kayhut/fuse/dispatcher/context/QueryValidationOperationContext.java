@@ -8,7 +8,7 @@ import com.kayhut.fuse.model.query.QueryMetadata;
 /**
  * Created by liorp on 6/11/2017.
  */
-public class QueryValidationOperationContext extends OperationContextBase<QueryValidationOperationContext> {
+public class QueryValidationOperationContext extends OperationContextBase<QueryValidationOperationContext> implements QueryMetadata.QueryMetadataAble {
     public interface Processor {
         ValidationContext process(QueryValidationOperationContext context) ;
     }
