@@ -17,18 +17,21 @@
     </properties>
 
     <dependencies>
+        <!-- runtime -->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!-- runtime -->
 
-        <!-- test dependencies -->
+        <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- tests -->
     </dependencies>
     <build>
         <plugins>

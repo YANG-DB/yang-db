@@ -26,7 +26,6 @@ import org.elasticsearch.search.SearchHit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.neo4j.cypher.internal.frontend.v2_3.ast.Foreach;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.nio.file.Paths;

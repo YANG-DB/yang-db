@@ -16,6 +16,7 @@
     </properties>
 
     <dependencies>
+        <!-- runtime -->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
@@ -26,24 +27,21 @@
             <artifactId>fuse-dispatcher</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.google.inject/guice -->
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.1.0</version>
         </dependency>
+        <!-- runtime -->
 
+        <!-- tests -->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
@@ -56,6 +54,7 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- tests -->
     </dependencies>
 
     <build>

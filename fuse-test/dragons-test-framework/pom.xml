@@ -12,25 +12,32 @@
     <artifactId>dragons-test-framework</artifactId>
 
     <dependencies>
+        <!-- runtime -->
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-executor</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-test-framework</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>2.4.5</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
@@ -45,12 +52,10 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
-            <version>2.7.0</version>
         </dependency>
         <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
-            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
@@ -74,11 +79,9 @@
             <artifactId>neo4j-shell</artifactId>
             <version>${neo4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>fuse-executor</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+        <!-- runtime -->
+
+        <!-- test -->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
@@ -86,12 +89,7 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>fuse-test-framework</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
+        <!-- test -->
     </dependencies>
 
 

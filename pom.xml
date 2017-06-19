@@ -23,8 +23,8 @@
 
     <scm>
         <developerConnection>scm:git:http://gita.westeurope.cloudapp.azure.com/fuse/Fuse.git</developerConnection>
-      <tag>1.0</tag>
-  </scm>
+        <tag>1.0</tag>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,26 +39,59 @@
         <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
         <maven-shade-plugin.version>2.1</maven-shade-plugin.version>
 
-        <!-- logging -->
-        <slf4j-api.version>1.7.21</slf4j-api.version>
-        <logback-classic.version>1.1.7</logback-classic.version>
+        <!-- jackson -->
+        <jackson.version>2.8.1</jackson.version>
+
+        <!-- commons -->
+        <commons-io.version>2.5</commons-io.version>
+        <commons-configuration.version>1.10</commons-configuration.version>
+        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-math3.version>3.6.1</commons-math3.version>
+        <commons-collections4.version>4.1</commons-collections4.version>
+
+        <!-- google -->
+        <google.guava.version>21.0</google.guava.version>
+        <google.guice.version>4.1.0</google.guice.version>
+
+        <!-- caffeine -->
+        <caffeine.version>2.3.3</caffeine.version>
+
+        <!-- elasticsearch -->
+        <elasticsearch.version>2.4.5</elasticsearch.version>
+
+        <!-- tinkerpop -->
+        <tinkerpop.version>3.2.4</tinkerpop.version>
+
+        <!-- unipop -->
+        <unipop.version>0.2</unipop.version>
+
+        <!-- opencsv -->
+        <opencsv.version>3.8</opencsv.version>
+
+        <!-- javaslang -->
+        <javaslang.version>2.0.4</javaslang.version>
 
         <!--jooby plugin -->
-        <jooby.version>1.0.1</jooby.version>
+        <jooby.version>1.1.2</jooby.version>
 
-        <!-- junit testing -->
+        <!-- logging -->
+        <slf4j.version>1.7.13</slf4j.version>
+        <slf4j-api.version>1.7.21</slf4j-api.version>
+        <logback.version>1.1.7</logback.version>
+
+        <!-- test -->
         <junit.version>4.12</junit.version>
         <easymock.version>3.2</easymock.version>
-        <slf4j.version>1.7.13</slf4j.version>
         <rest-assured.version>3.0.1</rest-assured.version>
-
-        <jackson.version>2.8.1</jackson.version>
-        <commons.io.version>2.5</commons.io.version>
-        <commons.configuration.version>1.10</commons.configuration.version>
+        <mockito-all.version>1.10.19</mockito-all.version>
+        <assertj.version>3.6.2</assertj.version>
+        <jsonassert.version>1.4.0</jsonassert.version>
+        <hamcrest-all.version>1.3</hamcrest-all.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- jackson -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
@@ -70,59 +103,179 @@
                 <version>${jackson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-csv</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <!-- jackson -->
+
+            <!-- commons -->
+            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-configuration</groupId>
                 <artifactId>commons-configuration</artifactId>
-                <version>${commons.configuration.version}</version>
+                <version>${commons-configuration.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>${commons-math3.version}</version>
+            </dependency>
+            <!-- commons -->
+
+            <!-- google -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${google.guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${google.guice.version}</version>
+            </dependency>
+            <!-- google -->
+
+            <!-- caffeine -->
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            <!-- caffeine -->
+
+            <!-- jooby -->
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-netty</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-caffeine</artifactId>
-                <version>1.1.2</version>
+                <version>${jooby.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-scanner</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-jackson</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-metrics</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
+            <!-- jooby -->
+
+            <!-- elasticsearch -->
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <!-- elasticsearch -->
+
+            <!-- tinkerpop -->
+            <dependency>
+                <groupId>org.apache.tinkerpop</groupId>
+                <artifactId>gremlin-core</artifactId>
+                <version>${tinkerpop.version}</version>
+            </dependency>
+            <!-- tinkerpop -->
+
+            <!-- unipop -->
+            <dependency>
+                <groupId>unipop</groupId>
+                <artifactId>unipop-core</artifactId>
+                <version>${unipop.version}</version>
+                <!--This is needed to avoid bringing log4j because it interferes with slf4j logback setup, which is the default for jooby-->
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>unipop</groupId>
+                <artifactId>unipop-elastic</artifactId>
+                <version>${unipop.version}</version>
+            </dependency>
+            <!-- unipop -->
+
+            <!-- opencsv -->
+            <dependency>
+                <groupId>com.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>${opencsv.version}</version>
+            </dependency>
+            <!-- opencsv -->
+
+            <!-- javaslang -->
+            <dependency>
+                <groupId>io.javaslang</groupId>
+                <artifactId>javaslang</artifactId>
+                <version>${javaslang.version}</version>
+            </dependency>
+            <!-- javaslang -->
 
             <!-- logging -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>${logback-classic.version}</version>
+                <version>${logback.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+            <!-- logging -->
 
-            <!-- Test dependencies -->
+            <!-- test -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -136,11 +289,42 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito-all.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${rest-assured.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.skyscreamer</groupId>
+                <artifactId>jsonassert</artifactId>
+                <version>${jsonassert.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>${commons-math3.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>${hamcrest-all.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- test -->
         </dependencies>
     </dependencyManagement>
 

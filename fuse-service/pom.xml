@@ -20,8 +20,7 @@
 
 
     <dependencies>
-
-        <!--functional dependencies -->
+        <!-- runtime -->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-validator</artifactId>
@@ -37,19 +36,16 @@
             <artifactId>fuse-dispatcher</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-neo4j</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-epb</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-executor</artifactId>
@@ -65,51 +61,43 @@
             <artifactId>dragons-test-framework</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-       <!-- Server -->
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-netty</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-scanner</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-caffeine</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-jackson</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.jooby</groupId>
             <artifactId>jooby-metrics</artifactId>
         </dependency>
-        <!--serialization-->
         <dependency>
             <groupId>com.cedarsoftware</groupId>
             <artifactId>json-io</artifactId>
             <version>4.9.10</version>
         </dependency>
-        <!-- logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
+        <!-- runtime -->
 
-        <!-- Tests -->
+        <!-- tests -->
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--hamcrest-json matcher-->
         <dependency>
             <groupId>uk.co.datumedge</groupId>
             <artifactId>hamcrest-json</artifactId>

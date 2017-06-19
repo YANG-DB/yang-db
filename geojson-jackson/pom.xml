@@ -14,6 +14,7 @@
     </properties>
 
     <dependencies>
+        <!-- runtime -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
@@ -22,6 +23,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+        <!-- runtime -->
     </dependencies>
 
 </project>

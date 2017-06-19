@@ -16,15 +16,24 @@
     </properties>
 
     <dependencies>
+        <!-- runtime -->
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>geojson-jackson</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
+            <artifactId>fuse-model</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
-            <version>3.2.4</version>
         </dependency>
         <dependency>
             <groupId>unipop</groupId>
             <artifactId>unipop-core</artifactId>
-            <version>0.2</version>
             <!--This is needed to avoid bringing log4j because it interferes with slf4j logback setup, which is the default for jooby-->
             <exclusions>
                 <exclusion>
@@ -40,50 +49,35 @@
         <dependency>
             <groupId>unipop</groupId>
             <artifactId>unipop-elastic</artifactId>
-            <version>0.2</version>
         </dependency>
         <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
-            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>19.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>geojson-jackson</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>2.4.4</version>
         </dependency>
+        <!-- runtime -->
 
         <!-- tests-->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>21.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kayhut</groupId>
-            <artifactId>fuse-model</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.skyscreamer</groupId>

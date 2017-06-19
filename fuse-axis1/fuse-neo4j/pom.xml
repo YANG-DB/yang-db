@@ -16,6 +16,7 @@
     </properties>
 
     <dependencies>
+        <!-- runtime -->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
@@ -31,7 +32,6 @@
             <artifactId>fuse-asg</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
         <!-- Neo4j -->
         <dependency>
             <!-- This gives us the Procedure API our runtime code uses. -->
@@ -40,7 +40,6 @@
             <version>${neo4j.version}</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <!-- Used to send cypher statements to our procedure. -->
             <groupId>org.neo4j.driver</groupId>
@@ -48,14 +47,14 @@
             <version>1.1.0</version>
             <scope>compile</scope>
         </dependency>
+        <!-- runtime -->
 
-        <!-- Tests -->
+        <!-- test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <!-- This is used for a utility that lets us start Neo4j with
                  a specific Procedure, which is nice for writing tests. -->
@@ -64,6 +63,7 @@
             <version>${neo4j.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- test -->
     </dependencies>
 
     <build>

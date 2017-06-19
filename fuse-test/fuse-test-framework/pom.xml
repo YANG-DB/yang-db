@@ -10,25 +10,22 @@
     <artifactId>fuse-test-framework</artifactId>
 
     <dependencies>
+        <!-- runtime -->
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>2.4.4</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jna</groupId>
@@ -38,12 +35,10 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
-            <version>2.7.0</version>
         </dependency>
         <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
-            <version>2.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.neo4j</groupId>
@@ -67,6 +62,9 @@
             <artifactId>neo4j-shell</artifactId>
             <version>${neo4j.version}</version>
         </dependency>
+        <!-- runtime -->
+
+        <!-- tests -->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-model</artifactId>
@@ -77,7 +75,9 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
+        <!-- tests -->
     </dependencies>
 
 
