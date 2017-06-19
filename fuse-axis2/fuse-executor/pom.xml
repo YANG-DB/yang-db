@@ -55,6 +55,7 @@
     <build>
         <plugins>
 
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -63,7 +64,7 @@
                         <exclude>org/kayhut/**/*.java</exclude>
                     </excludes>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <!-- Parent module has the same plugin and does the work of
                  generating -sources.jar for each project. But without the

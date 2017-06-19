@@ -432,7 +432,10 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <configuration>
                         <threadCount>1</threadCount>
-                        <perCoreThreadCount>true</perCoreThreadCount>
+                        <perCoreThreadCount>false</perCoreThreadCount>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
                         <parallel>both</parallel>
                         <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
                     </configuration>
