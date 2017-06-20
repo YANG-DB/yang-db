@@ -332,7 +332,6 @@ public class StatCalculatorTest {
         }
 
         elasticEmbeddedNode.close();
-        Thread.sleep(4000);
 
     }
 

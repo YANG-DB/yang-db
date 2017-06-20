@@ -204,7 +204,5 @@ public class statCalculatorDynamicFieldTest {
         }
 
         elasticEmbeddedNode.close();
-        Thread.sleep(4000);
-
     }
 }

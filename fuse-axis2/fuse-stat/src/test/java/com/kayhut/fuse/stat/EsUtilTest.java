@@ -283,8 +283,6 @@ public class EsUtilTest {
         }
 
         elasticEmbeddedNode.close();
-        Thread.sleep(4000);
-
     }
 
 }
