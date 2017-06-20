@@ -25,6 +25,8 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import javaslang.Tuple2;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -51,7 +53,6 @@ public class ElasticStatisticsGraphProviderTest {
     private static StatConfig statConfig;
 
     private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
-    private static final long NUM_OF_DRAGONS_IN_INDEX_2 = 555L; //HAMSA HAMSA HAMSA
 
     private static final String DATA_TYPE_DRAGON = "dragon";
     private static final String DATA_TYPE_FIRE = "fire";
@@ -68,9 +69,6 @@ public class ElasticStatisticsGraphProviderTest {
     private static final String DATA_FIELD_NAME_GENDER = "gender";
     private static final String DATA_FIELD_NAME_TYPE = "_type";
 
-
-    private static final List<String> DRAGON_COLORS =
-            Arrays.asList("red", "green", "yellow", "blue", "00", "11", "22", "33", "44", "55");
     private static final List<String> DRAGON_GENDERS =
             Arrays.asList("male", "female");
 
@@ -136,17 +134,6 @@ public class ElasticStatisticsGraphProviderTest {
     }
 
     @Test
-    public void getConditionHistogram() throws Exception {
-//        populateNumericStatDocs(VERTEX_INDICES,
-//                DRAGON_TYPE_NAME,
-//                AGE_FIELD_NAME,
-//                10L,
-//                100L,
-//                20);
-//        Thread.sleep(2000);
-    }
-
-    @Test
     public void getConditionHistogram1() throws Exception {
 
     }
@@ -164,28 +151,12 @@ public class ElasticStatisticsGraphProviderTest {
      */
     @BeforeClass
     public static void setup() throws Exception {
-
         statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
-        statClient = new ElasticClientProvider(statConfig).getStatClient();
-
-//        MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH);
-//        MappingFileElasticConfigurer configurerIndex2 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH);
-//        MappingFileElasticConfigurer configurerIndex3 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH);
-//        MappingFileElasticConfigurer configurerIndex4 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH);
-//
-//        MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH);
-//
-//        elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{
-//                configurerIndex1,
-//                configurerIndex2,
-//                configurerIndex3,
-//                configurerIndex4,
-//                configurerStat});
 
         elasticEmbeddedNode = new ElasticEmbeddedNode();
+        elasticEmbeddedNode.getClient().admin().indices().create(new CreateIndexRequest(statConfig.getStatIndexName())).actionGet();
 
-
-        Thread.sleep(4000);
+        statClient = new ElasticClientProvider(statConfig).getStatClient();
     }
 
     @AfterClass
@@ -196,23 +167,6 @@ public class ElasticStatisticsGraphProviderTest {
         }
 
         elasticEmbeddedNode.close();
-        Thread.sleep(4000);
-    }
-
-    private static void populateNumericStatDocs(List<String> indices, String type, String field, long min, long max, int numOfBins) throws IOException {
-        new ElasticDataPopulator(
-                statClient,
-                statConfig.getStatIndexName(),
-                statConfig.getStatNumericTypeName(),
-                "id",
-                () -> prepareNumericStatisticsDocs(
-                        indices,
-                        type,
-                        field,
-                        min,
-                        max,
-                        numOfBins
-                )).populate();
     }
 
     /**

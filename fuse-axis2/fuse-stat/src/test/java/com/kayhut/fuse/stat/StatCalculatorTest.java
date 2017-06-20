@@ -140,13 +140,6 @@ public class StatCalculatorTest {
         }
         StatTestUtil.printAllDocs(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME);
         SearchResponse firstNDocumentsInType = EsUtil.getFirstNDocumentsInType(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME, 1);
-
-        /*boolean a = true;
-        while(a) {
-            a = !a;
-            a = !a;
-            Thread.sleep(10000);
-        }*/
     }
 
     @Test

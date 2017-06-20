@@ -285,6 +285,7 @@ public class RealClusterTest {
 
 
     @Test
+    @Ignore
     public void test5_with_no_props() throws IOException, InterruptedException, ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

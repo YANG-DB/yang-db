@@ -38,6 +38,7 @@ import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.junit.*;
 
 import java.text.ParseException;
@@ -97,7 +98,7 @@ public abstract class EntityRelationEntityTest {
 
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
-                FIRE.getName().toLowerCase() +"20170511",
+                FIRE.getName().toLowerCase() + "20170511",
                 FIRE.getName(),
                 idField,
                 () -> createDragonFireDragonEdges(
@@ -129,14 +130,19 @@ public abstract class EntityRelationEntityTest {
                 .populate(); // date interval is 5 min
 
 
-        Thread.sleep(2000);
+        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest(
+                PERSON.name.toLowerCase(),
+                DRAGON.name.toLowerCase(),
+                FIRE.getName().toLowerCase() + "20170511",
+                FIRE.getName().toLowerCase() + "20170512",
+                FIRE.getName().toLowerCase() + "20170513"
+        )).actionGet();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
         if (elasticEmbeddedNode != null) {
             elasticEmbeddedNode.close();
-            Thread.sleep(2000);
         }
     }
 

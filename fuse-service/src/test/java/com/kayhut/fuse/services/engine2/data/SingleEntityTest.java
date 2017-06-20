@@ -14,6 +14,9 @@ import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
@@ -40,6 +43,9 @@ public class SingleEntityTest {
         String idField = "id";
 
         elasticEmbeddedNode = new ElasticEmbeddedNode();
+        elasticEmbeddedNode.getClient().admin().indices().create(new CreateIndexRequest("person")).actionGet();
+        elasticEmbeddedNode.getClient().admin().indices().create(new CreateIndexRequest("dragon")).actionGet();
+
         new ElasticDataPopulator(
                 elasticEmbeddedNode.getClient(),
                 "person",
@@ -54,6 +60,9 @@ public class SingleEntityTest {
                 idField,
                 () -> createDragons(10)).populate();
 
+        elasticEmbeddedNode.getClient().admin().indices()
+                .refresh(new RefreshRequest("person", "dragon")).actionGet();
+
         Thread.sleep(2000);
     }
 
@@ -61,7 +70,6 @@ public class SingleEntityTest {
     public static void cleanup() throws Exception {
         if (elasticEmbeddedNode != null) {
             elasticEmbeddedNode.close();
-            Thread.sleep(2000);
         }
     }
 

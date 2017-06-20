@@ -16,6 +16,7 @@ import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -155,8 +156,6 @@ public class ElasticStatProviderTest {
                 DRAGON_GENDERS,
                 DRAGON_ADDRESS_LENGTH);
 
-        Thread.sleep(4000);
-
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME,
@@ -164,17 +163,17 @@ public class ElasticStatProviderTest {
                 "id",
                 () -> dragonsList
         ).populate();
+        dataClient.admin().indices().refresh(new RefreshRequest(DATA_INDEX_NAME)).actionGet();
 
-        Thread.sleep(2000);
         StatCalculator.loadDefaultStatParameters(
                 statConfig.getStatIndexName(),
                 statConfig.getStatNumericTypeName(),
                 statConfig.getStatStringTypeName(),
                 statConfig.getStatTermTypeName(),
                 statConfig.getStatGlobalTypeName());
-        StatCalculator.buildStatisticsBasedOnConfiguration(dataClient, statClient, buildStatContainer());
-        Thread.sleep(3000);
 
+        StatCalculator.buildStatisticsBasedOnConfiguration(dataClient, statClient, buildStatContainer());
+        statClient.admin().indices().refresh(new RefreshRequest(statConfig.getStatIndexName())).actionGet();
     }
 
     @AfterClass
@@ -190,8 +189,6 @@ public class ElasticStatProviderTest {
         }
 
         elasticEmbeddedNode.close();
-        Thread.sleep(4000);
-
     }
 
     //Per test

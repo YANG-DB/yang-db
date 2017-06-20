@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services.engine2.data;
 
 import com.codahale.metrics.MetricRegistry;
+import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.PromiseVertexFilterController;
@@ -19,12 +20,10 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.Client;
 import org.joda.time.DateTime;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
@@ -70,14 +69,25 @@ public class PromiseEdgeTest{
                 idField,
                 () -> createFire(100)).populate();
 
-        Thread.sleep(2000);
-
         client = elasticEmbeddedNode.getClient();
+        client.admin().indices().refresh(new RefreshRequest(indexName)).actionGet();
 
         configuration = mock(ElasticGraphConfiguration.class);
 
         graph = mock(UniGraph.class);
     }
+
+    @AfterClass
+    public static void cleanup() throws Exception {
+        elasticEmbeddedNode.close();
+        client.close();
+    }
+
+    @Before
+    public void before() {
+        Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));
+    }
+
 
     @Test
     public void testPromiseEdges() {
@@ -189,14 +199,6 @@ public class PromiseEdgeTest{
             Assert.assertEquals("d11", e.inVertex().id());
         });
 
-    }
-
-    @AfterClass
-    public static void cleanup() throws Exception {
-
-        elasticEmbeddedNode.close();
-        Thread.sleep(2000);
-        client.close();
     }
 
     private static Iterable<Map<String, Object>> createDragons(int numDragons) {

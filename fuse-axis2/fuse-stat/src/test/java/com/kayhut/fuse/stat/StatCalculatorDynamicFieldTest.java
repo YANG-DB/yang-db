@@ -62,7 +62,8 @@ public class StatCalculatorDynamicFieldTest {
         int numOfBins = ((HistogramDynamic) histogram.get()).getNumOfBins();
 
         StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
-        Thread.sleep(3000);
+        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
+
         Set<Map<String, Object>> docs = StatTestUtil.searchByTerm(
                 statClient,
                 new String[]{STAT_INDEX_NAME},

@@ -46,6 +46,5 @@ public class TestSuite {
     public static void clearDataFolder() throws InterruptedException {
         String dir = System.getProperty("user.dir") + File.separator + configuration.getString("resultsPath");
         TestUtil.cleanDirectory(new File(dir));
-        Thread.sleep(1000);
     }
 }

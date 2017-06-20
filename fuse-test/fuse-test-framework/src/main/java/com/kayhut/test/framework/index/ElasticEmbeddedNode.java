@@ -53,7 +53,8 @@ public class ElasticEmbeddedNode implements AutoCloseable {
             try {
                 Settings settings = Settings.settingsBuilder()
                         .put("cluster.name", nodeName).build();
-                this.client = TransportClient.builder().settings(settings).build().addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
+                this.client = TransportClient.builder().settings(settings).build()
+                        .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
             } catch (UnknownHostException e) {
                 throw new UnknownError(e.getMessage());
             }
