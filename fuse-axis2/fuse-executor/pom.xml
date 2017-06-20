@@ -45,6 +45,15 @@
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-unipop</artifactId>
         </dependency>
+        <!-- runtime -->
+
+        <!-- test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- test -->
     </dependencies>
 
     <build>
