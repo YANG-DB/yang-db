@@ -67,7 +67,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -93,7 +93,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 
@@ -168,7 +168,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -180,7 +180,7 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 

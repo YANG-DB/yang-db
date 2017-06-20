@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
@@ -63,20 +64,22 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
     }
 
     @Override
-    public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
+    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
         for(ChainedPlanValidator.PlanOpValidator planOpValidator : this.planOpValidators) {
-            boolean isPlanOpValid = planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
+            ValidationContext planOpValid = planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
 
-            if (isPlanOpValid && this.mode == Mode.one) {
-                return true;
+            if (planOpValid.valid() && this.mode == Mode.one) {
+                return ValidationContext.OK;
             }
 
-            if (!isPlanOpValid && this.mode == Mode.all) {
-                return false;
+            if (!planOpValid.valid() && this.mode == Mode.all) {
+                return planOpValid;
             }
         }
 
-        return this.mode == Mode.all;
+        if(this.mode == Mode.all)
+            return ValidationContext.OK;
+        return new ValidationContext(false,"Not all valid");
     }
     //endregion
 
