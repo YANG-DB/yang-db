@@ -317,8 +317,6 @@ public class StatCalculatorTest {
         dataClient.admin().indices().refresh(new RefreshRequest(
                 DATA_INDEX_NAME_1, DATA_INDEX_NAME_2, DATA_INDEX_NAME_3, DATA_INDEX_NAME_4))
                 .actionGet();
-
-        Thread.sleep(4000);
     }
 
     @AfterClass

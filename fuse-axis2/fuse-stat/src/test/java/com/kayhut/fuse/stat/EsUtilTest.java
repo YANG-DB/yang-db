@@ -268,7 +268,6 @@ public class EsUtilTest {
         ).populate();
 
         dataClient.admin().indices().refresh(new RefreshRequest(DATA_INDEX_NAME)).actionGet();
-        Thread.sleep(4000);
     }
 
     @AfterClass
