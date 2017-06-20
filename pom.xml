@@ -5,7 +5,8 @@
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
+
     <modules>
         <module>data-gen</module>
         <module>fuse-model</module>
@@ -16,9 +17,9 @@
         <module>fuse-axis1</module>
         <module>fuse-axis2</module>
         <module>fuse-test</module>
-        <module>geojson-jackson</module>
         <module>fuse-datagen</module>
         <module>fuse-assembly</module>
+        <module>geojson-jackson</module>
     </modules>
 
     <scm>
@@ -32,12 +33,15 @@
         <version.major>1</version.major>
         <version.minor>11</version.minor>
 
-        <checksum-maven-plugin.version>1.2</checksum-maven-plugin.version>
-        <findbugs.version>3.0.1</findbugs.version>
-        <git-commit-id-plugin.version>2.1.9</git-commit-id-plugin.version>
+        <!-- plugins -->
+        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
-        <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
-        <maven-shade-plugin.version>2.1</maven-shade-plugin.version>
+
+        <!-- fuse -->
+        <fuse.version>${project.version}</fuse.version>
 
         <!-- jackson -->
         <jackson.version>2.8.1</jackson.version>
@@ -58,6 +62,10 @@
 
         <!-- elasticsearch -->
         <elasticsearch.version>2.4.5</elasticsearch.version>
+
+        <!-- neo4j -->
+        <neo4j.version>3.1.0</neo4j.version>
+        <neo4j-java-driver.version>1.1.0</neo4j-java-driver.version>
 
         <!-- tinkerpop -->
         <tinkerpop.version>3.2.4</tinkerpop.version>
@@ -90,10 +98,74 @@
         <assertj.version>3.6.2</assertj.version>
         <jsonassert.version>1.4.0</jsonassert.version>
         <hamcrest-all.version>1.3</hamcrest-all.version>
+        <hamcres-json.version>0.2</hamcres-json.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- fuse -->
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-model</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-dispatcher</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-asg</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-neo4j</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-epb</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-executor</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-stat</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-gta</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-unipop</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-service</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-validator</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>geojson-jackson</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <!-- fuse -->
+
             <!-- jackson -->
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -207,6 +279,19 @@
             </dependency>
             <!-- elasticsearch -->
 
+            <!-- neo4j -->
+            <dependency>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j</artifactId>
+                <version>${neo4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.neo4j.driver</groupId>
+                <artifactId>neo4j-java-driver</artifactId>
+                <version>${neo4j-java-driver.version}</version>
+            </dependency>
+            <!-- neo4j -->
+
             <!-- tinkerpop -->
             <dependency>
                 <groupId>org.apache.tinkerpop</groupId>
@@ -287,6 +372,42 @@
             <!-- metrics -->
 
             <!-- test -->
+            <!-- fuse -->
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-test-framework</artifactId>
+                <version>${fuse.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>dragons-test-framework</artifactId>
+                <version>${fuse.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-model</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-unipop</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-asg</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <!-- fuse -->
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -335,6 +456,12 @@
                 <version>${hamcrest-all.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>uk.co.datumedge</groupId>
+                <artifactId>hamcrest-json</artifactId>
+                <version>${hamcres-json.version}</version>
+                <scope>test</scope>
+            </dependency>
             <!-- test -->
         </dependencies>
     </dependencyManagement>
@@ -344,75 +471,68 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <configuration>
-                            <configLocation>${top.dir}/src/main/config/checkstyle/checker.xml</configLocation>
-                            <suppressionsLocation>${top.dir}/src/main/config/checkstyle/suppressions.xml
-                            </suppressionsLocation>
-                            <consoleOutput>true</consoleOutput>
-                            <headerLocation>${top.dir}/src/main/config/checkstyle/header.txt</headerLocation>
-                            <failOnViolation>true</failOnViolation>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        </configuration>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${maven-checkstyle-plugin.version}</version>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
                     <executions>
                         <execution>
-                            <id>failsafe-integration-test</id>
-                            <goals>
-                                <goal>integration-test</goal>
-                            </goals>
-                            <phase>integration-test</phase>
-                            <configuration>
-                                <threadCount>6</threadCount>
-                                <parallel>both</parallel>
-                                <argLine>-Xmx1024m</argLine>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>failsafe-verify</id>
-                            <goals>
-                                <goal>verify</goal>
-                            </goals>
+                            <id>attach-sources</id>
                             <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                                <goal>test-jar-no-fork</goal>
+                            </goals>
                         </execution>
                     </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <threadCount>1</threadCount>
+                        <perCoreThreadCount>false</perCoreThreadCount>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <parallel>methods</parallel>
+                        <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>${maven-jar-plugin.version}</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -421,29 +541,36 @@
                             </manifest>
                         </archive>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <threadCount>1</threadCount>
-                        <perCoreThreadCount>false</perCoreThreadCount>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
-                        <parallel>both</parallel>
-                        <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <version>${git-commit-id-plugin.version}</version>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <configuration>
+                                <configLocation>${top.dir}/src/main/config/checkstyle/checker.xml</configLocation>
+                                <suppressionsLocation>${top.dir}/src/main/config/checkstyle/suppressions.xml
+                                </suppressionsLocation>
+                                <consoleOutput>true</consoleOutput>
+                                <headerLocation>${top.dir}/src/main/config/checkstyle/header.txt</headerLocation>
+                                <failOnViolation>true</failOnViolation>
+                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            </configuration>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
