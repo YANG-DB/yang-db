@@ -259,8 +259,6 @@ public class StatCalculatorTest {
                 configurerIndex4,
                 configurerStat});
 
-        Thread.sleep(4000);
-
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_1,
