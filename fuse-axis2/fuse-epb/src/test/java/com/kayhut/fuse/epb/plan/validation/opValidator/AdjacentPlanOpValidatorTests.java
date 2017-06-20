@@ -65,7 +65,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -97,7 +97,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -132,7 +132,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 9).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -145,7 +145,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -160,7 +160,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -174,7 +174,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -190,7 +190,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -205,7 +205,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -236,7 +236,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -252,7 +252,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -266,7 +266,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -282,7 +282,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -295,7 +295,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 7).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -310,7 +310,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 7).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -324,7 +324,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 8).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -341,7 +341,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 8).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -355,7 +355,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -372,7 +372,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 
@@ -385,7 +385,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -396,7 +396,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -406,7 +406,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -418,7 +418,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -430,7 +430,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -441,7 +441,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 9).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -452,7 +452,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(asgQuery, 10).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -464,7 +464,7 @@ public class AdjacentPlanOpValidatorTests {
                 new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 9).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -476,7 +476,7 @@ public class AdjacentPlanOpValidatorTests {
                 new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(asgQuery, 10).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation;
 
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.log.Trace;
 import javaslang.Tuple2;
@@ -17,8 +18,8 @@ public class DummyValidator<P,Q> implements PlanValidator<P,Q> {
         return this;
     }
     @Override
-    public boolean isPlanValid(P plan, Q query) {
-        return true;
+    public ValidationContext isPlanValid(P plan, Q query) {
+        return ValidationContext.OK;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 
@@ -94,7 +94,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -107,7 +107,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class NoRedundantRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 

@@ -39,7 +39,7 @@ public class ReverseRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -51,7 +51,7 @@ public class ReverseRelationOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class ReverseRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.<Rel>element(asgQuery, 2).get()))
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ReverseRelationOpValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
         );
 
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery));
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 
@@ -87,7 +87,7 @@ public class ReverseRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ReverseRelationOpValidatorTests {
                 new RelationOp(AsgQueryUtil.reverse(AsgQueryUtil.<Rel>element(asgQuery, 2).get()))
         );
 
-        Assert.assertFalse(validator.isPlanValid(plan, asgQuery));
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion
 

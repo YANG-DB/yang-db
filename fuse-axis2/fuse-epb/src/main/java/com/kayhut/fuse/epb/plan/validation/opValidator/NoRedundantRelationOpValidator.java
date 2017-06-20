@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
@@ -49,19 +50,19 @@ public class NoRedundantRelationOpValidator implements ChainedPlanValidator.Plan
     }
 
     @Override
-    public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
+    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
         PlanOpBase planOp = compositePlanOp.getOps().get(opIndex);
         if (!(planOp instanceof RelationOp)) {
-            return true;
+            return ValidationContext.OK;
         }
 
         if (!this.relationEnums.contains(planOp.geteNum())){
             this.relationEnums.add(planOp.geteNum());
-            return true;
+            return ValidationContext.OK;
         }
 
         log("NoRedundant:Validation failed on:"+toPattern(compositePlanOp)+"<"+opIndex+">", Level.INFO);
-        return false;
+        return new ValidationContext(false,"NoRedundant:Validation failed on:"+toPattern(compositePlanOp)+"<"+opIndex+">");
     }
     //endregion
 

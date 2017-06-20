@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -44,29 +45,31 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
     }
 
     @Override
-    public boolean isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
+    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
         if (opIndex == 0) {
-            return true;
+            return ValidationContext.OK;
         }
 
         PlanOpBase planOp = compositePlanOp.getOps().get(opIndex);
         if (!(planOp instanceof RelationOp)) {
-            return true;
+            return ValidationContext.OK;
         }
 
         Optional<EntityOp> previousEntityOp = getPreviousOp(compositePlanOp, opIndex, EntityOp.class);
         if (!previousEntityOp.isPresent()) {
-            return false;
+            return ValidationContext.OK;
         }
 
         AsgEBase<EEntityBase> previousEntityAsg = previousEntityOp.get().getAsgEBase();
         AsgEBase<Rel> relAsg = ((RelationOp)planOp).getAsgEBase();
 
+        ValidationContext context = ValidationContext.OK;
         boolean result = areEntityAndRelationReversed(query, previousEntityAsg, relAsg);
         if(!result) {
             log("Reverse:Validation failed on:"+toPattern(compositePlanOp) +"<"+opIndex+">", Level.INFO);
+            context = new ValidationContext(result,"Reverse:Validation failed on:"+toPattern(compositePlanOp) +"<"+opIndex+">");
         }
-        return result;
+        return context;
     }
     //endregion
 

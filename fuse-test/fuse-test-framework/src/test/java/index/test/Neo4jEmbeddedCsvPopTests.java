@@ -36,7 +36,7 @@ public class Neo4jEmbeddedCsvPopTests {
     }
 
     private void loadFileToNeo(String fileName,String cypherTemplate, GraphDatabaseService graphDatabaseService) throws IOException {
-        String cypherLoadCsv = String.format(cypherTemplate, getFilePath(fileName));
+        String cypherLoadCsv = String.format(cypherTemplate, getFilePath(fileName).replace('\\','/'));
         Neo4jCsvDataPopulator populator = new Neo4jCsvDataPopulator(graphDatabaseService, cypherLoadCsv);
         populator.populate();
     }
