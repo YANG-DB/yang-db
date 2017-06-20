@@ -1,7 +1,5 @@
 package com.kayhut.fuse.stat;
 
-import com.kayhut.fuse.stat.configuration.StatConfiguration;
-import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.bucket.BucketTerm;
 import com.kayhut.fuse.stat.model.enums.DataType;
@@ -10,20 +8,19 @@ import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.math3.random.EmpiricalDistribution;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.*;
 
+import static com.kayhut.fuse.stat.StatTestSuite.dataClient;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -31,25 +28,15 @@ import static org.junit.Assert.assertTrue;
  * Created by benishue on 24/05/2017.
  */
 public class EsUtilTest {
-
-    private static TransportClient dataClient;
-    private static TransportClient statClient;
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static Iterable<Map<String, Object>> dragonsList;
 
-    private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
     private static final int NUM_OF_DRAGONS_IN_INDEX = 1000;
     private static final String STAT_INDEX_NAME = "stat";
-    private static final String STAT_TYPE_NUMERIC_NAME = "bucketNumeric";
-    private static final String STAT_TYPE_STRING_NAME = "bucketString";
-    private static final String STAT_TYPE_TERM_NAME = "bucketTerm";
-    private static final String DATA_INDEX_NAME = "index1";
+    private static final String DATA_INDEX_NAME = "index5";
     private static final String DATA_TYPE_NAME = "Dragon";
     private static final String DATA_FIELD_NAME_AGE = "age";
     private static final String DATA_FIELD_NAME_ADDRESS = "address";
-    private static final String DATA_FIELD_NAME_COLOR = "color";
     private static final String DATA_FIELD_NAME_GENDER = "gender";
-    private static final String DATA_FIELD_NAME_TYPE = "_type";
 
     private static final int DRAGON_MIN_AGE = 1;
     private static final int DRAGON_MAX_AGE = 10;
@@ -242,13 +229,6 @@ public class EsUtilTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-
-        Configuration configuration = new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance();
-
-        dataClient = ClientProvider.getDataClient(configuration);
-        statClient = ClientProvider.getDataClient(configuration);
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
-
         dragonsList = StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
                 DRAGON_MIN_AGE,
                 DRAGON_MAX_AGE,
@@ -270,17 +250,9 @@ public class EsUtilTest {
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        if (statClient != null) {
-            statClient.close();
-            statClient = null;
-        }
-
         if (dataClient != null) {
-            dataClient.close();
-            dataClient = null;
+            dataClient.admin().indices().delete(new DeleteIndexRequest(DATA_INDEX_NAME)).actionGet();
         }
-
-        elasticEmbeddedNode.close();
     }
 
 }

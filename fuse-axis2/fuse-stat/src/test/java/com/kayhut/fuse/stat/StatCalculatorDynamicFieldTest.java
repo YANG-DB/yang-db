@@ -1,52 +1,26 @@
 package com.kayhut.fuse.stat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.stat.configuration.StatConfiguration;
-import com.kayhut.fuse.stat.es.client.ClientProvider;
-import com.kayhut.fuse.stat.model.configuration.Field;
-import com.kayhut.fuse.stat.model.configuration.StatContainer;
-import com.kayhut.fuse.stat.model.configuration.Type;
 import com.kayhut.fuse.stat.model.histogram.Histogram;
 import com.kayhut.fuse.stat.model.histogram.HistogramDynamic;
-import com.kayhut.fuse.stat.model.histogram.HistogramNumeric;
-import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatTestUtil;
-import com.kayhut.fuse.stat.util.StatUtil;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.ElasticIndexConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.apache.commons.configuration.Configuration;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermsLookupQueryBuilder;
-import org.elasticsearch.search.SearchHit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.nio.file.Paths;
 import java.util.*;
 
+import static com.kayhut.fuse.stat.StatTestSuite.dataClient;
+import static com.kayhut.fuse.stat.StatTestSuite.statClient;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
  * Created by benishue on 08-Jun-17.
  */
-public class statCalculatorDynamicFieldTest {
-
-
-    private static TransportClient dataClient;
-    private static TransportClient statClient;
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
-    private static final String MAPPING_DATA_FILE_DRAGON_PATH = Paths.get("src", "test", "resources", "elastic.test.data.dragon.mapping.json").toString();
-    private static final String MAPPING_DATA_FILE_FIRE_PATH = Paths.get("src", "test", "resources", "elastic.test.data.fire.mapping.json").toString();
-    private static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
-
+public class StatCalculatorDynamicFieldTest {
     private static final int NUM_OF_DRAGONS_IN_INDEX_1 = 1000;
     private static final int NUM_OF_DRAGONS_IN_INDEX_2 = 555;
     private static final int NUM_OF_DRAGONS_IN_INDEX_3 = 200;
@@ -54,9 +28,6 @@ public class statCalculatorDynamicFieldTest {
 
     private static final String STAT_INDEX_NAME = "stat";
     private static final String STAT_TYPE_NUMERIC_NAME = "bucketNumeric";
-    private static final String STAT_TYPE_STRING_NAME = "bucketString";
-    private static final String STAT_TYPE_TERM_NAME = "bucketTerm";
-    private static final String STAT_TYPE_GLOBAL_NAME = "bucketGlobal";
 
     private static final String DATA_INDEX_NAME_1 = "index1";
     private static final String DATA_INDEX_NAME_2 = "index2";
@@ -66,14 +37,7 @@ public class statCalculatorDynamicFieldTest {
     private static final String DATA_TYPE_DRAGON = "dragon";
     private static final String DATA_TYPE_FIRE = "fire";
 
-    private static final String DATA_FIELD_NAME_AGE = "age";
-    private static final String DATA_FIELD_NAME_ADDRESS = "address";
-    private static final String DATA_FIELD_NAME_COLOR = "color";
-    private static final String DATA_FIELD_NAME_GENDER = "gender";
-    private static final String DATA_FIELD_NAME_TYPE = "_type";
     private static final String DATA_FIELD_NAME_TIMESTAMP = "timestamp";
-
-
 
     private static final int DRAGON_MIN_AGE = 0;
     private static final int DRAGON_MAX_AGE = 100;
@@ -110,27 +74,6 @@ public class statCalculatorDynamicFieldTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-
-        Configuration configuration = new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance();
-
-        dataClient = ClientProvider.getDataClient(configuration);
-        statClient = ClientProvider.getDataClient(configuration);
-
-        MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH);
-        MappingFileElasticConfigurer configurerIndex2 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH);
-        MappingFileElasticConfigurer configurerIndex3 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH);
-        MappingFileElasticConfigurer configurerIndex4 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH);
-
-
-        MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(STAT_INDEX_NAME, MAPPING_STAT_FILE_PATH);
-
-        elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{
-                configurerIndex1,
-                configurerIndex2,
-                configurerIndex3,
-                configurerIndex4,
-                configurerStat});
-
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_1,
@@ -190,17 +133,18 @@ public class statCalculatorDynamicFieldTest {
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDown() throws Exception {
         if (statClient != null) {
-            statClient.close();
-            statClient = null;
+            statClient.admin().indices().delete(new DeleteIndexRequest(STAT_INDEX_NAME)).actionGet();
         }
 
         if (dataClient != null) {
-            dataClient.close();
-            dataClient = null;
+            dataClient.admin().indices().delete(new DeleteIndexRequest(
+                    DATA_INDEX_NAME_1,
+                    DATA_INDEX_NAME_2,
+                    DATA_INDEX_NAME_3,
+                    DATA_INDEX_NAME_4
+            )).actionGet();
         }
-
-        elasticEmbeddedNode.close();
     }
 }

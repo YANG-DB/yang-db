@@ -1,8 +1,6 @@
 package com.kayhut.fuse.stat;
 
 import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
-import com.kayhut.fuse.stat.configuration.StatConfiguration;
-import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.configuration.Field;
 import com.kayhut.fuse.stat.model.configuration.Mapping;
@@ -13,14 +11,10 @@ import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
-import com.kayhut.test.framework.index.ElasticIndexConfigurer;
-import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.apache.commons.configuration.Configuration;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -28,24 +22,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.File;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static com.kayhut.fuse.stat.StatTestSuite.*;
 
 /**
  * Created by benishue on 04-May-17.
  */
 public class StatCalculatorTest {
-
-    private static TransportClient dataClient;
-    private static TransportClient statClient;
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
-    private static final String MAPPING_DATA_FILE_DRAGON_PATH = Paths.get("src", "test", "resources", "elastic.test.data.dragon.mapping.json").toString();
-    private static final String MAPPING_DATA_FILE_FIRE_PATH = Paths.get("src", "test", "resources", "elastic.test.data.fire.mapping.json").toString();
-    private static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
 
     private static final int NUM_OF_DRAGONS_IN_INDEX_1 = 1000;
     private static final int NUM_OF_DRAGONS_IN_INDEX_2 = 555;
@@ -238,27 +224,6 @@ public class StatCalculatorTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-
-        Configuration configuration = new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance();
-
-        dataClient = ClientProvider.getDataClient(configuration);
-        statClient = ClientProvider.getDataClient(configuration);
-
-        MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH);
-        MappingFileElasticConfigurer configurerIndex2 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH);
-        MappingFileElasticConfigurer configurerIndex3 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH);
-        MappingFileElasticConfigurer configurerIndex4 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH);
-
-
-        MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(STAT_INDEX_NAME, MAPPING_STAT_FILE_PATH);
-
-        elasticEmbeddedNode = new ElasticEmbeddedNode(new ElasticIndexConfigurer[]{
-                configurerIndex1,
-                configurerIndex2,
-                configurerIndex3,
-                configurerIndex4,
-                configurerStat});
-
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_1,
@@ -318,19 +283,19 @@ public class StatCalculatorTest {
     }
 
     @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    public static void tearDown() throws Exception {
         if (statClient != null) {
-            statClient.close();
-            statClient = null;
+            statClient.admin().indices().delete(new DeleteIndexRequest(STAT_INDEX_NAME)).actionGet();
         }
 
         if (dataClient != null) {
-            dataClient.close();
-            dataClient = null;
+            dataClient.admin().indices().delete(new DeleteIndexRequest(
+                    DATA_INDEX_NAME_1,
+                    DATA_INDEX_NAME_2,
+                    DATA_INDEX_NAME_3,
+                    DATA_INDEX_NAME_4
+            )).actionGet();
         }
-
-        elasticEmbeddedNode.close();
-
     }
 
     private StatContainer buildStatContainer() {

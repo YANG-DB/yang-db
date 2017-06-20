@@ -51,7 +51,7 @@ public class StatUtil {
         try {
             String statConfigurationFilePath = configuration.getString("statistics.configuration.file");
             String statJson = readJsonToString(statConfigurationFilePath);
-            logger.info("Statistics Configuration: \n {}", statJson);
+            //logger.info("Statistics Configuration: \n {}", statJson);
             resultObj = Optional.of(new ObjectMapper().readValue(statJson, StatContainer.class));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
