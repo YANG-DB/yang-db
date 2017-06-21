@@ -4,6 +4,8 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
 import com.kayhut.fuse.epb.plan.statistics.util.StatConfigTestUtil;
 import com.kayhut.fuse.model.ontology.*;
@@ -80,7 +82,9 @@ public class ElasticStatisticsGraphProviderTest {
     public void getVertexCardinality() throws Exception {
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(getOntology());
         GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
+
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
+                new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(statClient, statConfig)),
                 Caffeine.newBuilder()
                         .maximumSize(10_000)
                         .expireAfterWrite(5, TimeUnit.MINUTES)
