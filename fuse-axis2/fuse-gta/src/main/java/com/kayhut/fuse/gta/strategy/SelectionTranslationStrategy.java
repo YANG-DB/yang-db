@@ -73,8 +73,8 @@ public class SelectionTranslationStrategy extends PlanOpTranslationStrategyBase 
                 .forEach(hasStep -> traversal.asAdmin().removeStep(hasStep));
 
         Stream.ofAll(lastEntityOp.get().getAsgEBase().geteBase().getReportProps())
-                .forEach(eProp -> traversal.has(context.getOnt().$property$(Integer.parseInt(eProp)).getName(),
-                        SelectP.raw(context.getOnt().$property$(Integer.parseInt(eProp)).getName())));
+                .forEach(eProp -> traversal.has(context.getOnt().$property$(eProp).getName(),
+                        SelectP.raw(context.getOnt().$property$(eProp).getName())));
 
         if (PlanUtil.isFirst(plan, lastEntityOp.get())) {
             return traversal;

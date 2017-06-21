@@ -77,7 +77,7 @@ public class ConditionCypherStrategy extends CypherStrategy {
 
         String pType = prop.getpType();
 
-        return $ont.$property(Integer.parseInt(pType));
+        return $ont.$property(pType);
 
     }
 
