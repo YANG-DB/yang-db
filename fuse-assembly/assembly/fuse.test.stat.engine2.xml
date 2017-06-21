@@ -5,7 +5,7 @@
     <formats>
         <format>dir</format>
     </formats>
-    <baseDirectory>fuse-engine2-stat-test</baseDirectory>
+    <baseDirectory>fuse-stat-engine2-test</baseDirectory>
 
     <files>
         <file>

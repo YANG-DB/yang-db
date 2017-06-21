@@ -1,1 +1,0 @@
-java -Xmx10g -Xms10g -cp ".:lib/*" com.kayhut.fuse.services.FuseRunner config/application.conf
