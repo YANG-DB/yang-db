@@ -5,8 +5,15 @@
     <formats>
         <format>dir</format>
     </formats>
-    <baseDirectory>fuse-engine2-service-test-dfs-private-private</baseDirectory>
+    <baseDirectory>fuse-test-service-engine2</baseDirectory>
     <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/resources/applicationConfig</directory>
+            <outputDirectory>config</outputDirectory>
+            <includes>
+                <include>*engine2*.conf</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>${project.basedir}/resources/ontology</directory>
             <outputDirectory>ontology</outputDirectory>
@@ -31,18 +38,12 @@
             <destName>readme.txt</destName>
         </file>
         <file>
-            <source>${project.basedir}/resources/applicationConfig/application.engine2.m1.test.dfs.private.private.conf</source>
-            <outputDirectory>./config</outputDirectory>
-            <destName>application.conf</destName>
-        </file>
-        <file>
-            <source>${project.basedir}/resources/scripts/start-fuse-service.bat</source>
+            <source>${project.basedir}/resources/scripts/test/start-fuse-service.bat</source>
             <outputDirectory>./</outputDirectory>
         </file>
         <file>
-            <source>${project.basedir}/resources/scripts/start-fuse-service-10g.sh</source>
+            <source>${project.basedir}/resources/scripts/test/start-fuse-service.sh</source>
             <outputDirectory>./</outputDirectory>
-            <destName>start-fuse-service.sh</destName>
         </file>
     </files>
 

@@ -166,6 +166,11 @@
                 <artifactId>geojson-jackson</artifactId>
                 <version>${fuse.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>dragons-test-framework</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
             <!-- fuse -->
 
             <!-- jackson -->
@@ -378,12 +383,6 @@
             <dependency>
                 <groupId>org.kayhut</groupId>
                 <artifactId>fuse-test-framework</artifactId>
-                <version>${fuse.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.kayhut</groupId>
-                <artifactId>dragons-test-framework</artifactId>
                 <version>${fuse.version}</version>
                 <scope>test</scope>
             </dependency>

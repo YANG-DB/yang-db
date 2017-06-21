@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.engine2.data;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.services.engine2.RedundantTestSuite;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -12,6 +13,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.jooby.test.JoobyRule;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 
 import java.util.ArrayList;
@@ -21,10 +24,14 @@ import java.util.List;
  * Created by Roman on 22/05/2017.
  */
 public class DfsRedundantEntityRelationEntityTest extends EntityRelationEntityTest {
-    @ClassRule
-    public static JoobyRule createApp() {
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf("application.engine2.dev.conf", "m1.dfs.redundant"));
+    @BeforeClass
+    public static void setup() throws Exception {
+        EntityRelationEntityTest.setup(RedundantTestSuite.elasticEmbeddedNode.getClient());
+    }
+
+    @AfterClass
+    public static void cleanup() throws Exception {
+        EntityRelationEntityTest.cleanup(RedundantTestSuite.elasticEmbeddedNode.getClient());
     }
 
     @Override

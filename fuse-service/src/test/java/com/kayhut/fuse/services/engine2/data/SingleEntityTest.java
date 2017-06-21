@@ -11,12 +11,13 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
+import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
+import org.elasticsearch.client.transport.TransportClient;
 import org.jooby.test.JoobyRule;
 import org.junit.*;
 
@@ -42,35 +43,29 @@ public class SingleEntityTest {
 
         String idField = "id";
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
-        elasticEmbeddedNode.getClient().admin().indices().create(new CreateIndexRequest("person")).actionGet();
-        elasticEmbeddedNode.getClient().admin().indices().create(new CreateIndexRequest("dragon")).actionGet();
+        TransportClient client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
+                client,
                 "person",
                 "Person",
                 idField,
                 () -> createPeople(10)).populate();
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
+                client,
                 "dragon",
                 "Dragon",
                 idField,
                 () -> createDragons(10)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices()
-                .refresh(new RefreshRequest("person", "dragon")).actionGet();
-
-        Thread.sleep(2000);
+        client.admin().indices().refresh(new RefreshRequest("person", "dragon")).actionGet();
     }
 
     @AfterClass
     public static void cleanup() throws Exception {
-        if (elasticEmbeddedNode != null) {
-            elasticEmbeddedNode.close();
-        }
+        NonRedundantTestSuite.elasticEmbeddedNode.getClient().admin().indices()
+                .delete(new DeleteIndexRequest("person", "dragon")).actionGet();
     }
 
     @Before

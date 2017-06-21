@@ -5,13 +5,20 @@
     <formats>
         <format>dir</format>
     </formats>
-    <baseDirectory>fuse-engine2-service-test-dfs-public</baseDirectory>
+    <baseDirectory>fuse-test-service-engine1</baseDirectory>
     <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/resources/applicationConfig</directory>
+            <outputDirectory>config</outputDirectory>
+            <includes>
+                <include>*engine1*.conf</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>${project.basedir}/resources/ontology</directory>
             <outputDirectory>ontology</outputDirectory>
             <includes>
-                <include>Dragons.json</include>
+                <include>Dragons_engine1.json</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -31,20 +38,11 @@
             <destName>readme.txt</destName>
         </file>
         <file>
-            <source>${project.basedir}/resources/applicationConfig/application.engine2.m1.test.dfs.public.conf</source>
-            <outputDirectory>./config</outputDirectory>
-            <destName>application.conf</destName>
-        </file>
-        <file>
-            <source>${project.basedir}/resources/scripts/start-fuse-service.bat</source>
+            <source>${project.basedir}/resources/scripts/test/start-fuse-service.bat</source>
             <outputDirectory>./</outputDirectory>
         </file>
         <file>
-            <source>${project.basedir}/resources/scripts/start-fuse-service-debug.bat</source>
-            <outputDirectory>./</outputDirectory>
-        </file>
-        <file>
-            <source>${project.basedir}/resources/scripts/start-fuse-service.sh</source>
+            <source>${project.basedir}/resources/scripts/test/start-fuse-service.sh</source>
             <outputDirectory>./</outputDirectory>
         </file>
     </files>

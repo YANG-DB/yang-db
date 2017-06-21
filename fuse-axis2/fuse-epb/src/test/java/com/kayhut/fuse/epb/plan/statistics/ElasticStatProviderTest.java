@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
 import com.kayhut.fuse.epb.plan.statistics.util.StatConfigTestUtil;
 import com.kayhut.fuse.epb.plan.statistics.util.StatTestUtil;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -94,14 +96,13 @@ public class ElasticStatProviderTest {
 
     @Test
     public void getGenderFieldStatisticsTest() throws Exception {
-        ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig);
+        ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
+                new ElasticStatDocumentProvider(statClient, statConfig));
 
-        List<Statistics.BucketInfo> genderStatistics = elasticStatProvider.getFieldStatistics(statClient,
-                statConfig.getStatIndexName(),
-                statConfig.getStatTermTypeName(),
-                Arrays.asList(DATA_INDEX_NAME),
-                Arrays.asList(DATA_TYPE_NAME),
-                Arrays.asList(DATA_FIELD_NAME_GENDER));
+        List<Statistics.BucketInfo> genderStatistics = elasticStatProvider.getFieldStatistics(
+                Collections.singletonList(DATA_INDEX_NAME),
+                Collections.singletonList(DATA_TYPE_NAME),
+                Collections.singletonList(DATA_FIELD_NAME_GENDER));
 
 
         assertEquals(DRAGON_GENDERS.size(), genderStatistics.size());
@@ -117,13 +118,13 @@ public class ElasticStatProviderTest {
 
     @Test
     public void getAgeFieldStatisticsTest() throws Exception {
-        ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig);
-        List<Statistics.BucketInfo> ageStatistics = elasticStatProvider.getFieldStatistics(statClient,
-                statConfig.getStatIndexName(),
-                statConfig.getStatNumericTypeName(),
-                Arrays.asList(DATA_INDEX_NAME),
-                Arrays.asList(DATA_TYPE_NAME),
-                Arrays.asList(DATA_FIELD_NAME_AGE));
+        ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
+                new ElasticStatDocumentProvider(statClient, statConfig));
+
+        List<Statistics.BucketInfo> ageStatistics = elasticStatProvider.getFieldStatistics(
+                Collections.singletonList(DATA_INDEX_NAME),
+                Collections.singletonList(DATA_TYPE_NAME),
+                Collections.singletonList(DATA_FIELD_NAME_AGE));
 
         assertTrue(ageStatistics.size() > 0);
 

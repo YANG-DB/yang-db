@@ -1,1 +1,0 @@
-java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -cp ".;lib/*" com.kayhut.fuse.services.FuseRunner config/application.conf

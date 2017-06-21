@@ -6,13 +6,11 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.epb.plan.statistics.util.StatUtil;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
-import org.elasticsearch.client.transport.TransportClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
  * Created by benishue on 22-May-17.
  */
 public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
-
+    //region Static
     //todo move it to a global enum across modules
     private static final String DATE = "date";
     private static final String ENUM = "enum";
@@ -31,14 +29,15 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     private static final String FIELD_NAME_TYPE = "_type";
     private static final String FIELD_NAME_EDGE = "entityA.id";
-    private static final String FIELD_NAME_TERM = "term";
+    //endregion
 
     //region Constructors
     @Inject
-    public ElasticStatisticsGraphProvider(StatConfig config, Cache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>> cache) {
+    public ElasticStatisticsGraphProvider(StatConfig config,
+                                          ElasticStatProvider elasticStatProvider,
+                                          Cache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>> cache) {
         this.statConfig = config;
-        this.elasticStatProvider = new ElasticStatProvider(config);
-        this.elasticClient = new ElasticClientProvider(config).getStatClient();
+        this.elasticStatProvider = elasticStatProvider;
         this.cache = cache;
     }
     //endregion
@@ -52,7 +51,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     @Override
     public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
-        return getStatResultsForType(graphVertexSchema.getType(), relevantIndices);
+        return getSummaryStatistics(graphVertexSchema.getType(), relevantIndices);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
 
     @Override
     public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema, List<String> relevantIndices) {
-        return getStatResultsForType(graphEdgeSchema.getType(), relevantIndices);
+        return getSummaryStatistics(graphEdgeSchema.getType(), relevantIndices);
     }
 
     @Override
@@ -77,10 +76,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
         String statTypeName = getStatTypeName(graphElementPropertySchema);
 
 
-        Map<String, List<Statistics.BucketInfo>> fieldStatisticsPerIndex = elasticStatProvider.getFieldStatisticsPerIndex(
-                this.elasticClient,
-                statConfig.getStatIndexName(),
-                statTypeName,
+        Map<String, List<Statistics.BucketInfo>> fieldStatisticsPerIndex = this.elasticStatProvider.getFieldStatisticsPerIndex(
                 relevantIndices,
                 Collections.singletonList(graphElementSchema.getType()),
                 Collections.singletonList(((graphElementPropertySchema instanceof GraphRedundantPropertySchema) ?
@@ -138,19 +134,17 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
                                      Rel.Direction direction,
                                      List<String> relevantIndices) {
         long globalSelectivity = 0;
-        List<Statistics.BucketInfo> buckets = elasticStatProvider.getEdgeGlobalStatistics(
-                elasticClient,
-                statConfig.getStatIndexName(),
-                statConfig.getStatGlobalTypeName(),
+        List<Statistics.BucketInfo<String>> buckets = this.elasticStatProvider.getEdgeGlobalStatistics(
                 relevantIndices,
                 Collections.singletonList(graphEdgeSchema.getType()),
                 Collections.singletonList(FIELD_NAME_EDGE),
                 convertDirection(direction)
         );
+
         if (!buckets.isEmpty()) {
-            long total = buckets.stream().mapToLong(b -> b.getTotal()).sum();
-            double cardinality = buckets.stream().mapToLong(b -> b.getCardinality()).average().getAsDouble();
-            globalSelectivity = (long) (total / cardinality);
+            long total = Stream.ofAll(buckets).map(Statistics.BucketInfo::getTotal).sum().longValue();
+            double cardinality = Stream.ofAll(buckets).map(Statistics.BucketInfo::getCardinality).average().get();
+            globalSelectivity = Math.round(total / cardinality);
         }
 
         return globalSelectivity;
@@ -158,80 +152,20 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     //endregion
 
     //region Private Methods
-    private Statistics.SummaryStatistics getStatResultsForType(String docType, Iterable<String> indices) {
-        List<Statistics.BucketInfo> buckets = elasticStatProvider.getFieldStatistics(
-                elasticClient,
-                statConfig.getStatIndexName(),
-                statConfig.getStatTermTypeName(),
-                Lists.newArrayList(indices),
-                Collections.singletonList(docType),
-                Collections.singletonList(FIELD_NAME_TYPE));
+    private Statistics.SummaryStatistics getSummaryStatistics(String docType, List<String> indices) {
+        long totalCount = Stream.ofAll(getBuckets(docType, indices))
+                .map(Statistics.BucketInfo::getTotal)
+                .sum().longValue();
 
-        long totalCount = 0;
-        for (Statistics.BucketInfo bucket : buckets) {
-            totalCount += bucket.getTotal();
-        }
         return new Statistics.SummaryStatistics(totalCount, 1);
     }
 
-    private Statistics.SummaryStatistics getStatResultsForType(String docType, List<String> indices) {
-        List<Statistics.BucketInfo> buckets = getBuckets(docType, indices);
-
-        long totalCount = 0;
-        for (Statistics.BucketInfo bucket : buckets) {
-            totalCount += bucket.getTotal();
-        }
-        return new Statistics.SummaryStatistics(totalCount, 1);
-    }
-
-    public List<Statistics.BucketInfo> getBuckets(String docType, List<String> indices) {
+    private List<Statistics.BucketInfo> getBuckets(String docType, List<String> indices) {
         return cache.get(new Tuple2<>(docType, indices),
                 stringListTuple2 -> elasticStatProvider.getFieldStatistics(
-                        elasticClient,
-                        statConfig.getStatIndexName(),
-                        statConfig.getStatTermTypeName(),
                         indices,
                         Collections.singletonList(docType),
                         Collections.singletonList(FIELD_NAME_TYPE)));
-    }
-
-    private long getTermBucketCount(String indexName, String docType, String term) {
-        String docId = StatUtil.hashString(indexName + docType + FIELD_NAME_TYPE + term);
-        return getStatBucketCount(docId);
-    }
-
-    private long getRangeBucketCount(String indexName, String docType, String field, String lowerBound, String upperBound) {
-        String docId = StatUtil.hashString(indexName + docType + field + lowerBound + upperBound);
-        return getStatBucketCount(docId);
-    }
-
-    private long getStatBucketCount(String docId) {
-        long count = 0;
-        Optional<Map<String, Object>> statDoc = elasticStatProvider.getDocumentById(
-                this.elasticClient,
-                statConfig.getStatIndexName(),
-                statConfig.getStatTermTypeName(),
-                docId);
-        if (statDoc.isPresent()) {
-            count = ((Number) statDoc.get().get(statConfig.getStatCountFieldName())).longValue();
-        }
-        return count;
-    }
-
-    private <T extends Comparable<T>> Statistics.BucketInfo getTermStatBucket(String docId) {
-        Statistics.BucketInfo<T> bucketInfo = new Statistics.BucketInfo();
-        Optional<Map<String, Object>> statDoc = elasticStatProvider.getDocumentById(
-                this.elasticClient,
-                statConfig.getStatIndexName(),
-                statConfig.getStatTermTypeName(),
-                docId);
-        if (statDoc.isPresent()) {
-            long count = ((Number) statDoc.get().get(statConfig.getStatCountFieldName())).longValue();
-            long cardinality = ((Number) statDoc.get().get(statConfig.getStatCardinalityFieldName())).longValue();
-            T term = (T) statDoc.get().get(FIELD_NAME_TERM);
-            bucketInfo = new Statistics.BucketInfo(count, cardinality, term, term);
-        }
-        return bucketInfo;
     }
 
     private String getStatTypeName(GraphElementPropertySchema propertySchema) {
@@ -286,7 +220,6 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     //region Fields
     private final StatConfig statConfig;
     private final ElasticStatProvider elasticStatProvider;
-    private final TransportClient elasticClient;
     private final Cache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>> cache;
     //endregion
 
