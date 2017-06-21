@@ -27,7 +27,6 @@ import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.index.Mappings.Mapping;
@@ -38,7 +37,9 @@ import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
+import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 
 import java.text.ParseException;
@@ -57,22 +58,23 @@ import static java.util.Collections.singletonList;
  * Created by Roman on 11/05/2017.
  */
 public abstract class EntityRelationEntityTest {
-    @BeforeClass
-    public static void setup() throws Exception {
+    public static void setup(TransportClient client) throws Exception {
         fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
 
         String idField = "id";
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode(
-                new MappingElasticConfigurer(PERSON.name.toLowerCase(), new Mappings().addMapping(PERSON.name, getPersonMapping())),
-                new MappingElasticConfigurer(DRAGON.name.toLowerCase(), new Mappings().addMapping(DRAGON.name, getDragonMapping())),
-                new MappingElasticConfigurer(Arrays.asList(
-                        FIRE.getName().toLowerCase() + "20170511",
-                        FIRE.getName().toLowerCase() + "20170512",
-                        FIRE.getName().toLowerCase() + "20170513"),
-                        new Mappings().addMapping(FIRE.getName(), getFireMapping())));
+        new MappingElasticConfigurer(PERSON.name.toLowerCase(), new Mappings().addMapping(PERSON.name, getPersonMapping()))
+                .configure(client);
+        new MappingElasticConfigurer(DRAGON.name.toLowerCase(), new Mappings().addMapping(DRAGON.name, getDragonMapping()))
+                .configure(client);
+        new MappingElasticConfigurer(Arrays.asList(
+                FIRE.getName().toLowerCase() + "20170511",
+                FIRE.getName().toLowerCase() + "20170512",
+                FIRE.getName().toLowerCase() + "20170513"),
+                new Mappings().addMapping(FIRE.getName(), getFireMapping()))
+                .configure(client);
 
         birthDateValueFunctionFactory = startingDate -> interval -> i -> startingDate + (interval * i);
         timestampValueFunctionFactory = startingDate -> interval -> i -> startingDate + (interval * i);
@@ -82,14 +84,14 @@ public abstract class EntityRelationEntityTest {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
+                client,
                 PERSON.name.toLowerCase(),
                 PERSON.name,
                 idField,
                 () -> createPeople(10)).populate();
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
+                client,
                 DRAGON.name.toLowerCase(),
                 DRAGON.name,
                 idField,
@@ -97,7 +99,7 @@ public abstract class EntityRelationEntityTest {
                 .populate(); // date interval is ~ 1 month
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
+                client,
                 FIRE.getName().toLowerCase() + "20170511",
                 FIRE.getName(),
                 idField,
@@ -108,7 +110,7 @@ public abstract class EntityRelationEntityTest {
                 .populate(); // date interval is 20 min
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
+                client,
                 FIRE.getName().toLowerCase() + "20170512",
                 FIRE.getName(),
                 idField,
@@ -119,7 +121,7 @@ public abstract class EntityRelationEntityTest {
                 .populate(); // date interval is 10 min
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
+                client,
                 FIRE.getName().toLowerCase() + "20170513",
                 FIRE.getName(),
                 idField,
@@ -130,7 +132,7 @@ public abstract class EntityRelationEntityTest {
                 .populate(); // date interval is 5 min
 
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest(
+        client.admin().indices().refresh(new RefreshRequest(
                 PERSON.name.toLowerCase(),
                 DRAGON.name.toLowerCase(),
                 FIRE.getName().toLowerCase() + "20170511",
@@ -139,11 +141,15 @@ public abstract class EntityRelationEntityTest {
         )).actionGet();
     }
 
-    @AfterClass
-    public static void cleanup() throws Exception {
-        if (elasticEmbeddedNode != null) {
-            elasticEmbeddedNode.close();
-        }
+    public static void cleanup(TransportClient client) throws Exception {
+        client.admin().indices()
+                .delete(new DeleteIndexRequest(
+                        PERSON.name.toLowerCase(),
+                        DRAGON.name.toLowerCase(),
+                        FIRE.getName().toLowerCase() + "20170511",
+                        FIRE.getName().toLowerCase() + "20170512",
+                        FIRE.getName().toLowerCase() + "20170513"))
+                .actionGet();
     }
 
     @Before
@@ -975,7 +981,6 @@ public abstract class EntityRelationEntityTest {
     //endregion
 
     //region Fields
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static FuseClient fuseClient;
     private static Ontology.Accessor $ont;
     private static SimpleDateFormat sdf;
