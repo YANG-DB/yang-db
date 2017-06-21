@@ -1,6 +1,7 @@
 package com.kayhut.fuse.neo4j.executor;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -11,6 +12,7 @@ import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -50,6 +52,7 @@ public class Neo4jOperationContextProcessor implements
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         if(context.getAsgQuery() == null || context.getExecutionPlan() != null) {
             return context;
@@ -75,6 +78,7 @@ public class Neo4jOperationContextProcessor implements
     //region CursorCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
 
         if (context.getCursor() != null) {

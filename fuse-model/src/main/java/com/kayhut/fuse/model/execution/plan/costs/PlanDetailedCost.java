@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,7 +16,7 @@ import static com.kayhut.fuse.model.Utils.fullPattern;
 /**
  * Created by Roman on 20/04/2017.
  */
-public class PlanDetailedCost {
+public class PlanDetailedCost implements ICost {
     public PlanDetailedCost() {
     }
 
@@ -35,7 +36,9 @@ public class PlanDetailedCost {
     }
 
     public List<PlanOpBase> getOps() {
-        return StreamSupport.stream(getOpCosts().spliterator(), false).flatMap(p -> p.getOpBase().stream()).collect(Collectors.toList());
+        if (opCosts != null)
+            return StreamSupport.stream(getOpCosts().spliterator(), false).flatMap(p -> p.getOpBase().stream()).collect(Collectors.toList());
+        return Collections.emptyList();
     }
 
     public Iterable<PlanOpWithCost<Cost>> getOpCosts() {
@@ -67,8 +70,8 @@ public class PlanDetailedCost {
     @Override
     public String toString() {
         return " { " +
-                    "plan:" + fullPattern(getOps()) + "," + "\n" +
-                    "cost:" + globalCost.toString() + "\n" +
-                " } ";
+                "plan:" + fullPattern(getOps()) + "," + "\n" +
+                "cost:" + (globalCost != null ? globalCost.toString() + "\n" : "")
+                + " } ";
     }
 }

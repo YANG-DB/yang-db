@@ -1,6 +1,7 @@
 package com.kayhut.fuse.gta;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -10,6 +11,7 @@ import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.gta.translation.TranslationContext;
@@ -52,6 +54,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
     //region CursorCreationOperationContext.Processor implementation
     @Override
     @Subscribe
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public CursorCreationOperationContext process(CursorCreationOperationContext context) throws Exception {
         if (context.getCursor() != null) {
             return context;

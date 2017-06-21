@@ -3,7 +3,7 @@ package com.kayhut.fuse.model.execution.plan.costs;
 /**
  * Created by moti on 4/20/2017.
  */
-public class Cost {
+public class Cost implements ICost{
     public Cost(double cost) {
         this.cost = cost;
     }

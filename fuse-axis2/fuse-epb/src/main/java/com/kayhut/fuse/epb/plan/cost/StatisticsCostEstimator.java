@@ -1,8 +1,10 @@
 package com.kayhut.fuse.epb.plan.cost;
 
+import com.codahale.metrics.Slf4jReporter;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
@@ -107,6 +109,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     }
 
     @Override
+    @LoggerAnnotation(name = "estimate", logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
             Plan plan,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,

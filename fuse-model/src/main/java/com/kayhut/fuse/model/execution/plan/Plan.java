@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.execution.plan;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.log.Trace;
 import javaslang.Tuple2;
 
@@ -12,7 +13,7 @@ import static com.kayhut.fuse.model.Utils.*;
 /**
  * Created by User on 22/02/2017.
  */
-public class Plan extends CompositePlanOpBase implements Trace<String> {
+public class Plan extends CompositePlanOpBase implements Trace<String>, IPlan {
     private Trace<String> trace = Trace.build(Plan.class.getSimpleName());
 
     //region Constructors
@@ -116,6 +117,18 @@ public class Plan extends CompositePlanOpBase implements Trace<String> {
         return new Plan(plan.getOps());
     }
 
+    public static class PlanDescriptor implements Descriptor<Plan> {
+
+        @Override
+        public String name(Plan plan) {
+            return String.valueOf(plan.hashCode());
+        }
+
+        @Override
+        public String describe(Plan plan) {
+            return plan.toString();
+        }
+    }
 }
 
 

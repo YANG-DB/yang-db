@@ -1,5 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
+import com.codahale.metrics.Slf4jReporter;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -16,6 +18,7 @@ import java.util.List;
  */
 public class CheapestPlanSelector implements PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> {
     @Override
+    @LoggerAnnotation(name = "select", logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public Iterable<PlanWithCost<Plan, PlanDetailedCost>> select(AsgQuery query, Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {
         PlanWithCost<Plan, PlanDetailedCost> minPlan = null;
         for(PlanWithCost<Plan, PlanDetailedCost> planWithCost : plans) {
