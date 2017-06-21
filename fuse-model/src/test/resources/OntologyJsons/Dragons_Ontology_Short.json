@@ -21,48 +21,48 @@
   ],
   "properties": [
     {
-      "pType": 1,
+      "pType": "firstName",
       "name": "firstName",
       "type": "string"
     },
     {
-      "pType": 2,
+      "pType": "lastName",
       "name": "lastName",
       "type": "string"
     },
     {
-      "pType": 3,
+      "pType": "gender",
       "name": "gender",
       "type": "TYPE_Gender"
     },
     {
-      "pType": 4,
+      "pType": "birthDate",
       "name": "birthDate",
       "type": "date"
     },
     {
-      "pType": 5,
+      "pType": "deathDate",
       "name": "deathDate",
       "type": "date"
     },
     {
-      "pType": 6,
+      "pType": "height",
       "name": "height",
       "type": "int",
       "units": "cm"
     },
     {
-      "pType": 7,
+      "pType": "name",
       "name": "name",
       "type": "string"
     },
     {
-      "pType": 8,
+      "pType": "startDate",
       "name": "startDate",
       "type": "date"
     },
     {
-      "pType": 9,
+      "pType": "endDate",
       "name": "endDate",
       "type": "date"
     }
@@ -72,26 +72,26 @@
       "eType": 1,
       "name": "Person",
       "properties": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
       ]
     },
     {
       "eType": 2,
       "name": "Dragon",
       "properties": [
-        7
+        "name"
       ]
     },
     {
       "eType": 4,
       "name": "Guild",
       "properties": [
-        7
+        "name"
       ]
     }
   ],
@@ -107,8 +107,8 @@
         }
       ],
       "properties": [
-        8,
-        9
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -122,8 +122,8 @@
         }
       ],
       "properties": [
-        8,
-        9
+        "startDate",
+        "endDate"
       ]
     }
   ]

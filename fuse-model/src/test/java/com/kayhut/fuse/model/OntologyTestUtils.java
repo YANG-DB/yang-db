@@ -1,10 +1,8 @@
 package com.kayhut.fuse.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kayhut.fuse.model.ontology.*;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,19 +25,19 @@ public class OntologyTestUtils {
     public static final String STRING = "string";
     public static final String CM = "cm";
 
-    public static Property FIRST_NAME = new Property("firstName", STRING, 1);
-    public static Property LAST_NAME = new Property("lastName", STRING, 2);
-    public static Property GENDER = new Property("gender", TYPE_GENDER, 3);
-    public static Property BIRTH_DATE = new Property("birthDate", STRING, 4);
-    public static Property DEATH_DATE = new Property("deathDate", STRING, 5);
-    public static Property HEIGHT = new Property("height", INT, 6);
-    public static Property NAME = new Property("name", STRING, 7);
-    public static Property COLOR = new Property("color", TYPE_COLOR, 8);
+    public static Property FIRST_NAME = new Property("firstName", STRING, "1");
+    public static Property LAST_NAME = new Property("lastName", STRING, "2");
+    public static Property GENDER = new Property("gender", TYPE_GENDER, "3");
+    public static Property BIRTH_DATE = new Property("birthDate", STRING, "4");
+    public static Property DEATH_DATE = new Property("deathDate", STRING, "5");
+    public static Property HEIGHT = new Property("height", INT, "6");
+    public static Property NAME = new Property("name", STRING, "7");
+    public static Property COLOR = new Property("color", TYPE_COLOR, "8");
 
-    public static Property START_DATE = new Property("startDate", DATE, 9);
-    public static Property END_DATE = new Property("endDate", DATE, 10);
-    public static Property TEMPERATURE = new Property("temperature", INT, 11);
-    public static Property TIMESTAMP = new Property("timestamp", DATE, 12);
+    public static Property START_DATE = new Property("startDate", DATE, "9");
+    public static Property END_DATE = new Property("endDate", DATE, "10");
+    public static Property TEMPERATURE = new Property("temperature", INT, "11");
+    public static Property TIMESTAMP = new Property("timestamp", DATE, "12");
 
 
     public static final RelationshipType OWN = new RelationshipType("own", 101, true).withProperty(START_DATE.type, END_DATE.type);
@@ -67,13 +65,13 @@ public class OntologyTestUtils {
         public String name;
         public boolean redundant;
         public String className;
-        public int type;
+        public String type;
 
-        public Property(String name, String className, int type) {
+        public Property(String name, String className, String type) {
             this(name,className,type,false);
         }
 
-        public Property(String name, String className, int type, boolean redundant) {
+        public Property(String name, String className, String type, boolean redundant) {
             this.name = name;
             this.className = className;
             this.type = type;
@@ -304,8 +302,8 @@ public class OntologyTestUtils {
         return properties.stream().filter(p -> p.name.equals(name)).findFirst().get();
     }
 
-    public static Property getPropertyByType(List<Property> properties, int type) {
-        return properties.stream().filter(p -> p.type == type).findFirst().get();
+    public static Property getPropertyByType(List<Property> properties, String type) {
+        return properties.stream().filter(p -> p.type.equals(type)).findFirst().get();
     }
 
     public static void main(String[] args) throws IOException {
