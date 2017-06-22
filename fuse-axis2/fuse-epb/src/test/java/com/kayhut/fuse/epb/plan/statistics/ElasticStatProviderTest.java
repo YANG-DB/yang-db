@@ -88,8 +88,6 @@ public class ElasticStatProviderTest {
 
     // The transport port for the statistics cluster
     private static final int STAT_TRANSPORT_PORT = 9300;
-
-    static Logger logger = org.slf4j.LoggerFactory.getLogger(ElasticStatProviderTest.class);
     //endregion
 
     //todo Add more tests
@@ -206,18 +204,18 @@ public class ElasticStatProviderTest {
 
         HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
                 .withBuckets(Arrays.asList(
-                        new BucketRange("abc", "dzz"),
-                        new BucketRange("efg", "hij"),
-                        new BucketRange("klm", "xyz")
+                        new BucketRange<>("abc", "dzz"),
+                        new BucketRange<>("efg", "hij"),
+                        new BucketRange<>("klm", "xyz")
                 ))
                 .withDataType(DataType.string)
                 .build();
 
         HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
                 .withManualBuckets(Arrays.asList(
-                        new BucketRange("00", "11"),
-                        new BucketRange("22", "33"),
-                        new BucketRange("44", "55")
+                        new BucketRange<>("00", "11"),
+                        new BucketRange<>("22", "33"),
+                        new BucketRange<>("44", "55")
                 )).withDataType(DataType.string)
                 .withAutoBuckets(HistogramString.Builder.get()
                         .withFirstCharCode("97")

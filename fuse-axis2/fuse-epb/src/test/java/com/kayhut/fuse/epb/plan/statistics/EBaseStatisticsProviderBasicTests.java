@@ -211,13 +211,12 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore // Stats Double Bug
     public void eTypedCompositeFilterTest(){
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         ArrayList<EProp> props = new ArrayList<>();
-        props.add(EProp.of("4", 0, Constraint.of(ConstraintOp.eq, new Date())));
-        props.add(EProp.of("6", 0, Constraint.of(ConstraintOp.eq, 10L)));
+        props.add(EProp.of("birthDate", 0, Constraint.of(ConstraintOp.eq, new Date())));
+        props.add(EProp.of("height", 0, Constraint.of(ConstraintOp.eq, 10L)));
 
         EPropGroup propGroup = new EPropGroup(props);
 
@@ -227,11 +226,10 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore // Stats Double Bug
     public void eTypedLongFilterEqHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.eq, 10L));
+        EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.eq, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -241,11 +239,10 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore // Stats Double Bug
     public void eTypedLongFilterNeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ne, 10L));
+        EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.ne, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -255,11 +252,10 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore // Stats Double Bug
     public void eTypedLongFilterGtHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.gt, 10L));
+        EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.gt, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -269,11 +265,10 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore // Stats Double Bug
     public void eTypedLongFilterGeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.ge, 10L));
+        EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.ge, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -283,11 +278,10 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore // Stats Double Bug
     public void eTypedLongFilterLtHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop = EProp.of("6", 0, Constraint.of(ConstraintOp.lt, 10L));
+        EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.lt, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -297,11 +291,10 @@ public class EBaseStatisticsProviderBasicTests {
     }
 
     @Test
-    @Ignore // Stats Double Bug
     public void eTypedLongFilterLeHistogramTest() {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
-        EProp prop =EProp.of("6", 0, Constraint.of(ConstraintOp.le , 10L));
+        EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.le , 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
