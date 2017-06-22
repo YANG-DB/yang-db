@@ -2,6 +2,7 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
@@ -68,4 +69,17 @@ public class CursorCreationOperationContext extends OperationContextBase<CursorC
     private CreateCursorRequest.CursorType cursorType;
     private Cursor cursor;
     //endregion
+
+    public static class CursorCreationOperationContextDescriptor implements Descriptor<CursorCreationOperationContext>{
+
+        @Override
+        public String name(CursorCreationOperationContext query) {
+            return query.getCursorId();
+        }
+
+        @Override
+        public String describe(CursorCreationOperationContext query) {
+            return query.getCursorId();
+        }
+    }
 }

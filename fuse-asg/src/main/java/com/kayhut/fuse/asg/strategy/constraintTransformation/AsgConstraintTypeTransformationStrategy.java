@@ -35,7 +35,7 @@ public class AsgConstraintTypeTransformationStrategy extends AsgConstraintTransf
     private void applyExpressionTransformation(AsgStrategyContext context, EBase eBase, Class klass) {
         if (klass == EProp.class){
             EProp eProp = (EProp) eBase;
-            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(eProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
             ConstraintOp op = eProp.getCon().getOp();
             if (property.isPresent() && isSingleElementOp(op)) {
                 Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), eProp.getCon().getExpr()));
@@ -44,7 +44,7 @@ public class AsgConstraintTypeTransformationStrategy extends AsgConstraintTransf
         }
         if (klass == RelProp.class) {
             RelProp relProp = (RelProp) eBase;
-            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(relProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
             ConstraintOp op = relProp.getCon().getOp();
             if (property.isPresent() && isSingleElementOp(op)) {
                 Constraint newCon = new Constraint(op, new OntologyPropertyTypeFactory().supply(property.get(), relProp.getCon().getExpr()));

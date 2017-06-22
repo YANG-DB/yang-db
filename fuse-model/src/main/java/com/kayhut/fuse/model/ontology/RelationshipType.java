@@ -73,19 +73,19 @@ public class RelationshipType {
         return this;
     }
 
-    public List<Integer> getProperties() {
+    public List<String> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<Integer> properties) {
+    public void setProperties(List<String> properties) {
         this.properties = properties;
     }
 
-    public RelationshipType addProperty(int type) {
+    public RelationshipType addProperty(String type) {
         this.properties.add(type);
         return this;
     }
-    public RelationshipType withProperty(Integer ... properties) {
+    public RelationshipType withProperty(String ... properties) {
         this.properties.addAll(Arrays.asList(properties));
         return this;
     }
@@ -130,7 +130,7 @@ public class RelationshipType {
     private boolean directional;
     private String DBrName;
     private List<EPair> ePairs;
-    private List<Integer> properties;
+    private List<String> properties;
 
     //endregion
 
@@ -141,7 +141,7 @@ public class RelationshipType {
         private boolean directional;
         private String DBrName;
         private List<EPair> ePairs;
-        private List<Integer> properties;
+        private List<String> properties;
 
         private Builder() {
         }
@@ -175,7 +175,7 @@ public class RelationshipType {
             return this;
         }
 
-        public Builder withProperties(List<Integer> properties) {
+        public Builder withProperties(List<String> properties) {
             this.properties = properties;
             return this;
         }

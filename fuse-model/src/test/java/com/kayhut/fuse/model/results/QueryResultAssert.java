@@ -106,7 +106,7 @@ public class QueryResultAssert {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
-        Assert.assertTrue(expected.getpType() == actual.getpType());
+        Assert.assertTrue(expected.getpType().equals(actual.getpType()));
         Assert.assertEquals(expected.getValue(), actual.getValue());
         Assert.assertEquals(expected.getAgg(), actual.getAgg());
     }

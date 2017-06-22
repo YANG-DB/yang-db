@@ -73,7 +73,7 @@ public class RelationFilterOpTranslationStrategyTest {
 
         when(ontology.getProperties()).then(invocationOnMock -> {
             Property timestampProperty = new Property();
-            timestampProperty.setpType(2);
+            timestampProperty.setpType("2");
             timestampProperty.setName("timestamp");
             timestampProperty.setType("int");
 
@@ -120,7 +120,7 @@ public class RelationFilterOpTranslationStrategyTest {
 
         when(ontology.getProperties()).then(invocationOnMock -> {
             Property timestampProperty = new Property();
-            timestampProperty.setpType(2);
+            timestampProperty.setpType("2");
             timestampProperty.setName("timestamp");
             timestampProperty.setType("int");
 

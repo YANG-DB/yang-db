@@ -17,10 +17,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple2;
-import org.jooby.Jooby;
-import org.jooby.Result;
-import org.jooby.Results;
-import org.jooby.Status;
+import org.jooby.*;
 import org.jooby.caffeine.CaffeineCache;
 import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
@@ -57,6 +54,8 @@ public class FuseApp extends Jooby {
 
     //region Consructors
     public FuseApp(AppUrlSupplier localUrlSupplier) {
+        //log all requests
+        use("*", new RequestLogger().extended());
         //metrics statistics
         use(new Metrics()
                 .request()

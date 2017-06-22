@@ -157,12 +157,12 @@ public class EBaseStatisticsProviderRedundantTests {
         Rel rel = new Rel();
         rel.setrType(2);
         RelProp prop = new RelProp();
-        prop.setpType("8");
+        prop.setpType("color");
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
         prop.setCon(constraint);
-        PushdownRelProp pushdownRelProp = PushdownRelProp.of(0, "EntityB.firstName", "2", Constraint.of(ConstraintOp.ge, "abc"));
+        PushdownRelProp pushdownRelProp = PushdownRelProp.of(0, "EntityB.firstName", "lastName", Constraint.of(ConstraintOp.ge, "abc"));
 
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
 

@@ -47,11 +47,11 @@ public class AsgOntologyRelValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(unTyped(1, DRAGON.type, HORSE.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(GENDER.type), 3, Constraint.of(ConstraintOp.eq, Gender.MALE))),
+                in(eProp(3, EProp.of(GENDER.type, 3, Constraint.of(ConstraintOp.eq, Gender.MALE))),
                         rel(8, REGISTERED.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type)
                                         .next(eProp(11,
-                                                EProp.of(Integer.toString(NAME.type), 11, Constraint.of(ConstraintOp.eq, "abc")))))).
+                                                EProp.of(NAME.type, 11, Constraint.of(ConstraintOp.eq, "abc")))))).
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
@@ -63,11 +63,11 @@ public class AsgOntologyRelValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(unTyped(1, DRAGON.type, HORSE.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(GENDER.type), 3, Constraint.of(ConstraintOp.eq, Gender.MALE))),
+                in(eProp(3, EProp.of(GENDER.type, 3, Constraint.of(ConstraintOp.eq, Gender.MALE))),
                         rel(8, REGISTERED.getrType(), Rel.Direction.L).below(relProp(9)).
                                 next(typed(10, GUILD.type)
                                         .next(eProp(11,
-                                                EProp.of(Integer.toString(NAME.type), 11, Constraint.of(ConstraintOp.eq, "abc")))))).
+                                                EProp.of(NAME.type, 11, Constraint.of(ConstraintOp.eq, "abc")))))).
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
@@ -81,11 +81,11 @@ public class AsgOntologyRelValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(unTyped(1, DRAGON.type, HORSE.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(GENDER.type), 3, Constraint.of(ConstraintOp.eq, Gender.MALE))),
+                in(eProp(3, EProp.of(GENDER.type, 3, Constraint.of(ConstraintOp.eq, Gender.MALE))),
                         rel(8, REGISTERED.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type)
                                         .next(eProp(11,
-                                                EProp.of(Integer.toString(NAME.type), 11, Constraint.of(ConstraintOp.eq, "abc")))))).
+                                                EProp.of(NAME.type, 11, Constraint.of(ConstraintOp.eq, "abc")))))).
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
@@ -98,13 +98,13 @@ public class AsgOntologyRelValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(NAME.type), 3, Constraint.of(ConstraintOp.le, "abc"))),
+                in(eProp(3, EProp.of(NAME.type, 3, Constraint.of(ConstraintOp.le, "abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.L).below(relProp(9)).
                                 next(typed(10, DRAGON.type)
-                                        .next(eProp(11, EProp.of(Integer.toString(NAME.type), 11, Constraint.of(ConstraintOp.eq, "abc"))))),
+                                        .next(eProp(11, EProp.of(NAME.type, 11, Constraint.of(ConstraintOp.eq, "abc"))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type), 7, Constraint.of(ConstraintOp.eq, "abc")))))).
+                                        .next(eProp(7, EProp.of(NAME.type, 7, Constraint.of(ConstraintOp.eq, "abc")))))).
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
@@ -117,13 +117,13 @@ public class AsgOntologyRelValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(NAME.type), 3, Constraint.of(ConstraintOp.le, "abc"))),
+                in(eProp(3, EProp.of(NAME.type, 3, Constraint.of(ConstraintOp.le, "abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, DRAGON.type)
-                                        .next(eProp(11, EProp.of(Integer.toString(NAME.type), 11, Constraint.of(ConstraintOp.eq, "abc"))))),
+                                        .next(eProp(11, EProp.of(NAME.type, 11, Constraint.of(ConstraintOp.eq, "abc"))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type), 7, Constraint.of(ConstraintOp.eq, "abc")))))).
+                                        .next(eProp(7, EProp.of(NAME.type, 7, Constraint.of(ConstraintOp.eq, "abc")))))).
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
@@ -135,12 +135,12 @@ public class AsgOntologyRelValidatorStrategyTest {
     public void testNotValidNoParentEntityWithQuantQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(NAME.type), 3, Constraint.of(ConstraintOp.le, "abc"))),
+                in(eProp(3, EProp.of(NAME.type, 3, Constraint.of(ConstraintOp.le, "abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(Integer.toString(NAME.type), 11, Constraint.of(ConstraintOp.eq, "abc"))))),
+                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(NAME.type, 11, Constraint.of(ConstraintOp.eq, "abc"))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type), 7, Constraint.of(ConstraintOp.eq, "abc")))))).
+                                        .next(eProp(7, EProp.of(NAME.type, 7, Constraint.of(ConstraintOp.eq, "abc")))))).
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();

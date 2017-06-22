@@ -1,9 +1,11 @@
 package com.kayhut.fuse.epb;
 
+import com.codahale.metrics.Slf4jReporter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.epb.plan.PlanSearcher;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -31,6 +33,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
     @Override
     @Subscribe
     @TimerAnnotation
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         //if asg not ready yet -> return
         if (context.getAsgQuery() == null) {

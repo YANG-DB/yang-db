@@ -151,7 +151,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Setting The EProp expression as a date represented by Long value
         EProp eProp = (EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase();
-        eProp.setpType("15"); //this is a date field - Input is long - epoch time
+        eProp.setpType("dateSinceTheBigBang"); //this is a date field - Input is long - epoch time
         eProp.getCon().setExpr(123456L); //Epoch time as Long
 
         assertThat(eProp.getCon().getExpr(), instanceOf(Long.class));
@@ -171,7 +171,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Setting The EProp expression as a date represented by Long value
         EProp eProp = (EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase();
-        eProp.setpType("15"); //this is a date field - Input is long - epoch time
+        eProp.setpType("dateSinceTheBigBang"); //this is a date field - Input is long - epoch time
         eProp.getCon().setExpr(123456); //Epoch time as Long
 
         assertThat(eProp.getCon().getExpr(), instanceOf(int.class));
@@ -191,7 +191,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Setting The EProp expression as an int
         EProp eProp = (EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase();
-        eProp.setpType("7"); //this is an int field
+        eProp.setpType("height"); //this is an int field
         eProp.getCon().setExpr(99);
 
         assertThat(eProp.getCon().getExpr(), instanceOf(Integer.class));
@@ -214,25 +214,25 @@ public class AsgConstraintTypeTransformationStrategyTest {
         //region Preparing the Properties for the AsgQuery
         //Setting The RelProp (enum #4) expression as a date represented by Long value
         RelProp rProp1 = (RelProp) AsgQueryUtil.element(asgQueryWithRelProps, 4).get().geteBase();
-        rProp1.setpType("15"); //this is a date field - Input is long type - epoch time
+        rProp1.setpType("dateSinceTheBigBang"); //this is a date field - Input is long type - epoch time
         rProp1.getCon().setExpr(123456L); //Epoch time as Long
         assertThat(rProp1.getCon().getExpr(), instanceOf(Long.class));
 
         //Setting The RelProp (enum #5) expression as a date represented by Long value
         RelProp rProp2 = (RelProp) AsgQueryUtil.element(asgQueryWithRelProps, 5).get().geteBase();
-        rProp2.setpType("15"); //this is a date field - Input is long type - epoch time
+        rProp2.setpType("dateSinceTheBigBang"); //this is a date field - Input is long type - epoch time
         rProp2.getCon().setExpr(5555L); //Epoch time as Long
         assertThat(rProp2.getCon().getExpr(), instanceOf(Long.class));
 
 
 
         RelProp rProp3 = (RelProp) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 5).get().geteBase();
-        rProp3.setpType("15"); //this is a date field - Input is long type - epoch time
+        rProp3.setpType("dateSinceTheBigBang"); //this is a date field - Input is long type - epoch time
         rProp3.getCon().setExpr(5555L); //Epoch time as Long
         assertThat(rProp3.getCon().getExpr(), instanceOf(Long.class));
 
         RelProp rProp4 = (RelProp) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase();
-        rProp4.setpType("15"); //this is a date field - Input is long type - epoch time
+        rProp4.setpType("dateSinceTheBigBang"); //this is a date field - Input is long type - epoch time
         rProp4.getCon().setExpr(123456L); //Epoch time as Long
         assertThat(rProp4.getCon().getExpr(), instanceOf(Long.class));
         //endregion

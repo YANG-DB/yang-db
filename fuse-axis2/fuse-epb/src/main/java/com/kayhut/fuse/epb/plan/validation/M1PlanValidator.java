@@ -1,5 +1,8 @@
 package com.kayhut.fuse.epb.plan.validation;
 
+import com.codahale.metrics.Slf4jReporter;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
+import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.validation.opValidator.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -17,5 +20,11 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                         new RedundantGoToEntityOpValidator(),
                         new ReverseRelationOpValidator()))
                 );
+    }
+
+    @Override
+    @LoggerAnnotation(name = "isPlanValid", logLevel = Slf4jReporter.LoggingLevel.DEBUG)
+    public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
+        return super.isPlanValid(plan, query);
     }
 }

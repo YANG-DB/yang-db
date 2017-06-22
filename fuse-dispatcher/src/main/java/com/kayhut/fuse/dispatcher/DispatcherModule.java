@@ -44,6 +44,7 @@ public class DispatcherModule extends ModuleBase {
         binder.bind(PageDispatcherDriver.class).to(SimplePageDispatcherDriver.class).asEagerSingleton();
 
         // inteceptors
+
         binder.bindInterceptor(
                 Matchers.subclassesOf(QueryCreationOperationContext.Processor.class),
                 Matchers.any(),
