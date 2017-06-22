@@ -2,14 +2,14 @@
 <configuration scan="true" scanPeriod="15 seconds" debug="false">
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>[%d{ISO8601}]-[%thread] %-5level %logger - %msg%n</pattern>
+      <pattern>[%d{ISO8601}]-[%thread] %-5level %logger -%msg%n</pattern>
     </encoder>
   </appender>
 
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>log/todo-backend.log</file>
+    <file>log/backend.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>log/todo-backend.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <fileNamePattern>log/backend.%d{yyyy-MM-dd}.log</fileNamePattern>
       <totalSizeCap>1mb</totalSizeCap>
       <maxHistory>7</maxHistory>
     </rollingPolicy>
@@ -28,7 +28,7 @@
     </rollingPolicy>
 
     <encoder>
-      <pattern>%msg%n</pattern>
+      <pattern>%d{ISO8601} - %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -36,7 +36,7 @@
     <appender-ref ref="ACCESS" />
   </logger>
 
-  <root level="ERROR">
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>

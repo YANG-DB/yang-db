@@ -30,13 +30,6 @@ import static io.restassured.RestAssured.given;
  * Created by Roman on 12/04/2017.
  */
 public class SingleEntityTest {
-
-    @ClassRule
-    public static JoobyRule createApp() {
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf("application.engine2.dev.conf", "m1.dfs.non_redundant"));
-    }
-
     @BeforeClass
     public static void setup() throws Exception {
         fuseClient = new FuseClient("http://localhost:8888/fuse");

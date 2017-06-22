@@ -23,6 +23,7 @@ import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -83,8 +84,8 @@ public class FuseApp extends Jooby {
     //endregion
 
     //region Public Methods
-    public FuseApp conf(String path, String activeProfile) {
-        Config config = ConfigFactory.parseResources(path);
+    public FuseApp conf(File file, String activeProfile) {
+        Config config = ConfigFactory.parseFile(file);
         config = config.withValue("application.profile", ConfigValueFactory.fromAnyRef(activeProfile, "FuseApp"));
 
         super.use(config);
