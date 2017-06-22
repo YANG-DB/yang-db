@@ -37,7 +37,7 @@ import static java.util.Collections.singletonList;
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
-        fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
+        fuseClient = new FuseClient("http://localhost:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
