@@ -70,12 +70,12 @@ public class AsgEntityPropertiesValidationStrategyTest {
     public void testNotValidNoParentEntityWithQuantQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(NAME.type),3, Constraint.of(ConstraintOp.le,"abc"))),
+                in(eProp(3, EProp.of(NAME.type,3, Constraint.of(ConstraintOp.le,"abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(Integer.toString(NAME.type),11, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(NAME.type,11, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(Integer.toString(NAME.type),7, Constraint.of(ConstraintOp.eq,"abc")))))).
+                                        .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.eq,"abc")))))).
                 build();
 
         AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();

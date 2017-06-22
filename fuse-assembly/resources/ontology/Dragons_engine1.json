@@ -5,55 +5,55 @@
       "eType": 1,
       "name": "Person",
       "properties": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height",
+        "name"
       ]
     },
     {
       "eType": 3,
       "name": "Horse",
       "properties": [
-        7,
-        22,
-        23,
-        24
+        "name",
+        "weight",
+        "maxSpeed",
+        "distance"
       ]
     },
     {
       "eType": 2,
       "name": "Dragon",
       "properties": [
-        7,
-        14,
-        3,
-        8
+        "name",
+        "power",
+        "gender",
+        "color"
       ]
     },
     {
       "eType": 5,
       "name": "Kingdom",
       "properties": [
-        7,
-        18,
-        19,
-        20,
-        21
+        "name",
+        "king",
+        "queen",
+        "independenceDay",
+        "funds"
       ]
     },
     {
       "eType": 4,
       "name": "Guild",
       "properties": [
-        7,
-        15,
-        16,
-        17,
-        25
+        "name",
+        "description",
+        "iconId",
+        "url",
+        "establishDate"
       ]
     }
   ],
@@ -73,8 +73,8 @@
         }
       ],
       "properties": [
-        26,
-        10
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -88,7 +88,7 @@
         }
       ],
       "properties": [
-        26
+        "startDate"
       ]
     },
     {
@@ -102,8 +102,8 @@
         }
       ],
       "properties": [
-        26,
-        10
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -117,8 +117,8 @@
         }
       ],
       "properties": [
-        11,
-        12
+        "temperature",
+        "timestamp"
       ]
     },
     {
@@ -132,8 +132,8 @@
         }
       ],
       "properties": [
-        26,
-        10
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -147,7 +147,7 @@
         }
       ],
       "properties": [
-        26
+        "startDate"
       ]
     },
     {
@@ -161,7 +161,7 @@
         }
       ],
       "properties": [
-        26
+        "startDate"
       ]
     },
     {
@@ -183,143 +183,143 @@
         }
       ],
       "properties": [
-        26
+        "startDate"
       ]
     }
   ],
   "properties": [
     {
-      "pType": 1,
+      "pType": "firstName",
       "name": "firstName",
       "type": "string"
     },
     {
-      "pType": 2,
+      "pType": "lastName",
       "name": "lastName",
       "type": "string"
     },
     {
-      "pType": 3,
+      "pType": "gender",
       "name": "gender",
       "type": "TYPE_Gender"
     },
     {
-      "pType": 4,
+      "pType": "birthDate",
       "name": "birthDate",
       "type": "date"
     },
     {
-      "pType": 5,
+      "pType": "deathDate",
       "name": "deathDate",
       "type": "string"
     },
     {
-      "pType": 7,
+      "pType": "name",
       "name": "name",
       "type": "string"
     },
     {
-      "pType": 6,
+      "pType": "height",
       "name": "height",
       "type": "int"
     },
     {
-      "pType": 22,
+      "pType": "weight",
       "name": "weight",
       "type": "int"
     },
     {
-      "pType": 23,
+      "pType": "maxSpeed",
       "name": "maxSpeed",
       "type": "int"
     },
     {
-      "pType": 24,
+      "pType": "distance",
       "name": "distance",
       "type": "int"
     },
     {
-      "pType": 25,
+      "pType": "establishDate",
       "name": "establishDate",
       "type": "date"
     },
     {
-      "pType": 15,
+      "pType": "description",
       "name": "description",
       "type": "string"
     },
     {
-      "pType": 16,
+      "pType": "iconId",
       "name": "iconId",
       "type": "string"
     },
     {
-      "pType": 17,
+      "pType": "url",
       "name": "url",
       "type": "string"
     },
     {
-      "pType": 18,
+      "pType": "king",
       "name": "king",
       "type": "string"
     },
     {
-      "pType": 19,
+      "pType": "queen",
       "name": "queen",
       "type": "string"
     },
     {
-      "pType": 20,
+      "pType": "independenceDay",
       "name": "independenceDay",
       "type": "string"
     },
     {
-      "pType": 21,
+      "pType": "funds",
       "name": "funds",
       "type": "float"
     },
     {
-      "pType": 8,
+      "pType": "color",
       "name": "color",
       "type": "TYPE_Color"
     },
     {
-      "pType": 9,
+      "pType": "date",
       "name": "date",
       "type": "date"
     },
     {
-      "pType": 26,
-      "name": "since",
+      "pType": "startDate",
+      "name": "startDate",
       "type": "date"
     },
     {
-      "pType": 10,
-      "name": "till",
+      "pType": "endDate",
+      "name": "endDate",
       "type": "date"
     },
     {
-      "pType": 11,
+      "pType": "temperature",
       "name": "temperature",
       "type": "int"
     },
     {
-      "pType": 12,
+      "pType": "timestamp",
       "name": "timestamp",
       "type": "date"
     },
     {
-      "pType": 14,
+      "pType": "power",
       "name": "power",
       "type": "int"
     },
     {
-      "pType": 2147483647,
+      "pType": "2147483647",
       "name": "id",
       "type": "string"
     },
     {
-      "pType": 2147483646,
+      "pType": "2147483646",
       "name": "type",
       "type": "string"
     }

@@ -5,44 +5,42 @@
       "eType": 1,
       "name": "Person",
       "properties": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
       ]
     },
     {
       "eType": 3,
       "name": "Horse",
       "properties": [
-        7,
-        3
+        "name",
+        "gender"
       ]
     },
     {
       "eType": 2,
       "name": "Dragon",
       "properties": [
-        7,
-        3,
-        8
+        "name",
+        "gender"
       ]
     },
     {
       "eType": 5,
       "name": "kingdom",
       "properties": [
-        7
+        "name"
       ]
     },
     {
       "eType": 4,
       "name": "Guild",
       "properties": [
-        7
+        "name"
       ]
     }
   ],
@@ -66,8 +64,8 @@
         }
       ],
       "properties": [
-        9,
-        10
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -81,8 +79,8 @@
         }
       ],
       "properties": [
-        9,
-        10
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -96,8 +94,7 @@
         }
       ],
       "properties": [
-        9,
-        10
+
       ]
     },
     {
@@ -111,9 +108,9 @@
         }
       ],
       "properties": [
-        9,
-        10,
-        11
+        "startDate",
+        "endDate",
+        "temperature"
       ]
     },
     {
@@ -127,10 +124,10 @@
         }
       ],
       "properties": [
-        9,
-        10,
-        11,
-        12
+        "startDate",
+        "endDate",
+        "timestamp",
+        "temperature"
       ]
     },
     {
@@ -144,8 +141,8 @@
         }
       ],
       "properties": [
-        9,
-        10
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -163,75 +160,75 @@
         }
       ],
       "properties": [
-        9,
-        10
+        "startDate",
+        "endDate"
       ]
     }
   ],
   "properties": [
     {
-      "pType": 1,
+      "pType": "firstName",
       "name": "firstName",
       "type": "string"
     },
     {
-      "pType": 2,
+      "pType": "lastName",
       "name": "lastName",
       "type": "string"
     },
     {
-      "pType": 3,
+      "pType": "gender",
       "name": "gender",
       "type": "TYPE_Gender"
     },
     {
-      "pType": 4,
+      "pType": "birthDate",
       "name": "birthDate",
       "type": "date"
     },
     {
-      "pType": 5,
+      "pType": "deathDate",
       "name": "deathDate",
       "type": "date"
     },
     {
-      "pType": 6,
+      "pType": "height",
       "name": "height",
       "type": "int",
       "units": "cm"
     },
     {
-      "pType": 7,
+      "pType": "name",
       "name": "name",
       "type": "string"
     },
     {
-      "pType": 9,
+      "pType": "startDate",
       "name": "startDate",
       "type": "date"
     },
     {
-      "pType": 10,
+      "pType": "endDate",
       "name": "endDate",
       "type": "date"
     },
     {
-      "pType": 12,
+      "pType": "timestamp",
       "name": "timestamp",
       "type": "long"
     },
     {
-      "pType": 11,
+      "pType": "temperature",
       "name": "temperature",
       "type": "long"
     },
     {
-      "pType": 2147483647,
+      "pType": "id",
       "name": "id",
       "type": "string"
     },
     {
-      "pType": 2147483646,
+      "pType": "type",
       "name": "type",
       "type": "string"
     }

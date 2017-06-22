@@ -98,7 +98,7 @@ public class AsgStepsValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(rel(1, FREEZE.getrType(), R))
                 .next(quant1(2, QuantType.all))
-                .in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                .in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5))
                         .next(rel(1, FREEZE.getrType(), R))
                         .next(typed(10, GUILD.type).next(eProp(11))))
@@ -115,7 +115,7 @@ public class AsgStepsValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, OntologyTestUtils.PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(Integer.toString(FIRST_NAME.type), 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
                                         .next(eProp(7))).
@@ -132,7 +132,7 @@ public class AsgStepsValidatorStrategyTest {
     public void testStepWithPropsNoRelLongerQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type)
-                        .next(eProp(2, EProp.of(Integer.toString(HEIGHT.type), 3, Constraint.of(ConstraintOp.gt, 189L)))))
+                        .next(eProp(2, EProp.of(HEIGHT.type, 3, Constraint.of(ConstraintOp.gt, 189L)))))
                 .next(rel(4, OWN.getrType(), R)
                         .below(relProp(5, RelProp.of(START_DATE.type, 6, Constraint.of(ge, new Date(System.currentTimeMillis()))))))
                 .next(typed(7, DRAGON.type))
@@ -141,13 +141,13 @@ public class AsgStepsValidatorStrategyTest {
                         , rel(12, FREEZE.getrType(), R)
                                 .below(relProp(122))
                                 .next(unTyped(13)
-                                        .next(eProp(14, EProp.of(Integer.toString(NAME.type), 15, Constraint.of(ConstraintOp.notContains, "bob"))))
+                                        .next(eProp(14, EProp.of(NAME.type, 15, Constraint.of(ConstraintOp.notContains, "bob"))))
                                 )
                                 .below(relProp(18, RelProp.of(START_DATE.type, 19,
                                         Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
                                         RelProp.of(END_DATE.type, 19, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
                                 .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
-                                        .next(eProp(21, EProp.of(Integer.toString(NAME.type), 22, Constraint.of(ConstraintOp.eq, "smoge"))))
+                                        .next(eProp(21, EProp.of(NAME.type, 22, Constraint.of(ConstraintOp.eq, "smoge"))))
                                 )
                 ).build();
 

@@ -166,13 +166,13 @@ public class SelectionTranslationStrategyTest {
     //region Private Methods
     private static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, PERSON.type,"A", Integer.toString(FIRST_NAME.type), Integer.toString(LAST_NAME.type)))
+                .next(typed(1, PERSON.type,"A", FIRST_NAME.type, LAST_NAME.type))
                 .next(quant1(4, QuantType.all))
-                .in(eProp(5, new EProp(5, Integer.toString(LAST_NAME.type), Constraint.of(ConstraintOp.eq, "last"))))
+                .in(eProp(5, new EProp(5, LAST_NAME.type, Constraint.of(ConstraintOp.eq, "last"))))
                 .next(rel(2,FIRE.getrType(),R))
-                .next(typed(3, DRAGON.type,"B", Integer.toString(FIRST_NAME.type), Integer.toString(LAST_NAME.type)))
+                .next(typed(3, DRAGON.type,"B", FIRST_NAME.type, LAST_NAME.type))
                 .next(quant1(6, QuantType.all))
-                .next(eProp(7, new EProp(7, Integer.toString(FIRST_NAME.type), Constraint.of(ConstraintOp.eq, "name"))))
+                .next(eProp(7, new EProp(7, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "name"))))
                 .build();
     }
     //endregion

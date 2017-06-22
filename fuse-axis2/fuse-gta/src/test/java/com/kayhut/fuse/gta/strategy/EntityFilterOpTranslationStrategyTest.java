@@ -75,12 +75,12 @@ public class EntityFilterOpTranslationStrategyTest {
         );
         when(ontology.getProperties()).then(invocationOnMock -> {
             Property nameProperty = new Property();
-            nameProperty.setpType(1);
+            nameProperty.setpType("1");
             nameProperty.setName("name");
             nameProperty.setType("string");
 
             Property ageProperty = new Property();
-            ageProperty.setpType(2);
+            ageProperty.setpType("2");
             ageProperty.setName("age");
             ageProperty.setType("int");
 
@@ -128,12 +128,12 @@ public class EntityFilterOpTranslationStrategyTest {
         );
         when(ontology.getProperties()).then(invocationOnMock -> {
             Property nameProperty = new Property();
-            nameProperty.setpType(1);
+            nameProperty.setpType("1");
             nameProperty.setName("name");
             nameProperty.setType("string");
 
             Property ageProperty = new Property();
-            ageProperty.setpType(2);
+            ageProperty.setpType("2");
             ageProperty.setName("age");
             ageProperty.setType("int");
 

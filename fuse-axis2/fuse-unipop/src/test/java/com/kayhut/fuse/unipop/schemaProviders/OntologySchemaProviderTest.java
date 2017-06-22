@@ -96,7 +96,7 @@ public class OntologySchemaProviderTest {
 
         Property nameProp = new Property();
         nameProp.setName("name");
-        nameProp.setpType(1);
+        nameProp.setpType("1");
 
         when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
 

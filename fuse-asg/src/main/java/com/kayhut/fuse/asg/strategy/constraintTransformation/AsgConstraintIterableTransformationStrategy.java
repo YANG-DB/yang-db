@@ -44,7 +44,7 @@ public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTr
     private void applyArrayTransformation(EBase eBase, AsgStrategyContext context) {
         if (eBase instanceof EProp) {
             EProp eProp = (EProp) eBase;
-            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(eProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
             Object expr = eProp.getCon().getExpr();
             ConstraintOp op = eProp.getCon().getOp();
             if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
@@ -55,7 +55,7 @@ public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTr
         }
         if (eBase instanceof RelProp) {
             RelProp relProp = (RelProp) eBase;
-            Optional<Property> property = context.getOntologyAccessor().$property(Integer.parseInt(relProp.getpType()));
+            Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
             Object expr = relProp.getCon().getExpr();
             ConstraintOp op = relProp.getCon().getOp();
             if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {

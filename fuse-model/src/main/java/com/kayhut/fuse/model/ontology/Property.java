@@ -13,17 +13,17 @@ public class Property {
     public Property() {
     }
 
-    public Property(String name, int pType, String type) {
+    public Property(String name, String pType, String type) {
         this.pType = pType;
         this.name = name;
         this.type = type;
     }
 
-    public int getpType() {
+    public String getpType() {
         return pType;
     }
 
-    public void setpType(int pType) {
+    public void setpType(String pType) {
         this.pType = pType;
     }
 
@@ -66,7 +66,7 @@ public class Property {
     }
 
     //region Fields
-    private int pType;
+    private String pType;
     private String name;
     private String type;
     private List<String> report;
@@ -75,7 +75,7 @@ public class Property {
 
     //region Builder
     public static final class Builder {
-        private int pType;
+        private String pType;
         private String name;
         private String type;
         private List<String> report;
@@ -88,7 +88,7 @@ public class Property {
             return new Builder();
         }
 
-        public Builder withPType(int pType) {
+        public Builder withPType(String pType) {
             this.pType = pType;
             return this;
         }
@@ -113,11 +113,11 @@ public class Property {
             return this;
         }
 
-        public Property build(int pType,String name,String type) {
+        public Property build(String pType,String name,String type) {
             return build(pType,name,type,null);
         }
 
-        public Property build(int pType,String name,String type,String units ) {
+        public Property build(String pType,String name,String type,String units ) {
             Property property = new Property();
             property.setName(name);
             property.setType(type);

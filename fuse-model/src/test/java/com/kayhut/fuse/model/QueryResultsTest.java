@@ -30,7 +30,7 @@ public class QueryResultsTest {
     @Test
     public void testResults1Serialization() throws IOException, JSONException {
         String result1ActualJSON = mapper.writeValueAsString(result1Obj);
-        String result1ExpectedJSONString = "{\"pattern\":{\"ont\":\"Dragons\",\"name\":\"Q1\"},\"assignments\":[{\"entities\":[{\"eTag\":[\"A\",\"C\"],\"eID\":\"12345678\",\"eType\":1,\"properties\":[{\"pType\":1,\"agg\":\"raw\",\"value\":\"a\"},{\"pType\":3,\"agg\":\"raw\",\"value\":5.35}],\"attachedProperties\":[{\"pName\":\"count(relationships)\",\"value\":53}]}],\"relationships\":[{\"rID\":\"12345678\",\"agg\":true,\"rType\":2,\"directional\":true,\"eID1\":\"12345678\",\"eID2\":\"12345679\",\"properties\":[{\"pType\":1,\"agg\":\"max\",\"value\":76},{\"pType\":1,\"agg\":\"avg\",\"value\":34.56}],\"attachedProperties\":[{\"pName\":\"sum(duration)\",\"value\":124}]}]}]}";
+        String result1ExpectedJSONString = "{\"pattern\":{\"ont\":\"Dragons\",\"name\":\"Q1\"},\"assignments\":[{\"entities\":[{\"eTag\":[\"A\",\"C\"],\"eID\":\"12345678\",\"eType\":1,\"properties\":[{\"pType\":\"1\",\"agg\":\"raw\",\"value\":\"a\"},{\"pType\":\"3\",\"agg\":\"raw\",\"value\":5.35}],\"attachedProperties\":[{\"pName\":\"count(relationships)\",\"value\":53}]}],\"relationships\":[{\"rID\":\"12345678\",\"agg\":true,\"rType\":2,\"directional\":true,\"eID1\":\"12345678\",\"eID2\":\"12345679\",\"properties\":[{\"pType\":\"1\",\"agg\":\"max\",\"value\":76},{\"pType\":\"1\",\"agg\":\"avg\",\"value\":34.56}],\"attachedProperties\":[{\"pName\":\"sum(duration)\",\"value\":124}]}]}]}";
         System.out.println("result1ExpectedJSONString:" + result1ExpectedJSONString);
         System.out.println("result1ActualJSON:" + result1ActualJSON);
         JSONAssert.assertEquals(result1ExpectedJSONString, result1ActualJSON,false);
@@ -63,12 +63,12 @@ public class QueryResultsTest {
 
         List<Property> properties = new ArrayList<Property>();
         Property property1 = new Property();
-        property1.setpType(1);
+        property1.setpType("1");
         property1.setAgg("raw");
         property1.setValue("a");
 
         Property property2 = new Property();
-        property2.setpType(3);
+        property2.setpType("3");
         property2.setAgg("raw");
         property2.setValue(5.35);
 
@@ -93,12 +93,12 @@ public class QueryResultsTest {
 
         List<Property> propertiesRelationship = new ArrayList<Property>();
         Property propertyRelationship1 =  new Property();
-        propertyRelationship1.setpType(1);
+        propertyRelationship1.setpType("1");
         propertyRelationship1.setAgg("max");
         propertyRelationship1.setValue(76);
 
         Property propertyRelationship2 =  new Property();
-        propertyRelationship2.setpType(1);
+        propertyRelationship2.setpType("1");
         propertyRelationship2.setAgg("avg");
         propertyRelationship2.setValue(34.56);
 

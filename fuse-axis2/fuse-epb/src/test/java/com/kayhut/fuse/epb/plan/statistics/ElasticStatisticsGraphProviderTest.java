@@ -282,8 +282,8 @@ public class ElasticStatisticsGraphProviderTest {
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
                 .withRType(1).withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
 
-        Property nameProp = new Property(DATA_FIELD_NAME_NAME, 1, "string");
-        Property ageProp = new Property(DATA_FIELD_NAME_AGE, 2, "int");
+        Property nameProp = new Property(DATA_FIELD_NAME_NAME, "1", "string");
+        Property ageProp = new Property(DATA_FIELD_NAME_AGE, "2", "int");
 
         when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
 

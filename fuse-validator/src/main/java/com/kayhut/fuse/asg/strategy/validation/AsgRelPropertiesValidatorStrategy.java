@@ -61,9 +61,9 @@ public class AsgRelPropertiesValidatorStrategy implements AsgValidatorStrategy {
     private List<String> check(Ontology.Accessor accessor, AsgEBase<Rel> base, RelProp property) {
         List<String> errors = new ArrayList<>();
         RelationshipType relationshipType = accessor.$relation$(base.geteBase().getrType());
-        int pType = Integer.valueOf(property.getpType());
+        String pType = property.getpType();
 
-        if (relationshipType.getProperties().stream().noneMatch(p -> p == pType)) {
+        if (relationshipType.getProperties().stream().noneMatch(p -> p.equals(pType))) {
             errors.add(ERROR_2 + ":" + print(base, property));
         }
 
