@@ -1,13 +1,11 @@
 package com.kayhut.test.framework.index;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;

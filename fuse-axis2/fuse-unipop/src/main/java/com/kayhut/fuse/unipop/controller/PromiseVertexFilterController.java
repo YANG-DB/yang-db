@@ -112,7 +112,7 @@ public class PromiseVertexFilterController extends PromiseVertexControllerBase {
         SearchRequestBuilder searchRequest = searchBuilder.compose(client, true).setSearchType(SearchType.SCAN);
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
-                client,
+                metricRegistry, client,
                 searchRequest,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),

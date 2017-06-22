@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.codahale.metrics.MetricRegistry;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
@@ -84,7 +85,7 @@ public class ElasticStatisticsGraphProviderTest {
         GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
 
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
-                new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(statClient, statConfig)),
+                new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig)),
                 Caffeine.newBuilder()
                         .maximumSize(10_000)
                         .expireAfterWrite(5, TimeUnit.MINUTES)

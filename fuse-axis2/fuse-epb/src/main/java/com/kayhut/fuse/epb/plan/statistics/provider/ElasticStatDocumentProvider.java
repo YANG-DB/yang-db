@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics.provider;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
@@ -19,7 +20,8 @@ import java.util.Map;
 public class ElasticStatDocumentProvider implements StatDataProvider {
     //region Constructors
     @Inject
-    public ElasticStatDocumentProvider(Client client, StatConfig config) {
+    public ElasticStatDocumentProvider(MetricRegistry metricRegistry, Client client, StatConfig config) {
+        this.metricRegistry = metricRegistry;
         this.client = client;
         this.config = config;
     }
@@ -47,6 +49,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
         searchBuilder.setScrollTime(60000);
 
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
+                metricRegistry,
                 this.client,
                 searchBuilder.compose(this.client, false),
                 searchBuilder.getLimit(),
@@ -59,6 +62,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
     }
     //endregion
 
+    private MetricRegistry metricRegistry;
     //region Fields
     private Client client;
     private StatConfig config;

@@ -28,7 +28,7 @@ public class PromiseElementController implements SearchQuery.SearchController {
     public PromiseElementController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider,MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
         this.innerControllers = new HashMap<>();
-        this.innerControllers.put(Vertex.class, new VertexController(client,configuration,graph,schemaProvider));
+        this.innerControllers.put(Vertex.class, new VertexController(client,configuration,graph,schemaProvider,metricRegistry));
         this.innerControllers.put(Edge.class, new EdgeController(client,configuration,graph,schemaProvider));
     }
     //endregion
