@@ -8,11 +8,13 @@ import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.configuration.*;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
+import com.kayhut.fuse.stat.model.result.StatGlobalCardinalityResult;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatResultBase;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
+import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.elasticsearch.client.transport.TransportClient;
@@ -20,11 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 /**
@@ -126,15 +128,30 @@ public class StatCalculator {
             if (fields.isPresent() && !fields.get().isEmpty()) {
                 for (Field field : fields.get()) {
                     HistogramNumeric hist = ((HistogramNumeric) field.getHistogram());
-                    List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(
-                            hist.getMin(),
-                            hist.getMax(),
-                            hist.getNumOfBins());
-                    List<StatRangeResult> bucketsResults = EsUtil.getNumericHistogramResults(dataClient,
+                    List<BucketRange<? extends Number>> numericBuckets = new ArrayList<>();
+
+                    if (hist.getDataType() == DataType.numericDouble) {
+                        numericBuckets.addAll(
+                                StatUtil.createDoubleBuckets(
+                                        hist.getMin().doubleValue(),
+                                        hist.getMax().doubleValue(),
+                                        hist.getNumOfBins()));
+                    } else if (hist.getDataType() == DataType.numericLong) {
+                        numericBuckets.addAll(
+                                StatUtil.createLongBuckets(
+                                        hist.getMin().longValue(),
+                                        hist.getMax().longValue(),
+                                        hist.getNumOfBins()));
+                    }
+
+                    List<StatRangeResult<? extends Number>> bucketsResults = EsUtil.getNumericHistogramResults(
+                            dataClient,
                             index,
                             type,
                             field.getField(),
+                            hist.getDataType(),
                             numericBuckets);
+
                     populateBuckets(statIndexName, statTypeNumericName, statClient, bucketsResults);
                 }
             }
@@ -157,31 +174,37 @@ public class StatCalculator {
             if (fields.isPresent() && !fields.get().isEmpty()) {
 
                 for (Field field : fields.get()) {
-                    HistogramManual hist = ((HistogramManual) field.getHistogram());
+                    Histogram hist = field.getHistogram();
                     if (field.getFilter() != null && !field.getFilter().isEmpty()) { //Use for global cardinality
                         Filter direction = field.getFilter().stream()
                                 .filter(filter -> "direction".equals(filter.getName()))
                                 .findFirst().get();
-                        List<StatRangeResult> bucketsResults = EsUtil.getGlobalCardinalityHistogramResults(
+                        List<StatGlobalCardinalityResult> bucketsResults = EsUtil.getGlobalCardinalityHistogramResults(
                                 dataClient,
                                 index,
                                 type,
                                 field.getField(),
-                                direction.getValue(), hist.getBuckets());
+                                direction.getValue(),
+                                ((HistogramManual<?>)hist).getBuckets());
                         populateBuckets(statIndexName, statTypeGlobalName, statClient, bucketsResults);
-                    } else {
-                        List<StatRangeResult> bucketsResults = EsUtil.getManualHistogramResults(dataClient,
+                    } else if (hist.getDataType() == DataType.numericDouble || hist.getDataType() == DataType.numericLong) {
+                        List<StatRangeResult<Number>> bucketsResults = EsUtil.getManualHistogramResults(
+                                dataClient,
                                 index,
                                 type,
                                 field.getField(),
-                                hist.getDataType(),
-                                hist.getBuckets());
-                        if (hist.getDataType() == DataType.string) {
-                            populateBuckets(statIndexName, statTypeStringName, statClient, bucketsResults);
-                        }
-                        if (hist.getDataType() == DataType.numeric) {
-                            populateBuckets(statIndexName, statTypeNumericName, statClient, bucketsResults);
-                        }
+                                field.getHistogram().getDataType(),
+                                ((HistogramManual<Number>)hist).getBuckets());
+                        populateBuckets(statIndexName, statTypeNumericName, statClient, bucketsResults);
+                    } else if (hist.getDataType() == DataType.string) {
+                        List<StatRangeResult<Number>> bucketsResults = EsUtil.getManualHistogramResults(
+                                dataClient,
+                                index,
+                                type,
+                                field.getField(),
+                                field.getHistogram().getDataType(),
+                                ((HistogramManual<Number>)hist).getBuckets());
+                        populateBuckets(statIndexName, statTypeStringName, statClient, bucketsResults);
                     }
                 }
             }
@@ -262,27 +285,32 @@ public class StatCalculator {
                                 field.getField(),
                                 stringBuckets);
 
-                        List<StatRangeResult> combinedBuckets = Stream
-                                .concat(autoBuckets.stream(), manualBuckets.stream())
-                                .collect(Collectors.toList());
+                        List<StatRangeResult> combinedBuckets = Stream.ofAll(manualBuckets).appendAll(autoBuckets).toJavaList();
                         populateBuckets(statIndexName, statTypeStringName, statClient, combinedBuckets);
                     }
-                    if (hist.getDataType() == DataType.numeric) {
+
+                    if (hist.getDataType() == DataType.numericDouble || hist.getDataType() == DataType.numericLong) {
                         HistogramNumeric subHist = (HistogramNumeric) hist.getAutoBuckets();
-                        List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(
-                                subHist.getMin(),
-                                subHist.getMax(),
-                                subHist.getNumOfBins());
-                        List<StatRangeResult> autoBuckets = EsUtil.getNumericHistogramResults(
+                        List<BucketRange<? extends Number>> numericBuckets = hist.getDataType() == DataType.numericDouble ?
+                                new ArrayList<>(StatUtil.createDoubleBuckets(
+                                    subHist.getMin().doubleValue(),
+                                    subHist.getMax().doubleValue(),
+                                    subHist.getNumOfBins())) :
+                                hist.getDataType() == DataType.numericLong ?
+                                        new ArrayList<>(StatUtil.createLongBuckets(
+                                                subHist.getMin().longValue(),
+                                                subHist.getMax().longValue(),
+                                                subHist.getNumOfBins())) : Collections.emptyList();
+
+                        List<StatRangeResult<? extends Number>> autoBuckets = EsUtil.getNumericHistogramResults(
                                 dataClient,
                                 index,
                                 type,
                                 field.getField(),
+                                subHist.getDataType(),
                                 numericBuckets);
 
-                        List<StatRangeResult> combinedBuckets = Stream.
-                                concat(autoBuckets.stream(), manualBuckets.stream())
-                                .collect(Collectors.toList());
+                        List<StatRangeResult> combinedBuckets = Stream.ofAll(manualBuckets).appendAll(autoBuckets).toJavaList();
                         populateBuckets(statIndexName, statTypeNumericName, statClient, combinedBuckets);
                     }
                 }
@@ -338,7 +366,7 @@ public class StatCalculator {
                 for (Field field : fields.get()) {
                     HistogramDynamic hist = (HistogramDynamic) field.getHistogram();
                     // !! Currently we support only dynamic histogram of numeric !!
-                    List<StatRangeResult> bucketsResults = EsUtil.getDynamicHistogramResults(
+                    List<StatRangeResult<Number>> bucketsResults = EsUtil.getDynamicHistogramResults(
                             dataClient,
                             index,
                             type,

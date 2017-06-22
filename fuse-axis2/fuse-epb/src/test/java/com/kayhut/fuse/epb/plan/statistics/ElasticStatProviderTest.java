@@ -195,7 +195,7 @@ public class ElasticStatProviderTest {
     //Per test
     private static StatContainer buildStatContainer() {
         HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
-                .withMin(DRAGON_MIN_AGE).withMax(DRAGON_MAX_AGE).withNumOfBins(10).build();
+                .withMin(DRAGON_MIN_AGE).withMax(DRAGON_MAX_AGE).withDataType(DataType.numericLong).withNumOfBins(10).build();
 
         HistogramString histogramDragonName = HistogramString.Builder.get()
                 .withPrefixSize(3)

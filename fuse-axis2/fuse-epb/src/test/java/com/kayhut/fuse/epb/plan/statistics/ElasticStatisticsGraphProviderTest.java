@@ -324,13 +324,13 @@ public class ElasticStatisticsGraphProviderTest {
                                                                               long min,
                                                                               long max,
                                                                               int numOfBins) {
-        List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
+        List<BucketRange<Double>> numericBuckets = StatUtil.createDoubleBuckets(min, max, Math.toIntExact(numOfBins));
         List<StatRangeResult> statRangeResults = new ArrayList<>();
         int j = 0;
         for (BucketRange<Double> bucketRange : numericBuckets) {
             for (String index : indices) {
                 StatRangeResult<Double> statRangeResult = new StatRangeResult<>
-                        (index, type, field, Integer.toString(j), DataType.numeric, bucketRange.getStart(), bucketRange.getEnd(), j, j);
+                        (index, type, field, Integer.toString(j), DataType.numericDouble, bucketRange.getStart(), bucketRange.getEnd(), j, j);
                 statRangeResults.add(statRangeResult);
             }
             j++;

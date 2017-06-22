@@ -130,8 +130,11 @@ public class StatUtil {
                         ((StatRangeResult) bucketStatResult).getLowerBound(),
                         ((StatRangeResult) bucketStatResult).getUpperBound());
                 bucket.put("id", bucketId);
-                if (bucketStatResult.getDataType() == DataType.numeric ||
-                        bucketStatResult.getDataType() == DataType.string) {
+                if (bucketStatResult.getDataType() == DataType.numericDouble ||
+                        bucketStatResult.getDataType() == DataType.numericLong) {
+                    bucket.put("upper_bound_numeric", ((StatRangeResult) bucketStatResult).getUpperBound());
+                    bucket.put("lower_bound_numeric", ((StatRangeResult) bucketStatResult).getLowerBound());
+                } else if (bucketStatResult.getDataType() == DataType.string) {
                     bucket.put("upper_bound_" + bucketStatResult.getDataType(), ((StatRangeResult) bucketStatResult).getUpperBound());
                     bucket.put("lower_bound_" + bucketStatResult.getDataType(), ((StatRangeResult) bucketStatResult).getLowerBound());
                 }
@@ -249,16 +252,41 @@ public class StatUtil {
      * @param numOfBins number of bins. Must be strictly positive.
      * @return a list of buckets of evenly distributed bins between the minimum and maximum values
      */
-    public static List<BucketRange<Double>> createNumericBuckets(double min, double max, int numOfBins) {
+    public static List<BucketRange<Double>> createDoubleBuckets(double min, double max, int numOfBins) {
         double[] bucketsData = new double[numOfBins + 1];
         for (int i = 0; i <= numOfBins; i++) {
-            bucketsData[i] = min + i * (max - min) / (numOfBins);
+            bucketsData[i] = min + i * ((max - min) / (numOfBins));
         }
         List<BucketRange<Double>> buckets = new ArrayList<>();
         for (int i = 0; i < bucketsData.length - 1; i++) {
             double start = bucketsData[i];
             double end = bucketsData[i + 1];
-            BucketRange bucket = new BucketRange<>(start, end);
+            BucketRange<Double> bucket = new BucketRange<>(start, end);
+            buckets.add(bucket);
+        }
+        return buckets;
+    }
+
+    /**
+     * @param min       lowest value
+     * @param max       highest value
+     * @param numOfBins number of bins. Must be strictly positive.
+     * @return a list of buckets of evenly distributed bins between the minimum and maximum values
+     */
+    public static List<BucketRange<Long>> createLongBuckets(long min, long max, int numOfBins) {
+        long[] bucketsData = new long[numOfBins + 1];
+        for (int i = 0; i <= numOfBins; i++) {
+            bucketsData[i] = min + Math.round((i * ((max - min) / ((double)numOfBins))));
+        }
+
+        bucketsData[0] = min;
+        bucketsData[numOfBins] = max;
+
+        List<BucketRange<Long>> buckets = new ArrayList<>();
+        for (int i = 0; i < bucketsData.length - 1; i++) {
+            long start = bucketsData[i];
+            long end = bucketsData[i + 1];
+            BucketRange<Long> bucket = new BucketRange<>(start, end);
             buckets.add(bucket);
         }
         return buckets;

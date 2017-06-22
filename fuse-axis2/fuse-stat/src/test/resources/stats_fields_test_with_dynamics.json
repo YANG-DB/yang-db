@@ -27,6 +27,7 @@
           "field": "age",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 10,
             "max": 100,
             "numOfBins": 10
@@ -145,7 +146,7 @@
         {
           "field": "timestamp",
           "histogram": {
-            "dataType": "numeric",
+            "dataType": "numericLong",
             "histogramType": "dynamic",
             "numOfBins": 10
           }

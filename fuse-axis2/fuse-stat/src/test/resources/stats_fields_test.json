@@ -27,6 +27,7 @@
           "field": "age",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 10,
             "max": 100,
             "numOfBins": 10
