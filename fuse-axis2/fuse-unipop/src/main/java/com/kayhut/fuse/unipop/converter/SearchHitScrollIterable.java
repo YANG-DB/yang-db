@@ -1,6 +1,8 @@
 package com.kayhut.fuse.unipop.converter;
 
-import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -11,6 +13,9 @@ import org.elasticsearch.search.SearchHit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+
+import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Created by r on 3/16/2015.
@@ -18,11 +23,13 @@ import java.util.NoSuchElementException;
 public class SearchHitScrollIterable implements Iterable<SearchHit> {
     //region Constructor
     public SearchHitScrollIterable(
+            MetricRegistry metricRegistry,
             Client client,
             SearchRequestBuilder searchRequestBuilder,
             long limit,
             int scrollSize,
             int scrollTime) {
+        this.metricRegistry = metricRegistry;
         this.searchRequestBuilder = searchRequestBuilder;
         this.limit = limit;
         this.scrollSize = scrollSize;
@@ -61,6 +68,7 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
     //endregion
 
 
+    private MetricRegistry metricRegistry;
     //region Fields
     private SearchRequestBuilder searchRequestBuilder;
     private long limit;
@@ -127,19 +135,27 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
                 return;
             }
 
+            Timer.Context time = metricRegistry.timer(name(SearchHitScrollIterable.class.getSimpleName(), "Scroll")).time();
+            Timer timeEs = metricRegistry.timer(name(SearchHitScrollIterable.class.getSimpleName(),"Scroll:elastic"));
             SearchResponse response;
             if (this.scrollId == null) {
                 response = this.iterable.getSearchRequestBuilder()
                         .execute()
                         .actionGet();
-
                 this.scrollId = response.getScrollId();
+                //update es execution time
+                timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
+                time.stop();
                 Scroll();
             } else {
                 response = this.iterable.getClient().prepareSearchScroll(this.scrollId)
                         .setScroll(new TimeValue(this.iterable.getScrollTime()))
                         .execute()
                         .actionGet();
+
+                //update es execution time
+                time.stop();
+                timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
 
                 for(SearchHit hit : response.getHits().getHits()) {
                     if (counter < this.iterable.getLimit()) {

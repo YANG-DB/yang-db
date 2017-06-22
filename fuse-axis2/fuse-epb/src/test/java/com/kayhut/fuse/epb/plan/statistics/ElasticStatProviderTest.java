@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
@@ -97,7 +98,7 @@ public class ElasticStatProviderTest {
     @Test
     public void getGenderFieldStatisticsTest() throws Exception {
         ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
-                new ElasticStatDocumentProvider(statClient, statConfig));
+                new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig));
 
         List<Statistics.BucketInfo> genderStatistics = elasticStatProvider.getFieldStatistics(
                 Collections.singletonList(DATA_INDEX_NAME),
@@ -119,7 +120,7 @@ public class ElasticStatProviderTest {
     @Test
     public void getAgeFieldStatisticsTest() throws Exception {
         ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
-                new ElasticStatDocumentProvider(statClient, statConfig));
+                new ElasticStatDocumentProvider(new MetricRegistry(),statClient, statConfig));
 
         List<Statistics.BucketInfo> ageStatistics = elasticStatProvider.getFieldStatistics(
                 Collections.singletonList(DATA_INDEX_NAME),

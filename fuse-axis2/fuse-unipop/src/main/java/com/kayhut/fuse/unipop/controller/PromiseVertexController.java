@@ -1,11 +1,10 @@
 package com.kayhut.fuse.unipop.controller;
 
-import com.codahale.metrics.*;
-import com.google.inject.Inject;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
-import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.PrefixedLabelProvider;
 import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
@@ -19,15 +18,18 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.codahale.metrics.MetricRegistry.name;
-import static com.codahale.metrics.Timer.*;
-import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
+import static com.codahale.metrics.Timer.Context;
+import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
  * Created by User on 16/03/2017.
@@ -86,7 +88,8 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
 
     //region Private Methods
     private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) throws Exception {
-        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges")).time();
+        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(), "queryPromiseEdges")).time();
+        Timer timeEs = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges:elastic"));
         SearchBuilder searchBuilder = new SearchBuilder();
 
         PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices, constraint, schemaProvider);
@@ -115,6 +118,9 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
                 graph,
                 new PromiseEdgeIdProvider(constraint),
                 new PrefixedLabelProvider("_"));
+
+        //timeEs es search took in ms
+        timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
         time.stop();
         return converter.convert(response.getAggregations().asMap());
 
