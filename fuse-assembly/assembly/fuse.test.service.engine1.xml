@@ -8,7 +8,7 @@
     <baseDirectory>fuse-test-service-engine1</baseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/resources/applicationConfig</directory>
+            <directory>${project.basedir}/resources/config</directory>
             <outputDirectory>config</outputDirectory>
             <includes>
                 <include>*engine1*.conf</include>
