@@ -129,7 +129,7 @@ public class ElasticStatProviderTest {
 
         ageStatistics.forEach(bucketInfo -> {
             //Since this is a term: Lower bound value == Upper bound value
-            assertTrue((Double) bucketInfo.getLowerBound() <= (Double) bucketInfo.getHigherBound());
+            assertTrue((Long) bucketInfo.getLowerBound() <= (Long) bucketInfo.getHigherBound());
         });
     }
 

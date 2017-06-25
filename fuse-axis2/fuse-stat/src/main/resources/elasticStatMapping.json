@@ -78,11 +78,17 @@
           "type": "string",
           "index": "not_analyzed"
         },
-        "lower_bound_numeric": {
+        "lower_bound_numericDouble": {
           "type": "double"
         },
-        "upper_bound_numeric": {
+        "upper_bound_numericDouble": {
           "type": "double"
+        },
+        "lower_bound_numericLong": {
+          "type": "long"
+        },
+        "upper_bound_numericLong": {
+          "type": "long"
         },
         "count": {
           "type": "long"

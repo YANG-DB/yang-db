@@ -740,21 +740,21 @@ public class RealClusterTest {
                 "\t{\"eNum\":0,\"type\":\"Start\",\"next\":1},\n" +
                 "\t{\"eNum\":1,\"next\":2,\"eType\":2,\"eTag\":\"D1\",\"type\":\"ETyped\"},\n" +
                 "\t{\"eNum\":2,\"next\":[3,4,5,15],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
-                "\t{\"eNum\":3,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"gt\",\"expr\":\"80\"}},\n" +
-                "\t{\"eNum\":4,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"MALE\"}},\n" +
-                "\t{\"eNum\":5,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"ne\",\"expr\":\"RED\"}},\n" +
+                "\t{\"eNum\":3,\"type\":\"EProp\",\"pType\":\"power\",\"con\":{\"op\":\"gt\",\"expr\":\"80\"}},\n" +
+                "\t{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"gender\",\"con\":{\"op\":\"eq\",\"expr\":\"MALE\"}},\n" +
+                "\t{\"eNum\":5,\"type\":\"EProp\",\"pType\":\"color\",\"con\":{\"op\":\"ne\",\"expr\":\"RED\"}},\n" +
                 "\t{\"eNum\":6,\"next\":7,\"eType\":2,\"eTag\":\"D2\",\"type\":\"ETyped\"},\n" +
                 "\t{\"eNum\":7,\"next\":[9,10,11,17],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
                 "\t{\"eNum\":8,\"next\":18,\"eType\":5,\"eTag\":\"K\",\"type\":\"ETyped\"},\n" +
-                "\t{\"eNum\":9,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"FEMALE\"}},\n" +
-                "\t{\"eNum\":10,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"lt\",\"expr\":\"80\"}},\n" +
-                "\t{\"eNum\":11,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"eq\",\"expr\":\"RED\"}},\n" +
+                "\t{\"eNum\":9,\"type\":\"EProp\",\"pType\":\"gender\",\"con\":{\"op\":\"eq\",\"expr\":\"FEMALE\"}},\n" +
+                "\t{\"eNum\":10,\"type\":\"EProp\",\"pType\":\"power\",\"con\":{\"op\":\"lt\",\"expr\":\"80\"}},\n" +
+                "\t{\"eNum\":11,\"type\":\"EProp\",\"pType\":\"color\",\"con\":{\"op\":\"eq\",\"expr\":\"RED\"}},\n" +
                 "\t{\"eNum\":12,\"next\":19,\"eType\":1,\"eTag\":\"P\",\"type\":\"ETyped\"},\n" +
                 "\t{\"eNum\":13,\"eType\":3,\"eTag\":\"H\",\"type\":\"ETyped\",\"next\":14},\n" +
                 "\t{\"eNum\":14,\"next\":[20,21],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
-                "\t{\"eNum\":20,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"molly\"}},\n" +
-                "\t{\"eNum\":21,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"cotter\"}},\n" +
-                "\t{\"eNum\":16,\"type\":\"RelProp\",\"pType\":11,\"con\":{\"op\":\"gt\",\"expr\":\"100\"}},\n" +
+                "\t{\"eNum\":20,\"type\":\"EProp\",\"pType\":\"name\",\"con\":{\"op\":\"eq\",\"expr\":\"molly\"}},\n" +
+                "\t{\"eNum\":21,\"type\":\"EProp\",\"pType\":\"name\",\"con\":{\"op\":\"eq\",\"expr\":\"cotter\"}},\n" +
+                "\t{\"eNum\":16,\"type\":\"RelProp\",\"pType\":\"temperature\",\"con\":{\"op\":\"gt\",\"expr\":\"100\"}},\n" +
                 "\t{\"eNum\":15,\"type\":\"Rel\",\"rType\":103,\"dir\":\"R\",\"next\":6,\"b\":16},\n" +
                 "\t{\"eNum\":17,\"type\":\"Rel\",\"rType\":105,\"dir\":\"R\",\"next\":8},\n" +
                 "\t{\"eNum\":18,\"type\":\"Rel\",\"rType\":106,\"dir\":\"L\",\"next\":12},\n" +

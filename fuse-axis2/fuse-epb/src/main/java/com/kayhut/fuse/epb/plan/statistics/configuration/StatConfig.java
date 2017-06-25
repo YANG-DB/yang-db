@@ -28,8 +28,12 @@ public class StatConfig {
         this.statCardinalityFieldName = config.getString("elasticsearch.stat.cardinality.field");
         //Hardcoded
         this.statFieldTermName = "term" ;
-        this.statFieldNumericLowerName = "lower_bound_numeric";
-        this.statFieldNumericUpperName = "upper_bound_numeric";
+
+        this.statFieldNumericDoubleLowerName = "lower_bound_numericDouble";
+        this.statFieldNumericDoubleUpperName = "upper_bound_numericDouble";
+        this.statFieldNumericLongLowerName = "lower_bound_numericLong";
+        this.statFieldNumericLongUpperName = "upper_bound_numericLong";
+
         this.statFieldStringLowerName = "lower_bound_string";
         this.statFieldStringUpperName = "upper_bound_string";
 
@@ -38,7 +42,7 @@ public class StatConfig {
     }
 
     //Used only in the Step Builder
-    private StatConfig(String statClusterName,
+    public StatConfig(String statClusterName,
                       List<String> statNodesHosts,
                       int statTransportPort,
                       String statIndexName,
@@ -49,8 +53,10 @@ public class StatConfig {
                       String statCountFieldName,
                       String statCardinalityFieldName,
                       String statFieldTermName,
-                      String statFieldNumericLowerName,
-                      String statFieldNumericUpperName,
+                      String statFieldNumericDoubleLowerName,
+                      String statFieldNumericDoubleUpperName,
+                       String statFieldNumericLongLowerName,
+                       String statFieldNumericLongUpperName,
                       String statFieldStringLowerName,
                       String statFieldStringUpperName,
                       StatContainer statContainer) {
@@ -65,8 +71,12 @@ public class StatConfig {
         this.statCountFieldName = statCountFieldName;
         this.statCardinalityFieldName = statCardinalityFieldName;
         this.statFieldTermName = statFieldTermName;
-        this.statFieldNumericLowerName = statFieldNumericLowerName;
-        this.statFieldNumericUpperName = statFieldNumericUpperName;
+
+        this.statFieldNumericDoubleLowerName = statFieldNumericDoubleLowerName;
+        this.statFieldNumericDoubleUpperName = statFieldNumericDoubleUpperName;
+        this.statFieldNumericLongLowerName = statFieldNumericLongLowerName;
+        this.statFieldNumericLongUpperName = statFieldNumericLongUpperName;
+
         this.statFieldStringLowerName = statFieldStringLowerName;
         this.statFieldStringUpperName = statFieldStringUpperName;
         this.statContainer = statContainer;
@@ -141,20 +151,28 @@ public class StatConfig {
         return statFieldTermName;
     }
 
-    public String getStatFieldNumericLowerName() {
-        return statFieldNumericLowerName;
-    }
-
-    public String getStatFieldNumericUpperName() {
-        return statFieldNumericUpperName;
-    }
-
     public String getStatFieldStringLowerName() {
         return statFieldStringLowerName;
     }
 
     public String getStatFieldStringUpperName() {
         return statFieldStringUpperName;
+    }
+
+    public String getStatFieldNumericDoubleLowerName() {
+        return statFieldNumericDoubleLowerName;
+    }
+
+    public String getStatFieldNumericDoubleUpperName() {
+        return statFieldNumericDoubleUpperName;
+    }
+
+    public String getStatFieldNumericLongLowerName() {
+        return statFieldNumericLongLowerName;
+    }
+
+    public String getStatFieldNumericLongUpperName() {
+        return statFieldNumericLongUpperName;
     }
 
     //endregion
@@ -171,227 +189,12 @@ public class StatConfig {
     private String statCountFieldName;
     private String statCardinalityFieldName;
     private String statFieldTermName;
-    private String statFieldNumericLowerName;
-    private String statFieldNumericUpperName;
+    private String statFieldNumericDoubleLowerName;
+    private String statFieldNumericDoubleUpperName;
+    private String statFieldNumericLongLowerName;
+    private String statFieldNumericLongUpperName;
     private String statFieldStringLowerName;
     private String statFieldStringUpperName;
     private StatContainer statContainer;
-
-
     //endregion
-
-    //region Step Builder
-    public interface StatClusterNameStep {
-        StatNodesHostsStep withStatClusterName(String statClusterName);
-    }
-
-    public interface StatNodesHostsStep {
-        StatTransportPortStep withStatNodesHosts(List<String> statNodesHosts);
-    }
-
-    public interface StatTransportPortStep {
-        StatIndexNameStep withStatTransportPort(int statTransportPort);
-    }
-
-    public interface StatIndexNameStep {
-        StatTermTypeNameStep withStatIndexName(String statIndexName);
-    }
-
-    public interface StatTermTypeNameStep {
-        StatStringTypeNameStep withStatTermTypeName(String statTermTypeName);
-    }
-
-    public interface StatStringTypeNameStep {
-        StatNumericTypeNameStep withStatStringTypeName(String statStringTypeName);
-    }
-
-    public interface StatNumericTypeNameStep {
-        StatGlobalTypeNameStep withStatNumericTypeName(String statNumericTypeName);
-    }
-
-    public interface StatGlobalTypeNameStep {
-        StatCountFieldNameStep withStatGlobalTypeName(String statGlobalTypeName);
-    }
-
-    public interface StatCountFieldNameStep {
-        StatCardinalityFieldNameStep withStatCountFieldName(String statCountFieldName);
-    }
-
-    public interface StatCardinalityFieldNameStep {
-        StatFieldTermNameStep withStatCardinalityFieldName(String statCardinalityFieldName);
-    }
-
-    public interface StatFieldTermNameStep {
-        StatFieldNumericLowerNameStep withStatFieldTermName(String statFieldTermName);
-    }
-
-    public interface StatFieldNumericLowerNameStep {
-        StatFieldNumericUpperNameStep withStatFieldNumericLowerName(String statFieldNumericLowerName);
-    }
-
-    public interface StatFieldNumericUpperNameStep {
-        StatFieldStringLowerNameStep withStatFieldNumericUpperName(String statFieldNumericUpperName);
-    }
-
-    public interface StatFieldStringLowerNameStep {
-        StatFieldStringUpperNameStep withStatFieldStringLowerName(String statFieldStringLowerName);
-    }
-
-    public interface StatFieldStringUpperNameStep {
-        StatContainerStep withStatFieldStringUpperName(String statFieldStringUpperName);
-    }
-
-    public interface StatContainerStep {
-        BuildStep withStatContainer(StatContainer statContainer);
-    }
-
-    public interface BuildStep {
-        StatConfig build();
-    }
-
-    public static class Builder implements StatClusterNameStep, StatNodesHostsStep, StatTransportPortStep, StatIndexNameStep, StatTermTypeNameStep, StatStringTypeNameStep, StatNumericTypeNameStep, StatGlobalTypeNameStep, StatCountFieldNameStep, StatCardinalityFieldNameStep, StatFieldTermNameStep, StatFieldNumericLowerNameStep, StatFieldNumericUpperNameStep, StatFieldStringLowerNameStep, StatFieldStringUpperNameStep, StatContainerStep, BuildStep {
-        private String statClusterName;
-        private List<String> statNodesHosts;
-        private int statTransportPort;
-        private String statIndexName;
-        private String statTermTypeName;
-        private String statStringTypeName;
-        private String statNumericTypeName;
-        private String statGlobalTypeName;
-        private String statCountFieldName;
-        private String statCardinalityFieldName;
-        private String statFieldTermName;
-        private String statFieldNumericLowerName;
-        private String statFieldNumericUpperName;
-        private String statFieldStringLowerName;
-        private String statFieldStringUpperName;
-        private StatContainer statContainer;
-
-        private Builder() {
-        }
-
-        public static StatClusterNameStep statConfig() {
-            return new Builder();
-        }
-
-        @Override
-        public StatNodesHostsStep withStatClusterName(String statClusterName) {
-            this.statClusterName = statClusterName;
-            return this;
-        }
-
-        @Override
-        public StatTransportPortStep withStatNodesHosts(List<String> statNodesHosts) {
-            this.statNodesHosts = statNodesHosts;
-            return this;
-        }
-
-        @Override
-        public StatIndexNameStep withStatTransportPort(int statTransportPort) {
-            this.statTransportPort = statTransportPort;
-            return this;
-        }
-
-        @Override
-        public StatTermTypeNameStep withStatIndexName(String statIndexName) {
-            this.statIndexName = statIndexName;
-            return this;
-        }
-
-        @Override
-        public StatStringTypeNameStep withStatTermTypeName(String statTermTypeName) {
-            this.statTermTypeName = statTermTypeName;
-            return this;
-        }
-
-        @Override
-        public StatNumericTypeNameStep withStatStringTypeName(String statStringTypeName) {
-            this.statStringTypeName = statStringTypeName;
-            return this;
-        }
-
-        @Override
-        public StatGlobalTypeNameStep withStatNumericTypeName(String statNumericTypeName) {
-            this.statNumericTypeName = statNumericTypeName;
-            return this;
-        }
-
-        @Override
-        public StatCountFieldNameStep withStatGlobalTypeName(String statGlobalTypeName) {
-            this.statGlobalTypeName = statGlobalTypeName;
-            return this;
-        }
-
-        @Override
-        public StatCardinalityFieldNameStep withStatCountFieldName(String statCountFieldName) {
-            this.statCountFieldName = statCountFieldName;
-            return this;
-        }
-
-        @Override
-        public StatFieldTermNameStep withStatCardinalityFieldName(String statCardinalityFieldName) {
-            this.statCardinalityFieldName = statCardinalityFieldName;
-            return this;
-        }
-
-        @Override
-        public StatFieldNumericLowerNameStep withStatFieldTermName(String statFieldTermName) {
-            this.statFieldTermName = statFieldTermName;
-            return this;
-        }
-
-        @Override
-        public StatFieldNumericUpperNameStep withStatFieldNumericLowerName(String statFieldNumericLowerName) {
-            this.statFieldNumericLowerName = statFieldNumericLowerName;
-            return this;
-        }
-
-        @Override
-        public StatFieldStringLowerNameStep withStatFieldNumericUpperName(String statFieldNumericUpperName) {
-            this.statFieldNumericUpperName = statFieldNumericUpperName;
-            return this;
-        }
-
-        @Override
-        public StatFieldStringUpperNameStep withStatFieldStringLowerName(String statFieldStringLowerName) {
-            this.statFieldStringLowerName = statFieldStringLowerName;
-            return this;
-        }
-
-        @Override
-        public StatContainerStep withStatFieldStringUpperName(String statFieldStringUpperName) {
-            this.statFieldStringUpperName = statFieldStringUpperName;
-            return this;
-        }
-
-        @Override
-        public BuildStep withStatContainer(StatContainer statContainer) {
-            this.statContainer = statContainer;
-            return this;
-        }
-
-        @Override
-        public StatConfig build() {
-            return new StatConfig(
-                    this.statClusterName,
-                    this.statNodesHosts,
-                    this.statTransportPort,
-                    this.statIndexName,
-                    this.statTermTypeName,
-                    this.statStringTypeName,
-                    this.statNumericTypeName,
-                    this.statGlobalTypeName,
-                    this.statCountFieldName,
-                    this.statCardinalityFieldName,
-                    this.statFieldTermName,
-                    this.statFieldNumericLowerName,
-                    this.statFieldNumericUpperName,
-                    this.statFieldStringLowerName,
-                    this.statFieldStringUpperName,
-                    this.statContainer
-            );
-        }
-    }
-    //endregion
-
 }

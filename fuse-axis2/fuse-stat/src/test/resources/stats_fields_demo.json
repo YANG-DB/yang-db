@@ -93,6 +93,7 @@
           "field": "power",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 10,
             "max": 100,
             "numOfBins": 20
@@ -182,6 +183,7 @@
           "field": "distance",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 0,
             "max": 80,
             "numOfBins": 15
@@ -191,6 +193,7 @@
           "field": "maxSpeed",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 5,
             "max": 30,
             "numOfBins": 25
@@ -200,6 +203,7 @@
           "field": "weight",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": -10,
             "max": 400,
             "numOfBins": 40
@@ -271,6 +275,7 @@
           "field": "height",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 140,
             "max": 220,
             "numOfBins": 40
@@ -280,6 +285,7 @@
           "field": "birthDate",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 946684800000,
             "max": 978307200000,
             "numOfBins": 365
@@ -289,6 +295,7 @@
           "field": "deathDate",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 946684800000,
             "max": 4733510400000,
             "numOfBins": 120
@@ -346,6 +353,7 @@
           "field": "funds",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericDouble",
             "min": 10000,
             "max": 10000000,
             "numOfBins": 10
@@ -355,6 +363,7 @@
           "field": "independenceDay",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 0,
             "max": 504921600000,
             "numOfBins": 1
@@ -421,6 +430,7 @@
           "field": "establishDate",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 0,
             "max": 315532800000,
             "numOfBins": 20
@@ -447,6 +457,7 @@
           "field": "temperature",
           "histogram": {
             "histogramType": "numeric",
+            "dataType": "numericLong",
             "min": 100,
             "max": 700,
             "numOfBins": 70
@@ -455,8 +466,8 @@
         {
           "field": "timestamp",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
@@ -578,16 +589,16 @@
         {
           "field": "startDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
         {
           "field": "endDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
@@ -671,8 +682,8 @@
         {
           "field": "startDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
@@ -759,8 +770,8 @@
         {
           "field": "startDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
@@ -850,8 +861,8 @@
         {
           "field": "startDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
@@ -938,16 +949,16 @@
         {
           "field": "startDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
         {
           "field": "endDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
@@ -1037,8 +1048,8 @@
         {
           "field": "startDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
@@ -1122,16 +1133,16 @@
         {
           "field": "startDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },
         {
           "field": "endDate",
           "histogram": {
-            "dataType": "numeric",
             "histogramType": "dynamic",
+            "dataType": "numericLong",
             "numOfBins": 800
           }
         },

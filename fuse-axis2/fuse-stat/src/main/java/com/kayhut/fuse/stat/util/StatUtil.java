@@ -131,10 +131,8 @@ public class StatUtil {
                         ((StatRangeResult) bucketStatResult).getUpperBound());
                 bucket.put("id", bucketId);
                 if (bucketStatResult.getDataType() == DataType.numericDouble ||
-                        bucketStatResult.getDataType() == DataType.numericLong) {
-                    bucket.put("upper_bound_numeric", ((StatRangeResult) bucketStatResult).getUpperBound());
-                    bucket.put("lower_bound_numeric", ((StatRangeResult) bucketStatResult).getLowerBound());
-                } else if (bucketStatResult.getDataType() == DataType.string) {
+                        bucketStatResult.getDataType() == DataType.numericLong ||
+                        bucketStatResult.getDataType() == DataType.string) {
                     bucket.put("upper_bound_" + bucketStatResult.getDataType(), ((StatRangeResult) bucketStatResult).getUpperBound());
                     bucket.put("lower_bound_" + bucketStatResult.getDataType(), ((StatRangeResult) bucketStatResult).getLowerBound());
                 }
