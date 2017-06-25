@@ -10,12 +10,6 @@ import java.util.*;
 public interface Statistics {
     Statistics merge(Statistics other);
 
-    static <T> Object normalize(T value) {
-        return Number.class.isAssignableFrom(value.getClass()) ?
-                ((Number)value).doubleValue() :
-                value;
-    }
-
     class SummaryStatistics implements Statistics{
         private double total;
         private double cardinality;
@@ -84,9 +78,7 @@ public interface Statistics {
         }
 
         public Optional<BucketInfo<T>> findBucketContaining(T value){
-            Object objValue = normalize(value);
-
-            BucketInfo dummyInfo = new BucketInfo(0L, 0L, (Comparable)objValue, (Comparable)objValue);
+            BucketInfo<T> dummyInfo = new BucketInfo<>(0L, 0L, value, value);
             int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
                 if(o1.getLowerBound().equals(o2.getLowerBound()) && o1.getHigherBound().equals(o2.getHigherBound()))
                     return 0;
@@ -103,17 +95,15 @@ public interface Statistics {
         }
 
         public List<BucketInfo<T>> findBucketsAbove(T value, boolean inclusive){
-            Object objValue = normalize(value);
-
             int i = 0;
             if(buckets.isEmpty())
                 return Collections.emptyList();
 
             BucketInfo<T> currentBucket = buckets.get(i);
-            while(i < buckets.size() && ((currentBucket.getHigherBound().compareTo((T) objValue)<=0  && !currentBucket.isSingleValue())||
+            while(i < buckets.size() && ((currentBucket.getHigherBound().compareTo(value)<=0  && !currentBucket.isSingleValue())||
                                         (currentBucket.isSingleValue() &&
-                                                ((currentBucket.getHigherBound().compareTo((T)objValue) <= 0 && !inclusive)
-                                                || (currentBucket.getHigherBound().compareTo((T)objValue) < 0 && inclusive))))){
+                                                ((currentBucket.getHigherBound().compareTo(value) <= 0 && !inclusive)
+                                                || (currentBucket.getHigherBound().compareTo(value) < 0 && inclusive))))){
                 i++;
                 if(i<buckets.size())
                     currentBucket = buckets.get(i);
@@ -122,13 +112,11 @@ public interface Statistics {
         }
 
         public List<BucketInfo<T>> findBucketsBelow(T value, boolean inclusive){
-            Object objValue = normalize(value);
-
             if(buckets.isEmpty())
                 return Collections.emptyList();
             int i = buckets.size()-1;
             BucketInfo<T> currentBucket = buckets.get(i);
-            while(i >=0 && ((currentBucket.getLowerBound().compareTo((T) objValue) > 0 && inclusive) || (currentBucket.getLowerBound().compareTo((T) objValue) >= 0 && !inclusive))){
+            while(i >=0 && ((currentBucket.getLowerBound().compareTo(value) > 0 && inclusive) || (currentBucket.getLowerBound().compareTo(value) >= 0 && !inclusive))){
                 i--;
                 if(i >= 0)
                     currentBucket = buckets.get(i);
@@ -233,14 +221,12 @@ public interface Statistics {
 
         //lower bound - inclusive, higher bound - non-inclusive
         public boolean isValueInRange(T value) {
-            Object objValue = normalize(value);
-
-            if(isSingleValue() && lowerBound.equals(objValue))
+            if(isSingleValue() && lowerBound.equals(value))
                 return true;
-            if (higherBound != null && ((Comparable) objValue).compareTo(higherBound) >= 0) {
+            if (higherBound != null && value.compareTo(higherBound) >= 0) {
                 return false;
             }
-            if (lowerBound != null && ((Comparable) objValue).compareTo(lowerBound) < 0) {
+            if (lowerBound != null && value.compareTo(lowerBound) < 0) {
                 return false;
             }
             return true;

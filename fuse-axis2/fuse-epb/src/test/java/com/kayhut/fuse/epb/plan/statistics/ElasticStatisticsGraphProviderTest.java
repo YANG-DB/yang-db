@@ -1,9 +1,12 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.codahale.metrics.MetricRegistry;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
 import com.kayhut.fuse.epb.plan.statistics.util.StatConfigTestUtil;
 import com.kayhut.fuse.model.ontology.*;
@@ -80,7 +83,9 @@ public class ElasticStatisticsGraphProviderTest {
     public void getVertexCardinality() throws Exception {
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(getOntology());
         GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
+
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
+                new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig)),
                 Caffeine.newBuilder()
                         .maximumSize(10_000)
                         .expireAfterWrite(5, TimeUnit.MINUTES)
@@ -278,8 +283,8 @@ public class ElasticStatisticsGraphProviderTest {
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
                 .withRType(1).withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
 
-        Property nameProp = new Property(DATA_FIELD_NAME_NAME, 1, "string");
-        Property ageProp = new Property(DATA_FIELD_NAME_AGE, 2, "int");
+        Property nameProp = new Property(DATA_FIELD_NAME_NAME, "1", "string");
+        Property ageProp = new Property(DATA_FIELD_NAME_AGE, "2", "int");
 
         when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
 
@@ -320,13 +325,13 @@ public class ElasticStatisticsGraphProviderTest {
                                                                               long min,
                                                                               long max,
                                                                               int numOfBins) {
-        List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(min, max, Math.toIntExact(numOfBins));
+        List<BucketRange<Double>> numericBuckets = StatUtil.createDoubleBuckets(min, max, Math.toIntExact(numOfBins));
         List<StatRangeResult> statRangeResults = new ArrayList<>();
         int j = 0;
         for (BucketRange<Double> bucketRange : numericBuckets) {
             for (String index : indices) {
                 StatRangeResult<Double> statRangeResult = new StatRangeResult<>
-                        (index, type, field, Integer.toString(j), DataType.numeric, bucketRange.getStart(), bucketRange.getEnd(), j, j);
+                        (index, type, field, Integer.toString(j), DataType.numericDouble, bucketRange.getStart(), bucketRange.getEnd(), j, j);
                 statRangeResults.add(statRangeResult);
             }
             j++;

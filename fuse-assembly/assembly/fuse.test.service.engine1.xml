@@ -8,7 +8,7 @@
     <baseDirectory>fuse-test-service-engine1</baseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/resources/applicationConfig</directory>
+            <directory>${project.basedir}/resources/config</directory>
             <outputDirectory>config</outputDirectory>
             <includes>
                 <include>*engine1*.conf</include>
@@ -32,6 +32,10 @@
     </fileSets>
 
     <files>
+        <file>
+            <source>${project.basedir}/resources/logConfig/logback.xml</source>
+            <outputDirectory>./config</outputDirectory>
+        </file>
         <file>
             <source>${project.basedir}/resources/readme/fuse.service.readme.txt</source>
             <outputDirectory>./</outputDirectory>

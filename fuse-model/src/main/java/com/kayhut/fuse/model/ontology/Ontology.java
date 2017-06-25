@@ -251,13 +251,13 @@ public class Ontology {
             return rType(relationName).get();
         }
 
-        public Optional<Property> $property(int pType) {
+        public Optional<Property> $property(String pType) {
             return Stream.ofAll(ontology.getProperties())
-                    .filter(property -> property.getpType() == pType)
+                    .filter(property -> property.getpType().equals(pType))
                     .toJavaOptional();
         }
 
-        public Property $property$(int pType) {
+        public Property $property$(String pType) {
             return $property(pType).get();
         }
 
@@ -271,14 +271,14 @@ public class Ontology {
             return property(propertyName).get();
         }
 
-        public Optional<Integer> pType(String propertyName) {
+        public Optional<String> pType(String propertyName) {
             return Stream.ofAll(ontology.getProperties())
                     .filter(property -> property.getName().equals(propertyName))
                     .map(Property::getpType)
                     .toJavaOptional();
         }
 
-        public Integer pType$(String propertyName) {
+        public String pType$(String propertyName) {
             return pType(propertyName).get();
         }
 

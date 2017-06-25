@@ -54,15 +54,17 @@ public class EsUtilTest {
         final double min = DRAGON_MIN_AGE;
         final double max = DRAGON_MAX_AGE;
 
-        List<BucketRange<Double>> numericBuckets = StatUtil.createNumericBuckets(
+        List<BucketRange<? extends Number>> numericBuckets = new ArrayList<>(StatUtil.createDoubleBuckets(
                 min,
                 max,
-                numOfBins);
-        List<StatRangeResult> numericHistogramResults = EsUtil.getNumericHistogramResults(
+                numOfBins));
+
+        List<StatRangeResult<? extends Number>> numericHistogramResults = EsUtil.getNumericHistogramResults(
                 dataClient,
                 DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
                 DATA_FIELD_NAME_AGE,
+                DataType.numericDouble,
                 numericBuckets);
 
         //Checking that we have 1o buckets
@@ -93,18 +95,18 @@ public class EsUtilTest {
 
     @Test
     public void getManualHistogramResultsTest() throws Exception {
-        BucketRange bucketRange_1dot0_TO_1dot5 = new BucketRange(1.0, 1.5);
+        BucketRange<Double> bucketRange_1dot0_TO_1dot5 = new BucketRange<>(1.0, 1.5);
         List<BucketRange<Double>> manualBuckets = Arrays.asList(
                 bucketRange_1dot0_TO_1dot5,
                 new BucketRange<>(1.5, 2.0),
                 new BucketRange<>(2.0, 2.5)
         );
 
-        StatRangeResult statRangeResult_1dot0_TO_1dot5 = new StatRangeResult(DATA_INDEX_NAME,
+        StatRangeResult<? extends Number> statRangeResult_1dot0_TO_1dot5 = new StatRangeResult<>(DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
                 DATA_FIELD_NAME_AGE,
                 "don't care",
-                DataType.numeric,
+                DataType.numericDouble,
                 bucketRange_1dot0_TO_1dot5.getStart(),
                 bucketRange_1dot0_TO_1dot5.getEnd(),
                 0,
@@ -120,11 +122,11 @@ public class EsUtilTest {
             }
         });
 
-        List<StatRangeResult> manualHistogramResults = EsUtil.getManualHistogramResults(dataClient,
+        List<StatRangeResult<Double>> manualHistogramResults = EsUtil.getManualHistogramResults(dataClient,
                 DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
                 DATA_FIELD_NAME_AGE,
-                DataType.numeric,
+                DataType.numericDouble,
                 manualBuckets);
         assertEquals(manualBuckets.size(), manualHistogramResults.size());
 
@@ -138,7 +140,7 @@ public class EsUtilTest {
         List<BucketRange<String>> stringBuckets = Arrays.asList(
                 stringBucketRange_A_TO_B,
                 new BucketRange<>("c", "d"));
-        StatRangeResult statRangeResult_A_TO_B = new StatRangeResult(DATA_INDEX_NAME,
+        StatRangeResult<String> statRangeResult_A_TO_B = new StatRangeResult<>(DATA_INDEX_NAME,
                 DATA_TYPE_NAME,
                 DATA_FIELD_NAME_ADDRESS,
                 "don't care",
@@ -169,7 +171,7 @@ public class EsUtilTest {
     @Test
     public void getTermHistogramResultsTest() throws Exception {
         String randomGender = DRAGON_GENDERS.get(StatTestUtil.randomInt(0, DRAGON_GENDERS.size() - 1));
-        BucketTerm bucketTerm = new BucketTerm(randomGender);
+        BucketTerm<String> bucketTerm = new BucketTerm<>(randomGender);
         List<StatTermResult> termHistogramResults = EsUtil.getTermHistogramResults(dataClient,
                 DATA_INDEX_NAME,
                 DATA_TYPE_NAME,

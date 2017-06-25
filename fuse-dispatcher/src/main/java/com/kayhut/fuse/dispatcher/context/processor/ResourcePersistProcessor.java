@@ -1,5 +1,6 @@
 package com.kayhut.fuse.dispatcher.context.processor;
 
+import com.codahale.metrics.Slf4jReporter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -10,6 +11,7 @@ import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 
 /**
  * Created by User on 08/03/2017.
@@ -31,6 +33,7 @@ public class ResourcePersistProcessor implements
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         //last step in creation of QueryCreationOperationContext => we can save the context now to the resourceStore
         if (context.getExecutionPlan() == null) {
@@ -51,6 +54,7 @@ public class ResourcePersistProcessor implements
     //region CursorCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
         if (context.getCursor() == null) {
             return context;
@@ -65,6 +69,7 @@ public class ResourcePersistProcessor implements
     //region PageCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public PageCreationOperationContext process(PageCreationOperationContext context) {
         if (context.getPageResource() == null) {
             return context;

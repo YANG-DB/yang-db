@@ -16,12 +16,12 @@
           "eType": 1,
           "properties": [
             {
-              "pType": 1,
+              "pType": "firstName",
               "agg": "raw",
               "value": "a"
             },
             {
-              "pType": 3,
+              "pType": "gender",
               "agg": "raw",
               "value": 5.35
             }
@@ -44,12 +44,12 @@
           "eID2": "12345679",
           "properties": [
             {
-              "pType": 1,
+              "pType": "firstName",
               "agg": "max",
               "value": 76
             },
             {
-              "pType": 1,
+              "pType": "firstName",
               "agg": "avg",
               "value": 34.56
             }

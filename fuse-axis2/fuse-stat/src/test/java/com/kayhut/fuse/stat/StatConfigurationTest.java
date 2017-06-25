@@ -36,7 +36,7 @@ public class StatConfigurationTest {
 
     private StatContainer buildStatContainer() {
         HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
-                .withMin(10).withMax(100).withNumOfBins(10).build();
+                .withMin(10).withMax(100).withNumOfBins(10).withDataType(DataType.numericLong).build();
 
         HistogramString histogramDragonName = HistogramString.Builder.get()
                 .withPrefixSize(3)
@@ -84,7 +84,7 @@ public class StatConfigurationTest {
 
         HistogramDynamic histogramFireTimestampEntity = HistogramDynamic.Builder.get()
                 .withNumOfBins(10)
-                .withDataType(DataType.numeric)
+                .withDataType(DataType.numericLong)
                 .build();
 
 

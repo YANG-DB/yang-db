@@ -1,6 +1,7 @@
 package com.kayhut.fuse.dispatcher.context.processor;
 
 import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -9,6 +10,7 @@ import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
+import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.model.results.QueryResult;
 
 import java.io.IOException;
@@ -36,6 +38,7 @@ public class PageProcessor implements PageCreationOperationContext.Processor {
     //region PageCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
+    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public PageCreationOperationContext process(PageCreationOperationContext context) throws IOException {
         if (context.getPageResource() != null && context.getPageResource().getData() != null) {
             return context;

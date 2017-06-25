@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.engine2.data;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.services.TestsConfiguration;
+import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.PromiseVertexFilterController;
@@ -9,7 +10,6 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
@@ -20,8 +20,9 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
 import org.joda.time.DateTime;
 import org.junit.*;
 import org.unipop.query.predicates.PredicatesHolder;
@@ -38,39 +39,36 @@ import static org.mockito.Mockito.when;
  * Created by Elad on 4/25/2017.
  */
 public class PromiseEdgeTest{
-
-
-    private static Client client;
-    static ElasticEmbeddedNode elasticEmbeddedNode;
+    static TransportClient client;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
     static MetricRegistry registry;
+
+    private static final String INDEX_NAME = "v1";
 
     @BeforeClass
     public static void setup() throws Exception {
         registry = new MetricRegistry();
 
-        String indexName = "v1";
         String idField = "id";
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
+        client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
-                indexName,
+                client,
+                INDEX_NAME,
                 "Dragon",
                 idField,
                 () -> createDragons(10)).populate();
 
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
-                indexName,
+                client,
+                INDEX_NAME,
                 "Fire",
                 idField,
                 () -> createFire(100)).populate();
 
-        client = elasticEmbeddedNode.getClient();
-        client.admin().indices().refresh(new RefreshRequest(indexName)).actionGet();
+        client.admin().indices().refresh(new RefreshRequest(INDEX_NAME)).actionGet();
 
         configuration = mock(ElasticGraphConfiguration.class);
 
@@ -79,8 +77,8 @@ public class PromiseEdgeTest{
 
     @AfterClass
     public static void cleanup() throws Exception {
-        elasticEmbeddedNode.close();
-        client.close();
+        NonRedundantTestSuite.elasticEmbeddedNode.getClient().admin().indices()
+                .delete(new DeleteIndexRequest(INDEX_NAME)).actionGet();
     }
 
     @Before
@@ -143,8 +141,8 @@ public class PromiseEdgeTest{
         //add old purple dragon
         String purpleDragonId = "d11";
         new ElasticDataPopulator(
-                elasticEmbeddedNode.getClient(),
-                "v1",
+                client,
+                INDEX_NAME,
                 "Dragon",
                 "id",
                 () -> {
@@ -155,6 +153,7 @@ public class PromiseEdgeTest{
                     dragon.put("color", "purple");
                     return Arrays.asList(dragon);
                 }).populate();
+        client.admin().indices().refresh(new RefreshRequest(INDEX_NAME)).actionGet();
 
 
         //edge constraint - this is the constraint that filters the end vertices of the promise edges

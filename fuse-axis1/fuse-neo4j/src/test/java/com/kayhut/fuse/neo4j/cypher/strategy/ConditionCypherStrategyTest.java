@@ -38,7 +38,7 @@ public class ConditionCypherStrategyTest {
                 .withEntityTypes(
                         Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
                 ).withProperties(
-                        Collections.singletonList(Property.Builder.get().build(1,"p1","int"))
+                        Collections.singletonList(Property.Builder.get().build("1","p1","int"))
                 ).build();
 
 

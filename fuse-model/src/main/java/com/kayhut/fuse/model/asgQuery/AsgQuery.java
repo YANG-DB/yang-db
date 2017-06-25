@@ -22,7 +22,7 @@ import java.util.Collections;
 /**
  * Created by benishue on 23-Feb-17.
  */
-public class AsgQuery {
+public class AsgQuery implements IQuery{
 
     //region Getters & Setters
 

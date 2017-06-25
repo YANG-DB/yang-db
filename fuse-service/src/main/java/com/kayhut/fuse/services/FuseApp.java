@@ -17,15 +17,13 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple2;
-import org.jooby.Jooby;
-import org.jooby.Result;
-import org.jooby.Results;
-import org.jooby.Status;
+import org.jooby.*;
 import org.jooby.caffeine.CaffeineCache;
 import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -57,6 +55,8 @@ public class FuseApp extends Jooby {
 
     //region Consructors
     public FuseApp(AppUrlSupplier localUrlSupplier) {
+        //log all requests
+        use("*", new RequestLogger().extended());
         //metrics statistics
         use(new Metrics()
                 .request()
@@ -87,8 +87,8 @@ public class FuseApp extends Jooby {
     //endregion
 
     //region Public Methods
-    public FuseApp conf(String path, String activeProfile) {
-        Config config = ConfigFactory.parseResources(path);
+    public FuseApp conf(File file, String activeProfile) {
+        Config config = ConfigFactory.parseFile(file);
         config = config.withValue("application.profile", ConfigValueFactory.fromAnyRef(activeProfile, "FuseApp"));
 
         super.use(config);

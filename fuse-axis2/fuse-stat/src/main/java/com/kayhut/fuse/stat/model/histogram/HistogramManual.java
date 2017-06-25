@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by benishue on 30-Apr-17.
  */
-public class HistogramManual <T> extends Histogram {
+public class HistogramManual<T> extends Histogram {
 
     //region Ctrs
     public HistogramManual() {

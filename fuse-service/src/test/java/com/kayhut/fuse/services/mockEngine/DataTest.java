@@ -32,27 +32,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DataTest {
-
-    @ClassRule
-    public static JoobyRule createApp() {
-        Cursor cursor = mock(Cursor.class);
-        when(cursor.getNextResults(anyInt())).thenReturn(QueryResult.Builder.instance().build());
-
-        CursorFactory cursorFactory = mock(CursorFactory.class);
-        when(cursorFactory.createCursor(any())).thenReturn(cursor);
-
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf("application.mockEngine.dev.conf")
-                .injector((stage, module) -> {
-                    return Guice.createInjector(stage, Modules.override(module).with(new AbstractModule() {
-                        @Override
-                        protected void configure() {
-                            bind(CursorFactory.class).toInstance(cursorFactory);
-                        }
-                    }));
-                }));
-    }
-
     @Before
     public void before() {
         Assume.assumeTrue(TestsConfiguration.instance.shouldRunTestClass(this.getClass()));

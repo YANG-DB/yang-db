@@ -172,7 +172,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
     }
 
     private Traversal convertEPropToTraversal(EProp eProp, Ontology.Accessor ont) {
-         Optional<Property> property = ont.$property(Integer.parseInt(eProp.getpType()));
+         Optional<Property> property = ont.$property(eProp.getpType());
          if (!property.isPresent()) {
              return __.start();
          }

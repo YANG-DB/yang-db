@@ -25,32 +25,32 @@ public class DragonsOntology {
     public static final String CM = "cm";
 
 
-    public static Property FIRST_NAME = new Property("firstName", STRING, 1);
-    public static Property LAST_NAME = new Property("lastName", STRING, 2);
-    public static Property GENDER = new Property("gender", TYPE_GENDER, 3);
-    public static Property BIRTH_DATE = new Property("birthDate", DATE_TYPE, 4);
-    public static Property DEATH_DATE = new Property("deathDate", STRING, 5);
-    public static Property HEIGHT = new Property("height", INT, 6);
-    public static Property NAME = new Property("name", STRING, 7);
-    public static Property COLOR = new Property("color", TYPE_COLOR, 8);
-    public static Property DATE = new Property("date", DATE_TYPE, 9);
-    public static Property END_DATE = new Property("endDate", DATE_TYPE, 10);
-    public static Property TEMPERATURE = new Property("temperature", INT, 11);
-    public static Property TIMESTAMP = new Property("timestamp", DATE_TYPE, 12);
-    public static Property ID = new Property("id", STRING, 13);
-    public static Property POWER = new Property("power", INT, 14);
-    public static Property DESCRIPTION = new Property("description", STRING, 15);
-    public static Property ICON_ID = new Property("iconId", STRING, 16);
-    public static Property URL = new Property("url", STRING, 17);
-    public static Property KING = new Property("king", STRING, 18);
-    public static Property QUEEN = new Property("queen", STRING, 19);
-    public static Property INDEPENDENCE_DAY = new Property("independenceDay", STRING, 20);
-    public static Property FUNDS = new Property("funds", FLOAT, 21);
-    public static Property WEIGHT = new Property("weight", INT, 22);
-    public static Property MAX_SPEED = new Property("maxSpeed", INT, 23);
-    public static Property DISTANCE = new Property("distance", INT, 24);
-    public static Property ESTABLISH_DATE = new Property("establishDate", DATE_TYPE, 25);
-    public static Property START_DATE = new Property("startDate", DATE_TYPE, 26);
+    public static Property FIRST_NAME = new Property("firstName", STRING, "firstName");
+    public static Property LAST_NAME = new Property("lastName", STRING, "lastName");
+    public static Property GENDER = new Property("gender", TYPE_GENDER, "gender");
+    public static Property BIRTH_DATE = new Property("birthDate", DATE_TYPE, "birthDate");
+    public static Property DEATH_DATE = new Property("deathDate", STRING, "deathDate");
+    public static Property HEIGHT = new Property("height", INT, "height");
+    public static Property NAME = new Property("name", STRING, "name");
+    public static Property COLOR = new Property("color", TYPE_COLOR, "color");
+    public static Property DATE = new Property("date", DATE_TYPE, "date");
+    public static Property END_DATE = new Property("endDate", DATE_TYPE, "endDate");
+    public static Property TEMPERATURE = new Property("temperature", INT, "temperature");
+    public static Property TIMESTAMP = new Property("timestamp", DATE_TYPE, "timestamp");
+    public static Property ID = new Property("id", STRING, "id");
+    public static Property POWER = new Property("power", INT, "power");
+    public static Property DESCRIPTION = new Property("description", STRING, "description");
+    public static Property ICON_ID = new Property("iconId", STRING, "iconId");
+    public static Property URL = new Property("url", STRING, "url");
+    public static Property KING = new Property("king", STRING, "king");
+    public static Property QUEEN = new Property("queen", STRING, "queen");
+    public static Property INDEPENDENCE_DAY = new Property("independenceDay", STRING, "independenceDay");
+    public static Property FUNDS = new Property("funds", FLOAT, "funds");
+    public static Property WEIGHT = new Property("weight", INT, "weight");
+    public static Property MAX_SPEED = new Property("maxSpeed", INT, "maxSpeed");
+    public static Property DISTANCE = new Property("distance", INT, "distance");
+    public static Property ESTABLISH_DATE = new Property("establishDate", DATE_TYPE, "establishDate");
+    public static Property START_DATE = new Property("startDate", DATE_TYPE, "startDate");
 
 
     public static List<Property> properties = Arrays.asList(
@@ -140,13 +140,13 @@ public class DragonsOntology {
         public String name;
         public boolean redundant;
         public String className;
-        public int type;
+        public String type;
 
-        public Property(String name, String className, int type) {
+        public Property(String name, String className, String type) {
             this(name, className, type, false);
         }
 
-        public Property(String name, String className, int type, boolean redundant) {
+        public Property(String name, String className, String type, boolean redundant) {
             this.name = name;
             this.className = className;
             this.type = type;
@@ -371,8 +371,8 @@ public class DragonsOntology {
         return properties.stream().filter(p -> p.name.equals(name)).findFirst().get();
     }
 
-    public static Property getPropertyByType(List<Property> properties, int type) {
-        return properties.stream().filter(p -> p.type == type).findFirst().get();
+    public static Property getPropertyByType(List<Property> properties, String type) {
+        return properties.stream().filter(p -> p.type.equals(type)).findFirst().get();
     }
 
     public static void main(String[] args) throws IOException {

@@ -1,10 +1,10 @@
 package com.kayhut.fuse.dispatcher.utils;
 
+import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
@@ -417,4 +417,17 @@ public class AsgQueryUtil {
 
     private static Function<AsgEBase, Predicate<AsgEBase>> adjacentDfsPredicate = (asgEBase -> (asgEBase1 -> asgEBase == asgEBase1));
     //endregion
+
+    public static class AsgQueryDescriptor implements Descriptor<AsgQuery> {
+
+        @Override
+        public String name(AsgQuery query) {
+            return query.getName();
+        }
+
+        @Override
+        public String describe(AsgQuery query) {
+            return patternValue(query);
+        }
+    }
 }

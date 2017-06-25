@@ -32,7 +32,7 @@ public class AsgDefaultSelectionStrategy implements AsgStrategy {
 
                     asgEBase.geteBase().setReportProps(
                             Stream.ofAll(ont.$entity$(asgEBase.geteBase().geteType()).getProperties())
-                                .map(pType -> Integer.toString(pType))
+                                .map(pType -> pType)
                                     .toJavaList());
                 }
             }

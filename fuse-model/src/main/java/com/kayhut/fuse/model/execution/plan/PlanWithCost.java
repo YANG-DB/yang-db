@@ -1,9 +1,12 @@
 package com.kayhut.fuse.model.execution.plan;
 
+
+import com.kayhut.fuse.model.descriptor.Descriptor;
+
 /**
  * Created by Roman on 20/04/2017.
  */
-public class PlanWithCost<P, C> {
+public class PlanWithCost<P, C> implements IPlan {
     //region Constructors
     public PlanWithCost(P plan, C cost) {
         this.plan = plan;
@@ -63,8 +66,21 @@ public class PlanWithCost<P, C> {
     @Override
     public String toString() {
         return "{" +
-                    " plan:" + plan.toString() + "," + "\n" +
-                    " cost:" + cost.toString() + "\n" +
-                "}";
+                " plan:" + plan.toString() + "," + "\n" +
+                " cost:" + (cost != null ? cost.toString() + "\n" : "")
+                + "}";
+    }
+
+    public static class PlanWithCostDescriptor implements Descriptor<PlanWithCost> {
+
+        @Override
+        public String name(PlanWithCost plan) {
+            return String.valueOf(plan.hashCode());
+        }
+
+        @Override
+        public String describe(PlanWithCost plan) {
+            return plan.toString();
+        }
     }
 }

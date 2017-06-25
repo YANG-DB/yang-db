@@ -1,10 +1,10 @@
 package com.kayhut.fuse.unipop.controller;
 
+import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.search.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
-import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseVertexConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
@@ -38,11 +38,12 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 class VertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    VertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
+    VertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider,MetricRegistry metricRegistry) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -155,7 +156,7 @@ class VertexController implements SearchQuery.SearchController {
         //compose
         SearchRequestBuilder searchRequest = searchBuilder.compose(client, false);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
-                client,
+                metricRegistry, client,
                 searchRequest,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),
@@ -177,5 +178,6 @@ class VertexController implements SearchQuery.SearchController {
     //region Fields
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private MetricRegistry metricRegistry;
     //endregion
 }

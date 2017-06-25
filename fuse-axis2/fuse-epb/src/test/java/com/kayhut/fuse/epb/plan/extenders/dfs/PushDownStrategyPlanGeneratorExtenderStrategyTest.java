@@ -149,11 +149,11 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                         .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(typed(3,  2))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("3", 9, of(gt, "value3")))
+                .in(eProp(9, EProp.of("firstName", 9, of(eq, "value1")), EProp.of("gender", 9, of(gt, "value3")))
                         , rel(5, 4, R)
                                 .next(unTyped( 6))
                         , rel(7, 5, R)
-                                .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
+                                .below(relProp(11, RelProp.of("deathDate", 11, of(eq, "value5")), RelProp.of("birthDate", 11, of(eq, "value4"))))
                                 .next(concrete(8, "concrete1", 3, "Concrete1", "D"))
                 )
                 .build();

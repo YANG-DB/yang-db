@@ -15,19 +15,19 @@ public class HistogramNumeric extends Histogram {
     //endregion
 
     //region Getters & Setters
-    public double getMin() {
+    public Number getMin() {
         return min;
     }
 
-    public void setMin(double min) {
+    public void setMin(Number min) {
         this.min = min;
     }
 
-    public double getMax() {
+    public Number getMax() {
         return max;
     }
 
-    public void setMax(double max) {
+    public void setMax(Number max) {
         this.max = max;
     }
 
@@ -41,16 +41,17 @@ public class HistogramNumeric extends Histogram {
     //endregion
 
     //region Fields
-    private double min;
-    private double max;
+    private Number min;
+    private Number max;
     private int numOfBins;
     //endregion
 
     //region Builder
     public static final class Builder {
-        private double min;
-        private double max;
+        private Number min;
+        private Number max;
         private int numOfBins;
+        private DataType dataType;
 
         private Builder() {
             super();
@@ -60,12 +61,12 @@ public class HistogramNumeric extends Histogram {
             return new Builder();
         }
 
-        public Builder withMin(double min) {
+        public Builder withMin(Number min) {
             this.min = min;
             return this;
         }
 
-        public Builder withMax(double max) {
+        public Builder withMax(Number max) {
             this.max = max;
             return this;
         }
@@ -75,11 +76,16 @@ public class HistogramNumeric extends Histogram {
             return this;
         }
 
+        public Builder withDataType(DataType dataType) {
+            this.dataType = dataType;
+            return this;
+        }
+
         public HistogramNumeric build() {
             HistogramNumeric histogramNumeric = new HistogramNumeric();
             histogramNumeric.setMin(min);
             histogramNumeric.setMax(max);
-            histogramNumeric.setDataType(DataType.numeric);
+            histogramNumeric.setDataType(dataType);
             histogramNumeric.setNumOfBins(numOfBins);
             return histogramNumeric;
         }
