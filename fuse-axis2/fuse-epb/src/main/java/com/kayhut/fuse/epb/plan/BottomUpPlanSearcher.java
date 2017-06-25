@@ -11,13 +11,14 @@ import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.ICost;
+import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.log.Trace;
 import com.kayhut.fuse.model.log.TraceComposite;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
-import org.slf4j.MDC;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 
@@ -26,6 +27,36 @@ import java.util.logging.Level;
  */
 public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQuery> implements PlanSearcher<P, C, Q>, Trace<String> {
     private TraceComposite<String> trace = TraceComposite.build(this.getClass().getSimpleName());
+
+    public abstract class wrapper<P extends IPlan, C extends ICost, Q extends IQuery> implements PlanSearcher<P, C, Q>,  Iterable<PlanWithCost<P, C>>, PlanNodeWrapper<P> {
+        private Iterable<PlanWithCost<P, C>> iterable;
+
+        @Override
+        public Iterable<PlanWithCost<P, C>> search(Q query) {
+            return iterable;
+        }
+
+        public wrapper(Iterable<PlanWithCost<P, C>> iterable) {
+            this.iterable = iterable;
+        }
+
+        @Override
+        public void forEach(Consumer<? super PlanWithCost<P, C>> action) {
+            iterable.forEach(action);
+        }
+
+        @Override
+        public Spliterator<PlanWithCost<P, C>> spliterator() {
+            return iterable.spliterator();
+        }
+
+        @Override
+        public Iterator<PlanWithCost<P, C>> iterator() {
+            return iterable.iterator();
+        }
+
+
+    }
 
 
     @Override
@@ -78,10 +109,13 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQ
         Iterable<PlanWithCost<P, C>> selectedPlans;
 
         Set<PlanWithCost<P, C>> currentPlans = new TreeSet<>(Comparator.comparing(o -> o.getPlan().toString()));
+        int phase = 0;
+        PlanNode.Builder builder = PlanNode.Builder.root(query.toString());
 
         // Generate seed plans (plan is null)
         for (P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)) {
             ValidationContext planValid = planValidator.isPlanValid(seedPlan, query);
+            builder.add(seedPlan,planValid.toString());
             if (planValid.valid()) {
                 PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, Optional.empty(), query);
                 currentPlans.add(planWithCost);
@@ -90,7 +124,8 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQ
 
         selectedPlans = localPlanSelector.select(query, currentPlans);
 
-        int phase = 1;
+        phase++;
+        builder.incAndGetPhase();
         // As long as we have search options, branch the search tree
         while (currentPlans.size() > 0) {
             Set<PlanWithCost<P, C>> newPlans = new HashSet<>();
@@ -98,9 +133,11 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQ
             for (PlanWithCost<P, C> partialPlan : currentPlans) {
                 try {
                     NDC.push("phase:" + Integer.toString(phase));
+                    builder.with(partialPlan.getPlan());
                     Set<PlanWithCost<P, C>> planExtensions = new HashSet<>();
                     for (P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)) {
                         ValidationContext planValid = planValidator.isPlanValid(extendedPlan, query);
+                        builder.add(extendedPlan,planValid.toString());
                         if (planValid.valid()) {
                             PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan), query);
                             planExtensions.add(planWithCost);
@@ -112,6 +149,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQ
                         newPlans.add(planWithCost);
                     }
                     phase++;
+                    builder.incAndGetPhase();
                 }finally {
                     NDC.pop();
                 }
@@ -127,7 +165,15 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQ
 
 
         selectedPlans = globalPlanSelector.select(query, selectedPlans);
-        return selectedPlans;
+        Iterable<PlanWithCost<P, C>> finalSelectedPlans = selectedPlans;
+        PlanNode root = builder.selected(Stream.ofAll(finalSelectedPlans).map(p -> p.getPlan()).toJavaList()).build();
+
+        return new wrapper<P, C, IQuery>(finalSelectedPlans) {
+            @Override
+            public PlanNode<P> planNode() {
+                return root;
+            }
+        };
     }
     //endregion
     //region Logger

@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -56,6 +57,13 @@ public class SimpleQueryController implements QueryController {
     public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
         return Builder.<QueryResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
+        return Builder.<PlanNode<Plan>>builder(randomUUID().toString(),OK, NOT_FOUND)
+                .data(this.driver.planVerbose(queryId))
                 .compose();
     }
 
