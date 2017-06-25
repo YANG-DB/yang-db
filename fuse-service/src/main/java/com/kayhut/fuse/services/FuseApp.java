@@ -195,8 +195,9 @@ public class FuseApp extends Jooby {
         use(localUrlSupplier.resourceUrl(":queryId") + "/planVerbose")
                 .get(req -> {
                     ContentResponse response = queryCtrl().planVerbose(req.param("queryId").value());
-                    //temporary fix for jason serialization of object graphs
-                    return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status()).type("application/json");
+                    //temporary fix for json serialization of object graphs
+                    return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status())
+                            .type("application/json");
                 });
 
         /** get the query plan verbose */
