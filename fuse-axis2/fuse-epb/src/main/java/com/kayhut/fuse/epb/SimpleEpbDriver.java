@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
+import com.kayhut.fuse.epb.plan.PlanNodeWrapper;
 import com.kayhut.fuse.epb.plan.PlanSearcher;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -49,6 +50,11 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
         //get first
         PlanWithCost<Plan, PlanDetailedCost> first = plans.iterator().next();
         System.out.println("Selected Plan: " + first.getPlan().toString());
+
+        if(plans instanceof PlanNodeWrapper) {
+            context = context.of(((PlanNodeWrapper) plans).planNode());
+        }
+
         return submit(bus, context.of(first));
     }
 }

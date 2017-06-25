@@ -3,6 +3,7 @@ package com.kayhut.fuse.services;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -16,6 +17,7 @@ public interface QueryController {
     ContentResponse<StoreResourceInfo> getInfo();
     ContentResponse<QueryResourceInfo> getInfo(String queryId);
     ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);
+    ContentResponse<PlanNode<Plan>> planVerbose(String queryId);
     ContentResponse<Boolean> delete(String queryId);
 
 }

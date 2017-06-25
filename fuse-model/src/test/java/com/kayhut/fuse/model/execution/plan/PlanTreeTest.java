@@ -8,9 +8,6 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import org.junit.Test;
 
-import javax.xml.bind.SchemaOutputResolver;
-import java.net.SocketPermission;
-
 /**
  * Created by Roman on 19/06/2017.
  */
@@ -49,11 +46,11 @@ public class PlanTreeTest {
                 new EntityOp(new AsgEBase<>(new ETyped(5, "C", 5, 0, 0)))
         );
 
-        PlanNode<Plan> planNode = new PlanNode<>(planParent, planParent.toString(), "0", null);
-        PlanNode<Plan> cpn1 = new PlanNode<>(childPlan1, childPlan1.toString(), "1", null);
-        PlanNode<Plan> cpn2 = new PlanNode<>(childPlan2, childPlan2.toString(), "2", "not valid because blah");
-        PlanNode<Plan> cpn3 = new PlanNode<>(childPlan3, childPlan3.toString(), "3", "blah");
-        PlanNode<Plan> cpn4 = new PlanNode<>(childPlan4, childPlan4.toString(), "4", "sasaa");
+        PlanNode<Plan> planNode = new PlanNode<>(0,planParent.toPattern(),"",planParent.hashCode()+"" , "valid");
+        PlanNode<Plan> cpn1 = new PlanNode<>(1 ,childPlan1.toPattern(),"", childPlan1.hashCode()+"",  "valid");
+        PlanNode<Plan> cpn2 = new PlanNode<>(2,childPlan2.toPattern(),"",  childPlan2.hashCode()+"","not valid because blah");
+        PlanNode<Plan> cpn3 = new PlanNode<>(3, childPlan3.toPattern(),"", childPlan3.hashCode()+"",  "blah");
+        PlanNode<Plan> cpn4 = new PlanNode<>(4,childPlan4.toPattern(), "",childPlan4.hashCode()+"",  "sasaa");
 
         cpn1.getChildren().add(cpn3);
         cpn2.getChildren().add(cpn4);

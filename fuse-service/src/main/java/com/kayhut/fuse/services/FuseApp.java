@@ -5,6 +5,7 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -85,7 +86,7 @@ public class FuseApp extends Jooby {
         get("fuse/detailedPlan/Q1", () ->
         {
             String dummy = String.valueOf(System.currentTimeMillis());
-            String json = "{\"name\":\""+dummy.substring(dummy.length()-5)+"\",\"desc\":\"[EntityOp(Asg(ETyped(1)))]\",\"children\":[{\"name\":\"1\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3)))]\",\"children\":[{\"name\":\"3\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3))):RelationOp(Asg(Rel(3))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"blah\"}],\"invalidReason\":\"\"},{\"name\":\"2\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"children\":[{\"name\":\"4\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"sasaa\"}],\"invalidReason\":\"not valid because blah\"}],\"invalidReason\":\"\"}";
+            String json = "{\"name\":\"" + dummy.substring(dummy.length() - 5) + "\",\"desc\":\"[EntityOp(Asg(ETyped(1)))]\",\"children\":[{\"name\":\"1\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3)))]\",\"children\":[{\"name\":\"3\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3))):RelationOp(Asg(Rel(3))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"blah\"}],\"invalidReason\":\"\"},{\"name\":\"2\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"children\":[{\"name\":\"4\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"sasaa\"}],\"invalidReason\":\"not valid because blah\"}],\"invalidReason\":\"\"}";
             return Results.with(json, 200)
                     .type("application/json");
         });
@@ -135,8 +136,7 @@ public class FuseApp extends Jooby {
             rsp.header("Access-Control-Allow-Origin", "*");
             rsp.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH");
             rsp.header("Access-Control-Max-Age", "3600");
-            rsp.header("Access-Control-Allow-Headers", "x-requested-with", "origin", "content-type",
-                    "accept");
+            rsp.header("Access-Control-Allow-Headers", "x-requested-with", "origin", "content-type", "accept");
             if (req.method().equalsIgnoreCase("options")) {
                 rsp.end();
             }
@@ -192,6 +192,14 @@ public class FuseApp extends Jooby {
                 });
 
         /** get the query execution plan */
+        use(localUrlSupplier.resourceUrl(":queryId") + "/planVerbose")
+                .get(req -> {
+                    ContentResponse response = queryCtrl().planVerbose(req.param("queryId").value());
+                    //temporary fix for jason serialization of object graphs
+                    return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status()).type("application/json");
+                });
+
+        /** get the query plan verbose */
         use(localUrlSupplier.resourceUrl(":queryId") + "/plan")
                 .get(req -> {
                     ContentResponse response = queryCtrl().explain(req.param("queryId").value());

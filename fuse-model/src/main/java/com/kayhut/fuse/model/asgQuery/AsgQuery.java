@@ -52,6 +52,14 @@ public class AsgQuery implements IQuery{
 
     //endregion
 
+    @Override
+    public String toString() {
+        return "AsgQuery{" +
+                "ont='" + ont + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
     //region Fields
     private String ont;
     private String name;

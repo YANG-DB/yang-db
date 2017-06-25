@@ -11,6 +11,7 @@ import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.FuseError;
@@ -86,6 +87,16 @@ public class SimpleQueryDispatcherDriver implements QueryDispatcherDriver {
         }
 
         return Optional.of(queryResource.get().getExecutionPlan());
+    }
+
+    @Override
+    public Optional<PlanNode<Plan>> planVerbose(String queryId) {
+        Optional<QueryResource> queryResource = resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        return queryResource.get().getPlanNode();
     }
 
     @Override

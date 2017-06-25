@@ -27,6 +27,13 @@ public class ValidationContext {
         return errors;
     }
 
+    @Override
+    public String toString() {
+        if(valid())
+            return "valid";
+        return print(errors);
+    }
+
     public static String print(Object ... elements) {
         StringJoiner joiner = new StringJoiner(":","[","]");
         Arrays.asList(elements).forEach(element -> joiner.add(element.toString()));
