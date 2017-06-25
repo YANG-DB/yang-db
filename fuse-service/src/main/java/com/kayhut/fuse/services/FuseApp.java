@@ -84,7 +84,8 @@ public class FuseApp extends Jooby {
 
         get("fuse/detailedPlan/Q1", () ->
         {
-            String json = "{\"name\":\""+System.currentTimeMillis()+"\",\"desc\":\"[EntityOp(Asg(ETyped(1)))]\",\"children\":[{\"name\":\"1\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3)))]\",\"children\":[{\"name\":\"3\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3))):RelationOp(Asg(Rel(3))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"blah\"}],\"invalidReason\":\"\"},{\"name\":\"2\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"children\":[{\"name\":\"4\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"sasaa\"}],\"invalidReason\":\"not valid because blah\"}],\"invalidReason\":\"\"}";
+            String dummy = String.valueOf(System.currentTimeMillis());
+            String json = "{\"name\":\""+dummy.substring(dummy.length()-5)+"\",\"desc\":\"[EntityOp(Asg(ETyped(1)))]\",\"children\":[{\"name\":\"1\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3)))]\",\"children\":[{\"name\":\"3\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3))):RelationOp(Asg(Rel(3))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"blah\"}],\"invalidReason\":\"\"},{\"name\":\"2\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"children\":[{\"name\":\"4\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"sasaa\"}],\"invalidReason\":\"not valid because blah\"}],\"invalidReason\":\"\"}";
             return Results.with(json, 200)
                     .type("application/json");
         });
