@@ -40,7 +40,7 @@ public class QueryTest {
     @Test
     public void testQ1Serialization() throws IOException, JSONException {
         String q1ActualJSON = mapper.writeValueAsString(q1Obj);
-        String q1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":1,\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2}]}";
+        String q1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":\"Person\",\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"}]}";
 
         JSONAssert.assertEquals(q1ExpectedJSONString, q1ActualJSON,false);
     }
@@ -48,7 +48,7 @@ public class QueryTest {
     @Test
     public void testQ2Serialization() throws IOException, JSONException {
         String q2ActualJSON = mapper.writeValueAsString(q2Obj);
-        String q2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":1,\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2,\"next\":4},{\"eNum\":4,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":2}]}";
+        String q2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"EConcrete\",\"eTag\":\"A\",\"eID\":\"12345678\",\"eType\":\"Person\",\"eName\":\"Brandon Stark\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\",\"next\":4},{\"eNum\":4,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Dragon\"}]}";
 
         JSONAssert.assertEquals(q2ExpectedJSONString, q2ActualJSON,false);
     }
@@ -56,7 +56,7 @@ public class QueryTest {
     @Test
     public void testQ3_1Serialization() throws IOException, JSONException {
         String q3_1ActualJSON = mapper.writeValueAsString(q3_1Obj);
-        String q3_1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":2,\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":1,\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":1,\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}";
+        String q3_1ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-1\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Dragon\",\"next\":2},{\"eNum\":2,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"L\",\"next\":3},{\"eNum\":3,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Person\",\"next\":4},{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}}]}";
 
         JSONAssert.assertEquals(q3_1ExpectedJSONString, q3_1ActualJSON,false);
     }
@@ -64,7 +64,7 @@ public class QueryTest {
     @Test
     public void testQ3_2Serialization() throws IOException, JSONException {
         String q3_2ActualJSON = mapper.writeValueAsString(q3_2Obj);
-        String q3_2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,4]},{\"eNum\":3,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}},{\"eNum\":4,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2}]}";
+        String q3_2ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q3-2\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,4]},{\"eNum\":3,\"type\":\"EProp\",\"pType\":\"1.1\",\"pTag\":\"1\",\"con\":{\"op\":\"eq\",\"expr\":\"Brandon\"}},{\"eNum\":4,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":5},{\"eNum\":5,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"}]}";
 
         JSONAssert.assertEquals(q3_2ExpectedJSONString, q3_2ActualJSON,false);
     }
@@ -72,7 +72,7 @@ public class QueryTest {
     @Test
     public void testQ5Serialization() throws IOException, JSONException {
         String q5ActualJSON = mapper.writeValueAsString(q5Obj);
-        String q5ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q5\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,5,11]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":4},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":5,\"type\":\"Rel\",\"rType\":4,\"dir\":\"R\",\"next\":6},{\"eNum\":6,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":1,\"next\":7},{\"eNum\":7,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":8},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":2,\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":3,\"dir\":\"R\",\"next\":10},{\"eNum\":10,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":2},{\"eNum\":11,\"type\":\"Rel\",\"rType\":4,\"dir\":\"R\",\"next\":12},{\"eNum\":12,\"type\":\"ETyped\",\"eTag\":\"E\",\"eType\":1,\"next\":13},{\"eNum\":13,\"type\":\"Rel\",\"rType\":1,\"dir\":\"R\",\"next\":14},{\"eNum\":14,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":2}],\"nonidentical\":[[\"C\",\"E\"]]}";
+        String q5ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q5\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,5,11]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":4},{\"eNum\":4,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"},{\"eNum\":5,\"type\":\"Rel\",\"rType\":\"freeze\",\"dir\":\"R\",\"next\":6},{\"eNum\":6,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Dragon\",\"next\":7},{\"eNum\":7,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":8},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":\"Dragon\",\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":\"fire\",\"dir\":\"R\",\"next\":10},{\"eNum\":10,\"type\":\"ETyped\",\"eTag\":\"B\",\"eType\":\"Dragon\"},{\"eNum\":11,\"type\":\"Rel\",\"rType\":\"freeze\",\"dir\":\"R\",\"next\":12},{\"eNum\":12,\"type\":\"ETyped\",\"eTag\":\"E\",\"eType\":\"Person\",\"next\":13},{\"eNum\":13,\"type\":\"Rel\",\"rType\":\"own\",\"dir\":\"R\",\"next\":14},{\"eNum\":14,\"type\":\"ETyped\",\"eTag\":\"D\",\"eType\":\"Dragon\"}],\"nonidentical\":[[\"C\",\"E\"]]}";
 
         JSONAssert.assertEquals(q5ExpectedJSONString, q5ActualJSON,false);
     }
@@ -80,7 +80,7 @@ public class QueryTest {
     @Test
     public void testQ11Serialization() throws IOException, JSONException {
         String q11ActualJSON = mapper.writeValueAsString(q11Obj);
-        String q11ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q11\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":1,\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":5,\"b\":4},{\"eNum\":4,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"1\",\"con\":{\"op\":\"empty\"}},{\"eNum\":5,\"type\":\"EConcrete\",\"eTag\":\"B\",\"eID\":\"22345670\",\"eType\":4,\"eName\":\"Masons\"},{\"eNum\":6,\"type\":\"Rel\",\"rType\":5,\"dir\":\"R\",\"next\":8,\"b\":7},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"ge\",\"expr\":\"1011-01-01T00:00:00.000\"}},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":1,\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":6,\"dir\":\"R\",\"next\":11,\"b\":10},{\"eNum\":10,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"3\",\"con\":{\"op\":\"ge\",\"expr\":\"1010-06-01T00:00:00.000\"}},{\"eNum\":11,\"type\":\"Quant2\",\"qType\":\"some\",\"next\":[12,13]},{\"eNum\":12,\"type\":\"EConcrete\",\"eTag\":\"D\",\"eID\":\"22345671\",\"eType\":4,\"eName\":\"Saddlers\"},{\"eNum\":13,\"type\":\"EConcrete\",\"eTag\":\"E\",\"eID\":\"22345672\",\"eType\":4,\"eName\":\"Blacksmiths\"}]}";
+        String q11ExpectedJSONString = "{\"ont\":\"Dragons\",\"name\":\"Q11\",\"elements\":[{\"eNum\":0,\"type\":\"Start\",\"next\":1},{\"eNum\":1,\"type\":\"ETyped\",\"eTag\":\"A\",\"eType\":\"Person\",\"next\":2},{\"eNum\":2,\"type\":\"Quant1\",\"qType\":\"all\",\"next\":[3,6]},{\"eNum\":3,\"type\":\"Rel\",\"rType\":\"subject\",\"dir\":\"R\",\"next\":5,\"b\":4},{\"eNum\":4,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"1\",\"con\":{\"op\":\"empty\"}},{\"eNum\":5,\"type\":\"EConcrete\",\"eTag\":\"B\",\"eID\":\"22345670\",\"eType\":\"Guild\",\"eName\":\"Masons\"},{\"eNum\":6,\"type\":\"Rel\",\"rType\":\"registered\",\"dir\":\"R\",\"next\":8,\"b\":7},{\"eNum\":7,\"type\":\"RelProp\",\"pType\":\"1\",\"pTag\":\"2\",\"con\":{\"op\":\"ge\",\"expr\":\"1011-01-01T00:00:00.000\"}},{\"eNum\":8,\"type\":\"ETyped\",\"eTag\":\"C\",\"eType\":\"Person\",\"next\":9},{\"eNum\":9,\"type\":\"Rel\",\"rType\":\"subject\",\"dir\":\"R\",\"next\":11,\"b\":10},{\"eNum\":10,\"type\":\"RelProp\",\"pType\":\"1.2\",\"pTag\":\"3\",\"con\":{\"op\":\"ge\",\"expr\":\"1010-06-01T00:00:00.000\"}},{\"eNum\":11,\"type\":\"Quant2\",\"qType\":\"some\",\"next\":[12,13]},{\"eNum\":12,\"type\":\"EConcrete\",\"eTag\":\"D\",\"eID\":\"22345671\",\"eType\":\"Guild\",\"eName\":\"Saddlers\"},{\"eNum\":13,\"type\":\"EConcrete\",\"eTag\":\"E\",\"eID\":\"22345672\",\"eType\":\"Guild\",\"eName\":\"Blacksmiths\"}]}";
 
         JSONAssert.assertEquals(q11ExpectedJSONString, q11ActualJSON,false);
     }
@@ -168,7 +168,7 @@ public class QueryTest {
         eConcrete.seteNum(1);
         eConcrete.seteTag("A");
         eConcrete.seteID("12345678");
-        eConcrete.seteType(1);
+        eConcrete.seteType("Person");
         eConcrete.seteName("Brandon Stark");
         eConcrete.setNext(2);
         elements.add(eConcrete);
@@ -184,7 +184,7 @@ public class QueryTest {
          */
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setrType(1);
+        rel.setrType("own");
         rel.setDir(Rel.Direction.R);
         rel.setNext(3);
         elements.add(rel);
@@ -201,7 +201,7 @@ public class QueryTest {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("Dragon");
         elements.add(eTyped);
 
         q1Obj.setElements(elements);
@@ -242,7 +242,7 @@ public class QueryTest {
         eConcrete.seteNum(1);
         eConcrete.seteTag("A");
         eConcrete.seteID("12345678");
-        eConcrete.seteType(1);
+        eConcrete.seteType("Person");
         eConcrete.seteName("Brandon Stark");
         eConcrete.setNext(2);
         elements.add(eConcrete);
@@ -259,7 +259,7 @@ public class QueryTest {
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setrType(1);
+        rel.setrType("own");
         rel.setDir(Rel.Direction.R);
         rel.setNext(3);
         elements.add(rel);
@@ -277,7 +277,7 @@ public class QueryTest {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("Dragon");
         eTyped.setNext(4);
         elements.add(eTyped);
 
@@ -293,7 +293,7 @@ public class QueryTest {
 
         Rel rel2 = new Rel();
         rel2.seteNum(4);
-        rel2.setrType(3);
+        rel2.setrType("fire");
         rel2.setDir(Rel.Direction.R);
         rel2.setNext(5);
         elements.add(rel2);
@@ -310,7 +310,7 @@ public class QueryTest {
         ETyped eTyped2 = new ETyped();
         eTyped2.seteNum(5);
         eTyped2.seteTag("C");
-        eTyped2.seteType(2);
+        eTyped2.seteType("Dragon");
         elements.add(eTyped2);
 
         q2Obj.setElements(elements);
@@ -348,7 +348,7 @@ public class QueryTest {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(1);
         eTyped.seteTag("A");
-        eTyped.seteType(2);
+        eTyped.seteType("Dragon");
         eTyped.setNext(2);
         elements.add(eTyped);
 
@@ -365,7 +365,7 @@ public class QueryTest {
          */
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setrType(1);
+        rel.setrType("own");
         rel.setDir(Rel.Direction.L);
         rel.setNext(3);
         elements.add(rel);
@@ -383,7 +383,7 @@ public class QueryTest {
         ETyped eTyped2 = new ETyped();
         eTyped2.seteNum(3);
         eTyped2.seteTag("B");
-        eTyped2.seteType(1);
+        eTyped2.seteType("Person");
         eTyped2.setNext(4);
         elements.add(eTyped2);
 
@@ -444,7 +444,7 @@ public class QueryTest {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(1);
         eTyped.seteTag("A");
-        eTyped.seteType(1);
+        eTyped.seteType("Person");
         eTyped.setNext(2);
         elements.add(eTyped);
 
@@ -499,7 +499,7 @@ public class QueryTest {
 
         Rel rel1 = new Rel();
         rel1.seteNum(4);
-        rel1.setrType(1);
+        rel1.setrType("own");
         rel1.setDir(Rel.Direction.R);
         rel1.setNext(5);
         elements.add(rel1);
@@ -516,7 +516,7 @@ public class QueryTest {
         ETyped eTyped2 = new ETyped();
         eTyped2.seteNum(5);
         eTyped2.seteTag("B");
-        eTyped2.seteType(2);
+        eTyped2.seteType("Dragon");
         elements.add(eTyped2);
 
         q3_2Obj.setElements(elements);
@@ -548,7 +548,7 @@ public class QueryTest {
       ETyped eTyped1 = new ETyped();
       eTyped1.seteNum(1);
       eTyped1.seteTag("A");
-      eTyped1.seteType(1);
+      eTyped1.seteType("Person");
       eTyped1.setNext(2);
       elements.add(eTyped1);
 
@@ -580,7 +580,7 @@ public class QueryTest {
          */
         Rel rel1 = new Rel();
         rel1.seteNum(3);
-        rel1.setrType(1);
+        rel1.setrType("own");
         rel1.setDir(Rel.Direction.R);
         rel1.setNext(4);
         elements.add(rel1);
@@ -597,7 +597,7 @@ public class QueryTest {
       ETyped eTyped2 = new ETyped();
       eTyped2.seteNum(4);
       eTyped2.seteTag("B");
-      eTyped2.seteType(2);
+      eTyped2.seteType("Dragon");
       elements.add(eTyped2);
 
           /*
@@ -612,7 +612,7 @@ public class QueryTest {
 
         Rel rel2 =  new Rel();
         rel2.seteNum(5);
-        rel2.setrType(4);
+        rel2.setrType("freeze");
         rel2.setDir(Rel.Direction.R);
         rel2.setNext(6);
         elements.add(rel2);
@@ -630,7 +630,7 @@ public class QueryTest {
          ETyped eTyped3 = new ETyped();
          eTyped3.seteNum(6);
          eTyped3.seteTag("C");
-         eTyped3.seteType(1);
+         eTyped3.seteType("Dragon");
          eTyped3.setNext(7);
          elements.add(eTyped3);
 
@@ -646,7 +646,7 @@ public class QueryTest {
 
         Rel rel3 = new Rel();
         rel3.seteNum(7);
-        rel3.setrType(1);
+        rel3.setrType("fire");
         rel3.setDir(Rel.Direction.R);
         rel3.setNext(8);
         elements.add(rel3);
@@ -663,7 +663,7 @@ public class QueryTest {
          ETyped eTyped4 = new ETyped();
          eTyped4.seteNum(8);
          eTyped4.seteTag("D");
-         eTyped4.seteType(2);
+         eTyped4.seteType("Dragon");
          eTyped4.setNext(9);
          elements.add(eTyped4);
 
@@ -679,7 +679,7 @@ public class QueryTest {
 
         Rel rel4 = new Rel();
         rel4.seteNum(9);
-        rel4.setrType(3);
+        rel4.setrType("fire");
         rel4.setDir(Rel.Direction.R);
         rel4.setNext(10);
         elements.add(rel4);
@@ -696,7 +696,7 @@ public class QueryTest {
         ETyped eTyped5 = new ETyped();
         eTyped5.seteNum(10);
         eTyped5.seteTag("B");
-        eTyped5.seteType(2);
+        eTyped5.seteType("Dragon");
         elements.add(eTyped5);
 
         /*
@@ -711,7 +711,7 @@ public class QueryTest {
 
         Rel rel5 = new Rel();
         rel5.seteNum(11);
-        rel5.setrType(4);
+        rel5.setrType("freeze");
         rel5.setDir(Rel.Direction.R);
         rel5.setNext(12);
         elements.add(rel5);
@@ -729,7 +729,7 @@ public class QueryTest {
         ETyped eTyped6 = new ETyped();
         eTyped6.seteNum(12);
         eTyped6.seteTag("E");
-        eTyped6.seteType(1);
+        eTyped6.seteType("Person");
         eTyped6.setNext(13);
         elements.add(eTyped6);
 
@@ -745,7 +745,7 @@ public class QueryTest {
 
         Rel rel6 =  new Rel();
         rel6.seteNum(13);
-        rel6.setrType(1);
+        rel6.setrType("own");
         rel6.setDir(Rel.Direction.R);
         rel6.setNext(14);
         elements.add(rel6);
@@ -762,7 +762,7 @@ public class QueryTest {
         ETyped eTyped7 = new ETyped();
         eTyped7.seteNum(14);
         eTyped7.seteTag("D");
-        eTyped7.seteType(2);
+        eTyped7.seteType("Dragon");
         elements.add(eTyped7);
 
 
@@ -801,7 +801,7 @@ public class QueryTest {
         ETyped eTyped1 = new ETyped();
         eTyped1.seteNum(1);
         eTyped1.seteTag("A");
-        eTyped1.seteType(1);
+        eTyped1.seteType("Person");
         eTyped1. setNext(2);
         elements.add(eTyped1);
 
@@ -836,7 +836,7 @@ public class QueryTest {
 
         Rel rel1 = new Rel();
         rel1.seteNum(3);
-        rel1.setrType(6);
+        rel1.setrType("subject");
         rel1.setDir(Rel.Direction.R);
         rel1.setNext(5);
         rel1.setB(4);
@@ -878,7 +878,7 @@ public class QueryTest {
         eConcrete1.seteNum(5);
         eConcrete1.seteTag("B");
         eConcrete1.seteID("22345670");
-        eConcrete1.seteType(4);
+        eConcrete1.seteType("Guild");
         eConcrete1.seteName("Masons");
         elements.add(eConcrete1);
 
@@ -895,7 +895,7 @@ public class QueryTest {
 
         Rel rel2 = new Rel();
         rel2.seteNum(6);
-        rel2.setrType(5);
+        rel2.setrType("registered");
         rel2.setDir(Rel.Direction.R);
         rel2.setNext(8);
         rel2.setB(7);
@@ -937,7 +937,7 @@ public class QueryTest {
         ETyped eTyped3 = new ETyped();
         eTyped3.seteNum(8);
         eTyped3.seteTag("C");
-        eTyped3.seteType(1);
+        eTyped3.seteType("Person");
         eTyped3.setNext(9);
         elements.add(eTyped3);
 
@@ -954,7 +954,7 @@ public class QueryTest {
 
         Rel rel3 = new Rel();
         rel3.seteNum(9);
-        rel3.setrType(6);
+        rel3.setrType("subject");
         rel3.setDir(Rel.Direction.R);
         rel3.setNext(11);
         rel3.setB(10);
@@ -1016,7 +1016,7 @@ public class QueryTest {
         eConcrete2.seteNum(12);
         eConcrete2.seteTag("D");
         eConcrete2.seteID("22345671");
-        eConcrete2.seteType(4);
+        eConcrete2.seteType("Guild");
         eConcrete2.seteName("Saddlers");
         elements.add(eConcrete2);
 
@@ -1035,7 +1035,7 @@ public class QueryTest {
         eConcrete3.seteNum(13);
         eConcrete3.seteTag("E");
         eConcrete3.seteID("22345672");
-        eConcrete3.seteType(4);
+        eConcrete3.seteType("Guild");
         eConcrete3.seteName("Blacksmiths");
         elements.add(eConcrete3);
 

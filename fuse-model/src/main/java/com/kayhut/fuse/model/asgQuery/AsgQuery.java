@@ -138,11 +138,11 @@ public class AsgQuery implements IQuery{
             return current;
         }
 
-        public static AsgEBase<EConcrete> concrete(int eNum, String eID, int eType, String eName, String eTag) {
+        public static AsgEBase<EConcrete> concrete(int eNum, String eID, String eType, String eName, String eTag) {
             return concrete(eNum, eID, eType, eName, eTag, new String[0]);
         }
 
-        public static AsgEBase<EConcrete> concrete(int eNum, String eID, int eType, String eName, String eTag, String...reportProps) {
+        public static AsgEBase<EConcrete> concrete(int eNum, String eID, String eType, String eName, String eTag, String...reportProps) {
             EConcrete concrete = new EConcrete();
             concrete.seteNum(eNum);
             concrete.seteType(eType);
@@ -186,11 +186,11 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(quant2);
         }
 
-        public static AsgEBase<ETyped> typed(int eNum, int eType, String eTag) {
+        public static AsgEBase<ETyped> typed(int eNum, String eType, String eTag) {
             return typed(eNum, eType, eTag, new String[0]);
         }
 
-        public static AsgEBase<ETyped> typed(int eNum, int eType, String eTag, String...reportProps) {
+        public static AsgEBase<ETyped> typed(int eNum, String eType, String eTag, String...reportProps) {
             ETyped eTyped = new ETyped();
             eTyped.seteNum(eNum);
             eTyped.seteType(eType);
@@ -200,7 +200,7 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<ETyped> typed(int eNum, int eType) {
+        public static AsgEBase<ETyped> typed(int eNum, String eType) {
             ETyped eTyped = new ETyped();
             eTyped.seteNum(eNum);
             eTyped.seteType(eType);
@@ -234,7 +234,7 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(untyped);
         }
 
-        public static AsgEBase<Rel> rel(int eNum, int rType, Rel.Direction direction) {
+        public static AsgEBase<Rel> rel(int eNum, String rType, Rel.Direction direction) {
             Rel rel = new Rel();
             rel.setDir(direction);
             rel.setrType(rType);

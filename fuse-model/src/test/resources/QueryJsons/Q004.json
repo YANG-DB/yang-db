@@ -11,7 +11,7 @@
       "eNum": 1,
       "type": "ETyped",
       "eTag": "A",
-      "eType": 1,
+      "eType": "Person",
       "next": 2
     },
     {
@@ -26,7 +26,7 @@
     {
       "eNum": 3,
       "type": "Rel",
-      "rType": 1,
+      "rType": "own",
       "dir": "R",
       "next": 4
     },
@@ -34,12 +34,12 @@
       "eNum": 4,
       "type": "ETyped",
       "eTag": "B",
-      "eType": 2
+      "eType": "Dragon"
     },
     {
       "eNum": 5,
       "type": "Rel",
-      "rType": 4,
+      "rType": "freeze",
       "dir": "R",
       "next": 6
     },
@@ -47,13 +47,13 @@
       "eNum": 6,
       "type": "ETyped",
       "eTag": "C",
-      "eType": 1,
+      "eType": "Person",
       "next": 7
     },
     {
       "eNum": 7,
       "type": "Rel",
-      "rType": 1,
+      "rType": "own",
       "dir": "R",
       "next": 8
     },
@@ -61,13 +61,13 @@
       "eNum": 8,
       "type": "ETyped",
       "eTag": "D",
-      "eType": 2,
+      "eType": "Dragon",
       "next": 9
     },
     {
       "eNum": 9,
       "type": "Rel",
-      "rType": 3,
+      "rType": "fire",
       "dir": "R",
       "next": 10
     },
@@ -75,7 +75,7 @@
       "eNum": 10,
       "type": "ETyped",
       "eTag": "B",
-      "eType": 2
+      "eType": "Dragon"
     }
   ]
 }

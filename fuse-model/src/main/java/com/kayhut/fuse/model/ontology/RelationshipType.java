@@ -18,7 +18,7 @@ public class RelationshipType {
         ePairs = new ArrayList<>();
     }
 
-    public RelationshipType(String name, int rType, boolean directional) {
+    public RelationshipType(String name, String rType, boolean directional) {
         this();
         this.rType = rType;
         this.name = name;
@@ -26,11 +26,11 @@ public class RelationshipType {
     }
 
     //region Getters & Setters
-    public int getrType() {
+    public String getrType() {
         return rType;
     }
 
-    public void setrType(int rType) {
+    public void setrType(String rType) {
         this.rType = rType;
     }
 
@@ -109,7 +109,7 @@ public class RelationshipType {
 
     @Override
     public int hashCode() {
-        int result = rType;
+        int result = rType.hashCode();
         result = 31 * result + name.hashCode();
         result = 31 * result + (directional ? 1 : 0);
         result = 31 * result + (DBrName != null ? DBrName.hashCode() : 0);
@@ -125,7 +125,7 @@ public class RelationshipType {
     }
 
     //region Fields
-    private int rType;
+    private String rType;
     private String name;
     private boolean directional;
     private String DBrName;
@@ -136,7 +136,7 @@ public class RelationshipType {
 
     //region Builder
     public static final class Builder {
-        private int rType;
+        private String rType;
         private String name;
         private boolean directional;
         private String DBrName;
@@ -150,7 +150,7 @@ public class RelationshipType {
             return new Builder();
         }
 
-        public Builder withRType(int rType) {
+        public Builder withRType(String rType) {
             this.rType = rType;
             return this;
         }

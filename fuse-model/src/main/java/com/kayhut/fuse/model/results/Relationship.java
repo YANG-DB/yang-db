@@ -36,11 +36,11 @@ public class Relationship {
         this.agg = agg;
     }
 
-    public int getrType() {
+    public String getrType() {
         return rType;
     }
 
-    public void setrType(int rType) {
+    public void setrType(String rType) {
         this.rType = rType;
     }
 
@@ -112,7 +112,7 @@ public class Relationship {
     //region Fields
     private String rID;
     private boolean agg;
-    private int rType;
+    private String rType;
     private boolean directional;
     private String eID1;
     private String eID2;
@@ -148,7 +148,7 @@ public class Relationship {
             return this;
         }
 
-        public Builder withRType(int rType) {
+        public Builder withRType(String rType) {
             this.rType = rType;
             return this;
         }
@@ -207,7 +207,7 @@ public class Relationship {
         //region Fields
         private String rID;
         private boolean agg;
-        private int rType;
+        private String rType;
         private boolean directional;
         private String eID1;
         private String eID2;

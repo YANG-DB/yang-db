@@ -14,11 +14,11 @@ public class EConcrete extends ETyped implements Typed.eTyped{
     //region Constructors
     public EConcrete() {}
 
-    public EConcrete(int eNum, String eTag, int eType, String eID, String eName, int next, int b) {
+    public EConcrete(int eNum, String eTag, String eType, String eID, String eName, int next, int b) {
         this(eNum, eTag, eType, eID, eName, Collections.emptyList(), next, b);
     }
 
-    public EConcrete(int eNum, String eTag, int eType, String eID, String eName, List<String> reportProps, int next, int b) {
+    public EConcrete(int eNum, String eTag, String eType, String eID, String eName, List<String> reportProps, int next, int b) {
         super(eNum, eTag, eType, reportProps, next, b);
         this.eID = eID;
         this.eName = eName;
