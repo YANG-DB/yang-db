@@ -27,12 +27,12 @@ public class AsgUntypedInferTypeLeftSideRelationStrategy implements AsgStrategy 
                     if(relation.isPresent()) {
                         AsgEBase<Rel> rel = relation.get();
                         Optional<RelationshipType> relationshipType = context.getOntologyAccessor().$relation(rel.geteBase().getrType());
-                        ArrayList<Integer> sideAvTypes = new ArrayList<>(relationshipType.get().getePairs().stream().map(EPair::geteTypeA).collect(Collectors.groupingBy(v -> v, Collectors.toSet())).keySet());
+                        ArrayList<String> sideAvTypes = new ArrayList<>(relationshipType.get().getePairs().stream().map(EPair::geteTypeA).collect(Collectors.groupingBy(v -> v, Collectors.toSet())).keySet());
 
                         //try populating side B of the rel is it is an Untyped
                         Optional<AsgEBase<EUntyped>> sideB = AsgQueryUtil.nextAdjacentDescendant(rel, EUntyped.class);
                         if(sideB.isPresent()) {
-                            ArrayList<Integer> sideBvTypes = new ArrayList<>(relationshipType.get().getePairs().stream().map(EPair::geteTypeB).collect(Collectors.groupingBy(v -> v, Collectors.toSet())).keySet());
+                            ArrayList<String> sideBvTypes = new ArrayList<>(relationshipType.get().getePairs().stream().map(EPair::geteTypeB).collect(Collectors.groupingBy(v -> v, Collectors.toSet())).keySet());
                             //populate possible types only if no types present on entity
                             if(sideB.get().geteBase().getvTypes().isEmpty()) {
                                 sideB.get().geteBase().getvTypes().addAll(sideBvTypes);

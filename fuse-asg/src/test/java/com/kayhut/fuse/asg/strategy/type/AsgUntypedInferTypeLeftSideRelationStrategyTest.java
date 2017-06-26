@@ -95,10 +95,9 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
         AsgEBase<EUntyped> afterSideA = iterator.next();
         AsgEBase<EUntyped> afterSideB = iterator.next();
 
-        Assert.assertEquals(afterSideA.geteBase().getvTypes(), Collections.singletonList(OntologyTestUtils.PERSON.type));
-        Assert.assertEquals(afterSideB.geteBase().getvTypes(), Arrays.asList(OntologyTestUtils.DRAGON.type,OntologyTestUtils.HORSE.type));
-
-
+        Assert.assertEquals(Collections.singletonList(OntologyTestUtils.PERSON.type), afterSideA.geteBase().getvTypes());
+        Assert.assertTrue(afterSideB.geteBase().getvTypes().contains(OntologyTestUtils.DRAGON.type) &&
+                afterSideB.geteBase().getvTypes().contains(OntologyTestUtils.HORSE.type));
 
     }
 }

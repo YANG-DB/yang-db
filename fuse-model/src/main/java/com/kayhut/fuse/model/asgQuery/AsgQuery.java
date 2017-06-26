@@ -207,16 +207,7 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Integer ... vTypes) {
-            EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.of(vTypes).toJavaList());
-            untyped.seteTag(eTag);
-            untyped.seteNum(eNum);
-
-            return new AsgEBase<>(untyped);
-        }
-
-        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> reportProps, Integer ... vTypes) {
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> reportProps, String ... vTypes) {
             EUntyped untyped = new EUntyped();
             untyped.setvTypes(Stream.of(vTypes).toJavaList());
             untyped.seteTag(eTag);
@@ -226,7 +217,7 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(untyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(int eNum, Integer ... vTypes) {
+        public static AsgEBase<EUntyped> unTyped(int eNum, String ... vTypes) {
             EUntyped untyped = new EUntyped();
             untyped.setvTypes(Stream.of(vTypes).toJavaList());
             untyped.seteNum(eNum);

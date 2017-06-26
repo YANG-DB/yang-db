@@ -25,7 +25,7 @@ public class EUntyped extends EEntityBase {
         this(eNum, eTag, Collections.emptyList(), Collections.emptyList(), next, b);
     }
 
-    public EUntyped(int eNum, String eTag, Iterable<Integer> vTypes, Iterable<Integer> nvTypes, int next, int b) {
+    public EUntyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, int next, int b) {
         this(eNum, eTag, vTypes, nvTypes, Collections.emptyList(), next, b);
     }
 
@@ -33,7 +33,7 @@ public class EUntyped extends EEntityBase {
         this(eNum, eTag, Collections.emptyList(), Collections.emptyList(), reportProps, next, b);
     }
 
-    public EUntyped(int eNum, String eTag, Iterable<Integer> vTypes, Iterable<Integer> nvTypes, List<String> reportProps, int next, int b) {
+    public EUntyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, List<String> reportProps, int next, int b) {
         super(eNum, eTag, reportProps, next, b);
         this.vTypes = Stream.ofAll(vTypes).toJavaList();
         this.nvTypes = Stream.ofAll(nvTypes).toJavaList();
@@ -61,25 +61,25 @@ public class EUntyped extends EEntityBase {
     //endregion
 
     //region Properties
-    public List<Integer> getvTypes() {
+    public List<String> getvTypes() {
         return vTypes;
     }
 
-    public void setvTypes(List<Integer> vTypes) {
+    public void setvTypes(List<String> vTypes) {
         this.vTypes = vTypes;
     }
 
-    public List<Integer> getNvTypes() {
+    public List<String> getNvTypes() {
         return nvTypes;
     }
 
-    public void setNvTypes(List<Integer> nvTypes) {
+    public void setNvTypes(List<String> nvTypes) {
         this.nvTypes = nvTypes;
     }
     //endregion
 
     //region Fields
-    private List<Integer> vTypes;
-    private	List<Integer> nvTypes;
+    private List<String> vTypes;
+    private	List<String> nvTypes;
     //endregion
 }
