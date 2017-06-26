@@ -152,7 +152,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeStatistics(eTyped);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(1d, nodeStatistics.getTotal(), 0);
@@ -161,7 +161,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedDateFilterEqHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         ArrayList<EProp> props = new ArrayList<>();
         props.add(EProp.of("birthDate", 0, Constraint.of(ConstraintOp.eq, new Date())));
         EPropGroup propGroup = new EPropGroup(props);
@@ -174,7 +174,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedStringFilterEqHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         ArrayList<EProp> props = new ArrayList<>();
         props.add(EProp.of("firstName", 0, Constraint.of(ConstraintOp.eq, "abc")));
         EPropGroup propGroup = new EPropGroup(props);
@@ -187,7 +187,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedStringFilterGeHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         ArrayList<EProp> props = new ArrayList<>();
         props.add(EProp.of("firstName", 0, Constraint.of(ConstraintOp.ge, "abc")));
         EPropGroup propGroup = new EPropGroup(props);
@@ -200,7 +200,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedStringFilterGe2HistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         ArrayList<EProp> props = new ArrayList<>();
         props.add(EProp.of("firstName", 0, Constraint.of(ConstraintOp.ge, "m")));
         EPropGroup propGroup = new EPropGroup(props);
@@ -213,7 +213,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedCompositeFilterTest(){
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         ArrayList<EProp> props = new ArrayList<>();
         props.add(EProp.of("birthDate", 0, Constraint.of(ConstraintOp.eq, new Date())));
         props.add(EProp.of("height", 0, Constraint.of(ConstraintOp.eq, 10L)));
@@ -228,7 +228,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedLongFilterEqHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.eq, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -241,7 +241,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedLongFilterNeHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.ne, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -254,7 +254,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedLongFilterGtHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.gt, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -267,7 +267,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedLongFilterGeHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.ge, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -280,7 +280,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedLongFilterLtHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.lt, 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -293,7 +293,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eTypedLongFilterLeHistogramTest() {
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("height", 0, Constraint.of(ConstraintOp.le , 10L));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -306,7 +306,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eUnTypedHistogramTest() {
         EUntyped eUntyped = new EUntyped();
-        eUntyped.setvTypes(Arrays.asList(1,2));
+        eUntyped.setvTypes(Arrays.asList("1","2"));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeStatistics(eUntyped);
         Assert.assertNotNull(nodeStatistics);
         Assert.assertEquals(2d, nodeStatistics.getTotal(), 0);
@@ -315,7 +315,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Test
     public void eUnTypedDateFilterEqHistogramTest() {
         EUntyped eUntyped = new EUntyped();
-        eUntyped.setvTypes(Collections.singletonList(1));
+        eUntyped.setvTypes(Collections.singletonList("1"));
         EProp prop = EProp.of("birthDate", 0, Constraint.of(ConstraintOp.eq, new Date()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -328,7 +328,7 @@ public class EBaseStatisticsProviderBasicTests {
     @Ignore
     public void eTypedEnumeratedFieldTest(){
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("3", 0, Constraint.of(ConstraintOp.eq, Value.ValueBuilder.aValue().withName("male").withVal(2).build()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -347,7 +347,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop =  EProp.of("3", 0, Constraint.of(ConstraintOp.eq, Value.ValueBuilder.aValue().withName("male").withVal(2).build()));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
 
@@ -366,7 +366,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.ge, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -385,7 +385,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.le, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -404,7 +404,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.lt, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -423,7 +423,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.ne, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -442,7 +442,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.notInSet, Arrays.asList("edf", "abc")));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -462,7 +462,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.gt, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -481,7 +481,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.inRange, Arrays.asList("f","r"), "[]"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -500,7 +500,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.<String>getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.inRange, Arrays.asList("f","ra"), "[)"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -519,7 +519,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.startsWith, "g"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -538,7 +538,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.startsWith, "f"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -556,7 +556,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.startsWith, "a"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -574,7 +574,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.startsWith, "e"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -597,7 +597,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.notStartsWith, "e"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
@@ -620,7 +620,7 @@ public class EBaseStatisticsProviderBasicTests {
         when(graphStatisticsProvider.getConditionHistogram(any(GraphVertexSchema.class),any(),any(),any(),eq(String.class))).thenReturn(new Statistics.HistogramStatistics<>(stringBuckets));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(1);
+        eTyped.seteType("1");
         EProp prop = EProp.of("firstName", 0, Constraint.of(ConstraintOp.startsWith, "edf"));
         EPropGroup propGroup = new EPropGroup(Collections.singletonList(prop));
         Statistics.SummaryStatistics nodeStatistics = statisticsProvider.getNodeFilterStatistics(eTyped,propGroup);
