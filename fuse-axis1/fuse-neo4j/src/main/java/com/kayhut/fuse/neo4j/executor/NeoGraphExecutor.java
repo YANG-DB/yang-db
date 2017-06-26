@@ -7,10 +7,11 @@ import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.model.results.Relationship;
+import com.kayhut.fuse.neo4j.cypher.types.CypherTypeParsersFactory;
 import javaslang.collection.Stream;
+import javaslang.control.Option;
 import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalRelationship;
-import org.neo4j.driver.internal.value.StringValue;
 
 import java.util.ArrayList;
 
@@ -24,10 +25,13 @@ abstract class NeoGraphUtils {
         ArrayList<Property> props = new ArrayList<>();
         node.keys().forEach(propName -> {
             Property prop = new Property();
-            String pType = Stream.ofAll(ont.getProperties()).find(p -> p.getName().equals(propName)).get().getpType();
-            prop.setpType(pType);
+            Option<com.kayhut.fuse.model.ontology.Property> property = Stream.ofAll(ont.getProperties()).find(p -> p.getName().equals(propName));
+            if(property.isEmpty()) {
+                throw new RuntimeException("Unknown property returned: " + propName);
+            }
+            prop.setpType(property.get().getpType());
             prop.setAgg(propName);
-            prop.setValue(node.get(propName) instanceof StringValue ? node.get(propName).asString() : String.valueOf(node.get(propName)));
+            prop.setValue(CypherTypeParsersFactory.toPropValue(ont, property.get().getType(), node.get(propName)));
             props.add(prop);
         });
 
@@ -47,10 +51,13 @@ abstract class NeoGraphUtils {
         ArrayList<Property> props = new ArrayList<>();
         rel.keys().forEach(propName -> {
             Property prop = new Property();
-            String pType = Stream.ofAll(ont.getProperties()).find(p -> p.getName().equals(propName)).get().getpType();
-            prop.setpType(pType);
+            Option<com.kayhut.fuse.model.ontology.Property> property = Stream.ofAll(ont.getProperties()).find(p -> p.getName().equals(propName));
+            if(property.isEmpty()) {
+                throw new RuntimeException("Unknown property returned: " + propName);
+            }
+            prop.setpType(property.get().getpType());
             prop.setAgg(propName);
-            prop.setValue(rel.get(propName) instanceof StringValue ? rel.get(propName).asString() :String.valueOf(rel.get(propName)));
+            prop.setValue(CypherTypeParsersFactory.toPropValue(ont, property.get().getType(),rel.get(propName)));
             props.add(prop);
         });
 

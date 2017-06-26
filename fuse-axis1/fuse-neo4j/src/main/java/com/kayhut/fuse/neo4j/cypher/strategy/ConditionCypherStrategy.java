@@ -12,6 +12,7 @@ import com.kayhut.fuse.neo4j.cypher.CypherCompilationState;
 import com.kayhut.fuse.neo4j.cypher.CypherCondition;
 import com.kayhut.fuse.neo4j.cypher.CypherElement;
 import com.kayhut.fuse.neo4j.cypher.CypherStatement;
+import com.kayhut.fuse.neo4j.cypher.types.CypherTypeParsersFactory;
 
 import java.util.Map;
 import java.util.Optional;
@@ -85,9 +86,7 @@ public class ConditionCypherStrategy extends CypherStrategy {
 
         CypherElement lastElement = cypherStatement.getPath(pathTag).getElementFromEnd(1);
 
-        String val = property.getType().equals("int") || constraint.getExpr() == null ?
-                                                            String.valueOf(constraint.getExpr()) :
-                                                            "'" + String.valueOf(constraint.getExpr()) + "'";
+        String val = CypherTypeParsersFactory.toCypherValue(ontology, property.getType(), constraint.getExpr());
 
         Optional<AsgEBase> any = asgNode.getParents()
                                         .stream()
