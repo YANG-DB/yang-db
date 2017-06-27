@@ -207,20 +207,54 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> reportProps, String ... vTypes) {
+        public static AsgEBase<EUntyped> unTyped(int eNum) {
             EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.of(vTypes).toJavaList());
-            untyped.seteTag(eTag);
             untyped.seteNum(eNum);
-            untyped.setReportProps(Stream.ofAll(reportProps).toJavaList());
 
             return new AsgEBase<>(untyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(int eNum, String ... vTypes) {
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag) {
             EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.of(vTypes).toJavaList());
             untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String... vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.seteNum(eNum);
+            untyped.setvTypes(Stream.of(vTypes).toJavaList());
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
+            untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
+            untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaList());
+            untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, Iterable<String> reportProps) {
+            EUntyped untyped = new EUntyped();
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
+            untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaList());
+            untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
+            untyped.setReportProps(Stream.ofAll(reportProps).toJavaList());
 
             return new AsgEBase<>(untyped);
         }

@@ -17,6 +17,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -95,6 +96,7 @@ public class BasicStepEstimatorTest {
     }
 
     @Test
+    @Ignore
     public void calculateFullStep() throws Exception {
         StepEstimator estimator = M1StepEstimator.getStepEstimator(1,0.001 );
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, "4")

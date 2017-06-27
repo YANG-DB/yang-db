@@ -147,7 +147,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                 .next(typed(1,  PERSON.type))
                 .next(rel(2, OWN.getrType(), R)
                         .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
-                .next(typed(3,  "2"))
+                .next(typed(3,  DRAGON.type))
                 .next(quant1(4, all))
                 .in(eProp(9, EProp.of("firstName", 9, of(eq, "value1")), EProp.of("gender", 9, of(gt, "value3")))
                         , rel(5, "4", R)
