@@ -69,17 +69,17 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         List<String> errors = new ArrayList<>();
         if (base.geteBase() instanceof Typed.eTyped) {
             EntityType entityType = accessor.$entity$(((Typed.eTyped) base.geteBase()).geteType());
-            int pType = Integer.valueOf(property.getpType());
+            String pType = property.getpType();
 
-            if (entityType.getProperties().stream().noneMatch(p -> p == pType)) {
+            if (entityType.getProperties().stream().noneMatch(p -> p.equals(pType))) {
                 errors.add(ERROR_2 + ":" + print(base, property));
             }
 
         } else if (base.geteBase() instanceof EUntyped) {
-            Stream<Integer> types = Stream.ofAll(((EUntyped) base.geteBase()).getvTypes()).map(accessor::$entity$).flatMap(EntityType::getProperties);
-            int pType = Integer.valueOf(property.getpType());
+            Stream<String> types = Stream.ofAll(((EUntyped) base.geteBase()).getvTypes()).map(accessor::$entity$).flatMap(EntityType::getProperties);
+            String pType = property.getpType();
 
-            if (types.toJavaStream().noneMatch(p -> p == pType)) {
+            if (types.toJavaStream().noneMatch(p -> p.equals(pType))) {
                 errors.add(ERROR_2 + ":" + print(base, property));
             }
         }

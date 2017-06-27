@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
+import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
@@ -88,8 +89,6 @@ public class ElasticStatProviderTest {
 
     // The transport port for the statistics cluster
     private static final int STAT_TRANSPORT_PORT = 9300;
-
-    static Logger logger = org.slf4j.LoggerFactory.getLogger(ElasticStatProviderTest.class);
     //endregion
 
     //todo Add more tests
@@ -97,7 +96,7 @@ public class ElasticStatProviderTest {
     @Test
     public void getGenderFieldStatisticsTest() throws Exception {
         ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
-                new ElasticStatDocumentProvider(statClient, statConfig));
+                new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig));
 
         List<Statistics.BucketInfo> genderStatistics = elasticStatProvider.getFieldStatistics(
                 Collections.singletonList(DATA_INDEX_NAME),
@@ -119,7 +118,7 @@ public class ElasticStatProviderTest {
     @Test
     public void getAgeFieldStatisticsTest() throws Exception {
         ElasticStatProvider elasticStatProvider = new ElasticStatProvider(statConfig,
-                new ElasticStatDocumentProvider(statClient, statConfig));
+                new ElasticStatDocumentProvider(new MetricRegistry(),statClient, statConfig));
 
         List<Statistics.BucketInfo> ageStatistics = elasticStatProvider.getFieldStatistics(
                 Collections.singletonList(DATA_INDEX_NAME),
@@ -130,7 +129,7 @@ public class ElasticStatProviderTest {
 
         ageStatistics.forEach(bucketInfo -> {
             //Since this is a term: Lower bound value == Upper bound value
-            assertTrue((Double) bucketInfo.getLowerBound() <= (Double) bucketInfo.getHigherBound());
+            assertTrue((Long) bucketInfo.getLowerBound() <= (Long) bucketInfo.getHigherBound());
         });
     }
 
@@ -195,7 +194,7 @@ public class ElasticStatProviderTest {
     //Per test
     private static StatContainer buildStatContainer() {
         HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
-                .withMin(DRAGON_MIN_AGE).withMax(DRAGON_MAX_AGE).withNumOfBins(10).build();
+                .withMin(DRAGON_MIN_AGE).withMax(DRAGON_MAX_AGE).withDataType(DataType.numericLong).withNumOfBins(10).build();
 
         HistogramString histogramDragonName = HistogramString.Builder.get()
                 .withPrefixSize(3)
@@ -206,18 +205,18 @@ public class ElasticStatProviderTest {
 
         HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
                 .withBuckets(Arrays.asList(
-                        new BucketRange("abc", "dzz"),
-                        new BucketRange("efg", "hij"),
-                        new BucketRange("klm", "xyz")
+                        new BucketRange<>("abc", "dzz"),
+                        new BucketRange<>("efg", "hij"),
+                        new BucketRange<>("klm", "xyz")
                 ))
                 .withDataType(DataType.string)
                 .build();
 
         HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
                 .withManualBuckets(Arrays.asList(
-                        new BucketRange("00", "11"),
-                        new BucketRange("22", "33"),
-                        new BucketRange("44", "55")
+                        new BucketRange<>("00", "11"),
+                        new BucketRange<>("22", "33"),
+                        new BucketRange<>("44", "55")
                 )).withDataType(DataType.string)
                 .withAutoBuckets(HistogramString.Builder.get()
                         .withFirstCharCode("97")

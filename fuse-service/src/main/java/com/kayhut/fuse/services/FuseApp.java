@@ -5,14 +5,12 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.kayhut.fuse.model.transport.CreatePageRequest;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
@@ -23,6 +21,7 @@ import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
 import org.jooby.scanner.Scanner;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -68,7 +67,8 @@ public class FuseApp extends Jooby {
 
         use(new Scanner());
         use(new Jackson());
-        use(use(new CaffeineCache<Tuple2<String , List<String>>, List<Statistics.BucketInfo>>() {}));
+        use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
+        }));
         get("/", () -> HOME);
 
         registerCors(localUrlSupplier);
@@ -79,12 +79,20 @@ public class FuseApp extends Jooby {
         registerCursorApi(localUrlSupplier);
         registerPageApi(localUrlSupplier);
         registerSearchApi(localUrlSupplier);
+
+        get("fuse/detailedPlan/Q1", () ->
+        {
+            String dummy = String.valueOf(System.currentTimeMillis());
+            String json = "{\"name\":\"" + dummy.substring(dummy.length() - 5) + "\",\"desc\":\"[EntityOp(Asg(ETyped(1)))]\",\"children\":[{\"name\":\"1\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3)))]\",\"children\":[{\"name\":\"3\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(2))):EntityOp(Asg(ETyped(3))):RelationOp(Asg(Rel(3))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"blah\"}],\"invalidReason\":\"\"},{\"name\":\"2\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"children\":[{\"name\":\"4\",\"desc\":\"[EntityOp(Asg(ETyped(1))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5))):RelationOp(Asg(Rel(4))):EntityOp(Asg(ETyped(5)))]\",\"invalidReason\":\"sasaa\"}],\"invalidReason\":\"not valid because blah\"}],\"invalidReason\":\"\"}";
+            return Results.with(json, 200)
+                    .type("application/json");
+        });
     }
     //endregion
 
     //region Public Methods
-    public FuseApp conf(String path, String activeProfile) {
-        Config config = ConfigFactory.parseResources(path);
+    public FuseApp conf(File file, String activeProfile) {
+        Config config = ConfigFactory.parseFile(file);
         config = config.withValue("application.profile", ConfigValueFactory.fromAnyRef(activeProfile, "FuseApp"));
 
         super.use(config);
@@ -125,8 +133,7 @@ public class FuseApp extends Jooby {
             rsp.header("Access-Control-Allow-Origin", "*");
             rsp.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH");
             rsp.header("Access-Control-Max-Age", "3600");
-            rsp.header("Access-Control-Allow-Headers", "x-requested-with", "origin", "content-type",
-                    "accept");
+            rsp.header("Access-Control-Allow-Headers", "x-requested-with", "origin", "content-type", "accept");
             if (req.method().equalsIgnoreCase("options")) {
                 rsp.end();
             }
@@ -163,8 +170,12 @@ public class FuseApp extends Jooby {
         /** create a query */
         use(localUrlSupplier.queryStoreUrl())
                 .post(req -> {
-                    ContentResponse<QueryResourceInfo> entity = queryCtrl().create(req.body(CreateQueryRequest.class));
-                    return Results.with(entity, entity.status());
+                    ContentResponse<QueryResourceInfo> response =
+                            req.param("fetch").isSet() && req.param("fetch").booleanValue() ?
+                                    queryCtrl().createAndFetch(req.body(CreateQueryAndFetchRequest.class)) :
+                                    queryCtrl().create(req.body(CreateQueryRequest.class));
+
+                    return Results.with(response, response.status());
                 });
 
         /** get the query info */
@@ -182,6 +193,15 @@ public class FuseApp extends Jooby {
                 });
 
         /** get the query execution plan */
+        use(localUrlSupplier.resourceUrl(":queryId") + "/planVerbose")
+                .get(req -> {
+                    ContentResponse response = queryCtrl().planVerbose(req.param("queryId").value());
+                    //temporary fix for json serialization of object graphs
+                    return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status())
+                            .type("application/json");
+                });
+
+        /** get the query plan verbose */
         use(localUrlSupplier.resourceUrl(":queryId") + "/plan")
                 .get(req -> {
                     ContentResponse response = queryCtrl().explain(req.param("queryId").value());

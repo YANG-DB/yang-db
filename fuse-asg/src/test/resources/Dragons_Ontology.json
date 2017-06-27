@@ -2,81 +2,81 @@
   "ont": "Dragons",
   "properties": [
     {
-      "pType": 1,
+      "pType": "firstName",
       "name": "firstName",
       "type": "string"
     },
     {
-      "pType": 2,
+      "pType": "lastName",
       "name": "lastName",
       "type": "string"
     },
     {
-      "pType": 3,
+      "pType": "name",
       "name": "name",
       "type": "string"
     },
     {
-      "pType": 4,
+      "pType": "gender",
       "name": "gender",
       "type": "TYPE_Gender"
     },
     {
-      "pType": 5,
+      "pType": "birthDate",
       "name": "birthDate",
       "type": "date"
     },
     {
-      "pType": 6,
+      "pType": "deathDate",
       "name": "deathDate",
       "type": "date"
     },
     {
-      "pType": 7,
+      "pType": "height",
       "name": "height",
       "type": "int",
       "units": "cm"
     },
     {
-      "pType": 8,
+      "pType": "color",
       "name": "color",
       "type": "TYPE_HorseColor"
     },
     {
-      "pType": 9,
+      "pType": "weight",
       "name": "weight",
       "type": "int",
       "units": "kg"
     },
     {
-      "pType": 10,
+      "pType": "startDate",
       "name": "startDate",
       "type": "date"
     },
     {
-      "pType": 11,
+      "pType": "endDate",
       "name": "endDate",
       "type": "date"
     },
     {
-      "pType": 12,
+      "pType": "timestamp",
       "name": "timestamp",
       "type": "date"
     },
     {
-      "pType": 13,
+      "pType": "duration",
       "name": "duration",
       "type": "int",
       "units": "min"
     },
     {
-      "pType": 14,
+      "pType": "mass",
       "name": "mass",
       "type": "int",
       "units": "mass"
     },
     {
-      "pType": 15,
+      "pType": "dateSinceTheBigBang",
       "name": "dateSinceTheBigBang",
       "type": "date"
     }
@@ -86,42 +86,42 @@
       "eType": 1,
       "name": "Person",
       "properties": [
-        1,
-        2,
-        4,
-        5,
-        6,
-        7
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
       ]
     },
     {
       "eType": 2,
       "name": "Dragon",
       "properties": [
-        3
+        "name"
       ]
     },
     {
       "eType": 3,
       "name": "Horse",
       "properties": [
-        3,
-        8,
-        9
+        "name",
+        "color",
+        "weight"
       ]
     },
     {
       "eType": 4,
       "name": "Guild",
       "properties": [
-        3
+        "name"
       ]
     },
     {
       "eType": 5,
       "name": "Kingdom",
       "properties": [
-        3
+        "name"
       ]
     }
   ],
@@ -141,8 +141,8 @@
         }
       ],
       "properties": [
-        10,
-        11
+        "startDate",
+        "endDate"
       ]
     },
     {
@@ -156,7 +156,7 @@
         }
       ],
       "properties": [
-        12
+        "timestamp"
       ]
     },
     {
@@ -170,8 +170,8 @@
         }
       ],
       "properties": [
-        12,
-        13
+        "timestamp",
+        "duration"
       ]
     },
     {
@@ -196,7 +196,7 @@
         }
       ],
       "properties": [
-        10
+        "startDate"
       ]
     },
     {
@@ -210,8 +210,8 @@
         }
       ],
       "properties": [
-        10,
-        11
+        "startDate",
+        "endDate"
       ]
     },
     {

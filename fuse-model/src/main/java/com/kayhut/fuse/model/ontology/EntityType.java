@@ -12,7 +12,7 @@ public class EntityType {
     public EntityType() {
     }
 
-    public EntityType(int type, String name, List<Integer> properties) {
+    public EntityType(int type, String name, List<String> properties) {
         this.eType = type;
         this.name = name;
         this.properties = properties;
@@ -34,11 +34,11 @@ public class EntityType {
         this.name = name;
     }
 
-    public List<Integer> getProperties() {
+    public List<String> getProperties() {
         return properties;
     }
 
-    public void setProperties(List<Integer> properties) {
+    public void setProperties(List<String> properties) {
         this.properties = properties;
     }
 
@@ -59,7 +59,7 @@ public class EntityType {
     //region Fields
     private int eType;
     private String name;
-    private List<Integer> properties;
+    private List<String> properties;
     private List<String> display;
     //endregion
 
@@ -67,7 +67,7 @@ public class EntityType {
     public static final class Builder {
         private int eType;
         private String name;
-        private List<Integer> properties;
+        private List<String> properties;
         private List<String> display;
 
         private Builder() {
@@ -87,7 +87,7 @@ public class EntityType {
             return this;
         }
 
-        public Builder withProperties(List<Integer> properties) {
+        public Builder withProperties(List<String> properties) {
             this.properties = properties;
             return this;
         }

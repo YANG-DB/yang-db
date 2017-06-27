@@ -104,7 +104,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
             if(redundantTypeProperty.isPresent()) {
                 RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantTypeProperty.get().getPropertyRedundantName(),
-                        Integer.toString(OntologyFinalizer.TYPE_FIELD_P_TYPE), constraint);
+                        OntologyFinalizer.TYPE_FIELD_P_TYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
         }
@@ -118,7 +118,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
             if(redundantIdProperty.isPresent()) {
                 RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantIdProperty.get().getPropertyRedundantName(),
-                        Integer.toString(OntologyFinalizer.ID_FIELD_P_TYPE), constraint);
+                        OntologyFinalizer.ID_FIELD_P_TYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
         }
@@ -127,7 +127,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
             AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEBase().geteBase().clone()).build();
             Stream.ofAll(ePropGroup.geteBase().getProps()).toJavaList().forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get()
-                        .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(Integer.parseInt(p.getpType())).getName()).get());
+                        .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
                 if(redundantVertexProperty.isPresent()){
                     RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
                             p.getpType(), p.getCon());

@@ -9,8 +9,17 @@ import com.kayhut.fuse.model.query.Query;
  */
 public class CreateQueryRequest {
     private String id;
+    private boolean verbose;
     private String name;
     private Query query;
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
 
     public String getId() {
         return id;

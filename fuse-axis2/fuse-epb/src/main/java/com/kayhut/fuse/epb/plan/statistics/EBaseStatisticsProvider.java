@@ -104,7 +104,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.SummaryStatistics minEdgeSummaryStatistics = getEdgeStatistics(graphEdgeSchema, relevantIndices);
         for(RelProp relProp : relFilter.getProps()){
-            Property property = ont.$property$(Integer.parseInt( relProp.getpType()));
+            Property property = ont.$property$( relProp.getpType() );
 
             GraphElementPropertySchema graphElementPropertySchema;
             if (relProp instanceof PushdownRelProp){
@@ -171,7 +171,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // When we add an OR condition (and a complex condition tree), we need to take a different approach
         Statistics.SummaryStatistics minVertexSummaryStatistics = getVertexStatistics(graphVertexSchema, relevantIndices);
         for(EProp eProp : entityFilter.getProps()){
-            Property property = ont.$property$(Integer.parseInt( eProp.getpType()));
+            Property property = ont.$property$( eProp.getpType() );
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
                 Optional<Statistics.SummaryStatistics> conditionCardinality = getConditionCardinality(graphVertexSchema, graphElementPropertySchema.get(), eProp.getCon(), relevantIndices, property.getType());
@@ -438,7 +438,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, EPropGroup entityFilter) {
         List<EProp> timeConditions = new ArrayList<>();
         for (EProp eProp : entityFilter.getProps()){
-            Property property =  ont.$property$(Integer.parseInt(eProp.getpType()));
+            Property property =  ont.$property$(eProp.getpType());
             if(property.getName().equals(indexPartition.getTimeField())){
                 switch(eProp.getCon().getOp()){
                     case inRange:
@@ -481,7 +481,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, RelPropGroup relPropGroup) {
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getProps()){
-            if (ont.$property$(Integer.parseInt(relProp.getpType())).getName().equals(indexPartition.getTimeField())) {
+            if (ont.$property$(relProp.getpType()).getName().equals(indexPartition.getTimeField())) {
                 switch(relProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();

@@ -20,11 +20,6 @@ public class EProp extends BaseProp {
     }
     //endregion
 
-
-    public static EProp of(int pType, int eNum, Constraint con) {
-        return of(Integer.toString(pType),eNum,con);
-    }
-
     public static EProp of(String pType, int eNum, Constraint con) {
         EProp eProp = new EProp();
         eProp.setpType(pType);

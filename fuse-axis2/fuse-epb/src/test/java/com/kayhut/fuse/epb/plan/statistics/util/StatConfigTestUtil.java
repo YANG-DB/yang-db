@@ -10,35 +10,39 @@ import java.util.Collections;
  */
 public class StatConfigTestUtil {
 
-    static final String STAT_INDEX_NAME = "stat";
-    static final String STAT_TERM_TYPE_NAME = "bucketTerm";
-    static final String STAT_STRING_TYPE_NAME = "bucketString";
-    static final String STAT_NUMERIC_TYPE_NAME = "bucketNumeric";
-    static final String STAT_GLOBAL_TYPE_NAME = "bucketGlobal";
-    static final String STAT_COUNT_FIELD_NAME = "count";
-    static final String STAT_CARDINALITY_FIELD_NAME = "cardinality";
-    static final String STAT_FIELD_TERM_NAME = "term";
-    static final String STAT_FIELD_NUMERIC_LOWER_NAME = "lower_bound_numeric";
-    static final String STAT_FIELD_NUMERIC_UPPER_NAME = "upper_bound_numeric";
-    static final String STAT_FIELD_STRING_LOWER_NAME = "lower_bound_string";
-    static final String STAT_FIELD_STRING_UPPER_NAME = "upper_bound_string";
+    private static final String STAT_INDEX_NAME = "stat";
+    private static final String STAT_TERM_TYPE_NAME = "bucketTerm";
+    private static final String STAT_STRING_TYPE_NAME = "bucketString";
+    private static final String STAT_NUMERIC_TYPE_NAME = "bucketNumeric";
+    private static final String STAT_GLOBAL_TYPE_NAME = "bucketGlobal";
+    private static final String STAT_COUNT_FIELD_NAME = "count";
+    private static final String STAT_CARDINALITY_FIELD_NAME = "cardinality";
+    private static final String STAT_FIELD_TERM_NAME = "term";
+    private static final String STAT_FIELD_NUMERIC_DOUBLE_LOWER_NAME = "lower_bound_numericDouble";
+    private static final String STAT_FIELD_NUMERIC_DOUBLE_UPPER_NAME = "upper_bound_numericDouble";
+    private static final String STAT_FIELD_NUMERIC_LONG_LOWER_NAME = "lower_bound_numericLong";
+    private static final String STAT_FIELD_NUMERIC_LONG_UPPER_NAME = "upper_bound_numericLong";
+    private static final String STAT_FIELD_STRING_LOWER_NAME = "lower_bound_string";
+    private static final String STAT_FIELD_STRING_UPPER_NAME = "upper_bound_string";
 
     public static StatConfig getStatConfig (StatContainer statContainer) {
-        return StatConfig.Builder.statConfig().withStatClusterName("fuse.test_elastic")
-                .withStatNodesHosts(Collections.singletonList("localhost"))
-                .withStatTransportPort(9300)
-                .withStatIndexName(STAT_INDEX_NAME)
-                .withStatTermTypeName(STAT_TERM_TYPE_NAME)
-                .withStatStringTypeName(STAT_STRING_TYPE_NAME)
-                .withStatNumericTypeName(STAT_NUMERIC_TYPE_NAME)
-                .withStatGlobalTypeName(STAT_GLOBAL_TYPE_NAME)
-                .withStatCountFieldName(STAT_COUNT_FIELD_NAME)
-                .withStatCardinalityFieldName(STAT_CARDINALITY_FIELD_NAME)
-                .withStatFieldTermName(STAT_FIELD_TERM_NAME)
-                .withStatFieldNumericLowerName(STAT_FIELD_NUMERIC_LOWER_NAME)
-                .withStatFieldNumericUpperName(STAT_FIELD_NUMERIC_UPPER_NAME)
-                .withStatFieldStringLowerName(STAT_FIELD_STRING_LOWER_NAME)
-                .withStatFieldStringUpperName(STAT_FIELD_STRING_UPPER_NAME)
-                .withStatContainer(statContainer).build();
+        return new StatConfig("fuse.test_elastic",
+                Collections.singletonList("localhost"),
+                9300,
+                STAT_INDEX_NAME,
+                STAT_TERM_TYPE_NAME,
+                STAT_STRING_TYPE_NAME,
+                STAT_NUMERIC_TYPE_NAME,
+                STAT_GLOBAL_TYPE_NAME,
+                STAT_COUNT_FIELD_NAME,
+                STAT_CARDINALITY_FIELD_NAME,
+                STAT_FIELD_TERM_NAME,
+                STAT_FIELD_NUMERIC_DOUBLE_LOWER_NAME,
+                STAT_FIELD_NUMERIC_DOUBLE_UPPER_NAME,
+                STAT_FIELD_NUMERIC_LONG_LOWER_NAME,
+                STAT_FIELD_NUMERIC_LONG_UPPER_NAME,
+                STAT_FIELD_STRING_LOWER_NAME,
+                STAT_FIELD_STRING_UPPER_NAME,
+                statContainer);
     }
 }

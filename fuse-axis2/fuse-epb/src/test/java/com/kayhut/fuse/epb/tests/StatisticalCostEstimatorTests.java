@@ -1,14 +1,11 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
@@ -16,9 +13,6 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EConcrete;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -38,12 +32,10 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.getSupportedPattern;
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;

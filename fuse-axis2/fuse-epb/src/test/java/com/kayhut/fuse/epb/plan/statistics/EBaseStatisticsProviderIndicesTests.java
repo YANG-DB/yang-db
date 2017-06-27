@@ -100,7 +100,7 @@ public class EBaseStatisticsProviderIndicesTests {
 
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
         RelationshipType relation2 = ont.$relation$(OWN.getrType());
-        relation2.addProperty(1);
+        relation2.addProperty("firstName");
 
         graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), indexProvider);
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
@@ -157,7 +157,7 @@ public class EBaseStatisticsProviderIndicesTests {
         rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType(Integer.toString(START_DATE.type));
+        prop.setpType(START_DATE.type);
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date(nowTime));
         constraint.setOp(ConstraintOp.gt);
@@ -175,7 +175,7 @@ public class EBaseStatisticsProviderIndicesTests {
         rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType(Integer.toString(START_DATE.type));
+        prop.setpType(START_DATE.type);
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.inRange);
@@ -195,7 +195,7 @@ public class EBaseStatisticsProviderIndicesTests {
         rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType(Integer.toString(START_DATE.type));
+        prop.setpType(START_DATE.type);
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.inSet);
@@ -215,7 +215,7 @@ public class EBaseStatisticsProviderIndicesTests {
         rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType(Integer.toString(START_DATE.type));
+        prop.setpType(START_DATE.type);
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-1000),new Date(nowTime)));
         constraint.setOp(ConstraintOp.notInSet);
@@ -234,7 +234,7 @@ public class EBaseStatisticsProviderIndicesTests {
         rel.setrType(OWN.getrType());
 
         RelProp prop = new RelProp();
-        prop.setpType("1");
+        prop.setpType("firstName");
         Constraint constraint = new Constraint();
         constraint.setExpr("abc");
         constraint.setOp(ConstraintOp.gt);
@@ -252,13 +252,13 @@ public class EBaseStatisticsProviderIndicesTests {
         rel.setrType(OWN.getrType());
 
         RelProp dateProp = new RelProp();
-        dateProp.setpType(Integer.toString(START_DATE.type));
+        dateProp.setpType(START_DATE.type);
         Constraint constraint = new Constraint();
         constraint.setExpr(new Date(nowTime));
         constraint.setOp(ConstraintOp.gt);
         dateProp.setCon(constraint);
         RelProp stringProp = new RelProp();
-        stringProp.setpType("1");
+        stringProp.setpType("firstName");
         constraint = new Constraint();
         constraint.setExpr("abc");
         constraint.setOp(ConstraintOp.gt);
@@ -276,14 +276,14 @@ public class EBaseStatisticsProviderIndicesTests {
         rel.setrType(OWN.getrType());
 
         RelProp dateProp = new RelProp();
-        dateProp.setpType(Integer.toString(START_DATE.type));
+        dateProp.setpType(START_DATE.type);
         Constraint constraint = new Constraint();
         constraint.setExpr(Arrays.asList(new Date(nowTime-60*1000),new Date(nowTime+60*1000)));
         constraint.setOp(ConstraintOp.inRange);
         constraint.setiType("[]");
         dateProp.setCon(constraint);
         RelProp stringProp = new RelProp();
-        stringProp.setpType("1");
+        stringProp.setpType("firstName");
         constraint = new Constraint();
         constraint.setExpr("abc");
         constraint.setOp(ConstraintOp.gt);

@@ -1,35 +1,22 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.util.Modules;
-import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.test.data.DragonsOntology;
-import org.jooby.test.JoobyRule;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
-import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
 
 public class QueryTest {
     @Before
@@ -71,6 +58,49 @@ public class QueryTest {
                 .contentType("application/json;charset=UTF-8");
 
     }
+
+    @Test
+    public void createQueryAndFetch() throws IOException {
+        CreateCursorRequest createCursorRequest = new CreateCursorRequest();
+        createCursorRequest.setCursorType(CreateCursorRequest.CursorType.paths);
+
+        CreatePageRequest createPageRequest = new CreatePageRequest();
+        createPageRequest.setPageSize(10);
+
+        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest();
+        request.setId("1");
+        request.setName("test");
+        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setCreateCursorRequest(createCursorRequest);
+        request.setCreatePageRequest(createPageRequest);
+        //submit query
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .body(request)
+                .post("/fuse/query?fetch=true")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
+                        Map data = (Map) contentResponse.getData();
+                        assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
+                        assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
+                        assertTrue(((Map)data.get("cursorResourceInfo")).containsKey("cursorType"));
+                        assertTrue(((Map)data.get("cursorResourceInfo")).containsKey("pageStoreUrl"));
+                        assertTrue(((Map)data.get("pageResourceInfo")).containsKey("dataUrl"));
+                        assertTrue(((Map)data.get("pageResourceInfo")).containsKey("actualPageSize"));
+                        return contentResponse.getData()!=null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(201)
+                .contentType("application/json;charset=UTF-8");
+    }
+
     @Test
     public void queryFaultyCreate() throws IOException {
         Query query = new Query();

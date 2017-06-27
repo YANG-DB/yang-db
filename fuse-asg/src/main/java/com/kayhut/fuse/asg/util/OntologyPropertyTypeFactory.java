@@ -49,7 +49,7 @@ public class OntologyPropertyTypeFactory {
         @Override
         public Object apply(Object o) {
             if (o instanceof String) {
-                return Integer.parseInt((String)o);
+                return Long.parseLong((String)o);
             }
 
             if (Number.class.isAssignableFrom(o.getClass())) {

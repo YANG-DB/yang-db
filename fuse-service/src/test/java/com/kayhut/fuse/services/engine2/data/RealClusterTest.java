@@ -37,7 +37,7 @@ import static java.util.Collections.singletonList;
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
-        fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
+        fuseClient = new FuseClient("http://localhost:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -49,9 +49,9 @@ public class RealClusterTest {
     public void test1() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 0, 0)
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -75,12 +75,12 @@ public class RealClusterTest {
     public void test_EntityRelEntityWithFilters() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "reagan")),
+                new EProp(3, NAME.type, Constraint.of(ConstraintOp.eq, "reagan")),
                 new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 5, 0),
-                new ETyped(5, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 6, 0),
-                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "erwin"))
+                new ETyped(5, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 6, 0),
+                new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "erwin"))
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -105,9 +105,9 @@ public class RealClusterTest {
     public void test2() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
                 new Rel(2, $ont.rType$(FREEZE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 0, 0)
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -131,15 +131,15 @@ public class RealClusterTest {
     public void test3() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "lenora")),
+                new EProp(3, NAME.type, Constraint.of(ConstraintOp.eq, "lenora")),
                 new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 5, 0),
-                new ETyped(5, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 0, 0)
+                new ETyped(5, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query,true);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
 
@@ -162,14 +162,14 @@ public class RealClusterTest {
 
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "lenora")),
+                new EProp(3, NAME.type, Constraint.of(ConstraintOp.eq, "lenora")),
                 new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 6, 5),
-                new RelProp(5, Integer.toString(TIMESTAMP.type), Constraint.of(ConstraintOp.inRange,
+                new RelProp(5, TIMESTAMP.type, Constraint.of(ConstraintOp.inRange,
                         Arrays.asList(sdf.parse("2000-04-05 00:00:00.000").getTime(), sdf.parse("2000-05-05 00:00:00.000").getTime())), 0),
-                new ETyped(6, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 7, 0),
-                new EProp(7, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "gideon"))
+                new ETyped(6, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 7, 0),
+                new EProp(7, NAME.type, Constraint.of(ConstraintOp.eq, "gideon"))
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -205,20 +205,20 @@ public class RealClusterTest {
 
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "lenora")),
+                new EProp(3, NAME.type, Constraint.of(ConstraintOp.eq, "lenora")),
                 new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 6, 5),
-                new RelProp(5, Integer.toString(TIMESTAMP.type), Constraint.of(ConstraintOp.inRange,
+                new RelProp(5, TIMESTAMP.type, Constraint.of(ConstraintOp.inRange,
                         Arrays.asList(sdf.parse("2000-04-05 00:00:00.000").getTime(), sdf.parse("2000-05-05 00:00:00.000").getTime())), 0),
-                new ETyped(6, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 7, 0),
+                new ETyped(6, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9), 0),
-                new EProp(8, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "gideon")),
+                new EProp(8, NAME.type, Constraint.of(ConstraintOp.eq, "gideon")),
                 new Rel(9, FREEZE.getrType(), Rel.Direction.L, null, 11, 10),
-                new RelProp(10, Integer.toString(START_DATE.type),
+                new RelProp(10, START_DATE.type,
                         Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
                 new ETyped(11, "C", $ont.eType$(DRAGON.name),
-                        Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 0, 0)
+                        Arrays.asList(NAME.type, POWER.type), 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -249,18 +249,18 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "C", $ont.eType$(DRAGON.name),
-                        Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 2, 0),
+                        Arrays.asList(NAME.type, POWER.type), 2, 0),
                 new Rel(2, FREEZE.getrType(), Rel.Direction.R, null, 4, 3),
-                new RelProp(3, Integer.toString(START_DATE.type),
+                new RelProp(3, START_DATE.type,
                         Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
-                new ETyped(4, "B", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 5, 0),
+                new ETyped(4, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 5, 0),
                 new Quant1(5, QuantType.all, Arrays.asList(6, 7), 0),
-                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "gideon")),
+                new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "gideon")),
                 new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 9, 8),
-                new RelProp(8, Integer.toString(TIMESTAMP.type), Constraint.of(ConstraintOp.inRange,
+                new RelProp(8, TIMESTAMP.type, Constraint.of(ConstraintOp.inRange,
                         Arrays.asList(sdf.parse("2000-04-05 00:00:00.000").getTime(), sdf.parse("2000-05-05 00:00:00.000").getTime())), 0),
-                new ETyped(9, "A", $ont.eType$(DRAGON.name), singletonList(Integer.toString(NAME.type)), 10, 0),
-                new EProp(10, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "lenora"))
+                new ETyped(9, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 10, 0),
+                new EProp(10, NAME.type, Constraint.of(ConstraintOp.eq, "lenora"))
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -294,15 +294,15 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$(DRAGON.name), Collections.emptyList(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "lenora")),
+                new EProp(3, NAME.type, Constraint.of(ConstraintOp.eq, "lenora")),
                 new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 6, 5),
-                new RelProp(5, Integer.toString(TIMESTAMP.type), Constraint.of(ConstraintOp.inRange,
+                new RelProp(5, TIMESTAMP.type, Constraint.of(ConstraintOp.inRange,
                         Arrays.asList(sdf.parse("2000-04-05 00:00:00.000").getTime(), sdf.parse("2000-05-05 00:00:00.000").getTime())), 0),
                 new ETyped(6, "B", $ont.eType$(DRAGON.name), Collections.emptyList(), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9), 0),
-                new EProp(8, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "gideon")),
+                new EProp(8, NAME.type, Constraint.of(ConstraintOp.eq, "gideon")),
                 new Rel(9, FREEZE.getrType(), Rel.Direction.L, null, 11, 10),
-                new RelProp(10, Integer.toString(START_DATE.type),
+                new RelProp(10, START_DATE.type,
                         Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
                 new ETyped(11, "C", $ont.eType$(DRAGON.name),
                         Collections.emptyList(), 0, 0)
@@ -366,25 +366,25 @@ public class RealClusterTest {
 
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", PERSON.type, singletonList(Integer.toString(FIRST_NAME.type)), 2, 0),
+                new ETyped(1, "A", PERSON.type, singletonList(FIRST_NAME.type), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, Integer.toString(HEIGHT.type), Constraint.of(ConstraintOp.inRange, new int[]{200, 205})),
+                new EProp(3, HEIGHT.type, Constraint.of(ConstraintOp.inRange, new int[]{200, 205})),
                 new Rel(4, OWN.getrType(), Rel.Direction.R, null, 6, 5),
-                new RelProp(5, Integer.toString(START_DATE.type), Constraint.of(ConstraintOp.inRange,
+                new RelProp(5, START_DATE.type, Constraint.of(ConstraintOp.inRange,
                         Arrays.asList(sdf.parse("2000-01-01 00:00:00.000").getTime(), sdf.parse("2000-12-30 00:00:00.000").getTime())), 0),
-                new ETyped(6, "B", DRAGON.type, singletonList(Integer.toString(NAME.type)), 7, 0),
+                new ETyped(6, "B", DRAGON.type, singletonList(NAME.type), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9, 12), 0),
-                new EProp(8, Integer.toString(POWER.type), Constraint.of(ConstraintOp.inRange, new int[]{25, 75})),
+                new EProp(8, POWER.type, Constraint.of(ConstraintOp.inRange, new int[]{25, 75})),
                 new Rel(9, FREEZE.getrType(), Rel.Direction.R, null, 11, 10),
-                new RelProp(10, Integer.toString(START_DATE.type),
+                new RelProp(10, START_DATE.type,
                         Constraint.of(ConstraintOp.lt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
                 new ETyped(11, "C", DRAGON.type,
-                        Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 0, 0),
+                        Arrays.asList(NAME.type, POWER.type), 0, 0),
                 new Rel(12, FIRE.getrType(), Rel.Direction.L, null, 15, 13),
-                new RelProp(13, Integer.toString(TIMESTAMP.type),
+                new RelProp(13, TIMESTAMP.type,
                         Constraint.of(ConstraintOp.gt, sdf.parse("2000-07-01 00:00:00.000").getTime()), 0),
                 new ETyped(15, "D", DRAGON.type,
-                        Arrays.asList(Integer.toString(NAME.type), Integer.toString(POWER.type)), 0, 0)))
+                        Arrays.asList(NAME.type, POWER.type), 0, 0)))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -519,7 +519,7 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", PERSON.type, Collections.emptyList(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3), 0),
-                new EProp(3, Integer.toString(HEIGHT.type), Constraint.of(ConstraintOp.ge, 200))))
+                new EProp(3, HEIGHT.type, Constraint.of(ConstraintOp.ge, 200))))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -546,7 +546,7 @@ public class RealClusterTest {
                 new ETyped(1, "A", PERSON.type, Collections.emptyList(), 2, 0),
                 new Rel(2, OWN.getrType(), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "B", DRAGON.type, Collections.emptyList(), 4, 0),
-                new EProp(4, Integer.toString(COLOR.type), Constraint.of(ConstraintOp.eq, "RED"))))
+                new EProp(4, COLOR.type, Constraint.of(ConstraintOp.eq, "RED"))))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -571,7 +571,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("Q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", PERSON.type, Collections.emptyList(), 2, 0),
-                new EProp(2, Integer.toString(HEIGHT.type), Constraint.of(ConstraintOp.eq, 200))))
+                new EProp(2, HEIGHT.type, Constraint.of(ConstraintOp.eq, 200))))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -740,21 +740,21 @@ public class RealClusterTest {
                 "\t{\"eNum\":0,\"type\":\"Start\",\"next\":1},\n" +
                 "\t{\"eNum\":1,\"next\":2,\"eType\":2,\"eTag\":\"D1\",\"type\":\"ETyped\"},\n" +
                 "\t{\"eNum\":2,\"next\":[3,4,5,15],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
-                "\t{\"eNum\":3,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"gt\",\"expr\":\"80\"}},\n" +
-                "\t{\"eNum\":4,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"MALE\"}},\n" +
-                "\t{\"eNum\":5,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"ne\",\"expr\":\"RED\"}},\n" +
+                "\t{\"eNum\":3,\"type\":\"EProp\",\"pType\":\"power\",\"con\":{\"op\":\"gt\",\"expr\":\"80\"}},\n" +
+                "\t{\"eNum\":4,\"type\":\"EProp\",\"pType\":\"gender\",\"con\":{\"op\":\"eq\",\"expr\":\"MALE\"}},\n" +
+                "\t{\"eNum\":5,\"type\":\"EProp\",\"pType\":\"color\",\"con\":{\"op\":\"ne\",\"expr\":\"RED\"}},\n" +
                 "\t{\"eNum\":6,\"next\":7,\"eType\":2,\"eTag\":\"D2\",\"type\":\"ETyped\"},\n" +
                 "\t{\"eNum\":7,\"next\":[9,10,11,17],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
                 "\t{\"eNum\":8,\"next\":18,\"eType\":5,\"eTag\":\"K\",\"type\":\"ETyped\"},\n" +
-                "\t{\"eNum\":9,\"type\":\"EProp\",\"pType\":3,\"con\":{\"op\":\"eq\",\"expr\":\"FEMALE\"}},\n" +
-                "\t{\"eNum\":10,\"type\":\"EProp\",\"pType\":14,\"con\":{\"op\":\"lt\",\"expr\":\"80\"}},\n" +
-                "\t{\"eNum\":11,\"type\":\"EProp\",\"pType\":8,\"con\":{\"op\":\"eq\",\"expr\":\"RED\"}},\n" +
+                "\t{\"eNum\":9,\"type\":\"EProp\",\"pType\":\"gender\",\"con\":{\"op\":\"eq\",\"expr\":\"FEMALE\"}},\n" +
+                "\t{\"eNum\":10,\"type\":\"EProp\",\"pType\":\"power\",\"con\":{\"op\":\"lt\",\"expr\":\"80\"}},\n" +
+                "\t{\"eNum\":11,\"type\":\"EProp\",\"pType\":\"color\",\"con\":{\"op\":\"eq\",\"expr\":\"RED\"}},\n" +
                 "\t{\"eNum\":12,\"next\":19,\"eType\":1,\"eTag\":\"P\",\"type\":\"ETyped\"},\n" +
                 "\t{\"eNum\":13,\"eType\":3,\"eTag\":\"H\",\"type\":\"ETyped\",\"next\":14},\n" +
                 "\t{\"eNum\":14,\"next\":[20,21],\"qType\":\"all\",\"type\":\"Quant1\"},\n" +
-                "\t{\"eNum\":20,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"molly\"}},\n" +
-                "\t{\"eNum\":21,\"type\":\"EProp\",\"pType\":7,\"con\":{\"op\":\"eq\",\"expr\":\"cotter\"}},\n" +
-                "\t{\"eNum\":16,\"type\":\"RelProp\",\"pType\":11,\"con\":{\"op\":\"gt\",\"expr\":\"100\"}},\n" +
+                "\t{\"eNum\":20,\"type\":\"EProp\",\"pType\":\"name\",\"con\":{\"op\":\"eq\",\"expr\":\"molly\"}},\n" +
+                "\t{\"eNum\":21,\"type\":\"EProp\",\"pType\":\"name\",\"con\":{\"op\":\"eq\",\"expr\":\"cotter\"}},\n" +
+                "\t{\"eNum\":16,\"type\":\"RelProp\",\"pType\":\"temperature\",\"con\":{\"op\":\"gt\",\"expr\":\"100\"}},\n" +
                 "\t{\"eNum\":15,\"type\":\"Rel\",\"rType\":103,\"dir\":\"R\",\"next\":6,\"b\":16},\n" +
                 "\t{\"eNum\":17,\"type\":\"Rel\",\"rType\":105,\"dir\":\"R\",\"next\":8},\n" +
                 "\t{\"eNum\":18,\"type\":\"Rel\",\"rType\":106,\"dir\":\"L\",\"next\":12},\n" +
@@ -788,8 +788,8 @@ public class RealClusterTest {
                 new Rel(2, OWN.getrType(), Rel.Direction.R, null, 3, 0),
                 new ETyped(3, "H", HORSE.type, Collections.emptyList(), 4, 0),
                 new Quant1(4, QuantType.all, Arrays.asList(5, 6), 0),
-                new EProp(5, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "molly")),
-                new EProp(6, Integer.toString(NAME.type), Constraint.of(ConstraintOp.eq, "cotter"))))
+                new EProp(5, NAME.type, Constraint.of(ConstraintOp.eq, "molly")),
+                new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "cotter"))))
                 .build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

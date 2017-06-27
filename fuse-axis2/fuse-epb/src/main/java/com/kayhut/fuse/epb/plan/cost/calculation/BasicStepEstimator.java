@@ -139,8 +139,8 @@ public class BasicStepEstimator implements StepEstimator {
         EPropGroup clone = filterTwoOp.getAsgEBase().geteBase().clone();
         List<RelProp> pushdownProps = new LinkedList<>();
         List<RelProp> collect = relFilterOp.getAsgEBase().geteBase().getProps().stream().filter(f -> (f instanceof PushdownRelProp) &&
-                (!f.getpType().equals(Integer.toString(OntologyFinalizer.ID_FIELD_P_TYPE)) &&
-                        (!f.getpType().equals(Integer.toString(OntologyFinalizer.TYPE_FIELD_P_TYPE)))))
+                (!f.getpType().equals(OntologyFinalizer.ID_FIELD_P_TYPE) &&
+                        (!f.getpType().equals(OntologyFinalizer.TYPE_FIELD_P_TYPE))))
                 .collect(Collectors.toList());
         collect.forEach(p -> {
             pushdownProps.add(p);

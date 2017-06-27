@@ -11,9 +11,4 @@ import org.junit.Ignore;
  */
 @Ignore("fix after TraversalCursorContext changes")
 public class PageTest extends com.kayhut.fuse.services.mockEngine.PageTest {
-    @ClassRule
-    public static JoobyRule createApp() {
-        return new JoobyRule(new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf("application.engine2.dev.conf", "m1.dfs.non_redundant"));
-    }
 }

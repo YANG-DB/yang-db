@@ -87,6 +87,8 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
 
+        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
+
 
         //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
         String docId1 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_AGE + "10.0" + "19.0");

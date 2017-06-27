@@ -18,7 +18,9 @@ import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
+import com.kayhut.fuse.epb.plan.statistics.provider.StatDataProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
@@ -45,6 +47,7 @@ public class EpbModule extends ModuleBase {
 
         binder.bind(StatConfig.class).toInstance(new StatConfig(conf));
         binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
+        binder.bind(StatDataProvider.class).to(ElasticStatDocumentProvider.class).asEagerSingleton();
 
         binder.bind(GraphElementSchemaProviderFactory.class).to(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
         binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();

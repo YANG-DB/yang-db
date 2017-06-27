@@ -8,11 +8,15 @@ import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.services.FuseApp;
+import com.kayhut.fuse.services.FuseRunner;
 import org.jooby.Jooby;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+
+import java.io.File;
+import java.nio.file.Paths;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -43,7 +47,7 @@ public class TestSuite {
         when(cursorFactory.createCursor(any())).thenReturn(cursor);
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf("application.mockEngine.dev.conf")
+                .conf(new File(Paths.get("src", "test", "conf", "application.mockEngine.dev.conf").toString()))
                 .injector((stage, module) -> {
                     return Guice.createInjector(stage, Modules.override(module).with(new AbstractModule() {
                         @Override
@@ -53,7 +57,7 @@ public class TestSuite {
                     }));
                 });
 
-        app.start("server.join=false");
+        new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
     }
 
     @AfterClass

@@ -5,5 +5,8 @@ package com.kayhut.fuse.stat.model.enums;
  */
 
 public enum DataType {
-    string, numeric, term
+    string,
+    term,
+    numericDouble,
+    numericLong
 }

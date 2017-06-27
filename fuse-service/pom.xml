@@ -121,7 +121,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -145,9 +144,6 @@
                             <mainClass>com.kayhut.fuse.services.FuseRunner</mainClass>
                         </manifest>
                     </archive>
-                    <excludes>
-                        <exclude>conf/*</exclude>
-                    </excludes>
                 </configuration>
             </plugin>
             <plugin>
@@ -155,18 +151,6 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
         </plugins>
-
-        <resources>
-            <resource>
-                <directory>src/test/conf</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <excludes>
-                    <exclude>version/*.properties</exclude>
-                </excludes>
-            </resource>
-        </resources>
     </build>
 
 </project>

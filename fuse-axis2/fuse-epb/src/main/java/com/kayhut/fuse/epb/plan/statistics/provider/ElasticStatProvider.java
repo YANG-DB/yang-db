@@ -24,8 +24,10 @@ public class ElasticStatProvider {
     private final String COUNT_FIELD_NAME;
     private final String CARDINALITY_FIELD_NAME;
     private final String STAT_FIELD_TERM_NAME;
-    private final String STAT_FIELD_NUMERIC_LOWER_NAME;
-    private final String STAT_FIELD_NUMERIC_UPPER_NAME;
+    private final String STAT_FIELD_NUMERIC_DOUBLE_LOWER_NAME;
+    private final String STAT_FIELD_NUMERIC_DOUBLE_UPPER_NAME;
+    private final String STAT_FIELD_NUMERIC_LONG_LOWER_NAME;
+    private final String STAT_FIELD_NUMERIC_LONG_UPPER_NAME;
     private final String STAT_FIELD_STRING_LOWER_NAME;
     private final String STAT_FIELD_STRING_UPPER_NAME;
     private final String STAT_INDEX_NAME;
@@ -46,8 +48,12 @@ public class ElasticStatProvider {
         STAT_TYPE_STRING_NAME = conf.getStatStringTypeName();
 
         STAT_FIELD_TERM_NAME = conf.getStatFieldTermName();
-        STAT_FIELD_NUMERIC_LOWER_NAME = conf.getStatFieldNumericLowerName();
-        STAT_FIELD_NUMERIC_UPPER_NAME = conf.getStatFieldNumericUpperName();
+
+        STAT_FIELD_NUMERIC_DOUBLE_LOWER_NAME = conf.getStatFieldNumericDoubleLowerName();
+        STAT_FIELD_NUMERIC_DOUBLE_UPPER_NAME = conf.getStatFieldNumericDoubleUpperName();
+        STAT_FIELD_NUMERIC_LONG_LOWER_NAME = conf.getStatFieldNumericLongLowerName();
+        STAT_FIELD_NUMERIC_LONG_UPPER_NAME = conf.getStatFieldNumericLongUpperName();
+
         STAT_FIELD_STRING_LOWER_NAME = conf.getStatFieldStringLowerName();
         STAT_FIELD_STRING_UPPER_NAME = conf.getStatFieldStringUpperName();
 
@@ -93,21 +99,30 @@ public class ElasticStatProvider {
             long count = ((Number)statDocument.get(COUNT_FIELD_NAME)).longValue();
 
             Statistics.BucketInfo bucket = null;
-            if (STAT_TYPE_TERM_NAME.equals(statType)) {
+            if (statType.equals(STAT_TYPE_TERM_NAME)) {
                 String term = statDocument.get(STAT_FIELD_TERM_NAME).toString();
                 bucket = new Statistics.BucketInfo<>(
                         count,
                         cardinality,
                         term, term);
             }
-            if (STAT_TYPE_NUMERIC_NAME.equals(statType)) {
-                bucket = new Statistics.BucketInfo(
-                        count,
-                        cardinality,
-                        ((Number)statDocument.get(STAT_FIELD_NUMERIC_LOWER_NAME)).doubleValue(),
-                        ((Number)statDocument.get(STAT_FIELD_NUMERIC_UPPER_NAME)).doubleValue());
+            if (statType.equals(STAT_TYPE_NUMERIC_NAME)) {
+                if (statDocument.containsKey(STAT_FIELD_NUMERIC_DOUBLE_LOWER_NAME)) {
+                    bucket = new Statistics.BucketInfo(
+                            count,
+                            cardinality,
+                            ((Number) statDocument.get(STAT_FIELD_NUMERIC_DOUBLE_LOWER_NAME)).doubleValue(),
+                            ((Number) statDocument.get(STAT_FIELD_NUMERIC_DOUBLE_UPPER_NAME)).doubleValue());
+                }
+                if (statDocument.containsKey(STAT_FIELD_NUMERIC_LONG_LOWER_NAME)) {
+                    bucket = new Statistics.BucketInfo(
+                            count,
+                            cardinality,
+                            ((Number) statDocument.get(STAT_FIELD_NUMERIC_LONG_LOWER_NAME)).longValue(),
+                            ((Number) statDocument.get(STAT_FIELD_NUMERIC_LONG_UPPER_NAME)).longValue());
+                }
             }
-            if (STAT_TYPE_STRING_NAME.equals(statType)) {
+            if (statType.equals(STAT_TYPE_STRING_NAME)) {
                 bucket = new Statistics.BucketInfo<>(
                         count,
                         cardinality,

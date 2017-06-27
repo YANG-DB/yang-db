@@ -6,8 +6,11 @@ import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
+
+import java.util.Optional;
 
 /**
  * Created by lior on 22/02/2017.
@@ -21,8 +24,13 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
 
     //region constructors
     public QueryCreationOperationContext(QueryMetadata queryMetadata, Query query) {
+        this(queryMetadata,query,Optional.empty());
+    }
+
+    public QueryCreationOperationContext(QueryMetadata queryMetadata, Query query,Optional<PlanNode<Plan>> planNode ) {
         this.queryMetadata = queryMetadata;
         this.query = query;
+        this.planNode = planNode;
     }
     //endregion
 
@@ -37,6 +45,10 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     //region properties
     public QueryMetadata getQueryMetadata() {
         return queryMetadata;
+    }
+
+    public Optional<PlanNode<Plan>> getPlanNode() {
+        return planNode;
     }
 
     public Query getQuery() {
@@ -55,6 +67,10 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this.cloneImpl().asg(asgQuery);
     }
 
+    public QueryCreationOperationContext of(Optional<PlanNode<Plan>> planNode) {
+        return this.cloneImpl().planNode(planNode);
+    }
+
     public QueryCreationOperationContext of(PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
         return this.cloneImpl().executionPlan(executionPlan);
     }
@@ -66,7 +82,13 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         QueryCreationOperationContext clone = new QueryCreationOperationContext(this.queryMetadata, this.query);
         clone.asgQuery = this.asgQuery;
         clone.executionPlan = this.executionPlan;
+        clone.planNode = this.planNode;
         return clone;
+    }
+
+    private QueryCreationOperationContext planNode(Optional<PlanNode<Plan>> planNode) {
+        this.planNode = planNode;
+        return this;
     }
 
     private QueryCreationOperationContext asg(AsgQuery asgQuery) {
@@ -85,6 +107,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     private Query query;
     private AsgQuery asgQuery;
     private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
+    private Optional<PlanNode<Plan>> planNode;
     //endregion
 
     public static class QueryCreationOperationContextDescriptor implements Descriptor<QueryCreationOperationContext>{

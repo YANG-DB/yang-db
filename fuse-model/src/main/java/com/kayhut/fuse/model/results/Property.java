@@ -14,11 +14,11 @@ public class Property {
 
     }
 
-    public Property(int pType, Object value) {
+    public Property(String pType, Object value) {
         this(pType, null, value);
     }
 
-    public Property(int pType, String agg, Object value) {
+    public Property(String pType, String agg, Object value) {
         this.pType = pType;
         this.agg = agg;
         this.value = value;
@@ -26,11 +26,11 @@ public class Property {
     //endregion
 
     //region Properties
-    public int getpType() {
+    public String getpType() {
         return pType;
     }
 
-    public void setpType(int pType) {
+    public void setpType(String pType) {
         this.pType = pType;
     }
 
@@ -60,7 +60,7 @@ public class Property {
     //endregion
 
     //region Fields
-    private int pType;
+    private String pType;
     private String agg;
     private Object value;
     //endregion

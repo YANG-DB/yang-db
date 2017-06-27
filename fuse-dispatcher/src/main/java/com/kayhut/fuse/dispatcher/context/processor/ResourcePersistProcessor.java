@@ -45,7 +45,8 @@ public class ResourcePersistProcessor implements
                 context.getQuery(),
                 context.getAsgQuery(),
                 context.getQueryMetadata(),
-                context.getExecutionPlan()));
+                context.getExecutionPlan(),
+                context.getPlanNode()));
 
         return context.complete();
     }

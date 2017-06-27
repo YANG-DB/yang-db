@@ -45,7 +45,7 @@ public class Quant1CypherStrategyTest {
                 .withEntityTypes(
                         Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
                 ).withProperties(
-                        Collections.singletonList(Property.Builder.get().build(1,"p1","int"))
+                        Collections.singletonList(Property.Builder.get().build("1","p1","int"))
                 ).build();
 
 
@@ -81,9 +81,9 @@ public class Quant1CypherStrategyTest {
                 .withEntityTypes(
                         Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
                 ).withProperties(
-                        Lists.newArrayList(Property.Builder.get().build(1, "p1", "string"),
-                                           Property.Builder.get().build(2, "p2", "int"),
-                                           Property.Builder.get().build(3, "p3", "int"))
+                        Lists.newArrayList(Property.Builder.get().build("1", "p1", "string"),
+                                           Property.Builder.get().build("2", "p2", "int"),
+                                           Property.Builder.get().build("3", "p3", "int"))
                 ).build();
 
 
@@ -119,9 +119,9 @@ public class Quant1CypherStrategyTest {
                 .withEntityTypes(
                         Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
                 ).withProperties(
-                        Lists.newArrayList(Property.Builder.get().build(1, "p1", "string"),
-                                Property.Builder.get().build(2, "p2", "int"),
-                                Property.Builder.get().build(3, "p3", "int"))
+                        Lists.newArrayList(Property.Builder.get().build("1", "p1", "string"),
+                                Property.Builder.get().build("2", "p2", "int"),
+                                Property.Builder.get().build("3", "p3", "int"))
                 ).build();
 
 

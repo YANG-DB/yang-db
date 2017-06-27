@@ -3,8 +3,8 @@ package com.kayhut.fuse.dispatcher.resource;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 
@@ -18,12 +18,17 @@ import java.util.Optional;
 public class QueryResource {
     //region Constructors
 
-    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
+    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan,Optional<PlanNode<Plan>> planNode) {
         this.query = query;
         this.asgQuery = asgQuery;
         this.queryMetadata = queryMetadata;
+        this.planNode = planNode;
         this.cursorResources = new HashMap<>();
         this.executionPlan = executionPlan;
+    }
+
+    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
+        this(query,asgQuery,queryMetadata,executionPlan,Optional.empty());
     }
     //endregion
 
@@ -65,12 +70,18 @@ public class QueryResource {
     public PlanWithCost<Plan, PlanDetailedCost> getExecutionPlan() {
         return this.executionPlan;
     }
-    //endregion
+
+    public Optional<PlanNode<Plan>> getPlanNode() {
+        return planNode;
+    }
+
+//endregion
 
     //region Fields
     private Query query;
     private QueryMetadata queryMetadata;
     private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
+    private Optional<PlanNode<Plan>> planNode;
     private AsgQuery asgQuery;
     private Map<String, CursorResource> cursorResources;
 

@@ -9,6 +9,7 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.result.StatGlobalCardinalityResult;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
+import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
@@ -67,37 +68,38 @@ public class EsUtil {
      * @param field     Elastic field name
      * @return List of numeric range buckets with lower (inclusive) and upper bound (exclusive)
      */
-    public static List<StatRangeResult> getNumericHistogramResults(TransportClient client,
+    public static List<StatRangeResult<? extends Number>> getNumericHistogramResults(TransportClient client,
                                                                    String index,
                                                                    String type,
                                                                    String field,
-                                                                   List<BucketRange<Double>> buckets) {
+                                                                   DataType dataType,
+                                                                   List<BucketRange<? extends Number>> buckets) {
 
 
-        return getNumericBucketsStatResults(client, index, type, field, buckets);
+        return getNumericBucketsStatResults(client, index, type, field, dataType, buckets);
     }
 
-    public static <T> List<StatRangeResult> getManualHistogramResults(TransportClient client,
+    public static <T> List<StatRangeResult<T>> getManualHistogramResults(TransportClient client,
                                                                       String index,
                                                                       String type,
                                                                       String field,
                                                                       DataType dataType,
                                                                       List<BucketRange<T>> buckets) {
-
-        List<StatRangeResult> bucketStatResults = new ArrayList<>();
-
-        if (DataType.string == dataType) {
+        if (dataType == DataType.string) {
             List<BucketRange<String>> stringBucketRanges = new ArrayList<>();
             buckets.forEach(bucketRange -> stringBucketRanges.add(new BucketRange<>((String) bucketRange.getStart(), (String) bucketRange.getEnd())));
-            bucketStatResults = getStringBucketsStatResults(client, index, type, field, stringBucketRanges);
+            return Stream.ofAll(getStringBucketsStatResults(client, index, type, field, stringBucketRanges))
+                    .map(statRangeResult -> (StatRangeResult<T>)statRangeResult).toJavaList();
         }
 
-        if (DataType.numeric == dataType) {
-            List<BucketRange<Double>> numericBucketRanges = new ArrayList<>();
-            buckets.forEach(bucketRange -> numericBucketRanges.add(new BucketRange<>((Double) bucketRange.getStart(), (Double) bucketRange.getEnd())));
-            bucketStatResults = getNumericBucketsStatResults(client, index, type, field, numericBucketRanges);
+        if (dataType == DataType.numericDouble || dataType == DataType.numericLong) {
+            List<BucketRange<? extends Number>> numericBucketRanges = new ArrayList<>();
+            buckets.forEach(bucketRange -> numericBucketRanges.add(new BucketRange<>((Number) bucketRange.getStart(), (Number) bucketRange.getEnd())));
+            return Stream.ofAll(getNumericBucketsStatResults(client, index, type, field, dataType, numericBucketRanges))
+                    .map(statRangeResult -> (StatRangeResult<T>)statRangeResult).toJavaList();
         }
-        return bucketStatResults;
+
+        return Collections.emptyList();
     }
 
     public static <T> List<StatGlobalCardinalityResult> getGlobalCardinalityHistogramResults(TransportClient client,
@@ -245,7 +247,7 @@ public class EsUtil {
      * @param numOfBins
      * @return
      */
-    public static List<StatRangeResult> getDynamicHistogramResults(TransportClient client,
+    public static <T> List<StatRangeResult<T>> getDynamicHistogramResults(TransportClient client,
                                                                    String index,
                                                                    String type,
                                                                    String field,
@@ -266,11 +268,20 @@ public class EsUtil {
 
         ExtendedStats agg = sr.getAggregations().get(AGG_EXTENDED_STATS);
 
-        List<StatRangeResult> statResults = new ArrayList<>();
-        if (dataType == DataType.numeric) {
-            List<BucketRange<Double>> buckets = StatUtil.createNumericBuckets(agg.getMin(), agg.getMax(), numOfBins);
-            statResults = getNumericBucketsStatResults(client, index, type, field, buckets);
+        List<StatRangeResult<T>> statResults = new ArrayList<>();
+        List<BucketRange<? extends Number>> buckets;
+        if (dataType == DataType.numericDouble) {
+            buckets = new ArrayList<>(StatUtil.createDoubleBuckets(agg.getMin(), agg.getMax(), numOfBins));
+            statResults = Stream.ofAll(getNumericBucketsStatResults(client, index, type, field, dataType, buckets))
+                    .map(statRangeResult -> (StatRangeResult<T>)statRangeResult)
+                    .toJavaList();
+        } else if (dataType == DataType.numericLong) {
+            buckets = new ArrayList<>(StatUtil.createLongBuckets(((Number)agg.getMin()).longValue(), ((Number)agg.getMax()).longValue(), numOfBins));
+            statResults = Stream.ofAll(getNumericBucketsStatResults(client, index, type, field, dataType, buckets))
+                    .map(statRangeResult -> (StatRangeResult<T>)statRangeResult)
+                    .toJavaList();
         }
+
         return statResults;
     }
 
@@ -525,19 +536,20 @@ public class EsUtil {
      * @param buckets List of numeric buckets with each bucket [lower bound, upper bound]
      * @return Numeric buckets with lower bound (inclusive),  upper bound (exclusive)
      */
-    private static List<StatRangeResult> getNumericBucketsStatResults(Client client,
+    private static List<StatRangeResult<? extends Number>> getNumericBucketsStatResults(Client client,
                                                                       String index,
                                                                       String type,
                                                                       String field,
-                                                                      List<BucketRange<Double>> buckets) {
-        List<StatRangeResult> bucketStatResults = new ArrayList<>();
+                                                                      DataType dataType,
+                                                                      List<BucketRange<? extends Number>> buckets) {
+        List<StatRangeResult<? extends Number>> bucketStatResults = new ArrayList<>();
         String aggName = buildAggName(index, type, field);
 
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
                 .setTypes(type);
 
         RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(field);
-        buckets.forEach(bucket -> rangesAggregationBuilder.addRange(bucket.getStart(), bucket.getEnd()));
+        buckets.forEach(bucket -> rangesAggregationBuilder.addRange(bucket.getStart().doubleValue(), bucket.getEnd().doubleValue()));
 
         SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(field)))
@@ -551,9 +563,9 @@ public class EsUtil {
             Number to = (Number) entry.getTo();              // Bucket to
 
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
-            StatRangeResult bucketStatResult = new StatRangeResult(index, type, field,
+            StatRangeResult<? extends Number> bucketStatResult = new StatRangeResult<>(index, type, field,
                     key,
-                    DataType.numeric,
+                    dataType,
                     from,
                     to,
                     entry.getDocCount(),
