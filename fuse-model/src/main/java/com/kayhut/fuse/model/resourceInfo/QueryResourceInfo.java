@@ -32,15 +32,10 @@ public class QueryResourceInfo extends ResourceInfoBase{
     public FuseError getError() {
         return error;
     }
-
-    public void setCursorStoreUrl(String cursorStoreUrl) {
-        this.cursorStoreUrl = cursorStoreUrl;
-    }
-
     //endregion
 
     public QueryResourceInfo error(FuseError error) {
-        QueryResourceInfo clone  = new QueryResourceInfo(this.getResourceUrl(), this.getResourceId(),cursorStoreUrl);
+        QueryResourceInfo clone  = new QueryResourceInfo(this.getResourceUrl(), this.getResourceId(), this.getCursorStoreUrl());
         clone.error = error;
         return clone ;
     }

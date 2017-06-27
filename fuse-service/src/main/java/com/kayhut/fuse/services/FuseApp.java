@@ -10,10 +10,7 @@ import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.transport.ContentResponse;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.kayhut.fuse.model.transport.CreatePageRequest;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
@@ -173,8 +170,12 @@ public class FuseApp extends Jooby {
         /** create a query */
         use(localUrlSupplier.queryStoreUrl())
                 .post(req -> {
-                    ContentResponse<QueryResourceInfo> entity = queryCtrl().create(req.body(CreateQueryRequest.class));
-                    return Results.with(entity, entity.status());
+                    ContentResponse<QueryResourceInfo> response =
+                            req.param("fetch").isSet() && req.param("fetch").booleanValue() ?
+                                    queryCtrl().create(req.body(CreateQueryAndFetchRequest.class)) :
+                                    queryCtrl().create(req.body(CreateQueryRequest.class));
+
+                    return Results.with(response, response.status());
                 });
 
         /** get the query info */
