@@ -27,7 +27,7 @@ public class Quant2CypherStrategyTest {
 
         AsgQuery query = AsgQuery.Builder.start("quant2_all_rel_ent", "dragons")
                 .next(unTyped(1,"A"))
-                .next(rel(2,1, Rel.Direction.R))
+                .next(rel(2,"1", Rel.Direction.R))
                 .next(quant2(3, QuantType.all))
                 .next(unTyped(4,"B"))
                 .build();
@@ -35,7 +35,7 @@ public class Quant2CypherStrategyTest {
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withRelationshipTypes(
-                        Collections.singletonList(new RelationshipType("knows",1, true))
+                        Collections.singletonList(new RelationshipType("knows","1", true))
                 ).build();
 
         String cypher = CypherCompiler.compile(query ,ontology);
@@ -51,7 +51,7 @@ public class Quant2CypherStrategyTest {
 
         AsgQuery query = AsgQuery.Builder.start("quant2_some_rel_ents", "dragons")
                 .next(unTyped(1,"A"))
-                .next(rel(2,1, Rel.Direction.R))
+                .next(rel(2,"1", Rel.Direction.R))
                 .next(quant2(3, QuantType.some))
                 .in(unTyped(4,"B"),unTyped(5,"C"),unTyped(6,"D"))
                 .build();
@@ -59,7 +59,7 @@ public class Quant2CypherStrategyTest {
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withRelationshipTypes(
-                        Collections.singletonList(new RelationshipType("knows",1, true))
+                        Collections.singletonList(new RelationshipType("knows","1", true))
                 ).build();
 
         String cypher = CypherCompiler.compile(query ,ontology);

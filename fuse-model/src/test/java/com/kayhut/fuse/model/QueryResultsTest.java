@@ -30,7 +30,7 @@ public class QueryResultsTest {
     @Test
     public void testResults1Serialization() throws IOException, JSONException {
         String result1ActualJSON = mapper.writeValueAsString(result1Obj);
-        String result1ExpectedJSONString = "{\"pattern\":{\"ont\":\"Dragons\",\"name\":\"Q1\"},\"assignments\":[{\"entities\":[{\"eTag\":[\"A\",\"C\"],\"eID\":\"12345678\",\"eType\":1,\"properties\":[{\"pType\":\"1\",\"agg\":\"raw\",\"value\":\"a\"},{\"pType\":\"3\",\"agg\":\"raw\",\"value\":5.35}],\"attachedProperties\":[{\"pName\":\"count(relationships)\",\"value\":53}]}],\"relationships\":[{\"rID\":\"12345678\",\"agg\":true,\"rType\":2,\"directional\":true,\"eID1\":\"12345678\",\"eID2\":\"12345679\",\"properties\":[{\"pType\":\"1\",\"agg\":\"max\",\"value\":76},{\"pType\":\"1\",\"agg\":\"avg\",\"value\":34.56}],\"attachedProperties\":[{\"pName\":\"sum(duration)\",\"value\":124}]}]}]}";
+        String result1ExpectedJSONString = "{\"pattern\":{\"ont\":\"Dragons\",\"name\":\"Q1\"},\"assignments\":[{\"entities\":[{\"eTag\":[\"A\",\"C\"],\"eID\":\"12345678\",\"eType\":\"Person\",\"properties\":[{\"pType\":\"1\",\"agg\":\"raw\",\"value\":\"a\"},{\"pType\":\"3\",\"agg\":\"raw\",\"value\":5.35}],\"attachedProperties\":[{\"pName\":\"count(relationships)\",\"value\":53}]}],\"relationships\":[{\"rID\":\"12345678\",\"agg\":true,\"rType\":\"memberof\",\"directional\":true,\"eID1\":\"12345678\",\"eID2\":\"12345679\",\"properties\":[{\"pType\":\"1\",\"agg\":\"max\",\"value\":76},{\"pType\":\"1\",\"agg\":\"avg\",\"value\":34.56}],\"attachedProperties\":[{\"pName\":\"sum(duration)\",\"value\":124}]}]}]}";
         System.out.println("result1ExpectedJSONString:" + result1ExpectedJSONString);
         System.out.println("result1ActualJSON:" + result1ActualJSON);
         JSONAssert.assertEquals(result1ExpectedJSONString, result1ActualJSON,false);
@@ -59,7 +59,7 @@ public class QueryResultsTest {
         Entity entity = new Entity();
         entity.seteTag(Arrays.asList("A", "C"));
         entity.seteID("12345678");
-        entity.seteType(1);
+        entity.seteType("Person");
 
         List<Property> properties = new ArrayList<Property>();
         Property property1 = new Property();
@@ -86,7 +86,7 @@ public class QueryResultsTest {
         Relationship relationship1 = new Relationship();
         relationship1.setrID("12345678");
         relationship1.setAgg(true);
-        relationship1.setrType(2);
+        relationship1.setrType("memberof");
         relationship1.setDirectional(true);
         relationship1.seteID1("12345678");
         relationship1.seteID2("12345679");

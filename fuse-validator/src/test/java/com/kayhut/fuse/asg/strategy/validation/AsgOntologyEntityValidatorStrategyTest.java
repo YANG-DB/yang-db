@@ -48,7 +48,7 @@ public class AsgOntologyEntityValidatorStrategyTest {
     @Test
     public void testNotValidConcreteEntityTypeQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
-                .next(concrete(1, "no", 100, "eName", "eTag"))
+                .next(concrete(1, "no", "100", "eName", "eTag"))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(unTyped(3))
@@ -66,7 +66,7 @@ public class AsgOntologyEntityValidatorStrategyTest {
                 .next(typed(1, PERSON.type))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
                         RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
-                .next(typed(3, 100))
+                .next(typed(3, "100"))
                 .build();
 
         AsgOntologyEntityValidatorStrategy strategy = new AsgOntologyEntityValidatorStrategy();
@@ -80,7 +80,7 @@ public class AsgOntologyEntityValidatorStrategyTest {
     public void testNotValidRelEntityTypeQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type))
-                .next(rel(2, 1000, R).below(relProp(10,
+                .next(rel(2, "1000", R).below(relProp(10,
                         RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
                 .next(concrete(3, "HorseWithNoName",HORSE.type,"display","eTag"))
                 .build();

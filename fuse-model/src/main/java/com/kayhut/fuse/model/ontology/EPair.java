@@ -11,24 +11,24 @@ public class EPair {
     public EPair() {
     }
 
-    public EPair(int eTypeA, int eTypeB) {
+    public EPair(String eTypeA, String eTypeB) {
         this.eTypeA = eTypeA;
         this.eTypeB = eTypeB;
     }
 
-    public int geteTypeA() {
+    public String geteTypeA() {
         return eTypeA;
     }
 
-    public void seteTypeA(int eTypeA) {
+    public void seteTypeA(String eTypeA) {
         this.eTypeA = eTypeA;
     }
 
-    public int geteTypeB() {
+    public String geteTypeB() {
         return eTypeB;
     }
 
-    public void seteTypeB(int eTypeB) {
+    public void seteTypeB(String eTypeB) {
         this.eTypeB = eTypeB;
     }
 
@@ -39,13 +39,13 @@ public class EPair {
     }
 
     //region Fields
-    private int eTypeA;
-    private int eTypeB;
+    private String eTypeA;
+    private String eTypeB;
     //endregion
 
     public static final class EPairBuilder {
-        private int eTypeA;
-        private int eTypeB;
+        private String eTypeA;
+        private String eTypeB;
 
         private EPairBuilder() {
         }
@@ -54,16 +54,16 @@ public class EPair {
             return new EPairBuilder();
         }
 
-        public EPair with(int eTypeA,int eTypeB) {
+        public EPair with(String eTypeA,String eTypeB) {
             return new EPair(eTypeA,eTypeB);
         }
 
-        public EPairBuilder withETypeA(int eTypeA) {
+        public EPairBuilder withETypeA(String eTypeA) {
             this.eTypeA = eTypeA;
             return this;
         }
 
-        public EPairBuilder withETypeB(int eTypeB) {
+        public EPairBuilder withETypeB(String eTypeB) {
             this.eTypeB = eTypeB;
             return this;
         }

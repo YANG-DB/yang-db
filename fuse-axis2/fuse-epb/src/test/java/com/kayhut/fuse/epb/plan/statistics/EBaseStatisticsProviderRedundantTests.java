@@ -155,7 +155,7 @@ public class EBaseStatisticsProviderRedundantTests {
     @Test
     public void redundantNodePropTest(){
         Rel rel = new Rel();
-        rel.setrType(2);
+        rel.setrType("Dragon");
         RelProp prop = new RelProp();
         prop.setpType("color");
         Constraint constraint = new Constraint();
@@ -167,7 +167,7 @@ public class EBaseStatisticsProviderRedundantTests {
         RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
 
         ETyped eTyped = new ETyped();
-        eTyped.seteType(4);
+        eTyped.seteType("Guild");
 
 
         Statistics.SummaryStatistics redundantEdgeStatistics = statisticsProvider.getRedundantNodeStatistics(eTyped, relFilter);

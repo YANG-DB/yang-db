@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
  */
 public class StatisticsMockUtils {
 
-    public static StatisticsProvider build(Map<String, Map<Integer, Double>> statistics, long maxCardinalityNode) {
+    public static StatisticsProvider build(Map<String, Map<String, Double>> statistics, long maxCardinalityNode) {
         StatisticsProvider mock = Mockito.mock(StatisticsProvider.class);
 
         //mock statistics provider

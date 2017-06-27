@@ -6,14 +6,14 @@ package com.kayhut.fuse.model.query.entity;
 public interface Typed {
 
     interface eTyped extends Typed{
-        void seteType(int eType);
+        void seteType(String eType);
 
-        int geteType();
+        String geteType();
     }
 
     interface rTyped extends Typed{
-        void setrType(int rType);
+        void setrType(String rType);
 
-        int getrType();
+        String getrType();
     }
 }

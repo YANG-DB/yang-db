@@ -226,7 +226,7 @@ public class AsgQuerySupplierTest {
         eConcrete.seteNum(1);
         eConcrete.seteTag("A");
         eConcrete.seteID("12345678");
-        eConcrete.seteType(1);
+        eConcrete.seteType("Person");
         eConcrete.seteName("Brandon Stark");
         eConcrete.setNext(2);
         elements.add(eConcrete);
@@ -242,7 +242,7 @@ public class AsgQuerySupplierTest {
          */
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setrType(1);
+        rel.setrType("Person");
         rel.setDir(Rel.Direction.R);
         rel.setNext(3);
         elements.add(rel);
@@ -259,7 +259,7 @@ public class AsgQuerySupplierTest {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("Dragon");
         elements.add(eTyped);
 
         q1Obj.setElements(elements);

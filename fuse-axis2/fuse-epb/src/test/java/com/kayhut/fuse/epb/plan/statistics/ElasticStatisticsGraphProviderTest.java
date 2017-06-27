@@ -276,12 +276,12 @@ public class ElasticStatisticsGraphProviderTest {
     private Ontology getOntology() {
         Ontology ontology = Mockito.mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
-            seteTypeA(2);
-            seteTypeB(1);
+            seteTypeA("2");
+            seteTypeB("1");
         }});
 
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
-                .withRType(1).withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
+                .withRType("1").withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
 
         Property nameProp = new Property(DATA_FIELD_NAME_NAME, "1", "string");
         Property ageProp = new Property(DATA_FIELD_NAME_AGE, "2", "int");
@@ -292,7 +292,7 @@ public class ElasticStatisticsGraphProviderTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(2).withName(DATA_TYPE_DRAGON)
+                            .withEType("2").withName(DATA_TYPE_DRAGON)
                             .withProperties(Collections.singletonList(ageProp.getpType()))
                             .build());
                     return entityTypes;

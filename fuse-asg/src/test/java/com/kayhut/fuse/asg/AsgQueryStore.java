@@ -93,14 +93,14 @@ public class AsgQueryStore {
         eConcrete.seteNum(1);
         eConcrete.seteTag("A");
         eConcrete.seteID("1234");
-        eConcrete.seteType(2);
+        eConcrete.seteType("Dragon");
         eConcrete.seteName("Balerion");
         eConcrete.setNext(2);
         elements.add(eConcrete);
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setrType(3);
+        rel.setrType("fire");
         rel.setDir(R);
         rel.setNext(3);
         rel.setB(4);
@@ -109,7 +109,7 @@ public class AsgQueryStore {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("Dragon");
         elements.add(eTyped);
 
         Constraint conRelProp1 = new Constraint();
@@ -158,14 +158,14 @@ public class AsgQueryStore {
         eConcrete.seteNum(1);
         eConcrete.seteTag("A");
         eConcrete.seteID("1234");
-        eConcrete.seteType(2);
+        eConcrete.seteType("Dragon");
         eConcrete.seteName("Balerion");
         eConcrete.setNext(2);
         elements.add(eConcrete);
 
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setrType(3);
+        rel.setrType("fire");
         rel.setDir(R);
         rel.setNext(3);
         rel.setB(4);
@@ -174,7 +174,7 @@ public class AsgQueryStore {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("Dragon");
         elements.add(eTyped);
 
         HQuant hQuant = new HQuant();

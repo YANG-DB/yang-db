@@ -20,13 +20,13 @@ public class TypedNodeCypherStrategyTest {
     public void testTypedNodeStrategy() {
 
         AsgQuery query = AsgQuery.Builder.start("typed", "dragons")
-                                         .next(typed(1, 1, "A"))
+                                         .next(typed(1, "1", "A"))
                                          .build();
 
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                                                     .withOnt("dragons")
                                                     .withEntityTypes(
-                                                            Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                                                            Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                                                     ).build();
 
 

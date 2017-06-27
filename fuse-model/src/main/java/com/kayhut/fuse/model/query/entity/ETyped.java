@@ -16,23 +16,23 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
     //region Constructors
     public ETyped() {}
 
-    public ETyped(int eNum, String eTag, int eType, int next, int b) {
+    public ETyped(int eNum, String eTag, String eType, int next, int b) {
         this(eNum, eTag, eType, Collections.emptyList(), next, b);
         this.eType = eType;
     }
 
-    public ETyped(int eNum, String eTag, int eType, List<String> reportProps, int next, int b) {
+    public ETyped(int eNum, String eTag, String eType, List<String> reportProps, int next, int b) {
         super(eNum, eTag, reportProps, next, b);
         this.eType = eType;
     }
     //endregion
 
     //region Properties
-    public int geteType() {
+    public String geteType() {
         return eType;
     }
 
-    public void seteType(int eType) {
+    public void seteType(String eType) {
         this.eType = eType;
     }
     //endregion
@@ -43,18 +43,18 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
         if (!super.equals(o)) return false;
         ETyped eTyped = (ETyped) o;
 
-        return eType == eTyped.eType;
+        return eType.equals(eTyped.eType);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + eType;
+        result = 31 * result + eType.hashCode();
         return result;
     }
     //endregion
 
     //region Fields
-    private int	eType;
+    private String	eType;
     //endregion
 }

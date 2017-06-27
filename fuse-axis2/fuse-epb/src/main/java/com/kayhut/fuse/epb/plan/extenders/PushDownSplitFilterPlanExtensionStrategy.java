@@ -79,7 +79,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
         Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
 
         // label
-        List<Integer> vTypes = new ArrayList<>();
+        List<String> vTypes = new ArrayList<>();
         if(lastEntityOp.get().getAsgEBase().geteBase() instanceof ETyped) {
             vTypes.add(((ETyped) lastEntityOp.get().getAsgEBase().geteBase()).geteType());
         }

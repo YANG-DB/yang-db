@@ -12,7 +12,7 @@
             "C"
           ],
           "eID": "12345678",
-          "eType": 1,
+          "eType": "Person",
           "properties": [
             {
               "pType": "1",
@@ -37,7 +37,7 @@
         {
           "rID": "12345678",
           "agg": true,
-          "rType": 2,
+          "rType": "memberof",
           "directional": true,
           "eID1": "12345678",
           "eID2": "12345679",

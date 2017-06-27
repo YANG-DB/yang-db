@@ -126,18 +126,18 @@ public class IndexSearchAppenderTest {
     private Ontology getOntology() {
         Ontology ontology = mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
-            seteTypeA(2);
-            seteTypeB(1);
+            seteTypeA("Dragon");
+            seteTypeB("Person");
         }});
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
-                .withRType(1).withName("Fire").withEPairs(ePairs).build();
+                .withRType("Fire").withName("Fire").withEPairs(ePairs).build();
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(1).withName("Person").build());
+                            .withEType("Person").withName("Person").build());
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(2).withName("Dragon").build());
+                            .withEType("Dragon").withName("Dragon").build());
                     return entityTypes;
                 }
         );
