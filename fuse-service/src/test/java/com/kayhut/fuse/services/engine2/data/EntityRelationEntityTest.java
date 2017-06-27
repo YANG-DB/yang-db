@@ -634,6 +634,10 @@ public abstract class EntityRelationEntityTest {
     //endregion
 
     //region Protected Methods
+    protected boolean shouldIgnoreRelId() {
+        return false;
+    }
+
     private void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -814,7 +818,7 @@ public abstract class EntityRelationEntityTest {
             String entityBId,
             Iterable<String> entityBTypes);
 
-    private static void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
+    private void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -828,8 +832,10 @@ public abstract class EntityRelationEntityTest {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult);
+        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
     }
+
+
 
     private static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();

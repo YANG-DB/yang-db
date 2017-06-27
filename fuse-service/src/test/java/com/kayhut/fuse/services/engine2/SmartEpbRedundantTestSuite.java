@@ -11,6 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import java.io.File;
+import java.nio.file.Paths;
+
 /**
  * Created by Roman on 21/06/2017.
  */
@@ -24,7 +27,7 @@ public class SmartEpbRedundantTestSuite {
         elasticEmbeddedNode = new ElasticEmbeddedNode();
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf("application.engine2.dev.conf", "m1.smartEpb");
+                .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.conf").toString()), "m1.smartEpb");
 
         app.start("server.join=false");
     }

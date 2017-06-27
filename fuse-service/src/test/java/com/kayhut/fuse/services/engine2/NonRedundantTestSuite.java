@@ -8,7 +8,6 @@ import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.FuseRunner;
 import com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest;
-import com.kayhut.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest;
 import com.kayhut.fuse.services.engine2.data.PromiseEdgeTest;
 import com.kayhut.fuse.services.engine2.data.SingleEntityTest;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;

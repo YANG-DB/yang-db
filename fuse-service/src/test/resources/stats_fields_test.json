@@ -33,16 +33,16 @@
           "field": "name",
           "histogram": {
             "histogramType": "string",
-            "prefixSize": 3,
+            "prefixSize": 1,
             "interval": 10,
-            "firstCharCode": "97",
-            "numOfChars": 26
+            "firstCharCode": "65",
+            "numOfChars": 58
           }
         },
         {
           "field": "birthDate",
           "histogram": {
-            "dataType": "numeric",
+            "dataType": "numericLong",
             "histogramType": "dynamic",
             "numOfBins": 100
           }
@@ -96,17 +96,18 @@
           "field": "temperature",
           "histogram": {
             "histogramType": "numeric",
-            "min": 100,
-            "max": 700,
-            "numOfBins": 70
+            "dataType": "numericLong",
+            "min": 1000,
+            "max": 10000,
+            "numOfBins": 10
           }
         },
         {
           "field": "timestamp",
           "histogram": {
-            "dataType": "numeric",
+            "dataType": "numericLong",
             "histogramType": "dynamic",
-            "numOfBins": 800
+            "numOfBins": 100
           }
         },
         {

@@ -58,4 +58,9 @@ public class SmartEpbRedundantEntityRelationEntityTest extends EntityRelationEnt
 
         return Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class)));
     }
+
+    @Override
+    protected boolean shouldIgnoreRelId() {
+        return true;
+    }
 }
