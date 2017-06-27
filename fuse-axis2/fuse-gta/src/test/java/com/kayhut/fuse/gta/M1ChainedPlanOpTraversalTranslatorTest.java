@@ -158,20 +158,20 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         concrete.seteNum(3);
         concrete.seteTag("A");
         concrete.seteID("12345678");
-        concrete.seteType(1); //Person
+        concrete.seteType("1"); //Person
         concrete.seteName("Dardas Aba");
         AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setDir(Rel.Direction.R);
-        rel.setrType(1);
+        rel.setrType("1");
         AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(concreteAsg).build();
 
         ETyped eTyped = new ETyped();
         eTyped.seteNum(1);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("2");
         AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).withNext(relAsg).build();
 
         Start start = new Start();
@@ -200,19 +200,19 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         ETyped eTyped2 = new ETyped();
         eTyped2.seteNum(3);
         eTyped2.seteTag("B");
-        eTyped2.seteType(2); //Dragon
+        eTyped2.seteType("2"); //Dragon
         AsgEBase<ETyped> eTypedAsg2 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped2).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setDir(Rel.Direction.R);
-        rel.setrType(1);
+        rel.setrType("1");
         AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(eTypedAsg2).build();
 
         ETyped eTyped1 = new ETyped();
         eTyped1.seteNum(1);
         eTyped1.seteTag("A");
-        eTyped1.seteType(1); //Person
+        eTyped1.seteType("1"); //Person
         AsgEBase<ETyped> eTypedAsg1 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped1).withNext(relAsg).build();
 
         Start start = new Start();
@@ -241,20 +241,20 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("2");
         AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).build();
 
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setDir(Rel.Direction.R);
-        rel.setrType(1);
+        rel.setrType("1");
         AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(eTypedAsg).build();
 
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("A");
         concrete.seteID("12345678");
-        concrete.seteType(1); //Person
+        concrete.seteType("1"); //Person
         concrete.seteName("Moshe Ufnik");
         AsgEBase<EConcrete> concreteAsg1 = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
 
@@ -290,14 +290,14 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         Rel rel = new Rel();
         rel.seteNum(2);
         rel.setDir(Rel.Direction.R);
-        rel.setrType(1);
+        rel.setrType("1");
         AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(unTypedAsg).build();
 
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("A");
         concrete.seteID("12345678");
-        concrete.seteType(1); //Person
+        concrete.seteType("1"); //Person
         concrete.seteName("Moshe Ufnik");
         AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
 
@@ -334,26 +334,26 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         Rel rel2 = new Rel();
         rel2.seteNum(4);
         rel2.setDir(Rel.Direction.R);
-        rel2.setrType(1);
+        rel2.setrType("1");
         AsgEBase<Rel> rel2Asg = AsgEBase.Builder.<Rel>get().withEBase(rel2).withNext(unTypedAsg).build();
 
         ETyped eTyped = new ETyped();
         eTyped.seteNum(3);
         eTyped.seteTag("B");
-        eTyped.seteType(2);
+        eTyped.seteType("2");
         AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).withNext(rel2Asg).build();
 
         Rel rel1 = new Rel();
         rel1.seteNum(2);
         rel1.setDir(Rel.Direction.R);
-        rel1.setrType(1);
+        rel1.setrType("1");
         AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel1).withNext(eTypedAsg).build();
 
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("A");
         concrete.seteID("12345678");
-        concrete.seteType(1); //Person
+        concrete.seteType("1"); //Person
         concrete.seteName("Moshe Ufnik");
         AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
 
@@ -397,9 +397,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(1).withName("Person").build());
+                            .withEType("1").withName("Person").build());
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(2).withName("Dragon").build());
+                            .withEType("2").withName("Dragon").build());
                     return  entityTypes;
                 }
         );
@@ -407,7 +407,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                 {
                     ArrayList<RelationshipType> relTypes = new ArrayList<>();
                     relTypes.add(RelationshipType.Builder.get()
-                            .withRType(1).withName("Fire").build());
+                            .withRType("1").withName("Fire").build());
                     return  relTypes;
                 }
         );
