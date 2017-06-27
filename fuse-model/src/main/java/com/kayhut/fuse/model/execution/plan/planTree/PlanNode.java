@@ -5,17 +5,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.kayhut.fuse.model.execution.plan.IPlan;
+import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Roman on 19/06/2017.
  */
 
-@JsonPropertyOrder({"name", "desc", "children", "invalidReason"})
-public class PlanNode<P extends IPlan> {
+@JsonPropertyOrder({ "name", "desc", "children", "invalidReason" })
+public class PlanNode<P extends IPlan > {
+
+    public static final String PLAN_VERBOSE = "planVerbose";
 
     //region Constructors
     public PlanNode(int phase, String id, String planDescription, String display, String invalidReason) {
@@ -104,57 +108,100 @@ public class PlanNode<P extends IPlan> {
     private String invalidReason;
     private List<PlanNode<P>> children;
 
-    public static class Builder<P extends IPlan> {
+    public static class Builder<P extends IPlan> implements BuilderIfc<P> {
         private final ConcurrentHashMap<String, PlanNode> levelMap = new ConcurrentHashMap<>();
+        private static final BuilderIfc MOCK = new BuilderIfc() {
+
+            @Override
+            public BuilderIfc add(PlanNode child) {
+                return this;
+            }
+
+            @Override
+            public BuilderIfc add(IPlan node, String validationContext) {
+                return this;
+            }
+
+            @Override
+            public int incAndGetPhase() {
+                return 0;
+            }
+
+            @Override
+            public BuilderIfc with(IPlan node) {
+                return this;
+            }
+
+            @Override
+            public BuilderIfc selected(Iterable selectedPlans) {
+                return this;
+            }
+
+            @Override
+            public Optional<PlanNode> build() {
+                return Optional.empty();
+            }
+        };
+
         private PlanNode root;
         private PlanNode context;
         private int phase;
 
-        private Builder(String query) {
-            phase = -1;
-            root = new PlanNode(phase, "root", query, -1 + "", "valid");
-            context = root;
-            levelMap.put(root.hashCode() + "", root);
-            incAndGetPhase();
+
+        public static BuilderIfc root(String query) {
+            if(MDC.get(PLAN_VERBOSE)!=null)
+                return new PlanNode.Builder(query);
+            return MOCK;
         }
 
-        public static Builder root(String query) {
-            return new Builder(query);
+        private Builder(String query) {
+            phase = -1;
+            root = new PlanNode(phase,"root",query,-1+"","valid");
+            context = root;
+            levelMap.put(root.hashCode()+"", root);
+            incAndGetPhase();
         }
 
         /**
          * add child plan node
-         *
          * @param child
          * @return
          */
-        public Builder add(PlanNode child) {
+        @Override
+        public BuilderIfc add(PlanNode child) {
             context.children.add(child);
             levelMap.put(child.getId(), child);
             return this;
         }
 
-        public Builder add(P node, String validationContext) {
+        @Override
+        public BuilderIfc add(P node, String validationContext) {
             return add(new PlanNode(phase, node.hashCode() + "", node.toString(), phase + "", validationContext));
         }
 
+        @Override
         public int incAndGetPhase() {
             phase++;
             return phase;
         }
 
-        public Builder with(P node) {
+        @Override
+        public BuilderIfc with(P node) {
             context = levelMap.get(node.hashCode() + "");
             return this;
         }
 
-        public Builder selected(Iterable<P> selectedPlans) {
-            selectedPlans.forEach(p -> levelMap.get(p.hashCode() + "").setSelected(true));
+        @Override
+        public BuilderIfc selected(Iterable<P> selectedPlans) {
+            selectedPlans.forEach(p -> {
+                levelMap.get(p.hashCode() + "").setSelected(true);
+            });
             return this;
         }
 
-        public PlanNode build() {
-            return root;
+        @Override
+        public Optional<PlanNode<P>> build() {
+            return Optional.of(root);
         }
     }
     //endregion
