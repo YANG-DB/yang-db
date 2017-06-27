@@ -11,8 +11,11 @@ import java.util.function.Function;
  * Created by Roman on 15/05/2017.
  */
 public class QueryResultAssert {
-    //region Public Methods
     public static void assertEquals(QueryResult expected, QueryResult actual) {
+        assertEquals(expected, actual, false);
+    }
+    //region Public Methods
+    public static void assertEquals(QueryResult expected, QueryResult actual, boolean ignoreRelId) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
@@ -27,11 +30,11 @@ public class QueryResultAssert {
                 .sortBy(Assignment::toString).toJavaList();
 
         for(int i = 0 ; i < expectedAssignments.size() ; i++) {
-            assertEquals(expectedAssignments.get(i), actualAssignments.get(i));
+            assertEquals(expectedAssignments.get(i), actualAssignments.get(i), ignoreRelId);
         }
     }
 
-    public static void assertEquals(Assignment expected, Assignment actual) {
+    public static void assertEquals(Assignment expected, Assignment actual, boolean ignoreRelId) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
@@ -60,7 +63,7 @@ public class QueryResultAssert {
                 .sortBy(Relationship::getrID).toJavaList();
 
         for(int i = 0 ; i < expectedRelationships.size() ; i++) {
-            assertEquals(expectedRelationships.get(i), actualRelationships.get(i));
+            assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId);
         }
     }
 
@@ -120,12 +123,14 @@ public class QueryResultAssert {
         Assert.assertEquals(expected.getValue(), actual.getValue());
     }
 
-    public static void assertEquals(Relationship expected, Relationship actual) {
+    public static void assertEquals(Relationship expected, Relationship actual, boolean ignoreRelId) {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
+
         Assert.assertTrue(expected.getrType().equals(actual.getrType()));
-        Assert.assertEquals(expected.getrID(), actual.getrID());
+        if(!ignoreRelId)
+            Assert.assertEquals(expected.getrID(), actual.getrID());
         Assert.assertEquals(expected.geteID1(), actual.geteID1());
         Assert.assertEquals(expected.geteID2(), actual.geteID2());
         Assert.assertEquals(expected.geteTag1(), actual.geteTag1());
