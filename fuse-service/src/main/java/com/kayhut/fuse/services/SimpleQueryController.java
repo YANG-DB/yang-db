@@ -53,8 +53,8 @@ public class SimpleQueryController implements QueryController {
     }
 
     @Override
-    public ContentResponse<QueryResourceInfo> create(CreateQueryAndFetchRequest request) {
-        ContentResponse<QueryResourceInfo> queryResourceInfoResponse = this.create((CreateQueryRequest)request);
+    public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryAndFetchRequest request) {
+        ContentResponse<QueryResourceInfo> queryResourceInfoResponse = this.create(request);
         if (queryResourceInfoResponse.status() == SERVER_ERROR) {
             return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR)
                     .data(Optional.of(queryResourceInfoResponse.getData()))

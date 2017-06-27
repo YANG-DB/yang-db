@@ -15,7 +15,7 @@ import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
  */
 public interface QueryController {
     ContentResponse<QueryResourceInfo> create(CreateQueryRequest request);
-    ContentResponse<QueryResourceInfo> create(CreateQueryAndFetchRequest request);
+    ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryAndFetchRequest request);
     ContentResponse<StoreResourceInfo> getInfo();
     ContentResponse<QueryResourceInfo> getInfo(String queryId);
     ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId);

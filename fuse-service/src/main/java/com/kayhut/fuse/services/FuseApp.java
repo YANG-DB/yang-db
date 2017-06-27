@@ -172,7 +172,7 @@ public class FuseApp extends Jooby {
                 .post(req -> {
                     ContentResponse<QueryResourceInfo> response =
                             req.param("fetch").isSet() && req.param("fetch").booleanValue() ?
-                                    queryCtrl().create(req.body(CreateQueryAndFetchRequest.class)) :
+                                    queryCtrl().createAndFetch(req.body(CreateQueryAndFetchRequest.class)) :
                                     queryCtrl().create(req.body(CreateQueryRequest.class));
 
                     return Results.with(response, response.status());
