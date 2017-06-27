@@ -6,7 +6,7 @@ import static org.mockito.Matchers.any;
  * Created by moti on 4/19/2017.
  */
 public class PlanCostTests {
-    /*private StatisticsCostEstimator<Cost> planOpStatisticsCostEstimator;
+    /*private StatisticsCostEstimator<DoubleCost> planOpStatisticsCostEstimator;
 
     @Before
     public void setup() {
@@ -45,10 +45,10 @@ public class PlanCostTests {
 
         //cost calculator
         CostEstimator costEstimator = Mockito.mock(CostEstimator.class);
-        when(costEstimator.estimateCost(any(), any())).thenReturn(new Cost(1.0,1,1));
-        when(costEstimator.estimateCost(any(PlanOpBase.class))).thenReturn(new Cost(1.0,1,1));
-        OpCostCalculator<Cost, Cost, Plan<Cost>> costCombiner = Mockito.mock(OpCostCalculator.class);
-        when(costCombiner.calculateCost(any(), any())).thenReturn(new Cost(1.0,1,1));
+        when(costEstimator.estimateCost(any(), any())).thenReturn(new DoubleCost(1.0,1,1));
+        when(costEstimator.estimateCost(any(PlanOpBase.class))).thenReturn(new DoubleCost(1.0,1,1));
+        OpCostCalculator<DoubleCost, DoubleCost, Plan<DoubleCost>> costCombiner = Mockito.mock(OpCostCalculator.class);
+        when(costCombiner.calculateCost(any(), any())).thenReturn(new DoubleCost(1.0,1,1));
 
         //tested class cost estimator
         planOpStatisticsCostEstimator = new StatisticsCostEstimator(statisticsProvider,costEstimator);

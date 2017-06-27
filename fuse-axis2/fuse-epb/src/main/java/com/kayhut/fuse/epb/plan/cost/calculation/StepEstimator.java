@@ -6,7 +6,8 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
 import java.util.Arrays;
@@ -24,15 +25,16 @@ public interface StepEstimator {
                                   Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
 
     interface StepEstimatorResult {
-        List<PlanOpWithCost<Cost>>  planOpWithCosts();
+        List<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts();
 
         double lambda();
 
-        static StepEstimatorResult of(double lambda, PlanOpWithCost<Cost> ... planOpWithCosts) {
+        @SafeVarargs
+        static StepEstimatorResult of(double lambda, PlanWithCost<Plan, CountEstimatesCost> ... planStepCosts) {
             return new StepEstimatorResult() {
                 @Override
-                public List<PlanOpWithCost<Cost>> planOpWithCosts() {
-                    return Arrays.asList(planOpWithCosts);
+                public List<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts() {
+                    return Arrays.asList(planStepCosts);
                 }
 
                 @Override

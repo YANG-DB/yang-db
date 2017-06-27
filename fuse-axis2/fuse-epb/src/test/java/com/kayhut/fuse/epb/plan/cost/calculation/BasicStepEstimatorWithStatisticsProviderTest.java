@@ -12,7 +12,8 @@ import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -108,14 +109,14 @@ public class BasicStepEstimatorWithStatisticsProviderTest {
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY, entityOp);
         StepEstimator.StepEstimatorResult calculate = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
-        List<PlanOpWithCost<Cost>> costs = calculate.planOpWithCosts();
+        List<PlanWithCost<Plan, CountEstimatesCost>> costs = calculate.getPlanStepCosts();
 
         Assert.assertNotNull(costs);
         Assert.assertEquals(costs.size(),1);
-        Assert.assertEquals(costs.get(0).getOpBase().size(),2);
-        Assert.assertTrue(costs.get(0).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertTrue(costs.get(0).getOpBase().get(1) instanceof EntityFilterOp);
-        Assert.assertEquals(costs.get(0).getCost().cost,1,0);
+        Assert.assertEquals(costs.get(0).getPlan().getOps().size(),2);
+        Assert.assertTrue(costs.get(0).getPlan().getOps().get(0) instanceof EntityOp);
+        Assert.assertTrue(costs.get(0).getPlan().getOps().get(1) instanceof EntityFilterOp);
+        Assert.assertEquals(costs.get(0).getCost().getCost(), 1, 0);
     }
 
     @Test

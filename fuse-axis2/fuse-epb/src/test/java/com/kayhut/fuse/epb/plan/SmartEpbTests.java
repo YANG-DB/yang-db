@@ -2,7 +2,6 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
@@ -13,7 +12,8 @@ import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -45,7 +45,7 @@ public class SmartEpbTests {
 
         StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(
                 (ont) -> eBaseStatisticsProvider,
-                M1StepEstimator.getStepEstimator(1.0,0.001 ),
+                M1StepEstimator.getStepEstimator(1.0, 0.001 ),
                 (id) -> Optional.of(scenarioMockUtil.getOntologyAccessor().get()));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
@@ -71,10 +71,11 @@ public class SmartEpbTests {
                 next(typed(1, PERSON.type)).
                 next(eProp(2,EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost(),new Cost(10));
-        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost(),new Cost(10));
+        Assert.assertEquals(first.getCost().getGlobalCost(),new DoubleCost(10));
+        Assert.assertEquals(new CountEstimatesCost(10, 10), first.getCost().getPlanStepCosts().iterator().next().getCost());
     }
 }

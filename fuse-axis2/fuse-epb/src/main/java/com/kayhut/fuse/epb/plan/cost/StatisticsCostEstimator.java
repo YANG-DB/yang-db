@@ -1,19 +1,18 @@
 package com.kayhut.fuse.epb.plan.cost;
 
 import com.codahale.metrics.Slf4jReporter;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
@@ -137,36 +136,36 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     }
 
     private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
-        AtomicReference<Cost> completePlanCost = new AtomicReference<>();
-        List<PlanOpWithCost<Cost>> planOpWithCosts;
+        DoubleCost previousPlanGlobalCost;
+        List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
         if (previousCost.isPresent()) {
-            completePlanCost.set(previousCost.get().getCost().getGlobalCost());
-            planOpWithCosts = Stream.ofAll(previousCost.get().getCost().getOpCosts()).map(c -> new PlanOpWithCost<>(c.getCost(), c.getCountEstimates(), c.getOpBase())).toJavaList();
+            previousPlanGlobalCost = previousCost.get().getCost().getGlobalCost();
+            previousPlanStepCosts = Stream.ofAll(previousCost.get().getCost().getPlanStepCosts()).map(PlanWithCost::new).toJavaList();
         } else {
-            completePlanCost.set(new Cost(0));
-            planOpWithCosts = new ArrayList<>();
+            previousPlanGlobalCost = new DoubleCost(0);
+            previousPlanStepCosts = new ArrayList<>();
         }
 
         double lambda = result.lambda();
-        planOpWithCosts.forEach(element-> {
-            if(element.getOpBase().get(0).getClass().equals(EntityOp.class)) {
-                element.push(element.peek()*lambda);
+        previousPlanStepCosts.forEach(planStepCost -> {
+            if(planStepCost.getPlan().getOps().get(0).getClass().equals(EntityOp.class)) {
+                planStepCost.getCost().push(planStepCost.getCost().peek()*lambda);
             }
         });
 
-        List<PlanOpWithCost<Cost>> costs = result.planOpWithCosts();
-        costs.forEach(c -> {
-            //add new step into plan
-            if (!previousCost.isPresent() || !contains(previousCost.get().getPlan(), c.getOpBase().get(0))) {
-                planOpWithCosts.add(c);
-                double cost = completePlanCost.get().cost + c.getCost().cost;
-                completePlanCost.set(new Cost(cost ));
-            }
-        });
+        List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts =
+                Stream.ofAll(result.getPlanStepCosts())
+                .filter(planStepCost -> !previousCost.isPresent() ||
+                        !PlanUtil.first(previousCost.get().getPlan(), planStepCost.getPlan().getOps().get(0)).isPresent())
+                .toJavaList();
 
-        Plan newPlan = new Plan(planOpWithCosts.stream().flatMap(p -> p.getOpBase().stream()).collect(Collectors.toList()));
-        PlanDetailedCost newCost = new PlanDetailedCost(completePlanCost.get(), planOpWithCosts);
-        return new PlanWithCost<>(newPlan, newCost);
+        double sumOfPlanStepCosts = Stream.ofAll(planStepCosts).map(planStepCost -> planStepCost.getCost().getCost()).sum().doubleValue();
+        double newCost = previousPlanGlobalCost.getCost() + sumOfPlanStepCosts;
+        List<PlanWithCost<Plan, CountEstimatesCost>> newPlanStepCosts = Stream.ofAll(previousPlanStepCosts).appendAll(planStepCosts).toJavaList();
+
+        Plan newPlan = new Plan(Stream.ofAll(newPlanStepCosts).flatMap(planStepCost -> Stream.ofAll(planStepCost.getPlan().getOps())).toJavaList());
+        PlanDetailedCost newDetailedCost = new PlanDetailedCost(new DoubleCost(newCost), newPlanStepCosts);
+        return new PlanWithCost<>(newPlan, newDetailedCost);
     }
 
     private Map<StatisticsCostEstimatorNames, PlanOpBase> extractStep(List<PlanOpBase> step, Map<String, Integer> groups, Matcher matcher) {

@@ -1,24 +1,18 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.BasicStepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
-import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.entity.EConcrete;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -207,20 +201,20 @@ public class StatisticalCostEstimatorTests {
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 6);
 
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().size(), 1);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().get(0) instanceof EntityFilterOp);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().size(), 1);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getPlan().getOps().get(0) instanceof EntityOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getPlan().getOps().size(), 1);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(1).getPlan().getOps().get(0) instanceof EntityFilterOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(1).getPlan().getOps().size(), 1);
 
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().size(), 2);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().get(0) instanceof RelationOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(2).getPlan().getOps().size(), 2);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(2).getPlan().getOps().get(0) instanceof RelationOp);
 
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().size(), 2);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().get(0) instanceof EntityOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(3).getPlan().getOps().size(), 2);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(3).getPlan().getOps().get(0) instanceof EntityOp);
 
-        Assert.assertEquals(estimate.getCost().getGlobalCost(),new Cost(51.06));
+        Assert.assertEquals(estimate.getCost().getGlobalCost(),new DoubleCost(51.06));
 
-        Assert.assertEquals(250, newArrayList(estimate.getCost().getOpCosts()).get(0).peek(), 0);
+        Assert.assertEquals(250, newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getCost().peek(), 0);
 
     }
 
@@ -231,7 +225,7 @@ public class StatisticalCostEstimatorTests {
                 return new Tuple2<>(1d, Collections.emptyList());
             else
                 return new Tuple2<>(1d,
-                        ((PlanWithCost<Plan, Cost>) invocationOnMock.getArgumentAt(3, Optional.class).get())
+                        ((PlanWithCost<Plan, DoubleCost>) invocationOnMock.getArgumentAt(3, Optional.class).get())
                                 .getPlan().getOps().stream().map(p -> new PlanOpWithCost(1, 1, p))
                                 .collect(Collectors.toList()));
         });
@@ -258,8 +252,8 @@ public class StatisticalCostEstimatorTests {
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 2);
         Assert.assertEquals(estimate.getCost().getGlobalCost().cost, 1, 0);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).size(), 1);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().size(), 2);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).size(), 1);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getPlan().getOps().size(), 2);
     }
 
 }

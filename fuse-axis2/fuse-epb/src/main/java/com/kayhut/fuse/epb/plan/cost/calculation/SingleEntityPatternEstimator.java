@@ -3,7 +3,8 @@ package com.kayhut.fuse.epb.plan.cost.calculation;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
 import java.util.Map;
@@ -16,6 +17,7 @@ import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCo
  * Created by moti on 29/05/2017.
  */
 public class SingleEntityPatternEstimator implements PatternCostEstimator {
+    //region PatternCostEstimator Implementation
     @Override
     public StepEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         EntityOp entityOp = (EntityOp) patternParts.get(ENTITY_ONLY);
@@ -34,6 +36,7 @@ public class SingleEntityPatternEstimator implements PatternCostEstimator {
         }
 
         double min = Math.min(entityTotal, filterTotal);
-        return StepEstimator.StepEstimatorResult.of(1d, new PlanOpWithCost<>(new Cost(min), min, entityOp, filterOp));
+        return StepEstimator.StepEstimatorResult.of(1.0, new PlanWithCost<>(new Plan(entityOp, filterOp), new CountEstimatesCost(min, min)));
     }
+    //endregion
 }

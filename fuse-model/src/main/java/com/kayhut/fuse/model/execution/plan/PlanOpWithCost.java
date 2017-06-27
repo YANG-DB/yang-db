@@ -71,13 +71,5 @@ public class PlanOpWithCost<C> {
         return new PlanOpWithCost<C>(cost,lambda,op);
     }
 
-    public double push(double value) {
-        return countEstimates.push(value);
-    }
-
-    public double peek() {
-        return countEstimates.peek();
-    }
-
 
 }

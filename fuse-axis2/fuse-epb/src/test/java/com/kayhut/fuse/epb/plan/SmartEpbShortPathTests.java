@@ -12,7 +12,8 @@ import com.kayhut.fuse.epb.tests.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -258,7 +259,7 @@ public class SmartEpbShortPathTests {
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(first.getCost().getGlobalCost().cost,400, 0.1);
-        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost,400, 0.1);
+        Assert.assertEquals(first.getCost().getPlanStepCosts().iterator().next().getCost().getCost(), 400, 0.1);
     }
 
     @Test
@@ -273,7 +274,7 @@ public class SmartEpbShortPathTests {
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(first.getCost().getGlobalCost().cost, 133d / 13d, 0.1);
-        Assert.assertEquals(first.getCost().getOpCosts().iterator().next().getCost().cost, 133d / 13d, 0.1);
+        Assert.assertEquals(first.getCost().getPlanStepCosts().iterator().next().getCost().getCost(), 133d / 13d, 0.1);
     }
 
     @Test
@@ -292,13 +293,11 @@ public class SmartEpbShortPathTests {
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(2403, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(400, op.getCost().cost, 0.1);
-        Assert.assertEquals(3, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(2000, iterator.next().getCost().cost, 0.1);
-
-
+        Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
+        PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
+        Assert.assertEquals(400, op.getCost().getCost(), 0.1);
+        Assert.assertEquals(3, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(2000, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -316,11 +315,11 @@ public class SmartEpbShortPathTests {
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(111.1, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().cost, 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(100.9, iterator.next().getCost().cost, 0.1);
+        Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
+        PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
+        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -332,17 +331,18 @@ public class SmartEpbShortPathTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(112.6, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(133d/13d,op.getCost().cost, 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(102.3, iterator.next().getCost().cost, 0.1);
+        Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
+        PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
+        Assert.assertEquals(133d/13d,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(102.3, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -354,17 +354,18 @@ public class SmartEpbShortPathTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(1401, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(400,op.getCost().cost, 0.1);
-        Assert.assertEquals(1, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(1000, iterator.next().getCost().cost, 0.1);
+        Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
+        PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
+        Assert.assertEquals(400,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(1, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(1000, iterator.next().getCost().getCost(), 0.1);
     }
 
 
@@ -377,17 +378,18 @@ public class SmartEpbShortPathTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.ge,"g")))).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(1267, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(266,op.getCost().cost, 0.1);
-        Assert.assertEquals(1, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(1000, iterator.next().getCost().cost, 0.1);
+        Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
+        PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
+        Assert.assertEquals(266,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(1, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(1000, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -399,17 +401,18 @@ public class SmartEpbShortPathTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, L).relFilter(4).entity(1).entityFilter(2).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(111.1, first.getCost().getGlobalCost().cost, 0.1);
-        Iterator<PlanOpWithCost<Cost>> iterator = first.getCost().getOpCosts().iterator();
-        PlanOpWithCost<Cost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().cost, 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().cost, 0.1);
-        Assert.assertEquals(100.9, iterator.next().getCost().cost, 0.1);
+        Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
+        PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
+        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
     }
 
 
@@ -425,6 +428,7 @@ public class SmartEpbShortPathTests {
                     rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                     next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
@@ -466,16 +470,17 @@ public class SmartEpbShortPathTests {
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8, Rel.Direction.R).relFilter(9).entity(10).entityFilter(11).plan();
         PlanWithCost<Plan, PlanDetailedCost> plan = plans.iterator().next();
         PlanAssert.assertEquals(expected, plan.getPlan());
-        PlanOpWithCost<Cost> opWithCost = plan.getCost().getOpCosts().iterator().next();
-        Assert.assertEquals(3,opWithCost.getCountEstimates().size());
-        Iterator<Double> iterator = opWithCost.getCountEstimates().iterator();
-        Assert.assertEquals(10.23,iterator.next(), 0.01);
-        Assert.assertEquals(0.34,iterator.next(), 0.01);
-        Assert.assertEquals(0.0008,iterator.next(), 0.01);
+        PlanWithCost<Plan, CountEstimatesCost> opWithCost = plan.getCost().getPlanStepCosts().iterator().next();
+        Assert.assertEquals(3, opWithCost.getCost().getCountEstimates().size());
+        Iterator<Double> iterator = opWithCost.getCost().getCountEstimates().iterator();
+        Assert.assertEquals(10.23, iterator.next(), 0.01);
+        Assert.assertEquals(0.34, iterator.next(), 0.01);
+        Assert.assertEquals(0.0008, iterator.next(), 0.01);
     }
 
     @Test
@@ -487,6 +492,7 @@ public class SmartEpbShortPathTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
+
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, L).relFilter(4).entity(1).entityFilter(2).plan();
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);

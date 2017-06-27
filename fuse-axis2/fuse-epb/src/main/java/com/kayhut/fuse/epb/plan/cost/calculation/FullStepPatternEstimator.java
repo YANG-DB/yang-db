@@ -3,7 +3,8 @@ package com.kayhut.fuse.epb.plan.cost.calculation;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.DetailedCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
@@ -20,17 +21,7 @@ import java.util.stream.Collectors;
  *
  */
 public class FullStepPatternEstimator implements PatternCostEstimator {
-    private CostEstimationConfig config;
-
-    public FullStepPatternEstimator(CostEstimationConfig config) {
-        this.config = config;
-    }
-
-    @Override
-    public StepEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
-        return calculateFullStep(config, statisticsProvider, previousCost.get(), Step.buildFullStep(patternParts));
-    }
-
+    //region Static
     /**
      * ********************************************************
      * Calculate estimates for a full step.
@@ -56,11 +47,16 @@ public class FullStepPatternEstimator implements PatternCostEstimator {
      * ********************************************************
      * @param config
      * @param statisticsProvider
-     * @param previousCost
+     * @param previousPlanCost
      * @param step
      * @return
      */
-    public static StepEstimator.StepEstimatorResult calculateFullStep(CostEstimationConfig config, StatisticsProvider statisticsProvider, PlanWithCost<Plan, PlanDetailedCost> previousCost,Step step) {
+    public static StepEstimator.StepEstimatorResult calculateFullStep(
+            CostEstimationConfig config,
+            StatisticsProvider statisticsProvider,
+            PlanWithCost<Plan, PlanDetailedCost> previousPlanCost,
+            Step step) {
+
         EntityOp start = step.start()._1;
         EntityFilterOp startFilter = step.start()._2;
         EntityOp end = step.end()._1;
@@ -68,8 +64,8 @@ public class FullStepPatternEstimator implements PatternCostEstimator {
         RelationOp rel = step.rel()._1;
         RelationFilterOp relationFilter = step.rel()._2;
 
-        PlanDetailedCost cost = previousCost.getCost();
-        Cost entityOneCost = cost.getOpCost(start).get();
+        PlanDetailedCost previousCost = previousPlanCost.getCost();
+        CountEstimatesCost entityOneCost = previousCost.getPlanStepCost(start).get().getCost();
 
         //edge estimate =>
         Direction direction = Direction.of(rel.getAsgEBase().geteBase().getDir());
@@ -77,7 +73,7 @@ public class FullStepPatternEstimator implements PatternCostEstimator {
         long selectivity = statisticsProvider.getGlobalSelectivity(rel.getAsgEBase().geteBase(),
                 relationFilter.getAsgEBase().geteBase(),
                 start.getAsgEBase().geteBase(), direction);
-        double N1 = cost.getPlanOpCost(start).get().peek();
+        double N1 = entityOneCost.peek();
         double R1 = N1 * selectivity;
         //(relation filter estimate) = statistical_estimate(Rel + filter + E1 pushdown)
         double R2 = statisticsProvider.getEdgeFilterStatistics(relationFilter.getRel().geteBase(), relationFilter.getAsgEBase().geteBase()).getTotal();
@@ -113,14 +109,36 @@ public class FullStepPatternEstimator implements PatternCostEstimator {
         double lambda = lambdaEdge * lambdaNode;
 
         //cost if zero since the real cost is residing on the adjacent filter (rel filter)
-        Cost relCost = new DetailedCost(R * config.getDelta(), lambdaNode, lambdaEdge, R, N2);
+        DoubleCost relCost = new DetailedCost(R * config.getDelta(), lambdaNode, lambdaEdge, R, N2);
 
-        PlanOpWithCost<Cost> entityOneOpCost = new PlanOpWithCost<>(entityOneCost, N1, start, startFilter);
-        entityOneOpCost.push(N1*lambda);
-        PlanOpWithCost<Cost> relOpCost = new PlanOpWithCost<>(relCost, R, rel, relationFilter);
-        PlanOpWithCost<Cost> entityTwoOpCost = new PlanOpWithCost<>(new DetailedCost(N2, lambdaNode, lambdaEdge, R, N2), N2, end, endFilter);
+        CountEstimatesCost newEntityOneCost = new CountEstimatesCost(entityOneCost.getCost(), N1);
+        newEntityOneCost.push(N1*lambda);
+        PlanWithCost<Plan, CountEstimatesCost> entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
 
-        return StepEstimator.StepEstimatorResult.of(lambda, entityOneOpCost, relOpCost, entityTwoOpCost);
+        CountEstimatesCost newRelCost = new CountEstimatesCost(relCost.getCost(), R);
+        PlanWithCost<Plan, CountEstimatesCost> relPlanCost = new PlanWithCost<>(new Plan(rel, relationFilter), newRelCost);
+
+        CountEstimatesCost entityTwoCost = new CountEstimatesCost(N2, N2);
+        PlanWithCost<Plan, CountEstimatesCost> entityTwoOpCost = new PlanWithCost<>(new Plan(end, endFilter), entityTwoCost);
+
+        return StepEstimator.StepEstimatorResult.of(lambda, entityOnePlanCost, relPlanCost, entityTwoOpCost);
     }
+    //endregion
 
+    //region Constructors
+    public FullStepPatternEstimator(CostEstimationConfig config) {
+        this.config = config;
+    }
+    //endregion
+
+    //region PatternCostEstimator Implementation
+    @Override
+    public StepEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+        return calculateFullStep(config, statisticsProvider, previousCost.get(), Step.buildFullStep(patternParts));
+    }
+    //endregion
+
+    //region Fields
+    private CostEstimationConfig config;
+    //endregion
 }
