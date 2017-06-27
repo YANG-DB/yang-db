@@ -43,7 +43,7 @@ public class Quant1CypherStrategyTest {
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withProperties(
                         Collections.singletonList(Property.Builder.get().build("1","p1","int"))
                 ).build();
@@ -79,7 +79,7 @@ public class Quant1CypherStrategyTest {
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withProperties(
                         Lists.newArrayList(Property.Builder.get().build("1", "p1", "string"),
                                            Property.Builder.get().build("2", "p2", "int"),
@@ -117,7 +117,7 @@ public class Quant1CypherStrategyTest {
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withProperties(
                         Lists.newArrayList(Property.Builder.get().build("1", "p1", "string"),
                                 Property.Builder.get().build("2", "p2", "int"),
@@ -140,16 +140,16 @@ public class Quant1CypherStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("quant1_all_rel", "dragons")
                 .next(unTyped(1,"A"))
                 .next(quant1(2, QuantType.all))
-                .next(rel(3, 1, Rel.Direction.R))
+                .next(rel(3, "1", Rel.Direction.R))
                 .next(unTyped(1,"B"))
                 .build();
 
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withRelationshipTypes(
-                        Collections.singletonList(new RelationshipType("knows", 1, false))
+                        Collections.singletonList(new RelationshipType("knows", "1", false))
                 ).build();
 
 
@@ -167,19 +167,19 @@ public class Quant1CypherStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("quant1_all_rels", "dragons")
                 .next(unTyped(1,"A"))
                 .next(quant1(2, QuantType.all))
-                .in(rel(3, 1, Rel.Direction.R).next(unTyped(1,"C")),
-                        rel(4, 2, Rel.Direction.R).next(unTyped(1,"D")),
-                        rel(5, 3, Rel.Direction.R).next(unTyped(1,"E")))
+                .in(rel(3, "1", Rel.Direction.R).next(unTyped(1,"C")),
+                        rel(4, "2", Rel.Direction.R).next(unTyped(1,"D")),
+                        rel(5, "3", Rel.Direction.R).next(unTyped(1,"E")))
                 .build();
 
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withRelationshipTypes(
-                        Lists.newArrayList(new RelationshipType("knows", 1, false),
-                                new RelationshipType("loves", 2, false),
-                                new RelationshipType("hates", 3, false))
+                        Lists.newArrayList(new RelationshipType("knows", "1", false),
+                                new RelationshipType("loves", "2", false),
+                                new RelationshipType("hates", "3", false))
                 ).build();
 
 
@@ -199,19 +199,19 @@ public class Quant1CypherStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("quant1_some_rels", "dragons")
                 .next(unTyped(1,"A"))
                 .next(quant1(2, QuantType.some))
-                .in(rel(3, 1, Rel.Direction.R).next(unTyped(1,"C")),
-                    rel(4, 2, Rel.Direction.R).next(unTyped(1,"D")),
-                    rel(5, 3, Rel.Direction.R).next(unTyped(1,"E")))
+                .in(rel(3, "1", Rel.Direction.R).next(unTyped(1,"C")),
+                    rel(4, "2", Rel.Direction.R).next(unTyped(1,"D")),
+                    rel(5, "3", Rel.Direction.R).next(unTyped(1,"E")))
                 .build();
 
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withRelationshipTypes(
-                        Lists.newArrayList(new RelationshipType("knows", 1, false),
-                                           new RelationshipType("loves", 2, false),
-                                           new RelationshipType("hates", 3, false))
+                        Lists.newArrayList(new RelationshipType("knows", "1", false),
+                                           new RelationshipType("loves", "2", false),
+                                           new RelationshipType("hates", "3", false))
                 ).build();
 
 
