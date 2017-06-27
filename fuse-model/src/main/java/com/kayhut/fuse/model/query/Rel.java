@@ -20,7 +20,7 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     //region Constructors
     public Rel() {}
 
-    public Rel(int eNum, int rType, Direction dir, String wrapper, int next, int b) {
+    public Rel(int eNum, String rType, Direction dir, String wrapper, int next, int b) {
         super(eNum);
         this.rType = rType;
         this.dir = dir;
@@ -31,11 +31,11 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     //endregion
 
     //region Properties
-    public int getrType() {
+    public String getrType() {
         return rType;
     }
 
-    public void setrType(int rType) {
+    public void setrType(String rType) {
         this.rType = rType;
     }
 
@@ -80,7 +80,7 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     //endregion
 
     //region Fields
-    private int rType;
+    private String rType;
     private Direction dir;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private String wrapper;
@@ -99,7 +99,7 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
 
         Rel rel = (Rel) o;
 
-        if (rType != rel.rType) return false;
+        if (!rType.equals(rel.rType)) return false;
         if (next != rel.next) return false;
         if (b != rel.b) return false;
         if (dir != rel.dir) return false;
@@ -109,7 +109,7 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + rType;
+        result = 31 * result + rType.hashCode();
         result = 31 * result + dir.hashCode();
         result = 31 * result + (wrapper != null ? wrapper.hashCode() : 0);
         result = 31 * result + next;

@@ -33,16 +33,16 @@ public class AggL1CypherStrategyTest {
 
         AsgQuery query = AsgQuery.Builder.start("aggL1", "dragons")
                 .next(unTyped(1,"A"))
-                .next(rel(2,1, Rel.Direction.R).below(AsgEBase.Builder.get().withEBase(agg).build()))
+                .next(rel(2,"1", Rel.Direction.R).below(AsgEBase.Builder.get().withEBase(agg).build()))
                 .next(unTyped(4,"B"))
                 .build();
 
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withRelationshipTypes(
-                        Collections.singletonList(new RelationshipType("knows",1,true))
+                        Collections.singletonList(new RelationshipType("knows","1",true))
                 ).build();
 
 

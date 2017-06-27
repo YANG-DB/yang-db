@@ -74,7 +74,7 @@ public class QueryResultAssert {
         Assert.assertEquals(expected.geteID(), actual.geteID());
         Assert.assertEquals(Stream.ofAll(expected.geteTag()).sorted().toJavaList().toString(),
                 Stream.ofAll(actual.geteTag()).sorted().toJavaList().toString());
-        Assert.assertTrue(expected.geteType() == actual.geteType());
+        Assert.assertTrue(expected.geteType().equals(actual.geteType()));
 
         assertIfBothNull(expected.getProperties(), actual.getProperties());
         assertIfBothNotNull(expected.getProperties(), actual.getProperties());
@@ -127,7 +127,8 @@ public class QueryResultAssert {
         assertIfBothNull(expected, actual);
         assertIfBothNotNull(expected, actual);
 
-        Assert.assertTrue(expected.getrType() == actual.getrType());
+
+        Assert.assertTrue(expected.getrType().equals(actual.getrType()));
         if(!ignoreRelId)
             Assert.assertEquals(expected.getrID(), actual.getrID());
         Assert.assertEquals(expected.geteID1(), actual.geteID1());

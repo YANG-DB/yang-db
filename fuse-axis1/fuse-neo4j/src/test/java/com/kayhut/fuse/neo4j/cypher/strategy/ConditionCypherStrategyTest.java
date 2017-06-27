@@ -36,7 +36,7 @@ public class ConditionCypherStrategyTest {
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).withProperties(
                         Collections.singletonList(Property.Builder.get().build("1","p1","int"))
                 ).build();

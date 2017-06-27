@@ -87,12 +87,12 @@ public class OntologySchemaProviderTest {
     private Ontology getOntology() {
         Ontology ontology = Mockito.mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
-            seteTypeA(2);
-            seteTypeB(1);
+            seteTypeA("Dragon");
+            seteTypeB("Person");
         }});
 
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
-                .withRType(1).withName("Fire").withEPairs(ePairs).build();
+                .withRType("Fire").withName("Fire").withEPairs(ePairs).build();
 
         Property nameProp = new Property();
         nameProp.setName("name");
@@ -104,9 +104,9 @@ public class OntologySchemaProviderTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(1).withName("Person").withProperties(Collections.singletonList(nameProp.getpType())).build());
+                            .withEType("Person").withName("Person").withProperties(Collections.singletonList(nameProp.getpType())).build());
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(2).withName("Dragon").build());
+                            .withEType("Dragon").withName("Dragon").build());
                     return entityTypes;
                 }
         );

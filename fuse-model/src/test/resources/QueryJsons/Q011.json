@@ -11,7 +11,7 @@
       "eNum": 1,
       "type": "ETyped",
       "eTag": "A",
-      "eType": 1,
+      "eType": "Person",
       "next": 2
     },
     {
@@ -51,7 +51,7 @@
     {
       "eNum": 6,
       "type": "Rel",
-      "rType": 5,
+      "rType": "registered",
       "dir": "R",
       "next": 8,
       "b": 7
@@ -70,7 +70,7 @@
       "eNum": 8,
       "type": "ETyped",
       "eTag": "C",
-      "eType": 1,
+      "eType": "Person",
       "next": 9
     },
     {
@@ -105,7 +105,7 @@
       "type": "EConcrete",
       "eTag": "D",
       "eID": "22345671",
-      "eType": 4,
+      "eType": "Guild",
       "eName": "Saddlers"
     },
     {
@@ -113,7 +113,7 @@
       "type": "EConcrete",
       "eTag": "E",
       "eID": "22345672",
-      "eType": 4,
+      "eType": "Guild",
       "eName": "Blacksmiths"
     }
   ]

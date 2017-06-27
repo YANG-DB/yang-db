@@ -38,11 +38,11 @@ public class Entity {
         this.eID = eID;
     }
 
-    public int geteType() {
+    public String geteType() {
         return eType;
     }
 
-    public void seteType(int eType) {
+    public void seteType(String eType) {
         this.eType = eType;
     }
 
@@ -67,7 +67,7 @@ public class Entity {
     @Override
     public int hashCode() {
         int hashCode = eID.hashCode() * 31;
-        hashCode = hashCode * 31 + eType;
+        hashCode = hashCode * 31 + eType.hashCode();
         hashCode = hashCode * 31 + eTag.hashCode();
         return hashCode;
     }
@@ -82,7 +82,7 @@ public class Entity {
     //region Fields
     private List<String> eTag;
     private String eID;
-    private int eType;
+    private String eType;
     private List<Property> properties;
     private List<AttachedProperty> attachedProperties;
     //endregion
@@ -115,7 +115,7 @@ public class Entity {
             return this;
         }
 
-        public Builder withEType(int eType) {
+        public Builder withEType(String eType) {
             this.eType = eType;
             return this;
         }
@@ -180,7 +180,7 @@ public class Entity {
         //region Fields
         private List<String> eTag;
         private String eID;
-        private int eType;
+        private String eType;
         private List<Property> properties;
         private List<AttachedProperty> attachedProperties;
         private List<Entity> entities;
