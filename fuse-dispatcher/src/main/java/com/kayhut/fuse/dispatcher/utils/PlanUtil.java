@@ -52,12 +52,20 @@ public class PlanUtil {
         return first(compositePlanOp, classPredicateFunction.apply(klass));
     }
 
+    public static <T extends PlanOpBase> Optional<T> first(CompositePlanOpBase compositePlanOp, T planOp) {
+        return first(compositePlanOp, equalsPredicateFunction.apply(planOp));
+    }
+
     public static <T extends PlanOpBase> T first$(Plan plan, Predicate<PlanOpBase> predicate) {
         return PlanUtil.<T>first(plan, predicate).get();
     }
 
     public static <T extends PlanOpBase> T first$(Plan plan, Class<T> klass) {
-        return PlanUtil.<T>first(plan, klass).get();
+        return PlanUtil.first(plan, klass).get();
+    }
+
+    public static <T extends PlanOpBase> T first$(Plan plan, T planOp) {
+        return PlanUtil.first(plan, planOp).get();
     }
 
     public static <T extends PlanOpBase> Optional<T> last(CompositePlanOpBase compositePlanOp, Predicate<PlanOpBase> opPredicate) {
@@ -68,12 +76,20 @@ public class PlanUtil {
         return last(compositePlanOp, classPredicateFunction.apply(klass));
     }
 
+    public static <T extends PlanOpBase> Optional<T> last(CompositePlanOpBase compositePlanOp, T planOp) {
+        return last(compositePlanOp, equalsPredicateFunction.apply(planOp));
+    }
+
     public static <T extends PlanOpBase> T last$(Plan plan, Predicate<PlanOpBase> predicate) {
         return PlanUtil.<T>last(plan, predicate).get();
     }
 
     public static <T extends PlanOpBase> T last$(Plan plan, Class<T> klass) {
-        return PlanUtil.<T>last(plan, klass).get();
+        return PlanUtil.last(plan, klass).get();
+    }
+
+    public static <T extends PlanOpBase> T last$(Plan plan, T planOp) {
+        return PlanUtil.last(plan, planOp).get();
     }
 
     public static Plan replace(Plan plan, PlanOpBase oldOp, PlanOpBase newOp) {
@@ -132,6 +148,9 @@ public class PlanUtil {
 
     private static Function<Class<?>, Predicate<PlanOpBase>> classPredicateFunction =
             klass -> planOp -> klass.isAssignableFrom(planOp.getClass());
+
+    private static Function<PlanOpBase, Predicate<PlanOpBase>> equalsPredicateFunction =
+            planOp -> planOp2 -> planOp2.equals(planOp);
 
     private static Predicate<PlanOpBase> truePredicate = planOp -> true;
     //endregion

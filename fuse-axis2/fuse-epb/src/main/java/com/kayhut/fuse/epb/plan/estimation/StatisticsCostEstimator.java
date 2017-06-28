@@ -1,37 +1,67 @@
-package com.kayhut.fuse.epb.plan.cost;
+package com.kayhut.fuse.epb.plan.estimation;
 
 import com.codahale.metrics.Slf4jReporter;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
-import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.dispatcher.utils.PlanUtil.extractNewStep;
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
 import static com.kayhut.fuse.model.Utils.pattern;
-import static com.kayhut.fuse.model.execution.plan.Plan.contains;
 
 /**
  * Created by moti on 01/04/2017.
  */
 public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost, AsgQuery> {
+    //region Static
+    private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
+
+    public static StatisticsCostEstimatorPatterns[] getSupportedPattern() {
+        return StatisticsCostEstimatorPatterns.values();
+    }
+
+    private static Map<String, Integer> getNamedGroups(Pattern regex) {
+        try {
+            Method namedGroupsMethod = Pattern.class.getDeclaredMethod("namedGroups");
+            namedGroupsMethod.setAccessible(true);
+
+            Map<String, Integer> namedGroups = null;
+            namedGroups = (Map<String, Integer>) namedGroupsMethod.invoke(regex);
+
+            if (namedGroups == null) {
+                throw new InternalError();
+            }
+
+            return Collections.unmodifiableMap(namedGroups);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static {
+        compiledPatterns = new HashMap<>();
+        for(StatisticsCostEstimatorPatterns pattern : StatisticsCostEstimatorPatterns.values()){
+            Pattern compile = Pattern.compile(pattern.pattern());
+            compiledPatterns.put(pattern, compile);
+        }
+    }
+    //endregion
+
     public enum StatisticsCostEstimatorPatterns {
         //option2
         FULL_STEP("^(?<" + ENTITY_ONE.value + ">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
@@ -44,21 +74,13 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
                 "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
                 "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
-        private String pattern;
-        private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
-
-        static {
-            compiledPatterns = new HashMap<>();
-            for(StatisticsCostEstimatorPatterns pattern : StatisticsCostEstimatorPatterns.values()){
-                Pattern compile = Pattern.compile(pattern.pattern());
-                compiledPatterns.put(pattern, compile);
-            }
-        }
-
+        //region Enum Constructors
         StatisticsCostEstimatorPatterns(String pattern) {
             this.pattern = pattern;
         }
+        //endregion
 
+        //region Properties
         public String pattern() {
             return pattern;
         }
@@ -66,6 +88,11 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         public Pattern getCompiledPattern(){
             return compiledPatterns.get(this);
         }
+        //endregion
+
+        //region Fields
+        private String pattern;
+        //endregion
     }
 
     public enum StatisticsCostEstimatorNames {
@@ -94,20 +121,19 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         }
     }
 
-    private StatisticsProviderFactory statisticsProviderFactory;
-    private OntologyProvider ontologyProvider;
-    private StepEstimator estimator;
-
+    //region Constructors
     @Inject
     public StatisticsCostEstimator(
             StatisticsProviderFactory statisticsProviderFactory,
-            StepEstimator estimator,
+            StepCostEstimator estimator,
             OntologyProvider ontologyProvider) {
         this.statisticsProviderFactory = statisticsProviderFactory;
         this.estimator = estimator;
         this.ontologyProvider = ontologyProvider;
     }
+    //endregion
 
+    //region CostEstimator Implementation
     @Override
     @LoggerAnnotation(name = "estimate", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
@@ -122,51 +148,56 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         String opsString = pattern(step);
         StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
         for (StatisticsCostEstimatorPatterns pattern : supportedPattern) {
-            //Pattern compile = Pattern.compile(pattern.pattern());
             Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
                 Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
                 StatisticsProvider statisticsProvider = statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get());
-                StepEstimator.StepEstimatorResult result = estimator.calculate(statisticsProvider, map, pattern, previousCost);
+                StepCostEstimator.StepEstimatorResult result = estimator.calculate(statisticsProvider, map, pattern, previousCost);
                 newPlan = buildNewPlan(result, previousCost);
                 break;
             }
         }
         return newPlan;
     }
+    //endregion
 
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
-        AtomicReference<Cost> completePlanCost = new AtomicReference<>();
-        List<PlanOpWithCost<Cost>> planOpWithCosts;
+    //region Private Methods
+    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepCostEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+        DoubleCost previousPlanGlobalCost;
+        List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
         if (previousCost.isPresent()) {
-            completePlanCost.set(previousCost.get().getCost().getGlobalCost());
-            planOpWithCosts = Stream.ofAll(previousCost.get().getCost().getOpCosts()).map(c -> new PlanOpWithCost<>(c.getCost(), c.getCountEstimates(), c.getOpBase())).toJavaList();
+            previousPlanGlobalCost = previousCost.get().getCost().getGlobalCost();
+            previousPlanStepCosts = Stream.ofAll(previousCost.get().getCost().getPlanStepCosts())
+                    .map(planStepCost -> new PlanWithCost<>(
+                            planStepCost.getPlan(),
+                            new CountEstimatesCost(planStepCost.getCost().getCost(), planStepCost.getCost().getCountEstimates())))
+                    .toJavaList();
         } else {
-            completePlanCost.set(new Cost(0));
-            planOpWithCosts = new ArrayList<>();
+            previousPlanGlobalCost = new DoubleCost(0);
+            previousPlanStepCosts = new ArrayList<>();
         }
 
         double lambda = result.lambda();
-        planOpWithCosts.forEach(element-> {
-            if(element.getOpBase().get(0).getClass().equals(EntityOp.class)) {
-                element.push(element.peek()*lambda);
+        previousPlanStepCosts.forEach(planStepCost -> {
+            if(planStepCost.getPlan().getOps().get(0).getClass().equals(EntityOp.class)) {
+                planStepCost.getCost().push(planStepCost.getCost().peek() * lambda);
             }
         });
 
-        List<PlanOpWithCost<Cost>> costs = result.planOpWithCosts();
-        costs.forEach(c -> {
-            //add new step into plan
-            if (!previousCost.isPresent() || !contains(previousCost.get().getPlan(), c.getOpBase().get(0))) {
-                planOpWithCosts.add(c);
-                double cost = completePlanCost.get().cost + c.getCost().cost;
-                completePlanCost.set(new Cost(cost ));
-            }
-        });
+        List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts =
+                Stream.ofAll(result.getPlanStepCosts())
+                .filter(planStepCost -> !previousCost.isPresent() ||
+                        !PlanUtil.first(previousCost.get().getPlan(), planStepCost.getPlan().getOps().get(0)).isPresent())
+                .toJavaList();
 
-        Plan newPlan = new Plan(planOpWithCosts.stream().flatMap(p -> p.getOpBase().stream()).collect(Collectors.toList()));
-        PlanDetailedCost newCost = new PlanDetailedCost(completePlanCost.get(), planOpWithCosts);
-        return new PlanWithCost<>(newPlan, newCost);
+        double sumOfPlanStepCosts = Stream.ofAll(planStepCosts).map(planStepCost -> planStepCost.getCost().getCost()).sum().doubleValue();
+        double newCost = previousPlanGlobalCost.getCost() + sumOfPlanStepCosts;
+        List<PlanWithCost<Plan, CountEstimatesCost>> newPlanStepCosts = Stream.ofAll(previousPlanStepCosts).appendAll(planStepCosts).toJavaList();
+
+        Plan newPlan = new Plan(Stream.ofAll(newPlanStepCosts).flatMap(planStepCost -> Stream.ofAll(planStepCost.getPlan().getOps())).toJavaList());
+        PlanDetailedCost newDetailedCost = new PlanDetailedCost(new DoubleCost(newCost), newPlanStepCosts);
+        return new PlanWithCost<>(newPlan, newDetailedCost);
     }
 
     private Map<StatisticsCostEstimatorNames, PlanOpBase> extractStep(List<PlanOpBase> step, Map<String, Integer> groups, Matcher matcher) {
@@ -183,32 +214,11 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         return map;
     }
+    //endregion
 
-    private List<String> extractGroups(Matcher matcher) {
-        return Arrays.stream(values()).map(v -> matcher.group(v.value())).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-
-    public static StatisticsCostEstimatorPatterns[] getSupportedPattern() {
-        return StatisticsCostEstimatorPatterns.values();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, Integer> getNamedGroups(Pattern regex) {
-        try {
-            Method namedGroupsMethod = Pattern.class.getDeclaredMethod("namedGroups");
-            namedGroupsMethod.setAccessible(true);
-
-            Map<String, Integer> namedGroups = null;
-            namedGroups = (Map<String, Integer>) namedGroupsMethod.invoke(regex);
-
-            if (namedGroups == null) {
-                throw new InternalError();
-            }
-
-            return Collections.unmodifiableMap(namedGroups);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    //region Fields
+    private StatisticsProviderFactory statisticsProviderFactory;
+    private OntologyProvider ontologyProvider;
+    private StepCostEstimator estimator;
+    //endregion
 }

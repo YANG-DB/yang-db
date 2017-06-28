@@ -12,7 +12,7 @@ import java.util.Date;
 public class BasicScenarioSetup {
 
     public static ScenarioMockUtil setup(){
-        return ScenarioMockUtil.start(10,100).withElementCardinality("Person", 100L).withElementCardinality("Dragon", 500L).withElementCardinality("Guild", 10L).
+        return ScenarioMockUtil.start(10, 100).withElementCardinality("Person", 100L).withElementCardinality("Dragon", 500L).withElementCardinality("Guild", 10L).
                 withLayoutRedundancy("own", "name", "entityB.name").
                 withTimeSeriesIndex("own", ElementType.edge, "startDate", 3).
                 withHistogram("firstName", generateStringHistogram());

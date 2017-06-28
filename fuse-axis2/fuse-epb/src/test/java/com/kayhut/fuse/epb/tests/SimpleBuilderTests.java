@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.kayhut.fuse.epb.plan.cost.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
@@ -9,7 +8,6 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.query.EBase;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;

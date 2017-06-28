@@ -1,14 +1,14 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
+import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.getSupportedPattern;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.getSupportedPattern;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
@@ -190,7 +190,7 @@ public class StatisticalCostEstimatorTests {
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
         StatisticsCostEstimator estimator = new StatisticsCostEstimator(
                 (ont) -> provider,
-                M1StepEstimator.getStepEstimator(1, 0.001),
+                new M1StepCostEstimator(1, 0.001),
                 (id) -> Optional.of(ont.get()));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
@@ -199,31 +199,31 @@ public class StatisticalCostEstimatorTests {
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 6);
 
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().size(), 1);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().get(0) instanceof EntityFilterOp);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(1).getOpBase().size(), 1);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getPlan().getOps().get(0) instanceof EntityOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getPlan().getOps().size(), 1);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(1).getPlan().getOps().get(0) instanceof EntityFilterOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(1).getPlan().getOps().size(), 1);
 
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().size(), 2);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(2).getOpBase().get(0) instanceof RelationOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(2).getPlan().getOps().size(), 2);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(2).getPlan().getOps().get(0) instanceof RelationOp);
 
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().size(), 2);
-        Assert.assertTrue(newArrayList(estimate.getCost().getOpCosts()).get(3).getOpBase().get(0) instanceof EntityOp);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(3).getPlan().getOps().size(), 2);
+        Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(3).getPlan().getOps().get(0) instanceof EntityOp);
 
-        Assert.assertEquals(estimate.getCost().getGlobalCost().cost,new Cost(51.06).cost,0.1);
+        Assert.assertEquals(estimate.getCost().getGlobalCost().cost,new DoubleCost(51.06).cost, 0.1);
 
-        Assert.assertEquals(250, newArrayList(estimate.getCost().getOpCosts()).get(0).peek(), 0);
+        Assert.assertEquals(250, newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getCost().peek(), 0);
 
     }
 
-    private StepEstimator mockStepEstimator() {
-        StepEstimator mock = Mockito.mock(StepEstimator.class);
+    private StepCostEstimator mockStepEstimator() {
+        StepCostEstimator mock = Mockito.mock(StepCostEstimator.class);
         when(mock.calculate(any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
             if (!invocationOnMock.getArgumentAt(3, Optional.class).isPresent())
                 return new Tuple2<>(1d, Collections.emptyList());
             else
                 return new Tuple2<>(1d,
-                        ((PlanWithCost<Plan, Cost>) invocationOnMock.getArgumentAt(3, Optional.class).get())
+                        ((PlanWithCost<Plan, DoubleCost>) invocationOnMock.getArgumentAt(3, Optional.class).get())
                                 .getPlan().getOps().stream().map(p -> new PlanOpWithCost(1, 1, p))
                                 .collect(Collectors.toList()));
         });
@@ -235,7 +235,7 @@ public class StatisticalCostEstimatorTests {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
         StatisticsCostEstimator estimator = new StatisticsCostEstimator(
                 (ont) -> provider,
-                M1StepEstimator.getStepEstimator(1, 0.001),
+                new M1StepCostEstimator(1, 0.001),
                 (id) -> Optional.of(ont.get()));
 
         AsgQuery query = AsgQuery.Builder.start("name", "ont").
@@ -250,8 +250,8 @@ public class StatisticalCostEstimatorTests {
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 2);
         Assert.assertEquals(estimate.getCost().getGlobalCost().cost, 1, 0);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).size(), 1);
-        Assert.assertEquals(newArrayList(estimate.getCost().getOpCosts()).get(0).getOpBase().size(), 2);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).size(), 1);
+        Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getPlan().getOps().size(), 2);
     }
 
 }

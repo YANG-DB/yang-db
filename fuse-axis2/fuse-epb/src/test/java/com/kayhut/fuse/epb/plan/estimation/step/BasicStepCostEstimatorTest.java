@@ -1,12 +1,12 @@
-package com.kayhut.fuse.epb.plan.cost.calculation;
+package com.kayhut.fuse.epb.plan.estimation.step;
 
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.tests.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -17,7 +17,6 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by moti on 5/16/2017.
  */
-public class BasicStepEstimatorTest {
+public class BasicStepCostEstimatorTest {
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private Ontology.Accessor ont;
 
@@ -77,27 +76,27 @@ public class BasicStepEstimatorTest {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
-        StepEstimator estimator = M1StepEstimator.getStepEstimator(1, 0.001);
+        StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001);
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
 
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY, entityOp);
-        StepEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
-        List<PlanOpWithCost<Cost>> costs = result.planOpWithCosts();
+        StepCostEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
+        List<PlanWithCost<Plan, CountEstimatesCost>> costs = result.getPlanStepCosts();
 
         Assert.assertNotNull(costs);
-        Assert.assertEquals(costs.size(),1);
-        Assert.assertEquals(costs.get(0).getOpBase().size(),2);
-        Assert.assertTrue(costs.get(0).getOpBase().get(0) instanceof EntityOp);
-        Assert.assertTrue(costs.get(0).getOpBase().get(1) instanceof EntityFilterOp);
-        Assert.assertEquals(costs.get(0).getCost().cost,1,0);
+        Assert.assertEquals(costs.size(), 1);
+        Assert.assertEquals(costs.get(0).getPlan().getOps().size(), 2);
+        Assert.assertTrue(costs.get(0).getPlan().getOps().get(0) instanceof EntityOp);
+        Assert.assertTrue(costs.get(0).getPlan().getOps().get(1) instanceof EntityFilterOp);
+        Assert.assertEquals(costs.get(0).getCost().getCost(), 1, 0);
     }
 
     @Test
     public void calculateFullStep() throws Exception {
-        StepEstimator estimator = M1StepEstimator.getStepEstimator(1,0.001 );
+        StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001 );
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, "1", 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
@@ -114,11 +113,13 @@ public class BasicStepEstimatorTest {
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_TWO, plan.getOps().get(numOps-2));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
-        StepEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
-        Assert.assertEquals(result.planOpWithCosts().get(0).getCost().cost,20,0.1);
-        Assert.assertEquals(0.4, result.planOpWithCosts().get(1).getCost().cost, 0.1);
-        Assert.assertEquals(50, result.planOpWithCosts().get(2).getCost().cost,0.1);
-        Assert.assertEquals(1.0, result.lambda(),0.1);//lambda
+        StepCostEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
+
+        Assert.assertEquals(result.getPlanStepCosts().get(0).getCost().getCost(), 20, 0.1);
+        Assert.assertEquals(0.4, result.getPlanStepCosts().get(1).getCost().getCost(), 0.1);
+        Assert.assertEquals(50, result.getPlanStepCosts().get(2).getCost().getCost(), 0.1);
+
+        Assert.assertEquals(1.0, result.lambda(), 0.1);
     }
 
 }

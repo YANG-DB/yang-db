@@ -1,77 +1,64 @@
 package com.kayhut.fuse.model.execution.plan.costs;
 
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.PlanOpWithCost;
-import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.execution.plan.*;
+import javaslang.collection.Stream;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.model.Utils.fullPattern;
 
 /**
  * Created by Roman on 20/04/2017.
  */
-public class PlanDetailedCost implements ICost {
+public class PlanDetailedCost implements Cost {
     public PlanDetailedCost() {
     }
 
-    public PlanDetailedCost(Cost globalCost, Iterable<PlanOpWithCost<Cost>> opCosts) {
+    public PlanDetailedCost(DoubleCost globalCost, Iterable<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts) {
         this.globalCost = globalCost;
-        this.opCosts = opCosts;
+        this.planStepCosts = planStepCosts;
     }
 
-    public PlanDetailedCost(PlanDetailedCost formerCost) {
+    public PlanDetailedCost(PlanDetailedCost previousCost) {
         //todo implement clone
-        this(formerCost.globalCost, formerCost.opCosts);
+        this(previousCost.globalCost, previousCost.planStepCosts);
     }
     //region properties
 
-    public Cost getGlobalCost() {
+    public DoubleCost getGlobalCost() {
         return globalCost;
     }
 
-    public List<PlanOpBase> getOps() {
-        if (opCosts != null)
-            return StreamSupport.stream(getOpCosts().spliterator(), false).flatMap(p -> p.getOpBase().stream()).collect(Collectors.toList());
+    public List<PlanOpBase> getPlanOps() {
+        if (planStepCosts != null) {
+            return Stream.ofAll(planStepCosts).flatMap(pc -> Stream.ofAll(pc.getPlan().getOps())).toJavaList();
+        }
+
         return Collections.emptyList();
     }
 
-    public Iterable<PlanOpWithCost<Cost>> getOpCosts() {
-        return opCosts;
+    public Iterable<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts() {
+        return planStepCosts;
     }
 
-    public Optional<PlanOpWithCost<Cost>> getPlanOpCost(PlanOpBase op) {
-        return StreamSupport.stream(getOpCosts().spliterator(), false).filter(p -> p.getOpBase().contains(op)).findFirst();
-    }
-
-    public Optional<Cost> getOpCost(PlanOpBase planOpBase) {
-        return StreamSupport.stream(opCosts.spliterator(), false).filter(p -> p.getOpBase().contains(planOpBase)).map(PlanOpWithCost::getCost).findFirst();
-    }
-
-    public Optional<PlanOpWithCost<Cost>> getPlanOpByEntity(EEntityBase entityBase) {
-        return StreamSupport.stream(opCosts.spliterator(), false)
-                .filter(p -> p.getOpBase().stream()
-                        .anyMatch(op -> op instanceof EntityOp && ((EntityOp) op).getAsgEBase().geteBase().equals(entityBase)))
-                .findFirst();
+    public Optional<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCost(PlanOpBase planOp) {
+        return Stream.ofAll(planStepCosts).filter(pc -> pc.getPlan().getOps().contains(planOp)).toJavaOptional();
     }
     //endregion
 
     //region Fields
-    private Cost globalCost;
-    private Iterable<PlanOpWithCost<Cost>> opCosts;
+    private DoubleCost globalCost;
+    private Iterable<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts;
     //endregion
 
 
     @Override
     public String toString() {
         return " { " +
-                "plan:" + fullPattern(getOps()) + "," + "\n" +
-                "cost:" + (globalCost != null ? globalCost.toString() + "\n" : "")
+                "plan:" + fullPattern(getPlanOps()) + "," + "\n" +
+                "estimation:" + (globalCost != null ? globalCost.toString() + "\n" : "")
                 + " } ";
     }
 }

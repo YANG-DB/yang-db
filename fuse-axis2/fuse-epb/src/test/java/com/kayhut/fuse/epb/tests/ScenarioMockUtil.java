@@ -201,7 +201,7 @@ public class ScenarioMockUtil {
     }
 
     public static ScenarioMockUtil start(long nodeScaleFactor, long edgeScaleFactor){
-        return new ScenarioMockUtil(nodeScaleFactor,edgeScaleFactor);
+        return new ScenarioMockUtil(nodeScaleFactor, edgeScaleFactor);
     }
 
 

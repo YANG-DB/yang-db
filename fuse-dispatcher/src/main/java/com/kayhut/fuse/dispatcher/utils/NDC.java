@@ -27,7 +27,7 @@ public class NDC {
 
     // The number of times we allow push to be called before we call lazyRemove
     // 5 is a relatively small number. As such, lazyRemove is not called too
-    // frequently. We thus avoid the cost of creating an Enumeration too often.
+    // frequently. We thus avoid the estimation of creating an Enumeration too often.
     // The higher this number, the longer is the avarage period for which all
     // logging calls in all threads are blocked.
     static final int REAP_THRESHOLD = 5;

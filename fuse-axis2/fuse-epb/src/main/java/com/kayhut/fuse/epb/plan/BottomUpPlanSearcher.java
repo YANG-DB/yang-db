@@ -6,11 +6,11 @@ import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.NDC;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.cost.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.ICost;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.planTree.BuilderIfc;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.log.Trace;
@@ -26,10 +26,10 @@ import java.util.logging.Level;
 /**
  * Created by moti on 2/21/2017.
  */
-public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQuery> implements PlanSearcher<P, C, Q>, Trace<String> {
+public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQuery> implements PlanSearcher<P, C, Q>, Trace<String> {
     private TraceComposite<String> trace = TraceComposite.build(this.getClass().getSimpleName());
 
-    public abstract class wrapper<P extends IPlan, C extends ICost, Q extends IQuery> implements PlanSearcher<P, C, Q>,  Iterable<PlanWithCost<P, C>>, PlanNodeWrapper<P> {
+    public abstract class wrapper<P extends IPlan, C extends Cost, Q extends IQuery> implements PlanSearcher<P, C, Q>,  Iterable<PlanWithCost<P, C>>, PlanNodeWrapper<P> {
         private Iterable<PlanWithCost<P, C>> iterable;
 
         @Override

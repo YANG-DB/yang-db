@@ -14,8 +14,8 @@ public class PlanWithCost<P, C> implements IPlan {
     }
 
     public PlanWithCost(PlanWithCost<P, C> planWithCost) {
-        this.cost = planWithCost.cost;//todo clone ?
-        this.plan = planWithCost.plan;//todo clone ?
+        this.cost = planWithCost.getCost();
+        this.plan = planWithCost.getPlan();
     }
     //endregion
 
@@ -67,7 +67,7 @@ public class PlanWithCost<P, C> implements IPlan {
     public String toString() {
         return "{" +
                 " plan:" + plan.toString() + "," + "\n" +
-                " cost:" + (cost != null ? cost.toString() + "\n" : "")
+                " estimation:" + (cost != null ? cost.toString() + "\n" : "")
                 + "}";
     }
 

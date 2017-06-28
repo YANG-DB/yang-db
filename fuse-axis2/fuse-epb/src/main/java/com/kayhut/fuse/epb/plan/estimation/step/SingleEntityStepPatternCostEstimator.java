@@ -1,23 +1,24 @@
-package com.kayhut.fuse.epb.plan.cost.calculation;
+package com.kayhut.fuse.epb.plan.estimation.step;
 
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY;
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_ONLY_FILTER;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_ONLY_FILTER;
 
 /**
  * Created by moti on 29/05/2017.
  */
-public class SingleEntityPatternEstimator implements PatternCostEstimator {
+public class SingleEntityStepPatternCostEstimator implements StepPatternCostEstimator {
+    //region StepPatternCostEstimator Implementation
     @Override
-    public StepEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public StepCostEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         EntityOp entityOp = (EntityOp) patternParts.get(ENTITY_ONLY);
         if (!patternParts.containsKey(OPTIONAL_ENTITY_ONLY_FILTER)) {
             patternParts.put(OPTIONAL_ENTITY_ONLY_FILTER, new EntityFilterOp());
@@ -34,6 +35,7 @@ public class SingleEntityPatternEstimator implements PatternCostEstimator {
         }
 
         double min = Math.min(entityTotal, filterTotal);
-        return StepEstimator.StepEstimatorResult.of(1d, new PlanOpWithCost<>(new Cost(min), min, entityOp, filterOp));
+        return StepCostEstimator.StepEstimatorResult.of(1.0, new PlanWithCost<>(new Plan(entityOp, filterOp), new CountEstimatesCost(min, min)));
     }
+    //endregion
 }

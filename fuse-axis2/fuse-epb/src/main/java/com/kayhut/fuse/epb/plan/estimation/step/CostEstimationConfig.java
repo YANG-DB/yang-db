@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.cost.calculation;
+package com.kayhut.fuse.epb.plan.estimation.step;
 
 /**
  * Created by moti on 6/1/2017.

@@ -5,7 +5,8 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
@@ -14,6 +15,7 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import javaslang.collection.Stream;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -171,7 +173,7 @@ public interface PlanMockUtils {
         public PlanMockBuilder entityFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
             EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType, eNum, constraint)));
             EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
-            EntityOp last = PlanUtil.last$(plan, planOp -> true);
+            EntityOp last = PlanUtil.<EntityOp>last$(plan, planOp -> true);
             plan = plan.withOp(filterOp);
             nodeFilterStatistics.put(String.valueOf(eNum), factor);
             //statistics simulator
@@ -188,7 +190,7 @@ public interface PlanMockUtils {
             RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(pType, eNum, constraint)));
             RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relPropGroup));
 
-            RelationOp last = PlanUtil.last$(plan, planOp -> true);
+            RelationOp last = PlanUtil.<RelationOp>last$(plan, planOp -> true);
             plan = plan.withOp(relationFilterOp);
             edgeFilterStatistics.put(String.valueOf(eNum), factor );
             //statistics simulator
@@ -203,13 +205,16 @@ public interface PlanMockUtils {
 
 
         public PlanWithCost<Plan, PlanDetailedCost> oldPlanWithCost(long globalCost, long total) {
-            Cost cost = new Cost(globalCost );
-            List<PlanOpWithCost<Cost>> collect = oldPlan.getOps().stream().map(element -> new PlanOpWithCost<>(getCost(element), total, element)).collect(Collectors.toList());
-            return new PlanWithCost<>(oldPlan, new PlanDetailedCost(cost, collect));
+            DoubleCost cost = new DoubleCost(globalCost );
+            List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts = Stream.ofAll(oldPlan.getOps())
+                    .map(planOp -> new PlanWithCost<>(new Plan(planOp), new CountEstimatesCost(getCost(planOp).getCost(), total)))
+                    .toJavaList();
+
+            return new PlanWithCost<>(oldPlan, new PlanDetailedCost(cost, planStepCosts));
         }
 
-        private Cost getCost(PlanOpBase opBase) {
-            return new Cost(costs.getOrDefault(opBase, 1d));
+        private DoubleCost getCost(PlanOpBase opBase) {
+            return new DoubleCost(costs.getOrDefault(opBase, 1d));
         }
 
         public Map<PlanOpBase, Double> costs() {

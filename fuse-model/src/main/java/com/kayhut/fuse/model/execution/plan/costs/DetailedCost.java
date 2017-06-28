@@ -3,7 +3,7 @@ package com.kayhut.fuse.model.execution.plan.costs;
 /**
  * Created by moti on 5/18/2017.
  */
-public class DetailedCost extends Cost {
+public class DetailedCost extends DoubleCost {
 
     public final double lambdaNode;
     public final double lambdaEdge;
@@ -21,7 +21,7 @@ public class DetailedCost extends Cost {
     @Override
     public String toString() {
         return "{" +
-                "cost=" + cost +
+                "estimation=" + cost +
                 "lambdaNode=" + lambdaNode +
                 ", lambdaEdge=" + lambdaEdge +
                 ", R=" + R +
