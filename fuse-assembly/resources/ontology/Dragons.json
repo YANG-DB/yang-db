@@ -2,7 +2,7 @@
   "ont": "Dragons",
   "entityTypes": [
     {
-      "eType": 1,
+      "eType": "Person",
       "name": "Person",
       "properties": [
         "firstName",
@@ -15,7 +15,7 @@
       ]
     },
     {
-      "eType": 3,
+      "eType": "Horse",
       "name": "Horse",
       "properties": [
         "name",
@@ -25,7 +25,7 @@
       ]
     },
     {
-      "eType": 2,
+      "eType": "Dragon",
       "name": "Dragon",
       "properties": [
         "name",
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "eType": 5,
+      "eType": "Kingdom",
       "name": "Kingdom",
       "properties": [
         "name",
@@ -46,7 +46,7 @@
       ]
     },
     {
-      "eType": 4,
+      "eType": "Guild",
       "name": "Guild",
       "properties": [
         "name",
@@ -59,17 +59,17 @@
   ],
   "relationshipTypes": [
     {
-      "rType": 101,
+      "rType": "own",
       "name": "own",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 1,
-          "eTypeB": 2
+          "eTypeA": "Person",
+          "eTypeB": "Dragon"
         },
         {
-          "eTypeA": 1,
-          "eTypeB": 3
+          "eTypeA": "Person",
+          "eTypeB": "Horse"
         }
       ],
       "properties": [
@@ -78,13 +78,13 @@
       ]
     },
     {
-      "rType": 108,
+      "rType": "know",
       "name": "know",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 1,
-          "eTypeB": 1
+          "eTypeA": "Person",
+          "eTypeB": "Person"
         }
       ],
       "properties": [
@@ -92,13 +92,13 @@
       ]
     },
     {
-      "rType": 102,
+      "rType": "memberOf",
       "name": "memberOf",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 1,
-          "eTypeB": 4
+          "eTypeA": "Person",
+          "eTypeB": "Guild"
         }
       ],
       "properties": [
@@ -107,13 +107,13 @@
       ]
     },
     {
-      "rType": 103,
+      "rType": "fire",
       "name": "fire",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 2,
-          "eTypeB": 2
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
         }
       ],
       "properties": [
@@ -122,13 +122,13 @@
       ]
     },
     {
-      "rType": 104,
+      "rType": "freeze",
       "name": "freeze",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 2,
-          "eTypeB": 2
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
         }
       ],
       "properties": [
@@ -137,13 +137,13 @@
       ]
     },
     {
-      "rType": 105,
+      "rType": "originatedIn",
       "name": "originatedIn",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 2,
-          "eTypeB": 5
+          "eTypeA": "Dragon",
+          "eTypeB": "Kingdom"
         }
       ],
       "properties": [
@@ -151,13 +151,13 @@
       ]
     },
     {
-      "rType": 106,
+      "rType": "subjectOf",
       "name": "subjectOf",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 1,
-          "eTypeB": 5
+          "eTypeA": "Person",
+          "eTypeB": "Kingdom"
         }
       ],
       "properties": [
@@ -165,21 +165,21 @@
       ]
     },
     {
-      "rType": 107,
+      "rType": "registeredIn",
       "name": "registeredIn",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": 4,
-          "eTypeB": 5
+          "eTypeA": "Guild",
+          "eTypeB": "Kingdom"
         },
         {
-          "eTypeA": 2,
-          "eTypeB": 4
+          "eTypeA": "Dragon",
+          "eTypeB": "Guild"
         },
         {
-          "eTypeA": 3,
-          "eTypeB": 4
+          "eTypeA": "Horse",
+          "eTypeB": "Guild"
         }
       ],
       "properties": [

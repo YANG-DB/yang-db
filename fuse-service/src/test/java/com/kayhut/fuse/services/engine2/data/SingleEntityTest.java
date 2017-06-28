@@ -69,71 +69,71 @@ public class SingleEntityTest {
     //region TestMethods
     @Test
     public void test_PeopleQuery_SingleAssignment() throws IOException, InterruptedException {
-        testSinglePageResult("People", "Dragons", "1", 1, 1, Optional.empty());
+        testSinglePageResult("People", "Dragons", "Person", 1, 1, Optional.empty());
     }
 
     @Test
     public void test_PeopleQuery_MultipleAssignments() throws IOException, InterruptedException {
-        testSinglePageResult("People", "Dragons", "1", 10, 10,
+        testSinglePageResult("People", "Dragons", "Person", 10, 10,
                 Optional.of(Arrays.asList("p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9")));
     }
 
     @Test
     public void test_PeopleQuery_MultipleAssignments_MoreThanExists() throws IOException, InterruptedException {
-        testSinglePageResult("People", "Dragons", "1", 20, 10,
+        testSinglePageResult("People", "Dragons", "Person", 20, 10,
                 Optional.of(Arrays.asList("p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9")));
     }
 
     @Test
     public void test_DragonsQuery_SingleAssignment() throws IOException, InterruptedException {
-        testSinglePageResult("Dragons", "Dragons", "2", 1, 1, Optional.empty());
+        testSinglePageResult("Dragons", "Dragons", "Dragon", 1, 1, Optional.empty());
     }
 
     @Test
     public void test_DragonsQuery_MultipleAssignments() throws IOException, InterruptedException {
-        testSinglePageResult("Dragons", "Dragons", "2", 10, 10,
+        testSinglePageResult("Dragons", "Dragons", "Dragon", 10, 10,
                 Optional.of(Arrays.asList("d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9")));
     }
 
     @Test
     public void test_DragonsQuery_MultipleAssignments_MoreThanExists() throws IOException, InterruptedException {
-        testSinglePageResult("Dragons", "Dragons", "2", 20, 10,
+        testSinglePageResult("Dragons", "Dragons", "Dragon", 20, 10,
                 Optional.of(Arrays.asList("d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9")));
     }
 
     @Test
     public void test_PeopleQuery_MultipleAssignments_MultiplePageResults_PageSize1() throws IOException, InterruptedException {
-        testMultiplePageResults("People", "Dragons", "1", 1,
+        testMultiplePageResults("People", "Dragons", "Person", 1,
                 Arrays.asList("p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"));
     }
 
     @Test
     public void test_PeopleQuery_MultipleAssignments_MultiplePageResults_PageSize2() throws IOException, InterruptedException {
-        testMultiplePageResults("People", "Dragons", "1", 2,
+        testMultiplePageResults("People", "Dragons", "Person", 2,
                 Arrays.asList("p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"));
     }
 
     @Test
     public void test_PeopleQuery_MultipleAssignments_MultiplePageResults_PageSize5() throws IOException, InterruptedException {
-        testMultiplePageResults("People", "Dragons", "1", 5,
+        testMultiplePageResults("People", "Dragons", "Person", 5,
                 Arrays.asList("p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9"));
     }
 
     @Test
     public void test_DragonsQuery_MultipleAssignments_MultiplePageResults_PageSize1() throws IOException, InterruptedException {
-        testMultiplePageResults("Dragons", "Dragons", "2", 1,
+        testMultiplePageResults("Dragons", "Dragons", "Dragon", 1,
                 Arrays.asList("d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9"));
     }
 
     @Test
     public void test_DragonsQuery_MultipleAssignments_MultiplePageResults_PageSize2() throws IOException, InterruptedException {
-        testMultiplePageResults("Dragons", "Dragons", "2", 2,
+        testMultiplePageResults("Dragons", "Dragons", "Dragon", 2,
                 Arrays.asList("d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9"));
     }
 
     @Test
     public void test_DragonsQuery_MultipleAssignments_MultiplePageResults_PageSize5() throws IOException, InterruptedException {
-        testMultiplePageResults("Dragons", "Dragons", "2", 5,
+        testMultiplePageResults("Dragons", "Dragons", "Dragon", 5,
                 Arrays.asList("d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9"));
     }
     //endregion
