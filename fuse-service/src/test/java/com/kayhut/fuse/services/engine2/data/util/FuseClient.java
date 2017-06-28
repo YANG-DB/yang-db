@@ -2,7 +2,6 @@ package com.kayhut.fuse.services.engine2.data.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -15,9 +14,6 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -38,10 +34,15 @@ public class FuseClient {
     }
 
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException {
+        return postQuery(queryStoreUrl,query, false);
+    }
+
+    public QueryResourceInfo postQuery(String queryStoreUrl, Query query, boolean verbose) throws IOException {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
         request.setQuery(query);
+        request.setVerbose(verbose);
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 

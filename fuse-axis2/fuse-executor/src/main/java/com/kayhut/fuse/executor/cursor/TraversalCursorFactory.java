@@ -109,7 +109,7 @@ public class TraversalCursorFactory implements CursorFactory {
             PromiseVertex vertex = path.get(element.geteTag());
             IdPromise idPromise = (IdPromise)vertex.getPromise();
 
-            int eType = idPromise.getLabel().isPresent() ? ont.eType$(idPromise.getLabel().get()) : 0;
+            String eType = idPromise.getLabel().isPresent() ? ont.eType$(idPromise.getLabel().get()) : "";
             List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
 
             return toEntity(vertex.id().toString(),eType,element.geteTag(), properties);
@@ -129,7 +129,7 @@ public class TraversalCursorFactory implements CursorFactory {
             return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
         }
 
-        private Entity toEntity(String eId, int eType, String eTag, List<Property> properties) {
+        private Entity toEntity(String eId, String eType, String eTag, List<Property> properties) {
             Entity.Builder builder = Entity.Builder.instance();
             builder.withEID(eId);
             builder.withEType(eType);

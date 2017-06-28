@@ -54,7 +54,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
     //region CursorCreationOperationContext.Processor implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public CursorCreationOperationContext process(CursorCreationOperationContext context) throws Exception {
         if (context.getCursor() != null) {
             return context;

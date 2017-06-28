@@ -34,7 +34,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
     @Override
     @Subscribe
     @TimerAnnotation
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         //if asg not ready yet -> return
         if (context.getAsgQuery() == null) {
@@ -47,9 +47,7 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
 
         AsgQuery query = context.getAsgQuery();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        //get first
         PlanWithCost<Plan, PlanDetailedCost> first = plans.iterator().next();
-        System.out.println("Selected Plan: " + first.getPlan().toString());
 
         if(plans instanceof PlanNodeWrapper) {
             context = context.of(((PlanNodeWrapper) plans).planNode());

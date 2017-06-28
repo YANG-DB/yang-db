@@ -41,16 +41,16 @@ public class EntityFilterOpTranslationStrategyTest {
 
     static AsgQuery simpleQuery2(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, 1, "A"))
-                .next(rel(2, 1, R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
-                .next(typed(3, 2, "B"))
+                .next(typed(1, "1", "A"))
+                .next(rel(2, "1", R).below(relProp(10, RelProp.of("2", 10, of(eq, "value2")))))
+                .next(typed(3, "2", "B"))
                 .next(quant1(4, all))
                 .in(eProp(9, EProp.of("1", 9, of(eq, "value1")), EProp.of("2", 9, of(eq, 30)))
-                        , rel(5, 4, R)
+                        , rel(5, "4", R)
                                 .next(unTyped(6, "C"))
-                        , rel(7, 5, R)
+                        , rel(7, "5", R)
                                 .below(relProp(11, RelProp.of("5", 11, of(eq, "value5")), RelProp.of("4", 11, of(eq, "value4"))))
-                                .next(concrete(8, "concrete1", 3, "Concrete1", "D"))
+                                .next(concrete(8, "concrete1", "3", "Concrete1", "D"))
                 )
                 .build();
     }
@@ -69,7 +69,7 @@ public class EntityFilterOpTranslationStrategyTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(2).withName("Person").build());
+                            .withEType("2").withName("Person").build());
                     return  entityTypes;
                 }
         );
@@ -122,7 +122,7 @@ public class EntityFilterOpTranslationStrategyTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(2).withName("Person").build());
+                            .withEType("2").withName("Person").build());
                     return  entityTypes;
                 }
         );

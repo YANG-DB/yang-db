@@ -11,13 +11,13 @@
       "eNum": 1,
       "type": "ETyped",
       "eTag": "A",
-      "eType": 2,
+      "eType": "Dragon",
       "next": 2
     },
     {
       "eNum": 2,
       "type": "Rel",
-      "rType": 1,
+      "rType": "own",
       "dir": "L",
       "next": 3
     },
@@ -25,7 +25,7 @@
       "eNum": 3,
       "type": "ETyped",
       "eTag": "B",
-      "eType": 1,
+      "eType": "Person",
       "next": 4
     },
     {

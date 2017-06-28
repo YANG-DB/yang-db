@@ -40,20 +40,20 @@ public class OntologyTestUtils {
     public static Property TIMESTAMP = new Property("timestamp", DATE, "timestamp");
 
 
-    public static final RelationshipType OWN = new RelationshipType("own", 101, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType KNOW = new RelationshipType("know", 108, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType MEMBER_OF = new RelationshipType("memberOf", 102, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType FIRE = new RelationshipType("fire", 103, true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type,TIMESTAMP.type);
-    public static final RelationshipType FREEZE = new RelationshipType("freeze", 104, true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type);
-    public static final RelationshipType ORIGIN = new RelationshipType("origin", 105, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType SUBJECT = new RelationshipType("subject", 106, true).withProperty(START_DATE.type, END_DATE.type);
-    public static final RelationshipType REGISTERED = new RelationshipType("registered", 107, true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType OWN = new RelationshipType("own", "own", true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType KNOW = new RelationshipType("know", "know", true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType MEMBER_OF = new RelationshipType("memberOf", "memberOf", true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType FIRE = new RelationshipType("fire", "fire", true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type,TIMESTAMP.type);
+    public static final RelationshipType FREEZE = new RelationshipType("freeze", "freeze", true).withProperty(START_DATE.type, END_DATE.type,TEMPERATURE.type);
+    public static final RelationshipType ORIGIN = new RelationshipType("origin", "origin", true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType SUBJECT = new RelationshipType("subject", "subject", true).withProperty(START_DATE.type, END_DATE.type);
+    public static final RelationshipType REGISTERED = new RelationshipType("registered", "registered", true).withProperty(START_DATE.type, END_DATE.type);
 
 
     public interface Entity {
         String name();
 
-        int type();
+        String type();
 
         List<RelationshipType> relations();
 
@@ -86,7 +86,7 @@ public class OntologyTestUtils {
 
     public static class DRAGON implements Entity {
         public static String name = "Dragon";
-        public static int type = 2;
+        public static String type = "Dragon";
         public static List<Property> propertyList = Arrays.asList(NAME.redundant(),BIRTH_DATE, GENDER, COLOR);
 
         public static List<RelationshipType> relationshipList = Arrays.asList(
@@ -101,7 +101,7 @@ public class OntologyTestUtils {
         }
 
         @Override
-        public int type() {
+        public String type() {
             return type;
         }
 
@@ -118,7 +118,7 @@ public class OntologyTestUtils {
 
     public static class HORSE implements Entity {
         public static String name = "Horse";
-        public static int type = 3;
+        public static String type = "Horse";
         public static List<Property> propertyList = Arrays.asList(NAME.redundant(), GENDER);
 
         public static List<RelationshipType> relationshipList = Collections.singletonList(
@@ -130,7 +130,7 @@ public class OntologyTestUtils {
         }
 
         @Override
-        public int type() {
+        public String type() {
             return type;
         }
 
@@ -147,7 +147,7 @@ public class OntologyTestUtils {
 
     public static class GUILD implements Entity {
         public static String name = "Guild";
-        public static int type = 4;
+        public static String type = "Guild";
         public static List<Property> propertyList = Arrays.asList(NAME);
 
         public static List<RelationshipType> relationshipList = Collections.singletonList(
@@ -159,7 +159,7 @@ public class OntologyTestUtils {
         }
 
         @Override
-        public int type() {
+        public String type() {
             return type;
         }
 
@@ -177,7 +177,7 @@ public class OntologyTestUtils {
 
     public static class KINGDOM implements Entity {
         public static String name = "Kingdom";
-        public static int type = 5;
+        public static String type = "Kingdom";
         public static List<Property> propertyList = Arrays.asList(NAME);
 
         @Override
@@ -186,7 +186,7 @@ public class OntologyTestUtils {
         }
 
         @Override
-        public int type() {
+        public String type() {
             return type;
         }
 
@@ -203,7 +203,7 @@ public class OntologyTestUtils {
 
     public static class PERSON implements Entity {
         public static String name = "Person";
-        public static int type = 1;
+        public static String type = "Person";
 
 
         public static List<Property> propertyList = Arrays.asList(FIRST_NAME, LAST_NAME, GENDER, BIRTH_DATE, DEATH_DATE, HEIGHT, NAME);
@@ -222,7 +222,7 @@ public class OntologyTestUtils {
         }
 
         @Override
-        public int type() {
+        public String type() {
             return type;
         }
 

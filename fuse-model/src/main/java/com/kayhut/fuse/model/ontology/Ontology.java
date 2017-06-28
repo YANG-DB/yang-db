@@ -189,13 +189,13 @@ public class Ontology {
             return this.ontology.getOnt();
         }
 
-        public Optional<EntityType> $entity(int eType) {
+        public Optional<EntityType> $entity(String eType) {
             return Stream.ofAll(ontology.getEntityTypes())
-                    .filter(entityType -> entityType.geteType() == eType)
+                    .filter(entityType -> entityType.geteType().equals(eType))
                     .toJavaOptional();
         }
 
-        public EntityType $entity$(int eType) {
+        public EntityType $entity$(String eType) {
             return $entity(eType).get();
         }
 
@@ -209,24 +209,24 @@ public class Ontology {
             return entity(entityName).get();
         }
 
-        public Optional<Integer> eType(String entityName) {
+        public Optional<String> eType(String entityName) {
             return Stream.ofAll(ontology.getEntityTypes())
                     .filter(entityType -> entityType.getName().equals(entityName))
                     .map(EntityType::geteType)
                     .toJavaOptional();
         }
 
-        public int eType$(String entityName) {
+        public String eType$(String entityName) {
             return eType(entityName).get();
         }
 
-        public Optional<RelationshipType> $relation(int rType) {
+        public Optional<RelationshipType> $relation(String rType) {
             return Stream.ofAll(ontology.getRelationshipTypes())
-                    .filter(relationshipType -> relationshipType.getrType() == rType)
+                    .filter(relationshipType -> relationshipType.getrType().equals(rType))
                     .toJavaOptional();
         }
 
-        public RelationshipType $relation$(int rType) {
+        public RelationshipType $relation$(String rType) {
             return $relation(rType).get();
         }
 
@@ -240,14 +240,14 @@ public class Ontology {
             return relation(relationName).get();
         }
 
-        public Optional<Integer> rType(String relationName) {
+        public Optional<String> rType(String relationName) {
             return Stream.ofAll(ontology.getRelationshipTypes())
                     .filter(relationshipType -> relationshipType.getName().equals(relationName))
                     .map(RelationshipType::getrType)
                     .toJavaOptional();
         }
 
-        public Integer rType$(String relationName) {
+        public String rType$(String relationName) {
             return rType(relationName).get();
         }
 
@@ -290,7 +290,7 @@ public class Ontology {
             return Stream.ofAll(entities()).map(EntityType::getName).toJavaList();
         }
 
-        public Iterable<Integer> eTypes() {
+        public Iterable<String> eTypes() {
             return Stream.ofAll(ontology.getEntityTypes()).map(EntityType::geteType).toJavaList();
         }
 
@@ -298,7 +298,7 @@ public class Ontology {
             return Stream.ofAll(ontology.getRelationshipTypes()).toJavaList();
         }
 
-        public Iterable<Integer> rTypes() {
+        public Iterable<String> rTypes() {
             return Stream.ofAll(relations()).map(RelationshipType::getrType).toJavaList();
         }
 

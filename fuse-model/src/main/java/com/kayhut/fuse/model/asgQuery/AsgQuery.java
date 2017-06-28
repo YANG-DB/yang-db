@@ -138,11 +138,11 @@ public class AsgQuery implements IQuery{
             return current;
         }
 
-        public static AsgEBase<EConcrete> concrete(int eNum, String eID, int eType, String eName, String eTag) {
+        public static AsgEBase<EConcrete> concrete(int eNum, String eID, String eType, String eName, String eTag) {
             return concrete(eNum, eID, eType, eName, eTag, new String[0]);
         }
 
-        public static AsgEBase<EConcrete> concrete(int eNum, String eID, int eType, String eName, String eTag, String...reportProps) {
+        public static AsgEBase<EConcrete> concrete(int eNum, String eID, String eType, String eName, String eTag, String...reportProps) {
             EConcrete concrete = new EConcrete();
             concrete.seteNum(eNum);
             concrete.seteType(eType);
@@ -186,11 +186,11 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(quant2);
         }
 
-        public static AsgEBase<ETyped> typed(int eNum, int eType, String eTag) {
+        public static AsgEBase<ETyped> typed(int eNum, String eType, String eTag) {
             return typed(eNum, eType, eTag, new String[0]);
         }
 
-        public static AsgEBase<ETyped> typed(int eNum, int eType, String eTag, String...reportProps) {
+        public static AsgEBase<ETyped> typed(int eNum, String eType, String eTag, String...reportProps) {
             ETyped eTyped = new ETyped();
             eTyped.seteNum(eNum);
             eTyped.seteType(eType);
@@ -200,41 +200,66 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<ETyped> typed(int eNum, int eType) {
+        public static AsgEBase<ETyped> typed(int eNum, String eType) {
             ETyped eTyped = new ETyped();
             eTyped.seteNum(eNum);
             eTyped.seteType(eType);
             return new AsgEBase<>(eTyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Integer ... vTypes) {
+        public static AsgEBase<EUntyped> unTyped(int eNum) {
             EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.of(vTypes).toJavaList());
-            untyped.seteTag(eTag);
             untyped.seteNum(eNum);
 
             return new AsgEBase<>(untyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> reportProps, Integer ... vTypes) {
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag) {
             EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.of(vTypes).toJavaList());
-            untyped.seteTag(eTag);
             untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String... vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.seteNum(eNum);
+            untyped.setvTypes(Stream.of(vTypes).toJavaList());
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
+            untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes) {
+            EUntyped untyped = new EUntyped();
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
+            untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaList());
+            untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
+
+            return new AsgEBase<>(untyped);
+        }
+
+        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, Iterable<String> reportProps) {
+            EUntyped untyped = new EUntyped();
+            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
+            untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaList());
+            untyped.seteNum(eNum);
+            untyped.seteTag(eTag);
             untyped.setReportProps(Stream.ofAll(reportProps).toJavaList());
 
             return new AsgEBase<>(untyped);
         }
 
-        public static AsgEBase<EUntyped> unTyped(int eNum, Integer ... vTypes) {
-            EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.of(vTypes).toJavaList());
-            untyped.seteNum(eNum);
-
-            return new AsgEBase<>(untyped);
-        }
-
-        public static AsgEBase<Rel> rel(int eNum, int rType, Rel.Direction direction) {
+        public static AsgEBase<Rel> rel(int eNum, String rType, Rel.Direction direction) {
             Rel rel = new Rel();
             rel.setDir(direction);
             rel.setrType(rType);

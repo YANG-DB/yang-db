@@ -23,7 +23,7 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
     }
 
     @Override
-    @LoggerAnnotation(name = "isPlanValid", logLevel = Slf4jReporter.LoggingLevel.DEBUG)
+    @LoggerAnnotation(name = "isPlanValid", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
         return super.isPlanValid(plan, query);
     }

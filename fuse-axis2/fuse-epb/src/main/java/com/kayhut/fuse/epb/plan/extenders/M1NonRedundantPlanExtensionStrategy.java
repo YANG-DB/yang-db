@@ -33,7 +33,7 @@ public class M1NonRedundantPlanExtensionStrategy extends CompositePlanExtensionS
     //endregion
 
     @Override
-    @LoggerAnnotation(name = "extendPlan", logLevel = Slf4jReporter.LoggingLevel.DEBUG)
+    @LoggerAnnotation(name = "extendPlan", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         return super.extendPlan(plan, query);
     }

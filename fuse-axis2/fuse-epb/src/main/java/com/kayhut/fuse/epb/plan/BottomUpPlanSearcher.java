@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.planTree.BuilderIfc;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
 import com.kayhut.fuse.model.log.Trace;
 import com.kayhut.fuse.model.log.TraceComposite;
@@ -104,13 +105,13 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
 
     //region Methods
     @Override
-    @LoggerAnnotation(name = "search", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "search", options = LoggerAnnotation.Options.returnValue, logLevel = Slf4jReporter.LoggingLevel.INFO)
     public Iterable<PlanWithCost<P, C>> search(Q query) {
         Iterable<PlanWithCost<P, C>> selectedPlans;
 
         Set<PlanWithCost<P, C>> currentPlans = new TreeSet<>(Comparator.comparing(o -> o.getPlan().toString()));
         int phase = 0;
-        PlanNode.Builder builder = PlanNode.Builder.root(query.toString());
+        BuilderIfc builder = PlanNode.Builder.root(query.toString());
 
         // Generate seed plans (plan is null)
         for (P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)) {
@@ -166,11 +167,11 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
 
         selectedPlans = globalPlanSelector.select(query, selectedPlans);
         Iterable<PlanWithCost<P, C>> finalSelectedPlans = selectedPlans;
-        PlanNode root = builder.selected(Stream.ofAll(finalSelectedPlans).map(p -> p.getPlan()).toJavaList()).build();
+        Optional<PlanNode<P>> root = builder.selected(Stream.ofAll(finalSelectedPlans).map(p -> p.getPlan()).toJavaList()).build();
 
         return new wrapper<P, C, IQuery>(finalSelectedPlans) {
             @Override
-            public PlanNode<P> planNode() {
+            public Optional<PlanNode<P>> planNode() {
                 return root;
             }
         };

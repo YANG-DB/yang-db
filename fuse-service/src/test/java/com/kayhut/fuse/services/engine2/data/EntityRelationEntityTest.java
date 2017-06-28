@@ -22,6 +22,7 @@ import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
+import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.unipop.controller.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.promise.Promise;
@@ -59,6 +60,10 @@ import static java.util.Collections.singletonList;
  */
 public abstract class EntityRelationEntityTest {
     public static void setup(TransportClient client) throws Exception {
+        setup(client, false);
+    }
+
+    public static void setup(TransportClient client, boolean calcStats) throws Exception {
         fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
@@ -139,9 +144,17 @@ public abstract class EntityRelationEntityTest {
                 FIRE.getName().toLowerCase() + "20170512",
                 FIRE.getName().toLowerCase() + "20170513"
         )).actionGet();
+
+        if(calcStats){
+            StatCalculator.main(new String[]{"statistics.test.properties"});
+        }
     }
 
     public static void cleanup(TransportClient client) throws Exception {
+        cleanup(client, false);
+    }
+
+    public static void cleanup(TransportClient client, boolean statsUsed) throws Exception {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
                         PERSON.name.toLowerCase(),
@@ -150,6 +163,10 @@ public abstract class EntityRelationEntityTest {
                         FIRE.getName().toLowerCase() + "20170512",
                         FIRE.getName().toLowerCase() + "20170513"))
                 .actionGet();
+
+        if(statsUsed){
+            client.admin().indices().delete(new DeleteIndexRequest("stat")).actionGet();
+        }
     }
 
     @Before
@@ -617,6 +634,10 @@ public abstract class EntityRelationEntityTest {
     //endregion
 
     //region Protected Methods
+    protected boolean shouldIgnoreRelId() {
+        return false;
+    }
+
     private void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
@@ -797,7 +818,7 @@ public abstract class EntityRelationEntityTest {
             String entityBId,
             Iterable<String> entityBTypes);
 
-    private static void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
+    private void testAndAssertQuery(Query query, QueryResult expectedQueryResult) throws Exception {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -811,8 +832,10 @@ public abstract class EntityRelationEntityTest {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult);
+        QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
     }
+
+
 
     private static Iterable<Map<String, Object>> createPeople(int numPeople) {
         List<Map<String, Object>> people = new ArrayList<>();

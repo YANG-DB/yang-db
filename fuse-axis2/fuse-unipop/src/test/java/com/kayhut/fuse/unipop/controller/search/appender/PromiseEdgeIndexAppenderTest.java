@@ -578,21 +578,21 @@ public class PromiseEdgeIndexAppenderTest{
         Ontology ontology = mock(Ontology.class);
 
         List<EPair> ePairs = Arrays.asList(new EPair() {{
-            seteTypeA(1);
-            seteTypeB(1);
+            seteTypeA("Dragon");
+            seteTypeB("Dragon");
         }});
 
         RelationshipType edgeTypeNoTS = RelationshipType.Builder.get()
-                                                        .withRType(1).withName(STATIC_INDEX_EDGE).withEPairs(ePairs).build();
+                                                        .withRType("Fire").withName(STATIC_INDEX_EDGE).withEPairs(ePairs).build();
 
         RelationshipType edgeTypeOnlyTS = RelationshipType.Builder.get()
-                                                        .withRType(1).withName(TIME_SERIES_INDEX_EDGE).withEPairs(ePairs).build();
+                                                        .withRType("Fire").withName(TIME_SERIES_INDEX_EDGE).withEPairs(ePairs).build();
 
         when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType(1).withName("Dragon").build());
+                            .withEType("Dragon").withName("Dragon").build());
                     return entityTypes;
                 }
         );

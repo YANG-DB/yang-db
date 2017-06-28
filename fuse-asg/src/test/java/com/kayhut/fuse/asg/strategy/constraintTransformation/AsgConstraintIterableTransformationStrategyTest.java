@@ -76,7 +76,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
         ETyped eTypedA = new ETyped();
         eTypedA.seteNum(1);
         eTypedA.seteTag("A");
-        eTypedA.seteType(1);
+        eTypedA.seteType("Person");
         eTypedA.setNext(2);
         elements.add(eTypedA);
 
@@ -91,7 +91,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
          */
         Rel rel = new Rel();
         rel.seteNum(2);
-        rel.setrType(1);
+        rel.setrType("own");
         rel.setDir(Rel.Direction.R);
         rel.setNext(3);
         elements.add(rel);
@@ -108,7 +108,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
         ETyped eTypedB = new ETyped();
         eTypedB.seteNum(3);
         eTypedB.seteTag("B");
-        eTypedB.seteType(2);
+        eTypedB.seteType("Dragon");
         eTypedB.setNext(4);
         elements.add(eTypedB);
 

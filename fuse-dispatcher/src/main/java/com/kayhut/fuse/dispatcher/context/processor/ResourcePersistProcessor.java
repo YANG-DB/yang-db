@@ -33,7 +33,7 @@ public class ResourcePersistProcessor implements
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         //last step in creation of QueryCreationOperationContext => we can save the context now to the resourceStore
         if (context.getExecutionPlan() == null) {
@@ -55,7 +55,7 @@ public class ResourcePersistProcessor implements
     //region CursorCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
         if (context.getCursor() == null) {
             return context;
@@ -70,7 +70,7 @@ public class ResourcePersistProcessor implements
     //region PageCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PageCreationOperationContext process(PageCreationOperationContext context) {
         if (context.getPageResource() == null) {
             return context;

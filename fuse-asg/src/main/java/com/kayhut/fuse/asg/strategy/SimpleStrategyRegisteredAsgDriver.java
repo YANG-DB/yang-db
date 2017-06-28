@@ -47,7 +47,7 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
     @Override
     @Subscribe
     @TimerAnnotation
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         if(context.getAsgQuery() != null) {
             return context;

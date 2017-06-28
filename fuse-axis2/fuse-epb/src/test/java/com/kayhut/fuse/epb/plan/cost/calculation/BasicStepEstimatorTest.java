@@ -18,6 +18,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -37,7 +38,7 @@ import static org.mockito.Mockito.when;
  */
 public class BasicStepEstimatorTest {
     private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
+    private Ontology.Accessor ont;
 
     @Before
     public void setup(){
@@ -72,7 +73,7 @@ public class BasicStepEstimatorTest {
         });
         when(graphEdgeSchema.getDestination()).thenReturn(Optional.of(edgeEnd));
         when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(graphEdgeSchema));
-        ontology = OntologyTestUtils.createDragonsOntologyShort();
+        ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
     }
 
     @Test
@@ -98,10 +99,10 @@ public class BasicStepEstimatorTest {
     @Test
     public void calculateFullStep() throws Exception {
         StepEstimator estimator = M1StepEstimator.getStepEstimator(1,0.001 );
-        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, 4)
+        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
-                .rel(out, 1, 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
-                .entity(TYPED, 50, 5).entityFilter(0.1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
+                .rel(out, "1", 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
+                .entity(TYPED, 50, "5").entityFilter(0.1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.oldPlanWithCost(50, 250);
         Plan plan = builder.plan();
         StatisticsProvider provider = build(builder.statistics(), 1000);
@@ -115,10 +116,12 @@ public class BasicStepEstimatorTest {
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_TWO, plan.getOps().get(numOps-2));
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
         StepEstimator.StepEstimatorResult result = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
+
         Assert.assertEquals(result.getPlanStepCosts().get(0).getCost().getCost(), 20, 0.1);
         Assert.assertEquals(0.4, result.getPlanStepCosts().get(1).getCost().getCost(), 0.1);
         Assert.assertEquals(50, result.getPlanStepCosts().get(2).getCost().getCost(), 0.1);
-        Assert.assertEquals(1.0, result.lambda(),0.1);//lambda
+
+        Assert.assertEquals(1.0, result.lambda(), 0.1);
     }
 
 }

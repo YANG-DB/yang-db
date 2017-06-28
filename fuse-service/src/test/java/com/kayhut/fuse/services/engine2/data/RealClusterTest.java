@@ -37,8 +37,8 @@ import static java.util.Collections.singletonList;
 public class RealClusterTest {
     @Before
     public void setup() throws IOException {
+        //fuseClient = new FuseClient("http://40.118.108.95:8888/fuse");
         fuseClient = new FuseClient("http://localhost:8888/fuse");
-        //fuseClient = new FuseClient("http://localhost:8888/fuse");
         //fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
@@ -139,7 +139,7 @@ public class RealClusterTest {
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query,true);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
 

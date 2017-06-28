@@ -20,13 +20,13 @@ public class ConcreteNodeCypherStrategyTest {
     public void testConcretedNodeStrategy() {
 
         AsgQuery query = AsgQuery.Builder.start("concrete", "dragons")
-                .next(concrete(1,"id123", 1,"name", "A"))
+                .next(concrete(1,"id123", "1","name", "A"))
                 .build();
 
         Ontology ontology = Ontology.OntologyBuilder.anOntology()
                 .withOnt("dragons")
                 .withEntityTypes(
-                        Collections.singletonList(new EntityType(1, "person", Collections.emptyList()))
+                        Collections.singletonList(new EntityType("1", "person", Collections.emptyList()))
                 ).build();
 
         String cypher = CypherCompiler.compile(query ,ontology);

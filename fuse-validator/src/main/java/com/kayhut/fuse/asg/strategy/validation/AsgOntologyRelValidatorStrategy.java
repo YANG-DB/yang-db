@@ -52,11 +52,11 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
                 errors.add(ERROR_1 + ":" + rel);
 
             List<EPair> elements = accessor.$relation$(rel.geteBase().getrType()).getePairs();
-            Set<Integer> allowedSideA = HashSet.<Integer>of().addAll(elements.stream().map(EPair::geteTypeA).collect(Collectors.toList()));
-            Set<Integer> allowedSideB = HashSet.<Integer>of().addAll(elements.stream().map(EPair::geteTypeB).collect(Collectors.toList()));
+            Set<String> allowedSideA = HashSet.<String>of().addAll(elements.stream().map(EPair::geteTypeA).collect(Collectors.toList()));
+            Set<String> allowedSideB = HashSet.<String>of().addAll(elements.stream().map(EPair::geteTypeB).collect(Collectors.toList()));
 
-            Set<Integer> sideATypes = getSideTypes(sideA);
-            Set<Integer> sideBTypes = getSideTypes(sideB);
+            Set<String> sideATypes = getSideTypes(sideA);
+            Set<String> sideBTypes = getSideTypes(sideB);
 
 
             if (!sideATypes.isEmpty()) {
@@ -76,8 +76,8 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
         return new ValidationContext(false, errors.toArray(new String[errors.size()]));
     }
 
-    private Set<Integer> getSideTypes(Optional<AsgEBase<EEntityBase>> side) {
-        Set<Integer> hashSet = HashSet.of();
+    private Set<String> getSideTypes(Optional<AsgEBase<EEntityBase>> side) {
+        Set<String> hashSet = HashSet.of();
         if (side.isPresent()) {
             if (Typed.eTyped.class.isAssignableFrom(side.get().geteBase().getClass())) {
                 hashSet = hashSet.add(((Typed.eTyped) side.get().geteBase()).geteType());

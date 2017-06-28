@@ -15,35 +15,35 @@ public class PlanTreeTest {
     @Test
     public void test1() throws JsonProcessingException {
         Plan planParent = new Plan(
-                new EntityOp(new AsgEBase<>(new ETyped(1, "A", 1, 2, 0)))
+                new EntityOp(new AsgEBase<>(new ETyped(1, "A", "1", 2, 0)))
         );
 
         Plan childPlan1 = new Plan(
-                new EntityOp(new AsgEBase<>(new ETyped(1, "A", 1, 2, 0))),
-                new RelationOp(new AsgEBase<>(new Rel(2, 2, Rel.Direction.R, null, 3, 0))),
-                new EntityOp(new AsgEBase<>(new ETyped(3, "B", 3, 0, 0)))
+                new EntityOp(new AsgEBase<>(new ETyped(1, "A", "1", 2, 0))),
+                new RelationOp(new AsgEBase<>(new Rel(2, "2", Rel.Direction.R, null, 3, 0))),
+                new EntityOp(new AsgEBase<>(new ETyped(3, "B", "3", 0, 0)))
         );
 
         Plan childPlan2 = new Plan(
-                new EntityOp(new AsgEBase<>(new ETyped(1, "A", 1, 2, 0))),
-                new RelationOp(new AsgEBase<>(new Rel(4, 4, Rel.Direction.L, null, 5, 0))),
-                new EntityOp(new AsgEBase<>(new ETyped(5, "C", 5, 0, 0)))
+                new EntityOp(new AsgEBase<>(new ETyped(1, "A", "1", 2, 0))),
+                new RelationOp(new AsgEBase<>(new Rel(4, "4", Rel.Direction.L, null, 5, 0))),
+                new EntityOp(new AsgEBase<>(new ETyped(5, "C", "5", 0, 0)))
         );
 
         Plan childPlan3 = new Plan(
-                new EntityOp(new AsgEBase<>(new ETyped(1, "A", 1, 2, 0))),
-                new RelationOp(new AsgEBase<>(new Rel(2, 2, Rel.Direction.R, null, 3, 0))),
-                new EntityOp(new AsgEBase<>(new ETyped(3, "B", 3, 0, 0))),
-                new RelationOp(new AsgEBase<>(new Rel(3, 2, Rel.Direction.R, null, 3, 0))),
-                new EntityOp(new AsgEBase<>(new ETyped(5, "B", 3, 0, 0)))
+                new EntityOp(new AsgEBase<>(new ETyped(1, "A", "1", 2, 0))),
+                new RelationOp(new AsgEBase<>(new Rel(2, "2", Rel.Direction.R, null, 3, 0))),
+                new EntityOp(new AsgEBase<>(new ETyped(3, "B", "3", 0, 0))),
+                new RelationOp(new AsgEBase<>(new Rel(3, "2", Rel.Direction.R, null, 3, 0))),
+                new EntityOp(new AsgEBase<>(new ETyped(5, "B", "3", 0, 0)))
         );
 
         Plan childPlan4 = new Plan(
-                new EntityOp(new AsgEBase<>(new ETyped(1, "A", 1, 2, 0))),
-                new RelationOp(new AsgEBase<>(new Rel(4, 4, Rel.Direction.L, null, 5, 0))),
-                new EntityOp(new AsgEBase<>(new ETyped(5, "C", 5, 0, 0))),
-                new RelationOp(new AsgEBase<>(new Rel(4, 4, Rel.Direction.L, null, 5, 0))),
-                new EntityOp(new AsgEBase<>(new ETyped(5, "C", 5, 0, 0)))
+                new EntityOp(new AsgEBase<>(new ETyped(1, "A", "1", 2, 0))),
+                new RelationOp(new AsgEBase<>(new Rel(4, "4", Rel.Direction.L, null, 5, 0))),
+                new EntityOp(new AsgEBase<>(new ETyped(5, "C", "5", 0, 0))),
+                new RelationOp(new AsgEBase<>(new Rel(4, "4", Rel.Direction.L, null, 5, 0))),
+                new EntityOp(new AsgEBase<>(new ETyped(5, "C", "5", 0, 0)))
         );
 
         PlanNode<Plan> planNode = new PlanNode<>(0,planParent.toPattern(),"",planParent.hashCode()+"" , "valid");

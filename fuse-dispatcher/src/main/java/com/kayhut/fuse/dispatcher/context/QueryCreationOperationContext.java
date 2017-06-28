@@ -67,7 +67,7 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return this.cloneImpl().asg(asgQuery);
     }
 
-    public QueryCreationOperationContext of(PlanNode planNode) {
+    public QueryCreationOperationContext of(Optional<PlanNode<Plan>> planNode) {
         return this.cloneImpl().planNode(planNode);
     }
 
@@ -86,8 +86,8 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
         return clone;
     }
 
-    private QueryCreationOperationContext planNode(PlanNode planNode) {
-        this.planNode = Optional.of(planNode);
+    private QueryCreationOperationContext planNode(Optional<PlanNode<Plan>> planNode) {
+        this.planNode = planNode;
         return this;
     }
 

@@ -43,6 +43,7 @@ public class TestsConfiguration {
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SingleEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SmartEpbRedundantEntityRelationEntityTest.class);
     }
     //endregion
 

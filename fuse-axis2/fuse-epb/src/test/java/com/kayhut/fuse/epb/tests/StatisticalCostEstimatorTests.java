@@ -32,12 +32,10 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.getSupportedPattern;
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
@@ -185,9 +183,9 @@ public class StatisticalCostEstimatorTests {
     public void calculateStepPattern() throws Exception {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
-        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock(asgQuery).entity(TYPED, 100, 4)
+        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock(asgQuery).entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
-                .rel(out, 1, 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, 5).entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
+                .rel(out, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
 
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
         StatisticsCostEstimator estimator = new StatisticsCostEstimator(
@@ -212,7 +210,7 @@ public class StatisticalCostEstimatorTests {
         Assert.assertEquals(newArrayList(estimate.getCost().getPlanStepCosts()).get(3).getPlan().getOps().size(), 2);
         Assert.assertTrue(newArrayList(estimate.getCost().getPlanStepCosts()).get(3).getPlan().getOps().get(0) instanceof EntityOp);
 
-        Assert.assertEquals(estimate.getCost().getGlobalCost(),new DoubleCost(51.06));
+        Assert.assertEquals(estimate.getCost().getGlobalCost().cost,new DoubleCost(51.06).cost, 0.1);
 
         Assert.assertEquals(250, newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getCost().peek(), 0);
 
@@ -241,7 +239,7 @@ public class StatisticalCostEstimatorTests {
                 (id) -> Optional.of(ont.get()));
 
         AsgQuery query = AsgQuery.Builder.start("name", "ont").
-                next(concrete(1, "id", 1, "name", "A")).
+                next(concrete(1, "id", "1", "name", "A")).
                 build();
 
         EntityOp entityOp = new EntityOp(AsgQueryUtil.element$(query, 1));

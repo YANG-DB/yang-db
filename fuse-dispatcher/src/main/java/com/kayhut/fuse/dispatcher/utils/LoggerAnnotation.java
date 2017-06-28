@@ -12,6 +12,13 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.METHOD)
 public @interface LoggerAnnotation {
+    enum Options {
+        full,
+        arguments,
+        returnValue
+    }
+
     Slf4jReporter.LoggingLevel logLevel();
     String name();
+    Options options();
 }

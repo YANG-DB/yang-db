@@ -27,7 +27,7 @@ logbackConfigurationFilename="config/logback.xml"
 if [ "${flavour}" = "" ]; then
     usage
     exit
-elif [ "${flavour}" = "-flavour" ]; then
+elif [ "${flavour}" != "-flavour" ]; then
     usage
     exit
 elif [ "${flavourId}" = "" ]; then
@@ -36,23 +36,23 @@ elif [ "${flavourId}" = "" ]; then
 fi
 
 if   [ "${flavourId}" = "1" ]; then
-    flavourName="test.engine1.m1.public"
+    flavourName=test.engine1.m1.public
 elif [ "${flavourId}" = "2" ]; then
-    flavourName="test.engine1.m1.private"
+    flavourName=test.engine1.m1.private
 elif [ "${flavourId}" = "3" ]; then
-    flavourName="test.engine1.m1.private.private"
+    flavourName=test.engine1.m1.private.private
 elif [ "${flavourId}" = "4" ]; then
-    flavourName="test.engine1.m1.dfs.public"
+    flavourName=test.engine2.m1.dfs.public
 elif [ "${flavourId}" = "5" ]; then
-    flavourName="test.engine1.m1.dfs.private"
+    flavourName=test.engine2.m1.dfs.private
 elif [ "${flavourId}" = "6" ]; then
-    flavourName="test.engine1.m1.dfs.private.private"
+    flavourName=test.engine2.m1.dfs.private.private
 elif [ "${flavourId}" = "7" ]; then
-    flavourName="test.engine1.m1.smart.public"
+    flavourName=test.engine2.m1.smart.public
 elif [ "${flavourId}" = "8" ]; then
-    flavourName="test.engine1.m1.dmart.private"
+    flavourName=test.engine2.m1.smart.private
 elif [ "${flavourId}" = "9" ]; then
-    flavourName="test.engine1.m1.smart.private.private"
+    flavourName=test.engine2.m1.smart.private.private
 fi
 
 if [ "${flavourName}" = "" ]; then
@@ -60,8 +60,8 @@ if [ "${flavourName}" = "" ]; then
     exit
 fi
 
-mainClass="com.kayhut.fuse.services.FuseRunner"
-configFile="config/application.${flavourName}.conf"
+mainClass=com.kayhut.fuse.services.FuseRunner
+configFile=config/application.${flavourName}.conf
 vmArgs="-Xmx10g -Xms10g"
 classPath=".:lib/*"
 
@@ -69,4 +69,5 @@ if [ "${debug}" = "-debug" ]; then
     debugParams="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
 fi
 
+echo java ${vmArgs} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}
 java ${vmArgs} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}

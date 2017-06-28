@@ -43,7 +43,6 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
 
 
     @Override
-    @LoggerAnnotation(name = "translate", logLevel = Slf4jReporter.LoggingLevel.INFO)
     public GraphTraversal translate(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
         return super.translate(traversal, plan, planOp, context);
     }
