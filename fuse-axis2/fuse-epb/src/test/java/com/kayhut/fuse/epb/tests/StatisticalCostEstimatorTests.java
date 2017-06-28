@@ -1,9 +1,9 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.M1StepCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
+import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.getSupportedPattern;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.getSupportedPattern;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
@@ -216,8 +216,8 @@ public class StatisticalCostEstimatorTests {
 
     }
 
-    private StepEstimator mockStepEstimator() {
-        StepEstimator mock = Mockito.mock(StepEstimator.class);
+    private StepCostEstimator mockStepEstimator() {
+        StepCostEstimator mock = Mockito.mock(StepCostEstimator.class);
         when(mock.calculate(any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
             if (!invocationOnMock.getArgumentAt(3, Optional.class).isPresent())
                 return new Tuple2<>(1d, Collections.emptyList());

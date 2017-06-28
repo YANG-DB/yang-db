@@ -1,14 +1,14 @@
-package com.kayhut.fuse.epb.plan.cost.calculation;
+package com.kayhut.fuse.epb.plan.estimation.step;
 
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
 import com.kayhut.fuse.model.execution.plan.*;
 import javaslang.Tuple2;
 
 import java.util.Map;
 
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER;
 
 /**
  * Created by moti on 6/1/2017.

@@ -21,7 +21,7 @@ public class DetailedCost extends DoubleCost {
     @Override
     public String toString() {
         return "{" +
-                "cost=" + cost +
+                "estimation=" + cost +
                 "lambdaNode=" + lambdaNode +
                 ", lambdaEdge=" + lambdaEdge +
                 ", R=" + R +

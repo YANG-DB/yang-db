@@ -1,11 +1,11 @@
-package com.kayhut.fuse.epb.plan.cost;
+package com.kayhut.fuse.epb.plan.estimation;
 
 import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -17,15 +17,12 @@ import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.dispatcher.utils.PlanUtil.extractNewStep;
-import static com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
+import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
 import static com.kayhut.fuse.model.Utils.pattern;
-import static com.kayhut.fuse.model.execution.plan.Plan.contains;
 
 /**
  * Created by moti on 01/04/2017.
@@ -128,7 +125,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     @Inject
     public StatisticsCostEstimator(
             StatisticsProviderFactory statisticsProviderFactory,
-            StepEstimator estimator,
+            StepCostEstimator estimator,
             OntologyProvider ontologyProvider) {
         this.statisticsProviderFactory = statisticsProviderFactory;
         this.estimator = estimator;
@@ -156,7 +153,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             if (matcher.find()) {
                 Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
                 StatisticsProvider statisticsProvider = statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get());
-                StepEstimator.StepEstimatorResult result = estimator.calculate(statisticsProvider, map, pattern, previousCost);
+                StepCostEstimator.StepEstimatorResult result = estimator.calculate(statisticsProvider, map, pattern, previousCost);
                 newPlan = buildNewPlan(result, previousCost);
                 break;
             }
@@ -166,7 +163,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     //endregion
 
     //region Private Methods
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepCostEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         DoubleCost previousPlanGlobalCost;
         List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
         if (previousCost.isPresent()) {
@@ -222,6 +219,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     //region Fields
     private StatisticsProviderFactory statisticsProviderFactory;
     private OntologyProvider ontologyProvider;
-    private StepEstimator estimator;
+    private StepCostEstimator estimator;
     //endregion
 }

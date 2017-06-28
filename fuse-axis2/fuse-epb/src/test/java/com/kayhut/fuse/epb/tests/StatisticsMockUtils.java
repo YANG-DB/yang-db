@@ -123,8 +123,8 @@ public class StatisticsMockUtils {
             Direction dir = (Direction) invocationOnMock.getArguments()[2];
 
 
-            long cost = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(rel.getrType()).longValue();
-            return new Statistics.SummaryStatistics(cost, cost);
+            long estimation = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(rel.getrType()).longValue();
+            return new Statistics.SummaryStatistics(estimation, estimation);
         });*/
 
 

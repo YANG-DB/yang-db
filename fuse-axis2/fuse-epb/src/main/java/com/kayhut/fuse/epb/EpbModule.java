@@ -5,10 +5,10 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
-import com.kayhut.fuse.epb.plan.cost.CostEstimator;
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.M1StepCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -45,7 +45,7 @@ public class EpbModule extends ModuleBase {
         binder.bind(GraphElementSchemaProviderFactory.class).to(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
         binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();
 
-        binder.bind(StepEstimator.class).toInstance(new M1StepCostEstimator(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
+        binder.bind(StepCostEstimator.class).toInstance(new M1StepCostEstimator(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
 
         binder.bind(new TypeLiteral<CostEstimator<Plan,PlanDetailedCost,AsgQuery>>(){}).to(StatisticsCostEstimator.class).asEagerSingleton();
 

@@ -46,7 +46,7 @@ public class DoubleCost implements Cost {
     @Override
     public String toString() {
         return "DoubleCost{" +
-                "cost=" + cost +
+                "estimation=" + cost +
                 '}';
     }
     //endregion

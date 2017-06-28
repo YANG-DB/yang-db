@@ -47,7 +47,7 @@ public class PlanOpWithCost<C> {
     @Override
     public String toString() {
         return fullPattern(getOpBase()) +
-                "[cost=" + cost +"]";
+                "[estimation=" + cost +"]";
     }
 //endregion
 
@@ -64,7 +64,7 @@ public class PlanOpWithCost<C> {
                  return ops.get(i).getCost();
             
         }
-        throw new RuntimeException("No cost found for index "+index);
+        throw new RuntimeException("No estimation found for index "+index);
     }
 
     public static <C> PlanOpWithCost<C> of(C cost, int lambda, PlanOpBase op) {

@@ -43,21 +43,21 @@ public class PlanCostTests {
         when(ontology.getEntityTypes()).thenReturn(Collections.singletonList(entityType));
         QueryItemStatisticsProvider statisticsProvider = new QueryItemStatisticsProvider(elasticSearchStatisticsProvider, graphElementSchemaProvider,ontology);
 
-        //cost calculator
+        //estimation calculator
         CostEstimator costEstimator = Mockito.mock(CostEstimator.class);
         when(costEstimator.estimateCost(any(), any())).thenReturn(new DoubleCost(1.0,1,1));
         when(costEstimator.estimateCost(any(PlanOpBase.class))).thenReturn(new DoubleCost(1.0,1,1));
         OpCostCalculator<DoubleCost, DoubleCost, Plan<DoubleCost>> costCombiner = Mockito.mock(OpCostCalculator.class);
         when(costCombiner.calculateCost(any(), any())).thenReturn(new DoubleCost(1.0,1,1));
 
-        //tested class cost estimator
+        //tested class estimation estimator
         planOpStatisticsCostEstimator = new StatisticsCostEstimator(statisticsProvider,costEstimator);
     }
 
     @Test
     public void planCostEConcreteTest(){
         AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(new EConcrete()).search();
-        Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).cost, 0.0);
+        Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).estimation, 0.0);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class PlanCostTests {
         EUntyped eBase = new EUntyped();
         eBase.setvTypes(Collections.singletonList(1));
         AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(eBase).search();
-        Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).cost, 0.0);
+        Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).estimation, 0.0);
     }
 
     @Test
@@ -73,6 +73,6 @@ public class PlanCostTests {
         ETyped eTyped = new ETyped();
         eTyped.seteType(1);
         AsgEBase<EEntityBase> asgEBase = AsgEBase.Builder.<EEntityBase>get().withEBase(eTyped).search();
-        Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).cost, 0.0);
+        Assert.assertEquals(1.0, planOpStatisticsCostEstimator.estimateCost( new EntityOp(asgEBase)).estimation, 0.0);
     }*/
 }

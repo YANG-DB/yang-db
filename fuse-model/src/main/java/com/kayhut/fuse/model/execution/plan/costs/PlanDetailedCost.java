@@ -58,7 +58,7 @@ public class PlanDetailedCost implements Cost {
     public String toString() {
         return " { " +
                 "plan:" + fullPattern(getPlanOps()) + "," + "\n" +
-                "cost:" + (globalCost != null ? globalCost.toString() + "\n" : "")
+                "estimation:" + (globalCost != null ? globalCost.toString() + "\n" : "")
                 + " } ";
     }
 }

@@ -6,7 +6,7 @@ import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.NDC;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.cost.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;

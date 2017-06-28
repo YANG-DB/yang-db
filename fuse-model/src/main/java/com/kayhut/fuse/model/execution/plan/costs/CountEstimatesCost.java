@@ -32,7 +32,7 @@ public class CountEstimatesCost implements Cost {
     //region Override Methods
     @Override
     public String toString() {
-        return "[cost = " + cost + ", countEstimate = " + this.countEstimates.peek() + "]";
+        return "[estimation = " + cost + ", countEstimate = " + this.countEstimates.peek() + "]";
     }
 
     @Override

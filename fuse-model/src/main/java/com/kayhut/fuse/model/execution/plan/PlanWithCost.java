@@ -67,7 +67,7 @@ public class PlanWithCost<P, C> implements IPlan {
     public String toString() {
         return "{" +
                 " plan:" + plan.toString() + "," + "\n" +
-                " cost:" + (cost != null ? cost.toString() + "\n" : "")
+                " estimation:" + (cost != null ? cost.toString() + "\n" : "")
                 + "}";
     }
 

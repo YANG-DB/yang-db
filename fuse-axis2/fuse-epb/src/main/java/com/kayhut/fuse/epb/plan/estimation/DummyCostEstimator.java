@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.cost;
+package com.kayhut.fuse.epb.plan.estimation;
 
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 

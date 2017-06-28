@@ -29,7 +29,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     private Ontology.Accessor ont;
     private GraphStatisticsProvider graphStatisticsProvider;
 
-    // Supported operators by the cost estimator, used for validation
+    // Supported operators by the estimation estimator, used for validation
     private static Set<ConstraintOp> supportedOps = new HashSet<>();
 
     static {

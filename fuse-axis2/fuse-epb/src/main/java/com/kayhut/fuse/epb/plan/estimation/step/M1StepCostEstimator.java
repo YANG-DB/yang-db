@@ -1,7 +1,7 @@
-package com.kayhut.fuse.epb.plan.cost.calculation;
+package com.kayhut.fuse.epb.plan.estimation.step;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,12 +11,12 @@ import java.util.Map;
  */
 public class M1StepCostEstimator extends CompositeStepCostEstimator {
     //region Static
-    private static Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, PatternCostEstimator> patternEstimators(CostEstimationConfig config) {
-        FullStepPatternEstimator fullStepPatternEstimator = new FullStepPatternEstimator(config);
-        SingleEntityPatternEstimator singleEntityPatternEstimator = new SingleEntityPatternEstimator();
-        GoToPatternEstimator goToPatternEstimator = new GoToPatternEstimator(config);
+    private static Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, StepPatternCostEstimator> patternEstimators(CostEstimationConfig config) {
+        FullStepPatternCostEstimator fullStepPatternEstimator = new FullStepPatternCostEstimator(config);
+        SingleEntityStepPatternCostEstimator singleEntityPatternEstimator = new SingleEntityStepPatternCostEstimator();
+        GoToStepPatternCostEstimator goToPatternEstimator = new GoToStepPatternCostEstimator(config);
 
-        Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, PatternCostEstimator> map = new HashMap<>();
+        Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, StepPatternCostEstimator> map = new HashMap<>();
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, fullStepPatternEstimator);
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, singleEntityPatternEstimator);
         map.put(StatisticsCostEstimator.StatisticsCostEstimatorPatterns.GOTO_MODE, goToPatternEstimator);

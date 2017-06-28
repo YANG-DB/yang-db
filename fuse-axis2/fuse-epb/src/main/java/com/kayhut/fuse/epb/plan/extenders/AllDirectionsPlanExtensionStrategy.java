@@ -63,7 +63,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
                     plans.add(new Plan(originalPlan.getOps()).withOp(op));
                     /*Plan<C> newPlan = Plan.PlanBuilder.search(originalPlan.getPlanOps())
                             .operation(new PlanOpWithCost<C>(op,costEstimator.estimateCost(originalPlan,op)))
-                            .cost(costEstimator)
+                            .estimation(costEstimator)
                             .compose();*/
                 }
             }
