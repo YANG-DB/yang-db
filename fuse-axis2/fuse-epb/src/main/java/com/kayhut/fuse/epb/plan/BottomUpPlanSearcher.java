@@ -105,7 +105,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends ICost, Q extends IQ
 
     //region Methods
     @Override
-    @LoggerAnnotation(name = "search", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "search", options = LoggerAnnotation.Options.returnValue, logLevel = Slf4jReporter.LoggingLevel.INFO)
     public Iterable<PlanWithCost<P, C>> search(Q query) {
         Iterable<PlanWithCost<P, C>> selectedPlans;
 

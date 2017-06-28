@@ -52,7 +52,7 @@ public class Neo4jOperationContextProcessor implements
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         if(context.getAsgQuery() == null || context.getExecutionPlan() != null) {
             return context;
@@ -78,7 +78,7 @@ public class Neo4jOperationContextProcessor implements
     //region CursorCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
 
         if (context.getCursor() != null) {

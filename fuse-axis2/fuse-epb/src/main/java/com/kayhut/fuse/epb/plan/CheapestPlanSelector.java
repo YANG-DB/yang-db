@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class CheapestPlanSelector implements PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> {
     @Override
-    @LoggerAnnotation(name = "select", logLevel = Slf4jReporter.LoggingLevel.DEBUG)
+    @LoggerAnnotation(name = "select", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public Iterable<PlanWithCost<Plan, PlanDetailedCost>> select(AsgQuery query, Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {
         PlanWithCost<Plan, PlanDetailedCost> minPlan = null;
         for(PlanWithCost<Plan, PlanDetailedCost> planWithCost : plans) {

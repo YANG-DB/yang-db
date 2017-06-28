@@ -30,6 +30,10 @@ if "%flavour%"=="" (
     goto :help
 )
 
+if not "%flavour%"=="-flavour" (
+    goto :help
+)
+
 if "%flavourId%"=="" (
     goto :help
 )

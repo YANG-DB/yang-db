@@ -35,8 +35,9 @@ public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
     public Object invoke(MethodInvocation invocation) throws Throwable {
         LoggerAnnotation annotation = null;
         for (Annotation annotation1 : invocation.getStaticPart().getAnnotations()) {
-            if(annotation1 instanceof LoggerAnnotation)
-                annotation = (LoggerAnnotation)annotation1;
+            if (annotation1 instanceof LoggerAnnotation) {
+                annotation = (LoggerAnnotation) annotation1;
+            }
         }
 
         Slf4jReporter.LoggingLevel level = annotation.logLevel();
@@ -47,14 +48,15 @@ public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
         org.slf4j.Logger logger = LoggerFactory.getLogger(declaringClass);
 
 
-        for (int i = 0; i < invocation.getArguments().length; i++) {
-            Descriptor descriptor = getDescriptor(invocation.getArguments()[i]);
-            if(descriptor!=null) {
-                String describe = descriptor.describe(invocation.getArguments()[i]);
-                String paramName = "Argument " + i;
-                reportParameter(logger, level, paramName, describe, annotationName);
-                Class<?> argumentClass = invocation.getArguments()[i].getClass();
-                name = name(declaringClass, argumentClass.getSimpleName());
+        if (annotation.options() == LoggerAnnotation.Options.full || annotation.options() == LoggerAnnotation.Options.arguments) {
+            for (int i = 0; i < invocation.getArguments().length; i++) {
+                Descriptor descriptor = getDescriptor(invocation.getArguments()[i]);
+                if (descriptor != null) {
+                    String describe = descriptor.describe(invocation.getArguments()[i]);
+                    String paramName = "Argument " + i;
+                    reportParameter(logger, level, paramName, describe, annotationName);
+                    Class<?> argumentClass = invocation.getArguments()[i].getClass();
+                }
             }
         }
 
@@ -62,12 +64,14 @@ public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
         Object proceed = invocation.proceed();
         time.stop();
 
-        if (proceed != null) {
-            String finalName = annotationName;
-            if(proceed instanceof Iterable) {
-                ((Iterable) proceed).forEach(v-> reportProceed(level, logger, v, finalName));
-            }else {
-                reportProceed(level, logger, proceed, finalName);
+        if (annotation.options() == LoggerAnnotation.Options.full || annotation.options() == LoggerAnnotation.Options.returnValue) {
+            if (proceed != null) {
+                String finalName = annotationName;
+                if (proceed instanceof Iterable) {
+                    ((Iterable) proceed).forEach(v -> reportProceed(level, logger, v, finalName));
+                } else {
+                    reportProceed(level, logger, proceed, finalName);
+                }
             }
         }
 

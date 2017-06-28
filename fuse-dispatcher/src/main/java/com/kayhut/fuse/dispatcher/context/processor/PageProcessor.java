@@ -38,7 +38,7 @@ public class PageProcessor implements PageCreationOperationContext.Processor {
     //region PageCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PageCreationOperationContext process(PageCreationOperationContext context) throws IOException {
         if (context.getPageResource() != null && context.getPageResource().getData() != null) {
             return context;

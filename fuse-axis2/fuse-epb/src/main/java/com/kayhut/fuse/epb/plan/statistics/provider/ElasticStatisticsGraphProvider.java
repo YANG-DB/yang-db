@@ -117,8 +117,8 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
             }
             case DATE: { //Enum ? string //todo decide?
                 List<Statistics.BucketInfo> collect = statistics.getBuckets().stream().map(b -> {
-                    long lowerBound = ((Double) b.getLowerBound()).longValue();
-                    long higherBound = ((Double) b.getHigherBound()).longValue();
+                    long lowerBound = (Long)b.getLowerBound();
+                    long higherBound = (Long) b.getHigherBound();
                     return new Statistics.BucketInfo<>(b.getTotal(), b.getCardinality(), new Date(lowerBound), new Date(higherBound));
                 }).collect(Collectors.toList());
                 statistics = new Statistics.HistogramStatistics(collect);

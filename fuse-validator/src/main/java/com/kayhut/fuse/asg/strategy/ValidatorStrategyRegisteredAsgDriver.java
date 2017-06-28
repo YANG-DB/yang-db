@@ -52,7 +52,7 @@ public class ValidatorStrategyRegisteredAsgDriver implements QueryValidationOper
     @Override
     @Subscribe
     @TimerAnnotation
-    @LoggerAnnotation(name = "process", logLevel = Slf4jReporter.LoggingLevel.INFO)
+    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public ValidationContext process(QueryValidationOperationContext context) {
         Optional<Ontology> ontology = this.ontologyProvider.get(context.getQuery().getOnt());
         if (!ontology.isPresent()) {

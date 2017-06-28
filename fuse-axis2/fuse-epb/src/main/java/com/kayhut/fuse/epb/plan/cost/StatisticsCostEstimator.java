@@ -109,7 +109,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     }
 
     @Override
-    @LoggerAnnotation(name = "estimate", logLevel = Slf4jReporter.LoggingLevel.DEBUG)
+    @LoggerAnnotation(name = "estimate", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
             Plan plan,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
