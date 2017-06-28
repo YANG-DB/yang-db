@@ -29,7 +29,7 @@ public class StatisticsMockUtils {
             EEntityBase item = (EEntityBase) invocationOnMock.getArguments()[0];
             EPropGroup eProp = (EPropGroup) invocationOnMock.getArguments()[1];
             List<EProp> eProps = (eProp).getProps();
-            int id = Integer.valueOf(eProps.get(0).getpType());
+            String id = eProps.get(0).getpType();
             double factor  =1;
             if(statistics.get(PlanMockUtils.NODE_FILTER_STATISTICS).containsKey(id)) {
                 factor = statistics.get(PlanMockUtils.NODE_FILTER_STATISTICS).get(id);
@@ -74,7 +74,7 @@ public class StatisticsMockUtils {
             RelPropGroup ePropGroup = (RelPropGroup) invocationOnMock.getArguments()[1];
 
             List<RelProp> relProps = (ePropGroup).getProps();
-            int id = Integer.valueOf(relProps.get(0).getpType());
+            String id = relProps.get(0).getpType();
             double factor  = 1;
             if(statistics.get(PlanMockUtils.EDGE_FILTER_STATISTICS).containsKey(id)) {
                 factor = statistics.get(PlanMockUtils.EDGE_FILTER_STATISTICS).get(id);

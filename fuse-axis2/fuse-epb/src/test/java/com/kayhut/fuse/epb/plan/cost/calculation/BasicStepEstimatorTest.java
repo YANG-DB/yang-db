@@ -96,7 +96,6 @@ public class BasicStepEstimatorTest {
     }
 
     @Test
-    @Ignore
     public void calculateFullStep() throws Exception {
         StepEstimator estimator = M1StepEstimator.getStepEstimator(1,0.001 );
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, "4")
