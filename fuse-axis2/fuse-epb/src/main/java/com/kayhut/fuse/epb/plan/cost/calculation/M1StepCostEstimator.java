@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by moti on 29/05/2017.
  */
-public class M1StepEstimator extends CompositeStepCostEstimator {
+public class M1StepCostEstimator extends CompositeStepCostEstimator {
     //region Static
     private static Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, PatternCostEstimator> patternEstimators(CostEstimationConfig config) {
         FullStepPatternEstimator fullStepPatternEstimator = new FullStepPatternEstimator(config);
@@ -27,12 +27,12 @@ public class M1StepEstimator extends CompositeStepCostEstimator {
 
     //region Constructors
     @Inject
-    public M1StepEstimator(CostEstimationConfig config) {
+    public M1StepCostEstimator(CostEstimationConfig config) {
         super(patternEstimators(config));
     }
 
     @Inject
-    public M1StepEstimator(double alpha, double delta) {
+    public M1StepCostEstimator(double alpha, double delta) {
         super(patternEstimators(new CostEstimationConfig(alpha, delta)));
     }
     //endregion
