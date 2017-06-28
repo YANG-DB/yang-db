@@ -78,7 +78,7 @@ public class BasicStepEstimatorTest {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
-        StepEstimator estimator = M1StepEstimator.getStepEstimator(1, 0.001);
+        StepEstimator estimator = new M1StepEstimator(1, 0.001);
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
 
         HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
@@ -98,7 +98,7 @@ public class BasicStepEstimatorTest {
 
     @Test
     public void calculateFullStep() throws Exception {
-        StepEstimator estimator = M1StepEstimator.getStepEstimator(1,0.001 );
+        StepEstimator estimator = new M1StepEstimator(1, 0.001 );
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, "1", 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))

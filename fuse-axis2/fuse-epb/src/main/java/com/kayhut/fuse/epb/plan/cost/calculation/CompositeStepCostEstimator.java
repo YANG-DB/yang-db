@@ -14,15 +14,24 @@ import java.util.Optional;
  * Created by moti on 29/05/2017.
  */
 public class CompositeStepCostEstimator implements StepEstimator {
-    Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, PatternCostEstimator> patternEstimators;
-
+    //region Constructors
     public CompositeStepCostEstimator(Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, PatternCostEstimator> patternEstimators) {
         this.patternEstimators = patternEstimators;
     }
+    //endregion
 
+    //region StepEstimator Implementation
     @Override
-    public StepEstimatorResult calculate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts, StatisticsCostEstimator.StatisticsCostEstimatorPatterns pattern, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public StepEstimatorResult calculate(
+            StatisticsProvider statisticsProvider,
+            Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts,
+            StatisticsCostEstimator.StatisticsCostEstimatorPatterns pattern,
+            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         return patternEstimators.get(pattern).estimate(statisticsProvider, patternParts, previousCost);
     }
+    //endregion
 
+    //region Fields
+    protected Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, PatternCostEstimator> patternEstimators;
+    //endregion
 }

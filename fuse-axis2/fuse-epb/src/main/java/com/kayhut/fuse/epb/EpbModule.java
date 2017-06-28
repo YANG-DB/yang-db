@@ -7,12 +7,8 @@ import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.cost.CostEstimator;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.CostEstimationConfig;
-import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.cost.calculation.StepEstimator;
-import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -38,9 +34,6 @@ public class EpbModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        StepEstimator stepEstimator = M1StepEstimator.getStepEstimator(
-                new CostEstimationConfig(conf.getDouble("epb.cost.alpha"),conf.getDouble("epb.cost.delta")));
-
         binder.bind(SimpleEpbDriver.class).asEagerSingleton();
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
@@ -52,7 +45,8 @@ public class EpbModule extends ModuleBase {
         binder.bind(GraphElementSchemaProviderFactory.class).to(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
         binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();
 
-        binder.bind(StepEstimator.class).toInstance(stepEstimator);
+        binder.bind(StepEstimator.class).toInstance(new M1StepCostEstimator(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
+
         binder.bind(new TypeLiteral<CostEstimator<Plan,PlanDetailedCost,AsgQuery>>(){}).to(StatisticsCostEstimator.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){}).to(M1PlanExtensionStrategy.class);

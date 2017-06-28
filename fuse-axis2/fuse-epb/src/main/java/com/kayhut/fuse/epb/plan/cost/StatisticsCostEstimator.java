@@ -31,6 +31,40 @@ import static com.kayhut.fuse.model.execution.plan.Plan.contains;
  * Created by moti on 01/04/2017.
  */
 public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost, AsgQuery> {
+    //region Static
+    private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
+
+    public static StatisticsCostEstimatorPatterns[] getSupportedPattern() {
+        return StatisticsCostEstimatorPatterns.values();
+    }
+
+    private static Map<String, Integer> getNamedGroups(Pattern regex) {
+        try {
+            Method namedGroupsMethod = Pattern.class.getDeclaredMethod("namedGroups");
+            namedGroupsMethod.setAccessible(true);
+
+            Map<String, Integer> namedGroups = null;
+            namedGroups = (Map<String, Integer>) namedGroupsMethod.invoke(regex);
+
+            if (namedGroups == null) {
+                throw new InternalError();
+            }
+
+            return Collections.unmodifiableMap(namedGroups);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static {
+        compiledPatterns = new HashMap<>();
+        for(StatisticsCostEstimatorPatterns pattern : StatisticsCostEstimatorPatterns.values()){
+            Pattern compile = Pattern.compile(pattern.pattern());
+            compiledPatterns.put(pattern, compile);
+        }
+    }
+    //endregion
+
     public enum StatisticsCostEstimatorPatterns {
         //option2
         FULL_STEP("^(?<" + ENTITY_ONE.value + ">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
@@ -43,21 +77,13 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
                 "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
                 "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
-        private String pattern;
-        private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
-
-        static {
-            compiledPatterns = new HashMap<>();
-            for(StatisticsCostEstimatorPatterns pattern : StatisticsCostEstimatorPatterns.values()){
-                Pattern compile = Pattern.compile(pattern.pattern());
-                compiledPatterns.put(pattern, compile);
-            }
-        }
-
+        //region Enum Constructors
         StatisticsCostEstimatorPatterns(String pattern) {
             this.pattern = pattern;
         }
+        //endregion
 
+        //region Properties
         public String pattern() {
             return pattern;
         }
@@ -65,6 +91,11 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         public Pattern getCompiledPattern(){
             return compiledPatterns.get(this);
         }
+        //endregion
+
+        //region Fields
+        private String pattern;
+        //endregion
     }
 
     public enum StatisticsCostEstimatorNames {
@@ -93,10 +124,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         }
     }
 
-    private StatisticsProviderFactory statisticsProviderFactory;
-    private OntologyProvider ontologyProvider;
-    private StepEstimator estimator;
-
+    //region Constructors
     @Inject
     public StatisticsCostEstimator(
             StatisticsProviderFactory statisticsProviderFactory,
@@ -106,7 +134,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         this.estimator = estimator;
         this.ontologyProvider = ontologyProvider;
     }
+    //endregion
 
+    //region CostEstimator Implementation
     @Override
     @LoggerAnnotation(name = "estimate", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
@@ -121,7 +151,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         String opsString = pattern(step);
         StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
         for (StatisticsCostEstimatorPatterns pattern : supportedPattern) {
-            //Pattern compile = Pattern.compile(pattern.pattern());
             Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
@@ -134,7 +163,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         }
         return newPlan;
     }
+    //endregion
 
+    //region Private Methods
     private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         DoubleCost previousPlanGlobalCost;
         List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
@@ -186,32 +217,11 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         return map;
     }
+    //endregion
 
-    private List<String> extractGroups(Matcher matcher) {
-        return Arrays.stream(values()).map(v -> matcher.group(v.value())).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-
-    public static StatisticsCostEstimatorPatterns[] getSupportedPattern() {
-        return StatisticsCostEstimatorPatterns.values();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Map<String, Integer> getNamedGroups(Pattern regex) {
-        try {
-            Method namedGroupsMethod = Pattern.class.getDeclaredMethod("namedGroups");
-            namedGroupsMethod.setAccessible(true);
-
-            Map<String, Integer> namedGroups = null;
-            namedGroups = (Map<String, Integer>) namedGroupsMethod.invoke(regex);
-
-            if (namedGroups == null) {
-                throw new InternalError();
-            }
-
-            return Collections.unmodifiableMap(namedGroups);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+    //region Fields
+    private StatisticsProviderFactory statisticsProviderFactory;
+    private OntologyProvider ontologyProvider;
+    private StepEstimator estimator;
+    //endregion
 }

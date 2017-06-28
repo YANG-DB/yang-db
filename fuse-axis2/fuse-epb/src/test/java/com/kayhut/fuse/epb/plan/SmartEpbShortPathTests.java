@@ -2,7 +2,7 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.cost.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.cost.calculation.M1StepEstimator;
+import com.kayhut.fuse.epb.plan.cost.calculation.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -13,7 +13,6 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
-import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
@@ -187,7 +186,7 @@ public class SmartEpbShortPathTests {
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         statisticsCostEstimator = new StatisticsCostEstimator(
                 (ont) -> eBaseStatisticsProvider,
-                M1StepEstimator.getStepEstimator(1.0,0.001),
+                new M1StepCostEstimator(1.0, 0.001),
                 (id) -> Optional.of(ont.get()));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
