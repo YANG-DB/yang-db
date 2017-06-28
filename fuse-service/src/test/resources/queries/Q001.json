@@ -12,14 +12,14 @@
       "type": "EConcrete",
       "eTag": "A",
       "eID": "12345678",
-      "eType": 1,
+      "eType": "Person",
       "eName": "Brandon Stark",
       "next": 2
     },
     {
       "eNum": 2,
       "type": "Rel",
-      "rType": 101,
+      "rType": "owns",
       "dir": "R",
       "next": 3
     },
@@ -27,7 +27,7 @@
       "eNum": 3,
       "type": "ETyped",
       "eTag": "B",
-      "eType": 2
+      "eType": "Dragon"
     }
   ]
 }
