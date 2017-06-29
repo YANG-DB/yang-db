@@ -97,23 +97,6 @@ public class PlanUtil {
         newPlan.getOps().set(plan.getOps().indexOf(oldOp), newOp);
         return newPlan;
     }
-
-    public static List<PlanOpBase> extractNewStep(Plan current) {
-        List<PlanOpBase> newPlan = new ArrayList<>();
-        List<PlanOpBase> ops = current.getOps();
-        int entityCounter = 0;
-        int i = ops.size() - 1;
-        while (i >= 0 && entityCounter < 2) {
-            if (EntityOp.class.isAssignableFrom(ops.get(i).getClass())) {
-                entityCounter++;
-            }
-            newPlan.add(0, ops.get(i));
-            i--;
-        }
-        if (entityCounter > 0)
-            return newPlan;
-        return Collections.emptyList();
-    }
     //endregion
 
     //region Private Methods

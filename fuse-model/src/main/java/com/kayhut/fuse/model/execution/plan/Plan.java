@@ -14,6 +14,11 @@ import static com.kayhut.fuse.model.Utils.*;
  * Created by User on 22/02/2017.
  */
 public class Plan extends CompositePlanOpBase implements Trace<String>, IPlan {
+    //region Static
+    public static Plan empty() { return empty; }
+    private static Plan empty = new Plan();
+    //endregion
+
     private Trace<String> trace = Trace.build(Plan.class.getSimpleName());
 
     //region Constructors

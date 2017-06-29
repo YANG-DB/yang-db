@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
@@ -27,11 +27,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.getSupportedPattern;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.getSupportedPattern;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
@@ -112,7 +111,7 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void planEstimatorPatternTwoTest() {
 
-        StatisticsCostEstimator.StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
+        StatisticsCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
         String s1 = new Plan().withOp(new EntityOp()).toPattern();
 
@@ -120,7 +119,7 @@ public class StatisticalCostEstimatorTests {
 
         String s3 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationFilterOp()).toPattern();
 
-        Pattern compileP2 = Pattern.compile(supportedPattern[1].pattern());
+        java.util.regex.Pattern compileP2 = java.util.regex.Pattern.compile(supportedPattern[1].pattern());
 
         Matcher matcher = compileP2.matcher(s1);
         if (matcher.matches()) {
@@ -140,7 +139,7 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void planEstimatorPatternOneTest() {
-        StatisticsCostEstimator.StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
+        StatisticsCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
         String s1 = new Plan().withOp(new EntityOp()).toPattern();
 
@@ -151,7 +150,7 @@ public class StatisticalCostEstimatorTests {
         String s4 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationOp()).withOp(new RelationFilterOp()).withOp(new EntityOp()).withOp(new EntityFilterOp()).toPattern();
 
 
-        Pattern compileP1 = Pattern.compile(supportedPattern[0].pattern());
+        java.util.regex.Pattern compileP1 = java.util.regex.Pattern.compile(supportedPattern[0].pattern());
 
         Matcher matcher = compileP1.matcher(s1);
         Assert.assertFalse(matcher.matches());
@@ -218,7 +217,7 @@ public class StatisticalCostEstimatorTests {
 
     private StepCostEstimator mockStepEstimator() {
         StepCostEstimator mock = Mockito.mock(StepCostEstimator.class);
-        when(mock.calculate(any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
+        when(mock.estimate(any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
             if (!invocationOnMock.getArgumentAt(3, Optional.class).isPresent())
                 return new Tuple2<>(1d, Collections.emptyList());
             else

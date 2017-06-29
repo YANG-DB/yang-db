@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.estimation.step;
+package com.kayhut.fuse.epb.plan.estimation;
 
 /**
  * Created by moti on 6/1/2017.

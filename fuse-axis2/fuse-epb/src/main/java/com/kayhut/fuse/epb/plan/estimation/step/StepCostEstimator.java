@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.estimation.step;
 
-import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
@@ -18,18 +17,18 @@ import java.util.Optional;
  */
 public interface StepCostEstimator {
 
-    StepEstimatorResult calculate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map,
-                                  StatisticsCostEstimator.StatisticsCostEstimatorPatterns pattern,
-                                  Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
+    Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.Token, PlanOpBase> map,
+                    StatisticsCostEstimator.Pattern pattern,
+                    Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
 
-    interface StepEstimatorResult {
+    interface Result {
         List<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts();
 
         double lambda();
 
         @SafeVarargs
-        static StepEstimatorResult of(double lambda, PlanWithCost<Plan, CountEstimatesCost> ... planStepCosts) {
-            return new StepEstimatorResult() {
+        static Result of(double lambda, PlanWithCost<Plan, CountEstimatesCost> ... planStepCosts) {
+            return new Result() {
                 @Override
                 public List<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts() {
                     return Arrays.asList(planStepCosts);

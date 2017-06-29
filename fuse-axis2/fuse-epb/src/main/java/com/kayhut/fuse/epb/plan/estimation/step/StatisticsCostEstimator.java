@@ -1,11 +1,11 @@
-package com.kayhut.fuse.epb.plan.estimation;
+package com.kayhut.fuse.epb.plan.estimation.step;
 
 import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -18,10 +18,8 @@ import javaslang.collection.Stream;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static com.kayhut.fuse.dispatcher.utils.PlanUtil.extractNewStep;
-import static com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator.StatisticsCostEstimatorNames.*;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.Token.*;
 import static com.kayhut.fuse.model.Utils.pattern;
 
 /**
@@ -29,15 +27,15 @@ import static com.kayhut.fuse.model.Utils.pattern;
  */
 public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost, AsgQuery> {
     //region Static
-    private static Map<StatisticsCostEstimatorPatterns, Pattern> compiledPatterns;
+    private static Map<Pattern, java.util.regex.Pattern> compiledPatterns;
 
-    public static StatisticsCostEstimatorPatterns[] getSupportedPattern() {
-        return StatisticsCostEstimatorPatterns.values();
+    public static Pattern[] getSupportedPattern() {
+        return Pattern.values();
     }
 
-    private static Map<String, Integer> getNamedGroups(Pattern regex) {
+    private static Map<String, Integer> getNamedGroups(java.util.regex.Pattern regex) {
         try {
-            Method namedGroupsMethod = Pattern.class.getDeclaredMethod("namedGroups");
+            Method namedGroupsMethod = java.util.regex.Pattern.class.getDeclaredMethod("namedGroups");
             namedGroupsMethod.setAccessible(true);
 
             Map<String, Integer> namedGroups = null;
@@ -55,14 +53,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
     static {
         compiledPatterns = new HashMap<>();
-        for(StatisticsCostEstimatorPatterns pattern : StatisticsCostEstimatorPatterns.values()){
-            Pattern compile = Pattern.compile(pattern.pattern());
+        for(Pattern pattern : Pattern.values()){
+            java.util.regex.Pattern compile = java.util.regex.Pattern.compile(pattern.pattern());
             compiledPatterns.put(pattern, compile);
         }
     }
     //endregion
 
-    public enum StatisticsCostEstimatorPatterns {
+    public enum Pattern {
         //option2
         FULL_STEP("^(?<" + ENTITY_ONE.value + ">" + EntityOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + ":)?" +
                 "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
@@ -75,7 +73,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
                 "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
         //region Enum Constructors
-        StatisticsCostEstimatorPatterns(String pattern) {
+        Pattern(String pattern) {
             this.pattern = pattern;
         }
         //endregion
@@ -85,7 +83,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             return pattern;
         }
 
-        public Pattern getCompiledPattern(){
+        public java.util.regex.Pattern getCompiledPattern(){
             return compiledPatterns.get(this);
         }
         //endregion
@@ -95,7 +93,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         //endregion
     }
 
-    public enum StatisticsCostEstimatorNames {
+    public enum Token {
         ENTITY_ONE("entityOne"),
         OPTIONAL_ENTITY_ONE_FILTER("optionalEntityOneFilter"),
         ENTITY_TWO("entityTwo"),
@@ -108,7 +106,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         private String value;
 
-        StatisticsCostEstimatorNames(String value) {
+        Token(String value) {
             this.value = value;
         }
 
@@ -116,7 +114,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             return value;
         }
 
-        static StatisticsCostEstimatorNames of(String name) {
+        static Token of(String name) {
             return Arrays.stream(values()).filter(v -> v.value.equals(name)).findFirst().get();
         }
     }
@@ -141,19 +139,17 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
             AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
-        List<PlanOpBase> step = plan.getOps();
-        if (previousCost.isPresent()) {
-            step = extractNewStep(plan);
-        }
-        String opsString = pattern(step);
-        StatisticsCostEstimatorPatterns[] supportedPattern = getSupportedPattern();
-        for (StatisticsCostEstimatorPatterns pattern : supportedPattern) {
-            Pattern compile = pattern.getCompiledPattern();
+        Plan step = previousCost.isPresent() ? extractNewPlanStep(plan) : plan;
+
+        String opsString = pattern(step.getOps());
+        Pattern[] supportedPattern = getSupportedPattern();
+        for (Pattern pattern : supportedPattern) {
+            java.util.regex.Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                Map<StatisticsCostEstimatorNames, PlanOpBase> map = extractStep(step, getNamedGroups(compile), matcher);
+                Map<Token, PlanOpBase> tokenMap = tokenizeStep(step, getNamedGroups(compile), matcher);
                 StatisticsProvider statisticsProvider = statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get());
-                StepCostEstimator.StepEstimatorResult result = estimator.calculate(statisticsProvider, map, pattern, previousCost);
+                StepCostEstimator.Result result = estimator.estimate(statisticsProvider, tokenMap, pattern, previousCost);
                 newPlan = buildNewPlan(result, previousCost);
                 break;
             }
@@ -163,7 +159,23 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     //endregion
 
     //region Private Methods
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepCostEstimator.StepEstimatorResult result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    private static Plan extractNewPlanStep(Plan plan) {
+        List<PlanOpBase> planOps = new ArrayList<>();
+        int entityCounter = 0;
+        for (int i = plan.getOps().size() - 1 ; i >= 0 && entityCounter < 2; i--) {
+            if (EntityOp.class.isAssignableFrom(plan.getOps().get(i).getClass())) {
+                entityCounter++;
+            }
+            planOps.add(0, plan.getOps().get(i));
+        }
+
+        if (entityCounter > 0) {
+            return new Plan(planOps);
+        }
+
+        return Plan.empty();
+    }
+    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepCostEstimator.Result result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         DoubleCost previousPlanGlobalCost;
         List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
         if (previousCost.isPresent()) {
@@ -200,14 +212,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         return new PlanWithCost<>(newPlan, newDetailedCost);
     }
 
-    private Map<StatisticsCostEstimatorNames, PlanOpBase> extractStep(List<PlanOpBase> step, Map<String, Integer> groups, Matcher matcher) {
-        Map<StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
+    private Map<Token, PlanOpBase> tokenizeStep(Plan step, Map<String, Integer> groups, Matcher matcher) {
+        Map<Token, PlanOpBase> map = new HashMap<>();
         TreeSet<Map.Entry<String, Integer>> entries = new TreeSet<>(Comparator.comparingInt(Map.Entry::getValue));
         entries.addAll(groups.entrySet());
         int stepIndex = 0;
         for (Map.Entry<String, Integer> entry : entries) {
             if (matcher.group(entry.getKey()) != null) {
-                map.put(StatisticsCostEstimatorNames.of(entry.getKey()), step.get(stepIndex));
+                map.put(Token.of(entry.getKey()), step.getOps().get(stepIndex));
                 stepIndex++;
             }
         }

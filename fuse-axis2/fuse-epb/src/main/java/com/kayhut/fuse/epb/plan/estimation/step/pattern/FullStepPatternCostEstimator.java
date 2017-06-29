@@ -133,7 +133,7 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public StepCostEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         return calculateFullStep(config, statisticsProvider, previousCost.get(), Step.buildFullStep(patternParts));
     }
     //endregion

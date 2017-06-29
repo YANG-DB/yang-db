@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.estimation.step;
 
-import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.pattern.StepPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
@@ -15,23 +15,23 @@ import java.util.Optional;
  */
 public class CompositeStepCostEstimator implements StepCostEstimator {
     //region Constructors
-    public CompositeStepCostEstimator(Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, StepPatternCostEstimator> patternEstimators) {
+    public CompositeStepCostEstimator(Map<StatisticsCostEstimator.Pattern, StepPatternCostEstimator> patternEstimators) {
         this.patternEstimators = patternEstimators;
     }
     //endregion
 
     //region StepCostEstimator Implementation
     @Override
-    public StepEstimatorResult calculate(
+    public Result estimate(
             StatisticsProvider statisticsProvider,
-            Map<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> patternParts,
-            StatisticsCostEstimator.StatisticsCostEstimatorPatterns pattern,
+            Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts,
+            StatisticsCostEstimator.Pattern pattern,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         return patternEstimators.get(pattern).estimate(statisticsProvider, patternParts, previousCost);
     }
     //endregion
 
     //region Fields
-    protected Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, StepPatternCostEstimator> patternEstimators;
+    protected Map<StatisticsCostEstimator.Pattern, StepPatternCostEstimator> patternEstimators;
     //endregion
 }

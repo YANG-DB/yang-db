@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.estimation.step;
 
-import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
@@ -103,11 +102,11 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
         StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001);
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
 
-        HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
+        HashMap<StatisticsCostEstimator.Token, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONLY, entityOp);
-        StepCostEstimator.StepEstimatorResult calculate = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, Optional.empty());
+        map.put(StatisticsCostEstimator.Token.ENTITY_ONLY, entityOp);
+        StepCostEstimator.Result calculate = estimator.estimate(provider, map, StatisticsCostEstimator.Pattern.SINGLE_MODE, Optional.empty());
         List<PlanWithCost<Plan, CountEstimatesCost>> costs = calculate.getPlanStepCosts();
 
         Assert.assertNotNull(costs);
@@ -131,15 +130,15 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
         Plan plan = builder.plan();
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(builder));
 
-        HashMap<StatisticsCostEstimator.StatisticsCostEstimatorNames, PlanOpBase> map = new HashMap<>();
+        HashMap<StatisticsCostEstimator.Token, PlanOpBase> map = new HashMap<>();
         int numOps = plan.getOps().size();
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_ONE, plan.getOps().get(numOps-6));
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_ONE_FILTER, plan.getOps().get(numOps-5));
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.RELATION, plan.getOps().get(numOps-4));
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.ENTITY_TWO, plan.getOps().get(numOps-2));
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorNames.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
-        StepCostEstimator.StepEstimatorResult calculate = estimator.calculate(provider, map, StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, Optional.of(oldPlan));
+        map.put(StatisticsCostEstimator.Token.ENTITY_ONE, plan.getOps().get(numOps-6));
+        map.put(StatisticsCostEstimator.Token.OPTIONAL_ENTITY_ONE_FILTER, plan.getOps().get(numOps-5));
+        map.put(StatisticsCostEstimator.Token.RELATION, plan.getOps().get(numOps-4));
+        map.put(StatisticsCostEstimator.Token.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
+        map.put(StatisticsCostEstimator.Token.ENTITY_TWO, plan.getOps().get(numOps-2));
+        map.put(StatisticsCostEstimator.Token.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
+        StepCostEstimator.Result calculate = estimator.estimate(provider, map, StatisticsCostEstimator.Pattern.FULL_STEP, Optional.of(oldPlan));
         Assert.assertNotNull(calculate);
     }
 

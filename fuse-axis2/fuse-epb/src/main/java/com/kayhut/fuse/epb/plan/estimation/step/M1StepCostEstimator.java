@@ -1,7 +1,11 @@
 package com.kayhut.fuse.epb.plan.estimation.step;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
+import com.kayhut.fuse.epb.plan.estimation.step.pattern.FullStepPatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.pattern.GoToStepPatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.pattern.SingleEntityStepPatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.pattern.StepPatternCostEstimator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,15 +15,15 @@ import java.util.Map;
  */
 public class M1StepCostEstimator extends CompositeStepCostEstimator {
     //region Static
-    private static Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, StepPatternCostEstimator> patternEstimators(CostEstimationConfig config) {
+    private static Map<StatisticsCostEstimator.Pattern, StepPatternCostEstimator> patternEstimators(CostEstimationConfig config) {
         FullStepPatternCostEstimator fullStepPatternEstimator = new FullStepPatternCostEstimator(config);
         SingleEntityStepPatternCostEstimator singleEntityPatternEstimator = new SingleEntityStepPatternCostEstimator();
         GoToStepPatternCostEstimator goToPatternEstimator = new GoToStepPatternCostEstimator(config);
 
-        Map<StatisticsCostEstimator.StatisticsCostEstimatorPatterns, StepPatternCostEstimator> map = new HashMap<>();
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorPatterns.FULL_STEP, fullStepPatternEstimator);
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorPatterns.SINGLE_MODE, singleEntityPatternEstimator);
-        map.put(StatisticsCostEstimator.StatisticsCostEstimatorPatterns.GOTO_MODE, goToPatternEstimator);
+        Map<StatisticsCostEstimator.Pattern, StepPatternCostEstimator> map = new HashMap<>();
+        map.put(StatisticsCostEstimator.Pattern.FULL_STEP, fullStepPatternEstimator);
+        map.put(StatisticsCostEstimator.Pattern.SINGLE_MODE, singleEntityPatternEstimator);
+        map.put(StatisticsCostEstimator.Pattern.GOTO_MODE, goToPatternEstimator);
 
         return map;
     }
