@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
-import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
+import com.kayhut.fuse.model.resourceInfo.*;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
+import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 
 import java.io.IOException;
@@ -52,6 +50,25 @@ public class FuseClient {
         request.setName(name);
         request.setQuery(query);
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
+    }
+
+    public QueryCursorPageResourceInfo postQueryAndFetch(
+            String queryStoreUrl,
+            Query query,
+            String id,
+            String name,
+            CreateCursorRequest.CursorType cursorType,
+            int pageSize) throws IOException {
+
+        CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest(
+                id,
+                name,
+                query,
+                new CreateCursorRequest(cursorType),
+                new CreatePageRequest(pageSize)
+        );
+
+        return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl + "?fetch=true", request)), QueryCursorPageResourceInfo.class);
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {

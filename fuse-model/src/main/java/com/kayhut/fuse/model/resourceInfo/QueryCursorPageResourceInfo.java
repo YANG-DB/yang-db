@@ -5,6 +5,8 @@ package com.kayhut.fuse.model.resourceInfo;
  */
 public class QueryCursorPageResourceInfo extends QueryResourceInfo {
     //region Constructors
+    public QueryCursorPageResourceInfo() {}
+
     public QueryCursorPageResourceInfo(
             String resourceUrl,
             String resourceId,

@@ -8,11 +8,24 @@ import com.kayhut.fuse.model.query.Query;
  * Mutable structure due to json reflective builder needs...
  */
 public class CreateQueryRequest {
-    private String id;
-    private boolean verbose;
-    private String name;
-    private Query query;
+    //region Constructors
+    public CreateQueryRequest() {
 
+    }
+
+    public CreateQueryRequest(String id, String name, Query query) {
+        this.id = id;
+        this.name = name;
+        this.query = query;
+    }
+
+    public CreateQueryRequest(String id, String name, Query query, boolean verbose) {
+        this(id, name, query);
+        this.verbose = verbose;
+    }
+    //endregion
+
+    //region Properties
     public boolean isVerbose() {
         return verbose;
     }
@@ -44,4 +57,12 @@ public class CreateQueryRequest {
     public Query getQuery() {
         return query;
     }
+    //endregion
+
+    //region Fields
+    private String id;
+    private boolean verbose;
+    private String name;
+    private Query query;
+    //endregion
 }

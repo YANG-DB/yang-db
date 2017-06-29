@@ -9,6 +9,16 @@ public class CreateCursorRequest {
         paths
     }
 
+    //region Constructors
+    public CreateCursorRequest() {
+
+    }
+
+    public CreateCursorRequest(CursorType cursorType) {
+        this.cursorType = cursorType;
+    }
+    //endregion
+
     //region Properties
     public CursorType getCursorType() {
         return cursorType;
