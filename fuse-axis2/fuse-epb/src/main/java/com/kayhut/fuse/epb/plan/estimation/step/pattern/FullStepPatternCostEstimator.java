@@ -1,6 +1,9 @@
-package com.kayhut.fuse.epb.plan.estimation.step;
+package com.kayhut.fuse.epb.plan.estimation.step.pattern;
 
-import com.kayhut.fuse.epb.plan.estimation.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
+import com.kayhut.fuse.epb.plan.estimation.step.Step;
+import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
@@ -51,7 +54,7 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
      * @param step
      * @return
      */
-    public static StepCostEstimator.StepEstimatorResult calculateFullStep(
+    public static StepCostEstimator.Result calculateFullStep(
             CostEstimationConfig config,
             StatisticsProvider statisticsProvider,
             PlanWithCost<Plan, PlanDetailedCost> previousPlanCost,
@@ -102,7 +105,7 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
         //* N2 = min(N2-1, N2-2)
         double N2 = Math.min(N2_1, N2_2);
 
-        //calculate back propagation weight
+        //estimate back propagation weight
         double lambdaEdge = R / R2;
         double lambdaNode = N2 / N2_2;
         // lambda = (R/R1)*(N2/N2-1)
@@ -121,7 +124,7 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
         CountEstimatesCost entityTwoCost = new CountEstimatesCost(N2, N2);
         PlanWithCost<Plan, CountEstimatesCost> entityTwoOpCost = new PlanWithCost<>(new Plan(end, endFilter), entityTwoCost);
 
-        return StepCostEstimator.StepEstimatorResult.of(lambda, entityOnePlanCost, relPlanCost, entityTwoOpCost);
+        return StepCostEstimator.Result.of(lambda, entityOnePlanCost, relPlanCost, entityTwoOpCost);
     }
     //endregion
 
@@ -133,7 +136,7 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.StepEstimatorResult estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public StepCostEstimator.Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         return calculateFullStep(config, statisticsProvider, previousCost.get(), Step.buildFullStep(patternParts));
     }
     //endregion
