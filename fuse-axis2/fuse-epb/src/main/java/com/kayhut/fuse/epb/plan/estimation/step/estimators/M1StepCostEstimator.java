@@ -1,11 +1,9 @@
-package com.kayhut.fuse.epb.plan.estimation.step;
+package com.kayhut.fuse.epb.plan.estimation.step.estimators;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
+import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
-import com.kayhut.fuse.epb.plan.estimation.step.pattern.EntityRelationEntityStepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.pattern.GoToEntityRelationEntityStepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.pattern.EntityStepCostEstimator;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 

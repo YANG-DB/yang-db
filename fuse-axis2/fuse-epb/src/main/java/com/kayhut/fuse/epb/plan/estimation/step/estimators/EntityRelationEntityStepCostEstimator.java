@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.estimation.step.pattern;
+package com.kayhut.fuse.epb.plan.estimation.step.estimators;
 
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.EntityRelationEntityStep;

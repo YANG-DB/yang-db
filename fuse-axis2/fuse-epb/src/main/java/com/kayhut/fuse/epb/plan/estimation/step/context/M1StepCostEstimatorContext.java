@@ -13,9 +13,9 @@ import java.util.Optional;
 /**
  * Created by Roman on 29/06/2017.
  */
-public class M1StepPatternCostEstimatorContext {
+public class M1StepCostEstimatorContext {
     //region Constructors
-    public M1StepPatternCostEstimatorContext(
+    public M1StepCostEstimatorContext(
             StatisticsProvider statisticsProvider,
             Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
