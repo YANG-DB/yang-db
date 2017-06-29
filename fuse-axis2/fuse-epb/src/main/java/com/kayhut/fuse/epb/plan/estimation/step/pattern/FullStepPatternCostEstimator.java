@@ -1,10 +1,9 @@
 package com.kayhut.fuse.epb.plan.estimation.step.pattern;
 
-import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.Step;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
+import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepPatternCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
@@ -16,7 +15,6 @@ import com.kayhut.fuse.model.query.properties.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
  * Created by moti on 29/05/2017.
  *
  */
-public class FullStepPatternCostEstimator implements StepPatternCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext> {
+public class FullStepPatternCostEstimator implements StepPatternCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext> {
     //region Static
     /**
      * ********************************************************
@@ -137,15 +135,8 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator<Pl
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(
-            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
-            StatisticsPatternContext context) {
-
-        return calculateFullStep(
-                config,
-                context.getStatisticsProvider(),
-                previousCost.get(),
-                Step.buildFullStep(context.getPatternParts()));
+    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(Step step, M1StepPatternCostEstimatorContext context) {
+        return calculateFullStep(config, context.getStatisticsProvider(), context.getPreviousCost().get(), step);
     }
     //endregion
 

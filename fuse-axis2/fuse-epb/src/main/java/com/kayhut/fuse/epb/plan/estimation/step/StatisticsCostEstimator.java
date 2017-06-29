@@ -6,8 +6,7 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
-import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
+import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepPatternCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -124,7 +123,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     @Inject
     public StatisticsCostEstimator(
             StatisticsProviderFactory statisticsProviderFactory,
-            StepCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext> estimator,
+            StepCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext> estimator,
             OntologyProvider ontologyProvider) {
         this.statisticsProviderFactory = statisticsProviderFactory;
         this.estimator = estimator;
@@ -140,21 +139,26 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
             AsgQuery query) {
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
-        Plan step = previousCost.isPresent() ? extractNewPlanStep(plan) : plan;
+        Plan planStep = previousCost.isPresent() ? extractNewPlanStep(plan) : plan;
 
-        String opsString = pattern(step.getOps());
+        String opsString = pattern(planStep.getOps());
         Pattern[] supportedPattern = getSupportedPattern();
         for (Pattern pattern : supportedPattern) {
             java.util.regex.Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                StatisticsPatternContext context = new StatisticsPatternContext(
+                M1StepPatternCostEstimatorContext context = new M1StepPatternCostEstimatorContext(
                         statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get()),
-                        getStepPatternParts(step, getNamedGroups(compile), matcher),
-                        pattern
+                        getStepPatternParts(planStep, getNamedGroups(compile), matcher),
+                        pattern,
+                        previousCost
                 );
 
-                StepCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(previousCost, context);
+                Step step = pattern.equals(Pattern.SINGLE_MODE) ?  Step.buildEntityOnlyStep(context.getPatternParts()) :
+                            pattern.equals(Pattern.FULL_STEP) ? Step.buildFullStep(context.getPatternParts()) :
+                            pattern.equals(Pattern.GOTO_MODE) ? Step.buildGoToStep(plan, context.getPatternParts()) : null;
+
+                StepCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(step, context);
 
                 newPlan = buildNewPlan(result, previousCost);
                 break;
@@ -240,6 +244,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     //region Fields
     private StatisticsProviderFactory statisticsProviderFactory;
     private OntologyProvider ontologyProvider;
-    private StepCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext> estimator;
+    private StepCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext> estimator;
     //endregion
 }

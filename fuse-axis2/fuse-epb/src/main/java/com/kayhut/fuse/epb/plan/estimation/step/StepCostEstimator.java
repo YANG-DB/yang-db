@@ -15,9 +15,9 @@ import java.util.Optional;
 /**
  * Created by liorp on 4/24/2017.
  */
-public interface StepCostEstimator<P, CDetailed, CStep, TContext> {
+public interface StepCostEstimator<P1, C1, TContext> {
 
-    Result<P, CStep> estimate(Optional<PlanWithCost<P, CDetailed>> previousCost, TContext context);
+    Result<P1, C1> estimate(Step step, TContext context);
 
     interface Result<P2, C2> {
         List<PlanWithCost<P2, C2>> getPlanStepCosts();

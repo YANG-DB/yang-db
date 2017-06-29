@@ -2,7 +2,7 @@ package com.kayhut.fuse.epb.plan.estimation.step;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
-import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
+import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepPatternCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.estimation.step.pattern.FullStepPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.pattern.GoToStepPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.pattern.SingleEntityStepPatternCostEstimator;
@@ -20,13 +20,13 @@ import java.util.Map;
 public class M1StepCostEstimator extends CompositeStepCostEstimator {
     //region Static
     private static Map<StatisticsCostEstimator.Pattern,
-            StepPatternCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext>> patternEstimators(CostEstimationConfig config) {
+            StepPatternCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext>> patternEstimators(CostEstimationConfig config) {
         FullStepPatternCostEstimator fullStepPatternEstimator = new FullStepPatternCostEstimator(config);
         SingleEntityStepPatternCostEstimator singleEntityPatternEstimator = new SingleEntityStepPatternCostEstimator();
         GoToStepPatternCostEstimator goToPatternEstimator = new GoToStepPatternCostEstimator(config);
 
         Map<StatisticsCostEstimator.Pattern,
-                StepPatternCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext>> estimators = new HashMap<>();
+                StepPatternCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext>> estimators = new HashMap<>();
         estimators.put(StatisticsCostEstimator.Pattern.FULL_STEP, fullStepPatternEstimator);
         estimators.put(StatisticsCostEstimator.Pattern.SINGLE_MODE, singleEntityPatternEstimator);
         estimators.put(StatisticsCostEstimator.Pattern.GOTO_MODE, goToPatternEstimator);

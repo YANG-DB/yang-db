@@ -2,7 +2,7 @@ package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.DummyCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.StepAdjacentDfsStrategy;

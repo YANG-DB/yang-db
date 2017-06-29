@@ -55,6 +55,20 @@ public final class Step {
         return step;
     }
 
+    public static Step buildEntityOnlyStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
+        Step step = new Step();
+
+        step.start = (EntityOp) patternParts.get(ENTITY_ONLY);
+
+        if (!patternParts.containsKey(OPTIONAL_ENTITY_ONLY_FILTER)) {
+            patternParts.put(OPTIONAL_ENTITY_ONLY_FILTER, new EntityFilterOp());
+        }
+
+        step.startFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_ONLY_FILTER);
+        step.startFilter.setEntity(step.start.getAsgEBase());
+        return step;
+    }
+
     public static Step buildFullStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
         Step step = new Step();
         //entity one
@@ -64,7 +78,6 @@ public final class Step {
         }
 
         step.startFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_ONE_FILTER);
-        //set entity type on this kaka
         step.startFilter.setEntity(step.start.getAsgEBase());
 
         //relation
@@ -74,7 +87,6 @@ public final class Step {
             patternParts.put(OPTIONAL_REL_FILTER, new RelationFilterOp());
         }
         step.relFilter = (RelationFilterOp) patternParts.get(OPTIONAL_REL_FILTER);
-        //set entity type on this kaka
         step.relFilter.setRel(step.rel.getAsgEBase());
 
         //entity
@@ -84,7 +96,6 @@ public final class Step {
         }
 
         step.endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
-        //set entity type on this kaka
         step.endFilter.setEntity(step.end.getAsgEBase());
         return step;
     }

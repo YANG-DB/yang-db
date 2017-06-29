@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.step.pattern;
 
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.Step;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -14,6 +15,6 @@ import java.util.Optional;
 /**
  * Created by moti on 29/05/2017.
  */
-public interface StepPatternCostEstimator<P, CDetailed, CStep, TContext> {
-    StepCostEstimator.Result<P, CStep> estimate(Optional<PlanWithCost<P, CDetailed>> previousCost, TContext context);
+public interface StepPatternCostEstimator<P, C, TContext> {
+    StepCostEstimator.Result<P, C> estimate(Step step, TContext context);
 }
