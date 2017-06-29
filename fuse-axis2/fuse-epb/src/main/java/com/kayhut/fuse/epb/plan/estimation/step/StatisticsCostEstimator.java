@@ -6,6 +6,7 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -123,7 +124,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     @Inject
     public StatisticsCostEstimator(
             StatisticsProviderFactory statisticsProviderFactory,
-            StepCostEstimator estimator,
+            StepCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext> estimator,
             OntologyProvider ontologyProvider) {
         this.statisticsProviderFactory = statisticsProviderFactory;
         this.estimator = estimator;
@@ -147,9 +148,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             java.util.regex.Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                Map<PatternPart, PlanOpBase> patternParts = getStepPatternParts(step, getNamedGroups(compile), matcher);
-                StatisticsProvider statisticsProvider = statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get());
-                StepCostEstimator.Result result = estimator.estimate(statisticsProvider, patternParts, pattern, previousCost);
+                StatisticsPatternContext context = new StatisticsPatternContext(
+                        statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get()),
+                        getStepPatternParts(step, getNamedGroups(compile), matcher),
+                        pattern
+                );
+
+                StepCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(previousCost, context);
+
                 newPlan = buildNewPlan(result, previousCost);
                 break;
             }
@@ -175,7 +181,10 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         return Plan.empty();
     }
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(StepCostEstimator.Result result, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(
+            StepCostEstimator.Result<Plan, CountEstimatesCost> result,
+            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+
         DoubleCost previousPlanGlobalCost;
         List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
         if (previousCost.isPresent()) {
@@ -231,6 +240,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     //region Fields
     private StatisticsProviderFactory statisticsProviderFactory;
     private OntologyProvider ontologyProvider;
-    private StepCostEstimator estimator;
+    private StepCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext> estimator;
     //endregion
 }

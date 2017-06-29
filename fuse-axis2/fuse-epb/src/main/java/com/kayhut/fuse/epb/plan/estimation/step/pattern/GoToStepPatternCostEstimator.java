@@ -4,6 +4,7 @@ import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.Step;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
@@ -19,7 +20,7 @@ import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.P
 /**
  * Created by moti on 29/05/2017.
  */
-public class GoToStepPatternCostEstimator implements StepPatternCostEstimator {
+public class GoToStepPatternCostEstimator implements StepPatternCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext> {
     //region Constructors
     public GoToStepPatternCostEstimator(CostEstimationConfig config) {
         this.config = config;
@@ -28,22 +29,21 @@ public class GoToStepPatternCostEstimator implements StepPatternCostEstimator {
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result estimate(
-            StatisticsProvider statisticsProvider,
-            Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts,
-            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(
+            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
+            StatisticsPatternContext context) {
 
-        StepCostEstimator.Result stepEstimatorResult = FullStepPatternCostEstimator.calculateFullStep(
+        StepCostEstimator.Result<Plan, CountEstimatesCost> stepEstimatorResult = FullStepPatternCostEstimator.calculateFullStep(
                 config,
-                statisticsProvider,
+                context.getStatisticsProvider(),
                 previousCost.get(),
-                Step.buildGoToStep(previousCost.get().getPlan(), patternParts));
+                Step.buildGoToStep(previousCost.get().getPlan(), context.getPatternParts()));
 
         CountEstimatesCost gotoCost = new CountEstimatesCost(0, 0);
 
         return StepCostEstimator.Result.of(
                 stepEstimatorResult.lambda(),
-                new PlanWithCost<>(new Plan(patternParts.get(GOTO_ENTITY)), gotoCost),
+                new PlanWithCost<>(new Plan(context.getPatternParts().get(GOTO_ENTITY)), gotoCost),
                 stepEstimatorResult.getPlanStepCosts().get(1),
                 stepEstimatorResult.getPlanStepCosts().get(2));
     }

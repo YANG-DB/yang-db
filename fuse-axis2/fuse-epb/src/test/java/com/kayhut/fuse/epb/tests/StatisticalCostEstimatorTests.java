@@ -215,20 +215,6 @@ public class StatisticalCostEstimatorTests {
 
     }
 
-    private StepCostEstimator mockStepEstimator() {
-        StepCostEstimator mock = Mockito.mock(StepCostEstimator.class);
-        when(mock.estimate(any(), any(), any(), any())).thenAnswer(invocationOnMock -> {
-            if (!invocationOnMock.getArgumentAt(3, Optional.class).isPresent())
-                return new Tuple2<>(1d, Collections.emptyList());
-            else
-                return new Tuple2<>(1d,
-                        ((PlanWithCost<Plan, DoubleCost>) invocationOnMock.getArgumentAt(3, Optional.class).get())
-                                .getPlan().getOps().stream().map(p -> new PlanOpWithCost(1, 1, p))
-                                .collect(Collectors.toList()));
-        });
-        return mock;
-    }
-
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);

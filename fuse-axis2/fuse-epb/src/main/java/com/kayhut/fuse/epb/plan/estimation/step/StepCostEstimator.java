@@ -15,22 +15,20 @@ import java.util.Optional;
 /**
  * Created by liorp on 4/24/2017.
  */
-public interface StepCostEstimator {
+public interface StepCostEstimator<P, CDetailed, CStep, TContext> {
 
-    Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> map,
-                    StatisticsCostEstimator.Pattern pattern,
-                    Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
+    Result<P, CStep> estimate(Optional<PlanWithCost<P, CDetailed>> previousCost, TContext context);
 
-    interface Result {
-        List<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts();
+    interface Result<P2, C2> {
+        List<PlanWithCost<P2, C2>> getPlanStepCosts();
 
         double lambda();
 
         @SafeVarargs
-        static Result of(double lambda, PlanWithCost<Plan, CountEstimatesCost> ... planStepCosts) {
-            return new Result() {
+        static <P2, C2> Result<P2, C2> of(double lambda, PlanWithCost<P2, C2> ... planStepCosts) {
+            return new Result<P2, C2>() {
                 @Override
-                public List<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts() {
+                public List<PlanWithCost<P2, C2>> getPlanStepCosts() {
                     return Arrays.asList(planStepCosts);
                 }
 

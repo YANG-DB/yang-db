@@ -9,6 +9,7 @@ import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -23,6 +24,7 @@ import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFacto
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.typesafe.config.Config;
 import org.jooby.Env;
@@ -45,7 +47,8 @@ public class EpbModule extends ModuleBase {
         binder.bind(GraphElementSchemaProviderFactory.class).to(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
         binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();
 
-        binder.bind(StepCostEstimator.class).toInstance(new M1StepCostEstimator(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
+        binder.bind(new TypeLiteral<StepCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext>>(){})
+                .toInstance(new M1StepCostEstimator(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
 
         binder.bind(new TypeLiteral<CostEstimator<Plan,PlanDetailedCost,AsgQuery>>(){}).to(StatisticsCostEstimator.class).asEagerSingleton();
 

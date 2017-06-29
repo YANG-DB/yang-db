@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.estimation.step;
 
+import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
@@ -99,14 +100,14 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
-        StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001);
+        M1StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001);
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
 
         HashMap<StatisticsCostEstimator.PatternPart, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.PatternPart.ENTITY_ONLY, entityOp);
-        StepCostEstimator.Result calculate = estimator.estimate(provider, map, StatisticsCostEstimator.Pattern.SINGLE_MODE, Optional.empty());
+        StepCostEstimator.Result calculate = estimator.estimate(Optional.empty(), new StatisticsPatternContext(provider, map, StatisticsCostEstimator.Pattern.SINGLE_MODE));
         List<PlanWithCost<Plan, CountEstimatesCost>> costs = calculate.getPlanStepCosts();
 
         Assert.assertNotNull(costs);
@@ -119,7 +120,7 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
 
     @Test
     public void calculateFullStepNotNull() throws Exception {
-        StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001);
+        M1StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001);
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, PERSON.type)
                 .entityFilter(0.2,7,FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, OWN.getrType(), 100)
@@ -138,7 +139,7 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
         map.put(StatisticsCostEstimator.PatternPart.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
         map.put(StatisticsCostEstimator.PatternPart.ENTITY_TWO, plan.getOps().get(numOps-2));
         map.put(StatisticsCostEstimator.PatternPart.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
-        StepCostEstimator.Result calculate = estimator.estimate(provider, map, StatisticsCostEstimator.Pattern.FULL_STEP, Optional.of(oldPlan));
+        StepCostEstimator.Result calculate = estimator.estimate(Optional.of(oldPlan), new StatisticsPatternContext(provider, map, StatisticsCostEstimator.Pattern.FULL_STEP));
         Assert.assertNotNull(calculate);
     }
 

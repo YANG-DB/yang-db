@@ -4,6 +4,7 @@ import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.Step;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.StatisticsPatternContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * Created by moti on 29/05/2017.
  *
  */
-public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
+public class FullStepPatternCostEstimator implements StepPatternCostEstimator<Plan, PlanDetailedCost, CountEstimatesCost, StatisticsPatternContext> {
     //region Static
     /**
      * ********************************************************
@@ -54,7 +55,7 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
      * @param step
      * @return
      */
-    public static StepCostEstimator.Result calculateFullStep(
+    public static StepCostEstimator.Result<Plan, CountEstimatesCost> calculateFullStep(
             CostEstimationConfig config,
             StatisticsProvider statisticsProvider,
             PlanWithCost<Plan, PlanDetailedCost> previousPlanCost,
@@ -136,8 +137,15 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator {
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
-        return calculateFullStep(config, statisticsProvider, previousCost.get(), Step.buildFullStep(patternParts));
+    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(
+            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
+            StatisticsPatternContext context) {
+
+        return calculateFullStep(
+                config,
+                context.getStatisticsProvider(),
+                previousCost.get(),
+                Step.buildFullStep(context.getPatternParts()));
     }
     //endregion
 
