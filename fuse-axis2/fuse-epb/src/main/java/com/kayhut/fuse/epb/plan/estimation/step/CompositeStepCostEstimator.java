@@ -24,7 +24,7 @@ public class CompositeStepCostEstimator implements StepCostEstimator {
     @Override
     public Result estimate(
             StatisticsProvider statisticsProvider,
-            Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts,
+            Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts,
             StatisticsCostEstimator.Pattern pattern,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         return patternEstimators.get(pattern).estimate(statisticsProvider, patternParts, previousCost);

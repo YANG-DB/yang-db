@@ -10,8 +10,8 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.Token.ENTITY_ONLY;
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.Token.OPTIONAL_ENTITY_ONLY_FILTER;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.ENTITY_ONLY;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.OPTIONAL_ENTITY_ONLY_FILTER;
 
 /**
  * Created by moti on 29/05/2017.
@@ -19,7 +19,7 @@ import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.T
 public class SingleEntityStepPatternCostEstimator implements StepPatternCostEstimator {
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    public StepCostEstimator.Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         EntityOp entityOp = (EntityOp) patternParts.get(ENTITY_ONLY);
         if (!patternParts.containsKey(OPTIONAL_ENTITY_ONLY_FILTER)) {
             patternParts.put(OPTIONAL_ENTITY_ONLY_FILTER, new EntityFilterOp());

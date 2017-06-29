@@ -15,5 +15,5 @@ import java.util.Optional;
  * Created by moti on 29/05/2017.
  */
 public interface StepPatternCostEstimator {
-    StepCostEstimator.Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
+    StepCostEstimator.Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts, Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
 }

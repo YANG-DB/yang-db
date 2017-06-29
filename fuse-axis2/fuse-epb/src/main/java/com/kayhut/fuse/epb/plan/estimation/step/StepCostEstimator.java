@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 public interface StepCostEstimator {
 
-    Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.Token, PlanOpBase> map,
+    Result estimate(StatisticsProvider statisticsProvider, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> map,
                     StatisticsCostEstimator.Pattern pattern,
                     Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost);
 

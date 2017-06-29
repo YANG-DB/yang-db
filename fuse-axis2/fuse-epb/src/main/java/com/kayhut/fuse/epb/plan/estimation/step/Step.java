@@ -6,8 +6,8 @@ import javaslang.Tuple2;
 
 import java.util.Map;
 
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.Token.*;
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.Token.OPTIONAL_ENTITY_TWO_FILTER;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.*;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.OPTIONAL_ENTITY_TWO_FILTER;
 
 /**
  * Created by moti on 6/1/2017.
@@ -22,7 +22,7 @@ public final class Step {
 
     private Step() {}
 
-    public static Step buildGoToStep(Plan plan, Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts) {
+    public static Step buildGoToStep(Plan plan, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
         Step step = new Step();
 
         GoToEntityOp gotoOp = (GoToEntityOp) patternParts.get(GOTO_ENTITY);
@@ -55,7 +55,7 @@ public final class Step {
         return step;
     }
 
-    public static Step buildFullStep(Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts) {
+    public static Step buildFullStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
         Step step = new Step();
         //entity one
         step.start = (EntityOp) patternParts.get(ENTITY_ONE);

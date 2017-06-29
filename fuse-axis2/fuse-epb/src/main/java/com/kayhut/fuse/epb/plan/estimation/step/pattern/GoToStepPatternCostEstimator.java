@@ -14,7 +14,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.Token.GOTO_ENTITY;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.GOTO_ENTITY;
 
 /**
  * Created by moti on 29/05/2017.
@@ -30,7 +30,7 @@ public class GoToStepPatternCostEstimator implements StepPatternCostEstimator {
     @Override
     public StepCostEstimator.Result estimate(
             StatisticsProvider statisticsProvider,
-            Map<StatisticsCostEstimator.Token, PlanOpBase> patternParts,
+            Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
 
         StepCostEstimator.Result stepEstimatorResult = FullStepPatternCostEstimator.calculateFullStep(
