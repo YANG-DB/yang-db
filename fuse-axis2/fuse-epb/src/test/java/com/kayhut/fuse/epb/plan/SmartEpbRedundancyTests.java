@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;

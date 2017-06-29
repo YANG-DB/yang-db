@@ -1,9 +1,10 @@
 package com.kayhut.fuse.epb.plan.estimation.step.pattern;
 
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
+import com.kayhut.fuse.epb.plan.estimation.step.EntityRelationEntityStep;
 import com.kayhut.fuse.epb.plan.estimation.step.Step;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepPatternCostEstimatorContext;
+import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
@@ -15,14 +16,13 @@ import com.kayhut.fuse.model.query.properties.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Created by moti on 29/05/2017.
  *
  */
-public class FullStepPatternCostEstimator implements StepPatternCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext> {
+public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> {
     //region Static
     /**
      * ********************************************************
@@ -57,14 +57,14 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator<Pl
             CostEstimationConfig config,
             StatisticsProvider statisticsProvider,
             PlanWithCost<Plan, PlanDetailedCost> previousPlanCost,
-            Step step) {
+            EntityRelationEntityStep step) {
 
-        EntityOp start = step.start()._1;
-        EntityFilterOp startFilter = step.start()._2;
-        EntityOp end = step.end()._1;
-        EntityFilterOp endFilter = step.end()._2;
-        RelationOp rel = step.rel()._1;
-        RelationFilterOp relationFilter = step.rel()._2;
+        EntityOp start = step.getStart();
+        EntityFilterOp startFilter = step.getStartFilter();
+        EntityOp end = step.getEnd();
+        EntityFilterOp endFilter = step.getEndFilter();
+        RelationOp rel = step.getRel();
+        RelationFilterOp relationFilter = step.getRelFilter();
 
         PlanDetailedCost previousCost = previousPlanCost.getCost();
         CountEstimatesCost entityOneCost = previousCost.getPlanStepCost(start).get().getCost();
@@ -128,15 +128,19 @@ public class FullStepPatternCostEstimator implements StepPatternCostEstimator<Pl
     //endregion
 
     //region Constructors
-    public FullStepPatternCostEstimator(CostEstimationConfig config) {
+    public EntityRelationEntityStepCostEstimator(CostEstimationConfig config) {
         this.config = config;
     }
     //endregion
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(Step step, M1StepPatternCostEstimatorContext context) {
-        return calculateFullStep(config, context.getStatisticsProvider(), context.getPreviousCost().get(), step);
+    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(Step step, M1StepCostEstimatorContext context) {
+        if (!step.getClass().equals(EntityRelationEntityStep.class)) {
+            return StepCostEstimator.EmptyResult.get();
+        }
+
+        return calculateFullStep(config, context.getStatisticsProvider(), context.getPreviousCost().get(), (EntityRelationEntityStep)step);
     }
     //endregion
 

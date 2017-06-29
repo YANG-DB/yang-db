@@ -2,8 +2,7 @@ package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -17,17 +16,14 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
-import javaslang.Tuple2;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.getSupportedPattern;

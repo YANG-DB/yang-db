@@ -12,107 +12,76 @@ import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.P
 /**
  * Created by moti on 6/1/2017.
  */
-public final class Step {
-    private EntityOp start;
-    private EntityFilterOp startFilter;
-    private RelationOp rel;
-    private RelationFilterOp relFilter;
-    private EntityOp end;
-    private EntityFilterOp endFilter;
+public class Step {
+   public static GoToEntityRelationEntityStep buildGoToStep(Plan plan, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
+        GoToEntityOp startGoTo = (GoToEntityOp) patternParts.get(GOTO_ENTITY);
 
-    private Step() {}
-
-    public static Step buildGoToStep(Plan plan, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
-        Step step = new Step();
-
-        GoToEntityOp gotoOp = (GoToEntityOp) patternParts.get(GOTO_ENTITY);
-
-        step.start = (EntityOp) plan.getOps().stream().
-                filter(op -> (op instanceof EntityOp) && ((EntityOp) op).getAsgEBase().geteBase().equals(gotoOp.getAsgEBase().geteBase())).
+        EntityOp start = (EntityOp) plan.getOps().stream().
+                filter(op -> (op instanceof EntityOp) && ((EntityOp) op).getAsgEBase().geteBase().equals(startGoTo.getAsgEBase().geteBase())).
                 findFirst().get();
-        step.startFilter = (EntityFilterOp) PlanUtil.adjacentNext(plan, step.start).get();
+        EntityFilterOp startFilter = (EntityFilterOp) PlanUtil.adjacentNext(plan, start).get();
 
         //relation
-        step.rel = (RelationOp) patternParts.get(RELATION);
+        RelationOp rel = (RelationOp) patternParts.get(RELATION);
 
         if (!patternParts.containsKey(OPTIONAL_REL_FILTER)) {
             patternParts.put(OPTIONAL_REL_FILTER, new RelationFilterOp());
         }
-        step.relFilter = (RelationFilterOp) patternParts.get(OPTIONAL_REL_FILTER);
-        //set entity type on this kaka
-        step.relFilter.setRel(step.rel.getAsgEBase());
+        RelationFilterOp relFilter = (RelationFilterOp) patternParts.get(OPTIONAL_REL_FILTER);
+        relFilter.setRel(rel.getAsgEBase());
 
         //entity
-        step.end = (EntityOp) patternParts.get(ENTITY_TWO);
+        EntityOp end = (EntityOp) patternParts.get(ENTITY_TWO);
         if (!patternParts.containsKey(OPTIONAL_ENTITY_TWO_FILTER)) {
             patternParts.put(OPTIONAL_ENTITY_TWO_FILTER, new EntityFilterOp());
         }
 
-        step.endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
-        //set entity type on this kaka
-        step.endFilter.setEntity(step.end.getAsgEBase());
+        EntityFilterOp endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
+        endFilter.setEntity(end.getAsgEBase());
 
-        return step;
+        return new GoToEntityRelationEntityStep(startGoTo, start, startFilter, rel, relFilter, end, endFilter);
     }
 
-    public static Step buildEntityOnlyStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
-        Step step = new Step();
-
-        step.start = (EntityOp) patternParts.get(ENTITY_ONLY);
+    public static EntityStep buildEntityOnlyStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
+        EntityOp start = (EntityOp) patternParts.get(ENTITY_ONLY);
 
         if (!patternParts.containsKey(OPTIONAL_ENTITY_ONLY_FILTER)) {
             patternParts.put(OPTIONAL_ENTITY_ONLY_FILTER, new EntityFilterOp());
         }
 
-        step.startFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_ONLY_FILTER);
-        step.startFilter.setEntity(step.start.getAsgEBase());
-        return step;
+        EntityFilterOp startFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_ONLY_FILTER);
+        startFilter.setEntity(start.getAsgEBase());
+        return new EntityStep(start, startFilter);
     }
 
-    public static Step buildFullStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
-        Step step = new Step();
+    public static EntityRelationEntityStep buildFullStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
         //entity one
-        step.start = (EntityOp) patternParts.get(ENTITY_ONE);
+        EntityOp start = (EntityOp) patternParts.get(ENTITY_ONE);
         if (!patternParts.containsKey(OPTIONAL_ENTITY_ONE_FILTER)) {
             patternParts.put(OPTIONAL_ENTITY_ONE_FILTER, new EntityFilterOp());
         }
 
-        step.startFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_ONE_FILTER);
-        step.startFilter.setEntity(step.start.getAsgEBase());
+        EntityFilterOp startFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_ONE_FILTER);
+        startFilter.setEntity(start.getAsgEBase());
 
         //relation
-        step.rel = (RelationOp) patternParts.get(RELATION);
+        RelationOp rel = (RelationOp) patternParts.get(RELATION);
 
         if (!patternParts.containsKey(OPTIONAL_REL_FILTER)) {
             patternParts.put(OPTIONAL_REL_FILTER, new RelationFilterOp());
         }
-        step.relFilter = (RelationFilterOp) patternParts.get(OPTIONAL_REL_FILTER);
-        step.relFilter.setRel(step.rel.getAsgEBase());
+        RelationFilterOp relFilter = (RelationFilterOp) patternParts.get(OPTIONAL_REL_FILTER);
+        relFilter.setRel(rel.getAsgEBase());
 
         //entity
-        step.end = (EntityOp) patternParts.get(ENTITY_TWO);
+        EntityOp end = (EntityOp) patternParts.get(ENTITY_TWO);
         if (!patternParts.containsKey(OPTIONAL_ENTITY_TWO_FILTER)) {
             patternParts.put(OPTIONAL_ENTITY_TWO_FILTER, new EntityFilterOp());
         }
 
-        step.endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
-        step.endFilter.setEntity(step.end.getAsgEBase());
-        return step;
+        EntityFilterOp endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
+        endFilter.setEntity(end.getAsgEBase());
+
+        return new EntityRelationEntityStep(start, startFilter, rel, relFilter, end, endFilter);
     }
-
-
-    public Tuple2<EntityOp,EntityFilterOp> start() {
-        return new Tuple2<>(start,startFilter);
-    }
-
-    public Tuple2<RelationOp,RelationFilterOp> rel() {
-        return new Tuple2<>(rel,relFilter);
-    }
-
-    public Tuple2<EntityOp,EntityFilterOp> end() {
-        return new Tuple2<>(end,endFilter);
-    }
-
-
-
 }

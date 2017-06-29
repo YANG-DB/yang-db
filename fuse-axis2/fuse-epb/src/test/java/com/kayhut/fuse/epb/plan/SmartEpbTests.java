@@ -2,7 +2,7 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;

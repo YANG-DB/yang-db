@@ -18,11 +18,9 @@ public class M1StepPatternCostEstimatorContext {
     public M1StepPatternCostEstimatorContext(
             StatisticsProvider statisticsProvider,
             Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts,
-            StatisticsCostEstimator.Pattern pattern,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
         this.statisticsProvider = statisticsProvider;
         this.patternParts = patternParts;
-        this.pattern = pattern;
         this.previousCost = previousCost;
     }
     //endregion
@@ -36,10 +34,6 @@ public class M1StepPatternCostEstimatorContext {
         return patternParts;
     }
 
-    public StatisticsCostEstimator.Pattern getPattern() {
-        return pattern;
-    }
-
     public Optional<PlanWithCost<Plan, PlanDetailedCost>> getPreviousCost() {
         return previousCost;
     }
@@ -49,7 +43,6 @@ public class M1StepPatternCostEstimatorContext {
     //region Fields
     private StatisticsProvider statisticsProvider;
     private Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts;
-    private StatisticsCostEstimator.Pattern pattern;
     private Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost;
     //endregion
 }

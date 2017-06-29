@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.step;
 
-import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepPatternCostEstimatorContext;
+import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
+import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
@@ -100,14 +101,14 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
-        StepCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext> estimator = new M1StepCostEstimator(1, 0.001);
+        StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> estimator = new M1StepCostEstimator(1, 0.001);
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
 
         HashMap<StatisticsCostEstimator.PatternPart, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.PatternPart.ENTITY_ONLY, entityOp);
-        StepCostEstimator.Result<Plan, CountEstimatesCost> estimate = estimator.estimate(Step.buildEntityOnlyStep(map), new M1StepPatternCostEstimatorContext(provider, map, StatisticsCostEstimator.Pattern.SINGLE_MODE, Optional.empty()));
+        StepCostEstimator.Result<Plan, CountEstimatesCost> estimate = estimator.estimate(Step.buildEntityOnlyStep(map), new M1StepCostEstimatorContext(provider, map, Optional.empty()));
         List<PlanWithCost<Plan, CountEstimatesCost>> costs = estimate.getPlanStepCosts();
 
         Assert.assertNotNull(costs);
@@ -139,7 +140,7 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
         map.put(StatisticsCostEstimator.PatternPart.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
         map.put(StatisticsCostEstimator.PatternPart.ENTITY_TWO, plan.getOps().get(numOps-2));
         map.put(StatisticsCostEstimator.PatternPart.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
-        StepCostEstimator.Result estimate = estimator.estimate(Step.buildFullStep(map), new M1StepPatternCostEstimatorContext(provider, map, StatisticsCostEstimator.Pattern.FULL_STEP, Optional.of(oldPlan)));
+        StepCostEstimator.Result estimate = estimator.estimate(Step.buildFullStep(map), new M1StepCostEstimatorContext(provider, map, Optional.of(oldPlan)));
         Assert.assertNotNull(estimate);
     }
 

@@ -6,7 +6,7 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepPatternCostEstimatorContext;
+import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -123,7 +123,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     @Inject
     public StatisticsCostEstimator(
             StatisticsProviderFactory statisticsProviderFactory,
-            StepCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext> estimator,
+            StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> estimator,
             OntologyProvider ontologyProvider) {
         this.statisticsProviderFactory = statisticsProviderFactory;
         this.estimator = estimator;
@@ -147,10 +147,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             java.util.regex.Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                M1StepPatternCostEstimatorContext context = new M1StepPatternCostEstimatorContext(
+                M1StepCostEstimatorContext context = new M1StepCostEstimatorContext(
                         statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get()),
                         getStepPatternParts(planStep, getNamedGroups(compile), matcher),
-                        pattern,
                         previousCost
                 );
 
@@ -244,6 +243,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     //region Fields
     private StatisticsProviderFactory statisticsProviderFactory;
     private OntologyProvider ontologyProvider;
-    private StepCostEstimator<Plan, CountEstimatesCost, M1StepPatternCostEstimatorContext> estimator;
+    private StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> estimator;
     //endregion
 }
