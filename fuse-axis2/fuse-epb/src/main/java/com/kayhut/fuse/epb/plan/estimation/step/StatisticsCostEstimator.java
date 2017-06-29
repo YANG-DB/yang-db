@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.Token.*;
+import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.*;
 import static com.kayhut.fuse.model.Utils.pattern;
 
 /**
@@ -93,7 +93,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         //endregion
     }
 
-    public enum Token {
+    public enum PatternPart {
         ENTITY_ONE("entityOne"),
         OPTIONAL_ENTITY_ONE_FILTER("optionalEntityOneFilter"),
         ENTITY_TWO("entityTwo"),
@@ -106,7 +106,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
         private String value;
 
-        Token(String value) {
+        PatternPart(String value) {
             this.value = value;
         }
 
@@ -114,7 +114,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             return value;
         }
 
-        static Token of(String name) {
+        static PatternPart of(String name) {
             return Arrays.stream(values()).filter(v -> v.value.equals(name)).findFirst().get();
         }
     }
@@ -147,9 +147,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             java.util.regex.Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                Map<Token, PlanOpBase> tokenMap = tokenizeStep(step, getNamedGroups(compile), matcher);
+                Map<PatternPart, PlanOpBase> patternParts = getStepPatternParts(step, getNamedGroups(compile), matcher);
                 StatisticsProvider statisticsProvider = statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get());
-                StepCostEstimator.Result result = estimator.estimate(statisticsProvider, tokenMap, pattern, previousCost);
+                StepCostEstimator.Result result = estimator.estimate(statisticsProvider, patternParts, pattern, previousCost);
                 newPlan = buildNewPlan(result, previousCost);
                 break;
             }
@@ -212,14 +212,14 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
         return new PlanWithCost<>(newPlan, newDetailedCost);
     }
 
-    private Map<Token, PlanOpBase> tokenizeStep(Plan step, Map<String, Integer> groups, Matcher matcher) {
-        Map<Token, PlanOpBase> map = new HashMap<>();
+    private Map<PatternPart, PlanOpBase> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {
+        Map<PatternPart, PlanOpBase> map = new HashMap<>();
         TreeSet<Map.Entry<String, Integer>> entries = new TreeSet<>(Comparator.comparingInt(Map.Entry::getValue));
         entries.addAll(groups.entrySet());
         int stepIndex = 0;
         for (Map.Entry<String, Integer> entry : entries) {
             if (matcher.group(entry.getKey()) != null) {
-                map.put(Token.of(entry.getKey()), step.getOps().get(stepIndex));
+                map.put(PatternPart.of(entry.getKey()), step.getOps().get(stepIndex));
                 stepIndex++;
             }
         }
