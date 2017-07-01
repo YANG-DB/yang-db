@@ -2,9 +2,9 @@ package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
-import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
-import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
+import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.getSupportedPattern;
+import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.getSupportedPattern;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
@@ -109,7 +109,7 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void planEstimatorPatternTwoTest() {
 
-        StatisticsCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
+        RegexPatternCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
         String s1 = new Plan().withOp(new EntityOp()).toPattern();
 
@@ -137,7 +137,7 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void planEstimatorPatternOneTest() {
-        StatisticsCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
+        RegexPatternCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
         String s1 = new Plan().withOp(new EntityOp()).toPattern();
 
@@ -185,13 +185,13 @@ public class StatisticalCostEstimatorTests {
                 .rel(out, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
 
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(new M1StepCostEstimator(
+        RegexPatternCostEstimator estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
                 (id) -> Optional.of(ont.get())));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), new IncrementalCostContext<>(previousCost, asgQuery));
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), new IncrementalEstimationContext<>(previousCost, asgQuery));
 
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 6);
@@ -216,7 +216,7 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(new M1StepCostEstimator(
+        RegexPatternCostEstimator estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
                 (id) -> Optional.of(ont.get())));
@@ -228,7 +228,7 @@ public class StatisticalCostEstimatorTests {
         EntityOp entityOp = new EntityOp(AsgQueryUtil.element$(query, 1));
 
         Plan plan = new Plan().withOp(entityOp);
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, new IncrementalCostContext<>(Optional.empty(), query));
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, new IncrementalEstimationContext<>(Optional.empty(), query));
 
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 2);

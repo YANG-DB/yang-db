@@ -1,19 +1,18 @@
-package com.kayhut.fuse.epb.plan.estimation.step;
+package com.kayhut.fuse.epb.plan.estimation.pattern;
 
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.*;
-import javaslang.Tuple2;
 
 import java.util.Map;
 
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.*;
-import static com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator.PatternPart.OPTIONAL_ENTITY_TWO_FILTER;
+import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.PatternPart.*;
+import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.PatternPart.OPTIONAL_ENTITY_TWO_FILTER;
 
 /**
  * Created by moti on 6/1/2017.
  */
-public class Step {
-   public static GoToEntityRelationEntityStep buildGoToStep(Plan plan, Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
+public class Pattern {
+   public static GoToEntityRelationEntityPattern buildGoToPattern(Plan plan, Map<RegexPatternCostEstimator.PatternPart, PlanOpBase> patternParts) {
         GoToEntityOp startGoTo = (GoToEntityOp) patternParts.get(GOTO_ENTITY);
 
         EntityOp start = (EntityOp) plan.getOps().stream().
@@ -39,10 +38,10 @@ public class Step {
         EntityFilterOp endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
         endFilter.setEntity(end.getAsgEBase());
 
-        return new GoToEntityRelationEntityStep(startGoTo, start, startFilter, rel, relFilter, end, endFilter);
+        return new GoToEntityRelationEntityPattern(startGoTo, start, startFilter, rel, relFilter, end, endFilter);
     }
 
-    public static EntityStep buildEntityOnlyStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
+    public static EntityPattern buildEntityPattern(Map<RegexPatternCostEstimator.PatternPart, PlanOpBase> patternParts) {
         EntityOp start = (EntityOp) patternParts.get(ENTITY_ONLY);
 
         if (!patternParts.containsKey(OPTIONAL_ENTITY_ONLY_FILTER)) {
@@ -51,10 +50,10 @@ public class Step {
 
         EntityFilterOp startFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_ONLY_FILTER);
         startFilter.setEntity(start.getAsgEBase());
-        return new EntityStep(start, startFilter);
+        return new EntityPattern(start, startFilter);
     }
 
-    public static EntityRelationEntityStep buildFullStep(Map<StatisticsCostEstimator.PatternPart, PlanOpBase> patternParts) {
+    public static EntityRelationEntityPattern buildEntityRelationEntityPattern(Map<RegexPatternCostEstimator.PatternPart, PlanOpBase> patternParts) {
         //entity one
         EntityOp start = (EntityOp) patternParts.get(ENTITY_ONE);
         if (!patternParts.containsKey(OPTIONAL_ENTITY_ONE_FILTER)) {
@@ -82,6 +81,6 @@ public class Step {
         EntityFilterOp endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
         endFilter.setEntity(end.getAsgEBase());
 
-        return new EntityRelationEntityStep(start, startFilter, rel, relFilter, end, endFilter);
+        return new EntityRelationEntityPattern(start, startFilter, rel, relFilter, end, endFilter);
     }
 }

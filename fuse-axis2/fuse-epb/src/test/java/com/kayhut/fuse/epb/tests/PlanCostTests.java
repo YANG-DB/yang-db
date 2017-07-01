@@ -6,7 +6,7 @@ import static org.mockito.Matchers.any;
  * Created by moti on 4/19/2017.
  */
 public class PlanCostTests {
-    /*private StatisticsCostEstimator<DoubleCost> planOpStatisticsCostEstimator;
+    /*private RegexPatternCostEstimator<DoubleCost> planOpStatisticsCostEstimator;
 
     @Before
     public void setup() {
@@ -51,7 +51,7 @@ public class PlanCostTests {
         when(costCombiner.calculateCost(any(), any())).thenReturn(new DoubleCost(1.0,1,1));
 
         //tested class estimation estimator
-        planOpStatisticsCostEstimator = new StatisticsCostEstimator(statisticsProvider,costEstimator);
+        planOpStatisticsCostEstimator = new RegexPatternCostEstimator(statisticsProvider,costEstimator);
     }
 
     @Test

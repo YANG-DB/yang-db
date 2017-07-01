@@ -2,8 +2,8 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
-import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -58,7 +58,7 @@ public class SmartEpbSelectivityTests {
     private GraphLayoutProvider layoutProvider;
 
     private EBaseStatisticsProvider eBaseStatisticsProvider;
-    private StatisticsCostEstimator statisticsCostEstimator;
+    private RegexPatternCostEstimator estimator;
 
     private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
     private long startTime;
@@ -195,7 +195,7 @@ public class SmartEpbSelectivityTests {
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
-        statisticsCostEstimator = new StatisticsCostEstimator(new M1StepCostEstimator(
+        estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
                 (id) -> Optional.of(ont.get())));
@@ -215,7 +215,7 @@ public class SmartEpbSelectivityTests {
                 globalPlanSelector,
                 localPlanSelector,
                 validator,
-                statisticsCostEstimator);
+                estimator);
     }
 
     private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {

@@ -82,7 +82,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
                                 .pop();
                         break;
                     default:
-                        throw new IllegalArgumentException(String.format("predicate not supported in has step: %s" + hasContainer.toString()));
+                        throw new IllegalArgumentException(String.format("predicate not supported in has pattern: %s" + hasContainer.toString()));
                 }
             } else if (hasContainer.getBiPredicate() instanceof Contains) {
                 Contains contains = (Contains) hasContainer.getBiPredicate();
@@ -103,7 +103,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
                         break;
 
                     default:
-                        throw new IllegalArgumentException(String.format("predicate not supported in has step: %s" + hasContainer.toString()));
+                        throw new IllegalArgumentException(String.format("predicate not supported in has pattern: %s" + hasContainer.toString()));
                 }
             } else if (hasContainer.getBiPredicate() instanceof Geo) {
                 Geo geo = (Geo) hasContainer.getBiPredicate();
@@ -191,7 +191,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
                                 break;
 
                             default:
-                                throw new IllegalArgumentException(String.format("predicate not supported in has step: %s" + hasContainer.toString()));
+                                throw new IllegalArgumentException(String.format("predicate not supported in has pattern: %s" + hasContainer.toString()));
 
                         }
                     } else if (hasContainer.getBiPredicate() instanceof Contains) {
@@ -209,7 +209,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
                                 }
 
                             default:
-                                throw new IllegalArgumentException(String.format("predicate not supported in has step: %s" + hasContainer.toString()));
+                                throw new IllegalArgumentException(String.format("predicate not supported in has pattern: %s" + hasContainer.toString()));
                         }
                     }
                 }
@@ -229,7 +229,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
                                 break;
 
                             default:
-                                throw new IllegalArgumentException(String.format("predicate not supported in has step: %s" + hasContainer.toString()));
+                                throw new IllegalArgumentException(String.format("predicate not supported in has pattern: %s" + hasContainer.toString()));
                         }
                     } else if (hasContainer.getBiPredicate() instanceof Contains) {
                         Contains contains = (Contains) hasContainer.getBiPredicate();
@@ -247,7 +247,7 @@ import static org.apache.tinkerpop.gremlin.process.traversal.Contains.within;
                                 break;
 
                             default:
-                                throw new IllegalArgumentException(String.format("predicate not supported in has step: %s" + hasContainer.toString()));
+                                throw new IllegalArgumentException(String.format("predicate not supported in has pattern: %s" + hasContainer.toString()));
                         }
                     }
                 }

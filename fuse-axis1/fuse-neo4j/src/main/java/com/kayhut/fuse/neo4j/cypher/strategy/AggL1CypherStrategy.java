@@ -30,7 +30,7 @@ public class AggL1CypherStrategy extends CypherStrategy {
 
             CypherCompilationState curState = getRelevantState(element);
 
-            //Add aggregation step by using a with clause
+            //Add aggregation pattern by using a with clause
             // WITH [per.1, per.2, per.3, ...] , aggregation( eTag ) as AGG
             // WHERE constraint(AGG)
 

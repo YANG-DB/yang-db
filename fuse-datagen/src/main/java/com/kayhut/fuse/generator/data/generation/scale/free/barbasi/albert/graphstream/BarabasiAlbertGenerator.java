@@ -62,7 +62,7 @@ public class BarabasiAlbertGenerator extends BaseGenerator {
     /**
      * Maximum number of edges created when a new entity is added.
      *
-     * @return The maximum number of links per step.
+     * @return The maximum number of links per pattern.
      */
     public int getMaxLinksPerStep() {
         return maxLinksPerStep;
@@ -155,7 +155,7 @@ public class BarabasiAlbertGenerator extends BaseGenerator {
      * Step of the generator. Add a entity and try to connect it with some others.
      *
      * The number of links is randomly chosen between 1 and the maximum number
-     * of links per step specified in {@link #setMaxLinksPerStep(int)}.
+     * of links per pattern specified in {@link #setMaxLinksPerStep(int)}.
      *
      * The complexity of this method is O(n) with n the number of nodes if the
      * number of edges created per new entity is 1, else it is O(nm) with m the

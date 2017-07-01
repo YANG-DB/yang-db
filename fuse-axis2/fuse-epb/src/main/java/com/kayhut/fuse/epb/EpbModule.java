@@ -7,11 +7,10 @@ import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
-import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
+import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
+import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -51,11 +50,11 @@ public class EpbModule extends ModuleBase {
 
         binder.bind(CostEstimationConfig.class)
                 .toInstance(new CostEstimationConfig(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
-        binder.bind(new TypeLiteral<StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
-                .to(M1StepCostEstimator.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
+                .to(M1PatternCostEstimator.class).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
-                .to(StatisticsCostEstimator.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
+                .to(RegexPatternCostEstimator.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){}).to(M1PlanExtensionStrategy.class);
 

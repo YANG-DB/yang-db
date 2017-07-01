@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.estimation.step;
+package com.kayhut.fuse.epb.plan.estimation.pattern;
 
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -6,9 +6,9 @@ import com.kayhut.fuse.model.execution.plan.EntityOp;
 /**
  * Created by Roman on 29/06/2017.
  */
-public class EntityStep extends Step {
+public class EntityPattern extends Pattern {
     //region Constructors
-    public EntityStep(EntityOp start, EntityFilterOp startFilter) {
+    public EntityPattern(EntityOp start, EntityFilterOp startFilter) {
         this.start = start;
         this.startFilter = startFilter;
     }

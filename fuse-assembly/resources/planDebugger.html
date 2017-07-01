@@ -299,32 +299,32 @@ function getPlanHtml(planDesc) {
 	for (i = 0; i < array.length; i++) { 
 		array[i]  = array[i].replace('[', '');
 		array[i]  = array[i].replace(']', '');
-		step = array[i];
-		if (step.indexOf('EntityOp') !== -1)
+		pattern = array[i];
+		if (pattern.indexOf('EntityOp') !== -1)
 		{
 			//innerText = array[i].replace('EntityOp','');
 			innerText = array[i];
-			if (step.indexOf('ETyped') !== -1) {
+			if (pattern.indexOf('ETyped') !== -1) {
 				innerText = innerText.replace('ETyped(1)', 'Person');
 				innerText = innerText.replace('ETyped(3)', 'Horse')
 				innerText = innerText.replace('ETyped(5)', 'Kingdom');
-				step = '<div style="background: #B8DBF1;float: left;border: 1px solid rgba(0, 0, 0, .2);text-align: center; vertical-align: middle; display: table-cell;">'+innerText + '</div>'+ arrow;
+				pattern = '<div style="background: #B8DBF1;float: left;border: 1px solid rgba(0, 0, 0, .2);text-align: center; vertical-align: middle; display: table-cell;">'+innerText + '</div>'+ arrow;
 			}
 
-			if (step.indexOf('EConcrete') !== -1) {
-				step = '<div style="background: #FFFF66;float: left;border: 1px solid rgba(0, 0, 0, .2);text-align: center; vertical-align: middle; display: table-cell;">'+innerText + '</div>'+ arrow;
+			if (pattern.indexOf('EConcrete') !== -1) {
+				pattern = '<div style="background: #FFFF66;float: left;border: 1px solid rgba(0, 0, 0, .2);text-align: center; vertical-align: middle; display: table-cell;">'+innerText + '</div>'+ arrow;
 			}
 					
 		}
 		
-		if (step.indexOf('RelationOp') !== -1)
+		if (pattern.indexOf('RelationOp') !== -1)
 		{
 			//innerText = array[i].replace('EntityOp','');
 			innerText = array[i];
-			step = '<div style="background: #DCB9FF;float: left;height: 18px;margin-right: 5px;margin-left: 5px;border: 1px solid rgba(0, 0, 0, .2);">'+innerText  + '</div>'+ arrow;
+			pattern = '<div style="background: #DCB9FF;float: left;height: 18px;margin-right: 5px;margin-left: 5px;border: 1px solid rgba(0, 0, 0, .2);">'+innerText  + '</div>'+ arrow;
 		}
 		
-		plan += step;
+		plan += pattern;
 	}		
 return plan;		
 

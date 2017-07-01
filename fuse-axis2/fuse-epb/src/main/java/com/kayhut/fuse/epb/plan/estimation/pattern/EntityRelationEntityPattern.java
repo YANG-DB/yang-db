@@ -1,15 +1,13 @@
-package com.kayhut.fuse.epb.plan.estimation.step;
+package com.kayhut.fuse.epb.plan.estimation.pattern;
 
 import com.kayhut.fuse.model.execution.plan.*;
-
-import java.util.Map;
 
 /**
  * Created by Roman on 29/06/2017.
  */
-public class EntityRelationEntityStep extends Step {
+public class EntityRelationEntityPattern extends Pattern {
     //region Constructors
-    public EntityRelationEntityStep(
+    public EntityRelationEntityPattern(
             EntityOp start,
             EntityFilterOp startFilter,
             RelationOp rel,

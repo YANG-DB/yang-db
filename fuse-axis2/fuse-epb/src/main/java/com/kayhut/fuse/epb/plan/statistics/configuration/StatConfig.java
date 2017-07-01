@@ -41,7 +41,7 @@ public class StatConfig {
 //        statJsonConfiguration.ifPresent(statContainer -> this.statContainer = statContainer);
     }
 
-    //Used only in the Step Builder
+    //Used only in the Pattern Builder
     public StatConfig(String statClusterName,
                       List<String> statNodesHosts,
                       int statTransportPort,

@@ -2,8 +2,8 @@ package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
-import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
@@ -44,7 +44,7 @@ public class SmartEpbTests {
                 scenarioMockUtil.getOntologyAccessor(),
                 scenarioMockUtil.getGraphStatisticsProvider());
 
-        StatisticsCostEstimator statisticsCostEstimator = new StatisticsCostEstimator(new M1StepCostEstimator(
+        RegexPatternCostEstimator estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
                 (id) -> Optional.of(scenarioMockUtil.getOntologyAccessor().get())));
@@ -62,7 +62,7 @@ public class SmartEpbTests {
                 planSelector,
                 planSelector,
                 validator,
-                statisticsCostEstimator);
+                estimator);
     }
 
     @Test

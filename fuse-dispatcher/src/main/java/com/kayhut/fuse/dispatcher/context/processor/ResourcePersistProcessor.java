@@ -35,7 +35,7 @@ public class ResourcePersistProcessor implements
     @Subscribe
     @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
-        //last step in creation of QueryCreationOperationContext => we can save the context now to the resourceStore
+        //last pattern in creation of QueryCreationOperationContext => we can save the context now to the resourceStore
         if (context.getExecutionPlan() == null) {
             return context;
         }

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.estimation.step.context;
+package com.kayhut.fuse.epb.plan.estimation;
 
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 
@@ -7,9 +7,9 @@ import java.util.Optional;
 /**
  * Created by Roman on 7/1/2017.
  */
-public class IncrementalCostContext<P, C, Q> {
+public class IncrementalEstimationContext<P, C, Q> {
     //region Constructors
-    public IncrementalCostContext(Optional<PlanWithCost<P, C>> previousCost, Q query) {
+    public IncrementalEstimationContext(Optional<PlanWithCost<P, C>> previousCost, Q query) {
         this.previousCost = previousCost;
         this.query = query;
     }
