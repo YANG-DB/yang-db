@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
@@ -183,10 +184,10 @@ public class StatisticalCostEstimatorTests {
                 .rel(out, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
 
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(new M1StepCostEstimator(
+                new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
-                new M1StepCostEstimator(1, 0.001),
-                (id) -> Optional.of(ont.get()));
+                (id) -> Optional.of(ont.get())));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost, asgQuery);
@@ -214,10 +215,10 @@ public class StatisticalCostEstimatorTests {
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
-        StatisticsCostEstimator estimator = new StatisticsCostEstimator(
+        StatisticsCostEstimator estimator = new StatisticsCostEstimator(new M1StepCostEstimator(
+                new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
-                new M1StepCostEstimator(1, 0.001),
-                (id) -> Optional.of(ont.get()));
+                (id) -> Optional.of(ont.get())));
 
         AsgQuery query = AsgQuery.Builder.start("name", "ont").
                 next(concrete(1, "id", "1", "name", "A")).

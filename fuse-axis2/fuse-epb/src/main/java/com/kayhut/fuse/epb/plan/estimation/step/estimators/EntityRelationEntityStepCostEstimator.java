@@ -1,11 +1,15 @@
 package com.kayhut.fuse.epb.plan.estimation.step.estimators;
 
+import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.EntityRelationEntityStep;
 import com.kayhut.fuse.epb.plan.estimation.step.Step;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
+import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
@@ -22,7 +26,7 @@ import java.util.stream.Collectors;
  * Created by moti on 29/05/2017.
  *
  */
-public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> {
+public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Static
     /**
      * ********************************************************
@@ -128,23 +132,31 @@ public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<
     //endregion
 
     //region Constructors
-    public EntityRelationEntityStepCostEstimator(CostEstimationConfig config) {
+    public EntityRelationEntityStepCostEstimator(
+            CostEstimationConfig config,
+            StatisticsProviderFactory statisticsProviderFactory,
+            OntologyProvider ontologyProvider) {
         this.config = config;
+        this.statisticsProviderFactory = statisticsProviderFactory;
+        this.ontologyProvider = ontologyProvider;
     }
     //endregion
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(Step step, M1StepCostEstimatorContext context) {
+    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(Step step, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery> context) {
         if (!step.getClass().equals(EntityRelationEntityStep.class)) {
             return StepCostEstimator.EmptyResult.get();
         }
 
-        return calculateFullStep(config, context.getStatisticsProvider(), context.getPreviousCost().get(), (EntityRelationEntityStep)step);
+        StatisticsProvider statisticsProvider = this.statisticsProviderFactory.get(this.ontologyProvider.get(context.getQuery().getOnt()).get());
+        return calculateFullStep(config, statisticsProvider, context.getPreviousCost().get(), (EntityRelationEntityStep)step);
     }
     //endregion
 
     //region Fields
     private CostEstimationConfig config;
+    private StatisticsProviderFactory statisticsProviderFactory;
+    private OntologyProvider ontologyProvider;
     //endregion
 }

@@ -5,8 +5,10 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
@@ -47,8 +49,10 @@ public class EpbModule extends ModuleBase {
         binder.bind(GraphElementSchemaProviderFactory.class).to(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
         binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext>>(){})
-                .toInstance(new M1StepCostEstimator(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
+        binder.bind(CostEstimationConfig.class)
+                .toInstance(new CostEstimationConfig(conf.getDouble("epb.cost.alpha"), conf.getDouble("epb.cost.delta")));
+        binder.bind(new TypeLiteral<StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
+                .to(M1StepCostEstimator.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<CostEstimator<Plan,PlanDetailedCost,AsgQuery>>(){}).to(StatisticsCostEstimator.class).asEagerSingleton();
 

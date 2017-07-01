@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
 import com.google.common.collect.Iterables;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
@@ -194,10 +195,10 @@ public class SmartEpbSelectivityTests {
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
-        statisticsCostEstimator = new StatisticsCostEstimator(
+        statisticsCostEstimator = new StatisticsCostEstimator(new M1StepCostEstimator(
+                new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
-                new M1StepCostEstimator(1.0, 0.001),
-                (id) -> Optional.of(ont.get()));
+                (id) -> Optional.of(ont.get())));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();

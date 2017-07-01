@@ -6,6 +6,7 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -121,13 +122,8 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
     //region Constructors
     @Inject
-    public StatisticsCostEstimator(
-            StatisticsProviderFactory statisticsProviderFactory,
-            StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> estimator,
-            OntologyProvider ontologyProvider) {
-        this.statisticsProviderFactory = statisticsProviderFactory;
+    public StatisticsCostEstimator(StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> estimator) {
         this.estimator = estimator;
-        this.ontologyProvider = ontologyProvider;
     }
     //endregion
 
@@ -147,15 +143,12 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             java.util.regex.Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                M1StepCostEstimatorContext context = new M1StepCostEstimatorContext(
-                        statisticsProviderFactory.get(ontologyProvider.get(query.getOnt()).get()),
-                        getStepPatternParts(planStep, getNamedGroups(compile), matcher),
-                        previousCost
-                );
+                IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery> context = new IncrementalCostContext<>(previousCost, query);
+                Map<PatternPart, PlanOpBase> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
 
-                Step step = pattern.equals(Pattern.SINGLE_MODE) ?  Step.buildEntityOnlyStep(context.getPatternParts()) :
-                            pattern.equals(Pattern.FULL_STEP) ? Step.buildFullStep(context.getPatternParts()) :
-                            pattern.equals(Pattern.GOTO_MODE) ? Step.buildGoToStep(plan, context.getPatternParts()) : null;
+                Step step = pattern.equals(Pattern.SINGLE_MODE) ?  Step.buildEntityOnlyStep(patternParts) :
+                            pattern.equals(Pattern.FULL_STEP) ? Step.buildFullStep(patternParts) :
+                            pattern.equals(Pattern.GOTO_MODE) ? Step.buildGoToStep(plan, patternParts) : null;
 
                 StepCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(step, context);
 
@@ -241,8 +234,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     //endregion
 
     //region Fields
-    private StatisticsProviderFactory statisticsProviderFactory;
-    private OntologyProvider ontologyProvider;
-    private StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> estimator;
+    private StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> estimator;
     //endregion
 }

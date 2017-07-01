@@ -1,5 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.step;
 
+import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
 import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
@@ -12,6 +14,7 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -101,14 +104,18 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
 
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
-        StepCostEstimator<Plan, CountEstimatesCost, M1StepCostEstimatorContext> estimator = new M1StepCostEstimator(1, 0.001);
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
+        StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
+                new M1StepCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, (id) -> Optional.of(ont.get()));
+
+        AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
+
 
         HashMap<StatisticsCostEstimator.PatternPart, PlanOpBase> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(StatisticsCostEstimator.PatternPart.ENTITY_ONLY, entityOp);
-        StepCostEstimator.Result<Plan, CountEstimatesCost> estimate = estimator.estimate(Step.buildEntityOnlyStep(map), new M1StepCostEstimatorContext(provider, map, Optional.empty()));
+        StepCostEstimator.Result<Plan, CountEstimatesCost> estimate = estimator.estimate(Step.buildEntityOnlyStep(map), new IncrementalCostContext<>(Optional.empty(), query));
         List<PlanWithCost<Plan, CountEstimatesCost>> costs = estimate.getPlanStepCosts();
 
         Assert.assertNotNull(costs);
@@ -121,16 +128,20 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
 
     @Test
     public void calculateFullStepNotNull() throws Exception {
-        M1StepCostEstimator estimator = new M1StepCostEstimator(1, 0.001);
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, PERSON.type)
                 .entityFilter(0.2,7,FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
                 .rel(out, OWN.getrType(), 100)
-                    .relFilter(0.6,11,START_DATE.type,Constraint.of(ConstraintOp.ge, "gt"))
+                .relFilter(0.6,11,START_DATE.type,Constraint.of(ConstraintOp.ge, "gt"))
                 .entity(CONCRETE, 1, DRAGON.type)
-                    .entityFilter(1,12, NAME.type, Constraint.of(ConstraintOp.inSet, "inSet"));
+                .entityFilter(1,12, NAME.type, Constraint.of(ConstraintOp.inSet, "inSet"));
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.oldPlanWithCost(50, 250);
         Plan plan = builder.plan();
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(builder));
+
+        StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
+                new M1StepCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, (id) -> Optional.of(ont.get()));
+
+        AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
 
         HashMap<StatisticsCostEstimator.PatternPart, PlanOpBase> map = new HashMap<>();
         int numOps = plan.getOps().size();
@@ -140,7 +151,7 @@ public class BasicStepCostEstimatorWithStatisticsProviderTest {
         map.put(StatisticsCostEstimator.PatternPart.OPTIONAL_REL_FILTER, plan.getOps().get(numOps-3));
         map.put(StatisticsCostEstimator.PatternPart.ENTITY_TWO, plan.getOps().get(numOps-2));
         map.put(StatisticsCostEstimator.PatternPart.OPTIONAL_ENTITY_TWO_FILTER, plan.getOps().get(numOps-1));
-        StepCostEstimator.Result estimate = estimator.estimate(Step.buildFullStep(map), new M1StepCostEstimatorContext(provider, map, Optional.of(oldPlan)));
+        StepCostEstimator.Result estimate = estimator.estimate(Step.buildFullStep(map), new IncrementalCostContext<>(Optional.of(oldPlan), query));
         Assert.assertNotNull(estimate);
     }
 
