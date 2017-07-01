@@ -54,7 +54,8 @@ public class EpbModule extends ModuleBase {
         binder.bind(new TypeLiteral<StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .to(M1StepCostEstimator.class).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<CostEstimator<Plan,PlanDetailedCost,AsgQuery>>(){}).to(StatisticsCostEstimator.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
+                .to(StatisticsCostEstimator.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){}).to(M1PlanExtensionStrategy.class);
 

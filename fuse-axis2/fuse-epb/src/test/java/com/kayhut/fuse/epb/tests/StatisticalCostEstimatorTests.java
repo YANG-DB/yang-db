@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.tests;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.step.StatisticsCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.epb.plan.estimation.step.estimators.M1StepCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
@@ -190,7 +191,7 @@ public class StatisticalCostEstimatorTests {
                 (id) -> Optional.of(ont.get())));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), previousCost, asgQuery);
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), new IncrementalCostContext<>(previousCost, asgQuery));
 
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 6);
@@ -227,7 +228,7 @@ public class StatisticalCostEstimatorTests {
         EntityOp entityOp = new EntityOp(AsgQueryUtil.element$(query, 1));
 
         Plan plan = new Plan().withOp(entityOp);
-        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, Optional.empty(), query);
+        PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, new IncrementalCostContext<>(Optional.empty(), query));
 
         Assert.assertNotNull(estimate);
         Assert.assertEquals(estimate.getPlan().getOps().size(), 2);

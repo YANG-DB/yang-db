@@ -26,7 +26,7 @@ import static com.kayhut.fuse.model.Utils.pattern;
 /**
  * Created by moti on 01/04/2017.
  */
-public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost, AsgQuery> {
+public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailedCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Static
     private static Map<Pattern, java.util.regex.Pattern> compiledPatterns;
 
@@ -132,10 +132,9 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
     @LoggerAnnotation(name = "estimate", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
             Plan plan,
-            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost,
-            AsgQuery query) {
+            IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery> context) {
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
-        Plan planStep = previousCost.isPresent() ? extractNewPlanStep(plan) : plan;
+        Plan planStep = context.getPreviousCost().isPresent() ? extractNewPlanStep(plan) : plan;
 
         String opsString = pattern(planStep.getOps());
         Pattern[] supportedPattern = getSupportedPattern();
@@ -143,7 +142,6 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
             java.util.regex.Pattern compile = pattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery> context = new IncrementalCostContext<>(previousCost, query);
                 Map<PatternPart, PlanOpBase> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
 
                 Step step = pattern.equals(Pattern.SINGLE_MODE) ?  Step.buildEntityOnlyStep(patternParts) :
@@ -152,7 +150,7 @@ public class StatisticsCostEstimator implements CostEstimator<Plan, PlanDetailed
 
                 StepCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(step, context);
 
-                newPlan = buildNewPlan(result, previousCost);
+                newPlan = buildNewPlan(result, context.getPreviousCost());
                 break;
             }
         }

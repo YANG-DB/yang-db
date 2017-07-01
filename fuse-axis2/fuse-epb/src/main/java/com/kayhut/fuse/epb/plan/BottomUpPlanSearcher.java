@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.NDC;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -82,7 +83,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
                                 @Named("GlobalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector,
                                 @Named("LocalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector,
                                 PlanValidator<P, Q> planValidator,
-                                CostEstimator<P, C, Q> costEstimator) {
+                                CostEstimator<P, C, IncrementalCostContext<P, C, Q>> costEstimator) {
         this.extensionStrategy = extensionStrategy;
         this.globalPruneStrategy = globalPruneStrategy;
         this.localPruneStrategy = localPruneStrategy;
@@ -100,7 +101,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
     private PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector;
     private PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector;
     private PlanValidator<P, Q> planValidator;
-    private CostEstimator<P, C, Q> costEstimator;
+    private CostEstimator<P, C, IncrementalCostContext<P, C, Q>> costEstimator;
     //endregion
 
     //region Methods
@@ -118,7 +119,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
             ValidationContext planValid = planValidator.isPlanValid(seedPlan, query);
             builder.add(seedPlan,planValid.toString());
             if (planValid.valid()) {
-                PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, Optional.empty(), query);
+                PlanWithCost<P, C> planWithCost = costEstimator.estimate(seedPlan, new IncrementalCostContext<>(Optional.empty(), query));
                 currentPlans.add(planWithCost);
             }
         }
@@ -140,7 +141,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
                         ValidationContext planValid = planValidator.isPlanValid(extendedPlan, query);
                         builder.add(extendedPlan,planValid.toString());
                         if (planValid.valid()) {
-                            PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, Optional.of(partialPlan), query);
+                            PlanWithCost<P, C> planWithCost = costEstimator.estimate(extendedPlan, new IncrementalCostContext<>(Optional.of(partialPlan), query));
                             planExtensions.add(planWithCost);
                             planExtensionsSet = planExtensionsSet.add(planWithCost);
                         }

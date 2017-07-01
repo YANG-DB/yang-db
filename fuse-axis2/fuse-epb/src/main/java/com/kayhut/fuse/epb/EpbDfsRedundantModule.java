@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.epb.plan.extenders.M1DfsRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -27,7 +28,7 @@ public class EpbDfsRedundantModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, AsgQuery>>(){})
+        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})

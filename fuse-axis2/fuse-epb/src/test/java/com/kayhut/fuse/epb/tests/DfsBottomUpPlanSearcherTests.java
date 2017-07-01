@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.tests;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.StepAdjacentDfsStrategy;
@@ -97,7 +98,8 @@ public class DfsBottomUpPlanSearcherTests {
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
 
-        CostEstimator<Plan, PlanDetailedCost, AsgQuery> costEstimator = new DummyCostEstimator<>(new PlanDetailedCost());
+        CostEstimator<Plan, PlanDetailedCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> costEstimator =
+                new DummyCostEstimator<>(new PlanDetailedCost());
 
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
 

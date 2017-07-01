@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Created by moti on 3/28/2017.
  */
-public class DummyCostEstimator<P, C, Q> implements CostEstimator<P, C, Q> {
+public class DummyCostEstimator<P, C, TContext> implements CostEstimator<P, C, TContext> {
     public DummyCostEstimator(C dummyCost) {
         this.dummyCost = dummyCost;
     }
@@ -17,7 +17,7 @@ public class DummyCostEstimator<P, C, Q> implements CostEstimator<P, C, Q> {
     private C dummyCost;
 
     @Override
-    public PlanWithCost<P, C> estimate(P plan, Optional<PlanWithCost<P, C>> previousCost, Q query) {
-        return new PlanWithCost<>(plan, previousCost.map(PlanWithCost::getCost).orElse(dummyCost));
+    public PlanWithCost<P, C> estimate(P plan, TContext context) {
+        return new PlanWithCost<>(plan, dummyCost);
     }
 }
