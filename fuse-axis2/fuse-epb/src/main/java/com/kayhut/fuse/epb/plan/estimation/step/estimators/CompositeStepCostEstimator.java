@@ -4,6 +4,7 @@ import com.kayhut.fuse.epb.plan.estimation.step.Step;
 import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
 import javaslang.collection.Stream;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,30 +13,24 @@ import java.util.Optional;
  */
 public class CompositeStepCostEstimator<P, C, TContext> implements StepCostEstimator<P, C, TContext> {
     //region Constructors
-    public CompositeStepCostEstimator(StepCostEstimator<P, C, TContext>...estimators) {
-        this.estimators = Stream.of(estimators);
-    }
-
-    public CompositeStepCostEstimator(Iterable<StepCostEstimator<P, C, TContext>> estimators) {
-        this.estimators = Stream.ofAll(estimators).toJavaList();
+    public CompositeStepCostEstimator(Map<Class<? extends Step>, StepCostEstimator<P, C, TContext>> estimators) {
+        this.estimators = new HashMap<>(estimators);
     }
     //endregion
 
     //region StepCostEstimator Implementation
     @Override
     public Result<P, C> estimate(Step step, TContext context) {
-        for(StepCostEstimator<P, C, TContext> estimator : this.estimators) {
-            Result<P, C> result = estimator.estimate(step, context);
-            if (!(result instanceof EmptyResult)) {
-                return result;
-            }
+        StepCostEstimator<P, C, TContext> estimator = this.estimators.get(step.getClass());
+        if (estimator == null) {
+            return StepCostEstimator.EmptyResult.get();
         }
 
-        return StepCostEstimator.EmptyResult.get();
+        return estimator.estimate(step, context);
     }
     //endregion
 
     //region Fields
-    private Iterable<StepCostEstimator<P, C, TContext>> estimators;
+    private Map<Class<? extends Step>, StepCostEstimator<P, C, TContext>> estimators;
     //endregion
 }
