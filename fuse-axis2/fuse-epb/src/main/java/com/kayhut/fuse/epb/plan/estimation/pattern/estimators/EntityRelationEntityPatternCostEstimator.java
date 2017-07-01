@@ -1,12 +1,10 @@
-package com.kayhut.fuse.epb.plan.estimation.step.estimators;
+package com.kayhut.fuse.epb.plan.estimation.pattern.estimators;
 
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
-import com.kayhut.fuse.epb.plan.estimation.step.EntityRelationEntityStep;
-import com.kayhut.fuse.epb.plan.estimation.step.Step;
-import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
-import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
+import com.kayhut.fuse.epb.plan.estimation.pattern.EntityRelationEntityPattern;
+import com.kayhut.fuse.epb.plan.estimation.pattern.Pattern;
+import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -26,13 +24,13 @@ import java.util.stream.Collectors;
  * Created by moti on 29/05/2017.
  *
  */
-public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> {
+public class EntityRelationEntityPatternCostEstimator implements PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Static
     /**
      * ********************************************************
-     * Calculate estimates for a full step.
+     * Calculate estimates for a full pattern.
      * Algorithm description:
-     * Step = E1 ------- Rel + filter(+ E2 pushdown props) ------> E2 + filter( without pushdown props)
+     * Pattern = E1 ------- Rel + filter(+ E2 pushdown props) ------> E2 + filter( without pushdown props)
      * <p>
      * N1 = Prior estimate for E1 count
      * <p>
@@ -57,11 +55,11 @@ public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<
      * @param step
      * @return
      */
-    public static StepCostEstimator.Result<Plan, CountEstimatesCost> calculateFullStep(
+    public static PatternCostEstimator.Result<Plan, CountEstimatesCost> calculateFullStep(
             CostEstimationConfig config,
             StatisticsProvider statisticsProvider,
             PlanWithCost<Plan, PlanDetailedCost> previousPlanCost,
-            EntityRelationEntityStep step) {
+            EntityRelationEntityPattern step) {
 
         EntityOp start = step.getStart();
         EntityFilterOp startFilter = step.getStartFilter();
@@ -127,12 +125,12 @@ public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<
         CountEstimatesCost entityTwoCost = new CountEstimatesCost(N2, N2);
         PlanWithCost<Plan, CountEstimatesCost> entityTwoOpCost = new PlanWithCost<>(new Plan(end, endFilter), entityTwoCost);
 
-        return StepCostEstimator.Result.of(lambda, entityOnePlanCost, relPlanCost, entityTwoOpCost);
+        return PatternCostEstimator.Result.of(lambda, entityOnePlanCost, relPlanCost, entityTwoOpCost);
     }
     //endregion
 
     //region Constructors
-    public EntityRelationEntityStepCostEstimator(
+    public EntityRelationEntityPatternCostEstimator(
             CostEstimationConfig config,
             StatisticsProviderFactory statisticsProviderFactory,
             OntologyProvider ontologyProvider) {
@@ -144,13 +142,13 @@ public class EntityRelationEntityStepCostEstimator implements StepCostEstimator<
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(Step step, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery> context) {
-        if (!step.getClass().equals(EntityRelationEntityStep.class)) {
-            return StepCostEstimator.EmptyResult.get();
+    public PatternCostEstimator.Result<Plan, CountEstimatesCost> estimate(Pattern pattern, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
+        if (!EntityRelationEntityPattern.class.isAssignableFrom(pattern.getClass())) {
+            return PatternCostEstimator.EmptyResult.get();
         }
 
         StatisticsProvider statisticsProvider = this.statisticsProviderFactory.get(this.ontologyProvider.get(context.getQuery().getOnt()).get());
-        return calculateFullStep(config, statisticsProvider, context.getPreviousCost().get(), (EntityRelationEntityStep)step);
+        return calculateFullStep(config, statisticsProvider, context.getPreviousCost().get(), (EntityRelationEntityPattern) pattern);
     }
     //endregion
 

@@ -1,11 +1,9 @@
-package com.kayhut.fuse.epb.plan.estimation.step.estimators;
+package com.kayhut.fuse.epb.plan.estimation.pattern.estimators;
 
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
-import com.kayhut.fuse.epb.plan.estimation.step.EntityStep;
-import com.kayhut.fuse.epb.plan.estimation.step.Step;
-import com.kayhut.fuse.epb.plan.estimation.step.StepCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.step.context.IncrementalCostContext;
-import com.kayhut.fuse.epb.plan.estimation.step.context.M1StepCostEstimatorContext;
+import com.kayhut.fuse.epb.plan.estimation.pattern.EntityPattern;
+import com.kayhut.fuse.epb.plan.estimation.pattern.Pattern;
+import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -16,9 +14,9 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 /**
  * Created by moti on 29/05/2017.
  */
-public class EntityStepCostEstimator implements StepCostEstimator<Plan, CountEstimatesCost, IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery>> {
+public class EntityPatternCostEstimator implements PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Constructors
-    public EntityStepCostEstimator(StatisticsProviderFactory statisticsProviderFactory, OntologyProvider ontologyProvider) {
+    public EntityPatternCostEstimator(StatisticsProviderFactory statisticsProviderFactory, OntologyProvider ontologyProvider) {
         this.statisticsProviderFactory = statisticsProviderFactory;
         this.ontologyProvider = ontologyProvider;
     }
@@ -26,15 +24,14 @@ public class EntityStepCostEstimator implements StepCostEstimator<Plan, CountEst
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public StepCostEstimator.Result<Plan, CountEstimatesCost> estimate(
-            Step step,
-            IncrementalCostContext<Plan, PlanDetailedCost, AsgQuery> context) {
-
-        if (!step.getClass().equals(EntityStep.class)) {
-            return StepCostEstimator.EmptyResult.get();
+    public PatternCostEstimator.Result<Plan, CountEstimatesCost> estimate(
+            Pattern pattern,
+            IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
+        if (!EntityPattern.class.isAssignableFrom(pattern.getClass())) {
+            return PatternCostEstimator.EmptyResult.get();
         }
 
-        EntityStep entityStep = (EntityStep)step;
+        EntityPattern entityStep = (EntityPattern) pattern;
         EntityOp start = entityStep.getStart();
         EntityFilterOp startFilter = entityStep.getStartFilter();
 
@@ -48,7 +45,7 @@ public class EntityStepCostEstimator implements StepCostEstimator<Plan, CountEst
         }
 
         double min = Math.min(entityTotal, filterTotal);
-        return StepCostEstimator.Result.of(1.0, new PlanWithCost<>(new Plan(start, startFilter), new CountEstimatesCost(min, min)));
+        return PatternCostEstimator.Result.of(1.0, new PlanWithCost<>(new Plan(start, startFilter), new CountEstimatesCost(min, min)));
     }
     //endregion
 
