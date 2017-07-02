@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 import com.kayhut.fuse.neo4j.cypher.TestUtils;
 import org.junit.Assert;
@@ -116,14 +117,16 @@ public class CompileSingleNodeTest {
 
         AsgQuery query = AsgQuery.Builder.start("q1", "Dragons")
                 .next(AsgQuery.Builder.typed(1, "Person", "A"))
+                .next(AsgQuery.Builder.quant1(2, QuantType.some))
                 .next(AsgQuery.Builder.eProp(2, new EProp(2, "firstName", Constraint.of(ConstraintOp.eq, "John")),
-                        new EProp(2, "height", Constraint.of(ConstraintOp.lt, 180)))).build();
+                        new EProp(2, "height", Constraint.of(ConstraintOp.lt, 180)),
+                        new EProp(2, "firstName", Constraint.of(ConstraintOp.ne, "Doe")))).build();
 
         String cypher = CypherCompiler.compile(query, ontology);
 
         Assert.assertEquals("MATCH\n" +
                 "p0 = (A:Person)\n" +
-                "WHERE A.firstName = 'John' AND A.height < 180\n" +
+                "WHERE A.firstName = 'John' OR A.height < 180 OR A.firstName  <>  'Doe'\n" +
                 "RETURN A\n", cypher);
 
     }
