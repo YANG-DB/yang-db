@@ -1,0 +1,178 @@
+{
+  "mappings": [
+    {
+      "indices": [
+        "dragon"
+      ],
+      "types": [
+        "Dragon"
+      ]
+    },
+    {
+      "indices": [
+        "person"
+      ],
+      "types": [
+        "Person"
+      ]
+    },
+    {
+      "indices": [
+        "fire20170511","fire20170512","fire20170513"
+      ],
+      "types": [
+        "fire"
+      ]
+    }
+  ],
+  "types": [
+    {
+      "type": "Dragon",
+      "fields": [
+        {
+          "field": "name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 1,
+            "interval": 10,
+            "firstCharCode": "65",
+            "numOfChars": 58
+          }
+        },
+        {
+          "field": "birthDate",
+          "histogram": {
+            "dataType": "numericLong",
+            "histogramType": "dynamic",
+            "numOfBins": 100
+          }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Dragon"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "Person",
+      "fields": [
+        {
+          "field": "name",
+          "histogram": {
+            "histogramType": "string",
+            "prefixSize": 2,
+            "interval": 10,
+            "firstCharCode": "65",
+            "numOfChars": 58
+          }
+        }
+      ,
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Person"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "type": "fire",
+      "fields": [
+        {
+          "field": "temperature",
+          "histogram": {
+            "histogramType": "numeric",
+            "dataType": "numericLong",
+            "min": 1000,
+            "max": 10000,
+            "numOfBins": 10
+          }
+        },
+        {
+          "field": "timestamp",
+          "histogram": {
+            "dataType": "numericLong",
+            "histogramType": "dynamic",
+            "numOfBins": 100
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityA.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "Dragon"
+              }
+            ]
+          }
+        },
+        {
+          "field": "_type",
+          "histogram": {
+            "histogramType": "term",
+            "dataType": "string",
+            "buckets": [
+              {
+                "term": "fire"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

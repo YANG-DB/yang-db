@@ -1,0 +1,130 @@
+{
+  "ont": "Dragons",
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 1,
+          "name": "Female"
+        },
+        {
+          "val": 2,
+          "name": "Male"
+        },
+        {
+          "val": 3,
+          "name": "Other"
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "firstName",
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "pType": "lastName",
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "pType": "gender",
+      "name": "gender",
+      "type": "TYPE_Gender"
+    },
+    {
+      "pType": "birthDate",
+      "name": "birthDate",
+      "type": "date"
+    },
+    {
+      "pType": "deathDate",
+      "name": "deathDate",
+      "type": "date"
+    },
+    {
+      "pType": "height",
+      "name": "height",
+      "type": "int",
+      "units": "cm"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "startDate",
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": "endDate",
+      "name": "endDate",
+      "type": "date"
+    }
+  ],
+  "entityTypes": [
+    {
+      "eType": "Person",
+      "name": "Person",
+      "properties": [
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
+      ]
+    },
+    {
+      "eType": "Dragon",
+      "name": "Dragon",
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "eType": "Guild",
+      "name": "Guild",
+      "properties": [
+        "name"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "own",
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "memberOf",
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Guild"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    }
+  ]
+}

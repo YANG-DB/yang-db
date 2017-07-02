@@ -1,0 +1,171 @@
+{
+  "ont": "Dragons",
+  "name": "Q10",
+  "elements": [
+    {
+      "eNum": 0,
+      "type": "Start",
+      "next": 1
+    },
+    {
+      "eNum": 1,
+      "type": "ETyped",
+      "eTag": "A",
+      "eType": "Person",
+      "next": 2
+    },
+    {
+      "eNum": 2,
+      "type": "Quant1",
+      "qType": "all",
+      "next": [
+        3,
+        4
+      ]
+    },
+    {
+      "eNum": 3,
+      "type": "EProp",
+      "pType": 1,
+      "pTag": 1,
+      "con": {
+        "op": "eq",
+        "expr": "Brandon"
+      }
+    },
+    {
+      "eNum": 4,
+      "type": "Rel",
+      "eType": "own",
+      "dir": "R",
+      "next": 5
+    },
+    {
+      "eNum": 5,
+      "type": "ETyped",
+      "eTag": "B",
+      "eType": "Dragon",
+      "next": 6
+    },
+    {
+      "eNum": 6,
+      "type": "Rel",
+      "eType": "fire",
+      "dir": "R",
+      "next": 9,
+      "b": 7
+    },
+    {
+      "eNum": 7,
+      "type": "RelProp",
+      "pType": 1,
+      "pTag": 2,
+      "con": {
+        "op": "ge",
+        "expr": "1010-01-01T00:00:00.000"
+      },
+      "b": 8
+    },
+    {
+      "eNum": 8,
+      "type": "RelProp",
+      "pType": 2,
+      "pTag": 3,
+      "con": {
+        "op": "gt",
+        "expr": "100"
+      }
+    },
+    {
+      "eNum": 9,
+      "type": "ETyped",
+      "eTag": "C",
+      "eType": "Dragon",
+      "next": 10
+    },
+    {
+      "eNum": 10,
+      "type": "Quant1",
+      "qType": "all",
+      "next": [
+        11,
+        15
+      ]
+    },
+    {
+      "eNum": 11,
+      "type": "Rel",
+      "eType": "own",
+      "dir": "L",
+      "next": 12
+    },
+    {
+      "eNum": 12,
+      "type": "ETyped",
+      "eTag": "D",
+      "eType": "Person",
+      "next": 13
+    },
+    {
+      "eNum": 13,
+      "type": "Rel",
+      "eType": "freeze",
+      "dir": "R",
+      "next": 14
+    },
+    {
+      "eNum": 14,
+      "type": "EConcrete",
+      "eTag": "E",
+      "eID": "12345679",
+      "eType": "Person",
+      "eName": "Rogar Bolton"
+    },
+    {
+      "eNum": 15,
+      "type": "Rel",
+      "eType": "fire",
+      "dir": "R",
+      "next": 16
+    },
+    {
+      "eNum": 16,
+      "type": "ETyped",
+      "eTag": "F",
+      "eType": "Dragon",
+      "next": 17
+    },
+    {
+      "eNum": 17,
+      "type": "Rel",
+      "eType": "own",
+      "dir": "L",
+      "next": 18
+    },
+    {
+      "eNum": 18,
+      "type": "Quant2",
+      "qType": "some",
+      "next": [
+        19,
+        20
+      ]
+    },
+    {
+      "eNum": 19,
+      "type": "EConcrete",
+      "eTag": "G",
+      "eID": "12345680",
+      "eType": "Person",
+      "eName": "Robin Arryn"
+    },
+    {
+      "eNum": 20,
+      "type": "EConcrete",
+      "eTag": "H",
+      "eID": "12345681",
+      "eType": "Person",
+      "eName": "Arrec Durrandon"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "ont": "Dragons",
+  "name": "Q2",
+  "elements": [
+    {
+      "eNum": 0,
+      "type": "Start",
+      "next": 1
+    },
+    {
+      "eNum": 1,
+      "type": "EConcrete",
+      "eTag": "A",
+      "eID": "12345678",
+      "eType": "Person",
+      "eName": "Brandon Stark",
+      "next": 2
+    },
+    {
+      "eNum": 2,
+      "type": "Rel",
+      "rType": "own",
+      "dir": "R",
+      "next": 3
+    },
+    {
+      "eNum": 3,
+      "type": "ETyped",
+      "eTag": "B",
+      "eType": "Dragon",
+      "next": 4
+    },
+    {
+      "eNum": 4,
+      "type": "Rel",
+      "rType": "fire",
+      "dir": "R",
+      "next": 5
+    },
+    {
+      "eNum": 5,
+      "type": "ETyped",
+      "eTag": "C",
+      "eType": "Dragon"
+    }
+  ]
+}

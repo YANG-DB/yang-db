@@ -1,0 +1,128 @@
+{
+  "ontology": "Dragons",
+  "entities": [
+    {
+      "name": "Dragon",
+      "headers": [
+        "id",
+        "name",
+        "Power",
+        "Gender",
+        "Color"
+      ]
+    },
+    {
+      "name": "Guild",
+      "headers": [
+        "id",
+        "name",
+        "description",
+        "iconId",
+        "url",
+        "establishDate"
+      ]
+    },
+    {
+      "name": "Kingdom",
+      "headers": [
+        "id",
+        "name",
+        "king",
+        "queen",
+        "independenceDay",
+        "funds"
+      ]
+    },
+    {
+      "name": "Horse",
+      "headers": [
+        "id",
+        "name",
+        "weight",
+        "maxSpeed",
+        "Distance"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "name": "Fires",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "date",
+        "temperature"
+      ]
+    },
+    {
+      "name": "Freeze",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "name": "Knows",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "startDate"
+      ]
+    },
+    {
+      "name": "MemberOf",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "startDate"
+      ]
+    },
+    {
+      "name": "Originiated",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "startDate"
+      ]
+    },
+    {
+      "name": "Registered",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "startDate"
+      ]
+    },
+    {
+      "name": "SubjectOf",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "startDate"
+      ]
+    },
+    {
+      "name": "Owns",
+      "headers": [
+        "id",
+        "source",
+        "target",
+        "startDate",
+        "endDate"
+      ]
+    }
+  ]
+}
+
+
+
+

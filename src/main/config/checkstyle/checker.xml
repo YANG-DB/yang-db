@@ -244,10 +244,10 @@
     </module>
     <module name="ParenPad"/>
     <module name="TypecastParenPad"/>
-      <!-- No extra whitespace around types -->
+      <!-- No extra whitespace around fields -->
     <module name="GenericWhitespace"/>
 
-    <!-- Required for SuppressionCommentFilter below -->
+    <!-- Required for SuppressionCommentFilter b -->
     <module name="FileContentsHolder"/>
   </module>
 

@@ -1,0 +1,33 @@
+{
+  "ont": "Dragons",
+  "name": "Q1",
+  "elements": [
+    {
+      "eNum": 0,
+      "type": "Start",
+      "next": 1
+    },
+    {
+      "eNum": 1,
+      "type": "EConcrete",
+      "eTag": "A",
+      "eID": "12345678",
+      "eType": "Person",
+      "eName": "Brandon Stark",
+      "next": 2
+    },
+    {
+      "eNum": 2,
+      "type": "Rel",
+      "rType": "owns",
+      "dir": "R",
+      "next": 3
+    },
+    {
+      "eNum": 3,
+      "type": "ETyped",
+      "eTag": "B",
+      "eType": "Dragon"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+    "index:" [
+    {
+     "name":"",
+     "partitions":"",
+     "types":["know","member","member"]
+    }]
+}

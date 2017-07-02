@@ -1,0 +1,41 @@
+#Last Updated: 08 June 2017
+------------------------------------
+
+#Person Header
+id, firstName, lastName, gender, birthDate, deathDate, height
+
+#Dragon Header
+id, name, power, gender, color
+
+#Guild Header
+id, name, description, iconId, url, establishDate
+
+#Kingdom Header
+id, name, king, queen, independenceDay, funds
+
+#Horse Header
+id, name, weight, maxSpeed, distance
+
+#Fires Header
+id, source(dragon_id), target(dragon_id), timestamp, temperature
+
+#Freeze Header
+id, source(dragon_id), target(dragon_id), since, till
+
+#Knows Header
+id, source(person_id), target(person_id), since
+
+#MemberOf Header
+id, source(guild_id), target(person_id), since, till
+
+#Originiated Header
+id, source(animal_id), target(kingdom_id), since
+
+#Owns Header
+id, source(person_id), target(animal_id), since, till
+
+#Registered Header
+id, source(guild_id), target(kingdom_id), since
+
+#SubjectOf Header
+id, source (person_id), target(kingdom_id), since

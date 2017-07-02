@@ -1,0 +1,276 @@
+{
+  "ont": "Dragons",
+  "entityTypes": [
+    {
+      "eType": "Person",
+      "name": "Person",
+      "properties": [
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
+      ]
+    },
+    {
+      "eType": "Horse",
+      "name": "Horse",
+      "properties": [
+        "name",
+        "gender"
+      ]
+    },
+    {
+      "eType": "Dragon",
+      "name": "Dragon",
+      "properties": [
+        "name",
+        "gender"
+      ]
+    },
+    {
+      "eType": "Kingdom",
+      "name": "kingdom",
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "eType": "Guild",
+      "name": "Guild",
+      "properties": [
+        "name"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "registered",
+      "name": "registered",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Guild",
+          "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Guild"
+        },
+        {
+          "eTypeA": "Horse",
+          "eTypeB": "Guild"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "subject",
+      "name": "subject",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Kingdom"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "origin",
+      "name": "origin",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Kingdom"
+        }
+      ],
+      "properties": [
+
+      ]
+    },
+    {
+      "rType": "freeze",
+      "name": "freeze",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate",
+        "temperature"
+      ]
+    },
+    {
+      "rType": "fire",
+      "name": "fire",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate",
+        "timestamp",
+        "temperature"
+      ]
+    },
+    {
+      "rType": "memberOf",
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Guild"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "own",
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Dragon"
+        },
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Horse"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "firstName",
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "pType": "lastName",
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "pType": "gender",
+      "name": "gender",
+      "type": "TYPE_Gender"
+    },
+    {
+      "pType": "birthDate",
+      "name": "birthDate",
+      "type": "date"
+    },
+    {
+      "pType": "deathDate",
+      "name": "deathDate",
+      "type": "date"
+    },
+    {
+      "pType": "height",
+      "name": "height",
+      "type": "int",
+      "units": "cm"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "startDate",
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": "endDate",
+      "name": "endDate",
+      "type": "date"
+    },
+    {
+      "pType": "timestamp",
+      "name": "timestamp",
+      "type": "long"
+    },
+    {
+      "pType": "temperature",
+      "name": "temperature",
+      "type": "long"
+    },
+    {
+      "pType": "id",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "type",
+      "name": "type",
+      "type": "string"
+    }
+  ],
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 0,
+          "name": "MALE"
+        },
+        {
+          "val": 1,
+          "name": "FEMALE"
+        },
+        {
+          "val": 2,
+          "name": "OTHER"
+        }
+      ]
+    },
+    {
+      "eType": "TYPE_Color",
+      "values": [
+        {
+          "val": 0,
+          "name": "RED"
+        },
+        {
+          "val": 1,
+          "name": "BLUE"
+        },
+        {
+          "val": 2,
+          "name": "GREEN"
+        },
+        {
+          "val": 3,
+          "name": "YELLOW"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,291 @@
+{
+  "ont": "Dragons",
+  "properties": [
+    {
+      "pType": "firstName",
+      "name": "firstName",
+      "type": "string"
+    },
+    {
+      "pType": "lastName",
+      "name": "lastName",
+      "type": "string"
+    },
+    {
+      "pType": "name",
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "pType": "gender",
+      "name": "gender",
+      "type": "TYPE_Gender"
+    },
+    {
+      "pType": "birthDate",
+      "name": "birthDate",
+      "type": "date"
+    },
+    {
+      "pType": "deathDate",
+      "name": "deathDate",
+      "type": "date"
+    },
+    {
+      "pType": "height",
+      "name": "height",
+      "type": "int",
+      "units": "cm"
+    },
+    {
+      "pType": "color",
+      "name": "color",
+      "type": "TYPE_HorseColor"
+    },
+    {
+      "pType": "weight",
+      "name": "weight",
+      "type": "int",
+      "units": "kg"
+    },
+    {
+      "pType": "startDate",
+      "name": "startDate",
+      "type": "date"
+    },
+    {
+      "pType": "endDate",
+      "name": "endDate",
+      "type": "date"
+    },
+    {
+      "pType": "timestamp",
+      "name": "timestamp",
+      "type": "date"
+    },
+    {
+      "pType": "duration",
+      "name": "duration",
+      "type": "int",
+      "units": "min"
+    },
+    {
+      "pType": "mass",
+      "name": "mass",
+      "type": "int",
+      "units": "mass"
+    },
+    {
+      "pType": "dateSinceTheBigBang",
+      "name": "dateSinceTheBigBang",
+      "type": "date"
+    }
+  ],
+  "entityTypes": [
+    {
+      "eType": "Person",
+      "name": "Person",
+      "properties": [
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height"
+      ]
+    },
+    {
+      "eType": "Dragon",
+      "name": "Dragon",
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "eType": "Horse",
+      "name": "Horse",
+      "properties": [
+        "name",
+        "color",
+        "weight"
+      ]
+    },
+    {
+      "eType": "Guild",
+      "name": "Guild",
+      "properties": [
+        "name"
+      ]
+    },
+    {
+      "eType": "Kingdom",
+      "name": "Kingdom",
+      "properties": [
+        "name"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "own",
+      "name": "own",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": 1,
+          "eTypeB": 2
+        },
+        {
+          "eTypeA": 1,
+          "eTypeB": 3
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "fire",
+      "name": "fire",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "properties": [
+        "timestamp"
+      ]
+    },
+    {
+      "rType": "freezes",
+      "name": "freezes",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Dragon"
+        }
+      ],
+      "properties": [
+        "timestamp",
+        "duration"
+      ]
+    },
+    {
+      "rType": "offspringOf",
+      "name": "offspringOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Person"
+        }
+      ]
+    },
+    {
+      "rType": "knows",
+      "name": "knows",
+      "directional": false,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Person"
+        }
+      ],
+      "properties": [
+        "startDate"
+      ]
+    },
+    {
+      "rType": "memberOf",
+      "name": "memberOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Guild"
+        }
+      ],
+      "properties": [
+        "startDate",
+        "endDate"
+      ]
+    },
+    {
+      "rType": "subjectOf",
+      "name": "subjectOf",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Person",
+          "eTypeB": "Kingdom"
+        }
+      ]
+    },
+    {
+      "rType": "registeredIn",
+      "name": "registeredIn",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Guild",
+          "eTypeB": "Kingdom"
+        }
+      ]
+    },
+    {
+      "rType": "originatedIn",
+      "name": "originatedIn",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Dragon",
+          "eTypeB": "Kingdom"
+        },
+        {
+          "eTypeA": "Horse",
+          "eTypeB": "Kingdom"
+        }
+      ]
+    }
+  ],
+  "enumeratedTypes": [
+    {
+      "eType": "TYPE_Gender",
+      "values": [
+        {
+          "val": 1,
+          "name": "Female"
+        },
+        {
+          "val": 2,
+          "name": "Male"
+        },
+        {
+          "val": 3,
+          "name": "Other"
+        }
+      ]
+    },
+    {
+      "eType": "TYPE_HorseColor",
+      "values": [
+        {
+          "val": 1,
+          "name": "Black"
+        },
+        {
+          "val": 2,
+          "name": "White"
+        },
+        {
+          "val": 3,
+          "name": "Brown"
+        }
+      ]
+    }
+  ]
+}

@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.kayhut</groupId>
     <artifactId>fuse</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1</version>
+
     <modules>
-        <module>fuse-unipop</module>
+        <module>data-gen</module>
+        <module>fuse-model</module>
+        <module>fuse-validator</module>
         <module>fuse-asg</module>
-        <module>fuse-epb</module>
-        <module>fuse-gta</module>
         <module>fuse-dispatcher</module>
         <module>fuse-service</module>
-        <module>fuse-model</module>
-        <module>fuse-neo4j</module>
+        <module>fuse-axis1</module>
+        <module>fuse-axis2</module>
+        <module>fuse-test</module>
+        <module>fuse-datagen</module>
+        <module>fuse-assembly</module>
+        <module>geojson-jackson</module>
     </modules>
 
     <properties>
@@ -25,167 +28,519 @@
         <version.major>1</version.major>
         <version.minor>11</version.minor>
 
-        <!-- maven checksum plugin -->
-        <checksum-maven-plugin.version>1.2</checksum-maven-plugin.version>
-        <!-- maven static code analysis -->
-        <findbugs.version>3.0.1</findbugs.version>
-        <!-- maven git tag plugin -->
-        <git-commit-id-plugin.version>2.1.9</git-commit-id-plugin.version>
-        <!-- maven checkstyle plugin -->
+        <!-- plugins -->
+        <maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
-        <!-- maven dependency plugin -->
-        <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
-        <!-- maven shade plugin (uber-jar)-->
-        <maven-shade-plugin.version>2.1</maven-shade-plugin.version>
 
-        <!-- logging -->
-        <slf4j-api.version>1.7.21</slf4j-api.version>
-        <logback-classic.version>1.1.7</logback-classic.version>
+        <!-- fuse -->
+        <fuse.version>${project.version}</fuse.version>
+
+        <!-- jackson -->
+        <jackson.version>2.8.1</jackson.version>
+
+        <!-- commons -->
+        <commons-io.version>2.5</commons-io.version>
+        <commons-configuration.version>1.10</commons-configuration.version>
+        <commons-lang3.version>3.5</commons-lang3.version>
+        <commons-math3.version>3.6.1</commons-math3.version>
+        <commons-collections4.version>4.1</commons-collections4.version>
+
+        <!-- google -->
+        <google.guava.version>21.0</google.guava.version>
+        <google.guice.version>4.1.0</google.guice.version>
+
+        <!-- caffeine -->
+        <caffeine.version>2.3.3</caffeine.version>
+
+        <!-- elasticsearch -->
+        <elasticsearch.version>2.4.5</elasticsearch.version>
+
+        <!-- neo4j -->
+        <neo4j.version>3.1.0</neo4j.version>
+        <neo4j-java-driver.version>1.1.0</neo4j-java-driver.version>
+
+        <!-- tinkerpop -->
+        <tinkerpop.version>3.2.4</tinkerpop.version>
+
+        <!-- unipop -->
+        <unipop.version>0.2</unipop.version>
+
+        <!-- opencsv -->
+        <opencsv.version>3.8</opencsv.version>
+
+        <!-- javaslang -->
+        <javaslang.version>2.0.4</javaslang.version>
 
         <!--jooby plugin -->
-        <jooby.version>1.0.1</jooby.version>
+        <jooby.version>1.1.3</jooby.version>
 
-        <!-- junit testing -->
+        <!-- logging -->
+        <slf4j.version>1.7.13</slf4j.version>
+        <slf4j-api.version>1.7.21</slf4j-api.version>
+        <logback.version>1.1.7</logback.version>
+
+        <!-- metrics -->
+        <metrics-core.version>3.1.2</metrics-core.version>
+
+        <!-- test -->
         <junit.version>4.12</junit.version>
         <easymock.version>3.2</easymock.version>
-        <slf4j.version>1.7.13</slf4j.version>
         <rest-assured.version>3.0.1</rest-assured.version>
-
+        <mockito-all.version>1.10.19</mockito-all.version>
+        <mockito-core.version>2.8.47</mockito-core.version>
+        <assertj.version>3.6.2</assertj.version>
+        <jsonassert.version>1.4.0</jsonassert.version>
+        <hamcrest-all.version>1.3</hamcrest-all.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <hamcres-json.version>0.2</hamcres-json.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- fuse -->
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-model</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-dispatcher</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-asg</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-neo4j</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-epb</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-executor</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-stat</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-gta</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-unipop</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-service</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-validator</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>geojson-jackson</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>dragons-test-framework</artifactId>
+                <version>${fuse.version}</version>
+            </dependency>
+            <!-- fuse -->
+
+            <!-- jackson -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-csv</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <!-- jackson -->
+
+            <!-- commons -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-configuration</groupId>
+                <artifactId>commons-configuration</artifactId>
+                <version>${commons-configuration.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${commons-collections4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>${commons-math3.version}</version>
+            </dependency>
+            <!-- commons -->
+
+            <!-- google -->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${google.guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>${google.guice.version}</version>
+            </dependency>
+            <!-- google -->
+
+            <!-- caffeine -->
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            <!-- caffeine -->
+
+            <!-- jooby -->
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-netty</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby-caffeine</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-scanner</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.jooby</groupId>
                 <artifactId>jooby-jackson</artifactId>
                 <version>${jooby.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jooby</groupId>
+                <artifactId>jooby-metrics</artifactId>
+                <version>${jooby.version}</version>
+            </dependency>
+            <!-- jooby -->
+
+            <!-- elasticsearch -->
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <!-- elasticsearch -->
+
+            <!-- neo4j -->
+            <dependency>
+                <groupId>org.neo4j</groupId>
+                <artifactId>neo4j</artifactId>
+                <version>${neo4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.neo4j.driver</groupId>
+                <artifactId>neo4j-java-driver</artifactId>
+                <version>${neo4j-java-driver.version}</version>
+            </dependency>
+            <!-- neo4j -->
+
+            <!-- tinkerpop -->
+            <dependency>
+                <groupId>org.apache.tinkerpop</groupId>
+                <artifactId>gremlin-core</artifactId>
+                <version>${tinkerpop.version}</version>
+            </dependency>
+            <!-- tinkerpop -->
+
+            <!-- unipop -->
+            <dependency>
+                <groupId>unipop</groupId>
+                <artifactId>unipop-core</artifactId>
+                <version>${unipop.version}</version>
+                <!--This is needed to avoid bringing log4j because it interferes with slf4j logback setup, which is the default for jooby-->
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>unipop</groupId>
+                <artifactId>unipop-elastic</artifactId>
+                <version>${unipop.version}</version>
+            </dependency>
+            <!-- unipop -->
+
+            <!-- opencsv -->
+            <dependency>
+                <groupId>com.opencsv</groupId>
+                <artifactId>opencsv</artifactId>
+                <version>${opencsv.version}</version>
+            </dependency>
+            <!-- opencsv -->
+
+            <!-- javaslang -->
+            <dependency>
+                <groupId>io.javaslang</groupId>
+                <artifactId>javaslang</artifactId>
+                <version>${javaslang.version}</version>
+            </dependency>
+            <!-- javaslang -->
 
             <!-- logging -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>${logback-classic.version}</version>
+                <version>${logback.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j-api.version}</version>
+            </dependency>
+            <!-- logging -->
 
-            <!-- Test dependencies -->
+            <!-- metrics -->
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${metrics-core.version}</version>
+            </dependency>
+            <!-- metrics -->
+
+            <!-- test -->
+            <!-- fuse -->
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-test-framework</artifactId>
+                <version>${fuse.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-model</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-unipop</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kayhut</groupId>
+                <artifactId>fuse-asg</artifactId>
+                <version>${fuse.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <!-- fuse -->
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
+                <scope>test</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.easymock</groupId>
                 <artifactId>easymock</artifactId>
                 <version>${easymock.version}</version>
+                <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${mockito-all.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito-core.version}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>io.rest-assured</groupId>
                 <artifactId>rest-assured</artifactId>
                 <version>${rest-assured.version}</version>
+                <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.skyscreamer</groupId>
+                <artifactId>jsonassert</artifactId>
+                <version>${jsonassert.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math3</artifactId>
+                <version>${commons-math3.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>${hamcrest-all.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>${hamcrest.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>uk.co.datumedge</groupId>
+                <artifactId>hamcrest-json</artifactId>
+                <version>${hamcres-json.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- test -->
         </dependencies>
     </dependencyManagement>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <configuration>
-                            <configLocation>${top.dir}/src/main/config/checkstyle/checker.xml</configLocation>
-                            <suppressionsLocation>${top.dir}/src/main/config/checkstyle/suppressions.xml
-                            </suppressionsLocation>
-                            <consoleOutput>true</consoleOutput>
-                            <headerLocation>${top.dir}/src/main/config/checkstyle/header.txt</headerLocation>
-                            <failOnViolation>true</failOnViolation>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        </configuration>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>analyze</id>
-                        <goals>
-                            <goal>analyze-only</goal>
-                        </goals>
-                        <configuration>
-                            <failOnWarning>true</failOnWarning>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-
         </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>${maven-checkstyle-plugin.version}</version>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
                     <executions>
                         <execution>
-                            <id>failsafe-integration-test</id>
-                            <goals>
-                                <goal>integration-test</goal>
-                            </goals>
-                            <phase>integration-test</phase>
-                            <configuration>
-                                <threadCount>6</threadCount>
-                                <parallel>both</parallel>
-                                <argLine>-Xmx1024m</argLine>
-                            </configuration>
-                        </execution>
-                        <execution>
-                            <id>failsafe-verify</id>
-                            <goals>
-                                <goal>verify</goal>
-                            </goals>
+                            <id>attach-sources</id>
                             <phase>verify</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                                <goal>test-jar-no-fork</goal>
+                            </goals>
                         </execution>
                     </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
+                    <configuration>
+                        <threadCount>1</threadCount>
+                        <perCoreThreadCount>false</perCoreThreadCount>
+                        <includes>
+                            <include>**/*.java</include>
+                        </includes>
+                        <parallel>methods</parallel>
+                        <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>${maven-jar-plugin.version}</version>
                     <configuration>
                         <archive>
                             <manifest>
@@ -194,31 +549,36 @@
                             </manifest>
                         </archive>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>${maven-shade-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <threadCount>1</threadCount>
-                        <perCoreThreadCount>true</perCoreThreadCount>
-                        <parallel>both</parallel>
-                        <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <version>${git-commit-id-plugin.version}</version>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <configuration>
+                                <configLocation>${top.dir}/src/main/config/checkstyle/checker.xml</configLocation>
+                                <suppressionsLocation>${top.dir}/src/main/config/checkstyle/suppressions.xml
+                                </suppressionsLocation>
+                                <consoleOutput>true</consoleOutput>
+                                <headerLocation>${top.dir}/src/main/config/checkstyle/header.txt</headerLocation>
+                                <failOnViolation>true</failOnViolation>
+                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            </configuration>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -226,9 +586,17 @@
     </build>
 
     <!-- todo add bitbucket repo-->
-    <repositories></repositories>
+    <repositories />
 
     <!-- todo profiles -->
-    <profiles></profiles>
+    <profiles />
+
+    <distributionManagement>
+        <repository>
+            <id>nexuss.westeurope.cloudapp.azure.com-snapshots</id>
+            <name>nexuss.westeurope.cloudapp.azure.com-snapshots</name>
+            <url>https://nexuss.westeurope.cloudapp.azure.com:8443/repository/maven-snapshots/</url>
+        </repository>
+    </distributionManagement>
 
 </project>

@@ -1,0 +1,45 @@
+{
+  "mappings": {
+    "fire": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "direction": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "entityA": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "index": "not_analyzed"
+            },
+            "type": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "entityB": {
+          "properties": {
+            "id": {
+              "type": "string",
+              "index": "not_analyzed"
+            },
+            "type": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        },
+        "temperature": {
+          "type": "long"
+        },
+        "time": {
+          "type": "long"
+        }
+      }
+    }
+  }
+}
