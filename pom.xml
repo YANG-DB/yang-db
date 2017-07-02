@@ -22,11 +22,6 @@
         <module>geojson-jackson</module>
     </modules>
 
-    <scm>
-        <developerConnection>scm:git:http://gita.westeurope.cloudapp.azure.com/fuse/Fuse.git</developerConnection>
-        <tag>1.0</tag>
-    </scm>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <top.dir>${project.basedir}</top.dir>
@@ -39,6 +34,7 @@
         <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
         <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
         <maven-checkstyle-plugin.version>2.12.1</maven-checkstyle-plugin.version>
+        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 
         <!-- fuse -->
         <fuse.version>${project.version}</fuse.version>
@@ -501,6 +497,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven-release-plugin.version}</version>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -584,6 +585,11 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${maven-release-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
