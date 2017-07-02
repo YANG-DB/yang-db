@@ -1,21 +1,20 @@
 package com.kayhut.fuse.unipop.process;
 
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.step.ByModulating;
 import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalParent;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.AbstractStep;
+import org.apache.tinkerpop.gremlin.process.traversal.util.FastNoSuchElementException;
 import org.apache.tinkerpop.gremlin.structure.Element;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * Created by Roman on 7/2/2017.
  */
-public class UniGraphJoinStep<S, E> extends AbstractStep<S, E> implements TraversalParent, ByModulating {
+public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> implements TraversalParent, ByModulating {
     //region Constructors
     public UniGraphJoinStep(Traversal.Admin traversal) {
         super(traversal);
@@ -26,6 +25,12 @@ public class UniGraphJoinStep<S, E> extends AbstractStep<S, E> implements Traver
     @Override
     protected Traverser.Admin<E> processNextStart() throws NoSuchElementException {
         return null;
+    }
+
+    @Override
+    public void reset() {
+        this.leftTraversal.reset();
+        this.rightTraversal.reset();
     }
     //endregion
 
@@ -53,6 +58,35 @@ public class UniGraphJoinStep<S, E> extends AbstractStep<S, E> implements Traver
     @Override
     public void modulateBy(final Traversal.Admin<?, ?> traversal) throws UnsupportedOperationException {
         this.addLocalChild(traversal);
+    }
+    //endregion
+
+    //region Private Methods
+    private Iterator<Traverser.Admin<E>> nestedLoopWithoutIdPushdownAlgorithm() {
+        Map<Object, List<Traverser<E>>> rightSet = new HashMap<>();
+        while(true) {
+            try {
+                Traverser<E> elementTraverser = this.rightTraversal.nextTraverser();
+                List<Traverser<E>> idTraversers = rightSet.computeIfAbsent(elementTraverser.get().id(), (id) -> new ArrayList<>());
+                idTraversers.add(elementTraverser);
+            } catch (FastNoSuchElementException ex) {
+                break;
+            }
+        }
+
+        return Stream.ofAll(() -> this.leftTraversal.getEndStep())
+                .flatMap(leftTraverser -> mergePaths(leftTraverser, rightSet.get(leftTraverser.get().id())))
+                .map(Traverser::asAdmin)
+                .iterator();
+    }
+
+    private Iterable<Traverser<E>> mergePaths(Traverser<E> leftTraversal, List<Traverser<E>> rightTraversers) {
+        if (rightTraversers == null || rightTraversers.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        //TODO: implement actual merge paths logic
+        return Collections.emptyList();
     }
     //endregion
 
