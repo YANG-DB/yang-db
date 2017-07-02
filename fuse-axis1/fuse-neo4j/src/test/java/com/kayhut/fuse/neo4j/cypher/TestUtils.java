@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.query.Query;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Created by User on 26/03/2017.
@@ -13,12 +14,12 @@ import java.io.IOException;
 public abstract class TestUtils {
 
     public static Ontology loadOntology(String name) throws IOException {
-        String query = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream( name));
+        String query = IOUtils.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(name)));
         return new ObjectMapper().readValue(query, Ontology.class);
     }
 
     public static Query loadQuery(String name) throws IOException {
-        String query = IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream( name));
+        String query = IOUtils.toString(new InputStreamReader(Thread.currentThread().getContextClassLoader().getResourceAsStream(name)));
         return new ObjectMapper().readValue(query, Query.class);
     }
 

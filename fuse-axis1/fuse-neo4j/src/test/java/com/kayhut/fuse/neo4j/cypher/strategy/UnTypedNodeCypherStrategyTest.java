@@ -31,4 +31,22 @@ public class UnTypedNodeCypherStrategyTest {
 
     }
 
+    @Test
+    public void testUמTypedNodeStrategyNoTag() {
+
+        AsgQuery query = AsgQuery.Builder.start("untyped", "dragons")
+                .next(unTyped(1))
+                .build();
+
+        Ontology ontology = Ontology.OntologyBuilder.anOntology()
+                .withOnt("dragons").build();
+
+        String cypher = CypherCompiler.compile(query ,ontology);
+
+        Assert.assertEquals(cypher, "MATCH\n" +
+                "p0 = (n1)\n" +
+                "RETURN n1\n");
+
+    }
+
 }
