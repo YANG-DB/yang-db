@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.google.common.collect.Iterables;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 
@@ -10,16 +11,8 @@ public class JoinOp extends EntityOp {
     private Plan leftBranch;
     private Plan rightBranch;
 
-    public JoinOp() {
-    }
-
     public JoinOp(Plan leftBranch, Plan rightBranch) {
-        this.leftBranch = leftBranch;
-        this.rightBranch = rightBranch;
-    }
-
-    public JoinOp(AsgEBase<EEntityBase> asgEBase, Plan leftBranch, Plan rightBranch) {
-        super(asgEBase);
+        super(((EntityOp)Iterables.getLast(leftBranch.getOps())).getAsgEBase());
         this.leftBranch = leftBranch;
         this.rightBranch = rightBranch;
     }
