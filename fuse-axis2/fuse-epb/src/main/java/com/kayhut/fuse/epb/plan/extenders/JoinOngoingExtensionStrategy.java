@@ -26,21 +26,15 @@ public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan,
 
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
-        if(!plan.isPresent())
+        if (!plan.isPresent())
             return Collections.emptyList();
 
-        PlanOpBase lastOp = Iterables.getLast(plan.get().getOps());
-        if(lastOp instanceof JoinOp){
-            JoinOp joinOp = (JoinOp) lastOp;
+        if (plan.get().getOps().size() == 1 && plan.get().getOps().get(0) instanceof JoinOp) {
+            JoinOp joinOp = (JoinOp) plan.get().getOps().get(0);
             Iterable<Plan> plans = innerExpander.extendPlan(Optional.of(joinOp.getRightBranch()), query);
             List<Plan> newPlans = new ArrayList<>();
             for (Plan innerPlan : plans) {
-                Plan newPlan = Plan.clone(plan.get());
-                JoinOp clonedJoin = (JoinOp) Iterables.getLast(newPlan.getOps());
-                JoinOp newJoin = new JoinOp(clonedJoin.getLeftBranch(), innerPlan);
-                newPlan.getOps().remove(newPlan.getOps().size()-1);
-                newPlan.getOps().add(newJoin);
-                newPlans.add(newPlan);
+                newPlans.add(new Plan(new JoinOp(joinOp.getLeftBranch(), innerPlan)));
             }
             return newPlans;
         }
