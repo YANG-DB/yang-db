@@ -19,9 +19,9 @@ import java.util.function.Supplier;
 /**
  * Created by Roman on 7/2/2017.
  */
-public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> implements TraversalParent, ByModulating {
+public class JoinStep<S, E extends Element> extends AbstractStep<S, E> implements TraversalParent, ByModulating {
     //region Constructors
-    public UniGraphJoinStep(Traversal.Admin traversal) {
+    public JoinStep(Traversal.Admin traversal) {
         super(traversal);
 
         this.iteratorSupplier = this::nestedLoopAlgorithm;

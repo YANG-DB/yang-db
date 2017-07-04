@@ -2,7 +2,6 @@ package com.kayhut.fuse.unipop.process;
 
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.process.traversal.strategy.decoration.ForceRequirementsStrategy;
-import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
@@ -10,8 +9,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
+import org.apache.tinkerpop.gremlin.process.traversal.step.sideEffect.InjectStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
-import org.apache.tinkerpop.gremlin.process.traversal.strategy.decoration.RequirementsStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.traverser.TraverserRequirement;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -22,13 +21,12 @@ import org.junit.Test;
 import org.unipop.structure.UniVertex;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by Roman on 04/07/2017.
  */
-public class UniGraphJoinStepTest {
+public class JoinStepTest {
     @Before
     public void setup() {
         ForceRequirementsStrategy.addRequirements(
@@ -39,7 +37,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testSingleLeftSimpleMultipleRightSimple() {
         GraphTraversal<Object, Object> traversal = __.start();
-        traversal.asAdmin().addStep(new UniGraphJoinStep<>(__.start().asAdmin()));
+        traversal.asAdmin().addStep(new JoinStep<>(__.start().asAdmin()));
         traversal.by(__.start().inject(
                 new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), "1").get(), null))
                 .as("A").asAdmin());
@@ -63,7 +61,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testMultipleLeftSimpleMultipleRightSimple() {
         GraphTraversal<Object, Object> traversal = __.start();
-        traversal.asAdmin().addStep(new UniGraphJoinStep<>(__.start().asAdmin()));
+        traversal.asAdmin().addStep(new JoinStep<>(__.start().asAdmin()));
         traversal.by(__.start().inject(
                 new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), "1").get(), null),
                 new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), "3").get(), null))
@@ -94,7 +92,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testSingleLeftComplexMultipleRightSimple() {
         GraphTraversal<Object, Object> traversal = __.start();
-        traversal.asAdmin().addStep(new UniGraphJoinStep<>(__.start().asAdmin()));
+        traversal.asAdmin().addStep(new JoinStep<>(__.start().asAdmin()));
         traversal.by(__.start().inject(1).as("A")
                 .map(traverser -> Integer.toString((int)traverser.get())).as("B")
                 .map(traverser -> new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), traverser.get()).get(), null)).as("C"));
@@ -119,7 +117,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testSingleLeftSimpleMultipleRightComplexWithFullLabels() {
         GraphTraversal<Object, Object> traversal = __.start();
-        traversal.asAdmin().addStep(new UniGraphJoinStep<>(__.start().asAdmin()));
+        traversal.asAdmin().addStep(new JoinStep<>(__.start().asAdmin()));
         traversal.by(__.start().inject(
                 new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), "1").get(), null)).as("A"));
 
@@ -143,7 +141,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testSingleLeftSimpleMultipleRightComplexWithEmptyLabels() {
         GraphTraversal<Object, Object> traversal = __.start();
-        traversal.asAdmin().addStep(new UniGraphJoinStep<>(__.start().asAdmin()));
+        traversal.asAdmin().addStep(new JoinStep<>(__.start().asAdmin()));
         traversal.by(__.start().inject(
                 new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), "1").get(), null)).as("A"));
 
@@ -166,7 +164,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testSingleLeftComplexMultipleRightComplex() {
         GraphTraversal<Object, Object> traversal = __.start();
-        traversal.asAdmin().addStep(new UniGraphJoinStep<>(__.start().asAdmin()));
+        traversal.asAdmin().addStep(new JoinStep<>(__.start().asAdmin()));
         traversal.by(__.start().inject(1).as("A")
                 .map(traverser -> Integer.toString((int)traverser.get())).as("B")
                 .map(traverser -> new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), traverser.get()).get(), null)).as("C"));
@@ -194,7 +192,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testMultipleLeftComplexMultipleRightComplex() {
         GraphTraversal<Object, Object> traversal = __.start();
-        traversal.asAdmin().addStep(new UniGraphJoinStep<>(__.start().asAdmin()));
+        traversal.asAdmin().addStep(new JoinStep<>(__.start().asAdmin()));
         traversal.by(__.start().inject(1, 3).as("A")
                 .map(traverser -> Integer.toString((int)traverser.get())).as("B")
                 .map(traverser -> new UniVertex(new MapBuilder<String, Object>().put(T.id.getAccessor(), traverser.get()).get(), null)).as("C"));
@@ -232,7 +230,7 @@ public class UniGraphJoinStepTest {
     @Test
     public void testMultipleLeftComplexMultipleRightComplexWithIdIntegration() {
         GraphTraversal<Object, Object> traversal = __.start();
-        UniGraphJoinStep<Object, Vertex> joinStep = new UniGraphJoinStep<>(__.start().asAdmin());
+        JoinStep<Object, Vertex> joinStep = new JoinStep<>(__.start().asAdmin());
         joinStep.setIntegrateIdsTraversalFunction((leftTraversal, ids) ->
                         leftTraversal.addStep(new HasStep<>(leftTraversal, new HasContainer(T.id.getAccessor(), P.within(ids)))));
 
