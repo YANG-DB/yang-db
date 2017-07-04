@@ -7,7 +7,7 @@
                 <repository>
                     <id>nexus-releases</id>
                     <name>mxsnapshots</name>
-                    <url>https://nexuss.westeurope.cloudapp.azure.com:8443/repository/maven-releases/</url>
+                    <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-releases/</url>
                 </repository>
             </repositories>
             <id>nexuss</id>
@@ -19,12 +19,12 @@
 
     <servers>
         <server>
-            <id>nexuss.westeurope.cloudapp.azure.com-snapshots</id>
+            <id>ec2-52-210-2-167.eu-west-1.compute.amazonaws.com-snapshots</id>
             <username>admin</username>
             <password>admin123</password>
         </server>
         <server>
-            <id>nexuss.westeurope.cloudapp.azure.com-releases</id>
+            <id>ec2-52-210-2-167.eu-west-1.compute.amazonaws.com-releases</id>
             <username>admin</username>
             <password>admin123</password>
         </server>

@@ -23,6 +23,7 @@ import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
 public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpValidator {
 
     private Trace<String> trace = Trace.build(ReverseRelationOpValidator.class.getSimpleName());
+
     //region ChainedPlanValidator.PlanOpValidator Implementation
     @Override
     public void reset() {
