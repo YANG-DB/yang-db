@@ -49,7 +49,12 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     //region TraversalParent Implementation
     @Override
     public List<Traversal.Admin<S, E>> getLocalChildren() {
-        return Arrays.asList(/*leftTraversal,*/ rightTraversal);
+        // THIS IS NOT A BUG!!!
+        // DO NOT return the leftTraversal!!!
+        // any traversal returned here will undergo strategy application, which will result in a locked traversal.
+        // since the left traversal supports integration of ids of the right traversal, it must not be locked when the
+        // parent traversal is first activated, thus we 'postpone' strategy application up until after ids integration
+        return Collections.singletonList(rightTraversal);
     }
 
     @Override
@@ -76,13 +81,20 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     //endregion
 
     //region Properties
+    public Traversal.Admin<S, E> getLeftTraversal() {
+        return leftTraversal;
+    }
+
+    public Traversal.Admin<S, E> getRightTraversal() {
+        return rightTraversal;
+    }
+
     public void setIntegrateIdsTraversalFunction(BiFunction<Traversal.Admin<S, E>, Set<Object>, Traversal.Admin<S, E>> integrateIdsTraversalFunction) {
         this.integrateIdsTraversalFunction = integrateIdsTraversalFunction;
     }
     //endregion
 
     //region Private Methods
-
     private Iterator<Traverser.Admin<E>> nestedLoopAlgorithm() {
         if (this.leftTraversal == null || this.rightTraversal == null) {
             return Collections.emptyIterator();
@@ -99,14 +111,24 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
             }
         }
 
-        Traversal.Admin<S, E> integratedWithIdsLeftTraversal = integrateIdsTraversalFunction.apply(this.leftTraversal.clone(), rightSet.keySet());
-        integratedWithIdsLeftTraversal = integratedWithIdsLeftTraversal == null ? this.leftTraversal : integratedWithIdsLeftTraversal;
+        Traversal.Admin<S, E> integratedWithIdsLeftTraversal = integrateIdsToTraversal(this.leftTraversal, rightSet.keySet());
         Iterator<Traverser.Admin<E>> leftIterator = integratedWithIdsLeftTraversal.getEndStep();
 
         return Stream.ofAll(() -> leftIterator)
                 .flatMap(leftTraverser -> mergePaths(leftTraverser, rightSet.get(leftTraverser.get().id())))
                 .map(Traverser::asAdmin)
                 .iterator();
+    }
+
+    private Traversal.Admin<S, E> integrateIdsToTraversal(Traversal.Admin<S, E> traversal, Set<Object> ids) {
+        Traversal.Admin<S, E> integratedWithIdsTraversal = integrateIdsTraversalFunction.apply(traversal.clone(), ids);
+        integratedWithIdsTraversal = integratedWithIdsTraversal == null ? traversal : integratedWithIdsTraversal;
+
+        if (!integratedWithIdsTraversal.isLocked()) {
+            integratedWithIdsTraversal.applyStrategies();
+        }
+
+        return integratedWithIdsTraversal;
     }
 
     private Iterable<Traverser<E>> mergePaths(Traverser<E> leftTraverser, List<Traverser<E>> rightTraversers) {
