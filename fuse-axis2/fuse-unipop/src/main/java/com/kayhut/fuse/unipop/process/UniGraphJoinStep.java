@@ -15,6 +15,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.util.FastNoSuchElementExce
 import org.apache.tinkerpop.gremlin.structure.Element;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * Created by Roman on 7/2/2017.
@@ -23,13 +24,19 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     //region Constructors
     public UniGraphJoinStep(Traversal.Admin traversal) {
         super(traversal);
+
+        this.iteratorSupplier = this::nestedLoopWithoutIdPushdownAlgorithm;
     }
     //endregion
 
     //region AbstractStep Implementation
     @Override
     protected Traverser.Admin<E> processNextStart() throws NoSuchElementException {
-        return null;
+        if (iterator == null) {
+            iterator = iteratorSupplier.get();
+        }
+
+        return iterator.next();
     }
 
     @Override
@@ -49,10 +56,12 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     public void addLocalChild(final Traversal.Admin<?, ?> localChildTraversal) {
         if (this.leftTraversal == null) {
             this.leftTraversal = this.integrateChild(localChildTraversal);
+            return;
         }
 
         if (this.rightTraversal == null) {
             this.rightTraversal = this.integrateChild(localChildTraversal);
+            return;
         }
 
         throw new IllegalStateException("The left and right traversals for join step have already been set: " + this);
@@ -98,7 +107,9 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
         List<Set<String>> pathLabels = rightTraverser.path().labels();
 
         Traverser.Admin<Object> childTraverser = null;
-        for(int i = pathObjects.size() - 1; i >= 0 ; i--) {
+
+        // ignore the last head of the right traversal as it should be identical to the head of the left traversal
+        for(int i = pathObjects.size() - 2; i >= 0 ; i--) {
             Set<String> objectLabels = pathLabels.get(i);
             if (objectLabels != null && !objectLabels.isEmpty()) {
                 childTraverser = childTraverser == null ?
@@ -119,6 +130,9 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     //region Fields
     private Traversal.Admin<S, E> leftTraversal;
     private Traversal.Admin<S, E> rightTraversal;
+
+    private Iterator<Traverser.Admin<E>> iterator;
+    private Supplier<Iterator<Traverser.Admin<E>>> iteratorSupplier;
 
 
     // the dummy steps are necessary for setting the proper labels for the objects in the new path generated from the split
