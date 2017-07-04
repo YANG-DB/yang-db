@@ -1,14 +1,11 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.extenders.GotoExtensionStrategy;
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import javaslang.collection.Stream;
 import org.junit.Assert;
@@ -16,10 +13,8 @@ import org.junit.Test;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.ConstraintOp.*;
@@ -84,7 +79,7 @@ public class GotoGeneratorExtenderStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(plan, asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 1);
         Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
     }
@@ -106,7 +101,7 @@ public class GotoGeneratorExtenderStrategyTest {
                 new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 11)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(plan, asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 3);
         Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
         Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(1).getOps().size()-1) instanceof GoToEntityOp);
@@ -127,7 +122,7 @@ public class GotoGeneratorExtenderStrategyTest {
                 new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(plan, asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 2);
         Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
         Assert.assertEquals(extendedPlans.get(0).getOps().size(),8);
@@ -149,7 +144,7 @@ public class GotoGeneratorExtenderStrategyTest {
                 new RelationOp(AsgQueryUtil.element$(asgQuery, 12)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 13)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(plan, asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 3);
         Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
         Assert.assertEquals(extendedPlans.get(0).getOps().size(),10);

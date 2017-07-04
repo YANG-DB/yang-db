@@ -110,7 +110,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
         Plan plan = new Plan(new GoToEntityOp(AsgQueryUtil.element$(asgQuery, 1)));
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
         Plan actualPlan = extendedPlans.get(0);
@@ -126,7 +126,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
         Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
         Plan actualPlan = extendedPlans.get(0);
@@ -142,7 +142,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new RelationOp(AsgQueryUtil.element$(asgQuery, 2)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 0);
     }
@@ -158,7 +158,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
         Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
         Plan actualPlan = extendedPlans.get(0);
@@ -198,7 +198,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 2);
         Plan actualPlan1 = extendedPlans.get(0);
@@ -238,7 +238,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 2);
 
@@ -273,7 +273,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 8)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
 
@@ -306,7 +306,7 @@ public class StepDescendantsAdjacentStrategyTest {
                 new RelationOp(AsgQueryUtil.element$(asgQuery, 5)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new StepDescendantsAdjacentStrategy().extendPlan(plan, asgQuery)).toJavaList();
 
         Assert.assertTrue(extendedPlans.size() == 1);
 

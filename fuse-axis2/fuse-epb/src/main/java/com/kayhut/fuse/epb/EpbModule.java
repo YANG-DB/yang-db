@@ -11,6 +11,7 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -40,6 +41,9 @@ public class EpbModule extends ModuleBase {
         binder.bind(SimpleEpbDriver.class).asEagerSingleton();
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
+
+        binder.bind(new TypeLiteral<PlanSeedStrategy<Plan, AsgQuery>>(){})
+                .to(InitialPlanGeneratorExtensionStrategy.class).asEagerSingleton();
 
         binder.bind(StatConfig.class).toInstance(new StatConfig(conf));
         binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();

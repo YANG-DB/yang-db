@@ -20,28 +20,20 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
     public AllDirectionsPlanExtensionStrategy() {}
 
     @Override
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
         List<Plan> plans = new LinkedList<>();
-        if(plan.isPresent()){
-            Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
+        Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
 
-            Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(plan.get(), queryParts);
-            List<AsgEBase> handledParts = partsTuple._1();
-            Map<Integer, AsgEBase> remainingQueryParts = partsTuple._2();
+        Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(plan, queryParts);
+        List<AsgEBase> handledParts = partsTuple._1();
+        Map<Integer, AsgEBase> remainingQueryParts = partsTuple._2();
 
-            // If we have query parts that need further handling
-            if(remainingQueryParts.size() > 0){
-                for(AsgEBase handledPart : handledParts){
-                    plans.addAll(extendPart(handledPart, remainingQueryParts, plan.get()));
-                }
+        // If we have query parts that need further handling
+        if(remainingQueryParts.size() > 0){
+            for(AsgEBase handledPart : handledParts){
+                plans.addAll(extendPart(handledPart, remainingQueryParts, plan));
             }
         }
-/*
-        for(Plan<C> newPlan : plans){
-            newPlan.setPlanComplete(SimpleExtenderUtils.checkIfPlanIsComplete(newPlan, query));
-        }
-*/
-
         return plans;
     }
 

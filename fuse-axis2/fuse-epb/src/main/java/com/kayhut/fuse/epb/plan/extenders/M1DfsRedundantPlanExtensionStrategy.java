@@ -19,10 +19,7 @@ public class M1DfsRedundantPlanExtensionStrategy extends CompositePlanExtensionS
             GraphLayoutProviderFactory graphLayoutProviderFactory) {
         super(
                 new ChainPlanExtensionStrategy<>(
-                        new CompositePlanExtensionStrategy<>(
-                                new InitialPlanGeneratorExtensionStrategy(),
-                                new StepAdjacentDfsStrategy()
-                        ),
+                        new CompositePlanExtensionStrategy<>(new StepAdjacentDfsStrategy()),
                         new PushDownSplitFilterPlanExtensionStrategy(
                                 ontologyProvider,
                                 physicalIndexProviderFactory,

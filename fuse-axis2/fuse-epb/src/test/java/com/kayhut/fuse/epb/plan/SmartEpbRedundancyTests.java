@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -227,13 +228,13 @@ public class SmartEpbRedundancyTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
+                new InitialPlanGeneratorExtensionStrategy(),
                 new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
                 localPlanSelector,
-                validator,
-                estimator);
+                validator, estimator);
     }
 
     private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {

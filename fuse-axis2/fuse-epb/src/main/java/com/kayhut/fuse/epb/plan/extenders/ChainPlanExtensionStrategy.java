@@ -1,13 +1,9 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
-import com.kayhut.fuse.model.execution.plan.Plan;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -17,7 +13,7 @@ public class ChainPlanExtensionStrategy<P extends IPlan, Q extends IQuery> imple
     //region Constructors
     @Inject
     @SafeVarargs
-    public ChainPlanExtensionStrategy(PlanExtensionStrategy<P, Q>...innerExtenders ) {
+    public ChainPlanExtensionStrategy(PlanExtensionStrategy<P, Q>... innerExtenders) {
         this.innerExtenders = Stream.of(innerExtenders).toJavaList();
     }
 
@@ -29,18 +25,17 @@ public class ChainPlanExtensionStrategy<P extends IPlan, Q extends IQuery> imple
 
     //region PlanExtensionStrategy Implementation
     @Override
-    public Iterable<P> extendPlan(Optional<P> plan, Q query) {
-        Iterable<Optional<P>> plans = Collections.singletonList(plan);
+    public Iterable<P> extendPlan(P plan, Q query) {
+        Iterable<P> plans = Collections.singletonList(plan);
 
         for (PlanExtensionStrategy<P, Q> extensionStrategy : innerExtenders) {
             plans = Stream.ofAll(plans)
                     .map(childPlan -> extensionStrategy.extendPlan(childPlan, query))
                     .flatMap(childPlans -> childPlans)
-                    .map(childPlan -> Optional.of(childPlan))
                     .toJavaList();
         }
 
-        return Stream.ofAll(plans).filter(Optional::isPresent).map(Optional::get);
+        return plans;
     }
     //endregion
 

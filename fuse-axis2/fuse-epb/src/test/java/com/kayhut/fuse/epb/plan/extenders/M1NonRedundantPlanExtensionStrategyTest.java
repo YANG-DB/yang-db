@@ -2,6 +2,7 @@ package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -11,7 +12,6 @@ import javaslang.collection.Stream;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
@@ -70,7 +70,8 @@ public class M1NonRedundantPlanExtensionStrategyTest {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
-        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.empty(), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorExtensionStrategy().extendPlan(asgQuery)).toJavaList();
+//        List<Plan> extendedPlans = Stream.ofAll(plans).map(p -> strategy.extendPlan(p, asgQuery)).flatMap(Stream::ofAll).toJavaList();
 
         assertEquals(extendedPlans.size(), 4);
         PlanAssert.assertEquals(mock(asgQuery).entity(1).plan(), extendedPlans.get(0));
@@ -87,7 +88,8 @@ public class M1NonRedundantPlanExtensionStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
-        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();
+        Plan plan = new InitialPlanGeneratorExtensionStrategy().extendPlan(asgQuery).iterator().next();
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(plan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).entityFilter(9).plan(), extendedPlans.get(0));
@@ -99,7 +101,7 @@ public class M1NonRedundantPlanExtensionStrategyTest {
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(
-                Optional.of(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).plan()), asgQuery)).toJavaList();
+                mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).plan(), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 4);
 
@@ -126,7 +128,7 @@ public class M1NonRedundantPlanExtensionStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
-        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(plan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 5);
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).rel(5, L).entity(3).entityFilter(9).plan(), extendedPlans.get(0));
@@ -149,7 +151,7 @@ public class M1NonRedundantPlanExtensionStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 6)));
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
-        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(plan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 6);
         PlanAssert.assertEquals(mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).rel(5).entity(6).rel(5, L).entity(3).entityFilter(9).plan(), extendedPlans.get(0));

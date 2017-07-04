@@ -51,15 +51,15 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
 
 
         ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy<Plan, AsgQuery>(
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))),
-                (plan, query) -> Collections.singletonList(Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))),
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))
-                                             ,Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
+                (plan, query) -> Arrays.asList(Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
+                                             , Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))),
+                (plan, query) -> Collections.singletonList(Plan.compose(plan, new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))),
+                (plan, query) -> Arrays.asList(Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
+                                             , Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))
+                                             ,Plan.compose(plan, new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
 
 
-        List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(startPlan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 6);
         extendedPlans.forEach(p->assertEquals(p.getOps().size(),4));
@@ -73,16 +73,16 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
 
 
         ChainPlanExtensionStrategy chain =  new ChainPlanExtensionStrategy<Plan, AsgQuery>(
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 3)))),
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 7)))
-                                            , Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 9)))),
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))
-                                             ,Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
+                (plan, query) -> Arrays.asList(Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
+                                             , Plan.compose(plan, new RelationOp(AsgQueryUtil.element$(asgQuery, 3)))),
+                (plan, query) -> Arrays.asList(Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 7)))
+                                            , Plan.compose(plan, new RelationOp(AsgQueryUtil.element$(asgQuery, 9)))),
+                (plan, query) -> Arrays.asList(Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
+                                             , Plan.compose(plan, new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))
+                                             ,Plan.compose(plan, new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
 
 
-        List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(startPlan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 12);
         extendedPlans.forEach(p->assertEquals(p.getOps().size(),4));

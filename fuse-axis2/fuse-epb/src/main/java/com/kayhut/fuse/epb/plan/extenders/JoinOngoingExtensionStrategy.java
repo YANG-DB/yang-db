@@ -1,12 +1,9 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.google.common.collect.Iterables;
-import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.JoinOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,13 +22,10 @@ public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan,
     }
 
     @Override
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
-        if (!plan.isPresent())
-            return Collections.emptyList();
-
-        if (plan.get().getOps().size() == 1 && plan.get().getOps().get(0) instanceof JoinOp) {
-            JoinOp joinOp = (JoinOp) plan.get().getOps().get(0);
-            Iterable<Plan> plans = innerExpander.extendPlan(Optional.of(joinOp.getRightBranch()), query);
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
+        if (plan.getOps().size() == 1 && plan.getOps().get(0) instanceof JoinOp) {
+            JoinOp joinOp = (JoinOp) plan.getOps().get(0);
+            Iterable<Plan> plans = innerExpander.extendPlan(joinOp.getRightBranch(), query);
             List<Plan> newPlans = new ArrayList<>();
             for (Plan innerPlan : plans) {
                 newPlans.add(new Plan(new JoinOp(joinOp.getLeftBranch(), innerPlan)));

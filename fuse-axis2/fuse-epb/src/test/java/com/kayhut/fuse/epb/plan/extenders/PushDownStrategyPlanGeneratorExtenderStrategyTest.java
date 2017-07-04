@@ -14,7 +14,9 @@ import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
-import com.kayhut.fuse.unipop.schemaProviders.*;
+import com.kayhut.fuse.unipop.schemaProviders.GraphLayoutProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
+import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
 import javaslang.collection.Stream;
 import org.junit.Assert;
@@ -83,7 +85,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                 physicalIndexProviderFactory,
                 graphLayoutProviderFactory);
 
-        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(plan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
         assertEquals(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().size(),3);
@@ -111,7 +113,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                 physicalIndexProviderFactory,
                 graphLayoutProviderFactory);
 
-        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(plan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
 

@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorOfType;
-import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorUnmarkedOfType;
 
 /**
  * Created by Roman on 23/04/2017.
@@ -25,12 +24,9 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
 
     //region PlanExtensionStrategy Implementation
     @Override
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
-        if (!plan.isPresent()) {
-            return Collections.emptyList();
-        }
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
 
-        Optional<AsgEBase<Rel>> nextRelation = getNextAncestorOfType(plan.get(), Rel.class);
+        Optional<AsgEBase<Rel>> nextRelation = getNextAncestorOfType(plan, Rel.class);
         if (!nextRelation.isPresent()) {
             return Collections.emptyList();
         }
@@ -50,7 +46,7 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
                 AsgQueryUtil.nextAdjacentDescendant(toEntity.get(), EPropGroup.class);
 
 
-        Plan newPlan = Plan.clone(plan.get());
+        Plan newPlan = Plan.clone(plan);
         //current pattern on plan is the "from" entity whether is entity or filter op
         RelationOp relationOp = new RelationOp(nextRelation.get(), Direction.reverse(nextRelation.get().geteBase().getDir()));
         newPlan = newPlan.withOp(relationOp);
@@ -63,8 +59,8 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
-        if(!Plan.equals(plan.get(), newPlan)) {
-            newPlan.log("StepAncestorAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+        if(!Plan.equals(plan, newPlan)) {
+            newPlan.log("StepAncestorAdjacentStrategy:[" + Plan.diff(plan, newPlan) + "]", Level.INFO);
         }
         return Collections.singletonList(newPlan);
     }

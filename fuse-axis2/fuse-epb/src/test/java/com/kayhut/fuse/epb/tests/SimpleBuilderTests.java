@@ -9,13 +9,13 @@ import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.query.EBase;
+import javaslang.collection.Stream;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by moti on 2/28/2017.
@@ -27,7 +27,7 @@ public class SimpleBuilderTests {
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
         InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
-        Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
+        Iterable<Plan> plans = strategy.extendPlan(query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
 
@@ -45,7 +45,7 @@ public class SimpleBuilderTests {
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
         InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
-        Iterable<Plan> plans = strategy.extendPlan(Optional.empty(), query.getLeft());
+        Iterable<Plan> plans = strategy.extendPlan(query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
 
@@ -73,19 +73,13 @@ public class SimpleBuilderTests {
 
     @Test
     public void TestCompositePlanStrategyInit(){
-        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy =
-                new CompositePlanExtensionStrategy<>(
-                        new InitialPlanGeneratorExtensionStrategy(),
-                        new AllDirectionsPlanExtensionStrategy());
+        InitialPlanGeneratorExtensionStrategy seeder = new InitialPlanGeneratorExtensionStrategy();
 
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
+        List<Plan> seeds = Stream.ofAll(seeder.extendPlan(query.getKey())).toJavaList();
 
-        Iterable<Plan> plans = compositePlanExtensionStrategy.extendPlan(Optional.empty(), query.getLeft());
-        List<Plan> planList = new LinkedList<>();
-        plans.forEach(p -> planList.add(p));
-
-        Assert.assertEquals(1, planList.size());
-        Plan plan = planList.get(0);
+        Assert.assertEquals(1, seeds.size());
+        Plan plan = seeds.get(0);
         Assert.assertEquals(1,plan.getOps().size());
         PlanOpBase op = plan.getOps().get(0);
         Assert.assertTrue(op instanceof EntityOp);

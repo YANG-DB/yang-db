@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -91,7 +92,7 @@ public class SmartEpbShortPathTests {
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.SummaryStatistics(typeCard.get(edgeSchema.getType())* indices.size(), typeCard.get(edgeSchema.getType())* indices.size());
+            return new Statistics.SummaryStatistics(typeCard.get(edgeSchema.getType()) * indices.size(), typeCard.get(edgeSchema.getType()) * indices.size());
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
@@ -103,7 +104,7 @@ public class SmartEpbShortPathTests {
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.SummaryStatistics(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
+            return new Statistics.SummaryStatistics(typeCard.get(vertexSchema.getType()) * indices.size(), typeCard.get(vertexSchema.getType()) * indices.size());
         });
 
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10l);
@@ -127,7 +128,7 @@ public class SmartEpbShortPathTests {
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
             int card = typeCard.get(elementSchema.getType());
             GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
-            return createDateHistogram(card,elementSchema,propertySchema, indices);
+            return createDateHistogram(card, elementSchema, propertySchema, indices);
         });
 
         IndexPartition defaultIndexPartition = mock(IndexPartition.class);
@@ -135,13 +136,13 @@ public class SmartEpbShortPathTests {
         physicalIndexProvider = mock(PhysicalIndexProvider.class);
         when(physicalIndexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
             String type = invocationOnMock.getArgumentAt(0, String.class);
-            if(type.equals(PERSON.name)){
-                return (IndexPartition) () -> Arrays.asList("Persons1","Persons2");
+            if (type.equals(PERSON.name)) {
+                return (IndexPartition) () -> Arrays.asList("Persons1", "Persons2");
             }
-            if(type.equals(DRAGON.name)){
-                return (IndexPartition) () -> Arrays.asList("Dragons1","Dragons2");
+            if (type.equals(DRAGON.name)) {
+                return (IndexPartition) () -> Arrays.asList("Dragons1", "Dragons2");
             }
-            if(type.equals(OWN.getName())){
+            if (type.equals(OWN.getName())) {
                 return new TimeSeriesIndexPartition() {
                     @Override
                     public String getDateFormat() {
@@ -170,7 +171,7 @@ public class SmartEpbShortPathTests {
 
                     @Override
                     public Iterable<String> getIndices() {
-                        return IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
+                        return IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60 * 60 * 1000 * i)).
                                 map(this::getIndexName).collect(Collectors.toList());
                     }
                 };
@@ -197,34 +198,34 @@ public class SmartEpbShortPathTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
+                new InitialPlanGeneratorExtensionStrategy(),
                 new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
                 localPlanSelector,
-                validator,
-                estimator);
+                validator, estimator);
     }
 
-    private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {
+    private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema, List<String> indices) {
         List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
-        if(elementSchema.getIndexPartition() instanceof TimeSeriesIndexPartition){
+        if (elementSchema.getIndexPartition() instanceof TimeSeriesIndexPartition) {
             TimeSeriesIndexPartition timeSeriesIndexPartition = (TimeSeriesIndexPartition) elementSchema.getIndexPartition();
-            if(timeSeriesIndexPartition.getTimeField().equals(graphElementPropertySchema.getName())){
-                for(int i = 0;i<3;i++){
-                    Date dt = new Date(startTime - i*60*60*1000);
+            if (timeSeriesIndexPartition.getTimeField().equals(graphElementPropertySchema.getName())) {
+                for (int i = 0; i < 3; i++) {
+                    Date dt = new Date(startTime - i * 60 * 60 * 1000);
                     String indexName = timeSeriesIndexPartition.getIndexName(dt);
-                    if(indices.contains(indexName)){
-                        buckets.add(new Statistics.BucketInfo<>(card, card/10, dt, new Date(startTime - (i-1) * 60*60*1000)));
+                    if (indices.contains(indexName)) {
+                        buckets.add(new Statistics.BucketInfo<>(card, card / 10, dt, new Date(startTime - (i - 1) * 60 * 60 * 1000)));
                     }
                 }
                 return new Statistics.HistogramStatistics<>(buckets);
             }
         }
         long bucketSize = card * indices.size() / 3;
-        for(int i = 0;i < 3;i++){
-            Date dt = new Date(startTime - i*60*60*1000);
-            buckets.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, dt, new Date(startTime - (i-1) * 60*60*1000)));
+        for (int i = 0; i < 3; i++) {
+            Date dt = new Date(startTime - i * 60 * 60 * 1000);
+            buckets.add(new Statistics.BucketInfo<>(bucketSize, bucketSize / 10, dt, new Date(startTime - (i - 1) * 60 * 60 * 1000)));
         }
         return new Statistics.HistogramStatistics<>(buckets);
     }
@@ -232,23 +233,23 @@ public class SmartEpbShortPathTests {
     private Statistics.HistogramStatistics<Long> createLongHistogram(int card, int numIndices) {
         long bucketSize = card * numIndices / 3;
         List<Statistics.BucketInfo<Long>> bucketInfos = new ArrayList<>();
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 0l,1000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 1000l,2000l));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, 2000l,3000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize / 10, 0l, 1000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize / 10, 1000l, 2000l));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize / 10, 2000l, 3000l));
         return new Statistics.HistogramStatistics<>(bucketInfos);
     }
 
     private Statistics.HistogramStatistics<String> createStringHistogram(int card, int numIndices) {
         long bucketSize = card * numIndices / 3;
         List<Statistics.BucketInfo<String>> bucketInfos = new ArrayList<>();
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, "a","g"));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, "g","o"));
-        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize/10, "o","z"));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize / 10, "a", "g"));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize / 10, "g", "o"));
+        bucketInfos.add(new Statistics.BucketInfo<>(bucketSize, bucketSize / 10, "o", "z"));
         return new Statistics.HistogramStatistics<>(bucketInfos);
     }
 
     @Test
-    public void testSingleElementNoCondition(){
+    public void testSingleElementNoCondition() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
@@ -258,7 +259,7 @@ public class SmartEpbShortPathTests {
         PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
         Assert.assertNotNull(first);
         PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(first.getCost().getGlobalCost().cost,400, 0.1);
+        Assert.assertEquals(first.getCost().getGlobalCost().cost, 400, 0.1);
         Assert.assertEquals(first.getCost().getPlanStepCosts().iterator().next().getCost().getCost(), 400, 0.1);
     }
 
@@ -278,7 +279,7 @@ public class SmartEpbShortPathTests {
     }
 
     @Test
-    public void testPathSelectionNoConditions(){
+    public void testPathSelectionNoConditions() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
@@ -301,13 +302,13 @@ public class SmartEpbShortPathTests {
     }
 
     @Test
-    public void testPathSelectionFilterToSide(){
+    public void testPathSelectionFilterToSide() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(6, EProp.of(NAME.type, 6, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, L).relFilter(4).entity(1).entityFilter(2).plan();
@@ -317,16 +318,16 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(111.1, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(10.09, op.getCost().getCost(), 0.1);
         Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
         Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
-    public void testPathSelectionFilterFromSide(){
+    public void testPathSelectionFilterFromSide() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2,EProp.of(FIRST_NAME.type,2, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
@@ -340,13 +341,13 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(112.6, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(133d/13d,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(133d / 13d, op.getCost().getCost(), 0.1);
         Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
         Assert.assertEquals(102.3, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
-    public void testPathSelectionFilterOnRel(){
+    public void testPathSelectionFilterOnRel() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
@@ -363,20 +364,20 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(1401, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(400,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(400, op.getCost().getCost(), 0.1);
         Assert.assertEquals(1, iterator.next().getCost().getCost(), 0.1);
         Assert.assertEquals(1000, iterator.next().getCost().getCost(), 0.1);
     }
 
 
     @Test
-    public void testFilterOnAllItems(){
+    public void testFilterOnAllItems() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.ge, "g")))).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.ge,"g")))).
+                next(eProp(6, EProp.of(NAME.type, 6, Constraint.of(ConstraintOp.ge, "g")))).
                 build();
 
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
@@ -387,19 +388,19 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(1267, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(266,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(266, op.getCost().getCost(), 0.1);
         Assert.assertEquals(1, iterator.next().getCost().getCost(), 0.1);
         Assert.assertEquals(1000, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
-    public void testFilterOnAllItemsReverse(){
+    public void testFilterOnAllItemsReverse() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.ge, "g")))).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(6, EProp.of(NAME.type, 6, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
 
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
@@ -410,23 +411,23 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(111.1, first.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = first.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(10.09, op.getCost().getCost(), 0.1);
         Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
         Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
     }
 
 
     @Test
-    public void testThreeEntityPathWithQuant(){
+    public void testThreeEntityPathWithQuant() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
                 in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
-                    rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
-                    next(typed(6, DRAGON.type)
-                            .next(eProp(7))),
-                    rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
-                    next(typed(10, GUILD.type).next(eProp(11)))).
+                        rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
+                                next(typed(6, DRAGON.type)
+                                        .next(eProp(7))),
+                        rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
+                                next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
 
         Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
@@ -439,14 +440,14 @@ public class SmartEpbShortPathTests {
 
 
     @Test
-    public void testThreeEntityPathWithQuantAndFilter(){
+    public void testThreeEntityPathWithQuantAndFilter() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
                 in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(eProp(7, EProp.of(NAME.type, 6, Constraint.of(ConstraintOp.eq, "abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
@@ -459,14 +460,14 @@ public class SmartEpbShortPathTests {
     }
 
     @Test
-    public void testBackUpdateOfEstimates(){
+    public void testBackUpdateOfEstimates() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
                 in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(eProp(7, EProp.of(NAME.type, 6, Constraint.of(ConstraintOp.eq, "abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
@@ -484,7 +485,7 @@ public class SmartEpbShortPathTests {
     }
 
     @Test
-    public void testUnTyped(){
+    public void testUnTyped() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(unTyped(1, PERSON.type, DRAGON.type)).
                 next(eProp(2)).
@@ -500,7 +501,6 @@ public class SmartEpbShortPathTests {
         PlanAssert.assertEquals(expected, first.getPlan());
         Assert.assertEquals(3001, first.getCost().getGlobalCost().cost, 0.1);
     }
-
 
 
 }

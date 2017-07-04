@@ -6,8 +6,6 @@ import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 
-import java.util.Optional;
-
 /**
  * Created by Roman on 21/05/2017.
  */
@@ -15,9 +13,7 @@ public class M1NonRedundantPlanExtensionStrategy extends CompositePlanExtensionS
     //region Constructors
     @Inject
     public M1NonRedundantPlanExtensionStrategy() {
-        super(
-                new CompositePlanExtensionStrategy<>(
-                        new InitialPlanGeneratorExtensionStrategy(),
+        super(new CompositePlanExtensionStrategy<>(
                         new StepAncestorAdjacentStrategy(),
                         new StepDescendantsAdjacentStrategy(),
                         new ChainPlanExtensionStrategy<>(
@@ -34,7 +30,7 @@ public class M1NonRedundantPlanExtensionStrategy extends CompositePlanExtensionS
 
     @Override
     @LoggerAnnotation(name = "extendPlan", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
         return super.extendPlan(plan, query);
     }
 }

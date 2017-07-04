@@ -10,12 +10,7 @@ import com.kayhut.fuse.model.execution.plan.Plan;
 public class M1DfsNonRedundantPlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan, AsgQuery> {
     //region Constructors
     public M1DfsNonRedundantPlanExtensionStrategy() {
-        super(
-                new CompositePlanExtensionStrategy<>(
-                        new InitialPlanGeneratorExtensionStrategy(),
-                        new StepAdjacentDfsStrategy()
-                )
-        );
+        super(new CompositePlanExtensionStrategy<>(new StepAdjacentDfsStrategy()));
     }
     //endregion
 }

@@ -77,13 +77,15 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
     }
 
     @Inject
-    public BottomUpPlanSearcher(PlanExtensionStrategy<P, Q> extensionStrategy,
+    public BottomUpPlanSearcher(PlanSeedStrategy<P, Q> seedStrategy,
+                                PlanExtensionStrategy<P, Q> extensionStrategy,
                                 @Named("GlobalPruningStrategy") PlanPruneStrategy<PlanWithCost<P, C>> globalPruneStrategy,
                                 @Named("LocalPruningStrategy") PlanPruneStrategy<PlanWithCost<P, C>> localPruneStrategy,
                                 @Named("GlobalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector,
                                 @Named("LocalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector,
                                 PlanValidator<P, Q> planValidator,
                                 CostEstimator<P, C, IncrementalEstimationContext<P, C, Q>> costEstimator) {
+        this.seedStrategy = seedStrategy;
         this.extensionStrategy = extensionStrategy;
         this.globalPruneStrategy = globalPruneStrategy;
         this.localPruneStrategy = localPruneStrategy;
@@ -95,6 +97,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
 
 
     //region Fields
+    private PlanSeedStrategy<P, Q> seedStrategy;
     private PlanExtensionStrategy<P, Q> extensionStrategy;
     private PlanPruneStrategy<PlanWithCost<P, C>> globalPruneStrategy;
     private PlanPruneStrategy<PlanWithCost<P, C>> localPruneStrategy;
@@ -115,7 +118,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
         BuilderIfc builder = PlanNode.Builder.root(query.toString());
 
         // Generate seed plans (plan is null)
-        for (P seedPlan : extensionStrategy.extendPlan(Optional.empty(), query)) {
+        for (P seedPlan : seedStrategy.extendPlan(query)) {
             ValidationContext planValid = planValidator.isPlanValid(seedPlan, query);
             builder.add(seedPlan,planValid.toString());
             if (planValid.valid()) {
@@ -137,7 +140,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
                     NDC.push("phase:" + Integer.toString(phase));
                     builder.with(partialPlan.getPlan());
                     Set<PlanWithCost<P, C>> planExtensions = new HashSet<>();
-                    for (P extendedPlan : extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query)) {
+                    for (P extendedPlan : extensionStrategy.extendPlan(partialPlan.getPlan(), query)) {
                         ValidationContext planValid = planValidator.isPlanValid(extendedPlan, query);
                         builder.add(extendedPlan,planValid.toString());
                         if (planValid.valid()) {

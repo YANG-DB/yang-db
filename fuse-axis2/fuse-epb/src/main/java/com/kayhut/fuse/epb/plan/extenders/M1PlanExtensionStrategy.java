@@ -9,8 +9,6 @@ import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 
-import java.util.Optional;
-
 /**
  * Created by Roman on 21/05/2017.
  */
@@ -24,7 +22,6 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
         super(
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
-                                new InitialPlanGeneratorExtensionStrategy(),
                                 new StepAncestorAdjacentStrategy(),
                                 new StepDescendantsAdjacentStrategy(),
                                 new ChainPlanExtensionStrategy<>(
@@ -46,7 +43,7 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
 
     @Override
     @LoggerAnnotation(name = "extendPlan", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
         return super.extendPlan(plan, query);
     }
 }

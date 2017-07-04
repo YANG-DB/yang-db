@@ -23,12 +23,9 @@ import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDesc
 public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQuery> {
     //region PlanExtensionStrategy Implementation
     @Override
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
-        if (!plan.isPresent()) {
-            return Collections.emptyList();
-        }
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
 
-        Optional<AsgEBase<Rel>> nextRelation = getNextDescendantUnmarkedOfType(plan.get(),Rel.class);
+        Optional<AsgEBase<Rel>> nextRelation = getNextDescendantUnmarkedOfType(plan,Rel.class);
         if (!nextRelation.isPresent()) {
             return Collections.emptyList();
         }
@@ -46,7 +43,7 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
             toEntityPropGroup = AsgQueryUtil.nextAdjacentDescendant(toEntity.get(), EPropGroup.class);
         }
 
-        Plan newPlan = plan.get();
+        Plan newPlan = plan;
         if (getLastOpOfType(newPlan,EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }

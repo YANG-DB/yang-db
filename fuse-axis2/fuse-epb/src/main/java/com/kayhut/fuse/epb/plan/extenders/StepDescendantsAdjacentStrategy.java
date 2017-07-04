@@ -26,26 +26,22 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
 
     //region PlanExtensionStrategy Implementation
     @Override
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
-        if (!plan.isPresent()) {
-            return Collections.emptyList();
-        }
-
-        List<AsgEBase<Rel>> nextRelations = getNextDescendantsUnmarkedOfType(plan.get(), Rel.class);
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
+        List<AsgEBase<Rel>> nextRelations = getNextDescendantsUnmarkedOfType(plan, Rel.class);
 
         if (nextRelations.isEmpty()) {
             return Collections.emptyList();
         }
         List<Plan> plans = new ArrayList<>();
 
-        Plan newPlan = plan.get();
+        Plan newPlan = plan;
         for (AsgEBase<Rel> nextRelation : nextRelations) {
             Optional<Plan> computedPlan = compute(nextRelation, newPlan);
             if (computedPlan.isPresent()) {
                 plans.add(computedPlan.get());
 
-                if (!Plan.equals(plan.get(), newPlan)) {
-                    newPlan.log("StepDescendantsAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
+                if (!Plan.equals(plan, newPlan)) {
+                    newPlan.log("StepDescendantsAdjacentStrategy:[" + Plan.diff(plan, newPlan) + "]", Level.INFO);
                 }
             }
         }

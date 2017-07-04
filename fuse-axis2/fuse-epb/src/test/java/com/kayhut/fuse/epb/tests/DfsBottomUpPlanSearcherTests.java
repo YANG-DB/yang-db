@@ -91,9 +91,7 @@ public class DfsBottomUpPlanSearcherTests {
     }
 
     private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> createBottomUpPlanSearcher() {
-        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(
-                new InitialPlanGeneratorExtensionStrategy(),
-                new StepAdjacentDfsStrategy());
+        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(new StepAdjacentDfsStrategy());
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -104,13 +102,13 @@ public class DfsBottomUpPlanSearcherTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
 
         return new BottomUpPlanSearcher<>(
+                new InitialPlanGeneratorExtensionStrategy(),
                 compositePlanExtensionStrategy,
                 pruneStrategy,
                 pruneStrategy,
                 planSelector,
                 planSelector,
-                validator,
-                costEstimator);
+                validator, costEstimator);
     }
 
 

@@ -42,33 +42,30 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
 
     //region PlanExtensionStrategy Implementation
     @Override
-    public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
-        if(!plan.isPresent()) {
-            return Collections.emptyList();
-        }
+    public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
 
         Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
 
-        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan.get(), EntityOp.class);
+        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan, EntityOp.class);
         if (!lastEntityOp.isPresent()) {
-            return Collections.singleton(plan.get());
+            return Collections.singleton(plan);
         }
 
-        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan.get(), lastEntityOp.get(), RelationOp.class);
+        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan, lastEntityOp.get(), RelationOp.class);
         if (!lastRelationOp.isPresent()) {
-            return Collections.singleton(plan.get());
+            return Collections.singleton(plan);
         }
 
-        Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(plan.get(), lastRelationOp.get(), RelationFilterOp.class);
+        Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(plan, lastRelationOp.get(), RelationFilterOp.class);
         if (!lastRelationFilterOp.isPresent()) {
-            return Collections.singleton(plan.get());
+            return Collections.singleton(plan);
         }
 
-        Optional<EntityFilterOp> lastEntityFilterOp = PlanUtil.next(plan.get(), lastEntityOp.get(), EntityFilterOp.class);
+        Optional<EntityFilterOp> lastEntityFilterOp = PlanUtil.next(plan, lastEntityOp.get(), EntityFilterOp.class);
 
         AtomicInteger maxEnum = new AtomicInteger(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get());
 
-        Plan newPlan = new Plan(plan.get().getOps());
+        Plan newPlan = new Plan(plan.getOps());
 
         GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(
                 $ont.get(),

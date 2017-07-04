@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
@@ -208,14 +209,13 @@ public class SmartEpbSelectivityTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
 
         planSearcher = new BottomUpPlanSearcher<>(
+                new InitialPlanGeneratorExtensionStrategy(),
                 new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
-                //new M1NonRedundantPlanExtensionStrategy(),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
                 localPlanSelector,
-                validator,
-                estimator);
+                validator, estimator);
     }
 
     private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {
