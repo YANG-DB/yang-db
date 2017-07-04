@@ -49,7 +49,7 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     //region TraversalParent Implementation
     @Override
     public List<Traversal.Admin<S, E>> getLocalChildren() {
-        return Arrays.asList(leftTraversal, rightTraversal);
+        return Arrays.asList(/*leftTraversal,*/ rightTraversal);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
             }
         }
 
-        Traversal.Admin<S, E> integratedWithIdsLeftTraversal = integrateIdsTraversalFunction.apply(this.leftTraversal, rightSet.keySet());
+        Traversal.Admin<S, E> integratedWithIdsLeftTraversal = integrateIdsTraversalFunction.apply(this.leftTraversal.clone(), rightSet.keySet());
         integratedWithIdsLeftTraversal = integratedWithIdsLeftTraversal == null ? this.leftTraversal : integratedWithIdsLeftTraversal;
         Iterator<Traverser.Admin<E>> leftIterator = integratedWithIdsLeftTraversal.getEndStep();
 
