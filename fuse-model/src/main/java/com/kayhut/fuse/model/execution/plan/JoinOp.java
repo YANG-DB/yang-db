@@ -24,4 +24,12 @@ public class JoinOp extends EntityOp {
     public Plan getRightBranch() {
         return rightBranch;
     }
+
+    @Override
+    public String toString() {
+        return "JoinOp(" +
+                "leftBranch=" + leftBranch +
+                ", rightBranch=" + rightBranch +
+                ')';
+    }
 }
