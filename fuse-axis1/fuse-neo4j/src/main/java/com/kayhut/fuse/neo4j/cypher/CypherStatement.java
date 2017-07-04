@@ -5,9 +5,7 @@ import javaslang.collection.Stream;
 import javaslang.control.Option;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by elad on 06/03/2017.
@@ -20,6 +18,7 @@ public class CypherStatement {
     private CypherWith with;
     private int relsCounter = 0;
     private int aggsCounter = 0;
+    private int nodesCounter = 0;
 
     private CypherStatement() {
         match = CypherMatch.cypherMatch();
@@ -78,6 +77,10 @@ public class CypherStatement {
 
     public CypherPath getPath(String tag) {
         return match.getPaths().get(tag);
+    }
+
+    public String getNewNodeTag() {
+        return "n" + (++nodesCounter);
     }
 
     public String getNewRelTag() {

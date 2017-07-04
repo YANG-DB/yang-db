@@ -34,9 +34,11 @@ public class TypedNodeCypherStrategy extends CypherStrategy {
                 throw new RuntimeException("Failed compiling query. Unknown entity type: " + eTyped.geteType());
             }
 
+            String tag = eTyped.geteTag() == null ? curState.getStatement().getNewNodeTag() : eTyped.geteTag();
+
             CypherNode node = CypherNode.cypherNode()
-                    .withTag(eTyped.geteTag())
-                    .withLabel(entity.get().getName());
+                                        .withTag(tag)
+                                        .withLabel(entity.get().getName());
 
             CypherReturnElement returnElement = CypherReturnElement.cypherReturnElement().withTag(node.tag);
 
