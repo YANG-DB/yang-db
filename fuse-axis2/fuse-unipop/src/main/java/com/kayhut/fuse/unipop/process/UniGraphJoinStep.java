@@ -1,20 +1,19 @@
 package com.kayhut.fuse.unipop.process;
 
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.ByModulating;
 import org.apache.tinkerpop.gremlin.process.traversal.step.TraversalParent;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.MapStep;
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.PathStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.SackStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.AbstractStep;
 import org.apache.tinkerpop.gremlin.process.traversal.util.FastNoSuchElementException;
 import org.apache.tinkerpop.gremlin.structure.Element;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
@@ -25,7 +24,8 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     public UniGraphJoinStep(Traversal.Admin traversal) {
         super(traversal);
 
-        this.iteratorSupplier = this::nestedLoopWithoutIdPushdownAlgorithm;
+        this.iteratorSupplier = this::nestedLoopAlgorithm;
+        this.integrateIdsTraversalFunction = (leftTraversal, ids) -> leftTraversal;
     }
     //endregion
 
@@ -75,8 +75,19 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     }
     //endregion
 
+    //region Properties
+    public void setIntegrateIdsTraversalFunction(BiFunction<Traversal.Admin<S, E>, Set<Object>, Traversal.Admin<S, E>> integrateIdsTraversalFunction) {
+        this.integrateIdsTraversalFunction = integrateIdsTraversalFunction;
+    }
+    //endregion
+
     //region Private Methods
-    private Iterator<Traverser.Admin<E>> nestedLoopWithoutIdPushdownAlgorithm() {
+
+    private Iterator<Traverser.Admin<E>> nestedLoopAlgorithm() {
+        if (this.leftTraversal == null || this.rightTraversal == null) {
+            return Collections.emptyIterator();
+        }
+
         Map<Object, List<Traverser<E>>> rightSet = new HashMap<>();
         while(true) {
             try {
@@ -88,7 +99,11 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
             }
         }
 
-        return Stream.ofAll(() -> this.leftTraversal.getEndStep())
+        Traversal.Admin<S, E> integratedWithIdsLeftTraversal = integrateIdsTraversalFunction.apply(this.leftTraversal, rightSet.keySet());
+        integratedWithIdsLeftTraversal = integratedWithIdsLeftTraversal == null ? this.leftTraversal : integratedWithIdsLeftTraversal;
+        Iterator<Traverser.Admin<E>> leftIterator = integratedWithIdsLeftTraversal.getEndStep();
+
+        return Stream.ofAll(() -> leftIterator)
                 .flatMap(leftTraverser -> mergePaths(leftTraverser, rightSet.get(leftTraverser.get().id())))
                 .map(Traverser::asAdmin)
                 .iterator();
@@ -134,11 +149,12 @@ public class UniGraphJoinStep<S, E extends Element> extends AbstractStep<S, E> i
     private Iterator<Traverser.Admin<E>> iterator;
     private Supplier<Iterator<Traverser.Admin<E>>> iteratorSupplier;
 
+    private BiFunction<Traversal.Admin<S, E>, Set<Object>, Traversal.Admin<S, E>> integrateIdsTraversalFunction;
 
     // the dummy steps are necessary for setting the proper labels for the objects in the new path generated from the split
-    // passing this to the split method is not recommended as the join step might have its own labels that we would like to use for the final traverser.
+    // passing 'this' to the split method is not recommended as the join step might have its own labels that we would like to use for the final traverser.
     // it is a hack neccessary due to the tinkerpop step api not providing an alternative beside passing a Step for the split method.
-    // another approach could be used by using our own type of Traverser with our own type of path, but at this time that would be an overkill
+    // another approach would be using our own type of Traverser with our own type of path, but at this time that would be an overkill
     private MapStep<E, Object> dummyStep1 = new SackStep<>(__.start().asAdmin());
     private MapStep<Object, Object> dummyStep2 = new SackStep<>(__.start().asAdmin());
     private MapStep<Object, E> dummyStep3 = new SackStep<>(__.start().asAdmin());
