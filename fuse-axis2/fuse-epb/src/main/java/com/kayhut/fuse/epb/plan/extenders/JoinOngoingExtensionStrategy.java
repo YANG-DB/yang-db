@@ -14,7 +14,6 @@ import java.util.Optional;
  * Created by moti on 7/3/2017.
  */
 public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
-
     private PlanExtensionStrategy<Plan, AsgQuery> innerExpander;
 
     public JoinOngoingExtensionStrategy(PlanExtensionStrategy<Plan, AsgQuery> innerExpander) {
@@ -23,6 +22,10 @@ public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan,
 
     @Override
     public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
+        if (plan.getOps().isEmpty()) {
+            return Collections.emptyList();
+        }
+
         if (plan.getOps().size() == 1 && plan.getOps().get(0) instanceof JoinOp) {
             JoinOp joinOp = (JoinOp) plan.getOps().get(0);
             Iterable<Plan> plans = innerExpander.extendPlan(joinOp.getRightBranch(), query);

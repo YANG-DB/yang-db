@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.seeders.InitialPlanGeneratorSeedStrategy;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -97,7 +97,7 @@ public class InitialPlanGeneratorExtenderStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
         Plan expectedPlan2 = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
-        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorExtensionStrategy().extendPlan(asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorSeedStrategy().extendPlan(asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(),2);
         Plan actualPlan1 = extendedPlans.get(0);
@@ -109,7 +109,7 @@ public class InitialPlanGeneratorExtenderStrategyTest {
     @Test
     public void test_simpleQuery2_seedPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
-        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorExtensionStrategy().extendPlan(asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorSeedStrategy().extendPlan(asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(),4);
 
@@ -122,7 +122,7 @@ public class InitialPlanGeneratorExtenderStrategyTest {
     @Test
     public void test_simpleQuery3_seedPlan() {
         AsgQuery asgQuery = simpleQuery3("name", "ont");
-        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorExtensionStrategy().extendPlan(asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorSeedStrategy().extendPlan(asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(),6);
 

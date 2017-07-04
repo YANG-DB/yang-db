@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.epb.plan.seeders.M1PlanSeedStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -58,7 +59,7 @@ public class OngoingJoinStrategyTest {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         M1NonRedundantPlanExtensionStrategy m1Strategy = new M1NonRedundantPlanExtensionStrategy();
         JoinOngoingExtensionStrategy join = new JoinOngoingExtensionStrategy(m1Strategy);
-        Iterable<Plan> plans = join.extendPlan(Optional.empty(), asgQuery);
+        Iterable<Plan> plans = join.extendPlan(new Plan(), asgQuery);
         Assert.assertEquals(0, Stream.ofAll(plans).length());
     }
 
@@ -66,11 +67,15 @@ public class OngoingJoinStrategyTest {
     public void singleJoinPlanTest(){
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
-        M1NonRedundantPlanExtensionStrategy m1Strategy = new M1NonRedundantPlanExtensionStrategy();
-        JoinSeedExtensionStrategy join = new JoinSeedExtensionStrategy(m1Strategy);
-        Iterable<Plan> plans = join.extendPlan(Optional.of(plan), asgQuery);
-        JoinOngoingExtensionStrategy joinOngoing = new JoinOngoingExtensionStrategy(m1Strategy);
-        Iterable<Plan> joinExtensionPlans = joinOngoing.extendPlan(Optional.of(plans.iterator().next()), asgQuery);
+        M1PlanSeedStrategy m1SeedStrategy = new M1PlanSeedStrategy();
+        M1NonRedundantPlanExtensionStrategy m1ExtensionStrategy = new M1NonRedundantPlanExtensionStrategy();
+
+        JoinSeedExtensionStrategy join = new JoinSeedExtensionStrategy(m1SeedStrategy);
+        Iterable<Plan> plans = join.extendPlan(plan, asgQuery);
+
+        JoinOngoingExtensionStrategy joinOngoing = new JoinOngoingExtensionStrategy(m1ExtensionStrategy);
+        Iterable<Plan> joinExtensionPlans = joinOngoing.extendPlan(plans.iterator().next(), asgQuery);
+
         Assert.assertEquals(1, Stream.ofAll(joinExtensionPlans).length());
     }
 
@@ -80,7 +85,7 @@ public class OngoingJoinStrategyTest {
         Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
         M1NonRedundantPlanExtensionStrategy m1Strategy = new M1NonRedundantPlanExtensionStrategy();
         JoinOngoingExtensionStrategy joinOngoing = new JoinOngoingExtensionStrategy(m1Strategy);
-        Iterable<Plan> plans = joinOngoing.extendPlan(Optional.of(plan), asgQuery);
+        Iterable<Plan> plans = joinOngoing.extendPlan(plan, asgQuery);
         Assert.assertEquals(0, Stream.ofAll(plans).length());
     }
 

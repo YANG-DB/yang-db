@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.extenders;
+package com.kayhut.fuse.epb.plan.seeders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanSeedStrategy;
@@ -20,9 +20,9 @@ import java.util.logging.Level;
 /**
  * Created by moti on 2/27/2017.
  */
-public class InitialPlanGeneratorExtensionStrategy implements PlanSeedStrategy<Plan, AsgQuery> {
+public class InitialPlanGeneratorSeedStrategy implements PlanSeedStrategy<Plan, AsgQuery> {
     @Inject
-    public InitialPlanGeneratorExtensionStrategy() {}
+    public InitialPlanGeneratorSeedStrategy() {}
 
     @Override
     public Iterable<Plan> extendPlan(AsgQuery query) {
@@ -34,7 +34,7 @@ public class InitialPlanGeneratorExtensionStrategy implements PlanSeedStrategy<P
             Plan newPlan = new Plan(Collections.singletonList(op));
             if(epropGroup.isPresent()) {
                 newPlan = Plan.compose(newPlan,new EntityFilterOp(epropGroup.get()));
-                newPlan.log("InitialPlanGeneratorExtensionStrategy:[empty->"+newPlan.getOps().size()+"]", Level.INFO);
+                newPlan.log("InitialPlanGeneratorSeedStrategy:[empty->"+newPlan.getOps().size()+"]", Level.INFO);
             }
             plans.add(newPlan);
         });
