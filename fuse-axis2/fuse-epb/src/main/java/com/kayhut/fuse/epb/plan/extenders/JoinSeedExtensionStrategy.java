@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.execution.plan.JoinOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,7 +15,6 @@ import java.util.List;
  */
 public class JoinSeedExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     private PlanSeedStrategy<Plan, AsgQuery> seedStrategy;
-    private PlanExtensionStrategy<Plan, AsgQuery> innerExpander;
 
     public JoinSeedExtensionStrategy(PlanSeedStrategy<Plan, AsgQuery> seedStrategy) {
         this.seedStrategy = seedStrategy;
@@ -22,6 +22,10 @@ public class JoinSeedExtensionStrategy implements PlanExtensionStrategy<Plan, As
 
     @Override
     public Iterable<Plan> extendPlan(Plan plan, AsgQuery query) {
+        if (plan.getOps().isEmpty()) {
+            return Collections.emptyList();
+        }
+
         Iterable<Plan> plans = seedStrategy.extendPlan(query);
 
         List<Plan> newPlans = new ArrayList<>();

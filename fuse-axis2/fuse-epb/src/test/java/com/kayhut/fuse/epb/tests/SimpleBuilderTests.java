@@ -1,8 +1,6 @@
 package com.kayhut.fuse.epb.tests;
 
-import com.kayhut.fuse.epb.plan.extenders.AllDirectionsPlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.seeders.InitialPlanGeneratorSeedStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -26,7 +24,7 @@ public class SimpleBuilderTests {
     public void TestInitialCreationSingleEntity(){
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
 
-        InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
+        InitialPlanGeneratorSeedStrategy strategy = new InitialPlanGeneratorSeedStrategy();
         Iterable<Plan> plans = strategy.extendPlan(query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
@@ -44,7 +42,7 @@ public class SimpleBuilderTests {
     public void TestInitialCreationMultipleEntities(){
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
-        InitialPlanGeneratorExtensionStrategy strategy = new InitialPlanGeneratorExtensionStrategy();
+        InitialPlanGeneratorSeedStrategy strategy = new InitialPlanGeneratorSeedStrategy();
         Iterable<Plan> plans = strategy.extendPlan(query.getLeft());
         List<Plan> plansList = new LinkedList<>();
         plans.forEach(plansList::add);
@@ -73,7 +71,7 @@ public class SimpleBuilderTests {
 
     @Test
     public void TestCompositePlanStrategyInit(){
-        InitialPlanGeneratorExtensionStrategy seeder = new InitialPlanGeneratorExtensionStrategy();
+        InitialPlanGeneratorSeedStrategy seeder = new InitialPlanGeneratorSeedStrategy();
 
         Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
         List<Plan> seeds = Stream.ofAll(seeder.extendPlan(query.getKey())).toJavaList();

@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.epb.plan.seeders.M1PlanSeedStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -63,9 +64,9 @@ public class JoinSeedStrategyTest {
     @Test
     public void emptyPlanTest(){
         AsgQuery asgQuery = simpleQuery1("name", "ont");
-        M1NonRedundantPlanExtensionStrategy m1Strategy = new M1NonRedundantPlanExtensionStrategy();
+        M1PlanSeedStrategy m1Strategy = new M1PlanSeedStrategy();
         JoinSeedExtensionStrategy join = new JoinSeedExtensionStrategy(m1Strategy);
-        Iterable<Plan> plans = join.extendPlan(Optional.empty(), asgQuery);
+        Iterable<Plan> plans = join.extendPlan(new Plan(), asgQuery);
         Assert.assertEquals(0, Stream.ofAll(plans).length());
     }
 
@@ -73,9 +74,9 @@ public class JoinSeedStrategyTest {
     public void singleEntityPlanTest(){
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
-        M1NonRedundantPlanExtensionStrategy m1Strategy = new M1NonRedundantPlanExtensionStrategy();
+        M1PlanSeedStrategy m1Strategy = new M1PlanSeedStrategy();
         JoinSeedExtensionStrategy join = new JoinSeedExtensionStrategy(m1Strategy);
-        Iterable<Plan> plans = join.extendPlan(Optional.of(plan), asgQuery);
+        Iterable<Plan> plans = join.extendPlan(plan, asgQuery);
         Assert.assertEquals(2, Stream.ofAll(plans).length());
         plans.forEach(p -> Assert.assertEquals(plan,((JoinOp)p.getOps().get(0)).getLeftBranch()));
     }

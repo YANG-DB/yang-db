@@ -2,8 +2,7 @@ package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.M1NonRedundantPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.seeders.InitialPlanGeneratorSeedStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -70,7 +69,7 @@ public class M1NonRedundantPlanExtensionStrategyTest {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
-        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorExtensionStrategy().extendPlan(asgQuery)).toJavaList();
+        List<Plan> extendedPlans = Stream.ofAll(new InitialPlanGeneratorSeedStrategy().extendPlan(asgQuery)).toJavaList();
 //        List<Plan> extendedPlans = Stream.ofAll(plans).map(p -> strategy.extendPlan(p, asgQuery)).flatMap(Stream::ofAll).toJavaList();
 
         assertEquals(extendedPlans.size(), 4);
@@ -88,7 +87,7 @@ public class M1NonRedundantPlanExtensionStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 1)));
 
         PlanExtensionStrategy<Plan, AsgQuery> strategy = new M1NonRedundantPlanExtensionStrategy();
-        Plan plan = new InitialPlanGeneratorExtensionStrategy().extendPlan(asgQuery).iterator().next();
+        Plan plan = new InitialPlanGeneratorSeedStrategy().extendPlan(asgQuery).iterator().next();
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(plan, asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);

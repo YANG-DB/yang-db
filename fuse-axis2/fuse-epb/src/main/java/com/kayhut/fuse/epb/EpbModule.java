@@ -11,8 +11,9 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.seeders.InitialPlanGeneratorSeedStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.seeders.M1PlanSeedStrategy;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProviderFactory;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
@@ -42,9 +43,6 @@ public class EpbModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<PlanSeedStrategy<Plan, AsgQuery>>(){})
-                .to(InitialPlanGeneratorExtensionStrategy.class).asEagerSingleton();
-
         binder.bind(StatConfig.class).toInstance(new StatConfig(conf));
         binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
         binder.bind(StatDataProvider.class).to(ElasticStatDocumentProvider.class).asEagerSingleton();
@@ -60,7 +58,10 @@ public class EpbModule extends ModuleBase {
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .to(RegexPatternCostEstimator.class).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){}).to(M1PlanExtensionStrategy.class);
+        binder.bind(new TypeLiteral<PlanSeedStrategy<Plan, AsgQuery>>(){})
+                .to(M1PlanSeedStrategy.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
+                .to(M1PlanExtensionStrategy.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                 .annotatedWith(Names.named("GlobalPruningStrategy"))
