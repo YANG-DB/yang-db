@@ -1,6 +1,6 @@
 package com.kayhut.fuse.gta.translation;
 
-import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;

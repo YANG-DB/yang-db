@@ -1,16 +1,13 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.Optional;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.rel;
