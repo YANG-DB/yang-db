@@ -99,7 +99,7 @@ public class JoinCompletePlanOpValidatorTest {
         Assert.assertFalse(new JoinCompletePlanOpValidator().isPlanValid(plan, asgQuery).valid());
     }
 
-    public static JoinOp createJoinOp(AsgQuery asgQuery) {
+    private static JoinOp createJoinOp(AsgQuery asgQuery) {
         Plan leftPlan = new Plan(
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),

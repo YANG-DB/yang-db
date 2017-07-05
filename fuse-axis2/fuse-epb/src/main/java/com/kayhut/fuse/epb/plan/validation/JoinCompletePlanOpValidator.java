@@ -47,7 +47,7 @@ public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery
         */
         if (plan.getOps().size() > 1 && joinOp.isPresent() && PlanUtil.isFirst(plan, joinOp.get())
                 && !isJoinOpComplete(joinOp.get())) {
-            return new ValidationContext(false, "JoinOp Validation failed: " + toPattern(plan));
+            return new ValidationContext(false, "JoinOp complete validation failed: " + toPattern(plan));
         }
         return ValidationContext.OK;
     }
