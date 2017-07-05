@@ -34,24 +34,24 @@ import java.util.function.Predicate;
  * Created by Roman on 04/07/2017.
  */
 public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
-    public interface Admin<S, E> extends GraphTraversal.Admin<S, E>, FuseGraphTraversal<S, E> {
+     interface Admin<S, E> extends GraphTraversal.Admin<S, E>, FuseGraphTraversal<S, E> {
 
         @Override
-        public default <E2> FuseGraphTraversal.Admin<S, E2> addStep(final Step<?, E2> step) {
+        default <E2> FuseGraphTraversal.Admin<S, E2> addStep(final Step<?, E2> step) {
             return (FuseGraphTraversal.Admin<S, E2>) GraphTraversal.Admin.super.addStep((Step) step);
         }
 
         @Override
-        public default FuseGraphTraversal<S, E> iterate() {
+        default FuseGraphTraversal<S, E> iterate() {
             return FuseGraphTraversal.super.iterate();
         }
 
         @Override
-        public FuseGraphTraversal.Admin<S, E> clone();
+         FuseGraphTraversal.Admin<S, E> clone();
     }
 
     @Override
-    public default FuseGraphTraversal.Admin<S, E> asAdmin() {
+    default FuseGraphTraversal.Admin<S, E> asAdmin() {
         return (FuseGraphTraversal.Admin<S, E>) this;
     }
 
@@ -63,14 +63,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param function the lambda expression that does the functional mapping
      * @return the traversal with an appended {@link LambdaMapStep}.
      */
-    public default <E2> FuseGraphTraversal<S, E2> map(final Function<Traverser<E>, E2> function) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.map, function);
-        return this.asAdmin().addStep(new LambdaMapStep<>(this.asAdmin(), function));
+    default <E2> FuseGraphTraversal<S, E2> map(final Function<Traverser<E>, E2> function) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.map(function);
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> map(final Traversal<?, E2> mapTraversal) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.map, mapTraversal);
-        return this.asAdmin().addStep(new TraversalMapStep<>(this.asAdmin(), mapTraversal));
+    default <E2> FuseGraphTraversal<S, E2> map(final Traversal<?, E2> mapTraversal) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.map(mapTraversal);
     }
 
     /**
@@ -81,9 +79,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>     the type of the returned iterator objects
      * @return the traversal with an appended {@link LambdaFlatMapStep}.
      */
-    public default <E2> FuseGraphTraversal<S, E2> flatMap(final Function<Traverser<E>, Iterator<E2>> function) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.flatMap, function);
-        return this.asAdmin().addStep(new LambdaFlatMapStep<>(this.asAdmin(), function));
+    default <E2> FuseGraphTraversal<S, E2> flatMap(final Function<Traverser<E>, Iterator<E2>> function) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.flatMap(function);
     }
 
     /**
@@ -94,9 +91,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>             the end type of the internal traversal
      * @return the traversal with an appended {@link TraversalFlatMapStep}.
      */
-    public default <E2> FuseGraphTraversal<S, E2> flatMap(final Traversal<?, E2> flatMapTraversal) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.flatMap, flatMapTraversal);
-        return this.asAdmin().addStep(new TraversalFlatMapStep<>(this.asAdmin(), flatMapTraversal));
+    default <E2> FuseGraphTraversal<S, E2> flatMap(final Traversal<?, E2> flatMapTraversal) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.flatMap(flatMapTraversal);
     }
 
     /**
@@ -104,9 +100,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link IdStep}.
      */
-    public default FuseGraphTraversal<S, Object> id() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.id);
-        return this.asAdmin().addStep(new IdStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, Object> id() {
+        return (FuseGraphTraversal<S, Object>)GraphTraversal.super.id();
     }
 
     /**
@@ -114,9 +109,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link LabelStep}.
      */
-    public default FuseGraphTraversal<S, String> label() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.label);
-        return this.asAdmin().addStep(new LabelStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, String> label() {
+        return (FuseGraphTraversal<S, String>)GraphTraversal.super.label();
     }
 
     /**
@@ -124,9 +118,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link IdentityStep}.
      */
-    public default FuseGraphTraversal<S, E> identity() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.identity);
-        return this.asAdmin().addStep(new IdentityStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, E> identity() {
+        return (FuseGraphTraversal<S, E>)GraphTraversal.super.identity();
     }
 
     /**
@@ -134,14 +127,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link ConstantStep}.
      */
-    public default <E2> FuseGraphTraversal<S, E2> constant(final E2 e) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.constant, e);
-        return this.asAdmin().addStep(new ConstantStep<E, E2>(this.asAdmin(), e));
+    default <E2> FuseGraphTraversal<S, E2> constant(final E2 e) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.constant(e);
     }
 
-    public default FuseGraphTraversal<S, Vertex> V(final Object... vertexIdsOrElements) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.V, vertexIdsOrElements);
-        return this.asAdmin().addStep(new GraphStep<>(this.asAdmin(), Vertex.class, false, vertexIdsOrElements));
+    default FuseGraphTraversal<S, Vertex> V(final Object... vertexIdsOrElements) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.V(vertexIdsOrElements);
     }
 
     /**
@@ -151,9 +142,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> to(final Direction direction, final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.to, direction, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Vertex.class, direction, edgeLabels));
+    default FuseGraphTraversal<S, Vertex> to(final Direction direction, final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.to(direction, edgeLabels);
     }
 
     /**
@@ -162,9 +152,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> out(final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.out, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Vertex.class, Direction.OUT, edgeLabels));
+    default FuseGraphTraversal<S, Vertex> out(final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.out(edgeLabels);
     }
 
     /**
@@ -173,9 +162,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> in(final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.in, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Vertex.class, Direction.IN, edgeLabels));
+    default FuseGraphTraversal<S, Vertex> in(final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.in(edgeLabels);
     }
 
     /**
@@ -184,9 +172,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> both(final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.both, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Vertex.class, Direction.BOTH, edgeLabels));
+    default FuseGraphTraversal<S, Vertex> both(final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.both(edgeLabels);
     }
 
     /**
@@ -196,9 +183,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Edge> toE(final Direction direction, final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.toE, direction, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Edge.class, direction, edgeLabels));
+    default FuseGraphTraversal<S, Edge> toE(final Direction direction, final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Edge>)GraphTraversal.super.toE(direction, edgeLabels);
     }
 
     /**
@@ -207,9 +193,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Edge> outE(final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.outE, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Edge.class, Direction.OUT, edgeLabels));
+    default FuseGraphTraversal<S, Edge> outE(final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Edge>)GraphTraversal.super.outE(edgeLabels);
     }
 
     /**
@@ -218,9 +203,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Edge> inE(final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.inE, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Edge.class, Direction.IN, edgeLabels));
+    default FuseGraphTraversal<S, Edge> inE(final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Edge>)GraphTraversal.super.inE(edgeLabels);
     }
 
     /**
@@ -229,9 +213,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param edgeLabels the edge labels to traverse
      * @return the traversal with an appended {@link VertexStep}.
      */
-    public default FuseGraphTraversal<S, Edge> bothE(final String... edgeLabels) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.bothE, edgeLabels);
-        return this.asAdmin().addStep(new VertexStep<>(this.asAdmin(), Edge.class, Direction.BOTH, edgeLabels));
+    default FuseGraphTraversal<S, Edge> bothE(final String... edgeLabels) {
+        return (FuseGraphTraversal<S, Edge>)GraphTraversal.super.bothE(edgeLabels);
     }
 
     /**
@@ -240,9 +223,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param direction the direction to traverser from the current edge
      * @return the traversal with an appended {@link EdgeVertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> toV(final Direction direction) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.toV, direction);
-        return this.asAdmin().addStep(new EdgeVertexStep(this.asAdmin(), direction));
+    default FuseGraphTraversal<S, Vertex> toV(final Direction direction) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.toV(direction);
     }
 
     /**
@@ -250,9 +232,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link EdgeVertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> inV() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.inV);
-        return this.asAdmin().addStep(new EdgeVertexStep(this.asAdmin(), Direction.IN));
+    default FuseGraphTraversal<S, Vertex> inV() {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.inV();
     }
 
     /**
@@ -260,9 +241,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link EdgeVertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> outV() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.outV);
-        return this.asAdmin().addStep(new EdgeVertexStep(this.asAdmin(), Direction.OUT));
+    default FuseGraphTraversal<S, Vertex> outV() {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.outV();
     }
 
     /**
@@ -270,9 +250,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link EdgeVertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> bothV() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.bothV);
-        return this.asAdmin().addStep(new EdgeVertexStep(this.asAdmin(), Direction.BOTH));
+    default FuseGraphTraversal<S, Vertex> bothV() {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.bothV();
     }
 
     /**
@@ -280,9 +259,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link EdgeOtherVertexStep}.
      */
-    public default FuseGraphTraversal<S, Vertex> otherV() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.otherV);
-        return this.asAdmin().addStep(new EdgeOtherVertexStep(this.asAdmin()));
+    default FuseGraphTraversal<S, Vertex> otherV() {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.otherV();
     }
 
     /**
@@ -290,9 +268,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link OrderGlobalStep}.
      */
-    public default FuseGraphTraversal<S, E> order() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.order);
-        return this.asAdmin().addStep(new OrderGlobalStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, E> order() {
+        return (FuseGraphTraversal<S, E>)GraphTraversal.super.order();
     }
 
     /**
@@ -301,9 +278,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param scope whether the ordering is the current local object or the entire global stream.
      * @return the traversal with an appended {@link OrderGlobalStep} or {@link OrderLocalStep}.
      */
-    public default FuseGraphTraversal<S, E> order(final Scope scope) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.order, scope);
-        return this.asAdmin().addStep(scope.equals(Scope.global) ? new OrderGlobalStep<>(this.asAdmin()) : new OrderLocalStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, E> order(final Scope scope) {
+        return (FuseGraphTraversal<S, E>)GraphTraversal.super.order(scope);
     }
 
     /**
@@ -314,9 +290,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>         the value type of the returned properties
      * @return the traversal with an appended {@link PropertiesStep}.
      */
-    public default <E2> FuseGraphTraversal<S, ? extends Property<E2>> properties(final String... propertyKeys) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.properties, propertyKeys);
-        return this.asAdmin().addStep(new PropertiesStep<>(this.asAdmin(), PropertyType.PROPERTY, propertyKeys));
+    default <E2> FuseGraphTraversal<S, ? extends Property<E2>> properties(final String... propertyKeys) {
+        return (FuseGraphTraversal<S, ? extends Property<E2>>)GraphTraversal.super.<E2>properties(propertyKeys);
     }
 
     /**
@@ -327,9 +302,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>         the value type of the properties
      * @return the traversal with an appended {@link PropertiesStep}.
      */
-    public default <E2> FuseGraphTraversal<S, E2> values(final String... propertyKeys) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.values, propertyKeys);
-        return this.asAdmin().addStep(new PropertiesStep<>(this.asAdmin(), PropertyType.VALUE, propertyKeys));
+    default <E2> FuseGraphTraversal<S, E2> values(final String... propertyKeys) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.values(propertyKeys);
     }
 
     /**
@@ -340,9 +314,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>         the value type of the returned properties
      * @return the traversal with an appended {@link PropertyMapStep}.
      */
-    public default <E2> FuseGraphTraversal<S, Map<String, E2>> propertyMap(final String... propertyKeys) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.propertyMap, propertyKeys);
-        return this.asAdmin().addStep(new PropertyMapStep<>(this.asAdmin(), false, PropertyType.PROPERTY, propertyKeys));
+    default <E2> FuseGraphTraversal<S, Map<String, E2>> propertyMap(final String... propertyKeys) {
+        return (FuseGraphTraversal<S, Map<String, E2>>)GraphTraversal.super.<E2>propertyMap(propertyKeys);
     }
 
     /**
@@ -353,9 +326,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>         the value type of the returned properties
      * @return the traversal with an appended {@link PropertyMapStep}.
      */
-    public default <E2> FuseGraphTraversal<S, Map<String, E2>> valueMap(final String... propertyKeys) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.valueMap, propertyKeys);
-        return this.asAdmin().addStep(new PropertyMapStep<>(this.asAdmin(), false, PropertyType.VALUE, propertyKeys));
+    default <E2> FuseGraphTraversal<S, Map<String, E2>> valueMap(final String... propertyKeys) {
+        return (FuseGraphTraversal<S, Map<String, E2>>)GraphTraversal.super.<E2>valueMap(propertyKeys);
     }
 
     /**
@@ -367,21 +339,19 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>          the value type of the returned properties
      * @return the traversal with an appended {@link PropertyMapStep}.
      */
-    public default <E2> FuseGraphTraversal<S, Map<String, E2>> valueMap(final boolean includeTokens, final String... propertyKeys) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.valueMap, includeTokens, propertyKeys);
-        return this.asAdmin().addStep(new PropertyMapStep<>(this.asAdmin(), includeTokens, PropertyType.VALUE, propertyKeys));
+    default <E2> FuseGraphTraversal<S, Map<String, E2>> valueMap(final boolean includeTokens, final String... propertyKeys) {
+        return (FuseGraphTraversal<S, Map<String, E2>>)GraphTraversal.super.<E2>valueMap(includeTokens, propertyKeys);
     }
 
-    public default <E2> FuseGraphTraversal<S, Collection<E2>> select(final Column column) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.select, column);
-        return this.asAdmin().addStep(new TraversalMapStep<>(this.asAdmin(), new ColumnTraversal(column)));
+    default <E2> FuseGraphTraversal<S, Collection<E2>> select(final Column column) {
+        return (FuseGraphTraversal<S, Collection<E2>>)GraphTraversal.super.<E2>select(column);
     }
 
     /**
      * @deprecated As of release 3.1.0, replaced by {@link GraphTraversal#select(Column)}
      */
     @Deprecated
-    public default <E2> FuseGraphTraversal<S, E2> mapValues() {
+    default <E2> FuseGraphTraversal<S, E2> mapValues() {
         return this.select(Column.values).unfold();
     }
 
@@ -389,7 +359,7 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @deprecated As of release 3.1.0, replaced by {@link GraphTraversal#select(Column)}
      */
     @Deprecated
-    public default <E2> FuseGraphTraversal<S, E2> mapKeys() {
+    default <E2> FuseGraphTraversal<S, E2> mapKeys() {
         return this.select(Column.keys).unfold();
     }
 
@@ -398,9 +368,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link PropertyKeyStep}.
      */
-    public default FuseGraphTraversal<S, String> key() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.key);
-        return this.asAdmin().addStep(new PropertyKeyStep(this.asAdmin()));
+    default FuseGraphTraversal<S, String> key() {
+        return (FuseGraphTraversal<S, String>)GraphTraversal.super.key();
     }
 
     /**
@@ -408,9 +377,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link PropertyValueStep}.
      */
-    public default <E2> FuseGraphTraversal<S, E2> value() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.value);
-        return this.asAdmin().addStep(new PropertyValueStep<>(this.asAdmin()));
+    default <E2> FuseGraphTraversal<S, E2> value() {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.value();
     }
 
     /**
@@ -418,9 +386,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link PathStep}.
      */
-    public default FuseGraphTraversal<S, Path> path() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.path);
-        return this.asAdmin().addStep(new PathStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, Path> path() {
+        return (FuseGraphTraversal<S, Path>)GraphTraversal.super.path();
     }
 
     /**
@@ -430,9 +397,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>            the type of the obejcts bound in the variables
      * @return the traversal with an appended {@link MatchStep}.
      */
-    public default <E2> FuseGraphTraversal<S, Map<String, E2>> match(final Traversal<?, ?>... matchTraversals) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.match, matchTraversals);
-        return this.asAdmin().addStep(new MatchStep<>(this.asAdmin(), ConnectiveStep.Connective.AND, matchTraversals));
+    default <E2> FuseGraphTraversal<S, Map<String, E2>> match(final Traversal<?, ?>... matchTraversals) {
+        return (FuseGraphTraversal<S,  Map<String, E2>>)GraphTraversal.super.<E2>match(matchTraversals);
     }
 
     /**
@@ -441,22 +407,16 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2> the sack value type
      * @return the traversal with an appended {@link SackStep}.
      */
-    public default <E2> FuseGraphTraversal<S, E2> sack() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sack);
-        return this.asAdmin().addStep(new SackStep<>(this.asAdmin()));
+    default <E2> FuseGraphTraversal<S, E2> sack() {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.sack();
     }
 
-    public default FuseGraphTraversal<S, Integer> loops() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.loops);
-        return this.asAdmin().addStep(new LoopsStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, Integer> loops() {
+        return (FuseGraphTraversal<S, Integer>)GraphTraversal.super.loops();
     }
 
-    public default <E2> FuseGraphTraversal<S, Map<String, E2>> project(final String projectKey, final String... otherProjectKeys) {
-        final String[] projectKeys = new String[otherProjectKeys.length + 1];
-        projectKeys[0] = projectKey;
-        System.arraycopy(otherProjectKeys, 0, projectKeys, 1, otherProjectKeys.length);
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.project, projectKey, otherProjectKeys);
-        return this.asAdmin().addStep(new ProjectStep<>(this.asAdmin(), projectKeys));
+    default <E2> FuseGraphTraversal<S, Map<String, E2>> project(final String projectKey, final String... otherProjectKeys) {
+        return (FuseGraphTraversal<S, Map<String, E2>>)GraphTraversal.super.<E2>project(projectKey, otherProjectKeys);
     }
 
     /**
@@ -469,13 +429,8 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>            the type of the objects projected
      * @return the traversal with an appended {@link SelectStep}.
      */
-    public default <E2> FuseGraphTraversal<S, Map<String, E2>> select(final Pop pop, final String selectKey1, final String selectKey2, String... otherSelectKeys) {
-        final String[] selectKeys = new String[otherSelectKeys.length + 2];
-        selectKeys[0] = selectKey1;
-        selectKeys[1] = selectKey2;
-        System.arraycopy(otherSelectKeys, 0, selectKeys, 2, otherSelectKeys.length);
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.select, pop, selectKey1, selectKey2, otherSelectKeys);
-        return this.asAdmin().addStep(new SelectStep<>(this.asAdmin(), pop, selectKeys));
+    default <E2> FuseGraphTraversal<S, Map<String, E2>> select(final Pop pop, final String selectKey1, final String selectKey2, String... otherSelectKeys) {
+        return (FuseGraphTraversal<S, Map<String, E2>>)GraphTraversal.super.<E2>select(pop, selectKey1, selectKey2, otherSelectKeys);
     }
 
     /**
@@ -487,38 +442,28 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param <E2>            the type of the objects projected
      * @return the traversal with an appended {@link SelectStep}.
      */
-    public default <E2> FuseGraphTraversal<S, Map<String, E2>> select(final String selectKey1, final String selectKey2, String... otherSelectKeys) {
-        final String[] selectKeys = new String[otherSelectKeys.length + 2];
-        selectKeys[0] = selectKey1;
-        selectKeys[1] = selectKey2;
-        System.arraycopy(otherSelectKeys, 0, selectKeys, 2, otherSelectKeys.length);
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.select, selectKey1, selectKey2, otherSelectKeys);
-        return this.asAdmin().addStep(new SelectStep<>(this.asAdmin(), null, selectKeys));
+    default <E2> FuseGraphTraversal<S, Map<String, E2>> select(final String selectKey1, final String selectKey2, String... otherSelectKeys) {
+        return (FuseGraphTraversal<S, Map<String, E2>>)GraphTraversal.super.<E2>select(selectKey1, selectKey2, otherSelectKeys);
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> select(final Pop pop, final String selectKey) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.select, pop, selectKey);
-        return this.asAdmin().addStep(new SelectOneStep<>(this.asAdmin(), pop, selectKey));
+    default <E2> FuseGraphTraversal<S, E2> select(final Pop pop, final String selectKey) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.select(pop, selectKey);
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> select(final String selectKey) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.select, selectKey);
-        return this.asAdmin().addStep(new SelectOneStep<>(this.asAdmin(), null, selectKey));
+    default <E2> FuseGraphTraversal<S, E2> select(final String selectKey) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.select(selectKey);
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> unfold() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.unfold);
-        return this.asAdmin().addStep(new UnfoldStep<>(this.asAdmin()));
+    default <E2> FuseGraphTraversal<S, E2> unfold() {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.unfold();
     }
 
-    public default FuseGraphTraversal<S, List<E>> fold() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.fold);
-        return this.asAdmin().addStep(new FoldStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, List<E>> fold() {
+        return (FuseGraphTraversal<S, List<E>>)GraphTraversal.super.fold();
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> fold(final E2 seed, final BiFunction<E2, E, E2> foldFunction) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.fold, seed, foldFunction);
-        return this.asAdmin().addStep(new FoldStep<>(this.asAdmin(), new ConstantSupplier<>(seed), foldFunction)); // TODO: User should provide supplier?
+    default <E2> FuseGraphTraversal<S, E2> fold(final E2 seed, final BiFunction<E2, E, E2> foldFunction) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.fold(seed, foldFunction);
     }
 
     /**
@@ -526,14 +471,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link CountGlobalStep}.
      */
-    public default FuseGraphTraversal<S, Long> count() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.count);
-        return this.asAdmin().addStep(new CountGlobalStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, Long> count() {
+        return (FuseGraphTraversal<S, Long>)GraphTraversal.super.count();
     }
 
-    public default FuseGraphTraversal<S, Long> count(final Scope scope) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.count, scope);
-        return this.asAdmin().addStep(scope.equals(Scope.global) ? new CountGlobalStep<>(this.asAdmin()) : new CountLocalStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, Long> count(final Scope scope) {
+        return (FuseGraphTraversal<S, Long>)GraphTraversal.super.count(scope);
     }
 
     /**
@@ -541,195 +484,141 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link SumGlobalStep}.
      */
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> sum() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sum);
-        return this.asAdmin().addStep(new SumGlobalStep<>(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> sum() {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.sum();
     }
 
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> sum(final Scope scope) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sum, scope);
-        return this.asAdmin().addStep(scope.equals(Scope.global) ? new SumGlobalStep<>(this.asAdmin()) : new SumLocalStep(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> sum(final Scope scope) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.sum(scope);
     }
 
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> max() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.max);
-        return this.asAdmin().addStep(new MaxGlobalStep<>(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> max() {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.max();
     }
 
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> max(final Scope scope) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.max, scope);
-        return this.asAdmin().addStep(scope.equals(Scope.global) ? new MaxGlobalStep<>(this.asAdmin()) : new MaxLocalStep(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> max(final Scope scope) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.max(scope);
     }
 
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> min() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.min);
-        return this.asAdmin().addStep(new MinGlobalStep<>(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> min() {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.min();
     }
 
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> min(final Scope scope) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.min, scope);
-        return this.asAdmin().addStep(scope.equals(Scope.global) ? new MinGlobalStep<E2>(this.asAdmin()) : new MinLocalStep<>(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> min(final Scope scope) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.min(scope);
     }
 
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> mean() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.mean);
-        return this.asAdmin().addStep(new MeanGlobalStep<>(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> mean() {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.mean();
     }
 
-    public default <E2 extends Number> FuseGraphTraversal<S, E2> mean(final Scope scope) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.mean, scope);
-        return this.asAdmin().addStep(scope.equals(Scope.global) ? new MeanGlobalStep<>(this.asAdmin()) : new MeanLocalStep(this.asAdmin()));
+    default <E2 extends Number> FuseGraphTraversal<S, E2> mean(final Scope scope) {
+        return (FuseGraphTraversal<S, E2>)GraphTraversal.super.mean(scope);
     }
 
-    public default <K, V> FuseGraphTraversal<S, Map<K, V>> group() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.group);
-        return this.asAdmin().addStep(new GroupStep<>(this.asAdmin()));
+    default <K, V> FuseGraphTraversal<S, Map<K, V>> group() {
+        return (FuseGraphTraversal<S, Map<K, V>>)GraphTraversal.super.<K, V>group();
     }
 
     /**
      * @deprecated As of release 3.1.0, replaced by {@link #group()}
      */
     @Deprecated
-    public default <K, V> FuseGraphTraversal<S, Map<K, V>> groupV3d0() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.groupV3d0);
-        return this.asAdmin().addStep(new GroupStepV3d0<>(this.asAdmin()));
+    default <K, V> FuseGraphTraversal<S, Map<K, V>> groupV3d0() {
+        return (FuseGraphTraversal<S, Map<K, V>>)GraphTraversal.super.<K, V>groupV3d0();
     }
 
-    public default <K> FuseGraphTraversal<S, Map<K, Long>> groupCount() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.groupCount);
-        return this.asAdmin().addStep(new GroupCountStep<>(this.asAdmin()));
+    default <K> FuseGraphTraversal<S, Map<K, Long>> groupCount() {
+        return (FuseGraphTraversal<S, Map<K, Long>>)GraphTraversal.super.<K>groupCount();
     }
 
-    public default FuseGraphTraversal<S, Tree> tree() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.tree);
-        return this.asAdmin().addStep(new TreeStep<>(this.asAdmin()));
+    default FuseGraphTraversal<S, Tree> tree() {
+        return (FuseGraphTraversal<S, Tree>)GraphTraversal.super.tree();
     }
 
-    public default FuseGraphTraversal<S, Vertex> addV(final String vertexLabel) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.addV, vertexLabel);
-        return this.asAdmin().addStep(new AddVertexStep<>(this.asAdmin(), vertexLabel));
+    default FuseGraphTraversal<S, Vertex> addV(final String vertexLabel) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.addV(vertexLabel);
     }
 
-    public default FuseGraphTraversal<S, Vertex> addV() {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.addV);
-        return this.asAdmin().addStep(new AddVertexStep<>(this.asAdmin(), null));
+    default FuseGraphTraversal<S, Vertex> addV() {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.addV();
     }
 
     /**
      * @deprecated As of release 3.1.0, replaced by {@link #addV()}
      */
     @Deprecated
-    public default FuseGraphTraversal<S, Vertex> addV(final Object... propertyKeyValues) {
-        this.addV();
-        for (int i = 0; i < propertyKeyValues.length; i = i + 2) {
-            this.property(propertyKeyValues[i], propertyKeyValues[i + 1]);
-        }
-        //((AddVertexStep) this.asAdmin().getEndStep()).addPropertyMutations(propertyKeyValues);
-        return (FuseGraphTraversal<S, Vertex>) this;
+    default FuseGraphTraversal<S, Vertex> addV(final Object... propertyKeyValues) {
+        return (FuseGraphTraversal<S, Vertex>)GraphTraversal.super.addV(propertyKeyValues);
     }
 
-    public default FuseGraphTraversal<S, Edge> addE(final String edgeLabel) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.addE, edgeLabel);
-        return this.asAdmin().addStep(new AddEdgeStep<>(this.asAdmin(), edgeLabel));
+    default FuseGraphTraversal<S, Edge> addE(final String edgeLabel) {
+        return (FuseGraphTraversal<S, Edge>)GraphTraversal.super.addE(edgeLabel);
     }
 
-    public default FuseGraphTraversal<S, E> to(final String toStepLabel) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.to, toStepLabel);
-        ((AddEdgeStep) this.asAdmin().getEndStep()).addTo(__.select(toStepLabel));
-        return this;
+    default FuseGraphTraversal<S, E> to(final String toStepLabel) {
+        return (FuseGraphTraversal<S, E>)GraphTraversal.super.to(toStepLabel);
     }
 
-    public default FuseGraphTraversal<S, E> from(final String fromStepLabel) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.from, fromStepLabel);
-        ((AddEdgeStep) this.asAdmin().getEndStep()).addFrom(__.select(fromStepLabel));
-        return this;
+    default FuseGraphTraversal<S, E> from(final String fromStepLabel) {
+        return (FuseGraphTraversal<S, E>)GraphTraversal.super.from(fromStepLabel);
     }
 
-    public default FuseGraphTraversal<S, E> to(final Traversal<E, Vertex> toVertex) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.to, toVertex);
-        ((AddEdgeStep) this.asAdmin().getEndStep()).addTo(toVertex);
-        return this;
+    default FuseGraphTraversal<S, E> to(final Traversal<E, Vertex> toVertex) {
+        return (FuseGraphTraversal<S, E>)GraphTraversal.super.to(toVertex);
     }
 
-    public default FuseGraphTraversal<S, E> from(final Traversal<E, Vertex> fromVertex) {
-        this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.from, fromVertex);
-        ((AddEdgeStep) this.asAdmin().getEndStep()).addFrom(fromVertex);
-        return this;
+    default FuseGraphTraversal<S, E> from(final Traversal<E, Vertex> fromVertex) {
+        return (FuseGraphTraversal<S, E>)GraphTraversal.super.from(fromVertex);
     }
 
     /**
      * @deprecated As of release 3.1.0, replaced by {@link #addE(String)}
      */
     @Deprecated
-    public default FuseGraphTraversal<S, Edge> addE(final Direction direction, final String firstVertexKeyOrEdgeLabel, final String edgeLabelOrSecondVertexKey, final Object... propertyKeyValues) {
-        if (propertyKeyValues.length % 2 == 0) {
-            // addOutE("createdBy", "a")
-            this.addE(firstVertexKeyOrEdgeLabel);
-            if (direction.equals(Direction.OUT))
-                this.to(edgeLabelOrSecondVertexKey);
-            else
-                this.from(edgeLabelOrSecondVertexKey);
-
-            for (int i = 0; i < propertyKeyValues.length; i = i + 2) {
-                this.property(propertyKeyValues[i], propertyKeyValues[i + 1]);
-            }
-            //((Mutating) this.asAdmin().getEndStep()).addPropertyMutations(propertyKeyValues);
-            return (FuseGraphTraversal<S, Edge>) this;
-        } else {
-            // addInE("a", "codeveloper", "b", "year", 2009)
-            this.addE(edgeLabelOrSecondVertexKey);
-            if (direction.equals(Direction.OUT))
-                this.from(firstVertexKeyOrEdgeLabel).to((String) propertyKeyValues[0]);
-            else
-                this.to(firstVertexKeyOrEdgeLabel).from((String) propertyKeyValues[0]);
-
-            for (int i = 1; i < propertyKeyValues.length; i = i + 2) {
-                this.property(propertyKeyValues[i], propertyKeyValues[i + 1]);
-            }
-            //((Mutating) this.asAdmin().getEndStep()).addPropertyMutations(Arrays.copyOfRange(propertyKeyValues, 1, propertyKeyValues.length));
-            return (FuseGraphTraversal<S, Edge>) this;
-        }
+    default FuseGraphTraversal<S, Edge> addE(final Direction direction, final String firstVertexKeyOrEdgeLabel, final String edgeLabelOrSecondVertexKey, final Object... propertyKeyValues) {
+        return (FuseGraphTraversal<S, Edge>)GraphTraversal.super.addE(direction, firstVertexKeyOrEdgeLabel, edgeLabelOrSecondVertexKey, propertyKeyValues);
     }
 
     /**
      * @deprecated As of release 3.1.0, replaced by {@link #addE(String)}
      */
     @Deprecated
-    public default FuseGraphTraversal<S, Edge> addOutE(final String firstVertexKeyOrEdgeLabel, final String edgeLabelOrSecondVertexKey, final Object... propertyKeyValues) {
-        return this.addE(Direction.OUT, firstVertexKeyOrEdgeLabel, edgeLabelOrSecondVertexKey, propertyKeyValues);
+    default FuseGraphTraversal<S, Edge> addOutE(final String firstVertexKeyOrEdgeLabel, final String edgeLabelOrSecondVertexKey, final Object... propertyKeyValues) {
+        return (FuseGraphTraversal<S, Edge>)GraphTraversal.super.addOutE(firstVertexKeyOrEdgeLabel, edgeLabelOrSecondVertexKey, propertyKeyValues);
     }
 
     /**
      * @deprecated As of release 3.1.0, replaced by {@link #addE(String)}
      */
     @Deprecated
-    public default FuseGraphTraversal<S, Edge> addInE(final String firstVertexKeyOrEdgeLabel, final String edgeLabelOrSecondVertexKey, final Object... propertyKeyValues) {
+    default FuseGraphTraversal<S, Edge> addInE(final String firstVertexKeyOrEdgeLabel, final String edgeLabelOrSecondVertexKey, final Object... propertyKeyValues) {
         return this.addE(Direction.IN, firstVertexKeyOrEdgeLabel, edgeLabelOrSecondVertexKey, propertyKeyValues);
     }
 
     ///////////////////// FILTER STEPS /////////////////////
 
-    public default FuseGraphTraversal<S, E> filter(final Predicate<Traverser<E>> predicate) {
+    default FuseGraphTraversal<S, E> filter(final Predicate<Traverser<E>> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.filter, predicate);
         return this.asAdmin().addStep(new LambdaFilterStep<>(this.asAdmin(), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> filter(final Traversal<?, ?> filterTraversal) {
+    default FuseGraphTraversal<S, E> filter(final Traversal<?, ?> filterTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.filter, filterTraversal);
         return this.asAdmin().addStep(new TraversalFilterStep<>(this.asAdmin(), (Traversal) filterTraversal));
     }
 
-    public default FuseGraphTraversal<S, E> or(final Traversal<?, ?>... orTraversals) {
+    default FuseGraphTraversal<S, E> or(final Traversal<?, ?>... orTraversals) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.or, orTraversals);
         return this.asAdmin().addStep(new OrStep(this.asAdmin(), orTraversals));
     }
 
-    public default FuseGraphTraversal<S, E> and(final Traversal<?, ?>... andTraversals) {
+    default FuseGraphTraversal<S, E> and(final Traversal<?, ?>... andTraversals) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.and, andTraversals);
         return this.asAdmin().addStep(new AndStep(this.asAdmin(), andTraversals));
     }
 
-    public default FuseGraphTraversal<S, E> inject(final E... injections) {
+    default FuseGraphTraversal<S, E> inject(final E... injections) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.inject, injections);
         return this.asAdmin().addStep(new InjectStep<>(this.asAdmin(), injections));
     }
@@ -741,7 +630,7 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param dedupLabels if labels are provided, then the scope labels determine de-duplication. No labels implies current object.
      * @return the traversal with an appended {@link DedupGlobalStep}.
      */
-    public default FuseGraphTraversal<S, E> dedup(final Scope scope, final String... dedupLabels) {
+    default FuseGraphTraversal<S, E> dedup(final Scope scope, final String... dedupLabels) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.dedup, scope, dedupLabels);
         return this.asAdmin().addStep(scope.equals(Scope.global) ? new DedupGlobalStep<>(this.asAdmin(), dedupLabels) : new DedupLocalStep(this.asAdmin()));
     }
@@ -752,39 +641,39 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param dedupLabels if labels are provided, then the scoped object's labels determine de-duplication. No labels implies current object.
      * @return the traversal with an appended {@link DedupGlobalStep}.
      */
-    public default FuseGraphTraversal<S, E> dedup(final String... dedupLabels) {
+    default FuseGraphTraversal<S, E> dedup(final String... dedupLabels) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.dedup, dedupLabels);
         return this.asAdmin().addStep(new DedupGlobalStep<>(this.asAdmin(), dedupLabels));
     }
 
-    public default FuseGraphTraversal<S, E> where(final String startKey, final P<String> predicate) {
+    default FuseGraphTraversal<S, E> where(final String startKey, final P<String> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.where, startKey, predicate);
         return this.asAdmin().addStep(new WherePredicateStep<>(this.asAdmin(), Optional.ofNullable(startKey), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> where(final P<String> predicate) {
+    default FuseGraphTraversal<S, E> where(final P<String> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.where, predicate);
         return this.asAdmin().addStep(new WherePredicateStep<>(this.asAdmin(), Optional.empty(), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> where(final Traversal<?, ?> whereTraversal) {
+    default FuseGraphTraversal<S, E> where(final Traversal<?, ?> whereTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.where, whereTraversal);
         return TraversalHelper.getVariableLocations(whereTraversal.asAdmin()).isEmpty() ?
                 this.asAdmin().addStep(new TraversalFilterStep<>(this.asAdmin(), (Traversal) whereTraversal)) :
                 this.asAdmin().addStep(new WhereTraversalStep<>(this.asAdmin(), whereTraversal));
     }
 
-    public default FuseGraphTraversal<S, E> has(final String propertyKey, final P<?> predicate) {
+    default FuseGraphTraversal<S, E> has(final String propertyKey, final P<?> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.has, propertyKey, predicate);
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(propertyKey, predicate));
     }
 
-    public default FuseGraphTraversal<S, E> has(final T accessor, final P<?> predicate) {
+    default FuseGraphTraversal<S, E> has(final T accessor, final P<?> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.has, accessor, predicate);
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(accessor.getAccessor(), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> has(final String propertyKey, final Object value) {
+    default FuseGraphTraversal<S, E> has(final String propertyKey, final Object value) {
         if (value instanceof P)
             return this.has(propertyKey, (P) value);
         else if (value instanceof Traversal)
@@ -795,7 +684,7 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
         }
     }
 
-    public default FuseGraphTraversal<S, E> has(final T accessor, final Object value) {
+    default FuseGraphTraversal<S, E> has(final T accessor, final Object value) {
         if (value instanceof P)
             return this.has(accessor, (P) value);
         else if (value instanceof Traversal)
@@ -806,43 +695,43 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
         }
     }
 
-    public default FuseGraphTraversal<S, E> has(final String label, final String propertyKey, final P<?> predicate) {
+    default FuseGraphTraversal<S, E> has(final String label, final String propertyKey, final P<?> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.has, label, propertyKey, predicate);
         TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.label.getAccessor(), P.eq(label)));
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(propertyKey, predicate));
     }
 
-    public default FuseGraphTraversal<S, E> has(final String label, final String propertyKey, final Object value) {
+    default FuseGraphTraversal<S, E> has(final String label, final String propertyKey, final Object value) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.has, label, propertyKey, value);
         TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.label.getAccessor(), P.eq(label)));
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(propertyKey, value instanceof P ? (P) value : P.eq(value)));
     }
 
-    public default FuseGraphTraversal<S, E> has(final T accessor, final Traversal<?, ?> propertyTraversal) {
+    default FuseGraphTraversal<S, E> has(final T accessor, final Traversal<?, ?> propertyTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.has, accessor, propertyTraversal);
         return this.asAdmin().addStep(
                 new TraversalFilterStep<>(this.asAdmin(), propertyTraversal.asAdmin().addStep(0,
                         new PropertiesStep(propertyTraversal.asAdmin(), PropertyType.VALUE, accessor.getAccessor()))));
     }
 
-    public default FuseGraphTraversal<S, E> has(final String propertyKey, final Traversal<?, ?> propertyTraversal) {
+    default FuseGraphTraversal<S, E> has(final String propertyKey, final Traversal<?, ?> propertyTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.has, propertyKey, propertyTraversal);
         return this.asAdmin().addStep(
                 new TraversalFilterStep<>(this.asAdmin(), propertyTraversal.asAdmin().addStep(0,
                         new PropertiesStep(propertyTraversal.asAdmin(), PropertyType.VALUE, propertyKey))));
     }
 
-    public default FuseGraphTraversal<S, E> has(final String propertyKey) {
+    default FuseGraphTraversal<S, E> has(final String propertyKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.has, propertyKey);
         return this.asAdmin().addStep(new TraversalFilterStep<>(this.asAdmin(), __.values(propertyKey)));
     }
 
-    public default FuseGraphTraversal<S, E> hasNot(final String propertyKey) {
+    default FuseGraphTraversal<S, E> hasNot(final String propertyKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.hasNot, propertyKey);
         return this.asAdmin().addStep(new NotStep<>(this.asAdmin(), __.values(propertyKey)));
     }
 
-    public default FuseGraphTraversal<S, E> hasLabel(final String label, final String... otherLabels) {
+    default FuseGraphTraversal<S, E> hasLabel(final String label, final String... otherLabels) {
         final String[] labels = new String[otherLabels.length + 1];
         labels[0] = label;
         System.arraycopy(otherLabels, 0, labels, 1, otherLabels.length);
@@ -850,12 +739,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.label.getAccessor(), labels.length == 1 ? P.eq(labels[0]) : P.within(labels)));
     }
 
-    public default FuseGraphTraversal<S, E> hasLabel(final P<String> predicate) {
+    default FuseGraphTraversal<S, E> hasLabel(final P<String> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.hasLabel, predicate);
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.label.getAccessor(), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> hasId(final Object id, final Object... otherIds) {
+    default FuseGraphTraversal<S, E> hasId(final Object id, final Object... otherIds) {
         if (id instanceof P)
             return this.hasId((P) id);
         else {
@@ -879,12 +768,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
         }
     }
 
-    public default FuseGraphTraversal<S, E> hasId(final P<Object> predicate) {
+    default FuseGraphTraversal<S, E> hasId(final P<Object> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.hasId, predicate);
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.id.getAccessor(), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> hasKey(final String label, final String... otherLabels) {
+    default FuseGraphTraversal<S, E> hasKey(final String label, final String... otherLabels) {
         final String[] labels = new String[otherLabels.length + 1];
         labels[0] = label;
         System.arraycopy(otherLabels, 0, labels, 1, otherLabels.length);
@@ -892,12 +781,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.key.getAccessor(), labels.length == 1 ? P.eq(labels[0]) : P.within(labels)));
     }
 
-    public default FuseGraphTraversal<S, E> hasKey(final P<String> predicate) {
+    default FuseGraphTraversal<S, E> hasKey(final P<String> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.hasKey, predicate);
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.key.getAccessor(), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> hasValue(final Object value, final Object... otherValues) {
+    default FuseGraphTraversal<S, E> hasValue(final Object value, final Object... otherValues) {
         if (value instanceof P)
             return this.hasValue((P) value);
         else {
@@ -921,12 +810,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
         }
     }
 
-    public default FuseGraphTraversal<S, E> hasValue(final P<Object> predicate) {
+    default FuseGraphTraversal<S, E> hasValue(final P<Object> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.hasValue, predicate);
         return TraversalHelper.addHasContainer(this.asAdmin(), new HasContainer(T.value.getAccessor(), predicate));
     }
 
-    public default FuseGraphTraversal<S, E> is(final P<E> predicate) {
+    default FuseGraphTraversal<S, E> is(final P<E> predicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.is, predicate);
         return this.asAdmin().addStep(new IsStep<>(this.asAdmin(), predicate));
     }
@@ -937,12 +826,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param value the value that the object must equal.
      * @return the traversal with an appended {@link IsStep}.
      */
-    public default FuseGraphTraversal<S, E> is(final Object value) {
+    default FuseGraphTraversal<S, E> is(final Object value) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.is, value);
         return this.asAdmin().addStep(new IsStep<>(this.asAdmin(), value instanceof P ? (P<E>) value : P.eq((E) value)));
     }
 
-    public default FuseGraphTraversal<S, E> not(final Traversal<?, ?> notTraversal) {
+    default FuseGraphTraversal<S, E> not(final Traversal<?, ?> notTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.not, notTraversal);
         return this.asAdmin().addStep(new NotStep<>(this.asAdmin(), (Traversal<E, ?>) notTraversal));
     }
@@ -953,53 +842,53 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param probability the probability that the object will pass through
      * @return the traversal with an appended {@link CoinStep}.
      */
-    public default FuseGraphTraversal<S, E> coin(final double probability) {
+    default FuseGraphTraversal<S, E> coin(final double probability) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.coin, probability);
         return this.asAdmin().addStep(new CoinStep<>(this.asAdmin(), probability));
     }
 
-    public default FuseGraphTraversal<S, E> range(final long low, final long high) {
+    default FuseGraphTraversal<S, E> range(final long low, final long high) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.range, low, high);
         return this.asAdmin().addStep(new RangeGlobalStep<>(this.asAdmin(), low, high));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> range(final Scope scope, final long low, final long high) {
+    default <E2> FuseGraphTraversal<S, E2> range(final Scope scope, final long low, final long high) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.range, scope, low, high);
         return this.asAdmin().addStep(scope.equals(Scope.global)
                 ? new RangeGlobalStep<>(this.asAdmin(), low, high)
                 : new RangeLocalStep<>(this.asAdmin(), low, high));
     }
 
-    public default FuseGraphTraversal<S, E> limit(final long limit) {
+    default FuseGraphTraversal<S, E> limit(final long limit) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.limit, limit);
         return this.asAdmin().addStep(new RangeGlobalStep<>(this.asAdmin(), 0, limit));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> limit(final Scope scope, final long limit) {
+    default <E2> FuseGraphTraversal<S, E2> limit(final Scope scope, final long limit) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.limit, scope, limit);
         return this.asAdmin().addStep(scope.equals(Scope.global)
                 ? new RangeGlobalStep<>(this.asAdmin(), 0, limit)
                 : new RangeLocalStep<>(this.asAdmin(), 0, limit));
     }
 
-    public default FuseGraphTraversal<S, E> tail() {
+    default FuseGraphTraversal<S, E> tail() {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.tail);
         return this.asAdmin().addStep(new TailGlobalStep<>(this.asAdmin(), 1));
     }
 
-    public default FuseGraphTraversal<S, E> tail(final long limit) {
+    default FuseGraphTraversal<S, E> tail(final long limit) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.tail, limit);
         return this.asAdmin().addStep(new TailGlobalStep<>(this.asAdmin(), limit));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> tail(final Scope scope) {
+    default <E2> FuseGraphTraversal<S, E2> tail(final Scope scope) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.tail, scope);
         return this.asAdmin().addStep(scope.equals(Scope.global)
                 ? new TailGlobalStep<>(this.asAdmin(), 1)
                 : new TailLocalStep<>(this.asAdmin(), 1));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> tail(final Scope scope, final long limit) {
+    default <E2> FuseGraphTraversal<S, E2> tail(final Scope scope, final long limit) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.tail, scope, limit);
         return this.asAdmin().addStep(scope.equals(Scope.global)
                 ? new TailGlobalStep<>(this.asAdmin(), limit)
@@ -1012,7 +901,7 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param timeLimit the count down time
      * @return the traversal with an appended {@link TimeLimitStep}
      */
-    public default FuseGraphTraversal<S, E> timeLimit(final long timeLimit) {
+    default FuseGraphTraversal<S, E> timeLimit(final long timeLimit) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.timeLimit, timeLimit);
         return this.asAdmin().addStep(new TimeLimitStep<E>(this.asAdmin(), timeLimit));
     }
@@ -1022,7 +911,7 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link SimplePathStep}.
      */
-    public default FuseGraphTraversal<S, E> simplePath() {
+    default FuseGraphTraversal<S, E> simplePath() {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.simplePath);
         return this.asAdmin().addStep(new SimplePathStep<>(this.asAdmin()));
     }
@@ -1032,56 +921,56 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      *
      * @return the traversal with an appended {@link CyclicPathStep}.
      */
-    public default FuseGraphTraversal<S, E> cyclicPath() {
+    default FuseGraphTraversal<S, E> cyclicPath() {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.cyclicPath);
         return this.asAdmin().addStep(new CyclicPathStep<>(this.asAdmin()));
     }
 
-    public default FuseGraphTraversal<S, E> sample(final int amountToSample) {
+    default FuseGraphTraversal<S, E> sample(final int amountToSample) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sample, amountToSample);
         return this.asAdmin().addStep(new SampleGlobalStep<>(this.asAdmin(), amountToSample));
     }
 
-    public default FuseGraphTraversal<S, E> sample(final Scope scope, final int amountToSample) {
+    default FuseGraphTraversal<S, E> sample(final Scope scope, final int amountToSample) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sample, scope, amountToSample);
         return this.asAdmin().addStep(scope.equals(Scope.global)
                 ? new SampleGlobalStep<>(this.asAdmin(), amountToSample)
                 : new SampleLocalStep<>(this.asAdmin(), amountToSample));
     }
 
-    public default FuseGraphTraversal<S, E> drop() {
+    default FuseGraphTraversal<S, E> drop() {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.drop);
         return this.asAdmin().addStep(new DropStep<>(this.asAdmin()));
     }
 
     ///////////////////// SIDE-EFFECT STEPS /////////////////////
 
-    public default FuseGraphTraversal<S, E> sideEffect(final Consumer<Traverser<E>> consumer) {
+    default FuseGraphTraversal<S, E> sideEffect(final Consumer<Traverser<E>> consumer) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sideEffect, consumer);
         return this.asAdmin().addStep(new LambdaSideEffectStep<>(this.asAdmin(), consumer));
     }
 
-    public default FuseGraphTraversal<S, E> sideEffect(final Traversal<?, ?> sideEffectTraversal) {
+    default FuseGraphTraversal<S, E> sideEffect(final Traversal<?, ?> sideEffectTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sideEffect, sideEffectTraversal);
         return this.asAdmin().addStep(new TraversalSideEffectStep<>(this.asAdmin(), (Traversal) sideEffectTraversal));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> cap(final String sideEffectKey, final String... sideEffectKeys) {
+    default <E2> FuseGraphTraversal<S, E2> cap(final String sideEffectKey, final String... sideEffectKeys) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.cap, sideEffectKey, sideEffectKeys);
         return this.asAdmin().addStep(new SideEffectCapStep<>(this.asAdmin(), sideEffectKey, sideEffectKeys));
     }
 
-    public default FuseGraphTraversal<S, Edge> subgraph(final String sideEffectKey) {
+    default FuseGraphTraversal<S, Edge> subgraph(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.subgraph, sideEffectKey);
         return this.asAdmin().addStep(new SubgraphStep(this.asAdmin(), sideEffectKey));
     }
 
-    public default FuseGraphTraversal<S, E> aggregate(final String sideEffectKey) {
+    default FuseGraphTraversal<S, E> aggregate(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.aggregate, sideEffectKey);
         return this.asAdmin().addStep(new AggregateStep<>(this.asAdmin(), sideEffectKey));
     }
 
-    public default FuseGraphTraversal<S, E> group(final String sideEffectKey) {
+    default FuseGraphTraversal<S, E> group(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.group, sideEffectKey);
         return this.asAdmin().addStep(new GroupSideEffectStep<>(this.asAdmin(), sideEffectKey));
     }
@@ -1089,22 +978,22 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
     /**
      * @deprecated As of release 3.1.0, replaced by {@link #group(String)}.
      */
-    public default FuseGraphTraversal<S, E> groupV3d0(final String sideEffectKey) {
+    default FuseGraphTraversal<S, E> groupV3d0(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.groupV3d0, sideEffectKey);
         return this.asAdmin().addStep(new GroupSideEffectStepV3d0<>(this.asAdmin(), sideEffectKey));
     }
 
-    public default FuseGraphTraversal<S, E> groupCount(final String sideEffectKey) {
+    default FuseGraphTraversal<S, E> groupCount(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.groupCount, sideEffectKey);
         return this.asAdmin().addStep(new GroupCountSideEffectStep<>(this.asAdmin(), sideEffectKey));
     }
 
-    public default FuseGraphTraversal<S, E> tree(final String sideEffectKey) {
+    default FuseGraphTraversal<S, E> tree(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.tree, sideEffectKey);
         return this.asAdmin().addStep(new TreeSideEffectStep<>(this.asAdmin(), sideEffectKey));
     }
 
-    public default <V, U> FuseGraphTraversal<S, E> sack(final BiFunction<V, U, V> sackOperator) {
+    default <V, U> FuseGraphTraversal<S, E> sack(final BiFunction<V, U, V> sackOperator) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.sack, sackOperator);
         return this.asAdmin().addStep(new SackValueStep<>(this.asAdmin(), sackOperator));
     }
@@ -1113,22 +1002,22 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @deprecated As of release 3.1.0, replaced by {@link #sack(BiFunction)} with {@link #by(String)}.
      */
     @Deprecated
-    public default <V, U> FuseGraphTraversal<S, E> sack(final BiFunction<V, U, V> sackOperator, final String elementPropertyKey) {
+    default <V, U> FuseGraphTraversal<S, E> sack(final BiFunction<V, U, V> sackOperator, final String elementPropertyKey) {
         return this.sack(sackOperator).by(elementPropertyKey);
     }
 
-    public default FuseGraphTraversal<S, E> store(final String sideEffectKey) {
+    default FuseGraphTraversal<S, E> store(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.store, sideEffectKey);
         return this.asAdmin().addStep(new StoreStep<>(this.asAdmin(), sideEffectKey));
     }
 
-    public default FuseGraphTraversal<S, E> profile(final String sideEffectKey) {
+    default FuseGraphTraversal<S, E> profile(final String sideEffectKey) {
         this.asAdmin().getBytecode().addStep(Traversal.Symbols.profile, sideEffectKey);
         return this.asAdmin().addStep(new ProfileSideEffectStep<>(this.asAdmin(), sideEffectKey));
     }
 
     @Override
-    public default FuseGraphTraversal<S, TraversalMetrics> profile() {
+    default FuseGraphTraversal<S, TraversalMetrics> profile() {
         return (FuseGraphTraversal<S, TraversalMetrics>) GraphTraversal.super.profile();
     }
 
@@ -1144,12 +1033,12 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * and when meta-properties are not included.
      *
      * @param cardinality the specified cardinality of the property where {@code null} will allow the {@link Graph}
-     *                    to use its default settings
+     *                    to use itsdefault settings
      * @param key         the key for the property
      * @param value       the value for the property
      * @param keyValues   any meta properties to be assigned to this property
      */
-    public default FuseGraphTraversal<S, E> property(final VertexProperty.Cardinality cardinality, final Object key, final Object value, final Object... keyValues) {
+    default FuseGraphTraversal<S, E> property(final VertexProperty.Cardinality cardinality, final Object key, final Object value, final Object... keyValues) {
         if (null == cardinality)
             this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.property, key, value, keyValues);
         else
@@ -1169,7 +1058,7 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
     /**
      * Sets the key and value of a {@link Property}. If the {@link Element} is a {@link VertexProperty} and the
      * {@link Graph} supports it, meta properties can be set.  Use of this method assumes that the
-     * {@link org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality} is defaulted to {@code null} which
+     * {@link org.apache.tinkerpop.gremlin.structure.VertexProperty.Cardinality} isdefaulted to {@code null} which
      * means that the default cardinality for the {@link Graph} will be used.
      * <p/>
      * This method is effectively calls
@@ -1180,7 +1069,7 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
      * @param value     the value for the property
      * @param keyValues any meta properties to be assigned to this property
      */
-    public default FuseGraphTraversal<S, E> property(final Object key, final Object value, final Object... keyValues) {
+    default FuseGraphTraversal<S, E> property(final Object key, final Object value, final Object... keyValues) {
         return key instanceof VertexProperty.Cardinality ?
                 this.property((VertexProperty.Cardinality) key, value, keyValues[0],
                         keyValues.length > 1 ?
@@ -1191,100 +1080,100 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
 
     ///////////////////// BRANCH STEPS /////////////////////
 
-    public default <M, E2> FuseGraphTraversal<S, E2> branch(final Traversal<?, M> branchTraversal) {
+    default <M, E2> FuseGraphTraversal<S, E2> branch(final Traversal<?, M> branchTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.branch, branchTraversal);
         final BranchStep<E, E2, M> branchStep = new BranchStep<>(this.asAdmin());
         branchStep.setBranchTraversal((Traversal.Admin<E, M>) branchTraversal);
         return this.asAdmin().addStep(branchStep);
     }
 
-    public default <M, E2> FuseGraphTraversal<S, E2> branch(final Function<Traverser<E>, M> function) {
+    default <M, E2> FuseGraphTraversal<S, E2> branch(final Function<Traverser<E>, M> function) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.branch, function);
         final BranchStep<E, E2, M> branchStep = new BranchStep<>(this.asAdmin());
         branchStep.setBranchTraversal((Traversal.Admin<E, M>) __.map(function));
         return this.asAdmin().addStep(branchStep);
     }
 
-    public default <M, E2> FuseGraphTraversal<S, E2> choose(final Traversal<?, M> choiceTraversal) {
+    default <M, E2> FuseGraphTraversal<S, E2> choose(final Traversal<?, M> choiceTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.choose, choiceTraversal);
         return this.asAdmin().addStep(new ChooseStep<>(this.asAdmin(), (Traversal.Admin<E, M>) choiceTraversal));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> choose(final Traversal<?, ?> traversalPredicate,
+    default <E2> FuseGraphTraversal<S, E2> choose(final Traversal<?, ?> traversalPredicate,
                                                      final Traversal<?, E2> trueChoice, final Traversal<?, E2> falseChoice) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.choose, traversalPredicate, trueChoice, falseChoice);
         return this.asAdmin().addStep(new ChooseStep<E, E2, Boolean>(this.asAdmin(), (Traversal.Admin<E, ?>) traversalPredicate, (Traversal.Admin<E, E2>) trueChoice, (Traversal.Admin<E, E2>) falseChoice));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> choose(final Traversal<?, ?> traversalPredicate,
+    default <E2> FuseGraphTraversal<S, E2> choose(final Traversal<?, ?> traversalPredicate,
                                                      final Traversal<?, E2> trueChoice) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.choose, traversalPredicate, trueChoice);
         return this.asAdmin().addStep(new ChooseStep<E, E2, Boolean>(this.asAdmin(), (Traversal.Admin<E, ?>) traversalPredicate, (Traversal.Admin<E, E2>) trueChoice, (Traversal.Admin<E, E2>) __.identity()));
     }
 
-    public default <M, E2> FuseGraphTraversal<S, E2> choose(final Function<E, M> choiceFunction) {
+    default <M, E2> FuseGraphTraversal<S, E2> choose(final Function<E, M> choiceFunction) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.choose, choiceFunction);
         return this.asAdmin().addStep(new ChooseStep<>(this.asAdmin(), (Traversal.Admin<E, M>) __.map(new FunctionTraverser<>(choiceFunction))));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> choose(final Predicate<E> choosePredicate,
+    default <E2> FuseGraphTraversal<S, E2> choose(final Predicate<E> choosePredicate,
                                                      final Traversal<?, E2> trueChoice, final Traversal<?, E2> falseChoice) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.choose, choosePredicate, trueChoice, falseChoice);
         return this.asAdmin().addStep(new ChooseStep<E, E2, Boolean>(this.asAdmin(), (Traversal.Admin<E, ?>) __.filter(new PredicateTraverser<>(choosePredicate)), (Traversal.Admin<E, E2>) trueChoice, (Traversal.Admin<E, E2>) falseChoice));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> choose(final Predicate<E> choosePredicate,
+    default <E2> FuseGraphTraversal<S, E2> choose(final Predicate<E> choosePredicate,
                                                      final Traversal<?, E2> trueChoice) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.choose, choosePredicate, trueChoice);
         return this.asAdmin().addStep(new ChooseStep<E, E2, Boolean>(this.asAdmin(), (Traversal.Admin<E, ?>) __.filter(new PredicateTraverser<>(choosePredicate)), (Traversal.Admin<E, E2>) trueChoice, (Traversal.Admin<E, E2>) __.identity()));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> optional(final Traversal<?, E2> optionalTraversal) {
+    default <E2> FuseGraphTraversal<S, E2> optional(final Traversal<?, E2> optionalTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.optional, optionalTraversal);
         return this.asAdmin().addStep(new ChooseStep<>(this.asAdmin(), (Traversal.Admin<E, ?>) optionalTraversal, (Traversal.Admin<E, E2>) optionalTraversal.asAdmin().clone(), (Traversal.Admin<E, E2>) __.<E2>identity()));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> union(final Traversal<?, E2>... unionTraversals) {
+    default <E2> FuseGraphTraversal<S, E2> union(final Traversal<?, E2>... unionTraversals) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.union, unionTraversals);
         return this.asAdmin().addStep(new UnionStep(this.asAdmin(), Arrays.copyOf(unionTraversals, unionTraversals.length, Traversal.Admin[].class)));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> coalesce(final Traversal<?, E2>... coalesceTraversals) {
+    default <E2> FuseGraphTraversal<S, E2> coalesce(final Traversal<?, E2>... coalesceTraversals) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.coalesce, coalesceTraversals);
         return this.asAdmin().addStep(new CoalesceStep(this.asAdmin(), Arrays.copyOf(coalesceTraversals, coalesceTraversals.length, Traversal.Admin[].class)));
     }
 
-    public default FuseGraphTraversal<S, E> repeat(final Traversal<?, E> repeatTraversal) {
+    default FuseGraphTraversal<S, E> repeat(final Traversal<?, E> repeatTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.repeat, repeatTraversal);
         return RepeatStep.addRepeatToTraversal(this, (Traversal.Admin<E, E>) repeatTraversal);
     }
 
-    public default FuseGraphTraversal<S, E> emit(final Traversal<?, ?> emitTraversal) {
+    default FuseGraphTraversal<S, E> emit(final Traversal<?, ?> emitTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.emit, emitTraversal);
         return RepeatStep.addEmitToTraversal(this, (Traversal.Admin<E, ?>) emitTraversal);
     }
 
-    public default FuseGraphTraversal<S, E> emit(final Predicate<Traverser<E>> emitPredicate) {
+    default FuseGraphTraversal<S, E> emit(final Predicate<Traverser<E>> emitPredicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.emit, emitPredicate);
         return RepeatStep.addEmitToTraversal(this, (Traversal.Admin<E, ?>) __.filter(emitPredicate));
     }
 
-    public default FuseGraphTraversal<S, E> emit() {
+    default FuseGraphTraversal<S, E> emit() {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.emit);
         return RepeatStep.addEmitToTraversal(this, TrueTraversal.instance());
     }
 
-    public default FuseGraphTraversal<S, E> until(final Traversal<?, ?> untilTraversal) {
+    default FuseGraphTraversal<S, E> until(final Traversal<?, ?> untilTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.until, untilTraversal);
         return RepeatStep.addUntilToTraversal(this, (Traversal.Admin<E, ?>) untilTraversal);
     }
 
-    public default FuseGraphTraversal<S, E> until(final Predicate<Traverser<E>> untilPredicate) {
+    default FuseGraphTraversal<S, E> until(final Predicate<Traverser<E>> untilPredicate) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.until, untilPredicate);
         return RepeatStep.addEmitToTraversal(this, (Traversal.Admin<E, ?>) __.filter(untilPredicate));
     }
 
-    public default FuseGraphTraversal<S, E> times(final int maxLoops) {
+    default FuseGraphTraversal<S, E> times(final int maxLoops) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.times, maxLoops);
         if (this.asAdmin().getEndStep() instanceof TimesModulating) {
             ((TimesModulating) this.asAdmin().getEndStep()).modulateTimes(maxLoops);
@@ -1293,34 +1182,34 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
             return RepeatStep.addUntilToTraversal(this, new LoopTraversal<>(maxLoops));
     }
 
-    public default <E2> FuseGraphTraversal<S, E2> local(final Traversal<?, E2> localTraversal) {
+    default <E2> FuseGraphTraversal<S, E2> local(final Traversal<?, E2> localTraversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.local, localTraversal);
         return this.asAdmin().addStep(new LocalStep<>(this.asAdmin(), localTraversal.asAdmin()));
     }
 
     /////////////////// VERTEX PROGRAM STEPS ////////////////
 
-    public default FuseGraphTraversal<S, E> pageRank() {
+    default FuseGraphTraversal<S, E> pageRank() {
         return this.pageRank(0.85d);
     }
 
-    public default FuseGraphTraversal<S, E> pageRank(final double alpha) {
+    default FuseGraphTraversal<S, E> pageRank(final double alpha) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.pageRank, alpha);
         return this.asAdmin().addStep((Step<E, E>) new PageRankVertexProgramStep(this.asAdmin(), alpha));
     }
 
-    public default FuseGraphTraversal<S, E> peerPressure() {
+    default FuseGraphTraversal<S, E> peerPressure() {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.peerPressure);
         return this.asAdmin().addStep((Step<E, E>) new PeerPressureVertexProgramStep(this.asAdmin()));
     }
 
-    public default FuseGraphTraversal<S, E> program(final VertexProgram<?> vertexProgram) {
+    default FuseGraphTraversal<S, E> program(final VertexProgram<?> vertexProgram) {
         return this.asAdmin().addStep((Step<E, E>) new ProgramVertexProgramStep(this.asAdmin(), vertexProgram));
     }
 
     ///////////////////// UTILITY STEPS /////////////////////
 
-    public default FuseGraphTraversal<S, E> as(final String stepLabel, final String... stepLabels) {
+    default FuseGraphTraversal<S, E> as(final String stepLabel, final String... stepLabels) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.as, stepLabel, stepLabels);
         if (this.asAdmin().getSteps().size() == 0) this.asAdmin().addStep(new StartStep<>(this.asAdmin()));
         final Step<?, E> endStep = this.asAdmin().getEndStep();
@@ -1331,16 +1220,16 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
         return this;
     }
 
-    public default FuseGraphTraversal<S, E> barrier() {
+    default FuseGraphTraversal<S, E> barrier() {
         return this.barrier(Integer.MAX_VALUE);
     }
 
-    public default FuseGraphTraversal<S, E> barrier(final int maxBarrierSize) {
+    default FuseGraphTraversal<S, E> barrier(final int maxBarrierSize) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.barrier, maxBarrierSize);
         return this.asAdmin().addStep(new NoOpBarrierStep<>(this.asAdmin(), maxBarrierSize));
     }
 
-    public default FuseGraphTraversal<S, E> barrier(final Consumer<TraverserSet<Object>> barrierConsumer) {
+    default FuseGraphTraversal<S, E> barrier(final Consumer<TraverserSet<Object>> barrierConsumer) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.barrier, barrierConsumer);
         return this.asAdmin().addStep(new LambdaCollectingBarrierStep<>(this.asAdmin(), (Consumer) barrierConsumer, Integer.MAX_VALUE));
     }
@@ -1348,31 +1237,31 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
 
     //// BY-MODULATORS
 
-    public default FuseGraphTraversal<S, E> by() {
+    default FuseGraphTraversal<S, E> by() {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy();
         return this;
     }
 
-    public default FuseGraphTraversal<S, E> by(final Traversal<?, ?> traversal) {
+    default FuseGraphTraversal<S, E> by(final Traversal<?, ?> traversal) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, traversal);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(traversal.asAdmin());
         return this;
     }
 
-    public default FuseGraphTraversal<S, E> by(final T token) {
+    default FuseGraphTraversal<S, E> by(final T token) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, token);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(token);
         return this;
     }
 
-    public default FuseGraphTraversal<S, E> by(final String key) {
+    default FuseGraphTraversal<S, E> by(final String key) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, key);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(key);
         return this;
     }
 
-    public default <V> FuseGraphTraversal<S, E> by(final Function<V, Object> function) {
+    default <V> FuseGraphTraversal<S, E> by(final Function<V, Object> function) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, function);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(function);
         return this;
@@ -1380,41 +1269,41 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
 
     //// COMPARATOR BY-MODULATORS
 
-    public default <V> FuseGraphTraversal<S, E> by(final Traversal<?, ?> traversal, final Comparator<V> comparator) {
+    default <V> FuseGraphTraversal<S, E> by(final Traversal<?, ?> traversal, final Comparator<V> comparator) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, traversal, comparator);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(traversal.asAdmin(), comparator);
         return this;
     }
 
-    public default FuseGraphTraversal<S, E> by(final Comparator<E> comparator) {
+    default FuseGraphTraversal<S, E> by(final Comparator<E> comparator) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, comparator);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(comparator);
         return this;
     }
 
-    public default FuseGraphTraversal<S, E> by(final Order order) {
+    default FuseGraphTraversal<S, E> by(final Order order) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, order);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(order);
         return this;
     }
 
-    public default <V> FuseGraphTraversal<S, E> by(final String key, final Comparator<V> comparator) {
+    default <V> FuseGraphTraversal<S, E> by(final String key, final Comparator<V> comparator) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, key, comparator);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(key, comparator);
         return this;
     }
 
-    /*public default <V> GraphTraversal<S, E> by(final Column column, final Comparator<V> comparator) {
+    /*default <V> GraphTraversal<S, E> by(final Column column, final Comparator<V> comparator) {
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(column, comparator);
         return this;
     }
 
-    public default <V> GraphTraversal<S, E> by(final T token, final Comparator<V> comparator) {
+    default <V> GraphTraversal<S, E> by(final T token, final Comparator<V> comparator) {
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(token, comparator);
         return this;
     }*/
 
-    public default <U> FuseGraphTraversal<S, E> by(final Function<U, Object> function, final Comparator comparator) {
+    default <U> FuseGraphTraversal<S, E> by(final Function<U, Object> function, final Comparator comparator) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.by, function, comparator);
         ((ByModulating) this.asAdmin().getEndStep()).modulateBy(function, comparator);
         return this;
@@ -1422,13 +1311,13 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
 
     ////
 
-    public default <M, E2> FuseGraphTraversal<S, E> option(final M pickToken, final Traversal<E, E2> traversalOption) {
+    default <M, E2> FuseGraphTraversal<S, E> option(final M pickToken, final Traversal<E, E2> traversalOption) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.option, pickToken, traversalOption);
         ((TraversalOptionParent<M, E, E2>) this.asAdmin().getEndStep()).addGlobalChildOption(pickToken, traversalOption.asAdmin());
         return this;
     }
 
-    public default <E2> FuseGraphTraversal<S, E> option(final Traversal<E, E2> traversalOption) {
+    default <E2> FuseGraphTraversal<S, E> option(final Traversal<E, E2> traversalOption) {
         this.asAdmin().getBytecode().addStep(GraphTraversal.Symbols.option, traversalOption);
         return this.option(TraversalOptionParent.Pick.any, traversalOption.asAdmin());
     }
@@ -1436,14 +1325,14 @@ public interface FuseGraphTraversal<S, E> extends GraphTraversal<S, E> {
     ////
 
     @Override
-    public default FuseGraphTraversal<S, E> iterate() {
+    default FuseGraphTraversal<S, E> iterate() {
         GraphTraversal.super.iterate();
         return this;
     }
 
     ////
 
-    public static final class Symbols {
+     static final class Symbols {
 
         private Symbols() {
             // static fields only
