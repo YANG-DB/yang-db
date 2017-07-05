@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -10,7 +10,6 @@ import javaslang.Tuple2;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;

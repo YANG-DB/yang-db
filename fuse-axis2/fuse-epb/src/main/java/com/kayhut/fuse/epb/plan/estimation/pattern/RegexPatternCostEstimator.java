@@ -3,7 +3,7 @@ package com.kayhut.fuse.epb.plan.estimation.pattern;
 import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
-import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;

@@ -12,7 +12,7 @@ public class JoinOp extends EntityOp {
     private Plan rightBranch;
 
     public JoinOp(Plan leftBranch, Plan rightBranch) {
-        super(((EntityOp)Iterables.getLast(leftBranch.getOps())).getAsgEBase());
+        super(PlanUtil.last(leftBranch, EntityOp.class).get().getAsgEBase());
         this.leftBranch = leftBranch;
         this.rightBranch = rightBranch;
     }
