@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.execution.plan.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -205,8 +206,8 @@ public interface PlanMockUtils {
 
         public PlanWithCost<Plan, PlanDetailedCost> oldPlanWithCost(long globalCost, long total) {
             DoubleCost cost = new DoubleCost(globalCost );
-            List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts = Stream.ofAll(oldPlan.getOps())
-                    .map(planOp -> new PlanWithCost<>(new Plan(planOp), new CountEstimatesCost(getCost(planOp).getCost(), total)))
+            List<PlanWithCost<Plan, Cost>> planStepCosts = Stream.ofAll(oldPlan.getOps())
+                    .map(planOp -> new PlanWithCost<Plan, Cost>(new Plan(planOp), new CountEstimatesCost(getCost(planOp).getCost(), total)))
                     .toJavaList();
 
             return new PlanWithCost<>(oldPlan, new PlanDetailedCost(cost, planStepCosts));

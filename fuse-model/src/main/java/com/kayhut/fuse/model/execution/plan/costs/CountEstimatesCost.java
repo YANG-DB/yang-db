@@ -57,6 +57,11 @@ public class CountEstimatesCost implements Cost {
     }
     //endregion
 
+    @Override
+    public Object clone() {
+        return new CountEstimatesCost(cost, countEstimates);
+    }
+
     //region Properties
     public double getCost() {
         return cost;

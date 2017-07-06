@@ -16,7 +16,7 @@ public class PlanDetailedCost implements Cost {
     public PlanDetailedCost() {
     }
 
-    public PlanDetailedCost(DoubleCost globalCost, Iterable<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts) {
+    public PlanDetailedCost(DoubleCost globalCost, Iterable<PlanWithCost<Plan, Cost>> planStepCosts) {
         this.globalCost = globalCost;
         this.planStepCosts = planStepCosts;
     }
@@ -39,18 +39,18 @@ public class PlanDetailedCost implements Cost {
         return Collections.emptyList();
     }
 
-    public Iterable<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCosts() {
+    public Iterable<PlanWithCost<Plan, Cost>> getPlanStepCosts() {
         return planStepCosts;
     }
 
-    public Optional<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCost(PlanOpBase planOp) {
+    public Optional<PlanWithCost<Plan, Cost>> getPlanStepCost(PlanOpBase planOp) {
         return Stream.ofAll(planStepCosts).filter(pc -> pc.getPlan().getOps().contains(planOp)).toJavaOptional();
     }
     //endregion
 
     //region Fields
     private DoubleCost globalCost;
-    private Iterable<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts;
+    private Iterable<PlanWithCost<Plan, Cost>> planStepCosts;
     //endregion
 
 
@@ -60,5 +60,15 @@ public class PlanDetailedCost implements Cost {
                 "plan:" + fullPattern(getPlanOps()) + "," + "\n" +
                 "estimation:" + (globalCost != null ? globalCost.toString() + "\n" : "")
                 + " } ";
+    }
+
+    @Override
+    public Object clone() {
+        return new PlanDetailedCost(globalCost, planStepCosts);
+    }
+
+    @Override
+    public double getCost() {
+        return globalCost.cost;
     }
 }

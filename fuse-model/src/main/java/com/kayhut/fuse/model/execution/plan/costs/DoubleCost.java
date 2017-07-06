@@ -16,6 +16,11 @@ public class DoubleCost implements Cost {
     }
     //endregion
 
+    @Override
+    public Object clone() {
+        return new DoubleCost(cost);
+    }
+
     //region Properties
     public double getCost() {
         return cost;
