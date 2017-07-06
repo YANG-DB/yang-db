@@ -8,13 +8,14 @@ import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
 /**
  * Created by moti on 29/05/2017.
  */
-public class EntityPatternCostEstimator implements PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
+public class EntityPatternCostEstimator implements PatternCostEstimator<Plan, Cost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Constructors
     public EntityPatternCostEstimator(StatisticsProviderFactory statisticsProviderFactory, OntologyProvider ontologyProvider) {
         this.statisticsProviderFactory = statisticsProviderFactory;
@@ -24,7 +25,7 @@ public class EntityPatternCostEstimator implements PatternCostEstimator<Plan, Co
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public PatternCostEstimator.Result<Plan, CountEstimatesCost> estimate(
+    public PatternCostEstimator.Result<Plan, Cost> estimate(
             Pattern pattern,
             IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
         if (!EntityPattern.class.isAssignableFrom(pattern.getClass())) {

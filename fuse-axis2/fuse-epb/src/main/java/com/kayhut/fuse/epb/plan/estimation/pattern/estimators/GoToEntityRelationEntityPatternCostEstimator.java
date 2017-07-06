@@ -10,13 +10,14 @@ import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
 /**
  * Created by moti on 29/05/2017.
  */
-public class GoToEntityRelationEntityPatternCostEstimator implements PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
+public class GoToEntityRelationEntityPatternCostEstimator implements PatternCostEstimator<Plan, Cost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Constructors
     public GoToEntityRelationEntityPatternCostEstimator(
             EntityRelationEntityPatternCostEstimator entityRelationEntityPatternCostEstimator) {
@@ -26,7 +27,7 @@ public class GoToEntityRelationEntityPatternCostEstimator implements PatternCost
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public PatternCostEstimator.Result<Plan, CountEstimatesCost> estimate(
+    public PatternCostEstimator.Result<Plan, Cost> estimate(
             Pattern pattern,
             IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
         if (!GoToEntityRelationEntityPattern.class.isAssignableFrom(pattern.getClass())) {
@@ -35,7 +36,7 @@ public class GoToEntityRelationEntityPatternCostEstimator implements PatternCost
 
         GoToEntityRelationEntityPattern goToEntityRelationEntityPattern = (GoToEntityRelationEntityPattern) pattern;
 
-        PatternCostEstimator.Result<Plan, CountEstimatesCost> result =
+        PatternCostEstimator.Result<Plan, Cost> result =
                 this.entityRelationEntityPatternCostEstimator.estimate(goToEntityRelationEntityPattern, context);
 
         CountEstimatesCost gotoCost = new CountEstimatesCost(0, 0);

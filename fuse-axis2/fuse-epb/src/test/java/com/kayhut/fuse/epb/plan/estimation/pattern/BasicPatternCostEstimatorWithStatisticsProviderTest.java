@@ -16,6 +16,7 @@ import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -105,7 +106,7 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
     @Test
     public void calculateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
-        PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
+        PatternCostEstimator<Plan, Cost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
                 new M1PatternCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, (id) -> Optional.of(ont.get()));
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
@@ -115,8 +116,8 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
         EntityOp entityOp = new EntityOp();
         entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
         map.put(RegexPatternCostEstimator.PatternPart.ENTITY_ONLY, entityOp);
-        PatternCostEstimator.Result<Plan, CountEstimatesCost> estimate = estimator.estimate(Pattern.buildEntityPattern(map), new IncrementalEstimationContext<>(Optional.empty(), query));
-        List<PlanWithCost<Plan, CountEstimatesCost>> costs = estimate.getPlanStepCosts();
+        PatternCostEstimator.Result<Plan, Cost> estimate = estimator.estimate(Pattern.buildEntityPattern(map), new IncrementalEstimationContext<>(Optional.empty(), query));
+        List<PlanWithCost<Plan, Cost>> costs = estimate.getPlanStepCosts();
 
         Assert.assertNotNull(costs);
         Assert.assertEquals(costs.size(),1);
@@ -138,7 +139,7 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
         Plan plan = builder.plan();
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(builder));
 
-        PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
+        PatternCostEstimator<Plan, Cost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
                 new M1PatternCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, (id) -> Optional.of(ont.get()));
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();

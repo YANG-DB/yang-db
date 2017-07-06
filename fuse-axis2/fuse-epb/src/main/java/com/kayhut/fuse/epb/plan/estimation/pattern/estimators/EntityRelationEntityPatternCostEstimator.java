@@ -9,10 +9,7 @@ import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
-import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
-import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
-import com.kayhut.fuse.model.execution.plan.costs.DetailedCost;
-import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.costs.*;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.query.properties.*;
 
@@ -24,7 +21,7 @@ import java.util.stream.Collectors;
  * Created by moti on 29/05/2017.
  *
  */
-public class EntityRelationEntityPatternCostEstimator implements PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
+public class EntityRelationEntityPatternCostEstimator implements PatternCostEstimator<Plan, Cost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Static
     /**
      * ********************************************************
@@ -55,7 +52,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
      * @param step
      * @return
      */
-    public static PatternCostEstimator.Result<Plan, CountEstimatesCost> calculateFullStep(
+    public static PatternCostEstimator.Result<Plan, Cost> calculateFullStep(
             CostEstimationConfig config,
             StatisticsProvider statisticsProvider,
             PlanWithCost<Plan, PlanDetailedCost> previousPlanCost,
@@ -69,7 +66,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         RelationFilterOp relationFilter = step.getRelFilter();
 
         PlanDetailedCost previousCost = previousPlanCost.getCost();
-        CountEstimatesCost entityOneCost = previousCost.getPlanStepCost(start).get().getCost();
+        CountEstimatesCost entityOneCost = (CountEstimatesCost) previousCost.getPlanStepCost(start).get().getCost();
 
         //edge estimate =>
         Direction direction = Direction.of(rel.getAsgEBase().geteBase().getDir());
@@ -117,13 +114,13 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
 
         CountEstimatesCost newEntityOneCost = new CountEstimatesCost(entityOneCost.getCost(), N1);
         newEntityOneCost.push(N1*lambda);
-        PlanWithCost<Plan, CountEstimatesCost> entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
+        PlanWithCost<Plan, Cost> entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
 
         CountEstimatesCost newRelCost = new CountEstimatesCost(relCost.getCost(), R);
-        PlanWithCost<Plan, CountEstimatesCost> relPlanCost = new PlanWithCost<>(new Plan(rel, relationFilter), newRelCost);
+        PlanWithCost<Plan, Cost> relPlanCost = new PlanWithCost<>(new Plan(rel, relationFilter), newRelCost);
 
         CountEstimatesCost entityTwoCost = new CountEstimatesCost(N2, N2);
-        PlanWithCost<Plan, CountEstimatesCost> entityTwoOpCost = new PlanWithCost<>(new Plan(end, endFilter), entityTwoCost);
+        PlanWithCost<Plan, Cost> entityTwoOpCost = new PlanWithCost<>(new Plan(end, endFilter), entityTwoCost);
 
         return PatternCostEstimator.Result.of(lambda, entityOnePlanCost, relPlanCost, entityTwoOpCost);
     }
@@ -142,7 +139,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
 
     //region StepPatternCostEstimator Implementation
     @Override
-    public PatternCostEstimator.Result<Plan, CountEstimatesCost> estimate(Pattern pattern, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
+    public PatternCostEstimator.Result<Plan, Cost> estimate(Pattern pattern, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
         if (!EntityRelationEntityPattern.class.isAssignableFrom(pattern.getClass())) {
             return PatternCostEstimator.EmptyResult.get();
         }

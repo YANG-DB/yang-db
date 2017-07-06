@@ -9,6 +9,7 @@ import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -209,7 +210,7 @@ public class StatisticalCostEstimatorTests {
 
         Assert.assertEquals(estimate.getCost().getGlobalCost().cost,new DoubleCost(51.06).cost, 0.1);
 
-        Assert.assertEquals(250, newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getCost().peek(), 0);
+        Assert.assertEquals(250, ((CountEstimatesCost)newArrayList(estimate.getCost().getPlanStepCosts()).get(0).getCost()).peek(), 0);
 
     }
 

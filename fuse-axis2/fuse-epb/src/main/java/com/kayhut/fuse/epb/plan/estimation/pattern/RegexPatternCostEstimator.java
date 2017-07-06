@@ -9,6 +9,7 @@ import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -121,7 +122,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
     //region Constructors
     @Inject
-    public RegexPatternCostEstimator(PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator) {
+    public RegexPatternCostEstimator(PatternCostEstimator<Plan, Cost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator) {
         this.estimator = estimator;
     }
     //endregion
@@ -148,7 +149,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
                                 regexPattern.equals(Pattern.ENTITY_RELATION_ENTITY) ? buildEntityRelationEntityPattern(patternParts) :
                                 regexPattern.equals(Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) : null;
 
-                PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(pattern, context);
+                PatternCostEstimator.Result<Plan, Cost> result = estimator.estimate(pattern, context);
 
                 newPlan = buildNewPlan(result, context.getPreviousCost());
                 break;
@@ -176,17 +177,17 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         return Plan.empty();
     }
     private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(
-            PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
+            PatternCostEstimator.Result<Plan, Cost> result,
             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
 
         DoubleCost previousPlanGlobalCost;
-        List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
+        List<PlanWithCost<Plan, Cost>> previousPlanStepCosts;
         if (previousCost.isPresent()) {
             previousPlanGlobalCost = previousCost.get().getCost().getGlobalCost();
             previousPlanStepCosts = Stream.ofAll(previousCost.get().getCost().getPlanStepCosts())
                     .map(planStepCost -> new PlanWithCost<>(
                             planStepCost.getPlan(),
-                            new CountEstimatesCost(planStepCost.getCost().getCost(), planStepCost.getCost().getCountEstimates())))
+                            (Cost)planStepCost.getCost().clone()))
                     .toJavaList();
         } else {
             previousPlanGlobalCost = new DoubleCost(0);
@@ -195,12 +196,16 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
         double lambda = result.lambda();
         previousPlanStepCosts.forEach(planStepCost -> {
-            if(planStepCost.getPlan().getOps().get(0).getClass().equals(EntityOp.class)) {
+            /*if(planStepCost.getPlan().getOps().get(0).getClass().equals(EntityOp.class)) {
                 planStepCost.getCost().push(planStepCost.getCost().peek() * lambda);
+            }*/
+            if(planStepCost.getCost().getClass().isAssignableFrom(CountEstimatesCost.class)){
+                CountEstimatesCost cost = (CountEstimatesCost) planStepCost.getCost();
+                cost.push(cost.peek()*lambda);
             }
         });
 
-        List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts =
+        List<PlanWithCost<Plan, Cost>> planStepCosts =
                 Stream.ofAll(result.getPlanStepCosts())
                 .filter(planStepCost -> !previousCost.isPresent() ||
                         !PlanUtil.first(previousCost.get().getPlan(), planStepCost.getPlan().getOps().get(0)).isPresent())
@@ -208,7 +213,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
         double sumOfPlanStepCosts = Stream.ofAll(planStepCosts).map(planStepCost -> planStepCost.getCost().getCost()).sum().doubleValue();
         double newCost = previousPlanGlobalCost.getCost() + sumOfPlanStepCosts;
-        List<PlanWithCost<Plan, CountEstimatesCost>> newPlanStepCosts = Stream.ofAll(previousPlanStepCosts).appendAll(planStepCosts).toJavaList();
+        List<PlanWithCost<Plan, Cost>> newPlanStepCosts = Stream.ofAll(previousPlanStepCosts).appendAll(planStepCosts).toJavaList();
 
         Plan newPlan = new Plan(Stream.ofAll(newPlanStepCosts).flatMap(planStepCost -> Stream.ofAll(planStepCost.getPlan().getOps())).toJavaList());
         PlanDetailedCost newDetailedCost = new PlanDetailedCost(new DoubleCost(newCost), newPlanStepCosts);
@@ -232,6 +237,6 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
     //endregion
 
     //region Fields
-    private PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator;
+    private PatternCostEstimator<Plan, Cost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator;
     //endregion
 }
