@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
