@@ -1,14 +1,9 @@
-package com.kayhut.fuse.unipop.controller.search.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.search.appender.SearchAppender;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.internal.matchers.Any;
 
-import static org.mockito.Matchers.booleanThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

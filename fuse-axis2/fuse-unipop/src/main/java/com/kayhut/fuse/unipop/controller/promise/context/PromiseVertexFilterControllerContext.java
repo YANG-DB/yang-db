@@ -1,6 +1,5 @@
-package com.kayhut.fuse.unipop.controller.context;
+package com.kayhut.fuse.unipop.controller.promise.context;
 
-import com.carrotsearch.hppc.HashContainers;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;

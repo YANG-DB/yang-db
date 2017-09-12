@@ -1,14 +1,10 @@
-package com.kayhut.fuse.unipop.controller.search.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
-import com.kayhut.fuse.unipop.controller.context.PromiseVertexFilterControllerContext;
-import com.kayhut.fuse.unipop.controller.context.SelectContext;
+import com.kayhut.fuse.unipop.controller.promise.context.SelectContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.predicates.SelectP;
-import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
-
-import java.util.function.BiPredicate;
 
 /**
  * Created by Roman on 24/05/2017.

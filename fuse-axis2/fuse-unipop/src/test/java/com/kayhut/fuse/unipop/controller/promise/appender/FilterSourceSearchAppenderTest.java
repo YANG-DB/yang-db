@@ -1,6 +1,6 @@
-package com.kayhut.fuse.unipop.controller.search.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
-import com.kayhut.fuse.unipop.controller.context.SelectContext;
+import com.kayhut.fuse.unipop.controller.promise.context.SelectContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import javaslang.collection.Stream;

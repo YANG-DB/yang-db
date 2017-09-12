@@ -1,8 +1,7 @@
-package com.kayhut.fuse.unipop.controller.search.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
-import com.kayhut.fuse.unipop.controller.context.SizeAppenderContext;
+import com.kayhut.fuse.unipop.controller.promise.context.SizeAppenderContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 
 /**

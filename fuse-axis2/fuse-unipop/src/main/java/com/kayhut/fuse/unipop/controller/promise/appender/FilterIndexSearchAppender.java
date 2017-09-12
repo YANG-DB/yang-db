@@ -1,13 +1,12 @@
-package com.kayhut.fuse.unipop.controller.search.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
-import com.kayhut.fuse.unipop.controller.context.PromiseVertexFilterControllerContext;
+import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.structure.Element;
 
 import java.util.List;
 import java.util.Optional;

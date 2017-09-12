@@ -1,7 +1,7 @@
-package com.kayhut.fuse.unipop.controller.search.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
 import com.google.common.collect.Lists;
-import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
+import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalPredicateByKeyProvider;

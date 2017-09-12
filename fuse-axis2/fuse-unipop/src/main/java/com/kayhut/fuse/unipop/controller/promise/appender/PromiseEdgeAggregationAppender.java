@@ -1,7 +1,7 @@
-package com.kayhut.fuse.unipop.controller.search.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
-import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 
 /**
