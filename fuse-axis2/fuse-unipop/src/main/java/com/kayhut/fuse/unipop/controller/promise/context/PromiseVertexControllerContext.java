@@ -1,7 +1,9 @@
 package com.kayhut.fuse.unipop.controller.promise.context;
 
+import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.Optional;
 /**
  * Created by Elad on 4/26/2017.
  */
-public class PromiseVertexControllerContext implements EdgeConstraintContext{
+public class PromiseVertexControllerContext implements ConstraintContext {
 
     private List<Vertex> startVertices;
     private Optional<TraversalConstraint> edgeConstraint;
@@ -28,11 +30,17 @@ public class PromiseVertexControllerContext implements EdgeConstraintContext{
         return startVertices;
     }
 
-    public Optional<TraversalConstraint> getEdgeConstraint() {
+    public Optional<TraversalConstraint> getConstraint() {
         return edgeConstraint;
     }
 
-    public GraphElementSchemaProvider getSchema() {
-        return schema;
+    @Override
+    public ElementType getElementType() {
+        return ElementType.edge;
+    }
+
+    @Override
+    public GraphElementSchemaProvider getSchemaProvider() {
+        return this.schema;
     }
 }

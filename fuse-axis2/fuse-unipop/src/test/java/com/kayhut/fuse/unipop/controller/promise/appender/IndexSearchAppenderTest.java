@@ -4,6 +4,8 @@ import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
+import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -32,18 +34,27 @@ public class IndexSearchAppenderTest {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Dragon"));
-        PromiseElementControllerContext promiseElementControllerContext = new
-                PromiseElementControllerContext(
-                    Collections.emptyList(),
-                    Optional.of(traversalConstraint),
-                    Collections.emptyList(),
-                    schemaProvider,
-                    ElementType.vertex,
-                    mock(SearchQuery.class));
+
+        ConstraintContext constraintContext = new ConstraintContext() {
+            @Override
+            public Optional<TraversalConstraint> getConstraint() {
+                return Optional.of(traversalConstraint);
+            }
+
+            @Override
+            public ElementType getElementType() {
+                return ElementType.vertex;
+            }
+
+            @Override
+            public GraphElementSchemaProvider getSchemaProvider() {
+                return schemaProvider;
+            }
+        };
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
-        boolean appendResult = indexSearchAppender.append(searchBuilder,promiseElementControllerContext);
+        boolean appendResult = indexSearchAppender.append(searchBuilder, constraintContext);
 
         assertEquals(appendResult, true);
         assertEquals(2,searchBuilder.getIndices().size());
@@ -57,18 +68,27 @@ public class IndexSearchAppenderTest {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Person"));
-        PromiseElementControllerContext promiseElementControllerContext = new
-                PromiseElementControllerContext(
-                    Collections.emptyList(),
-                    Optional.of(traversalConstraint),
-                    Collections.emptyList(),
-                    schemaProvider,
-                    ElementType.vertex,
-                    mock(SearchQuery.class));
+
+        ConstraintContext constraintContext = new ConstraintContext() {
+            @Override
+            public Optional<TraversalConstraint> getConstraint() {
+                return Optional.of(traversalConstraint);
+            }
+
+            @Override
+            public ElementType getElementType() {
+                return ElementType.vertex;
+            }
+
+            @Override
+            public GraphElementSchemaProvider getSchemaProvider() {
+                return schemaProvider;
+            }
+        };
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
-        boolean appendResult = indexSearchAppender.append(searchBuilder,promiseElementControllerContext);
+        boolean appendResult = indexSearchAppender.append(searchBuilder, constraintContext);
 
         assertEquals(appendResult, true);
         assertEquals(1,searchBuilder.getIndices().size());
@@ -82,18 +102,27 @@ public class IndexSearchAppenderTest {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("color","sheker"));
-        PromiseElementControllerContext promiseElementControllerContext = new
-                PromiseElementControllerContext(
-                    Collections.emptyList(),
-                    Optional.of(traversalConstraint),
-                    Collections.emptyList(),
-                    schemaProvider,
-                    ElementType.vertex,
-                    mock(SearchQuery.class));
+
+        ConstraintContext constraintContext = new ConstraintContext() {
+            @Override
+            public Optional<TraversalConstraint> getConstraint() {
+                return Optional.of(traversalConstraint);
+            }
+
+            @Override
+            public ElementType getElementType() {
+                return ElementType.vertex;
+            }
+
+            @Override
+            public GraphElementSchemaProvider getSchemaProvider() {
+                return schemaProvider;
+            }
+        };
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
-        boolean appendResult = indexSearchAppender.append(searchBuilder,promiseElementControllerContext);
+        boolean appendResult = indexSearchAppender.append(searchBuilder, constraintContext);
 
         assertEquals(appendResult, true);
         assertEquals(3,searchBuilder.getIndices().size());

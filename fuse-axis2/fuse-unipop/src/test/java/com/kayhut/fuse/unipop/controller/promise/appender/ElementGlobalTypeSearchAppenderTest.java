@@ -4,9 +4,12 @@ import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
+import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.Constraint;
+import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
@@ -34,13 +37,23 @@ public class ElementGlobalTypeSearchAppenderTest {
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         ElementGlobalTypeSearchAppender appender = new ElementGlobalTypeSearchAppender();
-        boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
-                Collections.emptyList(),
-                Optional.of(Constraint.by(__.has("name", "Sasson"))),
-                Collections.emptyList(),
-                schemaProvider,
-                ElementType.vertex,
-                mock(SearchQuery.class)));
+
+        boolean appendResult = appender.append(searchBuilder, new ConstraintContext() {
+            @Override
+            public Optional<TraversalConstraint> getConstraint() {
+                return Optional.of(Constraint.by(__.has("name", "Sasson")));
+            }
+
+            @Override
+            public ElementType getElementType() {
+                return ElementType.vertex;
+            }
+
+            @Override
+            public GraphElementSchemaProvider getSchemaProvider() {
+                return schemaProvider;
+            }
+        });
 
         Assert.assertTrue(appendResult);
 

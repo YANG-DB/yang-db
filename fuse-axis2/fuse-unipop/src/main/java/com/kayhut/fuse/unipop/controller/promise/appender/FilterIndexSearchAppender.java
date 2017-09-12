@@ -23,7 +23,7 @@ public class FilterIndexSearchAppender implements SearchAppender<PromiseVertexFi
                 .map(PromiseVertex::getPromise)
                 .map(promise -> (IdPromise)promise)
                 .map(promise -> promise.getLabel().get())
-                .map(label -> context.getSchema().getVertexSchema(label))
+                .map(label -> context.getSchemaProvider().getVertexSchema(label))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(GraphElementSchema::getIndexPartition)

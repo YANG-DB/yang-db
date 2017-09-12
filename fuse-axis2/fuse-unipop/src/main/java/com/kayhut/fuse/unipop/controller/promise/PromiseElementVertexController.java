@@ -2,6 +2,8 @@ package com.kayhut.fuse.unipop.controller.promise;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;

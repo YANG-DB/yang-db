@@ -4,8 +4,11 @@ import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
+import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
@@ -23,6 +26,7 @@ import org.unipop.query.search.SearchQuery;
 
 import java.util.*;
 
+import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,21 +64,21 @@ public class CompositeAllAppendersTest {
         ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
 
         //Testing the composition of the the above appenders
-        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender);
+        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(globalAppender));
 
         //Just Global Appender - nothing should be done - since the traversal contains a "Label"
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertFalse(appendResult);
 
         //Just Global Appender - nothing should be done beside the index appender
-        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(globalAppender), wrap(indexSearchAppender));
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 1);
         Assert.assertTrue(searchBuilder.getIndices().contains("personIndex1"));
 
         // Index appender, Global Appender, Constraint Appender
-        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(globalAppender), wrap(indexSearchAppender), constraintSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 1);
@@ -114,7 +118,7 @@ public class CompositeAllAppendersTest {
         ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
 
         //Testing the composition of the the above appenders
-        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender);
+        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(globalAppender));
 
         //One of the appenders should return true
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
@@ -127,7 +131,7 @@ public class CompositeAllAppendersTest {
                 JSONCompareMode.LENIENT);
 
         //Just Global Appender - nothing should be done beside the index appender
-        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(globalAppender), wrap(indexSearchAppender));
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 3);
@@ -141,7 +145,7 @@ public class CompositeAllAppendersTest {
                 JSONCompareMode.LENIENT);
 
         // Index appender, Global Appender, Constraint Appender
-        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender, indexSearchAppender, constraintSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(globalAppender), wrap(indexSearchAppender), constraintSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 3);
@@ -180,7 +184,7 @@ public class CompositeAllAppendersTest {
         //Element Constraint Search Appender
         ElementConstraintSearchAppender constraintSearchAppender = new ElementConstraintSearchAppender();
 
-        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, globalAppender);
+        CompositeSearchAppender<PromiseElementControllerContext> compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(globalAppender));
 
         boolean appendResult = compositeSearchAppender.append(searchBuilder, context);
 
@@ -188,7 +192,7 @@ public class CompositeAllAppendersTest {
         Assert.assertFalse(appendResult);
 
         // Index appender, Constraint Appender
-        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, indexSearchAppender, constraintSearchAppender);
+        compositeSearchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all, wrap(indexSearchAppender), constraintSearchAppender);
         appendResult = compositeSearchAppender.append(searchBuilder, context);
         Assert.assertTrue(appendResult);
         Assert.assertTrue(searchBuilder.getIndices().size() == 2);

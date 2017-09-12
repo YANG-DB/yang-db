@@ -1,6 +1,8 @@
-package com.kayhut.fuse.unipop.controller.promise.appender;
+package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.google.common.collect.Lists;
+import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
+import com.kayhut.fuse.unipop.controller.promise.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
@@ -21,27 +23,27 @@ import java.util.Set;
 /**
  * Created by User on 27/03/2017.
  */
-public class IndexSearchAppender implements SearchAppender<PromiseElementControllerContext> {
+public class IndexSearchAppender implements SearchAppender<ConstraintContext> {
 
     //region SearchAppender Implementation
     @Override
-    public boolean append(SearchBuilder searchBuilder, PromiseElementControllerContext promiseElementControllerContext) {
-        GraphElementSchemaProvider schemaProvider = promiseElementControllerContext.getSchemaProvider();
-        Optional<TraversalConstraint> constraint = promiseElementControllerContext.getConstraint();
+    public boolean append(SearchBuilder searchBuilder, ConstraintContext context) {
+        GraphElementSchemaProvider schemaProvider = context.getSchemaProvider();
+        Optional<TraversalConstraint> constraint = context.getConstraint();
         if (!constraint.isPresent()) {
-            manageSpecialCase(promiseElementControllerContext,schemaProvider,searchBuilder);
+            manageSpecialCase(context, schemaProvider, searchBuilder);
         } else {
             Traversal traversal = constraint.get().getTraversal();
             TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
             Set<String> labels = traversalValuesByKeyProvider.getValueByKey(traversal, T.label.getAccessor());
             if (!labels.isEmpty()) {
                 labels.stream().forEach(label -> {
-                    if (promiseElementControllerContext.getElementType() == ElementType.edge) {
+                    if (context.getElementType() == ElementType.edge) {
                         Optional<Iterable<GraphEdgeSchema>> edgeSchemas = schemaProvider.getEdgeSchemas(label);
                         if (edgeSchemas.isPresent()) {
                             searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchemas.get()));
                         }
-                    } else if (promiseElementControllerContext.getElementType() == ElementType.vertex) {
+                    } else if (context.getElementType() == ElementType.vertex) {
                         Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(label);
                         if (vertexSchema.isPresent()) {
                             searchBuilder.getIndices().addAll(getVertexSchemasIndices(vertexSchema));
@@ -51,14 +53,14 @@ public class IndexSearchAppender implements SearchAppender<PromiseElementControl
                 return true;
             } else // No specific label - append all index partitions filtered by the type of the element (vertex or edge)
             {
-                manageSpecialCase(promiseElementControllerContext,schemaProvider,searchBuilder);
+                manageSpecialCase(context, schemaProvider, searchBuilder);
             }
         }
 
         return true;
     }
 
-    private void manageSpecialCase(PromiseElementControllerContext promiseElementControllerContext, GraphElementSchemaProvider schemaProvider, SearchBuilder searchBuilder) {
+    private void manageSpecialCase(ConstraintContext promiseElementControllerContext, GraphElementSchemaProvider schemaProvider, SearchBuilder searchBuilder) {
         if (promiseElementControllerContext.getElementType() == ElementType.vertex) {
             Iterable<String> vertexTypes = schemaProvider.getVertexTypes();
             vertexTypes.forEach(vertexType -> {

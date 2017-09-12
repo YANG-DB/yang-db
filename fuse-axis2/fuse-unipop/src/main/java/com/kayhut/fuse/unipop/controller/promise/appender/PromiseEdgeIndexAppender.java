@@ -32,12 +32,12 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
 
         TraversalValuesByKeyProvider labelsProvider = new TraversalValuesByKeyProvider();
 
-        Set<String> labels = labelsProvider.getValueByKey(context.getEdgeConstraint().get().getTraversal(), T.label.getAccessor());
+        Set<String> labels = labelsProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
 
         for (String label :
                 labels) {
 
-            Optional<GraphEdgeSchema> edgeSchema = context.getSchema().getEdgeSchema(label);
+            Optional<GraphEdgeSchema> edgeSchema = context.getSchemaProvider().getEdgeSchema(label);
 
             if (edgeSchema.isPresent()) {
 
@@ -49,7 +49,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexCon
 
                     TraversalPredicateByKeyProvider visitor = new TraversalPredicateByKeyProvider();
 
-                    Set<P> predicates = visitor.getPredicateByKey(context.getEdgeConstraint().get().getTraversal(), tsIndexPartition.getTimeField());
+                    Set<P> predicates = visitor.getPredicateByKey(context.getConstraint().get().getTraversal(), tsIndexPartition.getTimeField());
 
                     if(predicates.size() == 0) {
                         //if there are no constraints, add all indices

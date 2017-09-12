@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.controller.promise.context;
 
+import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.promise.*;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.structure.ElementType;
@@ -13,7 +14,7 @@ import java.util.Optional;
 /**
  * Created by User on 27/03/2017.
  */
-public class PromiseElementControllerContext implements SizeAppenderContext, SelectContext{
+public class PromiseElementControllerContext implements SizeAppenderContext, SelectContext, ConstraintContext{
 
     //region Constructors
     public PromiseElementControllerContext(
