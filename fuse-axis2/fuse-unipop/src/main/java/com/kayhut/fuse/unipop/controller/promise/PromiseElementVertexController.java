@@ -36,10 +36,10 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 /**
  * Created by liorp on 4/2/2017.
  */
-class PromiseElementVertexController implements SearchQuery.SearchController {
+public class PromiseElementVertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;

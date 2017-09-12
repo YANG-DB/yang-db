@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.promise.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -64,7 +66,10 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client, elasticGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
+                        new ElementController(
+                                new PromiseElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider, metricRegistry),
+                                new PromiseElementEdgeController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                                metricRegistry),
                         new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
                         new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider ,metricRegistry)
                 );

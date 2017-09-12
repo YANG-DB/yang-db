@@ -2,7 +2,9 @@ package com.kayhut.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.promise.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
@@ -36,7 +38,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by User on 19/03/2017.
  */
-public class PromiseElementControllerCompositTest {
+public class ElementControllerCompositTest {
     Client client;
     ElasticGraphConfiguration configuration;
 
@@ -94,8 +96,12 @@ public class PromiseElementControllerCompositTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController elementController = new ElementController(
+                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),registry),
+                new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider()),
+                registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 10);
         Assert.assertTrue(vertices.get(0).id().equals("1"));

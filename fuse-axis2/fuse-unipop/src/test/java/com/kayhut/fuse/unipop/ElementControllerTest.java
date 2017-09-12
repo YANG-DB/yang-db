@@ -2,7 +2,9 @@ package com.kayhut.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.promise.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.promise.*;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
@@ -32,7 +34,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by User on 19/03/2017.
  */
-public class PromiseElementControllerTest {
+public class ElementControllerTest {
     Client client;
     ElasticGraphConfiguration configuration;
     MetricRegistry registry = new MetricRegistry();
@@ -54,8 +56,10 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
         Assert.assertTrue(vertices.get(0).id().equals("A"));
@@ -81,8 +85,11 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
         Assert.assertTrue(vertices.get(0).id().equals("A"));
@@ -111,8 +118,11 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
         Assert.assertTrue(vertices.get(0).id().equals("A"));
@@ -147,8 +157,11 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
         Assert.assertTrue(vertices.get(0).id().equals("A"));
@@ -183,8 +196,11 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
         Assert.assertTrue(vertices.get(0).id().equals("A"));
@@ -213,8 +229,11 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
         Assert.assertTrue(vertices.get(0).id().equals("A"));
@@ -248,8 +267,11 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
         Assert.assertTrue(vertices.get(0).id().equals("A"));
@@ -287,8 +309,11 @@ public class PromiseElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        PromiseElementController controller = new PromiseElementController(client,configuration,graph,new EmptyGraphElementSchemaProvider(),registry);
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)controller.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 3);
         Assert.assertTrue(vertices.get(0).id().equals("A"));

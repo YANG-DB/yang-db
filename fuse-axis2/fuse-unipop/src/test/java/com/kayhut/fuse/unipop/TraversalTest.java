@@ -3,7 +3,9 @@ package com.kayhut.fuse.unipop;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.promise.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
@@ -51,7 +53,10 @@ public class TraversalTest {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
+                        new ElementController(
+                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
+                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                registry),
                         new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry));
             }
 
@@ -88,7 +93,10 @@ public class TraversalTest {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),registry),
+                        new ElementController(
+                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
+                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                registry),
                         new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),new MetricRegistry()));
             }
 

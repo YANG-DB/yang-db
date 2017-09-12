@@ -12,8 +12,8 @@ import java.util.Iterator;
 /**
  * Created by liorp on 4/2/2017.
  */ //region PromiseElementEdgeController Implementation
-class PromiseElementEdgeController implements SearchQuery.SearchController {
-    PromiseElementEdgeController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {}
+public class PromiseElementEdgeController implements SearchQuery.SearchController {
+    public PromiseElementEdgeController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {}
 
     //region SearchQuery.SearchController Implementation
     @Override
