@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.controller.promise.appender;
 
+import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import org.junit.Assert;
 import org.junit.Test;

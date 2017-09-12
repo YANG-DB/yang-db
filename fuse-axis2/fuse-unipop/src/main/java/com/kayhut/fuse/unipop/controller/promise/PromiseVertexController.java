@@ -3,12 +3,14 @@ package com.kayhut.fuse.unipop.controller.promise;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.PrefixedLabelProvider;
-import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
+import com.kayhut.fuse.unipop.converter.promise.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
@@ -98,7 +100,7 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
         CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new StartVerticesSearchAppender()),
-                        wrap(new EdgeConstraintSearchAppender()),
+                        wrap(new ConstraintSearchAppender()),
                         wrap(new PromiseEdgeAggregationAppender()),
                         wrap(new PromiseEdgeIndexAppender()));
 

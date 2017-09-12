@@ -1,11 +1,12 @@
-package com.kayhut.fuse.unipop.converter;
+package com.kayhut.fuse.unipop.converter.promise;
 
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.LabelProvider;
+import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.promise.Promise;
-import com.kayhut.fuse.unipop.structure.PromiseEdge;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.promise.PromiseEdge;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;

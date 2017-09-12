@@ -1,6 +1,7 @@
-package com.kayhut.fuse.unipop.controller.promise.appender;
+package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
+import com.kayhut.fuse.unipop.controller.promise.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
@@ -11,7 +12,7 @@ import java.util.Optional;
 /**
  * Created by Elad on 4/26/2017.
  */
-public class EdgeConstraintSearchAppender implements SearchAppender<ConstraintContext> {
+public class ConstraintSearchAppender implements SearchAppender<ConstraintContext> {
     @Override
     public boolean append(SearchBuilder searchBuilder, ConstraintContext context) {
         Optional<TraversalConstraint> constraint = context.getConstraint();

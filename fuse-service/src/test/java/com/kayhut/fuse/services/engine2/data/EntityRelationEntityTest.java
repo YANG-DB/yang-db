@@ -27,7 +27,7 @@ import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.index.Mappings.Mapping;

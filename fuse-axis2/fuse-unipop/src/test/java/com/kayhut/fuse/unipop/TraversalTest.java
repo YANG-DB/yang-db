@@ -12,7 +12,7 @@ import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.promise.TraversalPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;

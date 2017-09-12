@@ -7,7 +7,7 @@ import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;

@@ -5,7 +5,7 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
 
 import java.util.List;
