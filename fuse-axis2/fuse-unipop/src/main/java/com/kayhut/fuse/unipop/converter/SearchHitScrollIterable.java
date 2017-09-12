@@ -2,7 +2,6 @@ package com.kayhut.fuse.unipop.converter;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.kayhut.fuse.unipop.controller.PromiseVertexController;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;

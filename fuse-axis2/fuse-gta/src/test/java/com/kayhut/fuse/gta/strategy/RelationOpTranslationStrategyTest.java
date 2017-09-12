@@ -9,12 +9,10 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
-import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -24,11 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import static com.kayhut.fuse.model.OntologyTestUtils.FIRE;
-import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.rel;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;

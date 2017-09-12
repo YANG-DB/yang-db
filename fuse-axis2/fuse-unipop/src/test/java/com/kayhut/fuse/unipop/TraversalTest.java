@@ -3,9 +3,8 @@ package com.kayhut.fuse.unipop;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.PromiseElementController;
-import com.kayhut.fuse.unipop.controller.PromiseVertexController;
-import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHashProvider;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -15,8 +14,6 @@ import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -27,7 +24,6 @@ import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.Set;
 

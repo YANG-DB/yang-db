@@ -2,7 +2,7 @@ package com.kayhut.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.PromiseElementController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementController;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;

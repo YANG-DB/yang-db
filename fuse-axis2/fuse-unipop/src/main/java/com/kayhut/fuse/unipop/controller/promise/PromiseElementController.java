@@ -1,7 +1,8 @@
-package com.kayhut.fuse.unipop.controller;
+package com.kayhut.fuse.unipop.controller.promise;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -25,11 +26,11 @@ public class PromiseElementController implements SearchQuery.SearchController {
     private final MetricRegistry metricRegistry;
 
     //region Constructors
-    public PromiseElementController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider,MetricRegistry metricRegistry) {
+    public PromiseElementController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         this.metricRegistry = metricRegistry;
         this.innerControllers = new HashMap<>();
-        this.innerControllers.put(Vertex.class, new VertexController(client,configuration,graph,schemaProvider,metricRegistry));
-        this.innerControllers.put(Edge.class, new EdgeController(client,configuration,graph,schemaProvider));
+        this.innerControllers.put(Vertex.class, new PromiseElementVertexController(client,configuration,graph,schemaProvider,metricRegistry));
+        this.innerControllers.put(Edge.class, new PromiseElementEdgeController(client,configuration,graph,schemaProvider));
     }
     //endregion
 

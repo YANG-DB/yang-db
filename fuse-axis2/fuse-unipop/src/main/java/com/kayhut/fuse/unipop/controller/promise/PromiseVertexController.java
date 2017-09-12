@@ -1,10 +1,11 @@
-package com.kayhut.fuse.unipop.controller;
+package com.kayhut.fuse.unipop.controller.promise;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.kayhut.fuse.unipop.controller.context.PromiseVertexControllerContext;
+import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.*;
+import com.kayhut.fuse.unipop.controller.promise.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.PrefixedLabelProvider;
 import com.kayhut.fuse.unipop.converter.AggregationPromiseEdgeIterableConverter;
@@ -37,7 +38,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexController extends PromiseVertexControllerBase {
 
     //region Constructors
-    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider,MetricRegistry metricRegistry) {
+    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         super(Collections.singletonList(GlobalConstants.Labels.PROMISE));
 
         this.client = client;

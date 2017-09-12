@@ -1,13 +1,11 @@
 package com.kayhut.fuse.unipop.structure;
 
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.structure.UniEdge;
 import org.unipop.structure.UniGraph;
-
-import java.util.Collections;
 
 /**
  * Created by Roman on 5/9/2017.

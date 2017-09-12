@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.controller;
+package com.kayhut.fuse.unipop.controller.promise;
 
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import javaslang.collection.Stream;

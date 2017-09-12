@@ -1,10 +1,11 @@
-package com.kayhut.fuse.unipop.controller;
+package com.kayhut.fuse.unipop.controller.promise;
 
 import com.codahale.metrics.*;
 import com.codahale.metrics.Timer;
-import com.kayhut.fuse.unipop.controller.context.PromiseVertexFilterControllerContext;
+import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.*;
+import com.kayhut.fuse.unipop.controller.promise.appender.*;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;

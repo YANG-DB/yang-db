@@ -2,8 +2,8 @@ package com.kayhut.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
-import com.kayhut.fuse.unipop.controller.PromiseVertexController;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Roman on 23/04/2017.
  */
-public class PromiseVertexControllerTest {
+public class PromisePromiseElementVertexControllerTest {
     Client client;
     ElasticGraphConfiguration configuration;
 

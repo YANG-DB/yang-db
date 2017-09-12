@@ -1,6 +1,6 @@
 package com.kayhut.fuse.unipop.structure;
 
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -8,7 +8,6 @@ import org.unipop.structure.UniEdge;
 import org.unipop.structure.UniGraph;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Created by r on 11/16/2015.

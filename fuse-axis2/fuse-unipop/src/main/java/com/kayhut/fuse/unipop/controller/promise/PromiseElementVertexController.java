@@ -1,9 +1,10 @@
-package com.kayhut.fuse.unipop.controller;
+package com.kayhut.fuse.unipop.controller.promise;
 
 import com.codahale.metrics.MetricRegistry;
-import com.kayhut.fuse.unipop.controller.context.PromiseElementControllerContext;
+import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.search.appender.*;
+import com.kayhut.fuse.unipop.controller.promise.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitPromiseVertexConverter;
@@ -35,10 +36,10 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 /**
  * Created by liorp on 4/2/2017.
  */
-class VertexController implements SearchQuery.SearchController {
+class PromiseElementVertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    VertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider,MetricRegistry metricRegistry) {
+    PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;

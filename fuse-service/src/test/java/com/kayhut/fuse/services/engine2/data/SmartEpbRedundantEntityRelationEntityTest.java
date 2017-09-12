@@ -1,8 +1,7 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.kayhut.fuse.services.engine2.RedundantTestSuite;
 import com.kayhut.fuse.services.engine2.SmartEpbRedundantTestSuite;
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;

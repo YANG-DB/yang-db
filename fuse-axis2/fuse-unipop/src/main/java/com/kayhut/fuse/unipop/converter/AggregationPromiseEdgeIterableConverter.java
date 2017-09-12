@@ -1,10 +1,9 @@
 package com.kayhut.fuse.unipop.converter;
 
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.LabelProvider;
 import com.kayhut.fuse.unipop.promise.Promise;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.PromiseVertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;
