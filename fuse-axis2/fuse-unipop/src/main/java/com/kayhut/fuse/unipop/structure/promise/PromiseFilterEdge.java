@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.structure;
+package com.kayhut.fuse.unipop.structure.promise;
 
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
