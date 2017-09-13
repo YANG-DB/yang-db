@@ -2,6 +2,7 @@ package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
+import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
@@ -23,11 +24,11 @@ import java.util.Set;
 /**
  * Created by User on 27/03/2017.
  */
-public class IndexSearchAppender implements SearchAppender<ConstraintContext> {
+public class IndexSearchAppender implements SearchAppender<ElementControllerContext> {
 
     //region SearchAppender Implementation
     @Override
-    public boolean append(SearchBuilder searchBuilder, ConstraintContext context) {
+    public boolean append(SearchBuilder searchBuilder, ElementControllerContext context) {
         GraphElementSchemaProvider schemaProvider = context.getSchemaProvider();
         Optional<TraversalConstraint> constraint = context.getConstraint();
         if (!constraint.isPresent()) {
@@ -39,10 +40,8 @@ public class IndexSearchAppender implements SearchAppender<ConstraintContext> {
             if (!labels.isEmpty()) {
                 labels.stream().forEach(label -> {
                     if (context.getElementType() == ElementType.edge) {
-                        Optional<Iterable<GraphEdgeSchema>> edgeSchemas = schemaProvider.getEdgeSchemas(label);
-                        if (edgeSchemas.isPresent()) {
-                            searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchemas.get()));
-                        }
+                        Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(label);
+                        searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchemas));
                     } else if (context.getElementType() == ElementType.vertex) {
                         Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(label);
                         if (vertexSchema.isPresent()) {
@@ -60,8 +59,8 @@ public class IndexSearchAppender implements SearchAppender<ConstraintContext> {
         return true;
     }
 
-    private void manageSpecialCase(ConstraintContext promiseElementControllerContext, GraphElementSchemaProvider schemaProvider, SearchBuilder searchBuilder) {
-        if (promiseElementControllerContext.getElementType() == ElementType.vertex) {
+    private void manageSpecialCase(ElementControllerContext context, GraphElementSchemaProvider schemaProvider, SearchBuilder searchBuilder) {
+        if (context.getElementType() == ElementType.vertex) {
             Iterable<String> vertexTypes = schemaProvider.getVertexTypes();
             vertexTypes.forEach(vertexType -> {
                 Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(vertexType);
@@ -69,13 +68,11 @@ public class IndexSearchAppender implements SearchAppender<ConstraintContext> {
                     searchBuilder.getIndices().addAll(getVertexSchemasIndices(vertexSchema));
                 }
             });
-        } else if (promiseElementControllerContext.getElementType() == ElementType.edge) {
+        } else if (context.getElementType() == ElementType.edge) {
             Iterable<String> edgeTypes = schemaProvider.getEdgeTypes();
             edgeTypes.forEach(edgeType -> {
-                Optional<Iterable<GraphEdgeSchema>> edgeSchemas = schemaProvider.getEdgeSchemas(edgeType);
-                if (edgeSchemas.isPresent()) {
-                    searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchemas.get()));
-                }
+                Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(edgeType);
+                    searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchemas));
             });
         }
 

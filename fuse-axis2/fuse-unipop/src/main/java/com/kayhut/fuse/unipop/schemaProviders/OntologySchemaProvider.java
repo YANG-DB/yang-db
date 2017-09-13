@@ -45,17 +45,19 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             return Optional.empty();
         }
 
-        Optional<Iterable<GraphEdgeSchema>> edgeSchemas = getEdgeSchemas(edgeType);
-        if (!edgeSchemas.isPresent())
+        Iterable<GraphEdgeSchema> edgeSchemas = getEdgeSchemas(edgeType);
+        if (Stream.ofAll(edgeSchemas).isEmpty())
             return Optional.empty();
 
-        return Stream.ofAll(edgeSchemas.get()).find(edgeSchema -> edgeSchema.getType().equals(edgeType)).toJavaOptional() ;
+        return Optional.of(Stream.ofAll(edgeSchemas).get(0));
+
+        //return Stream.ofAll(edgeSchemas.get()).find(edgeSchema -> edgeSchema.getType().equals(edgeType)).toJavaOptional() ;
     }
 
     @Override
-    public Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String edgeType) {
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String edgeType) {
         if (Strings.isNullOrEmpty(edgeType)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
         Optional<RelationshipType> relationshipType = $ont.relation(edgeType);
@@ -70,12 +72,14 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     graphEdgeSchemas.add(relationTypeSchema.get());
                 }
             }
-            if (graphEdgeSchemas.size() > 0)
-                return Optional.of(graphEdgeSchemas);
-            else
-                return Optional.empty();
+            if (graphEdgeSchemas.size() > 0) {
+                return graphEdgeSchemas;
+            } else {
+                return Collections.emptyList();
+            }
         }
-        return Optional.empty();
+
+        return Collections.emptyList();
     }
 
     @Override

@@ -18,7 +18,7 @@ public class FilterIndexSearchAppender implements SearchAppender<PromiseVertexFi
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, PromiseVertexFilterControllerContext context) {
-        List<String> indices = Stream.ofAll(context.getStartVertices())
+        List<String> indices = Stream.ofAll(context.getBulkVertices())
                 .map(vertex -> (PromiseVertex)vertex)
                 .map(PromiseVertex::getPromise)
                 .map(promise -> (IdPromise)promise)

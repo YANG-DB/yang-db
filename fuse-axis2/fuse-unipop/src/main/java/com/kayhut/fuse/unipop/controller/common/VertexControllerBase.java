@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.controller.promise;
+package com.kayhut.fuse.unipop.controller.common;
 
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import javaslang.collection.Stream;
@@ -12,9 +12,9 @@ import java.util.*;
 /**
  * Created by Roman on 15/05/2017.
  */
-public abstract class PromiseVertexControllerBase implements SearchVertexQuery.SearchVertexController {
+public abstract class VertexControllerBase implements SearchVertexQuery.SearchVertexController {
     //region Constructors
-    PromiseVertexControllerBase(Iterable<String> supportedEdgeLabels) {
+    public VertexControllerBase(Iterable<String> supportedEdgeLabels) {
         this.supportedEdgeLabels = Stream.ofAll(supportedEdgeLabels).toJavaSet();
     }
     //endregion
@@ -22,6 +22,10 @@ public abstract class PromiseVertexControllerBase implements SearchVertexQuery.S
     //region SearchVertexQuery.SearchVertexController Implementation
     @Override
     public Iterator<Edge> search(SearchVertexQuery searchVertexQuery) {
+        if (searchVertexQuery.getVertices().size() == 0){
+            throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices to start with");
+        }
+
         Iterable<String> supportedEdgeLabels = getSupportedEdgeLabels(searchVertexQuery.getPredicates().getPredicates());
         return search(searchVertexQuery, supportedEdgeLabels);
     }

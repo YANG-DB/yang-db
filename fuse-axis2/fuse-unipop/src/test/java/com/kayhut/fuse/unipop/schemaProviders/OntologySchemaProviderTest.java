@@ -54,8 +54,8 @@ public class OntologySchemaProviderTest {
     public void getEdgeSchemas() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        Optional<Iterable<GraphEdgeSchema>> edgeSchemas = ontologySchemaProvider.getEdgeSchemas("Fire");
-        assertEquals(Lists.newArrayList(edgeSchemas.get()).size(), 1);
+        Iterable<GraphEdgeSchema> edgeSchemas = ontologySchemaProvider.getEdgeSchemas("Fire");
+        assertEquals(Lists.newArrayList(edgeSchemas).size(), 1);
     }
 
     @Test

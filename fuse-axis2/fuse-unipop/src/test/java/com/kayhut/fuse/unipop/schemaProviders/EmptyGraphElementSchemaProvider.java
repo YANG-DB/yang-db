@@ -21,8 +21,8 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
     }
 
     @Override
-    public Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String type) {
-        return Optional.empty();
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String type) {
+        return Collections.emptyList();
     }
 
     @Override

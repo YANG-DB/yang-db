@@ -1,6 +1,7 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
+import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.appender.SearchQueryAppenderBase;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
@@ -15,10 +16,10 @@ import java.util.Set;
 /**
  * Created by User on 27/03/2017.
  */
-public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<ConstraintContext> {
+public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<ElementControllerContext> {
     //region SearchQueryAppenderBase Implementation
     @Override
-    public boolean append(QueryBuilder queryBuilder, ConstraintContext context) {
+    public boolean append(QueryBuilder queryBuilder, ElementControllerContext context) {
         if (!context.getConstraint().isPresent()) {
             return false;
         }

@@ -21,7 +21,7 @@ public class StartVerticesSearchAppender implements SearchAppender<PromiseVertex
     @Override
     public boolean append(SearchBuilder searchBuilder, PromiseVertexControllerContext context) {
 
-        Traversal traversal = buildStartVerticesConstraint(context.getStartVertices());
+        Traversal traversal = buildStartVerticesConstraint(context.getBulkVertices());
 
         QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter().bool().must();
 

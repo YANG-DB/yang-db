@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
+import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -35,7 +36,7 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Dragon"));
 
-        ConstraintContext constraintContext = new ConstraintContext() {
+        ElementControllerContext context = new ElementControllerContext() {
             @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(traversalConstraint);
@@ -54,7 +55,7 @@ public class IndexSearchAppenderTest {
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
-        boolean appendResult = indexSearchAppender.append(searchBuilder, constraintContext);
+        boolean appendResult = indexSearchAppender.append(searchBuilder, context);
 
         assertEquals(appendResult, true);
         assertEquals(2,searchBuilder.getIndices().size());
@@ -69,7 +70,7 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Person"));
 
-        ConstraintContext constraintContext = new ConstraintContext() {
+        ElementControllerContext context = new ElementControllerContext() {
             @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(traversalConstraint);
@@ -88,7 +89,7 @@ public class IndexSearchAppenderTest {
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
-        boolean appendResult = indexSearchAppender.append(searchBuilder, constraintContext);
+        boolean appendResult = indexSearchAppender.append(searchBuilder, context);
 
         assertEquals(appendResult, true);
         assertEquals(1,searchBuilder.getIndices().size());
@@ -103,7 +104,7 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("color","sheker"));
 
-        ConstraintContext constraintContext = new ConstraintContext() {
+        ElementControllerContext context = new ElementControllerContext() {
             @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(traversalConstraint);
@@ -122,7 +123,7 @@ public class IndexSearchAppenderTest {
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
-        boolean appendResult = indexSearchAppender.append(searchBuilder, constraintContext);
+        boolean appendResult = indexSearchAppender.append(searchBuilder, context);
 
         assertEquals(appendResult, true);
         assertEquals(3,searchBuilder.getIndices().size());

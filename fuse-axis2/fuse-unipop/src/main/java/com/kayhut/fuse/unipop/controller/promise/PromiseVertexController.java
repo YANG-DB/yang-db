@@ -3,6 +3,7 @@ package com.kayhut.fuse.unipop.controller.promise;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
@@ -37,7 +38,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 /**
  * Created by User on 16/03/2017.
  */
-public class PromiseVertexController extends PromiseVertexControllerBase {
+public class PromiseVertexController extends VertexControllerBase {
 
     //region Constructors
     public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
@@ -51,7 +52,7 @@ public class PromiseVertexController extends PromiseVertexControllerBase {
     }
     //endregion
 
-    //region PromiseVertexControllerBase Implementation
+    //region VertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
         Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"search")).time();

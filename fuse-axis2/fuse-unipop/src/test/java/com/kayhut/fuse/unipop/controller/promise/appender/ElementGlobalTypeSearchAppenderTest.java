@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
+import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -14,6 +15,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,7 +40,7 @@ public class ElementGlobalTypeSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         ElementGlobalTypeSearchAppender appender = new ElementGlobalTypeSearchAppender();
 
-        boolean appendResult = appender.append(searchBuilder, new ConstraintContext() {
+        boolean appendResult = appender.append(searchBuilder, new ElementControllerContext() {
             @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(Constraint.by(__.has("name", "Sasson")));
