@@ -31,6 +31,7 @@ public class ElementConstraintSearchAppenderTest {
 
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
+                null,
                 Collections.emptyList(),
                 Optional.empty(),
                 Collections.emptyList(),
@@ -51,6 +52,7 @@ public class ElementConstraintSearchAppenderTest {
 
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
+                null,
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.has(T.label, "dragon"))),
                 Collections.emptyList(),
@@ -71,6 +73,7 @@ public class ElementConstraintSearchAppenderTest {
 
         ElementConstraintSearchAppender appender = new ElementConstraintSearchAppender();
         boolean appendResult = appender.append(searchBuilder, new PromiseElementControllerContext(
+                null,
                 Collections.emptyList(),
                 Optional.of(Constraint.by(__.and(__.has(T.label, "dragon"), __.has("name", "Drogar")))),
                 Collections.emptyList(),

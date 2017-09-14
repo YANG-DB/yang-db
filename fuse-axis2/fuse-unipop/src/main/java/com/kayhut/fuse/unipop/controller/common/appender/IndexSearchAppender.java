@@ -1,10 +1,7 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.google.common.collect.Lists;
-import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
-import com.kayhut.fuse.unipop.controller.promise.appender.SearchAppender;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;

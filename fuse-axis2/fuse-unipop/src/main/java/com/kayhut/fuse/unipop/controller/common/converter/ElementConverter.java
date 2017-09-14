@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.converter;
+package com.kayhut.fuse.unipop.controller.common.converter;
 
 /**
  * Created by r on 3/16/2015.

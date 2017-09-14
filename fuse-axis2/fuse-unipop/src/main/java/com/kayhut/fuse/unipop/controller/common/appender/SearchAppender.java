@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.controller.promise.appender;
+package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 

@@ -9,8 +9,8 @@ import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppende
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
-import com.kayhut.fuse.unipop.converter.ElementConverter;
-import com.kayhut.fuse.unipop.converter.promise.SearchHitPromiseFilterEdgeConverter;
+import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -97,6 +97,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
 
         PromiseVertexFilterControllerContext context =
                 new PromiseVertexFilterControllerContext(
+                        this.graph,
                         searchVertexQuery.getVertices(),
                         constraint,
                         selectPHasContainers,

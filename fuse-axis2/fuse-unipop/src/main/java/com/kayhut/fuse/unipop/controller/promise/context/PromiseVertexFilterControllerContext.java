@@ -8,6 +8,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.query.search.SearchQuery;
+import org.unipop.structure.UniGraph;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,42 +16,21 @@ import java.util.Optional;
 /**
  * Created by Elad on 4/30/2017.
  */
-public class PromiseVertexFilterControllerContext implements VertexControllerContext, SizeAppenderContext, SelectContext{
+public class PromiseVertexFilterControllerContext extends VertexControllerContext.Default implements SizeAppenderContext, SelectContext{
     //region Constructors
-    public PromiseVertexFilterControllerContext(List<Vertex> vertices,
+    public PromiseVertexFilterControllerContext(UniGraph graph,
+                                                List<Vertex> vertices,
                                                 Optional<TraversalConstraint> constraint,
                                                 List<HasContainer> selectPHasContainers,
                                                 GraphElementSchemaProvider schemaProvider,
                                                 SearchQuery query) {
-        this.bulkVertices = vertices;
-        this.constraint = constraint;
-        this.selectPHasContainers = selectPHasContainers;
-        this.schema = schemaProvider;
+        super(graph, schemaProvider, constraint, Direction.OUT, vertices);
         this.searchQuery = query;
+        this.selectPHasContainers = selectPHasContainers;
     }
     //endregion
 
     //region Properties
-    @Override
-    public List<Vertex> getBulkVertices() {
-        return bulkVertices;
-    }
-
-    @Override
-    public Optional<TraversalConstraint> getConstraint() {
-        return constraint;
-    }
-
-    @Override
-    public ElementType getElementType() {
-        return ElementType.vertex;
-    }
-
-    @Override
-    public GraphElementSchemaProvider getSchemaProvider() {
-        return this.schema;
-    }
-
     @Override
     public SearchQuery getSearchQuery() {
         return searchQuery;
@@ -67,9 +47,6 @@ public class PromiseVertexFilterControllerContext implements VertexControllerCon
     //endregion
 
     //region Fields
-    private List<Vertex> bulkVertices;
-    private Optional<TraversalConstraint> constraint;
-    private GraphElementSchemaProvider schema;
     private SearchQuery searchQuery;
     private List<HasContainer> selectPHasContainers;
     //endregion

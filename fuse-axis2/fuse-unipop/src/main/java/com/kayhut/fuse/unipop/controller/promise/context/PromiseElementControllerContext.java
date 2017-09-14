@@ -8,6 +8,7 @@ import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.unipop.query.search.SearchQuery;
+import org.unipop.structure.UniGraph;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -15,21 +16,20 @@ import java.util.Optional;
 /**
  * Created by User on 27/03/2017.
  */
-public class PromiseElementControllerContext implements ElementControllerContext, SizeAppenderContext, SelectContext{
+public class PromiseElementControllerContext extends ElementControllerContext.Default implements SizeAppenderContext, SelectContext{
 
     //region Constructors
     public PromiseElementControllerContext(
+            UniGraph graph,
             Iterable<Promise> promises,
             Optional<TraversalConstraint> constraint,
             Iterable<HasContainer> selectPHasContainers,
             GraphElementSchemaProvider schemaProvider,
             ElementType elementType,
             SearchQuery searchQuery) {
+        super(graph, elementType, schemaProvider, constraint);
         this.promises = new ArrayList<>(Stream.ofAll(promises).toJavaList());
-        this.constraint = constraint;
         this.selectPHasContainers = selectPHasContainers;
-        this.schemaProvider = schemaProvider;
-        this.elementType = elementType;
         this.searchQuery = searchQuery;
     }
     //endregion
@@ -37,18 +37,6 @@ public class PromiseElementControllerContext implements ElementControllerContext
     //region Properties
     public Iterable<Promise> getPromises() {
         return promises;
-    }
-
-    public GraphElementSchemaProvider getSchemaProvider() {
-        return schemaProvider;
-    }
-
-    public Optional<TraversalConstraint> getConstraint() {
-        return constraint;
-    }
-
-    public ElementType getElementType() {
-        return elementType;
     }
 
     public SearchQuery getSearchQuery() {
@@ -63,9 +51,6 @@ public class PromiseElementControllerContext implements ElementControllerContext
 
     //region Fields
     private Iterable<Promise> promises;
-    private Optional<TraversalConstraint> constraint;
-    private GraphElementSchemaProvider schemaProvider;
-    private ElementType elementType;
     private SearchQuery searchQuery;
     private Iterable<HasContainer> selectPHasContainers;
     //endregion

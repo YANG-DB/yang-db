@@ -18,6 +18,7 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.unipop.query.search.SearchQuery;
+import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
@@ -37,6 +38,11 @@ public class IndexSearchAppenderTest {
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Dragon"));
 
         ElementControllerContext context = new ElementControllerContext() {
+            @Override
+            public UniGraph getGraph() {
+                return null;
+            }
+
             @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(traversalConstraint);
@@ -72,6 +78,11 @@ public class IndexSearchAppenderTest {
 
         ElementControllerContext context = new ElementControllerContext() {
             @Override
+            public UniGraph getGraph() {
+                return null;
+            }
+
+            @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(traversalConstraint);
             }
@@ -105,6 +116,11 @@ public class IndexSearchAppenderTest {
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("color","sheker"));
 
         ElementControllerContext context = new ElementControllerContext() {
+            @Override
+            public UniGraph getGraph() {
+                return null;
+            }
+
             @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(traversalConstraint);

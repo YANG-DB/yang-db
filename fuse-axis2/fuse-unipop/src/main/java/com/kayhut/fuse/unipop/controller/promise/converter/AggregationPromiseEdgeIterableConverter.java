@@ -1,9 +1,9 @@
-package com.kayhut.fuse.unipop.converter.promise;
+package com.kayhut.fuse.unipop.controller.promise.converter;
 
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.LabelProvider;
-import com.kayhut.fuse.unipop.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.structure.promise.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;

@@ -1,6 +1,8 @@
 package com.kayhut.fuse.unipop.controller.promise.appender;
 
 import com.google.common.collect.Lists;
+import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
+import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
@@ -25,10 +27,10 @@ import java.util.Set;
 /**
  * Created by Elad on 4/26/2017.
  */
-public class PromiseEdgeIndexAppender implements SearchAppender<PromiseVertexControllerContext> {
+public class PromiseEdgeIndexAppender implements SearchAppender<VertexControllerContext> {
 
     @Override
-    public boolean append(SearchBuilder searchBuilder, PromiseVertexControllerContext context) {
+    public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
 
         TraversalValuesByKeyProvider labelsProvider = new TraversalValuesByKeyProvider();
 

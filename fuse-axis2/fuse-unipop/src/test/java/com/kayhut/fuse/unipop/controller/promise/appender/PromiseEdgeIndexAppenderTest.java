@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.ontology.EPair;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
+import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -44,9 +45,7 @@ public class PromiseEdgeIndexAppenderTest{
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, STATIC_INDEX_EDGE)));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                                                                                    Optional.of(traversalConstraint),
-                                                                                    schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -65,9 +64,7 @@ public class PromiseEdgeIndexAppenderTest{
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, TIME_SERIES_INDEX_EDGE));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -89,9 +86,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                                                                                  __.has("time", P.eq(date))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -114,9 +109,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.neq(date))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -139,9 +132,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.gt(date))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -164,9 +155,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.gte(date))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -189,9 +178,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.lt(date))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -214,9 +201,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.lte(date))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -241,9 +226,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.within(date1, date2, date3))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -268,9 +251,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.without(date1, date2, date3))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -294,9 +275,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.between(date1, date2))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -320,9 +299,7 @@ public class PromiseEdgeIndexAppenderTest{
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.and(__.has(T.label, TIME_SERIES_INDEX_EDGE),
                 __.has("time", P.outside(date1, date2))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -355,9 +332,7 @@ public class PromiseEdgeIndexAppenderTest{
                                                                                                  .or(P.between(date3, date4))
                                                                                                  .or(P.between(date5, date6)))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -390,9 +365,7 @@ public class PromiseEdgeIndexAppenderTest{
                                 .and(P.outside(date3, date4))
                                 .and(P.outside(date5, date6)))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -425,9 +398,7 @@ public class PromiseEdgeIndexAppenderTest{
                         P.outside(date1, date2)
                                 .and(P.between(date3, date4).or(P.between(date5, date6))))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -460,9 +431,7 @@ public class PromiseEdgeIndexAppenderTest{
                         P.outside(date1, date2)
                                 .or(P.between(date3, date4).or(P.between(date5, date6))))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -504,9 +473,7 @@ public class PromiseEdgeIndexAppenderTest{
                                 .and(P.between(date7, date8)
                                         .or(P.between(date9, date10))))));
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(null,
-                Optional.of(traversalConstraint),
-                schemaProvider);
+        VertexControllerContext context = new PromiseVertexControllerContext(null, schemaProvider, Optional.of(traversalConstraint), Collections.emptyList());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 

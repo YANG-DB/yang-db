@@ -1,6 +1,5 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
-import com.kayhut.fuse.unipop.controller.promise.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import javaslang.collection.Stream;
 

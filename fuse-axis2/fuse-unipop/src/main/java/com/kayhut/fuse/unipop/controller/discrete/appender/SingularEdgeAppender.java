@@ -1,6 +1,7 @@
 package com.kayhut.fuse.unipop.controller.discrete.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
+import com.kayhut.fuse.unipop.controller.discrete.util.SchemaUtil;
 import com.kayhut.fuse.unipop.controller.promise.appender.SearchQueryAppenderBase;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
@@ -21,12 +22,12 @@ public class SingularEdgeAppender extends SearchQueryAppenderBase<VertexControll
     //region VertexControllerContext Implementation
     @Override
     protected boolean append(QueryBuilder queryBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = getRelevantSingularEdgeSchemas(context);
+        Iterable<GraphEdgeSchema> edgeSchemas = SchemaUtil.getRelevantSingularEdgeSchemas(context);
 
         //currently assuming only one relevant schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
-        String vertexLabel = context.getBulkVertices().get(0).label();
+        String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
         if (edgeSchema.getSource().get().getType().get().equals(vertexLabel)) {
             queryBuilder.seekRoot().query().filtered().filter().bool().must()
                     .terms(edgeSchema.getSource().get().getIdField(),
@@ -42,42 +43,4 @@ public class SingularEdgeAppender extends SearchQueryAppenderBase<VertexControll
         return true;
     }
     //endregion
-
-    //region Private Methods
-    private Iterable<GraphEdgeSchema> getEdgeSchemas(VertexControllerContext context) {
-        Set<String> types = Collections.emptySet();
-        if (context.getConstraint().isPresent()) {
-            TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
-            types = traversalValuesByKeyProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
-        }
-
-        if (types.isEmpty()) {
-            types = Stream.ofAll(context.getSchemaProvider().getEdgeTypes()).toJavaSet();
-        }
-
-        return Stream.ofAll(types)
-                .flatMap(type -> context.getSchemaProvider().getEdgeSchemas(type))
-                .distinct()
-                .toJavaList();
-    }
-
-    private Iterable<GraphEdgeSchema> getSingularEdgeSchemas(VertexControllerContext context) {
-        return Stream.ofAll(getEdgeSchemas(context))
-                .filter(edgeSchema -> !edgeSchema.getDirection().isPresent())
-                .toJavaList();
-    }
-
-    private Iterable<GraphEdgeSchema> getRelevantSingularEdgeSchemas(VertexControllerContext context) {
-        //currently assuming all bulk vertices of same type
-        String vertexLabel = context.getBulkVertices().get(0).label();
-
-        return Stream.ofAll(getSingularEdgeSchemas(context))
-                .filter(edgeSchema -> (edgeSchema.getSource().get().getType().get().equals(vertexLabel) &&
-                        (context.getDirection().equals(Direction.OUT) || context.getDirection().equals(Direction.BOTH))) ||
-                        (edgeSchema.getDestination().get().getType().get().equals(vertexLabel) &&
-                                (context.getDirection().equals(Direction.IN) || context.getDirection().equals(Direction.BOTH))))
-                .toJavaList();
-    }
-    //endregion
-
 }

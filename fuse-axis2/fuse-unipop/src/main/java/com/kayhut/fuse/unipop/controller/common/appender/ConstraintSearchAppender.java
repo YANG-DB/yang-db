@@ -1,7 +1,6 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
-import com.kayhut.fuse.unipop.controller.promise.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;

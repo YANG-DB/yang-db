@@ -47,6 +47,7 @@ public class CompositeAllAppendersTest {
 
         PromiseElementControllerContext context = new
                 PromiseElementControllerContext(
+                    null,
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
                     Collections.emptyList(),
@@ -101,6 +102,7 @@ public class CompositeAllAppendersTest {
 
         PromiseElementControllerContext context = new
                 PromiseElementControllerContext(
+                        null,
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
                     Collections.emptyList(),
@@ -168,6 +170,7 @@ public class CompositeAllAppendersTest {
 
         PromiseElementControllerContext context = new
                 PromiseElementControllerContext(
+                        null,
                     Collections.emptyList(),
                     Optional.of(traversalConstraint),
                     Collections.emptyList(),

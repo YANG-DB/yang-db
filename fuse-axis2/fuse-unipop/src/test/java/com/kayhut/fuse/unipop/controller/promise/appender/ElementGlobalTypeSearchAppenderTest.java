@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.unipop.query.search.SearchQuery;
+import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
@@ -41,6 +42,11 @@ public class ElementGlobalTypeSearchAppenderTest {
         ElementGlobalTypeSearchAppender appender = new ElementGlobalTypeSearchAppender();
 
         boolean appendResult = appender.append(searchBuilder, new ElementControllerContext() {
+            @Override
+            public UniGraph getGraph() {
+                return null;
+            }
+
             @Override
             public Optional<TraversalConstraint> getConstraint() {
                 return Optional.of(Constraint.by(__.has("name", "Sasson")));

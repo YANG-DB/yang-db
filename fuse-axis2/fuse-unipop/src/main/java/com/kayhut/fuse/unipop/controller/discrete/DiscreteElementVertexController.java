@@ -8,9 +8,9 @@ import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
-import com.kayhut.fuse.unipop.converter.discrete.SearchHitDiscreteVertexConverter;
+import com.kayhut.fuse.unipop.controller.discrete.converter.SearchHitDiscreteVertexConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
@@ -56,9 +56,10 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 TraversalConstraint.EMPTY ;
 
         DiscreteElementControllerContext context = new DiscreteElementControllerContext(
-                constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint),
+                this.graph,
                 ElementType.vertex,
-                this.schemaProvider);
+                this.schemaProvider,
+                constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint));
 
         CompositeSearchAppender<DiscreteElementControllerContext> searchAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
@@ -77,7 +78,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        ElementConverter<SearchHit, E> elementConverter = new SearchHitDiscreteVertexConverter<>(this.graph);
+        ElementConverter<SearchHit, E> elementConverter = new SearchHitDiscreteVertexConverter<>(context);
         return Stream.ofAll(searchHits)
                 .map(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();

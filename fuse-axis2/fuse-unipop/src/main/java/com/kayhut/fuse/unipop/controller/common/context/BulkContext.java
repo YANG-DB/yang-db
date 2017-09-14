@@ -8,5 +8,6 @@ import java.util.List;
  * Created by roman.margolis on 13/09/2017.
  */
 public interface BulkContext {
-    List<Vertex> getBulkVertices();
+    Iterable<Vertex> getBulkVertices();
+    Vertex getVertex(Object id);
 }

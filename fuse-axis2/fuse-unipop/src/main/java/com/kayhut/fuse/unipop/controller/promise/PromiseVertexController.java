@@ -11,7 +11,7 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.PrefixedLabelProvider;
-import com.kayhut.fuse.unipop.converter.promise.AggregationPromiseEdgeIterableConverter;
+import com.kayhut.fuse.unipop.controller.promise.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
@@ -96,7 +96,7 @@ public class PromiseVertexController extends VertexControllerBase {
         Timer timeEs = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges:elastic"));
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(startVertices, constraint, schemaProvider);
+        PromiseVertexControllerContext context = new PromiseVertexControllerContext(graph, schemaProvider, constraint, startVertices);
 
         CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,

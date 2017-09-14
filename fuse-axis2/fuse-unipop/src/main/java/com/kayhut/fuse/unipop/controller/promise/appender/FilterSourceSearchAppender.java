@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.controller.promise.appender;
 
+import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.SelectContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.predicates.SelectP;

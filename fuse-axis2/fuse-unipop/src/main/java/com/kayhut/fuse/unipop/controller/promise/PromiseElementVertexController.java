@@ -9,8 +9,8 @@ import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControlle
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
-import com.kayhut.fuse.unipop.converter.ElementConverter;
-import com.kayhut.fuse.unipop.converter.promise.SearchHitPromiseVertexConverter;
+import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseVertexConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -140,6 +140,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
 
         SearchBuilder searchBuilder = new SearchBuilder();
         PromiseElementControllerContext context = new PromiseElementControllerContext(
+                this.graph,
                 Collections.emptyList(),
                 constraint,
                 selectPHasContainers,

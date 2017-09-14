@@ -7,9 +7,14 @@ import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender
 import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeAppender;
-import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteElementControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
+import com.kayhut.fuse.unipop.controller.discrete.converter.SearchHitDiscreteSingularEdgeConverter;
+import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
+import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
+import com.kayhut.fuse.unipop.controller.discrete.converter.SearchHitDiscreteVertexConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
@@ -17,12 +22,15 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
@@ -53,11 +61,11 @@ public class DiscreteVertexController extends VertexControllerBase {
                 TraversalConstraint.EMPTY ;
 
         DiscreteVertexControllerContext context = new DiscreteVertexControllerContext(
-                searchVertexQuery.getVertices(),
-                searchVertexQuery.getDirection(),
+                this.graph,
+                this.schemaProvider,
                 constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint),
-                ElementType.edge,
-                this.schemaProvider);
+                searchVertexQuery.getDirection(),
+                searchVertexQuery.getVertices());
 
         CompositeSearchAppender<DiscreteVertexControllerContext> searchAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
@@ -66,7 +74,23 @@ public class DiscreteVertexController extends VertexControllerBase {
                         wrap(new ConstraintSearchAppender()),
                         wrap(new SingularEdgeAppender()));
 
-        return null;
+        SearchBuilder searchBuilder = new SearchBuilder();
+        searchAppender.append(searchBuilder, context);
+
+        SearchRequestBuilder searchRequest = searchBuilder.compose(client, false);
+        SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
+                metricRegistry, client,
+                searchRequest,
+                searchBuilder.getLimit(),
+                searchBuilder.getScrollSize(),
+                searchBuilder.getScrollTime());
+
+        ElementConverter<SearchHit, Edge> elementConverter = new CompositeElementConverter<>(
+                new SearchHitDiscreteSingularEdgeConverter<>(context));
+        
+        return Stream.ofAll(searchHits)
+                .map(elementConverter::convert)
+                .filter(Objects::nonNull).iterator();
     }
     //endregion
 

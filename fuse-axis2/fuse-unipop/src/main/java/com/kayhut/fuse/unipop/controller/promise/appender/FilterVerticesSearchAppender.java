@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.controller.promise.appender;
 
+import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
@@ -33,7 +34,7 @@ public class FilterVerticesSearchAppender implements SearchAppender<PromiseVerte
 
     }
 
-    private Traversal buildStartVerticesConstraint(List<Vertex> vertices) {
+    private Traversal buildStartVerticesConstraint(Iterable<Vertex> vertices) {
         return __.has(T.id, P.within(Stream.ofAll(vertices).map(vertex -> vertex.id()).toJavaList()));
     }
 }
