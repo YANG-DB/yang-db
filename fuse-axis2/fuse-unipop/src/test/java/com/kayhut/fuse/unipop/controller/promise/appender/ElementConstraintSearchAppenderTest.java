@@ -37,7 +37,7 @@ public class ElementConstraintSearchAppenderTest {
                 Collections.emptyList(),
                 EmptyGraphElementSchemaProvider.instance,
                 ElementType.vertex,
-                mock(SearchQuery.class)));
+                0));
 
         Assert.assertTrue(!appendResult);
         Assert.assertTrue(searchBuilder.getQueryBuilder().getQuery() == null);
@@ -58,7 +58,7 @@ public class ElementConstraintSearchAppenderTest {
                 Collections.emptyList(),
                 EmptyGraphElementSchemaProvider.instance,
                 ElementType.vertex,
-                mock(SearchQuery.class)));
+                0));
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(
@@ -79,7 +79,7 @@ public class ElementConstraintSearchAppenderTest {
                 Collections.emptyList(),
                 EmptyGraphElementSchemaProvider.instance,
                 ElementType.vertex,
-                mock(SearchQuery.class)));
+                0));
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(

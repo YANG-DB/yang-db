@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.structure.UniGraph;
@@ -23,9 +24,11 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
                 UniGraph graph,
                 GraphElementSchemaProvider schemaProvider,
                 Optional<TraversalConstraint> constraint,
+                Iterable<HasContainer> selectPHasContainers,
+                int limit,
                 Direction direction,
                 Iterable<Vertex> bulkVertices) {
-            super(graph, ElementType.edge, schemaProvider, constraint);
+            super(graph, ElementType.edge, schemaProvider, constraint, selectPHasContainers, limit);
             this.direction = direction;
             this.bulkVertices = Stream.ofAll(bulkVertices).toJavaMap(vertex -> new Tuple2<>(vertex.id(), vertex));
         }

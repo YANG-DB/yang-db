@@ -10,14 +10,12 @@ import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
-import com.kayhut.fuse.unipop.controller.discrete.converter.SearchHitDiscreteSingularEdgeConverter;
+import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteSingularEdgeConverter;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
-import com.kayhut.fuse.unipop.controller.discrete.converter.SearchHitDiscreteVertexConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -64,6 +62,8 @@ public class DiscreteVertexController extends VertexControllerBase {
                 this.graph,
                 this.schemaProvider,
                 constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint),
+                Collections.emptyList(),
+                searchVertexQuery.getLimit(),
                 searchVertexQuery.getDirection(),
                 searchVertexQuery.getVertices());
 
@@ -86,8 +86,8 @@ public class DiscreteVertexController extends VertexControllerBase {
                 searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, Edge> elementConverter = new CompositeElementConverter<>(
-                new SearchHitDiscreteSingularEdgeConverter<>(context));
-        
+                new DiscreteSingularEdgeConverter<>(context));
+
         return Stream.ofAll(searchHits)
                 .map(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();

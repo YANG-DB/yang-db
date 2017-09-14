@@ -23,6 +23,9 @@ public class SingularEdgeAppender extends SearchQueryAppenderBase<VertexControll
     @Override
     protected boolean append(QueryBuilder queryBuilder, VertexControllerContext context) {
         Iterable<GraphEdgeSchema> edgeSchemas = SchemaUtil.getRelevantSingularEdgeSchemas(context);
+        if (Stream.ofAll(edgeSchemas).isEmpty()) {
+            return false;
+        }
 
         //currently assuming only one relevant schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);

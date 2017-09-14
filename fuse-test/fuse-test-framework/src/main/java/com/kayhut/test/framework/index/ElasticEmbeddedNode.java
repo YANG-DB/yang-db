@@ -25,6 +25,10 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     //endregion
 
     //region Constructors
+    public ElasticEmbeddedNode(String clusterName) throws Exception {
+        this("target/es", 9200, 9300, clusterName);
+    }
+
     public ElasticEmbeddedNode() throws Exception {
         this("target/es", 9200, 9300, "fuse.test_elastic");
     }

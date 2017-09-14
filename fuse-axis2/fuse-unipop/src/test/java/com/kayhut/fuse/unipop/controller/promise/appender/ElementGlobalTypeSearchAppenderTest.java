@@ -41,27 +41,15 @@ public class ElementGlobalTypeSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         ElementGlobalTypeSearchAppender appender = new ElementGlobalTypeSearchAppender();
 
-        boolean appendResult = appender.append(searchBuilder, new ElementControllerContext() {
-            @Override
-            public UniGraph getGraph() {
-                return null;
-            }
+        ElementControllerContext context = new ElementControllerContext.Default(
+                null,
+                ElementType.vertex,
+                schemaProvider,
+                Optional.of(Constraint.by(__.has("name", "Sasson"))),
+                Collections.emptyList(),
+                0);
 
-            @Override
-            public Optional<TraversalConstraint> getConstraint() {
-                return Optional.of(Constraint.by(__.has("name", "Sasson")));
-            }
-
-            @Override
-            public ElementType getElementType() {
-                return ElementType.vertex;
-            }
-
-            @Override
-            public GraphElementSchemaProvider getSchemaProvider() {
-                return schemaProvider;
-            }
-        });
+        boolean appendResult = appender.append(searchBuilder, context);
 
         Assert.assertTrue(appendResult);
 

@@ -83,11 +83,6 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
         //region Constructor
         private ScrollIterator(SearchHitScrollIterable iterable) {
             this.iterable = iterable;
-            iterable.getSearchRequestBuilder().setSearchType(SearchType.SCAN)
-                    .setScroll(new TimeValue(iterable.getScrollTime()))
-                    .setSize(Math.min(iterable.getScrollSize(),
-                            (int)Math.min((long)Integer.MAX_VALUE, iterable.getLimit())));
-
             this.scrollId = null;
             this.searchHits = new ArrayList<>(iterable.getScrollSize());
         }
@@ -139,6 +134,10 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             SearchResponse response;
             if (this.scrollId == null) {
                 response = this.iterable.getSearchRequestBuilder()
+                        .setSearchType(SearchType.SCAN)
+                        .setScroll(new TimeValue(iterable.getScrollTime()))
+                        .setSize(Math.min(iterable.getScrollSize(),
+                                (int)Math.min((long)Integer.MAX_VALUE, iterable.getLimit())))
                         .execute()
                         .actionGet();
                 this.scrollId = response.getScrollId();

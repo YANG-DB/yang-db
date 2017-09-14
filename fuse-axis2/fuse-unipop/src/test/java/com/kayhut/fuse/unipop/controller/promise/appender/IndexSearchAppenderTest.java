@@ -37,27 +37,14 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Dragon"));
 
-        ElementControllerContext context = new ElementControllerContext() {
-            @Override
-            public UniGraph getGraph() {
-                return null;
-            }
-
-            @Override
-            public Optional<TraversalConstraint> getConstraint() {
-                return Optional.of(traversalConstraint);
-            }
-
-            @Override
-            public ElementType getElementType() {
-                return ElementType.vertex;
-            }
-
-            @Override
-            public GraphElementSchemaProvider getSchemaProvider() {
-                return schemaProvider;
-            }
-        };
+        ElementControllerContext context = new ElementControllerContext.Default(
+                null,
+                ElementType.vertex,
+                schemaProvider,
+                Optional.of(traversalConstraint),
+                Collections.emptyList(),
+                0
+        );
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
@@ -76,27 +63,14 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Person"));
 
-        ElementControllerContext context = new ElementControllerContext() {
-            @Override
-            public UniGraph getGraph() {
-                return null;
-            }
-
-            @Override
-            public Optional<TraversalConstraint> getConstraint() {
-                return Optional.of(traversalConstraint);
-            }
-
-            @Override
-            public ElementType getElementType() {
-                return ElementType.vertex;
-            }
-
-            @Override
-            public GraphElementSchemaProvider getSchemaProvider() {
-                return schemaProvider;
-            }
-        };
+        ElementControllerContext context = new ElementControllerContext.Default(
+                null,
+                ElementType.vertex,
+                schemaProvider,
+                Optional.of(traversalConstraint),
+                Collections.emptyList(),
+                0
+        );
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();
@@ -115,27 +89,13 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("color","sheker"));
 
-        ElementControllerContext context = new ElementControllerContext() {
-            @Override
-            public UniGraph getGraph() {
-                return null;
-            }
-
-            @Override
-            public Optional<TraversalConstraint> getConstraint() {
-                return Optional.of(traversalConstraint);
-            }
-
-            @Override
-            public ElementType getElementType() {
-                return ElementType.vertex;
-            }
-
-            @Override
-            public GraphElementSchemaProvider getSchemaProvider() {
-                return schemaProvider;
-            }
-        };
+        ElementControllerContext context = new ElementControllerContext.Default(
+                null,
+                ElementType.vertex,
+                schemaProvider,
+                Optional.of(traversalConstraint),
+                Collections.emptyList(),
+                0);
 
         SearchBuilder searchBuilder = new SearchBuilder();
         IndexSearchAppender indexSearchAppender = new IndexSearchAppender();

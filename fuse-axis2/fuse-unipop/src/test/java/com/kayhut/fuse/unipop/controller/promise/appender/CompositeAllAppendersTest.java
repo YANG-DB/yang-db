@@ -53,7 +53,7 @@ public class CompositeAllAppendersTest {
                     Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
-                    searchQuery);
+                    searchQuery.getLimit());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -108,7 +108,7 @@ public class CompositeAllAppendersTest {
                     Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
-                    searchQuery);
+                    searchQuery.getLimit());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
@@ -176,7 +176,7 @@ public class CompositeAllAppendersTest {
                     Collections.emptyList(),
                     schemaProvider,
                     ElementType.vertex,
-                    searchQuery);
+                    searchQuery.getLimit());
 
         SearchBuilder searchBuilder = new SearchBuilder();
 

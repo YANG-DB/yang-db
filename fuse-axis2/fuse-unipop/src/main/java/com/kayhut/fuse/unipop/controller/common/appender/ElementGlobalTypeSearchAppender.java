@@ -20,9 +20,6 @@ public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<Ele
     //region SearchQueryAppenderBase Implementation
     @Override
     public boolean append(QueryBuilder queryBuilder, ElementControllerContext context) {
-        if (!context.getConstraint().isPresent()) {
-            return false;
-        }
         Optional<TraversalConstraint> constraint = context.getConstraint();
         if (constraint.isPresent()) {
             TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();

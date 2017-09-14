@@ -2,21 +2,21 @@ package com.kayhut.fuse.unipop.controller.discrete;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteElementControllerContext;
-import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
+import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
-import com.kayhut.fuse.unipop.controller.discrete.converter.SearchHitDiscreteVertexConverter;
+import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexConverter;
+import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -24,9 +24,7 @@ import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 
@@ -47,7 +45,13 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
     //region SearchController Implementation
     @Override
     public <E extends Element> Iterator<E> search(SearchQuery<E> searchQuery) {
+        List<HasContainer> selectPHasContainers = Stream.ofAll(searchQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() != null)
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
+                .toJavaList();
+
         Traversal[] hasTraversals = Stream.ofAll(searchQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> !selectPHasContainers.contains(hasContainer))
                 .map(hasContainer -> (Traversal)__.has(hasContainer.getKey(), hasContainer.getPredicate()))
                 .toJavaArray(Traversal.class);
 
@@ -59,13 +63,17 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 this.graph,
                 ElementType.vertex,
                 this.schemaProvider,
-                constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint));
+                constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint),
+                selectPHasContainers,
+                searchQuery.getLimit());
 
         CompositeSearchAppender<DiscreteElementControllerContext> searchAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new IndexSearchAppender()),
+                        wrap(new SizeSearchAppender(this.configuration)),
                         wrap(new ElementGlobalTypeSearchAppender()),
-                        wrap(new ConstraintSearchAppender()));
+                        wrap(new ConstraintSearchAppender()),
+                        wrap(new FilterSourceSearchAppender()));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);
@@ -78,7 +86,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        ElementConverter<SearchHit, E> elementConverter = new SearchHitDiscreteVertexConverter<>(context);
+        ElementConverter<SearchHit, E> elementConverter = new DiscreteVertexConverter<>(context);
         return Stream.ofAll(searchHits)
                 .map(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();

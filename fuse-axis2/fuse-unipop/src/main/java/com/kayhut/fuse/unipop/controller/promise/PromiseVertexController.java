@@ -96,7 +96,7 @@ public class PromiseVertexController extends VertexControllerBase {
         Timer timeEs = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges:elastic"));
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(graph, schemaProvider, constraint, startVertices);
+        PromiseVertexControllerContext context = new PromiseVertexControllerContext(graph, schemaProvider, constraint, Collections.emptyList(), 0, startVertices);
 
         CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,

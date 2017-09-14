@@ -17,9 +17,9 @@ import java.util.Map;
 /**
  * Created by roman.margolis on 14/09/2017.
  */
-public class SearchHitDiscreteSingularEdgeConverter<E extends Element> implements ElementConverter<SearchHit, E> {
+public class DiscreteSingularEdgeConverter<E extends Element> implements ElementConverter<SearchHit, E> {
     //region Constructors
-    public SearchHitDiscreteSingularEdgeConverter(VertexControllerContext context) {
+    public DiscreteSingularEdgeConverter(VertexControllerContext context) {
         this.context = context;
     }
     //endregion

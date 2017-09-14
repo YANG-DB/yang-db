@@ -9,9 +9,9 @@ import org.elasticsearch.search.SearchHit;
 /**
  * Created by roman.margolis on 12/09/2017.
  */
-public class SearchHitDiscreteVertexConverter<E extends Element> implements ElementConverter<SearchHit, E> {
+public class DiscreteVertexConverter<E extends Element> implements ElementConverter<SearchHit, E> {
     //region Constructors
-    public SearchHitDiscreteVertexConverter(ElementControllerContext context) {
+    public DiscreteVertexConverter(ElementControllerContext context) {
         this.context = context;
     }
     //endregion

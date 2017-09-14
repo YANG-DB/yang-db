@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
@@ -102,7 +103,7 @@ public class PromiseVertexFilterController extends VertexControllerBase {
                         constraint,
                         selectPHasContainers,
                         schemaProvider,
-                        searchVertexQuery);
+                        searchVertexQuery.getLimit());
 
         CompositeSearchAppender<PromiseVertexFilterControllerContext> appender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
