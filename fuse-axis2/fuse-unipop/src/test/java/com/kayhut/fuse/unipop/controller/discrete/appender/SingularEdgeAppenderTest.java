@@ -1,4 +1,4 @@
-package com.kayhut.fuse.unipop.controller.discrete;
+package com.kayhut.fuse.unipop.controller.discrete.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeAppender;
@@ -35,6 +35,8 @@ public class SingularEdgeAppenderTest {
                 null,
                 getSchemaProvider(),
                 Optional.empty(),
+                Collections.emptyList(),
+                0,
                 Direction.OUT,
                 Arrays.asList(
                         new DiscreteVertex("1", "vertexType1", null, null),
@@ -54,6 +56,8 @@ public class SingularEdgeAppenderTest {
                 null,
                 getSchemaProvider(),
                 Optional.of(new TraversalConstraint(__.has(T.label, "edgeType1"))),
+                Collections.emptyList(),
+                0,
                 Direction.OUT,
                 Arrays.asList(
                         new DiscreteVertex("1", "vertexType1", null, null),
@@ -73,6 +77,8 @@ public class SingularEdgeAppenderTest {
                 null,
                 getSchemaProvider(),
                 Optional.empty(),
+                Collections.emptyList(),
+                0,
                 Direction.IN,
                 Arrays.asList(
                         new DiscreteVertex("3", "vertexType2", null, null),
@@ -92,6 +98,8 @@ public class SingularEdgeAppenderTest {
                 null,
                 getSchemaProvider(),
                 Optional.of(new TraversalConstraint(__.has(T.label, "edgeType1"))),
+                Collections.emptyList(),
+                0,
                 Direction.IN,
                 Arrays.asList(
                         new DiscreteVertex("3", "vertexType2", null, null),
@@ -111,6 +119,8 @@ public class SingularEdgeAppenderTest {
                 null,
                 getSchemaProvider(),
                 Optional.of(new TraversalConstraint(__.has(T.label, "edgeTypeNonExistent"))),
+                Collections.emptyList(),
+                0,
                 Direction.OUT,
                 Arrays.asList(
                         new DiscreteVertex("1", "vertexType1", null, null),
@@ -128,6 +138,8 @@ public class SingularEdgeAppenderTest {
                 null,
                 getSchemaProvider(),
                 Optional.empty(),
+                Collections.emptyList(),
+                0,
                 Direction.OUT,
                 Arrays.asList(
                         new DiscreteVertex("3", "vertexType2", null, null),
@@ -145,6 +157,8 @@ public class SingularEdgeAppenderTest {
                 null,
                 getSchemaProvider(),
                 Optional.empty(),
+                Collections.emptyList(),
+                0,
                 Direction.IN,
                 Arrays.asList(
                         new DiscreteVertex("1", "vertexType1", null, null),
