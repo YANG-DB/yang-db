@@ -11,6 +11,8 @@ import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -70,7 +72,13 @@ public class DiscreteTraversalTest {
                                                 new MetricRegistry()),
                                         null,
                                         new MetricRegistry()
-                                )
+                                ),
+                                new DiscreteVertexController(
+                                        elasticEmbeddedNode.getClient(),
+                                        elasticGraphConfiguration,
+                                        uniGraph,
+                                        schemaProvider,
+                                        new MetricRegistry())
                         );
                     }
 
@@ -89,7 +97,14 @@ public class DiscreteTraversalTest {
                 "id",
                 () -> createDragons(10)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons")).actionGet();
+        new ElasticDataPopulator(
+                client,
+                "coins",
+                "Coin",
+                "id",
+                () -> createCoins(10, 3)).populate();
+
+        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons", "coins")).actionGet();
     }
 
     @AfterClass
@@ -113,6 +128,15 @@ public class DiscreteTraversalTest {
     @Test
     public void g_V() throws InterruptedException {
         List<Vertex> vertices = g.V().toList();
+        Assert.assertEquals(40, vertices.size());
+        for(Vertex vertex : vertices) {
+            Assert.assertTrue(vertex.label().equals("Dragon") || vertex.label().equals("Coin"));
+        }
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").toList();
         Assert.assertEquals(10, vertices.size());
         for(Vertex vertex : vertices) {
             Assert.assertEquals("Dragon", vertex.label());
@@ -120,11 +144,17 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXage_eq_103XXselect_ageX() throws InterruptedException {
+    public void g_V_hasXage_103XXselect_ageX() throws InterruptedException {
         List<Vertex> vertices = g.V().has("age", P.eq(103)).has("age", SelectP.raw("age")).toList();
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
         Assert.assertEquals((Integer)103, vertices.get(0).value("age"));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_outE_Coin() throws InterruptedException {
+        List<Edge> edges = g.V().has(T.label, "Dragon").outE("Coin").toList();
+        int x = 5;
     }
     //endregion
 
@@ -160,6 +190,33 @@ public class DiscreteTraversalTest {
                             return null;
                         }
                     });
+
+                    case "Coin": return Optional.of(new GraphVertexSchema() {
+                        @Override
+                        public String getType() {
+                            return "Coin";
+                        }
+
+                        @Override
+                        public Optional<GraphElementRouting> getRouting() {
+                            return null;
+                        }
+
+                        @Override
+                        public IndexPartition getIndexPartition() {
+                            return () -> Arrays.asList("coins");
+                        }
+
+                        @Override
+                        public Iterable<GraphElementPropertySchema> getProperties() {
+                            return null;
+                        }
+
+                        @Override
+                        public Optional<GraphElementPropertySchema> getProperty(String name) {
+                            return null;
+                        }
+                    });
                 }
 
                 return Optional.empty();
@@ -167,12 +224,87 @@ public class DiscreteTraversalTest {
 
             @Override
             public Optional<GraphEdgeSchema> getEdgeSchema(String type) {
-                return null;
+                switch (type) {
+                    case "Coin": return Optional.of(new GraphEdgeSchema() {
+                        @Override
+                        public Optional<End> getSource() {
+                            return Optional.of(new End() {
+                                @Override
+                                public String getIdField() {
+                                    return "dragonId";
+                                }
+
+                                @Override
+                                public Optional<String> getType() {
+                                    return Optional.of("Dragon");
+                                }
+
+                                @Override
+                                public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
+                                    return null;
+                                }
+                            });
+                        }
+
+                        @Override
+                        public Optional<End> getDestination() {
+                            return Optional.of(new End() {
+                                @Override
+                                public String getIdField() {
+                                    return "coinId";
+                                }
+
+                                @Override
+                                public Optional<String> getType() {
+                                    return Optional.of("Coin");
+                                }
+
+                                @Override
+                                public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
+                                    return null;
+                                }
+                            });
+                        }
+
+                        @Override
+                        public Optional<Direction> getDirection() {
+                            return Optional.empty();
+                        }
+
+                        @Override
+                        public String getType() {
+                            return "Coin";
+                        }
+
+                        @Override
+                        public Optional<GraphElementRouting> getRouting() {
+                            return null;
+                        }
+
+                        @Override
+                        public IndexPartition getIndexPartition() {
+                            return () -> Arrays.asList("coins");
+                        }
+
+                        @Override
+                        public Iterable<GraphElementPropertySchema> getProperties() {
+                            return null;
+                        }
+
+                        @Override
+                        public Optional<GraphElementPropertySchema> getProperty(String name) {
+                            return null;
+                        }
+                    });
+                }
+
+                return Optional.empty();
             }
 
             @Override
             public Iterable<GraphEdgeSchema> getEdgeSchemas(String type) {
-                return null;
+                Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(type);
+                return graphEdgeSchema.<Iterable<GraphEdgeSchema>>map(Collections::singletonList).orElseGet(Collections::emptyList);
             }
 
             @Override
@@ -182,12 +314,12 @@ public class DiscreteTraversalTest {
 
             @Override
             public Iterable<String> getVertexTypes() {
-                return Arrays.asList("Dragon");
+                return Arrays.asList("Dragon", "Coin");
             }
 
             @Override
             public Iterable<String> getEdgeTypes() {
-                return null;
+                return Arrays.asList("Coin");
             }
         };
     }
@@ -206,6 +338,29 @@ public class DiscreteTraversalTest {
             dragons.add(dragon);
         }
         return dragons;
+    }
+
+    private static Iterable<Map<String, Object>> createCoins(int numDragons, int numCoinsPerDragon) {
+        int coinId = 0;
+        List<String> materials = Arrays.asList("gold", "silver", "bronze", "tin");
+        List<Integer> weights = Arrays.asList(10, 20, 30, 40, 50, 60, 70);
+
+        List<Map<String, Object>> coins = new ArrayList<>();
+        for(int i = 0 ; i < numDragons ; i++) {
+            for(int j = 0; j < numCoinsPerDragon ; j++) {
+                Map<String, Object> coin = new HashMap();
+                coin.put("id", "c" + Integer.toString(coinId));
+                coin.put("coinId", "c" + Integer.toString(coinId));
+                coin.put("dragonId", "d" + Integer.toString(i));
+                coin.put("material", materials.get(coinId % materials.size()));
+                coin.put("weight", weights.get(coinId % weights.size()));
+                coins.add(coin);
+
+                coinId++;
+            }
+        }
+
+        return coins;
     }
     //endregion
 

@@ -9,8 +9,10 @@ import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearch
 import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeAppender;
+import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteSingularEdgeConverter;
+import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
@@ -40,6 +42,11 @@ public class DiscreteVertexController extends VertexControllerBase {
     //region Constructors
     DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         super(Stream.ofAll(schemaProvider.getEdgeTypes()).distinct().toJavaList());
+        this.client = client;
+        this.configuration = configuration;
+        this.graph = graph;
+        this.schemaProvider = schemaProvider;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -70,9 +77,11 @@ public class DiscreteVertexController extends VertexControllerBase {
         CompositeSearchAppender<DiscreteVertexControllerContext> searchAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new IndexSearchAppender()),
+                        wrap(new SizeSearchAppender(this.configuration)),
                         wrap(new ElementGlobalTypeSearchAppender()),
                         wrap(new ConstraintSearchAppender()),
-                        wrap(new SingularEdgeAppender()));
+                        wrap(new SingularEdgeAppender()),
+                        wrap(new SingularEdgeSourceSearchAppender()));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);
