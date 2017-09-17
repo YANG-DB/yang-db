@@ -9,6 +9,7 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -144,7 +145,7 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXage_103XXselect_ageX() throws InterruptedException {
+    public void g_V_hasXage_103XXselect_raw_ageX() throws InterruptedException {
         List<Vertex> vertices = g.V().has("age", P.eq(103)).has("age", SelectP.raw("age")).toList();
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
@@ -152,9 +153,92 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_Coin() throws InterruptedException {
+    public void g_V_hasXlabel_DragonX_outE_hasCoin() throws InterruptedException {
         List<Edge> edges = g.V().has(T.label, "Dragon").outE("hasCoin").toList();
-        int x = 5;
+        Assert.assertEquals(30, edges.size());
+        Assert.assertTrue(Stream.ofAll(edges).forAll(edge -> edge.label().equals("hasCoin")));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_out_hasCoin() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").out("hasCoin").toList();
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_inE_hasCoin() throws InterruptedException {
+        List<Edge> edges = g.V().has(T.label, "Dragon").inE("hasCoin").toList();
+        Assert.assertEquals(0, edges.size());
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_in_hasCoin() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").in("hasCoin").toList();
+        Assert.assertEquals(0, vertices.size());
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_SelectP_raw_materialX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").outE("hasCoin").has("material", SelectP.raw("material")).inV().toList();
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material") != null));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon")
+                .outE("hasCoin")
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material") != null));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight") != null));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_goldX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon")
+                .outE("hasCoin")
+                .has("material", "gold")
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(8, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material").toString().equals("gold")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight") != null));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXweight_30X_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon")
+                .outE("hasCoin")
+                .has("weight", 30)
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(4, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight").equals(30)));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_goldX_hasXweight_30X_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon")
+                .outE("hasCoin")
+                .has("material", "gold")
+                .has("weight", 30)
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material").equals("gold")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight").equals(30)));
     }
     //endregion
 
@@ -209,7 +293,10 @@ public class DiscreteTraversalTest {
 
                         @Override
                         public Iterable<GraphElementPropertySchema> getProperties() {
-                            return null;
+                            return Arrays.asList(
+                                    new GraphElementPropertySchema.Impl("material", "string"),
+                                    new GraphElementPropertySchema.Impl("weight", "int")
+                            );
                         }
 
                         @Override
@@ -241,7 +328,12 @@ public class DiscreteTraversalTest {
 
                                 @Override
                                 public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return null;
+                                    return Optional.empty();
+                                }
+
+                                @Override
+                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
+                                    return Collections.emptyList();
                                 }
                             });
                         }
@@ -261,7 +353,15 @@ public class DiscreteTraversalTest {
 
                                 @Override
                                 public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return null;
+                                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), property.getName(), property.getType()));
+                                }
+
+                                @Override
+                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
+                                    return Arrays.asList(
+                                            new GraphRedundantPropertySchema.Impl("material", "material", "string"),
+                                            new GraphRedundantPropertySchema.Impl("weight", "weight", "int")
+                                    );
                                 }
                             });
                         }

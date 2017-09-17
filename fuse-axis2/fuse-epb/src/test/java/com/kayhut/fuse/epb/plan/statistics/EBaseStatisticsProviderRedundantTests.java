@@ -15,10 +15,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -77,6 +74,11 @@ public class EBaseStatisticsProviderRedundantTests {
                 }else{
                     return Optional.empty();
                 }
+            }
+
+            @Override
+            public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
+                return Collections.emptyList();
             }
         }));
 

@@ -3,10 +3,7 @@ package com.kayhut.fuse.unipop.controller.discrete;
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
-import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeAppender;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSourceSearchAppender;
@@ -16,11 +13,13 @@ import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
+import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
@@ -28,10 +27,7 @@ import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
@@ -57,7 +53,13 @@ public class DiscreteVertexController extends VertexControllerBase {
             return Collections.emptyIterator();
         }
 
+        List<HasContainer> selectPHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() != null)
+                .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
+                .toJavaList();
+
         Traversal[] hasTraversals = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> !selectPHasContainers.contains(hasContainer))
                 .map(hasContainer -> (Traversal) __.has(hasContainer.getKey(), hasContainer.getPredicate()))
                 .toJavaArray(Traversal.class);
 
@@ -69,7 +71,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                 this.graph,
                 this.schemaProvider,
                 constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint),
-                Collections.emptyList(),
+                selectPHasContainers,
                 searchVertexQuery.getLimit(),
                 searchVertexQuery.getDirection(),
                 searchVertexQuery.getVertices());
@@ -80,6 +82,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                         wrap(new SizeSearchAppender(this.configuration)),
                         wrap(new ElementGlobalTypeSearchAppender()),
                         wrap(new ConstraintSearchAppender()),
+                        wrap(new FilterSourceSearchAppender()),
                         wrap(new SingularEdgeAppender()),
                         wrap(new SingularEdgeSourceSearchAppender()));
 

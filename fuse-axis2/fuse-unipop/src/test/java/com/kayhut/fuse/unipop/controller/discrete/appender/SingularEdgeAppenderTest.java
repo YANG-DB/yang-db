@@ -197,7 +197,12 @@ public class SingularEdgeAppenderTest {
 
                                 @Override
                                 public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return null;
+                                    return Optional.empty();
+                                }
+
+                                @Override
+                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
+                                    return Collections.emptyList();
                                 }
                             });
                         }
@@ -217,7 +222,12 @@ public class SingularEdgeAppenderTest {
 
                                 @Override
                                 public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return null;
+                                    return Optional.empty();
+                                }
+
+                                @Override
+                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
+                                    return Collections.emptyList();
                                 }
                             });
                         }

@@ -191,6 +191,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
                         return graphLayoutProvider.getRedundantProperty(edgeType, property);
                     }
+
+                    @Override
+                    public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
+                        return Collections.emptyList();
+                    }
                 });
             }
 
@@ -210,6 +215,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     @Override
                     public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
                         return graphLayoutProvider.getRedundantProperty(edgeType, property);
+                    }
+
+                    @Override
+                    public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
+                        return Collections.emptyList();
                     }
                 });
             }
