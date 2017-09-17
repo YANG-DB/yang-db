@@ -38,21 +38,28 @@ public class DiscreteSingularEdgeConverter<E extends Element> implements Element
         Vertex outV = null;
         Vertex inV = null;
         Map<String, Object> properties = searchHit.sourceAsMap();
+        Object sourceId = getIdFieldValue(searchHit, properties, edgeSchema.getSource().get().getIdField());
+        Object destId = getIdFieldValue(searchHit, properties, edgeSchema.getDestination().get().getIdField());
+
         if (context.getDirection().equals(Direction.OUT)) {
-            outV = context.getVertex(properties.get(edgeSchema.getSource().get().getIdField()));
-            inV = new DiscreteVertex(properties.get(edgeSchema.getDestination().get().getIdField()),
-                    edgeSchema.getDestination().get().getType().get(),
-                    context.getGraph(),
-                    null);
+            outV = context.getVertex(sourceId);
+            inV = new DiscreteVertex(destId, edgeSchema.getDestination().get().getLabel().get(), context.getGraph(), null);
         } else {
-            inV = context.getVertex(properties.get(edgeSchema.getDestination().get().getIdField()));
-            outV = new DiscreteVertex(properties.get(edgeSchema.getSource().get().getIdField()),
-                    edgeSchema.getDestination().get().getType().get(),
-                    context.getGraph(),
-                    null);
+            inV = context.getVertex(destId);
+            outV = new DiscreteVertex(sourceId, edgeSchema.getDestination().get().getLabel().get(), context.getGraph(), null);
         }
 
-        return (E)new DiscreteEdge(searchHit.getId(), edgeSchema.getType(), outV, inV, context.getGraph(), properties);
+        return (E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), properties);
+    }
+    //endregion
+
+    //region Private Methods
+    private Object getIdFieldValue(SearchHit searchHit, Map<String, Object> properties, String idField) {
+        if (idField.equals("_id")) {
+            return searchHit.id();
+        } else {
+            return properties.get(idField);
+        }
     }
     //endregion
 

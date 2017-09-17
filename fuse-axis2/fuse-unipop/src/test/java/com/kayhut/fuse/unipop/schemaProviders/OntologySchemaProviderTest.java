@@ -39,7 +39,7 @@ public class OntologySchemaProviderTest {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
-        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getType().get(), "Person");
+        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Person");
 
 
         assertEquals(2, Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartition().getIndices()).size());

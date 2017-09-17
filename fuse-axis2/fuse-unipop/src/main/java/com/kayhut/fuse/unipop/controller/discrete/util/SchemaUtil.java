@@ -22,7 +22,7 @@ public class SchemaUtil {
         }
 
         if (types.isEmpty()) {
-            types = Stream.ofAll(context.getSchemaProvider().getEdgeTypes()).toJavaSet();
+            types = Stream.ofAll(context.getSchemaProvider().getEdgeLabels()).toJavaSet();
         }
 
         return Stream.ofAll(types)
@@ -42,9 +42,9 @@ public class SchemaUtil {
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
         return Stream.ofAll(getSingularEdgeSchemas(context))
-                .filter(edgeSchema -> (edgeSchema.getSource().get().getType().get().equals(vertexLabel) &&
+                .filter(edgeSchema -> (edgeSchema.getSource().get().getLabel().get().equals(vertexLabel) &&
                         (context.getDirection().equals(Direction.OUT) || context.getDirection().equals(Direction.BOTH))) ||
-                        (edgeSchema.getDestination().get().getType().get().equals(vertexLabel) &&
+                        (edgeSchema.getDestination().get().getLabel().get().equals(vertexLabel) &&
                                 (context.getDirection().equals(Direction.IN) || context.getDirection().equals(Direction.BOTH))))
                 .toJavaList();
     }

@@ -64,7 +64,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         }
 
         // We estimate each vertex type's statistics, and combine all statistics together
-        List<String> vertexTypes = getVertexTypes(entity, ont, graphElementSchemaProvider.getVertexTypes());
+        List<String> vertexTypes = getVertexTypes(entity, ont, graphElementSchemaProvider.getVertexLabels());
         Statistics.SummaryStatistics entityStats = getVertexStatistics(vertexTypes.get(0));
 
         for (int i = 1; i < vertexTypes.size(); i++) {
@@ -81,7 +81,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
             return bucketInfos.get(0).getCardinalityObject();
         }
-        List<String> vertexTypes = getVertexTypes(entity,ont,graphElementSchemaProvider.getVertexTypes());
+        List<String> vertexTypes = getVertexTypes(entity,ont,graphElementSchemaProvider.getVertexLabels());
 
         Statistics.SummaryStatistics entityStats = estimateVertexPropertyGroup(vertexTypes.get(0),entityFilter);
 

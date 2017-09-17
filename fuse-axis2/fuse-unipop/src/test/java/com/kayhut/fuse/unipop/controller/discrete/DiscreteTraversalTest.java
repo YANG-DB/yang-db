@@ -153,7 +153,7 @@ public class DiscreteTraversalTest {
 
     @Test
     public void g_V_hasXlabel_DragonX_outE_Coin() throws InterruptedException {
-        List<Edge> edges = g.V().has(T.label, "Dragon").outE("Coin").toList();
+        List<Edge> edges = g.V().has(T.label, "Dragon").outE("hasCoin").toList();
         int x = 5;
     }
     //endregion
@@ -162,8 +162,8 @@ public class DiscreteTraversalTest {
     private static GraphElementSchemaProvider getSchemaProvider() {
         return new GraphElementSchemaProvider() {
             @Override
-            public Optional<GraphVertexSchema> getVertexSchema(String type) {
-                switch (type) {
+            public Optional<GraphVertexSchema> getVertexSchema(String label) {
+                switch (label) {
                     case "Dragon": return Optional.of(new GraphVertexSchema() {
                         @Override
                         public String getType() {
@@ -223,9 +223,9 @@ public class DiscreteTraversalTest {
             }
 
             @Override
-            public Optional<GraphEdgeSchema> getEdgeSchema(String type) {
-                switch (type) {
-                    case "Coin": return Optional.of(new GraphEdgeSchema() {
+            public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
+                switch (label) {
+                    case "hasCoin": return Optional.of(new GraphEdgeSchema() {
                         @Override
                         public Optional<End> getSource() {
                             return Optional.of(new End() {
@@ -235,7 +235,7 @@ public class DiscreteTraversalTest {
                                 }
 
                                 @Override
-                                public Optional<String> getType() {
+                                public Optional<String> getLabel() {
                                     return Optional.of("Dragon");
                                 }
 
@@ -251,11 +251,11 @@ public class DiscreteTraversalTest {
                             return Optional.of(new End() {
                                 @Override
                                 public String getIdField() {
-                                    return "coinId";
+                                    return "_id";
                                 }
 
                                 @Override
-                                public Optional<String> getType() {
+                                public Optional<String> getLabel() {
                                     return Optional.of("Coin");
                                 }
 
@@ -274,6 +274,11 @@ public class DiscreteTraversalTest {
                         @Override
                         public String getType() {
                             return "Coin";
+                        }
+
+                        @Override
+                        public String getLabel() {
+                            return "hasCoin";
                         }
 
                         @Override
@@ -302,8 +307,8 @@ public class DiscreteTraversalTest {
             }
 
             @Override
-            public Iterable<GraphEdgeSchema> getEdgeSchemas(String type) {
-                Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(type);
+            public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
+                Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
                 return graphEdgeSchema.<Iterable<GraphEdgeSchema>>map(Collections::singletonList).orElseGet(Collections::emptyList);
             }
 
@@ -313,13 +318,13 @@ public class DiscreteTraversalTest {
             }
 
             @Override
-            public Iterable<String> getVertexTypes() {
+            public Iterable<String> getVertexLabels() {
                 return Arrays.asList("Dragon", "Coin");
             }
 
             @Override
-            public Iterable<String> getEdgeTypes() {
-                return Arrays.asList("Coin");
+            public Iterable<String> getEdgeLabels() {
+                return Arrays.asList("hasCoin");
             }
         };
     }
@@ -350,7 +355,6 @@ public class DiscreteTraversalTest {
             for(int j = 0; j < numCoinsPerDragon ; j++) {
                 Map<String, Object> coin = new HashMap();
                 coin.put("id", "c" + Integer.toString(coinId));
-                coin.put("coinId", "c" + Integer.toString(coinId));
                 coin.put("dragonId", "d" + Integer.toString(i));
                 coin.put("material", materials.get(coinId % materials.size()));
                 coin.put("weight", weights.get(coinId % weights.size()));

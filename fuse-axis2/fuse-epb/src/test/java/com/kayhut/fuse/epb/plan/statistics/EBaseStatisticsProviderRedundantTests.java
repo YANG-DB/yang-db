@@ -40,7 +40,7 @@ public class EBaseStatisticsProviderRedundantTests {
     public void setup(){
         ontology = OntologyTestUtils.createDragonsOntologyShort();
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
-        when(graphElementSchemaProvider.getVertexTypes()).thenReturn(Arrays.asList("Guild"));
+        when(graphElementSchemaProvider.getVertexLabels()).thenReturn(Arrays.asList("Guild"));
         GraphEdgeSchema ownSchema = mock(GraphEdgeSchema.class);
         when(ownSchema.getIndexPartition()).thenReturn(() -> new ArrayList<>());
         when(ownSchema.getDestination()).thenReturn(Optional.of(new GraphEdgeSchema.End(){
@@ -51,7 +51,7 @@ public class EBaseStatisticsProviderRedundantTests {
             }
 
             @Override
-            public Optional<String> getType() {
+            public Optional<String> getLabel() {
                 return null;
             }
 

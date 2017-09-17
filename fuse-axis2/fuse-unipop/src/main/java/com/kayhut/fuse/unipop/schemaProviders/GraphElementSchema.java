@@ -15,6 +15,9 @@ public interface GraphElementSchema {
      * @return vertex/edge type (e.g., Dragon, Person, fire)
      */
     String getType();
+    default String getLabel() {
+        return getType();
+    }
 
     Optional<GraphElementRouting> getRouting();
 

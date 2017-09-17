@@ -174,13 +174,13 @@ public class SingularEdgeAppenderTest {
     private GraphElementSchemaProvider getSchemaProvider() {
         return new GraphElementSchemaProvider() {
             @Override
-            public Optional<GraphVertexSchema> getVertexSchema(String type) {
+            public Optional<GraphVertexSchema> getVertexSchema(String label) {
                 return null;
             }
 
             @Override
-            public Optional<GraphEdgeSchema> getEdgeSchema(String type) {
-                switch (type) {
+            public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
+                switch (label) {
                     case "edgeType1": return Optional.of(new GraphEdgeSchema() {
                         @Override
                         public Optional<End> getSource() {
@@ -191,7 +191,7 @@ public class SingularEdgeAppenderTest {
                                 }
 
                                 @Override
-                                public Optional<String> getType() {
+                                public Optional<String> getLabel() {
                                     return Optional.of("vertexType1");
                                 }
 
@@ -211,7 +211,7 @@ public class SingularEdgeAppenderTest {
                                 }
 
                                 @Override
-                                public Optional<String> getType() {
+                                public Optional<String> getLabel() {
                                     return Optional.of("vertexType2");
                                 }
 
@@ -258,8 +258,8 @@ public class SingularEdgeAppenderTest {
             }
 
             @Override
-            public Iterable<GraphEdgeSchema> getEdgeSchemas(String type) {
-                Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(type);
+            public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
+                Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
                 return graphEdgeSchema.map(Collections::singletonList).orElseGet(Collections::emptyList);
             }
 
@@ -269,12 +269,12 @@ public class SingularEdgeAppenderTest {
             }
 
             @Override
-            public Iterable<String> getVertexTypes() {
+            public Iterable<String> getVertexLabels() {
                 return Arrays.asList("vertexType1", "vertexType2");
             }
 
             @Override
-            public Iterable<String> getEdgeTypes() {
+            public Iterable<String> getEdgeLabels() {
                 return Arrays.asList("edgeType1");
             }
         };

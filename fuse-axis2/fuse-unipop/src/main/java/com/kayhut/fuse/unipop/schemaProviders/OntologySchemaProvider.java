@@ -30,44 +30,44 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region GraphElementSchemaProvider implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String vertexType) {
-        if (Strings.isNullOrEmpty(vertexType) || !this.vertexTypes.contains(vertexType)) {
+    public Optional<GraphVertexSchema> getVertexSchema(String label) {
+        if (Strings.isNullOrEmpty(label) || !this.vertexTypes.contains(label)) {
             return Optional.empty();
         } else
-            return getEntityTypeSchema(vertexType);
+            return getEntityTypeSchema(label);
     }
 
     @Override
     public Optional<GraphEdgeSchema> getEdgeSchema(
-            String edgeType) {
+            String label) {
 
-        if (Strings.isNullOrEmpty(edgeType)) {
+        if (Strings.isNullOrEmpty(label)) {
             return Optional.empty();
         }
 
-        Iterable<GraphEdgeSchema> edgeSchemas = getEdgeSchemas(edgeType);
+        Iterable<GraphEdgeSchema> edgeSchemas = getEdgeSchemas(label);
         if (Stream.ofAll(edgeSchemas).isEmpty())
             return Optional.empty();
 
         return Optional.of(Stream.ofAll(edgeSchemas).get(0));
 
-        //return Stream.ofAll(edgeSchemas.get()).find(edgeSchema -> edgeSchema.getType().equals(edgeType)).toJavaOptional() ;
+        //return Stream.ofAll(edgeSchemas.get()).find(edgeSchema -> edgeSchema.getLabel().equals(edgeType)).toJavaOptional() ;
     }
 
     @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String edgeType) {
-        if (Strings.isNullOrEmpty(edgeType)) {
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
+        if (Strings.isNullOrEmpty(label)) {
             return Collections.emptyList();
         }
 
-        Optional<RelationshipType> relationshipType = $ont.relation(edgeType);
+        Optional<RelationshipType> relationshipType = $ont.relation(label);
         if (relationshipType.isPresent()) {
             List<GraphEdgeSchema> graphEdgeSchemas = new ArrayList<>();
             List<EPair> verticesPair = relationshipType.get().getePairs();
             for (EPair ePair : verticesPair) {
                 String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
                 String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
-                Optional<GraphEdgeSchema> relationTypeSchema = getRelationTypeSchema(edgeType, eTypeA, eTypeB);
+                Optional<GraphEdgeSchema> relationTypeSchema = getRelationTypeSchema(label, eTypeA, eTypeB);
                 if (relationTypeSchema.isPresent()) {
                     graphEdgeSchemas.add(relationTypeSchema.get());
                 }
@@ -103,12 +103,12 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     }
 
     @Override
-    public Iterable<String> getVertexTypes() {
+    public Iterable<String> getVertexLabels() {
         return this.vertexTypes;
     }
 
     @Override
-    public Iterable<String> getEdgeTypes() {
+    public Iterable<String> getEdgeLabels() {
         return this.edgeTypes;
     }
     //endregion
@@ -183,7 +183,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     }
 
                     @Override
-                    public Optional<String> getType() {
+                    public Optional<String> getLabel() {
                         return Optional.of(sourceVertexType);
                     }
 
@@ -203,7 +203,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     }
 
                     @Override
-                    public Optional<String> getType() {
+                    public Optional<String> getLabel() {
                         return Optional.of(destinationVertexType);
                     }
 

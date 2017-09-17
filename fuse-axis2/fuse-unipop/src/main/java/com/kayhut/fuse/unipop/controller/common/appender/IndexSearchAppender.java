@@ -58,7 +58,7 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
 
     private void manageSpecialCase(ElementControllerContext context, GraphElementSchemaProvider schemaProvider, SearchBuilder searchBuilder) {
         if (context.getElementType() == ElementType.vertex) {
-            Iterable<String> vertexTypes = schemaProvider.getVertexTypes();
+            Iterable<String> vertexTypes = schemaProvider.getVertexLabels();
             vertexTypes.forEach(vertexType -> {
                 Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(vertexType);
                 if (vertexSchema.isPresent()) {
@@ -66,7 +66,7 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
                 }
             });
         } else if (context.getElementType() == ElementType.edge) {
-            Iterable<String> edgeTypes = schemaProvider.getEdgeTypes();
+            Iterable<String> edgeTypes = schemaProvider.getEdgeLabels();
             edgeTypes.forEach(edgeType -> {
                 Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(edgeType);
                     searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchemas));
