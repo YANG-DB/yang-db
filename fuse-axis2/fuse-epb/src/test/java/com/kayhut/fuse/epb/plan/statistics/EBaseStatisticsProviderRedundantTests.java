@@ -40,47 +40,13 @@ public class EBaseStatisticsProviderRedundantTests {
         when(graphElementSchemaProvider.getVertexLabels()).thenReturn(Arrays.asList("Guild"));
         GraphEdgeSchema ownSchema = mock(GraphEdgeSchema.class);
         when(ownSchema.getIndexPartition()).thenReturn(() -> new ArrayList<>());
-        when(ownSchema.getDestination()).thenReturn(Optional.of(new GraphEdgeSchema.End(){
-
-            @Override
-            public String getIdField() {
-                return null;
-            }
-
-            @Override
-            public Optional<String> getLabel() {
-                return null;
-            }
-
-            @Override
-            public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                if(property.getName().equals("firstName")){
-                    return Optional.of(new GraphRedundantPropertySchema() {
-                        @Override
-                        public String getPropertyRedundantName() {
-                            return "EntityB.firstName";
-                        }
-
-                        @Override
-                        public String getName() {
-                            return "firstName";
-                        }
-
-                        @Override
-                        public String getType() {
-                            return "string";
-                        }
-                    });
-                }else{
-                    return Optional.empty();
-                }
-            }
-
-            @Override
-            public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
-                return Collections.emptyList();
-            }
-        }));
+        when(ownSchema.getDestination()).thenReturn(Optional.of(
+                new GraphEdgeSchema.End.Impl(
+                        null,
+                        null,
+                        Collections.singletonList(
+                                new GraphRedundantPropertySchema.Impl("firstName", "EntityB.firstName", "string")
+                        ))));
 
         GraphVertexSchema graphVertexSchema = new GraphVertexSchema() {
             @Override
@@ -100,42 +66,14 @@ public class EBaseStatisticsProviderRedundantTests {
 
             @Override
             public Iterable<GraphElementPropertySchema> getProperties() {
-                return Arrays.asList(new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return "firstName";
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-                },new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return "lastName";
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-                } );
+                return Arrays.asList(
+                        new GraphElementPropertySchema.Impl("firstName", "string"),
+                        new GraphElementPropertySchema.Impl("lastName", "string"));
             }
 
             @Override
             public Optional<GraphElementPropertySchema> getProperty(String name) {
-                return Optional.of(new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return name;
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-                });
+                return Optional.of(new GraphElementPropertySchema.Impl(name, "string"));
             }
         };
         when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(ownSchema));

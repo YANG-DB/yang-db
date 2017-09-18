@@ -6,6 +6,10 @@ package com.kayhut.fuse.unipop.schemaProviders;
 public interface GraphElementPropertySchema {
     class Impl implements GraphElementPropertySchema {
         //region Constructors
+        public Impl(String name) {
+            this(name, null);
+        }
+
         public Impl(String name, String type) {
             this.name = name;
             this.type = type;

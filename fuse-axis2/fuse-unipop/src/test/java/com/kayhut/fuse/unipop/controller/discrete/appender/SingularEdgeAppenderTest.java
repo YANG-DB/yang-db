@@ -184,52 +184,18 @@ public class SingularEdgeAppenderTest {
                     case "edgeType1": return Optional.of(new GraphEdgeSchema() {
                         @Override
                         public Optional<End> getSource() {
-                            return Optional.of(new End() {
-                                @Override
-                                public String getIdField() {
-                                    return "vertexType1Id";
-                                }
-
-                                @Override
-                                public Optional<String> getLabel() {
-                                    return Optional.of("vertexType1");
-                                }
-
-                                @Override
-                                public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return Optional.empty();
-                                }
-
-                                @Override
-                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
-                                    return Collections.emptyList();
-                                }
-                            });
+                            return Optional.of(
+                                    new End.Impl("vertexType1Id",
+                                            Optional.of("vertexType1"),
+                                            Collections.emptyList()));
                         }
 
                         @Override
                         public Optional<End> getDestination() {
-                            return Optional.of(new End() {
-                                @Override
-                                public String getIdField() {
-                                    return "vertexType2Id";
-                                }
-
-                                @Override
-                                public Optional<String> getLabel() {
-                                    return Optional.of("vertexType2");
-                                }
-
-                                @Override
-                                public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return Optional.empty();
-                                }
-
-                                @Override
-                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
-                                    return Collections.emptyList();
-                                }
-                            });
+                            return Optional.of(
+                                    new End.Impl("vertexType2Id",
+                                            Optional.of("vertexType2"),
+                                            Collections.emptyList()));
                         }
 
                         @Override

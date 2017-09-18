@@ -256,7 +256,9 @@ public class DiscreteTraversalTest {
 
                         @Override
                         public Optional<GraphElementRouting> getRouting() {
-                            return null;
+                            return Optional.of(new GraphElementRouting.Impl(
+                                    new GraphElementPropertySchema.Impl("faction")
+                            ));
                         }
 
                         @Override
@@ -315,55 +317,26 @@ public class DiscreteTraversalTest {
                     case "hasCoin": return Optional.of(new GraphEdgeSchema() {
                         @Override
                         public Optional<End> getSource() {
-                            return Optional.of(new End() {
-                                @Override
-                                public String getIdField() {
-                                    return "dragonId";
-                                }
-
-                                @Override
-                                public Optional<String> getLabel() {
-                                    return Optional.of("Dragon");
-                                }
-
-                                @Override
-                                public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return Optional.empty();
-                                }
-
-                                @Override
-                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
-                                    return Collections.emptyList();
-                                }
-                            });
+                            return Optional.of(
+                                    new End.Impl("dragonId",
+                                            Optional.of("Dragon"),
+                                            Collections.emptyList(),
+                                            Optional.of(new GraphElementRouting.Impl(
+                                                    new GraphElementPropertySchema.Impl("faction")
+                                            ))));
                         }
 
                         @Override
                         public Optional<End> getDestination() {
-                            return Optional.of(new End() {
-                                @Override
-                                public String getIdField() {
-                                    return "_id";
-                                }
-
-                                @Override
-                                public Optional<String> getLabel() {
-                                    return Optional.of("Coin");
-                                }
-
-                                @Override
-                                public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), property.getName(), property.getType()));
-                                }
-
-                                @Override
-                                public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
-                                    return Arrays.asList(
-                                            new GraphRedundantPropertySchema.Impl("material", "material", "string"),
-                                            new GraphRedundantPropertySchema.Impl("weight", "weight", "int")
-                                    );
-                                }
-                            });
+                            return Optional.of(
+                                    new End.Impl("_id",
+                                            Optional.of("Coin"),
+                                            Arrays.asList(
+                                                    new GraphRedundantPropertySchema.Impl("material", "material", "string"),
+                                                    new GraphRedundantPropertySchema.Impl("weight", "weight", "int")),
+                                            Optional.of(new GraphElementRouting.Impl(
+                                                    new GraphElementPropertySchema.Impl("faction")
+                                            ))));
                         }
 
                         @Override
@@ -433,10 +406,12 @@ public class DiscreteTraversalTest {
     //region Private Methods
     private static Iterable<Map<String, Object>> createDragons(int numDragons) {
         List<String> colors = Arrays.asList("red", "green", "yellow", "blue");
+        List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5", "faction6");
         List<Map<String, Object>> dragons = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashMap();
             dragon.put("id", "d" + Integer.toString(i));
+            dragon.put("faction", factions.get(i % factions.size()));
             dragon.put("name", "dragon" + i);
             dragon.put("age", 100 + i);
             dragon.put("color", colors.get(i % colors.size()));
