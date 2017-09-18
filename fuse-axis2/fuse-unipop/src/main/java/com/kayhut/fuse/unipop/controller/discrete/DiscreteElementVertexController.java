@@ -73,7 +73,8 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                         wrap(new SizeSearchAppender(this.configuration)),
                         wrap(new ElementGlobalTypeSearchAppender()),
                         wrap(new ConstraintSearchAppender()),
-                        wrap(new FilterSourceSearchAppender()));
+                        wrap(new FilterSourceSearchAppender()),
+                        wrap(new RoutingFilterSourceSearchAppender()));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);

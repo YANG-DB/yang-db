@@ -130,18 +130,18 @@ public class DiscreteTraversalTest {
     public void g_V() throws InterruptedException {
         List<Vertex> vertices = g.V().toList();
         Assert.assertEquals(40, vertices.size());
-        for(Vertex vertex : vertices) {
-            Assert.assertTrue(vertex.label().equals("Dragon") || vertex.label().equals("Coin"));
-        }
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon") || vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices)
+                .filter(vertex -> vertex.label().equals("Dragon"))
+                .forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
     public void g_V_hasXlabel_DragonX() throws InterruptedException {
         List<Vertex> vertices = g.V().has(T.label, "Dragon").toList();
         Assert.assertEquals(10, vertices.size());
-        for(Vertex vertex : vertices) {
-            Assert.assertEquals("Dragon", vertex.label());
-        }
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
@@ -150,6 +150,7 @@ public class DiscreteTraversalTest {
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
         Assert.assertEquals((Integer)103, vertices.get(0).value("age"));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
@@ -285,7 +286,7 @@ public class DiscreteTraversalTest {
 
                         @Override
                         public Optional<GraphElementRouting> getRouting() {
-                            return null;
+                            return Optional.empty();
                         }
 
                         @Override
@@ -334,9 +335,7 @@ public class DiscreteTraversalTest {
                                             Arrays.asList(
                                                     new GraphRedundantPropertySchema.Impl("material", "material", "string"),
                                                     new GraphRedundantPropertySchema.Impl("weight", "weight", "int")),
-                                            Optional.of(new GraphElementRouting.Impl(
-                                                    new GraphElementPropertySchema.Impl("faction")
-                                            ))));
+                                            Optional.empty()));
                         }
 
                         @Override
