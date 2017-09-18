@@ -44,7 +44,7 @@ public class DiscreteTraversalTest {
     //region Setup
     @BeforeClass
     public static void setup() throws Exception {
-        elasticEmbeddedNode = new ElasticEmbeddedNode("fuse.test_elastic");
+        elasticEmbeddedNode = new ElasticEmbeddedNode("fuse.test_elastic", 3);
 
         elasticGraphConfiguration = new ElasticGraphConfiguration();
         elasticGraphConfiguration.setClusterName("fuse.test_elastic");
@@ -96,6 +96,9 @@ public class DiscreteTraversalTest {
                 "dragons",
                 "Dragon",
                 "id",
+                true,
+                "faction",
+                false,
                 () -> createDragons(10)).populate();
 
         new ElasticDataPopulator(
@@ -103,6 +106,9 @@ public class DiscreteTraversalTest {
                 "coins",
                 "Coin",
                 "id",
+                true,
+                "faction",
+                true,
                 () -> createCoins(10, 3)).populate();
 
         elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons", "coins")).actionGet();
@@ -145,12 +151,20 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXage_103XXselect_raw_ageX() throws InterruptedException {
+    public void g_V_hasXage_103X_hasXage_select_raw_ageX() throws InterruptedException {
         List<Vertex> vertices = g.V().has("age", P.eq(103)).has("age", SelectP.raw("age")).toList();
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
         Assert.assertEquals((Integer)103, vertices.get(0).value("age"));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXfaction_faction1X() {
+        List<Vertex> vertices = g.V().has("faction", P.eq("faction1")).toList();
+        Assert.assertEquals(2, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction").equals("faction1")));
     }
 
     @Test
@@ -355,7 +369,7 @@ public class DiscreteTraversalTest {
 
                         @Override
                         public Optional<GraphElementRouting> getRouting() {
-                            return null;
+                            return Optional.empty();
                         }
 
                         @Override
@@ -405,7 +419,7 @@ public class DiscreteTraversalTest {
     //region Private Methods
     private static Iterable<Map<String, Object>> createDragons(int numDragons) {
         List<String> colors = Arrays.asList("red", "green", "yellow", "blue");
-        List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5", "faction6");
+        List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5");
         List<Map<String, Object>> dragons = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashMap();
@@ -423,12 +437,14 @@ public class DiscreteTraversalTest {
         int coinId = 0;
         List<String> materials = Arrays.asList("gold", "silver", "bronze", "tin");
         List<Integer> weights = Arrays.asList(10, 20, 30, 40, 50, 60, 70);
+        List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5");
 
         List<Map<String, Object>> coins = new ArrayList<>();
         for(int i = 0 ; i < numDragons ; i++) {
             for(int j = 0; j < numCoinsPerDragon ; j++) {
                 Map<String, Object> coin = new HashMap();
                 coin.put("id", "c" + Integer.toString(coinId));
+                coin.put("faction", factions.get(i % factions.size()));
                 coin.put("dragonId", "d" + Integer.toString(i));
                 coin.put("material", materials.get(coinId % materials.size()));
                 coin.put("weight", weights.get(coinId % weights.size()));

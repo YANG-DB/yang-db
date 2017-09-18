@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * Created by roman.margolis on 18/09/2017.
  */
-public class RoutingFilterSourceSearchAppender implements SearchAppender<ElementControllerContext> {
+public class FilterSourceRoutingSearchAppender implements SearchAppender<ElementControllerContext> {
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, ElementControllerContext context) {

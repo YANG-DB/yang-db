@@ -22,13 +22,14 @@ public interface VertexControllerContext extends BulkContext, DirectionContext, 
         //region Constructors
         public Default(
                 UniGraph graph,
+                ElementType elementType,
                 GraphElementSchemaProvider schemaProvider,
                 Optional<TraversalConstraint> constraint,
                 Iterable<HasContainer> selectPHasContainers,
                 int limit,
                 Direction direction,
                 Iterable<Vertex> bulkVertices) {
-            super(graph, ElementType.edge, schemaProvider, constraint, selectPHasContainers, limit);
+            super(graph, elementType, schemaProvider, constraint, selectPHasContainers, limit);
             this.direction = direction;
             this.bulkVertices = Stream.ofAll(bulkVertices).toJavaMap(vertex -> new Tuple2<>(vertex.id(), vertex));
         }

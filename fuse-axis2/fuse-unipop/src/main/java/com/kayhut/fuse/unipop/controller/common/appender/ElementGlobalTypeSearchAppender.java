@@ -15,11 +15,12 @@ import java.util.Set;
 /**
  * Created by User on 27/03/2017.
  */
+@Deprecated
 public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<ElementControllerContext> {
     //region SearchQueryAppenderBase Implementation
     @Override
     public boolean append(QueryBuilder queryBuilder, ElementControllerContext context) {
-        Optional<TraversalConstraint> constraint = context.getConstraint();
+       /* Optional<TraversalConstraint> constraint = context.getConstraint();
         if (constraint.isPresent()) {
             TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
             Set<String> labels = traversalValuesByKeyProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
@@ -40,7 +41,7 @@ public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<Ele
                     .map(label -> context.getSchemaProvider().getEdgeSchema(label).get().getType())
                     .toJavaList();
             queryBuilder.seekRoot().query().filtered().filter().bool().must().terms(this.getClass().getSimpleName(),"_type", edgeTypes);
-        }
+        }*/
 
         return true;
     }

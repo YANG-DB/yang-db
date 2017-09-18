@@ -7,12 +7,14 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
@@ -30,41 +32,47 @@ import java.util.Set;
 public class ConstraintSearchAppender implements SearchAppender<ElementControllerContext> {
     @Override
     public boolean append(SearchBuilder searchBuilder, ElementControllerContext context) {
-        Optional<TraversalConstraint> constraint = context.getConstraint();
-        if(!constraint.isPresent()) {
-            return true;
+        Set<String> labels = Collections.emptySet();
+        if (context.getConstraint().isPresent()) {
+            TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
+            labels = traversalValuesByKeyProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
         }
 
-        Traversal clone = constraint.get().getTraversal().asAdmin().clone();
-        HasStep<?> labelsStep = new TraversalHasStepFinder(hasStep -> !hasStep.getHasContainers().isEmpty() &&
-                hasStep.getHasContainers().get(0).getKey().equals(T.label.getAccessor())).getValue(clone);
+        if (labels.isEmpty()) {
+            labels = Stream.ofAll(context.getElementType().equals(ElementType.vertex) ?
+                    context.getSchemaProvider().getVertexLabels() :
+                    context.getSchemaProvider().getEdgeLabels()).toJavaSet();
+        }
 
-        List<String> types = Collections.emptyList();
-        if (labelsStep != null) {
-            List<String> labels = CollectionUtil.listFromObjectValue(Stream.ofAll(labelsStep.getHasContainers()).get(0).getValue());
-            if (context.getElementType().equals(ElementType.vertex)) {
-                types = Stream.ofAll(labels).filter(label -> context.getSchemaProvider().getVertexSchema(label).isPresent())
-                        .map(label -> context.getSchemaProvider().getVertexSchema(label).get().getType())
-                        .distinct()
-                        .toJavaList();
+        Traversal newConstraint = context.getConstraint().isPresent() ?
+                context.getConstraint().get().getTraversal().asAdmin().clone() :
+                __.has(T.label, P.within(labels));
+
+        Set<String> types =
+                Stream.ofAll(labels)
+                .map(label -> context.getElementType().equals(ElementType.vertex) ?
+                              context.getSchemaProvider().getVertexSchema(label) :
+                              context.getSchemaProvider().getEdgeSchema(label))
+                .filter(Optional::isPresent)
+                .map(elementSchema -> elementSchema.get().getType())
+                .toJavaSet();
+
+        if (!types.isEmpty()) {
+            List<HasStep> labelHasSteps = Stream.ofAll(new TraversalHasStepFinder(step -> step.getHasContainers().get(0).getKey().equals(T.label.getAccessor()))
+                    .getValue(newConstraint)).toJavaList();
+            if (labelHasSteps.isEmpty()) {
+                newConstraint = __.and(__.has(T.label, P.within(types)), newConstraint);
             } else {
-                types = Stream.ofAll(labels).filter(label -> context.getSchemaProvider().getEdgeSchema(label).isPresent())
-                        .map(label -> context.getSchemaProvider().getEdgeSchema(label).get().getType())
-                        .distinct()
-                        .toJavaList();
+                HasStep<?> newLabelsStep = new HasStep<>(labelHasSteps.get(0).getTraversal(),
+                        new HasContainer(T.label.getAccessor(), P.within(types)));
+                TraversalHelper.insertAfterStep(newLabelsStep, labelHasSteps.get(0), labelHasSteps.get(0).getTraversal());
+                labelHasSteps.get(0).getTraversal().removeStep(labelHasSteps.get(0));
             }
         }
 
-        if (!types.isEmpty()) {
-            HasStep<?> newLabelsStep = new HasStep<>(clone.asAdmin(),
-                    new HasContainer(T.label.getAccessor(), types.size() == 1 ? P.eq(types.get(0)) : P.within(types)));
-            TraversalHelper.insertAfterStep((Step)newLabelsStep, labelsStep, labelsStep.getTraversal());
-            labelsStep.getTraversal().removeStep(labelsStep);
-        }
-
-        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter().bool().must();
+        QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter();
         TraversalQueryTranslator traversalQueryTranslator = new TraversalQueryTranslator(queryBuilder, false);
-        traversalQueryTranslator.visit(clone);
+        traversalQueryTranslator.visit(newConstraint);
         return true;
     }
 }

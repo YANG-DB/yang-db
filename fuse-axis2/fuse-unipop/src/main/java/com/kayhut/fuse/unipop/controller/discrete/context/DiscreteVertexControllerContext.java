@@ -19,6 +19,6 @@ import java.util.Optional;
  */
 public class DiscreteVertexControllerContext extends VertexControllerContext.Default {
     public DiscreteVertexControllerContext(UniGraph graph, GraphElementSchemaProvider schemaProvider, Optional<TraversalConstraint> constraint, Iterable<HasContainer> selectPHasContainers, int limit, Direction direction, Iterable<Vertex> bulkVertices) {
-        super(graph, schemaProvider, constraint, selectPHasContainers, limit, direction, bulkVertices);
+        super(graph, ElementType.edge, schemaProvider, constraint, selectPHasContainers, limit, direction, bulkVertices);
     }
 }

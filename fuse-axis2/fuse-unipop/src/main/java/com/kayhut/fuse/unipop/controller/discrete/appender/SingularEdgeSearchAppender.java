@@ -10,7 +10,7 @@ import javaslang.collection.Stream;
 /**
  * Created by roman.margolis on 13/09/2017.
  */
-public class SingularEdgeAppender extends SearchQueryAppenderBase<VertexControllerContext> {
+public class SingularEdgeSearchAppender extends SearchQueryAppenderBase<VertexControllerContext> {
     //region VertexControllerContext Implementation
     @Override
     protected boolean append(QueryBuilder queryBuilder, VertexControllerContext context) {

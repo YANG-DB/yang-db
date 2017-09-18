@@ -18,6 +18,6 @@ import java.util.Optional;
  */
 public class PromiseVertexControllerContext extends VertexControllerContext.Default {
     public PromiseVertexControllerContext(UniGraph graph, GraphElementSchemaProvider schemaProvider, Optional<TraversalConstraint> constraint, Iterable<HasContainer> selectPHasContainers, int limit, Iterable<Vertex> bulkVertices) {
-        super(graph, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, bulkVertices);
+        super(graph, ElementType.edge, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, bulkVertices);
     }
 }

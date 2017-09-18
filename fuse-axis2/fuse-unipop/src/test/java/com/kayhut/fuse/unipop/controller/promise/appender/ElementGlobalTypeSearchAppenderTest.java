@@ -18,6 +18,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.json.JSONException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -35,6 +36,8 @@ import static org.mockito.Mockito.when;
 public class ElementGlobalTypeSearchAppenderTest {
 
     @Test
+    @Ignore
+    // This appender is deprecated
     public void testSimpleConstraint() throws JSONException {
         SearchBuilder searchBuilder = new SearchBuilder();
         Ontology ontology = getOntology();

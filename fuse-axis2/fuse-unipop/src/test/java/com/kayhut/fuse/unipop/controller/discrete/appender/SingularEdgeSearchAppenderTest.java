@@ -1,20 +1,17 @@
 package com.kayhut.fuse.unipop.controller.discrete.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
-import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeAppender;
-import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexConverter;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -25,14 +22,15 @@ import java.util.Optional;
 /**
  * Created by roman.margolis on 14/09/2017.
  */
-public class SingularEdgeAppenderTest {
+public class SingularEdgeSearchAppenderTest {
     //region Tests
     @Test
     public void testOut() {
-        SingularEdgeAppender appender = new SingularEdgeAppender();
+        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
+                ElementType.edge,
                 getSchemaProvider(),
                 Optional.empty(),
                 Collections.emptyList(),
@@ -50,10 +48,11 @@ public class SingularEdgeAppenderTest {
 
     @Test
     public void testOutEdgeType1() {
-        SingularEdgeAppender appender = new SingularEdgeAppender();
+        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
+                ElementType.edge,
                 getSchemaProvider(),
                 Optional.of(new TraversalConstraint(__.has(T.label, "edgeType1"))),
                 Collections.emptyList(),
@@ -71,10 +70,11 @@ public class SingularEdgeAppenderTest {
 
     @Test
     public void testIn() {
-        SingularEdgeAppender appender = new SingularEdgeAppender();
+        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
+                ElementType.edge,
                 getSchemaProvider(),
                 Optional.empty(),
                 Collections.emptyList(),
@@ -92,10 +92,11 @@ public class SingularEdgeAppenderTest {
 
     @Test
     public void testInEdgeType1() {
-        SingularEdgeAppender appender = new SingularEdgeAppender();
+        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
+                ElementType.edge,
                 getSchemaProvider(),
                 Optional.of(new TraversalConstraint(__.has(T.label, "edgeType1"))),
                 Collections.emptyList(),
@@ -113,10 +114,11 @@ public class SingularEdgeAppenderTest {
 
     @Test
     public void testOutEdgeTypeNonExistent() {
-        SingularEdgeAppender appender = new SingularEdgeAppender();
+        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
+                ElementType.edge,
                 getSchemaProvider(),
                 Optional.of(new TraversalConstraint(__.has(T.label, "edgeTypeNonExistent"))),
                 Collections.emptyList(),
@@ -132,10 +134,11 @@ public class SingularEdgeAppenderTest {
 
     @Test
     public void testOutVertexType2() {
-        SingularEdgeAppender appender = new SingularEdgeAppender();
+        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
+                ElementType.edge,
                 getSchemaProvider(),
                 Optional.empty(),
                 Collections.emptyList(),
@@ -151,10 +154,11 @@ public class SingularEdgeAppenderTest {
 
     @Test
     public void testInVertexType1() {
-        SingularEdgeAppender appender = new SingularEdgeAppender();
+        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
+                ElementType.edge,
                 getSchemaProvider(),
                 Optional.empty(),
                 Collections.emptyList(),

@@ -5,7 +5,8 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
-import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeAppender;
+import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeRoutingSearchAppender;
+import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteSingularEdgeConverter;
@@ -80,16 +81,18 @@ public class DiscreteVertexController extends VertexControllerBase {
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new IndexSearchAppender()),
                         wrap(new SizeSearchAppender(this.configuration)),
-                        wrap(new ElementGlobalTypeSearchAppender()),
                         wrap(new ConstraintSearchAppender()),
                         wrap(new FilterSourceSearchAppender()),
-                        wrap(new SingularEdgeAppender()),
-                        wrap(new SingularEdgeSourceSearchAppender()));
+                        wrap(new FilterSourceRoutingSearchAppender()),
+                        wrap(new ElementRoutingSearchAppender(50)),
+                        wrap(new SingularEdgeSearchAppender()),
+                        wrap(new SingularEdgeSourceSearchAppender()),
+                        wrap(new SingularEdgeRoutingSearchAppender(50)));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);
 
-        SearchRequestBuilder searchRequest = searchBuilder.compose(client, false);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 metricRegistry, client,
                 searchRequest,

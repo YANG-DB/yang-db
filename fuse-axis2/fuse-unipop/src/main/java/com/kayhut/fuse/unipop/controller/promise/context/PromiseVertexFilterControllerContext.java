@@ -4,6 +4,7 @@ import com.kayhut.fuse.unipop.controller.common.context.SelectContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -24,7 +25,7 @@ public class PromiseVertexFilterControllerContext extends VertexControllerContex
                                                 List<HasContainer> selectPHasContainers,
                                                 GraphElementSchemaProvider schemaProvider,
                                                 int limit) {
-        super(graph, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, vertices);
+        super(graph, ElementType.vertex, schemaProvider, constraint, selectPHasContainers, limit, Direction.OUT, vertices);
     }
     //endregion
 }

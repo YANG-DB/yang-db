@@ -2,10 +2,7 @@ package com.kayhut.fuse.unipop.controller.promise;
 
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
@@ -153,14 +150,13 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                 wrap(new IndexSearchAppender()),
                 wrap(new SizeSearchAppender(this.configuration)),
-                wrap(new ElementConstraintSearchAppender()),
-                wrap(new ElementGlobalTypeSearchAppender()),
+                wrap(new ConstraintSearchAppender()),
                 wrap(new FilterSourceSearchAppender()));
 
         searchAppender.append(searchBuilder, context);
 
-        //compose
-        SearchRequestBuilder searchRequest = searchBuilder.compose(client, false);
+        //build
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 metricRegistry, client,
                 searchRequest,

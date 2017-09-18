@@ -23,14 +23,32 @@ public class ElasticDataPopulator implements DataPopulator {
     private String indexName;
     private String docType;
     private String idField;
+    private boolean removeIdField;
+    private String routingField;
+    private boolean removeRoutingField;
     private GenericDataProvider provider;
     private static int BULK_SIZE = 500;
 
     public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
+        this(client, indexName, docType, idField, true, null, true, provider);
+    }
+
+    public ElasticDataPopulator(
+            TransportClient client,
+            String indexName,
+            String docType,
+            String idField,
+            boolean removeIdField,
+            String routingField,
+            boolean removeRoutingField,
+            GenericDataProvider provider) {
         this.client = client;
         this.indexName = indexName;
         this.docType = docType;
         this.idField = idField;
+        this.removeIdField = removeIdField;
+        this.routingField = routingField;
+        this.removeRoutingField = removeRoutingField;
         this.provider = provider;
     }
 
@@ -46,10 +64,21 @@ public class ElasticDataPopulator implements DataPopulator {
     private IndexRequestBuilder documentIndexRequest(Map<String, Object> doc){
         IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
                 .setIndex(this.indexName)
+                .setRouting(this.routingField != null ? this.routingField : this.idField)
                 .setType(this.docType)
                 .setOpType(IndexRequest.OpType.INDEX);
-        if(doc.containsKey(idField))
-            indexRequestBuilder = indexRequestBuilder.setId((String)doc.remove(idField));
+
+        if(doc.containsKey(this.idField)) {
+            indexRequestBuilder = indexRequestBuilder.setId((String)doc.get(this.idField));
+            if (this.removeIdField) {
+                doc.remove(this.idField);
+            }
+        }
+
+        if (this.routingField != null && this.removeRoutingField) {
+            doc.remove(this.routingField);
+        }
+
         indexRequestBuilder = indexRequestBuilder.setSource(doc);
         return indexRequestBuilder;
     }
