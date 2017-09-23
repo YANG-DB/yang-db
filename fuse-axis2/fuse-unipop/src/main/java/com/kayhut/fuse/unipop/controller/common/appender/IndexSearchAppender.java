@@ -6,17 +6,16 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.structure.T;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by User on 27/03/2017.
@@ -79,19 +78,17 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
 
     //region Private Methods
 
-    private List<String> getEdgeSchemasIndices(Iterable<GraphEdgeSchema> edgeSchemas) {
-        ArrayList<String> indices = Lists.newArrayList();
-        edgeSchemas.forEach(graphEdgeSchema ->
-        {
-            IndexPartition indexPartition = graphEdgeSchema.getIndexPartition();
-            indices.addAll(Lists.newArrayList(indexPartition.getIndices()));
-        });
-        return indices;
+    private Collection<String> getEdgeSchemasIndices(Iterable<GraphEdgeSchema> edgeSchemas) {
+        return Stream.ofAll(edgeSchemas)
+                .flatMap(edgeSchema -> edgeSchema.getIndexPartitions().partitions())
+                .flatMap(IndexPartitions.Partition::indices)
+                .toJavaSet();
     }
 
-    private List<String> getVertexSchemasIndices(Optional<GraphVertexSchema> vertexSchema) {
-        IndexPartition indexPartition = vertexSchema.get().getIndexPartition();
-        return Lists.newArrayList(indexPartition.getIndices());
+    private Collection<String> getVertexSchemasIndices(Optional<GraphVertexSchema> vertexSchema) {
+        return Stream.ofAll(vertexSchema.get().getIndexPartitions().partitions())
+                .flatMap(partition -> partition.indices())
+                .toJavaSet();
     }
 
     //endregion

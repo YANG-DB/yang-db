@@ -12,6 +12,7 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -112,15 +113,15 @@ public class IndexSearchAppenderTest {
         return new OntologySchemaProvider(ontology, (label, elementType) -> {
             if (elementType == ElementType.vertex) {
                 if (label.equals("Dragon")){
-                    return () -> Arrays.<String>asList("dragonIndex1", "dragonIndex2");
+                    return new StaticIndexPartitions(Arrays.asList("dragonIndex1", "dragonIndex2"));
                 }
                 else if(label.equals("Person")){
-                    return () -> Arrays.<String>asList("personIndex1");
+                    return new StaticIndexPartitions(Collections.singletonList("personIndex1"));
                 }
                 //Default
-                return () -> Arrays.<String>asList("vertexIndex1", "vertexIndex2");
+                return new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2"));
             } else if (elementType == ElementType.edge) {
-                return () -> Arrays.<String>asList("edgeIndex1", "edgeIndex2");
+                return new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"));
             } else {
                 // must fail
                 Assert.assertTrue(false);

@@ -9,7 +9,8 @@ import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
@@ -120,10 +121,9 @@ public class PromiseEdgeTest{
         when(searchQuery.getVertices()).thenReturn(Arrays.asList(startVertex1, startVertex2, startVertex6, startVertex8));
 
         //prepare schema provider
-        IndexPartition indexPartition = mock(IndexPartition.class);
-        when(indexPartition.getIndices()).thenReturn(Arrays.asList("v1"));
+        IndexPartitions indexPartitions = new StaticIndexPartitions(Collections.singletonList("v1"));
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
-        when(edgeSchema.getIndexPartition()).thenReturn(indexPartition);
+        when(edgeSchema.getIndexPartitions()).thenReturn(indexPartitions);
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 

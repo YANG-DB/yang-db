@@ -1,6 +1,7 @@
 package com.kayhut.test.etl.ontology;
 
 import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
 import javaslang.collection.Stream;
 
@@ -29,21 +30,21 @@ public interface OriginatedHorseEdge {
         RedundantFieldTransformer redundantOutTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(ORIGINATED, out, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(HORSE).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(HORSE).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 HORSE,
                 redundant(ORIGINATED, out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(KINGDOM).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(KINGDOM).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 KINGDOM,
                 out.name());
         RedundantFieldTransformer redundantInTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(ORIGINATED,  Direction.in, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(KINGDOM).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(KINGDOM).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 KINGDOM,
                 redundant(ORIGINATED, Direction.in,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(HORSE).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(HORSE).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 HORSE, Direction.in.name());
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 

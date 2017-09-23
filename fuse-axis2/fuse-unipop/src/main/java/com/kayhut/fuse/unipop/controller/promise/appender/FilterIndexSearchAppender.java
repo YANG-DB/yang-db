@@ -5,10 +5,11 @@ import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterCont
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class FilterIndexSearchAppender implements SearchAppender<PromiseVertexFi
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, PromiseVertexFilterControllerContext context) {
-        List<String> indices = Stream.ofAll(context.getBulkVertices())
+        Collection<String> indices = Stream.ofAll(context.getBulkVertices())
                 .map(vertex -> (PromiseVertex)vertex)
                 .map(PromiseVertex::getPromise)
                 .map(promise -> (IdPromise)promise)
@@ -27,8 +28,9 @@ public class FilterIndexSearchAppender implements SearchAppender<PromiseVertexFi
                 .map(label -> context.getSchemaProvider().getVertexSchema(label))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(GraphElementSchema::getIndexPartition)
-                .flatMap(IndexPartition::getIndices)
+                .map(GraphElementSchema::getIndexPartitions)
+                .flatMap(IndexPartitions::partitions)
+                .flatMap(IndexPartitions.Partition::indices)
                 .distinct()
                 .toJavaList();
 

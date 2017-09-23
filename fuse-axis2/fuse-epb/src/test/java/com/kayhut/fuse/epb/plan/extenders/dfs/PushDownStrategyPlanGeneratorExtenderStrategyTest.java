@@ -15,7 +15,7 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,7 +64,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
             });
 
         graphLayoutProviderFactory = ontology -> graphLayoutProvider;
-        physicalIndexProviderFactory = (ontology -> new PhysicalIndexProvider.Constant(new StaticIndexPartition(Arrays.asList("index"))));
+        physicalIndexProviderFactory = (ontology -> new PhysicalIndexProvider.Constant(new StaticIndexPartitions(Arrays.asList("index"))));
     }
 
     //region Test Methods

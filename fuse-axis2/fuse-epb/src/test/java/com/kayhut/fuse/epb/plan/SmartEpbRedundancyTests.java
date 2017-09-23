@@ -23,8 +23,9 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,7 +86,7 @@ public class SmartEpbRedundancyTests {
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartition().getIndices()).toJavaList();
+            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
             return graphStatisticsProvider.getEdgeCardinality(edgeSchema, indices);
         });
 
@@ -97,7 +98,7 @@ public class SmartEpbRedundancyTests {
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartition().getIndices()).toJavaList();
+            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
             return graphStatisticsProvider.getVertexCardinality(vertexSchema, indices);
         });
 
@@ -136,19 +137,30 @@ public class SmartEpbRedundancyTests {
             return createDateHistogram(card,elementSchema,propertySchema, indices);
         });
 
-        IndexPartition defaultIndexPartition = mock(IndexPartition.class);
-        when(defaultIndexPartition.getIndices()).thenReturn(Collections.singleton("idx1"));
+        IndexPartitions defaultIndexPartitions = new StaticIndexPartitions(Collections.singletonList("idx1"));
         physicalIndexProvider = mock(PhysicalIndexProvider.class);
         when(physicalIndexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
             String type = invocationOnMock.getArgumentAt(0, String.class);
             if(type.equals(PERSON.name)){
-                return (IndexPartition) () -> Arrays.asList("Persons1","Persons2");
+                return new StaticIndexPartitions(Arrays.asList("Persons1","Persons2"));
             }
             if(type.equals(DRAGON.name)){
-                return (IndexPartition) () -> Arrays.asList("Dragons1","Dragons2");
+                return new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2"));
             }
             if(type.equals(OWN.getName())){
-                return new TimeSeriesIndexPartition() {
+                return new TimeSeriesIndexPartitions() {
+                    @Override
+                    public Optional<String> partitionField() {
+                        return Optional.of(START_DATE.name);
+                    }
+
+                    @Override
+                    public Iterable<Partition> partitions() {
+                        return Collections.singletonList(
+                                () -> IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
+                                        map(this::getIndexName).collect(Collectors.toList()));
+                    }
+
                     @Override
                     public String getDateFormat() {
                         return DATE_FORMAT_STRING;
@@ -173,15 +185,9 @@ public class SmartEpbRedundancyTests {
                     public String getIndexName(Date date) {
                         return String.format(getIndexFormat(), DATE_FORMAT.format(date));
                     }
-
-                    @Override
-                    public Iterable<String> getIndices() {
-                        return IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
-                                map(this::getIndexName).collect(Collectors.toList());
-                    }
                 };
             }
-            return defaultIndexPartition;
+            return defaultIndexPartitions;
         });
 
         layoutProvider = mock(GraphLayoutProvider.class);
@@ -238,8 +244,8 @@ public class SmartEpbRedundancyTests {
 
     private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {
         List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
-        if(elementSchema.getIndexPartition() instanceof TimeSeriesIndexPartition){
-            TimeSeriesIndexPartition timeSeriesIndexPartition = (TimeSeriesIndexPartition) elementSchema.getIndexPartition();
+        if(elementSchema.getIndexPartitions() instanceof TimeSeriesIndexPartitions){
+            TimeSeriesIndexPartitions timeSeriesIndexPartition = (TimeSeriesIndexPartitions) elementSchema.getIndexPartitions();
             if(timeSeriesIndexPartition.getTimeField().equals(graphElementPropertySchema.getName())){
                 for(int i = 0;i<3;i++){
                     Date dt = new Date(startTime - i*60*60*1000);

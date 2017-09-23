@@ -4,16 +4,15 @@ import com.jayway.jsonpath.JsonPath;
 import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import net.minidev.json.JSONArray;
 
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.model.Utils.readJsonFile;
@@ -44,20 +43,20 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
                 JSONArray read = JsonPath.read(conf, "$['entities'][?(@.type =='" + label + "')]");
                 return buildIndexPartition(read);
             } catch (Exception e) {
-                return Collections::emptyList;
+                return new StaticIndexPartitions(Collections.emptyList());
             }
         });
     }
 
-    private IndexPartition buildIndexPartition(JSONArray entity) {
-        Optional<IndexPartition> partition = entity.stream().filter(p -> ((Map) p).containsKey(PARTITION)).map(v -> {
+    private IndexPartitions buildIndexPartition(JSONArray entity) {
+        Optional<IndexPartitions> partition = entity.stream().filter(p -> ((Map) p).containsKey(PARTITION)).map(v -> {
             if (((Map) v).get(PARTITION).equals(TIME)) {
-                return new TimeBasedIndexPartition((Map) v);
+                return new TimeBasedIndexPartitions((Map) v);
             } else {
-                return new StaticIndexPartition(indices((Map) v));
+                return new StaticIndexPartitions(indices((Map) v));
             }
         }).findFirst();
-        return partition.orElse(() -> Collections.EMPTY_LIST);
+        return partition.orElse(new StaticIndexPartitions(Collections.emptyList()));
     }
 
     private static Iterable<String> indices(Map map) {
@@ -77,11 +76,11 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
     //region Fields
     private Map<String, PhysicalIndexProvider> physicalIndexProviders;
 
-    public static class TimeBasedIndexPartition implements TimeSeriesIndexPartition {
+    public static class TimeBasedIndexPartitions implements TimeSeriesIndexPartitions {
         private Map values;
         private SimpleDateFormat dateFormat;
 
-        public TimeBasedIndexPartition(Map values) {
+        public TimeBasedIndexPartitions(Map values) {
             this.values = values;
             this.dateFormat = new SimpleDateFormat(getDateFormat());
         }
@@ -110,16 +109,25 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
         @Override
         public String getIndexName(Date date) {
             String format = String.format(getIndexFormat(), dateFormat.format(date));
-            return StreamSupport.stream(getIndices().spliterator(), false)
-                    .filter(s -> s.equals(format)).findFirst().orElse(null);
+            List<String> indices = Stream.ofAll(partitions())
+                    .flatMap(Partition::indices)
+                    .filter(index -> index.equals(format))
+                    .toJavaList();
+
+            return indices.isEmpty() ? null : indices.get(0);
         }
 
         @Override
-        public Iterable<String> getIndices() {
-            return Stream.ofAll(indices(values))
+        public Optional<String> partitionField() {
+            return Optional.of(getTimeField());
+        }
+
+        @Override
+        public Iterable<Partition> partitions() {
+            return Collections.singletonList(() -> Stream.ofAll(indices(values))
                     .map(p -> String.format(getIndexFormat(), p))
                     .distinct().sorted()
-                    .toJavaList();
+                    .toJavaList());
         }
     }
 }

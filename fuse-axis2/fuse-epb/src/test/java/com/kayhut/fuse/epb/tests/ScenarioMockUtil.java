@@ -5,8 +5,9 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.elasticsearch.common.collect.Tuple;
@@ -30,7 +31,7 @@ public class ScenarioMockUtil {
     private GraphElementSchemaProvider graphElementSchemaProvider;
     private GraphLayoutProvider graphLayoutProvider = null;
     private Map<String, Map<String, String>> redundantProps = new HashMap<>();
-    private Map<Tuple<String, ElementType>, IndexPartition> indexPartitionMap = new HashMap<>();
+    private Map<Tuple<String, ElementType>, IndexPartitions> indexPartitionMap = new HashMap<>();
     private static String INDEX_PREFIX = "idx-";
     private static String INDEX_FORMAT = "idx-%s";
     private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
@@ -62,7 +63,7 @@ public class ScenarioMockUtil {
         this.ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
 
         this.indexProvider = mock(PhysicalIndexProvider.class);
-        IndexPartition defaultPartition = () -> Arrays.asList("idx1");
+        IndexPartitions defaultPartition = new StaticIndexPartitions(Collections.singletonList("idx1"));
         when(this.indexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
             String label = invocationOnMock.getArgumentAt(0, String.class);
             ElementType elementType = invocationOnMock.getArgumentAt(1, ElementType.class);
@@ -82,8 +83,10 @@ public class ScenarioMockUtil {
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertex = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            IndexPartition indexPartition = indexProvider.getIndexPartitionByLabel(vertex.getType(), ElementType.vertex);
-            return graphStatisticsProvider.getVertexCardinality(vertex, Stream.ofAll(indexPartition.getIndices()).toJavaList());
+            IndexPartitions indexPartitions = indexProvider.getIndexPartitionByLabel(vertex.getType(), ElementType.vertex);
+            return graphStatisticsProvider.getVertexCardinality(
+                    vertex,
+                    Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList());
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
@@ -94,8 +97,10 @@ public class ScenarioMockUtil {
 
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edge = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            IndexPartition indexPartition = indexProvider.getIndexPartitionByLabel(edge.getType(), ElementType.edge);
-            return graphStatisticsProvider.getEdgeCardinality(edge, Stream.ofAll(indexPartition.getIndices()).toJavaList());
+            IndexPartitions indexPartitions = indexProvider.getIndexPartitionByLabel(edge.getType(), ElementType.edge);
+            return graphStatisticsProvider.getEdgeCardinality(
+                    edge,
+                    Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList());
         });
 
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
@@ -143,7 +148,19 @@ public class ScenarioMockUtil {
     }
 
     public ScenarioMockUtil withTimeSeriesIndex(String type, ElementType elementType, String timeField, int numIndices){
-        TimeSeriesIndexPartition indexPartition = new TimeSeriesIndexPartition() {
+        TimeSeriesIndexPartitions indexPartition = new TimeSeriesIndexPartitions() {
+            @Override
+            public Optional<String> partitionField() {
+                return Optional.of(timeField);
+            }
+
+            @Override
+            public Iterable<Partition> partitions() {
+                return Collections.singletonList(
+                        () ->  IntStream.range(0, numIndices).mapToObj(i -> new Date(scenarioTime - 60*60*1000 * i)).
+                                map(this::getIndexName).collect(Collectors.toList()));
+            }
+
             @Override
             public String getDateFormat() {
                 return DATE_FORMAT_STRING;
@@ -167,13 +184,6 @@ public class ScenarioMockUtil {
             @Override
             public String getIndexName(Date date) {
                 return String.format(getIndexFormat(), DATE_FORMAT.format(date));
-            }
-
-            @Override
-            public Iterable<String> getIndices() {
-                return IntStream.range(0, numIndices).mapToObj(i -> new Date(scenarioTime - 60*60*1000 * i)).
-                        map(this::getIndexName).collect(Collectors.toList());
-
             }
         };
         indexPartitionMap.put(new Tuple<>(type, elementType), indexPartition);

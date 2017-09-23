@@ -1,6 +1,7 @@
 package com.kayhut.test.etl.ontology;
 
 import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
 import javaslang.collection.Stream;
 
@@ -30,11 +31,11 @@ public interface FireEdge {
         RedundantFieldTransformer redundantFieldTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(FIRE, Direction.out,"A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(DRAGON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(DRAGON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 DRAGON,
                 redundant(FIRE, Direction.out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(DRAGON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(DRAGON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 DRAGON);
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 

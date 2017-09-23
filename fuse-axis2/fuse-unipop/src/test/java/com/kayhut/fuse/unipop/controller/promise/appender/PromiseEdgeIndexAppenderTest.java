@@ -11,8 +11,9 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -495,10 +496,20 @@ public class PromiseEdgeIndexAppenderTest{
                 switch(label){
 
                     case STATIC_INDEX_EDGE:
-                        return new StaticIndexPartition(STATIC_INDEX_NAMES);
+                        return new StaticIndexPartitions(STATIC_INDEX_NAMES);
 
                     case TIME_SERIES_INDEX_EDGE:
-                        return new TimeSeriesIndexPartition() {
+                        return new TimeSeriesIndexPartitions() {
+                            @Override
+                            public Optional<String> partitionField() {
+                                return Optional.of("time");
+                            }
+
+                            @Override
+                            public Iterable<Partition> partitions() {
+                                return Collections.singletonList(() -> TIME_SERIES_INDEX_NAMES);
+                            }
+
                             @Override
                             public String getDateFormat() {
                                 return "YYYY-MM";
@@ -522,11 +533,6 @@ public class PromiseEdgeIndexAppenderTest{
                             @Override
                             public String getIndexName(Date date) {
                                 return null;
-                            }
-
-                            @Override
-                            public Iterable<String> getIndices() {
-                                return TIME_SERIES_INDEX_NAMES;
                             }
                         };
 

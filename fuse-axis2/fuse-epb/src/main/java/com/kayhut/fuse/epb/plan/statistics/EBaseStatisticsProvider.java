@@ -14,8 +14,8 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -139,10 +139,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> getRelevantIndicesForEdge(RelPropGroup relPropGroup, GraphEdgeSchema graphEdgeSchema) {
-        IndexPartition indexPartition = graphEdgeSchema.getIndexPartition();
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
-        if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition) indexPartition ,relPropGroup);
+        IndexPartitions indexPartitions = graphEdgeSchema.getIndexPartitions();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        if(indexPartitions instanceof TimeSeriesIndexPartitions){
+            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions,relPropGroup);
         }
         return relevantIndices;
     }
@@ -187,10 +187,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> getVertexRelevantIndices(EPropGroup entityFilter, GraphVertexSchema graphVertexSchema) {
-        IndexPartition indexPartition = graphVertexSchema.getIndexPartition();
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
-        if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition)indexPartition, entityFilter);
+        IndexPartitions indexPartitions = graphVertexSchema.getIndexPartitions();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        if(indexPartitions instanceof TimeSeriesIndexPartitions){
+            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions, entityFilter);
         }
         return relevantIndices;
     }
@@ -435,11 +435,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return mergeBucketsCardinality(bucketsAbove);
     }
 
-    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, EPropGroup entityFilter) {
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartitions indexPartitions, EPropGroup entityFilter) {
         List<EProp> timeConditions = new ArrayList<>();
         for (EProp eProp : entityFilter.getProps()){
             Property property =  ont.$property$(eProp.getpType());
-            if(property.getName().equals(indexPartition.getTimeField())){
+            if(property.getName().equals(indexPartitions.getTimeField())){
                 switch(eProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)eProp.getCon().getExpr();
@@ -465,23 +465,23 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             }
         }
 
-        if(timeConditions.size() == 0)
-            return Lists.newArrayList(indexPartition.getIndices());
-
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        if(timeConditions.size() == 0) {
+            return relevantIndices;
+        }
 
         for(EProp timeCondition : timeConditions) {
-            String indexName = indexPartition.getIndexName((Date) timeCondition.getCon().getExpr());
+            String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
             relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
         }
         return relevantIndices;
 
     }
 
-    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, RelPropGroup relPropGroup) {
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartitions indexPartitions, RelPropGroup relPropGroup) {
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getProps()){
-            if (ont.$property$(relProp.getpType()).getName().equals(indexPartition.getTimeField())) {
+            if (ont.$property$(relProp.getpType()).getName().equals(indexPartitions.getTimeField())) {
                 switch(relProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();
@@ -509,14 +509,15 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             }
         }
 
-        if(timeConditions.size() == 0)
-            return Lists.newArrayList(indexPartition.getIndices());
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
 
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
+        if(timeConditions.size() == 0) {
+            return relevantIndices;
+        }
 
         for(RelProp timeCondition : timeConditions) {
 
-            String indexName = indexPartition.getIndexName((Date) timeCondition.getCon().getExpr());
+            String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
             relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
         }
         return relevantIndices;

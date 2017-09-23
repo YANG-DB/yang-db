@@ -3,14 +3,13 @@ package com.kayhut.fuse.unipop.controller.promise.appender;
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalPredicateByKeyProvider;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
@@ -43,11 +42,11 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
 
             if (edgeSchema.isPresent()) {
 
-                IndexPartition indexPartition = edgeSchema.get().getIndexPartition();
+                IndexPartitions indexPartitions = edgeSchema.get().getIndexPartitions();
 
-                if (indexPartition instanceof TimeSeriesIndexPartition) {
+                if (indexPartitions instanceof TimeSeriesIndexPartitions) {
 
-                    TimeSeriesIndexPartition tsIndexPartition = (TimeSeriesIndexPartition) indexPartition;
+                    TimeSeriesIndexPartitions tsIndexPartition = (TimeSeriesIndexPartitions) indexPartitions;
 
                     TraversalPredicateByKeyProvider visitor = new TraversalPredicateByKeyProvider();
 
@@ -55,15 +54,18 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
 
                     if(predicates.size() == 0) {
                         //if there are no constraints, add all indices
-                        searchBuilder.getIndices().addAll(Lists.newArrayList(indexPartition.getIndices()));
+                        searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet());
 
                     } else {
                         //ass only indices satisfying the constraints
-                        searchBuilder.getIndices().addAll(Stream.ofAll(tsIndexPartition.getIndices()).filter(index -> isIndexRelevant(index, predicates, tsIndexPartition)).toJavaList());
+                        searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.partitions())
+                            .flatMap(IndexPartitions.Partition::indices)
+                                .filter(index -> isIndexRelevant(index, predicates, tsIndexPartition))
+                                .toJavaSet());
                     }
                 } else {
                     //index partition is static, add all indices
-                    searchBuilder.getIndices().addAll(Lists.newArrayList(indexPartition.getIndices()));
+                    searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet());
                 }
 
             }
@@ -73,7 +75,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
 
     }
 
-    private boolean isIndexRelevant(String index, Set<P> predicates, TimeSeriesIndexPartition tsIndexPartition) {
+    private boolean isIndexRelevant(String index, Set<P> predicates, TimeSeriesIndexPartitions tsIndexPartition) {
 
         for (P predicate : predicates) {
             if(predicate instanceof AndP) {
@@ -88,7 +90,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
         return true;
     }
 
-    private boolean testSimplePredicate(P predicate, String index, TimeSeriesIndexPartition tsIndexPartition) {
+    private boolean testSimplePredicate(P predicate, String index, TimeSeriesIndexPartitions tsIndexPartition) {
 
         if (predicate.getBiPredicate().equals(Compare.eq)) {
 
@@ -100,7 +102,8 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
             String indexName = getIndexName(predicate.getValue(), tsIndexPartition);
 
             // assuming the indexes are returned by order
-            List<String> list = Stream.ofAll(tsIndexPartition.getIndices()).toJavaList();
+            List<String> list = Stream.ofAll(tsIndexPartition.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+
             return  list.indexOf(indexName) <= list.indexOf(index);
 
         } else if (predicate.getBiPredicate().equals(Compare.lt) ||
@@ -109,7 +112,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
             String indexName = getIndexName(predicate.getValue(), tsIndexPartition);
 
             // assuming the indexes are returned by order
-            List<String> list = Stream.ofAll(tsIndexPartition.getIndices()).toJavaList();
+            List<String> list = Stream.ofAll(tsIndexPartition.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
             return  list.indexOf(indexName) >= list.indexOf(index);
 
         } else if (predicate.getBiPredicate().equals(Compare.neq)) {
@@ -126,7 +129,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
         }
     }
 
-    private String getIndexName(Object value, TimeSeriesIndexPartition indexPartition) {
+    private String getIndexName(Object value, TimeSeriesIndexPartitions indexPartition) {
 
         String formattedDate = new SimpleDateFormat(indexPartition.getDateFormat()).format(value);
 

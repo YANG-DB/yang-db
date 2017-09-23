@@ -1,10 +1,12 @@
 package providers.test;
 
 import com.kayhut.fuse.unipop.schemaProviders.PhysicalIndexProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.data.DragonsOntologyPhysicalIndexProviderFactory;
+import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,9 +30,11 @@ public class DragonsOntologyPhysicalIndexProviderFactoryTest {
         DragonsOntologyPhysicalIndexProviderFactory factory = new DragonsOntologyPhysicalIndexProviderFactory("DragonsIndexProvider.conf");
         PhysicalIndexProvider provider = factory.get(createDragonsOntologyLong());
 
-        TimeSeriesIndexPartition freez = (TimeSeriesIndexPartition) provider.getIndexPartitionByLabel("Freez", ElementType.edge);
+        TimeSeriesIndexPartitions freez = (TimeSeriesIndexPartitions) provider.getIndexPartitionByLabel("Freez", ElementType.edge);
 
-        Assert.assertEquals(freez.getIndices(), new HashSet<>(Arrays.asList("idx_freez_2017-2","idx_freez_2017-4","idx_freez_2017-1")));
+        Assert.assertEquals(Stream.ofAll(freez.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet(),
+                new HashSet<>(Arrays.asList("idx_freez_2017-2","idx_freez_2017-4","idx_freez_2017-1")));
+
         Assert.assertEquals(freez.getDateFormat(), "YYYY-W");
         Assert.assertEquals(freez.getIndexFormat(), "idx_freez_%s");
         Assert.assertEquals(freez.getIndexPrefix(), "idx_freez");
@@ -45,9 +49,9 @@ public class DragonsOntologyPhysicalIndexProviderFactoryTest {
         DragonsOntologyPhysicalIndexProviderFactory factory = new DragonsOntologyPhysicalIndexProviderFactory("DragonsIndexProvider.conf");
         PhysicalIndexProvider provider = factory.get(createDragonsOntologyLong());
 
-        StaticIndexPartition person = (StaticIndexPartition) provider.getIndexPartitionByLabel("Person", ElementType.vertex);
+        StaticIndexPartitions person = (StaticIndexPartitions) provider.getIndexPartitionByLabel("Person", ElementType.vertex);
 
-        Assert.assertEquals(person.getIndices(), Collections.singleton("persons1"));
+        Assert.assertEquals(Stream.ofAll(person.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet(), Collections.singleton("persons1"));
     }
 
 }

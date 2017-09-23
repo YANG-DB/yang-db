@@ -10,7 +10,8 @@ import com.kayhut.fuse.model.query.properties.PushdownRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class EBaseStatisticsProviderRedundantTests {
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
         when(graphElementSchemaProvider.getVertexLabels()).thenReturn(Arrays.asList("Guild"));
         GraphEdgeSchema ownSchema = mock(GraphEdgeSchema.class);
-        when(ownSchema.getIndexPartition()).thenReturn(() -> new ArrayList<>());
+        when(ownSchema.getIndexPartitions()).thenReturn(new StaticIndexPartitions(Collections.emptyList()));
         when(ownSchema.getDestination()).thenReturn(Optional.of(
                 new GraphEdgeSchema.End.Impl(
                         null,
@@ -60,8 +61,8 @@ public class EBaseStatisticsProviderRedundantTests {
             }
 
             @Override
-            public IndexPartition getIndexPartition() {
-                return () -> Arrays.asList();
+            public IndexPartitions getIndexPartitions() {
+                return new StaticIndexPartitions(Collections.emptyList());
             }
 
             @Override

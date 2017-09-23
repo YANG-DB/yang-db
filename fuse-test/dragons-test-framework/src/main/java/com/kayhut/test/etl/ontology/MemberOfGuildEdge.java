@@ -1,6 +1,7 @@
 package com.kayhut.test.etl.ontology;
 
 import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
 import javaslang.collection.Stream;
 
@@ -38,21 +39,21 @@ public interface MemberOfGuildEdge {
         RedundantFieldTransformer redundantOutTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(MEMBER_OF_GUILD, out, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 PERSON,
                 redundant(MEMBER_OF_GUILD, out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(GUILD).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(GUILD).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 GUILD,
                 out.name());
         RedundantFieldTransformer redundantInTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(MEMBER_OF_GUILD,  Direction.in, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(GUILD).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(GUILD).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 GUILD,
                 redundant(MEMBER_OF_GUILD, Direction.in,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 PERSON, Direction.in.name());
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 

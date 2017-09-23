@@ -2,6 +2,8 @@ package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.ontology.*;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.junit.Assert;
@@ -26,9 +28,8 @@ public class OntologySchemaProviderTest {
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
 
         assertEquals(vertexPersonSchema.getType(), "Person");
-        assertEquals(2, Stream.ofAll(vertexPersonSchema.getIndexPartition().getIndices()).size());
-
-        Iterable<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartition().getIndices());
+        List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        assertEquals(2, indices.size());
 
         assertEquals("vertexIndex1", Stream.ofAll(indices).get(0));
         assertEquals("vertexIndex2", Stream.ofAll(indices).get(1));
@@ -41,10 +42,8 @@ public class OntologySchemaProviderTest {
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
         assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Person");
 
-
-        assertEquals(2, Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartition().getIndices()).size());
-
-        Iterable<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartition().getIndices());
+        List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        assertEquals(2, indices.size());
 
         assertEquals("edgeIndex1", Stream.ofAll(indices).get(0));
         assertEquals("edgeIndex2", Stream.ofAll(indices).get(1));
@@ -73,9 +72,9 @@ public class OntologySchemaProviderTest {
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider(ontology, (label, elementType) -> {
             if (elementType == ElementType.vertex) {
-                return () -> Arrays.<String>asList("vertexIndex1", "vertexIndex2");
+              return new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2"));
             } else if (elementType == ElementType.edge) {
-                return () -> Arrays.<String>asList("edgeIndex1", "edgeIndex2");
+                return new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"));
             } else {
                 // must fail
                 Assert.assertTrue(false);

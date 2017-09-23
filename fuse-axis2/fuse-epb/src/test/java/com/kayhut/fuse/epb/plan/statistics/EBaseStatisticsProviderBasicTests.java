@@ -14,6 +14,7 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -57,7 +58,7 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "m", "z"));
 
         indexProvider = Mockito.mock(PhysicalIndexProvider.class);
-        when(indexProvider.getIndexPartitionByLabel(any(), any())).thenReturn(() -> new LinkedList<>());
+        when(indexProvider.getIndexPartitionByLabel(any(), any())).thenReturn(new StaticIndexPartitions(Collections.emptyList()));
 
         ontology = OntologyTestUtils.createDragonsOntologyShort();
         graphElementSchemaProvider = new OntologySchemaProvider(ontology, indexProvider);

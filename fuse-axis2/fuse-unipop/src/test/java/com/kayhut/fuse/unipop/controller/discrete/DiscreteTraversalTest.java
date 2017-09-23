@@ -6,7 +6,8 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -15,16 +16,13 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSo
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
 import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.process.strategyregistrar.StandardStrategyProvider;
 import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.UniQueryController;
-import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
@@ -277,8 +275,8 @@ public class DiscreteTraversalTest {
                         }
 
                         @Override
-                        public IndexPartition getIndexPartition() {
-                            return () -> Arrays.asList("dragons");
+                        public IndexPartitions getIndexPartitions() {
+                            return new StaticIndexPartitions(Collections.singletonList("dragons"));
                         }
 
                         @Override
@@ -304,8 +302,8 @@ public class DiscreteTraversalTest {
                         }
 
                         @Override
-                        public IndexPartition getIndexPartition() {
-                            return () -> Arrays.asList("coins");
+                        public IndexPartitions getIndexPartitions() {
+                            return new StaticIndexPartitions(Collections.singletonList("coins"));
                         }
 
                         @Override
@@ -373,8 +371,8 @@ public class DiscreteTraversalTest {
                         }
 
                         @Override
-                        public IndexPartition getIndexPartition() {
-                            return () -> Arrays.asList("coins");
+                        public IndexPartitions getIndexPartitions() {
+                            return new StaticIndexPartitions(Collections.singletonList("coins"));
                         }
 
                         @Override

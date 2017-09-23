@@ -7,7 +7,8 @@ import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -126,10 +127,8 @@ public class PromisePromiseElementVertexControllerTest {
         when(searchQuery.getVertices()).thenReturn(Arrays.asList(startVertex1, startVertex2));
 
         //prepare schema provider
-        IndexPartition indexPartition = mock(IndexPartition.class);
-        when(indexPartition.getIndices()).thenReturn(Arrays.asList("v1"));
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
-        when(edgeSchema.getIndexPartition()).thenReturn(indexPartition);
+        when(edgeSchema.getIndexPartitions()).thenReturn(new StaticIndexPartitions(Collections.singletonList("v1")));
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 

@@ -25,6 +25,7 @@ import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import javaslang.Tuple2;
@@ -262,9 +263,9 @@ public class ElasticStatisticsGraphProviderTest {
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider(ontology, (label, elementType) -> {
             if (elementType == ElementType.vertex) {
-                return () -> VERTEX_INDICES;
+                return new StaticIndexPartitions(VERTEX_INDICES);
             } else if (elementType == ElementType.edge) {
-                return () -> EDGE_INDICES;
+                return new StaticIndexPartitions(EDGE_INDICES);
             } else {
                 // must fail
                 Assert.assertTrue(false);

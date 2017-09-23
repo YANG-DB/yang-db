@@ -2,7 +2,7 @@ package com.kayhut.fuse.unipop.schemaProviders.indexPartitions;
 
 import java.util.Date;
 
-public interface TimeSeriesIndexPartition extends IndexPartition{
+public interface TimeSeriesIndexPartitions extends IndexPartitions {
     String getDateFormat();
     String getIndexPrefix();
     String getIndexFormat();

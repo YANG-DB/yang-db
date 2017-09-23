@@ -29,7 +29,7 @@ public class PlanCostTests {
             }
 
             @Override
-            public Iterable<IndexPartition> getIndexPartition() {
+            public Iterable<IndexPartitions> getIndexPartition() {
                 return null;
             }
         }));

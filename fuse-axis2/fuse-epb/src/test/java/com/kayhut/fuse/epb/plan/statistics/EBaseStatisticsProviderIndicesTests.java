@@ -9,7 +9,9 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,8 +67,18 @@ public class EBaseStatisticsProviderIndicesTests {
                                              String.format(INDEX_FORMAT,DATE_FORMAT.format(new Date(nowTime))));
 
         when(indexProvider.getIndexPartitionByLabel(any(), eq(ElementType.edge)))
-                .thenReturn(new TimeSeriesIndexPartition() {
-            @Override
+                .thenReturn(new TimeSeriesIndexPartitions() {
+                    @Override
+                    public Optional<String> partitionField() {
+                        return Optional.of("startDate");
+                    }
+
+                    @Override
+                    public Iterable<Partition> partitions() {
+                        return Collections.singletonList(() -> indices);
+                    }
+
+                    @Override
             public String getDateFormat() {
                 return DATE_FORMAT_STRING;
             }
@@ -89,11 +101,6 @@ public class EBaseStatisticsProviderIndicesTests {
             @Override
             public String getIndexName(Date date) {
                 return String.format(INDEX_FORMAT, DATE_FORMAT.format(date));
-            }
-
-            @Override
-            public Iterable<String> getIndices() {
-                return indices;
             }
         });
 

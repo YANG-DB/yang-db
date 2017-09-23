@@ -5,7 +5,7 @@ import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -218,7 +218,7 @@ public class SingularEdgeSearchAppenderTest {
                         }
 
                         @Override
-                        public IndexPartition getIndexPartition() {
+                        public IndexPartitions getIndexPartitions() {
                             return null;
                         }
 

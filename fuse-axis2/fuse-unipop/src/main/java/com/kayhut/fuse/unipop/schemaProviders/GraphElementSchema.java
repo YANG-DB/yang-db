@@ -1,7 +1,7 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
 
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ public interface GraphElementSchema {
 
     Optional<GraphElementRouting> getRouting();
 
-    IndexPartition getIndexPartition();
+    IndexPartitions getIndexPartitions();
 
     Iterable<GraphElementPropertySchema> getProperties();
 

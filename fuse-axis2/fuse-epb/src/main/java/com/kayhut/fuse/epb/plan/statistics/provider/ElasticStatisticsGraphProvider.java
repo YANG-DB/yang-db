@@ -9,6 +9,7 @@ import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.schemaProviders.*;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -46,7 +47,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Override
     public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema) {
         return getVertexCardinality(graphVertexSchema,
-                Lists.newArrayList(graphVertexSchema.getIndexPartition().getIndices()));
+                Stream.ofAll(graphVertexSchema.getIndexPartitions().partitions())
+                .flatMap(IndexPartitions.Partition::indices)
+                .toJavaList());
     }
 
     @Override
@@ -57,7 +60,9 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Override
     public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema) {
         return getEdgeCardinality(graphEdgeSchema,
-                Lists.newArrayList(graphEdgeSchema.getIndexPartition().getIndices()));
+                Stream.ofAll(graphEdgeSchema.getIndexPartitions().partitions())
+                        .flatMap(IndexPartitions.Partition::indices)
+                        .toJavaList());
     }
 
     @Override

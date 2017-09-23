@@ -26,7 +26,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,8 +67,8 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
                         return invocationOnMock.getArguments()[0].toString();
                     }
                 }));
-        when(graphEdgeSchema.getIndexPartition())
-                .thenReturn(new StaticIndexPartition(Collections.singleton("index")));
+        when(graphEdgeSchema.getIndexPartitions())
+                .thenReturn(new StaticIndexPartitions(Collections.singleton("index")));
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
         when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];

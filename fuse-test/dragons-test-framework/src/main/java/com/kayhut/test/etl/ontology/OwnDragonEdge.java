@@ -1,6 +1,7 @@
 package com.kayhut.test.etl.ontology;
 
 import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
 import javaslang.collection.Stream;
 
@@ -29,21 +30,21 @@ public interface OwnDragonEdge {
         RedundantFieldTransformer redundantOutTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(OWN, out, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 PERSON,
                 redundant(OWN, out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(DRAGON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(DRAGON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 DRAGON,
                 out.name());
         RedundantFieldTransformer redundantInTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(OWN,  Direction.in, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(DRAGON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(DRAGON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 DRAGON,
                 redundant(OWN, Direction.in,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(PERSON).getIndices()).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
                 PERSON, Direction.in.name());
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 
