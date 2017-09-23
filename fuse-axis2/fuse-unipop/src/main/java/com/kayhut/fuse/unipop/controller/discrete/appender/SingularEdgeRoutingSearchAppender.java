@@ -4,9 +4,11 @@ import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.util.SchemaUtil;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.utils.ElementUtil;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Set;
 
@@ -38,7 +40,10 @@ public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexC
         if (endSchema.getRouting().isPresent()) {
             Set<String> routingValues =
                     Stream.ofAll(context.getBulkVertices())
-                            .map(vertex -> vertex.<String>value(endSchema.getRouting().get().getRoutingProperty().getName()))
+                            .map(vertex -> ElementUtil.<String>value(vertex,
+                                    endSchema.getRouting().get().getRoutingProperty().getName().equals("_id") ?
+                                            T.id.getAccessor() :
+                                            endSchema.getRouting().get().getRoutingProperty().getName()))
                             .toJavaSet();
 
             if (routingValues.size() <= this.maxNumRoutingValues) {

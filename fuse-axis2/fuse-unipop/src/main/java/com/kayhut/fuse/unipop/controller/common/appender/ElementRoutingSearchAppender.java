@@ -57,6 +57,7 @@ public class ElementRoutingSearchAppender implements SearchAppender<ElementContr
 
         Set<String> routingValues =
         Stream.ofAll(routingPropertyNames)
+                .map(propertyName -> propertyName.equals("_id") ? T.id.getAccessor() : propertyName)
                 .flatMap(propertyName -> new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), propertyName))
                 .toJavaSet();
 
