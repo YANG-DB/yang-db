@@ -28,7 +28,7 @@ public class OntologySchemaProviderTest {
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
 
         assertEquals(vertexPersonSchema.getType(), "Person");
-        List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
         assertEquals(2, indices.size());
 
         assertEquals("vertexIndex1", Stream.ofAll(indices).get(0));
@@ -42,7 +42,7 @@ public class OntologySchemaProviderTest {
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
         assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Person");
 
-        List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
         assertEquals(2, indices.size());
 
         assertEquals("edgeIndex1", Stream.ofAll(indices).get(0));

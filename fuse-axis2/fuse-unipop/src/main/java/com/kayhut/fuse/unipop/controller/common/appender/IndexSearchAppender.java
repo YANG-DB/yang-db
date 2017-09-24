@@ -80,14 +80,14 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
 
     private Collection<String> getEdgeSchemasIndices(Iterable<GraphEdgeSchema> edgeSchemas) {
         return Stream.ofAll(edgeSchemas)
-                .flatMap(edgeSchema -> edgeSchema.getIndexPartitions().partitions())
+                .flatMap(edgeSchema -> edgeSchema.getIndexPartitions().get().partitions())
                 .flatMap(IndexPartitions.Partition::indices)
                 .toJavaSet();
     }
 
     private Collection<String> getVertexSchemasIndices(Optional<GraphVertexSchema> vertexSchema) {
-        return Stream.ofAll(vertexSchema.get().getIndexPartitions().partitions())
-                .flatMap(partition -> partition.indices())
+        return Stream.ofAll(vertexSchema.get().getIndexPartitions().get().partitions())
+                .flatMap(IndexPartitions.Partition::indices)
                 .toJavaSet();
     }
 

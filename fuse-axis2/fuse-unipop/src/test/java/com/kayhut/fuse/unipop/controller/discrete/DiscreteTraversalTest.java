@@ -111,15 +111,25 @@ public class DiscreteTraversalTest {
 
         new ElasticDataPopulator(
                 client,
-                "coins",
+                "coins1",
                 "Coin",
                 "id",
                 true,
                 "faction",
                 true,
-                () -> createCoins(10, 3)).populate();
+                () -> createCoins(0, 5, 3)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons1", "dragons2", "coins")).actionGet();
+        new ElasticDataPopulator(
+                client,
+                "coins2",
+                "Coin",
+                "id",
+                true,
+                "faction",
+                true,
+                () -> createCoins(5, 10, 3)).populate();
+
+        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons1", "dragons2", "coins1", "coins2")).actionGet();
     }
 
     @AfterClass
@@ -333,10 +343,10 @@ public class DiscreteTraversalTest {
                         }
 
                         @Override
-                        public IndexPartitions getIndexPartitions() {
-                            return new IndexPartitions.Impl("_id",
+                        public Optional<IndexPartitions> getIndexPartitions() {
+                            return Optional.of(new IndexPartitions.Impl("_id",
                                     new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
-                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"));
+                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2")));
                         }
 
                         @Override
@@ -362,8 +372,10 @@ public class DiscreteTraversalTest {
                         }
 
                         @Override
-                        public IndexPartitions getIndexPartitions() {
-                            return new StaticIndexPartitions(Collections.singletonList("coins"));
+                        public Optional<IndexPartitions> getIndexPartitions() {
+                            return Optional.of(new IndexPartitions.Impl("dragonId",
+                                    new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
+                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2")));
                         }
 
                         @Override
@@ -396,7 +408,11 @@ public class DiscreteTraversalTest {
                                             Collections.emptyList(),
                                             Optional.of(new GraphElementRouting.Impl(
                                                     new GraphElementPropertySchema.Impl("faction")
-                                            ))));
+                                            )),
+                                            Optional.of(new IndexPartitions.Impl("_id",
+                                                            new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
+                                                            new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2")))
+                                            ));
                         }
 
                         @Override
@@ -407,7 +423,11 @@ public class DiscreteTraversalTest {
                                             Arrays.asList(
                                                     new GraphRedundantPropertySchema.Impl("material", "material", "string"),
                                                     new GraphRedundantPropertySchema.Impl("weight", "weight", "int")),
-                                            Optional.empty()));
+                                            Optional.empty(),
+                                            Optional.of(new IndexPartitions.Impl("dragonId",
+                                                    new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
+                                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2")))
+                                            ));
                         }
 
                         @Override
@@ -431,8 +451,8 @@ public class DiscreteTraversalTest {
                         }
 
                         @Override
-                        public IndexPartitions getIndexPartitions() {
-                            return new StaticIndexPartitions(Collections.singletonList("coins"));
+                        public Optional<IndexPartitions> getIndexPartitions() {
+                            return Optional.of(new StaticIndexPartitions("coins1", "coins2"));
                         }
 
                         @Override
@@ -491,14 +511,14 @@ public class DiscreteTraversalTest {
         return dragons;
     }
 
-    private static Iterable<Map<String, Object>> createCoins(int numDragons, int numCoinsPerDragon) {
-        int coinId = 0;
+    private static Iterable<Map<String, Object>> createCoins(int dragonStartId, int dragonEndId, int numCoinsPerDragon) {
+        int coinId = dragonStartId * numCoinsPerDragon;
         List<String> materials = Arrays.asList("gold", "silver", "bronze", "tin");
         List<Integer> weights = Arrays.asList(10, 20, 30, 40, 50, 60, 70);
         List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5");
 
         List<Map<String, Object>> coins = new ArrayList<>();
-        for(int i = 0 ; i < numDragons ; i++) {
+        for(int i = dragonStartId ; i < dragonEndId ; i++) {
             for(int j = 0; j < numCoinsPerDragon ; j++) {
                 Map<String, Object> coin = new HashMap();
                 coin.put("id", "c" + Integer.toString(coinId));

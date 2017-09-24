@@ -218,8 +218,8 @@ public class SingularEdgeSearchAppenderTest {
                         }
 
                         @Override
-                        public IndexPartitions getIndexPartitions() {
-                            return null;
+                        public Optional<IndexPartitions> getIndexPartitions() {
+                            return Optional.empty();
                         }
 
                         @Override

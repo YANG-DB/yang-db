@@ -21,7 +21,7 @@ public interface GraphElementSchema {
 
     Optional<GraphElementRouting> getRouting();
 
-    IndexPartitions getIndexPartitions();
+    Optional<IndexPartitions> getIndexPartitions();
 
     Iterable<GraphElementPropertySchema> getProperties();
 

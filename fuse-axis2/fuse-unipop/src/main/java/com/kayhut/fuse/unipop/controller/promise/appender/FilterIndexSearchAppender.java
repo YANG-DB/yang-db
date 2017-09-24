@@ -28,7 +28,7 @@ public class FilterIndexSearchAppender implements SearchAppender<PromiseVertexFi
                 .map(label -> context.getSchemaProvider().getVertexSchema(label))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(GraphElementSchema::getIndexPartitions)
+                .map(schema -> schema.getIndexPartitions().get())
                 .flatMap(IndexPartitions::partitions)
                 .flatMap(IndexPartitions.Partition::indices)
                 .distinct()

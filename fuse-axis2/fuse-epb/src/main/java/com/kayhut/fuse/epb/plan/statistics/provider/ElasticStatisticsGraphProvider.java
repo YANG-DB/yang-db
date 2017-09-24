@@ -47,7 +47,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Override
     public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema) {
         return getVertexCardinality(graphVertexSchema,
-                Stream.ofAll(graphVertexSchema.getIndexPartitions().partitions())
+                Stream.ofAll(graphVertexSchema.getIndexPartitions().get().partitions())
                 .flatMap(IndexPartitions.Partition::indices)
                 .toJavaList());
     }
@@ -60,7 +60,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Override
     public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema) {
         return getEdgeCardinality(graphEdgeSchema,
-                Stream.ofAll(graphEdgeSchema.getIndexPartitions().partitions())
+                Stream.ofAll(graphEdgeSchema.getIndexPartitions().get().partitions())
                         .flatMap(IndexPartitions.Partition::indices)
                         .toJavaList());
     }

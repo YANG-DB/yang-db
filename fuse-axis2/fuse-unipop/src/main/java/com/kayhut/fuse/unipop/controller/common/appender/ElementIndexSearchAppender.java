@@ -54,14 +54,18 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
     //endregion
 
     //region Private Methods
-    private Iterable<String> getIndices(IndexPartitions indexPartitions, ElementControllerContext context) {
-        if (!indexPartitions.partitionField().isPresent() || !context.getConstraint().isPresent()) {
-            return Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet();
+    private Iterable<String> getIndices(Optional<IndexPartitions> indexPartitions, ElementControllerContext context) {
+        if (!indexPartitions.isPresent()) {
+                return Collections.emptyList();
         }
 
-        String partitionField = indexPartitions.partitionField().get().equals("_id") ?
+        if (!indexPartitions.get().partitionField().isPresent() || !context.getConstraint().isPresent()) {
+            return Stream.ofAll(indexPartitions.get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet();
+        }
+
+        String partitionField = indexPartitions.get().partitionField().get().equals("_id") ?
                 T.id.getAccessor() :
-                indexPartitions.partitionField().get();
+                indexPartitions.get().partitionField().get();
 
 
         //currently supporting only compare eq and contains within
@@ -72,10 +76,10 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
                 .getValue(context.getConstraint().get().getTraversal())).toJavaList();
 
         if (hasSteps.isEmpty()) {
-            return Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet();
+            return Stream.ofAll(indexPartitions.get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet();
         }
 
-        Set<String> indices = Stream.ofAll(indexPartitions.partitions())
+        Set<String> indices = Stream.ofAll(indexPartitions.get().partitions())
                 .filter(partition -> !(partition instanceof IndexPartitions.Partition.Range))
                 .flatMap(IndexPartitions.Partition::indices)
                 .toJavaSet();
@@ -84,7 +88,7 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
         HasStep<?> hasStep = hasSteps.get(0);
         List<Object> values = CollectionUtil.listFromObjectValue(hasStep.getHasContainers().get(0).getValue());
         if (!values.isEmpty() && values.get(0) instanceof Comparable) {
-            indices.addAll(Stream.ofAll(indexPartitions.partitions())
+            indices.addAll(Stream.ofAll(indexPartitions.get().partitions())
                     .filter(partition -> partition instanceof IndexPartitions.Partition.Range)
                     .map(partition -> (IndexPartitions.Partition.Range) partition)
                     .filter(partition -> Stream.ofAll(values).find(value -> partition.isWithin((Comparable)value)).toJavaOptional().isPresent())

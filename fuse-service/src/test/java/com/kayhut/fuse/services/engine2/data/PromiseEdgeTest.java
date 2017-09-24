@@ -123,7 +123,7 @@ public class PromiseEdgeTest{
         //prepare schema provider
         IndexPartitions indexPartitions = new StaticIndexPartitions(Collections.singletonList("v1"));
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
-        when(edgeSchema.getIndexPartitions()).thenReturn(indexPartitions);
+        when(edgeSchema.getIndexPartitions()).thenReturn(Optional.of(indexPartitions));
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 

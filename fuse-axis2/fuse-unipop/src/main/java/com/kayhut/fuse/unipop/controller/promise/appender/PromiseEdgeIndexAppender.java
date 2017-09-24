@@ -42,7 +42,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
 
             if (edgeSchema.isPresent()) {
 
-                IndexPartitions indexPartitions = edgeSchema.get().getIndexPartitions();
+                IndexPartitions indexPartitions = edgeSchema.get().getIndexPartitions().get();
 
                 if (indexPartitions instanceof TimeSeriesIndexPartitions) {
 

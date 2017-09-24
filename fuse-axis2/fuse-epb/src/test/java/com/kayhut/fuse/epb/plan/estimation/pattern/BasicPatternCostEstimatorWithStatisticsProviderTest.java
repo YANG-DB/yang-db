@@ -68,7 +68,7 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
                     }
                 }));
         when(graphEdgeSchema.getIndexPartitions())
-                .thenReturn(new StaticIndexPartitions(Collections.singleton("index")));
+                .thenReturn(Optional.of(new StaticIndexPartitions(Collections.singleton("index"))));
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
         when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];

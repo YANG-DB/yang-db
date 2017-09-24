@@ -89,7 +89,7 @@ public class SmartEpbSelectivityTests {
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().partitions())
+            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().get().partitions())
                     .flatMap(IndexPartitions.Partition::indices).toJavaList();
             return graphStatisticsProvider.getEdgeCardinality(edgeSchema, indices);
         });
@@ -102,7 +102,7 @@ public class SmartEpbSelectivityTests {
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().partitions())
+            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().get().partitions())
                     .flatMap(IndexPartitions.Partition::indices).toJavaList();
             return graphStatisticsProvider.getVertexCardinality(vertexSchema, indices);
         });
@@ -228,8 +228,8 @@ public class SmartEpbSelectivityTests {
 
     private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {
         List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
-        if(elementSchema.getIndexPartitions() instanceof TimeSeriesIndexPartitions){
-            TimeSeriesIndexPartitions timeSeriesIndexPartition = (TimeSeriesIndexPartitions) elementSchema.getIndexPartitions();
+        if(elementSchema.getIndexPartitions().get() instanceof TimeSeriesIndexPartitions){
+            TimeSeriesIndexPartitions timeSeriesIndexPartition = (TimeSeriesIndexPartitions) elementSchema.getIndexPartitions().get();
             if(timeSeriesIndexPartition.getTimeField().equals(graphElementPropertySchema.getName())){
                 for(int i = 0;i<3;i++){
                     Date dt = new Date(startTime - i*60*60*1000);

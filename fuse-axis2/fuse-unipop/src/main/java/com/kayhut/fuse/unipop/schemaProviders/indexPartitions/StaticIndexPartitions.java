@@ -11,6 +11,10 @@ import java.util.Optional;
  */
 public class StaticIndexPartitions implements IndexPartitions {
     //region Constructors
+    public StaticIndexPartitions(String...indices) {
+        this(Stream.of(indices));
+    }
+
     public StaticIndexPartitions(Iterable<String> indices) {
         this.indices = Stream.ofAll(indices).toJavaList();
     }

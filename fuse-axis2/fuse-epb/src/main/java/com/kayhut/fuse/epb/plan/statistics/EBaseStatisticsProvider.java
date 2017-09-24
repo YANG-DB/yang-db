@@ -139,7 +139,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> getRelevantIndicesForEdge(RelPropGroup relPropGroup, GraphEdgeSchema graphEdgeSchema) {
-        IndexPartitions indexPartitions = graphEdgeSchema.getIndexPartitions();
+        IndexPartitions indexPartitions = graphEdgeSchema.getIndexPartitions().get();
         List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
         if(indexPartitions instanceof TimeSeriesIndexPartitions){
             relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions,relPropGroup);
@@ -187,7 +187,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> getVertexRelevantIndices(EPropGroup entityFilter, GraphVertexSchema graphVertexSchema) {
-        IndexPartitions indexPartitions = graphVertexSchema.getIndexPartitions();
+        IndexPartitions indexPartitions = graphVertexSchema.getIndexPartitions().get();
         List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
         if(indexPartitions instanceof TimeSeriesIndexPartitions){
             relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions, entityFilter);

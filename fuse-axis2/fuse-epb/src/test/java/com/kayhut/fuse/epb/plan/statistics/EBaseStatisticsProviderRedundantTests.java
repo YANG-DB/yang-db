@@ -40,7 +40,7 @@ public class EBaseStatisticsProviderRedundantTests {
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
         when(graphElementSchemaProvider.getVertexLabels()).thenReturn(Arrays.asList("Guild"));
         GraphEdgeSchema ownSchema = mock(GraphEdgeSchema.class);
-        when(ownSchema.getIndexPartitions()).thenReturn(new StaticIndexPartitions(Collections.emptyList()));
+        when(ownSchema.getIndexPartitions()).thenReturn(Optional.of(new StaticIndexPartitions(Collections.emptyList())));
         when(ownSchema.getDestination()).thenReturn(Optional.of(
                 new GraphEdgeSchema.End.Impl(
                         null,
@@ -61,8 +61,8 @@ public class EBaseStatisticsProviderRedundantTests {
             }
 
             @Override
-            public IndexPartitions getIndexPartitions() {
-                return new StaticIndexPartitions(Collections.emptyList());
+            public Optional<IndexPartitions> getIndexPartitions() {
+                return Optional.of(new StaticIndexPartitions(Collections.emptyList()));
             }
 
             @Override
