@@ -61,4 +61,43 @@ public interface IndexPartitions {
             }
         }
     }
+
+    class Impl implements IndexPartitions {
+        //region Constructors
+        public Impl(Partition...partitions) {
+            this(Stream.of(partitions));
+        }
+
+        public Impl(Iterable<Partition> partitions) {
+            this.partitions = Stream.ofAll(partitions).toJavaList();
+            this.partitionField = Optional.empty();
+        }
+
+        public Impl(String partitionField, Partition...partitions) {
+            this(partitionField, Stream.of(partitions));
+        }
+
+        public Impl(String partitionField, Iterable<Partition> partitions) {
+            this.partitionField = Optional.of(partitionField);
+            this.partitions = Stream.ofAll(partitions).toJavaList();
+        }
+        //endregion
+
+        //region IndexPartitions Implementation
+        @Override
+        public Optional<String> partitionField() {
+            return this.partitionField;
+        }
+
+        @Override
+        public Iterable<Partition> partitions() {
+            return this.partitions;
+        }
+        //endregion
+
+        //region Fields
+        private Optional<String> partitionField;
+        private Iterable<Partition> partitions;
+        //endregion
+    }
 }

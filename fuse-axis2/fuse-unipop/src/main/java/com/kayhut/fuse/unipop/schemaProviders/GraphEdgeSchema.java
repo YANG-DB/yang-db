@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -35,6 +36,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property);
         Iterable<GraphRedundantPropertySchema> getRedundantProperties();
         Optional<GraphElementRouting> getRouting();
+        Optional<IndexPartitions> getIndexPartitions();
 
         class Impl implements End {
             //region Constructors
@@ -53,11 +55,20 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                         Optional<String> label,
                         Iterable<GraphRedundantPropertySchema> redundantPropertySchemas,
                         Optional<GraphElementRouting> routing) {
+                this(idField, label, redundantPropertySchemas, routing, Optional.empty());
+            }
+
+            public Impl(String idField,
+                        Optional<String> label,
+                        Iterable<GraphRedundantPropertySchema> redundantPropertySchemas,
+                        Optional<GraphElementRouting> routing,
+                        Optional<IndexPartitions> indexPartitions) {
                 this.idField = idField;
                 this.label = label;
                 this.redundantPropertySchemas = Stream.ofAll(redundantPropertySchemas)
                         .toJavaMap(property -> new Tuple2<>(property.getName(), property));
                 this.routing = routing;
+                this.indexPartitions = indexPartitions;
             }
             //endregion
 
@@ -87,6 +98,11 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             public Optional<GraphElementRouting> getRouting() {
                 return this.routing;
             }
+
+            @Override
+            public Optional<IndexPartitions> getIndexPartitions() {
+                return this.indexPartitions;
+            }
             //endregion
 
             //region Fields
@@ -94,6 +110,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             private Optional<String> label;
             private Map<String, GraphRedundantPropertySchema> redundantPropertySchemas;
             private Optional<GraphElementRouting> routing;
+            private Optional<IndexPartitions> indexPartitions;
             //endregion
         }
     }

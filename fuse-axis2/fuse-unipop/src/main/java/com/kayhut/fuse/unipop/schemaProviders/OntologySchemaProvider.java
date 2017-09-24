@@ -201,6 +201,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                     public Optional<GraphElementRouting> getRouting() {
                         return Optional.empty();
                     }
+
+                    @Override
+                    public Optional<IndexPartitions> getIndexPartitions() {
+                        return Optional.empty();
+                    }
                 });
             }
 
@@ -229,6 +234,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
                     @Override
                     public Optional<GraphElementRouting> getRouting() {
+                        return Optional.empty();
+                    }
+
+                    @Override
+                    public Optional<IndexPartitions> getIndexPartitions() {
                         return Optional.empty();
                     }
                 });

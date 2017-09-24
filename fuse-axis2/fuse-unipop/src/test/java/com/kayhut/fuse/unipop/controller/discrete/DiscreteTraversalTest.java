@@ -91,13 +91,23 @@ public class DiscreteTraversalTest {
         TransportClient client = elasticEmbeddedNode.getClient();
         new ElasticDataPopulator(
                 client,
-                "dragons",
+                "dragons1",
                 "Dragon",
                 "id",
                 true,
                 "faction",
                 false,
-                () -> createDragons(10)).populate();
+                () -> createDragons(0, 5)).populate();
+
+        new ElasticDataPopulator(
+                client,
+                "dragons2",
+                "Dragon",
+                "id",
+                true,
+                "faction",
+                false,
+                () -> createDragons(5, 10)).populate();
 
         new ElasticDataPopulator(
                 client,
@@ -109,7 +119,7 @@ public class DiscreteTraversalTest {
                 true,
                 () -> createCoins(10, 3)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons", "coins")).actionGet();
+        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons1", "dragons2", "coins")).actionGet();
     }
 
     @AfterClass
@@ -138,6 +148,54 @@ public class DiscreteTraversalTest {
         Assert.assertTrue(Stream.ofAll(vertices)
                 .filter(vertex -> vertex.label().equals("Dragon"))
                 .forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXid_d001X() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d001").toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXid_d001X_hasXlabel_DragonX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d001").has(T.label, "Dragon").toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXid_d007X() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d007").toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXid_d007X_hasXlabel_DragonX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d007").has(T.label, "Dragon").toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXid_within_d001_d002X() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d002")).toList();
+        Assert.assertEquals(2, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXid_within_d001_d007X() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d007")).toList();
+        Assert.assertEquals(2, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
@@ -276,7 +334,9 @@ public class DiscreteTraversalTest {
 
                         @Override
                         public IndexPartitions getIndexPartitions() {
-                            return new StaticIndexPartitions(Collections.singletonList("dragons"));
+                            return new IndexPartitions.Impl("_id",
+                                    new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
+                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"));
                         }
 
                         @Override
@@ -415,13 +475,13 @@ public class DiscreteTraversalTest {
     //endregion
 
     //region Private Methods
-    private static Iterable<Map<String, Object>> createDragons(int numDragons) {
+    private static Iterable<Map<String, Object>> createDragons(int startId, int endId) {
         List<String> colors = Arrays.asList("red", "green", "yellow", "blue");
         List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5");
         List<Map<String, Object>> dragons = new ArrayList<>();
-        for(int i = 0 ; i < numDragons ; i++) {
+        for(int i = startId ; i < endId ; i++) {
             Map<String, Object> dragon = new HashMap();
-            dragon.put("id", "d" + Integer.toString(i));
+            dragon.put("id", "d" + String.format("%03d", i));
             dragon.put("faction", factions.get(i % factions.size()));
             dragon.put("name", "dragon" + i);
             dragon.put("age", 100 + i);
@@ -443,7 +503,7 @@ public class DiscreteTraversalTest {
                 Map<String, Object> coin = new HashMap();
                 coin.put("id", "c" + Integer.toString(coinId));
                 coin.put("faction", factions.get(i % factions.size()));
-                coin.put("dragonId", "d" + Integer.toString(i));
+                coin.put("dragonId", "d" + String.format("%03d", i));
                 coin.put("material", materials.get(coinId % materials.size()));
                 coin.put("weight", weights.get(coinId % weights.size()));
                 coins.add(coin);

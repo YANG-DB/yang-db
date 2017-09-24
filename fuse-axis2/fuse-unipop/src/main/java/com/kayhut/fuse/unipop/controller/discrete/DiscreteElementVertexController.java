@@ -69,7 +69,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
 
         CompositeSearchAppender<DiscreteElementControllerContext> searchAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
-                        wrap(new IndexSearchAppender()),
+                        wrap(new ElementIndexSearchAppender()),
                         wrap(new SizeSearchAppender(this.configuration)),
                         wrap(new ConstraintSearchAppender()),
                         wrap(new FilterSourceSearchAppender()),
