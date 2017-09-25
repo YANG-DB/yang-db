@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
+import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeIndexSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeRoutingSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSourceSearchAppender;
@@ -87,7 +88,8 @@ public class DiscreteVertexController extends VertexControllerBase {
                         wrap(new ElementRoutingSearchAppender(50)),
                         wrap(new SingularEdgeSearchAppender()),
                         wrap(new SingularEdgeSourceSearchAppender()),
-                        wrap(new SingularEdgeRoutingSearchAppender(50)));
+                        wrap(new SingularEdgeRoutingSearchAppender(50)),
+                        wrap(new SingularEdgeIndexSearchAppender()));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);

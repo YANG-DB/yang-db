@@ -31,6 +31,7 @@ public class CompositeSearchAppender<TContext> implements SearchAppender<TContex
 
         for(SearchAppender<TContext> searchAppender : this.searchAppenders) {
             innerAppenderResult = searchAppender.append(searchBuilder, context);
+
             if (innerAppenderResult && this.mode == Mode.first) {
                 return true;
             }

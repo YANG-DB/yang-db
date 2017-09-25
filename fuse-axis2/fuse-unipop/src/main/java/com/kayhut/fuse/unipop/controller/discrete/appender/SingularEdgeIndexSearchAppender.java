@@ -11,6 +11,8 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,8 +47,8 @@ public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexCon
                 T.id.getAccessor() :
                 endSchema.getIndexPartitions().get().partitionField().get();
 
-        List<Object> partitionValues = Stream.ofAll(context.getBulkVertices())
-                .map(vertex -> ElementUtil.value(vertex, partitionField))
+        List<Comparable> partitionValues = Stream.ofAll(context.getBulkVertices())
+                .map(vertex -> (Comparable)ElementUtil.value(vertex, partitionField))
                 .distinct().sorted().toJavaList();
 
         List<IndexPartitions.Partition.Range> rangePartitions =
@@ -56,7 +58,42 @@ public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexCon
                     .<Comparable>sortBy(partition -> (Comparable)partition.to())
                     .toJavaList();
 
-        return false;
+        Iterable<IndexPartitions.Partition.Range> relevantRangePartitions = findRelevantRangePartitions(rangePartitions, partitionValues);
+        Set<String> indices =
+                Stream.ofAll(endSchema.getIndexPartitions().get().partitions())
+                .filter(partition -> !(partition instanceof IndexPartitions.Partition.Range))
+                .appendAll(relevantRangePartitions)
+                .flatMap(IndexPartitions.Partition::indices)
+                .toJavaSet();
+
+        searchBuilder.getIndices().addAll(indices);
+        return indices.size() > 0;
+    }
+    //endregion
+
+    //Private Methods
+    private Set<IndexPartitions.Partition.Range> findRelevantRangePartitions(
+            List<IndexPartitions.Partition.Range> partitions,
+            List<Comparable> values) {
+        Set<IndexPartitions.Partition.Range> foundPartitions = new HashSet<>();
+        int partitionIndex = 0;
+        int valueIndex = 0;
+
+        while(partitionIndex < partitions.size() && valueIndex < values.size()) {
+            IndexPartitions.Partition.Range partition = partitions.get(partitionIndex);
+            Comparable value = values.get(valueIndex);
+
+            if (partition.isWithin(value)) {
+                foundPartitions.add(partition);
+                valueIndex++;
+            } else if (partition.to().compareTo(value) < 0) {
+                partitionIndex++;
+            } else {
+                valueIndex++;
+            }
+        }
+
+        return foundPartitions;
     }
     //endregion
 }

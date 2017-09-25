@@ -321,6 +321,48 @@ public class DiscreteTraversalTest {
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material").equals("gold")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight").equals(30)));
     }
+
+    @Test
+    public void g_V_hasXid_d001X_outE_hasCoin_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d001").outE("hasCoin").inV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXid_d001X_hasXlabel_DragonX_outE_hasCoin_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d001").has(T.label, "Dragon").outE("hasCoin").inV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXid_d007X_outE_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d007").outE("hasCoin").inV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXid_d007X_hasXlabel_DragonX_outE_hasCoin_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, "d007").has(T.label, "Dragon").outE("hasCoin").inV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXid_within_d001_d002X_outE_hasCoin_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d002")).outE("hasCoin").inV().toList();
+        Assert.assertEquals(6, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
+
+    @Test
+    public void g_V_hasXid_within_d001_d007X_outE_hasCoin_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d007")).outE("hasCoin").inV().toList();
+        Assert.assertEquals(6, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+    }
     //endregion
 
     //region SchemaProvider
@@ -452,7 +494,7 @@ public class DiscreteTraversalTest {
 
                         @Override
                         public Optional<IndexPartitions> getIndexPartitions() {
-                            return Optional.of(new StaticIndexPartitions("coins1", "coins2"));
+                            return Optional.empty();
                         }
 
                         @Override
