@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta.strategy;
+package com.kayhut.fuse.gta.strategy.common;
 
 /**
  * Created by Roman on 29/05/2017.

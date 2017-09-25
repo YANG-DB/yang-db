@@ -1,6 +1,7 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.gta.strategy.promise.RelationOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;

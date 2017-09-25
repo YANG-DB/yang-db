@@ -1,6 +1,8 @@
 package com.kayhut.fuse.gta.strategy;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
+import com.kayhut.fuse.gta.strategy.promise.EntityFilterOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;

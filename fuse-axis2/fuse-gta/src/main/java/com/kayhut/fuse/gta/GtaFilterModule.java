@@ -1,14 +1,9 @@
 package com.kayhut.fuse.gta;
 
 import com.google.inject.Binder;
-import com.google.inject.matcher.Matchers;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
-import com.kayhut.fuse.gta.strategy.M1FilterPlanOpTranslationStrategy;
-import com.kayhut.fuse.gta.strategy.M1PlanOpTranslationStrategy;
-import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategy;
-import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
-import com.kayhut.fuse.gta.translation.M1FilterPlanTraversalTranslator;
+import com.kayhut.fuse.gta.translation.promise.M1FilterPlanTraversalTranslator;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
 import com.typesafe.config.Config;
 import org.jooby.Env;

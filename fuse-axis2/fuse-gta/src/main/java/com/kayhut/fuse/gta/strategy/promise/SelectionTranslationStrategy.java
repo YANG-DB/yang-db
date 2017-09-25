@@ -1,6 +1,7 @@
-package com.kayhut.fuse.gta.strategy;
+package com.kayhut.fuse.gta.strategy.promise;
 
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
