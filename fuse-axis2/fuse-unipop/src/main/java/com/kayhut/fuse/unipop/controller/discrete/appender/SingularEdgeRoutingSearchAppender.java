@@ -16,12 +16,6 @@ import java.util.Set;
  * Created by roman.margolis on 18/09/2017.
  */
 public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexControllerContext> {
-    //region Constructors
-    public SingularEdgeRoutingSearchAppender(int maxNumRoutingValues) {
-        this.maxNumRoutingValues = maxNumRoutingValues;
-    }
-    //endregion
-
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
@@ -46,17 +40,11 @@ public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexC
                                             endSchema.getRouting().get().getRoutingProperty().getName()))
                             .toJavaSet();
 
-            if (routingValues.size() <= this.maxNumRoutingValues) {
-                searchBuilder.getRouting().addAll(routingValues);
-                return true;
-            }
+            searchBuilder.getRouting().addAll(routingValues);
+            return routingValues.size() > 0;
         }
 
         return false;
     }
-    //endregion
-
-    //region Fields
-    private int maxNumRoutingValues;
     //endregion
 }

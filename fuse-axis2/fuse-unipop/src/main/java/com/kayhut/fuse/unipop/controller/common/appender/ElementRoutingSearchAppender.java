@@ -19,12 +19,6 @@ import java.util.Set;
  * Created by roman.margolis on 18/09/2017.
  */
 public class ElementRoutingSearchAppender implements SearchAppender<ElementControllerContext> {
-    //region Constructors
-    public ElementRoutingSearchAppender(int maxNumRoutingValues) {
-        this.maxNumRoutingValues = maxNumRoutingValues;
-    }
-    //endregion
-
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, ElementControllerContext context) {
@@ -61,16 +55,9 @@ public class ElementRoutingSearchAppender implements SearchAppender<ElementContr
                 .flatMap(propertyName -> new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), propertyName))
                 .toJavaSet();
 
-        if (routingValues.size() <= this.maxNumRoutingValues) {
-            searchBuilder.getRouting().addAll(routingValues);
-            return true;
-        }
+        searchBuilder.getRouting().addAll(routingValues);
 
-        return false;
+        return routingValues.size() > 0;
     }
-    //endregion
-
-    //region Fields
-    private int maxNumRoutingValues;
     //endregion
 }

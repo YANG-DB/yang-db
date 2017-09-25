@@ -85,11 +85,13 @@ public class DiscreteVertexController extends VertexControllerBase {
                         wrap(new ConstraintSearchAppender()),
                         wrap(new FilterSourceSearchAppender()),
                         wrap(new FilterSourceRoutingSearchAppender()),
-                        wrap(new ElementRoutingSearchAppender(50)),
+                        wrap(new ElementRoutingSearchAppender()),
                         wrap(new SingularEdgeSearchAppender()),
                         wrap(new SingularEdgeSourceSearchAppender()),
-                        wrap(new SingularEdgeRoutingSearchAppender(50)),
-                        wrap(new SingularEdgeIndexSearchAppender()));
+                        wrap(new SingularEdgeRoutingSearchAppender()),
+                        wrap(new SingularEdgeIndexSearchAppender()),
+                        wrap(new NormalizeRoutingSearchAppender(50)),
+                        wrap(new NormalizeIndexSearchAppender(100)));
 
         SearchBuilder searchBuilder = new SearchBuilder();
         searchAppender.append(searchBuilder, context);
