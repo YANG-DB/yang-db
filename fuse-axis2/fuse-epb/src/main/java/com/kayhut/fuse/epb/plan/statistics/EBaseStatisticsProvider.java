@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Constraint;
@@ -107,7 +106,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             Property property = ont.$property$( relProp.getpType() );
 
             GraphElementPropertySchema graphElementPropertySchema;
-            if (relProp instanceof PushdownRelProp){
+            if (relProp instanceof RedundantRelProp){
                 graphElementPropertySchema = graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
             }else {
                 graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
@@ -123,8 +122,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.SummaryStatistics getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
-        List<PushdownRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof PushdownRelProp).
-                map(PushdownRelProp.class::cast).collect(Collectors.toList());
+        List<RedundantRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof RedundantRelProp).
+                map(RedundantRelProp.class::cast).collect(Collectors.toList());
 
         EPropGroup ePropGroup = new EPropGroup(pushdownProps.stream().map(prop -> EProp.of(prop.getpType(), prop.geteNum(), prop.getCon())).collect(Collectors.toList()));
         return getNodeFilterStatistics(entity, ePropGroup);

@@ -6,7 +6,7 @@ import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.PushdownRelProp;
+import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
@@ -103,9 +103,9 @@ public class EBaseStatisticsProviderRedundantTests {
         constraint.setExpr(new Date());
         constraint.setOp(ConstraintOp.eq);
         prop.setCon(constraint);
-        PushdownRelProp pushdownRelProp = PushdownRelProp.of(0, "EntityB.firstName", "lastName", Constraint.of(ConstraintOp.ge, "abc"));
+        RedundantRelProp redundantRelProp = RedundantRelProp.of(0, "EntityB.firstName", "lastName", Constraint.of(ConstraintOp.ge, "abc"));
 
-        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, pushdownRelProp));
+        RelPropGroup relFilter = new RelPropGroup(Arrays.asList(prop, redundantRelProp));
 
         ETyped eTyped = new ETyped();
         eTyped.seteType("Guild");

@@ -103,7 +103,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
                     .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.TYPE_FIELD_P_TYPE).getName()).get());
 
             if(redundantTypeProperty.isPresent()) {
-                RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantTypeProperty.get().getPropertyRedundantName(),
+                RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantTypeProperty.get().getPropertyRedundantName(),
                         OntologyFinalizer.TYPE_FIELD_P_TYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
@@ -117,7 +117,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
                     .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.ID_FIELD_P_TYPE).getName()).get());
 
             if(redundantIdProperty.isPresent()) {
-                RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantIdProperty.get().getPropertyRedundantName(),
+                RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantIdProperty.get().getPropertyRedundantName(),
                         OntologyFinalizer.ID_FIELD_P_TYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
@@ -129,7 +129,7 @@ public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionSt
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = edgeSchema.get().getDestination().get()
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
                 if(redundantVertexProperty.isPresent()){
-                    RelProp relProp = PushdownRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
+                    RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
                             p.getpType(), p.getCon());
                     relPropGroup.getProps().add(relProp);
                     ePropGroup.geteBase().getProps().remove(p);
