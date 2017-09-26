@@ -1,8 +1,9 @@
-package com.kayhut.fuse.gta;
+package com.kayhut.fuse.gta.module.promise;
 
 import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
+import com.kayhut.fuse.gta.GtaTraversalCursorProcessor;
 import com.kayhut.fuse.gta.translation.promise.M1FilterPlanTraversalTranslator;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
 import com.typesafe.config.Config;
