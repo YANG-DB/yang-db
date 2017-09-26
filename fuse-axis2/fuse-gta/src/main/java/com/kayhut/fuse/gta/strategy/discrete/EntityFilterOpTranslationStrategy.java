@@ -41,10 +41,8 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             return traversal;
         }
 
-        EntityOp entityOp = (EntityOp) previousPlanOp.get();
         traversal = appendPropertyGroup(
                 traversal,
-                entityOp.getAsgEBase().geteBase(),
                 entityFilterOp.getAsgEBase().geteBase(),
                 context.getOnt());
 
@@ -55,14 +53,8 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
     //region Private Methods
     private GraphTraversal appendPropertyGroup(
             GraphTraversal<?, ?> traversal,
-            EEntityBase entity,
             EPropGroup ePropGroup,
             Ontology.Accessor ont) {
-
-        Stream.ofAll(TraversalUtil.<Step>lastSteps(traversal, step -> step.getLabels().contains(entity.geteTag())))
-                .forEach(step -> step.removeLabel(entity.geteTag()));
-
-        traversal.as(entity.geteTag());
         for(EProp eProp : ePropGroup.getProps()) {
             Optional<Property> property = ont.$property(eProp.getpType());
             property.ifPresent(property1 -> traversal.has(property1.getName(), ConversionUtil.convertConstraint(eProp.getCon())));

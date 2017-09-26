@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta.strategy;
+package com.kayhut.fuse.gta.strategy.common;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.common.GoToEntityOpTranslationStrategy;

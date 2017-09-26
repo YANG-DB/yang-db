@@ -37,12 +37,14 @@ public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase
 
         switch (rel.getDir()) {
             case R: traversal.outE(rTypeName);
+                break;
             case L: traversal.inE(rTypeName);
+                break;
             case RL: traversal.bothE(rTypeName);
+                break;
         }
 
-        return traversal.as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), rel.getDir(), next.get().getAsgEBase().geteBase()))
-                .has(T.label, P.eq(rTypeName));
+        return traversal.as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), rel.getDir(), next.get().getAsgEBase().geteBase()));
 
     }
     //endregion

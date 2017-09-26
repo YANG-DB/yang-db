@@ -1,8 +1,7 @@
-package com.kayhut.fuse.gta.strategy;
+package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
-import com.kayhut.fuse.gta.strategy.promise.EntityOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -19,8 +18,6 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
-import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -40,7 +37,7 @@ import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by Roman on 10/05/2017.
+ * Created by roman.margolis on 26/09/2017.
  */
 public class EntityOpTranslationStrategyTest {
     public static AsgQuery simpleQuery0(String queryName, String ontologyName) {
@@ -132,8 +129,7 @@ public class EntityOpTranslationStrategyTest {
         when(context.getGraphTraversalSource()).thenReturn(new PromiseGraph().traversal());
 
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(0), context);
-        GraphTraversal expectedTraversal = __.start().V().as("A")
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")));
+        GraphTraversal expectedTraversal = __.start().V().as("A").has(T.label, "Person");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -151,39 +147,7 @@ public class EntityOpTranslationStrategyTest {
 
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(2), context);
-        GraphTraversal expectedTraversal = __.start().otherV().as("B");
-
-        Assert.assertEquals(expectedTraversal, actualTraversal);
-    }
-
-    @Test
-    public void testOptions_filterEntity_entity1_rel2_entity3() throws Exception {
-        AsgQuery query = simpleQuery1("name", "ontName");
-        Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 1).get()),
-                new RelationOp(AsgQueryUtil.<Rel>element(query, 2).get()),
-                new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 3).get())
-        );
-
-        Ontology ontology = Mockito.mock(Ontology.class);
-        when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
-                {
-                    return Arrays.asList(
-                            EntityType.Builder.get()
-                                    .withEType("2").withName("Person").build()
-                    );
-                }
-        );
-
-        TranslationContext context = Mockito.mock(TranslationContext.class);
-        when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
-
-        EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.filterEntity);
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(2), context);
-        GraphTraversal expectedTraversal = __.start().otherV()
-                .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")))
-                .otherV().as("B");
+        GraphTraversal expectedTraversal = __.start().inV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -202,7 +166,7 @@ public class EntityOpTranslationStrategyTest {
 
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(3), context);
-        GraphTraversal expectedTraversal = __.start().otherV().as("B");
+        GraphTraversal expectedTraversal = __.start().inV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
