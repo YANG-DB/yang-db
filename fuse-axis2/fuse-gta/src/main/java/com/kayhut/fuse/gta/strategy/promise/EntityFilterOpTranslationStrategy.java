@@ -3,7 +3,7 @@ package com.kayhut.fuse.gta.strategy.promise;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
-import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
+import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
@@ -179,7 +179,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
              return __.start();
          }
 
-         return __.has(property.get().getName(), ConverstionUtil.convertConstraint(eProp.getCon()));
+         return __.has(property.get().getName(), ConversionUtil.convertConstraint(eProp.getCon()));
     }
 
     private boolean isFilterVertexStep(VertexStep vertexStep) {

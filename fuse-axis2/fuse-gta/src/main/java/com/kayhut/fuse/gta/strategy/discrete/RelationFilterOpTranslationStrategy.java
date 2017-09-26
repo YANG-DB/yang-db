@@ -1,11 +1,14 @@
-package com.kayhut.fuse.gta.strategy.promise;
+package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Rel;
@@ -45,8 +48,6 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
             return traversal;
         }
 
-        TraversalUtil.remove(traversal, TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class));
-
         traversal = appendRelationAndPropertyGroup(
                 traversal,
                 relationOp.get().getAsgEBase().geteBase(),
@@ -64,29 +65,15 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
             RelPropGroup relPropGroup,
             Ontology.Accessor ont) {
 
-        String relationTypeName = ont.$relation$(rel.getrType()).getName();
-        List<Traversal> traversals = Stream.ofAll(relPropGroup.getProps())
-                .map(relProp -> convertRelPropToTraversal(relProp, ont))
-                .toJavaList();
+        for(RelProp relProp : relPropGroup.getProps()) {
+            Optional<Property> property = ont.$property(relProp.getpType());
+            property.ifPresent(property1 -> traversal.has(relProp instanceof PushdownRelProp ?
+                            ((PushdownRelProp) relProp).getPushdownPropName() :
+                            property1.getName(),
+                    ConversionUtil.convertConstraint(relProp.getCon())));
+        }
 
-        traversals.addAll(0, Arrays.asList(
-                __.has(T.label, P.eq(relationTypeName)),
-                __.has(GlobalConstants.HasKeys.DIRECTION, P.eq(ConversionUtil.convertDirection(rel.getDir())))
-        ));
-
-        return traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class))));
-    }
-
-    private Traversal convertRelPropToTraversal(RelProp relProp, Ontology.Accessor ont) {
-        Optional<Property> property = ont.$property(relProp.getpType());
-        return property.<Traversal>map(property1 ->
-                __.has(relProp instanceof PushdownRelProp ?
-                        ((PushdownRelProp)relProp).getPushdownPropName() :
-                        property1.getName()
-                , ConversionUtil.convertConstraint(relProp.getCon())))
-                .orElseGet(__::start);
-
+        return traversal;
     }
     //endregion
 }

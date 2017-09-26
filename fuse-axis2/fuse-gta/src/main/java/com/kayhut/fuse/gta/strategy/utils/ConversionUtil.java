@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by Roman on 10/05/2017.
  */
-public class ConverstionUtil {
+public class ConversionUtil {
     public static <V> P<V> convertConstraint(com.kayhut.fuse.model.query.Constraint constraint){
         List<Object> range = null;
 
@@ -42,6 +42,16 @@ public class ConverstionUtil {
             default:
                 throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
         }
+    }
+
+    public static String convertDirectionGraphic(Rel.Direction dir) {
+        switch (dir) {
+            case R: return "-->";
+            case L: return "<--";
+            case RL: return "<-->";
+        }
+
+        return null;
     }
 
     public static <TIn, TOut> TOut cast(TIn value) {

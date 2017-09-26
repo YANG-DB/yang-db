@@ -1,6 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
+import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -702,13 +702,13 @@ public abstract class EntityRelationEntityTest {
                         FIRE.getName(),
                         Direction.OUT,
                         TEMPERATURE.name,
-                        ConverstionUtil.convertConstraint(of(op, value)),
+                        ConversionUtil.convertConstraint(of(op, value)),
                         null,
                         singleton(DRAGON.name)),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
                                 .test(temperatureValueFunction.apply(intId)))
                         .isEmpty()));
     }
@@ -733,7 +733,7 @@ public abstract class EntityRelationEntityTest {
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("A"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
                                 .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
                         .isEmpty()));
     }
@@ -757,7 +757,7 @@ public abstract class EntityRelationEntityTest {
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
                                 .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
                         .isEmpty()));
     }
