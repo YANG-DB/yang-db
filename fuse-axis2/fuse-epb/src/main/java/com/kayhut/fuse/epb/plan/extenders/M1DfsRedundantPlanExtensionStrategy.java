@@ -23,7 +23,7 @@ public class M1DfsRedundantPlanExtensionStrategy extends CompositePlanExtensionS
                                 new InitialPlanGeneratorExtensionStrategy(),
                                 new StepAdjacentDfsStrategy()
                         ),
-                        new PushDownSplitFilterPlanExtensionStrategy(
+                        new RedundantFilterPlanExtensionStrategy(
                                 ontologyProvider,
                                 physicalIndexProviderFactory,
                                 graphLayoutProviderFactory)

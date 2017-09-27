@@ -35,7 +35,7 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                                         )
                                 )
                         ),
-                        new PushDownSplitFilterPlanExtensionStrategy(
+                        new RedundantFilterPlanExtensionStrategy(
                                 ontologyProvider,
                                 physicalIndexProviderFactory,
                                 graphLayoutProviderFactory)

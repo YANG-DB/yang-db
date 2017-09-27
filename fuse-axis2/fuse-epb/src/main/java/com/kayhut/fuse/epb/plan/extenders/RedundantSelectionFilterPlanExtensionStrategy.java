@@ -17,20 +17,29 @@ import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
-import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.unipop.schemaProviders.*;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RedundantRelProp;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
+import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import javaslang.collection.Stream;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by moti on 5/14/2017.
  */
-public class PushDownSplitFilterPlanExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     //region Constructors
     @Inject
-    public PushDownSplitFilterPlanExtensionStrategy(
+    public RedundantSelectionFilterPlanExtensionStrategy(
             OntologyProvider ontologyProvider,
             PhysicalIndexProviderFactory physicalIndexProviderFactory,
             GraphLayoutProviderFactory graphLayoutProviderFactory) {

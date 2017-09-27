@@ -3,7 +3,7 @@ package com.kayhut.fuse.epb.plan.extenders.dfs;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.extenders.PushDownSplitFilterPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.RedundantFilterPlanExtensionStrategy;
 import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.OntologyTestUtils;
@@ -40,7 +40,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
+public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
     OntologyProvider ontologyProvider;
     PhysicalIndexProviderFactory physicalIndexProviderFactory;
     GraphLayoutProviderFactory graphLayoutProviderFactory;
@@ -78,7 +78,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                 new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
-        PushDownSplitFilterPlanExtensionStrategy strategy = new PushDownSplitFilterPlanExtensionStrategy(
+        RedundantFilterPlanExtensionStrategy strategy = new RedundantFilterPlanExtensionStrategy(
                 ontologyProvider,
                 physicalIndexProviderFactory,
                 graphLayoutProviderFactory);
@@ -106,7 +106,7 @@ public class PushDownStrategyPlanGeneratorExtenderStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        PushDownSplitFilterPlanExtensionStrategy strategy = new PushDownSplitFilterPlanExtensionStrategy(
+        RedundantFilterPlanExtensionStrategy strategy = new RedundantFilterPlanExtensionStrategy(
                 ontologyProvider,
                 physicalIndexProviderFactory,
                 graphLayoutProviderFactory);
