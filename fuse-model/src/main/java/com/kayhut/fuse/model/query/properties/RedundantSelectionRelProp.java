@@ -22,8 +22,8 @@ public class RedundantSelectionRelProp extends RelProp {
     private String redundantPropName;
     //endregion
 
-    public static RedundantRelProp of(int eNum, String redundantPropName, String pType){
-        RedundantRelProp relProp = new RedundantRelProp(redundantPropName);
+    public static RedundantSelectionRelProp of(int eNum, String redundantPropName, String pType){
+        RedundantSelectionRelProp relProp = new RedundantSelectionRelProp(redundantPropName);
         relProp.seteNum(eNum);
         relProp.setpType(pType);
         return relProp;

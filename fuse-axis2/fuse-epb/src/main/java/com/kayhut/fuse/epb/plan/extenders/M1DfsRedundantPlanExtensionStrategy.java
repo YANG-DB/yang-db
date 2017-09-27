@@ -26,6 +26,10 @@ public class M1DfsRedundantPlanExtensionStrategy extends CompositePlanExtensionS
                         new RedundantFilterPlanExtensionStrategy(
                                 ontologyProvider,
                                 physicalIndexProviderFactory,
+                                graphLayoutProviderFactory),
+                        new RedundantSelectionFilterPlanExtensionStrategy(
+                                ontologyProvider,
+                                physicalIndexProviderFactory,
                                 graphLayoutProviderFactory)
                 )
         );
