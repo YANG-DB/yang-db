@@ -1,15 +1,12 @@
-package com.kayhut.fuse.gta;
+package com.kayhut.fuse.gta.translation.promise;
 
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
-import com.kayhut.fuse.gta.strategy.promise.M1PlanOpTranslationStrategy;
+import com.kayhut.fuse.gta.strategy.promise.M1FilterPlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
@@ -22,11 +19,12 @@ import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,19 +36,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by Roman on 14/05/2017.
+ * Created by benishue on 13-Mar-17.
  */
-public class M1ChainedPlanOpTraversalTranslatorTest {
+public class M1FilterChainedPlanOpTraversalTranslatorTest {
     UniGraphProvider uniGraphProvider;
     PlanTraversalTranslator translator;
 
     @Before
     public void setUp() throws Exception {
-        translator = new ChainedPlanOpTraversalTranslator(new M1PlanOpTranslationStrategy());
+        translator = new ChainedPlanOpTraversalTranslator(new M1FilterPlanOpTranslationStrategy());
         UniGraph uniGraph = mock(UniGraph.class);
         when(uniGraph.traversal()).thenReturn(new GraphTraversalSource(uniGraph));
         this.uniGraphProvider = mock(UniGraphProvider.class);
@@ -65,11 +64,14 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 __.start().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
-                        .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                        .otherV().as("B")
-                        .path();
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
+                .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
+                .otherV()
+                .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "Dragon"))))
+                .otherV().as("B")
+                .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -85,6 +87,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                         .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
+                        .otherV()
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .otherV().as("B")
                         .path();
 
@@ -102,6 +107,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
+                        .otherV()
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                         .otherV().as("A")
                         .path();
 
@@ -121,6 +129,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
+                        .otherV()
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .otherV().as("B")
                         .path();
 
@@ -140,11 +151,17 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
+                        .otherV()
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .otherV().as("B")
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->C")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
+                        .otherV()
+                        .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.within("Person", "Dragon"))))
                         .otherV().as("C")
                         .path();
 
