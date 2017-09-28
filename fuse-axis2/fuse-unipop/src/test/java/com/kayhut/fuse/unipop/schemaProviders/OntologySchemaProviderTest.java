@@ -70,17 +70,10 @@ public class OntologySchemaProviderTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, (label, elementType) -> {
-            if (elementType == ElementType.vertex) {
-              return new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2"));
-            } else if (elementType == ElementType.edge) {
-                return new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"));
-            } else {
-                // must fail
-                Assert.assertTrue(false);
-                return null;
-            }
-        });
+        return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
+                Optional.of(new GraphVertexSchema.Impl("", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2")))),
+                Optional.of(new GraphEdgeSchema.Impl("", new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
+        ));
     }
 
     private Ontology getOntology() {

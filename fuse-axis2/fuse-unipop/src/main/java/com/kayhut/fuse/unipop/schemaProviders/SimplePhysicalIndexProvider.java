@@ -21,7 +21,7 @@ public class SimplePhysicalIndexProvider implements PhysicalIndexProvider {
 
     //region PhysicalIndexProvider Implementation
     @Override
-    public IndexPartitions getIndexPartitionByLabel(String label, ElementType elementType) {
+    public IndexPartitions getIndexPartitionsByLabel(String label, ElementType elementType) {
         switch (elementType) {
             case edge: return new StaticIndexPartitions(Collections.singletonList(this.edgeIndexName));
             case vertex: return new StaticIndexPartitions(Collections.singletonList(this.vertexIndexName));

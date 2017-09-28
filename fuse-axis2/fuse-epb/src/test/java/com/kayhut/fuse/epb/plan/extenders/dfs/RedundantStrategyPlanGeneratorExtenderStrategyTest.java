@@ -4,6 +4,7 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.extenders.RedundantFilterPlanExtensionStrategy;
+import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.OntologyTestUtils;
@@ -11,20 +12,20 @@ import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
+import org.elasticsearch.common.collect.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
@@ -41,30 +42,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
-    OntologyProvider ontologyProvider;
-    PhysicalIndexProviderFactory physicalIndexProviderFactory;
-    GraphLayoutProviderFactory graphLayoutProviderFactory;
-
     @Before
     public void setup(){
-        ontologyProvider = mock(OntologyProvider.class);
+        this.ontologyProvider = mock(OntologyProvider.class);
         when(ontologyProvider.get(any())).thenReturn(Optional.of(OntologyTestUtils.createDragonsOntologyShort()));
 
-        GraphLayoutProvider graphLayoutProvider = ((edgeType, property) -> {
-                if(property.getName().equals("firstName"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.firstName", property.getType()));
-                if(property.getName().equals("gender"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.gender", property.getType()));
-                if(property.getName().equals("id"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.id", property.getType()));
-                if(property.getName().equals("type"))
-                    return Optional.of(new GraphRedundantPropertySchema.Impl(property.getName(), "entityB.type", property.getType()));
-
-                return Optional.empty();
-            });
-
-        graphLayoutProviderFactory = ontology -> graphLayoutProvider;
-        physicalIndexProviderFactory = (ontology -> new PhysicalIndexProvider.Constant(new StaticIndexPartitions(Arrays.asList("index"))));
+        this.schemaProviderFactory = ontology -> buildSchemaProvider(new Ontology.Accessor(ontology));
     }
 
     //region Test Methods
@@ -78,10 +61,7 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                 new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
 
-        RedundantFilterPlanExtensionStrategy strategy = new RedundantFilterPlanExtensionStrategy(
-                ontologyProvider,
-                physicalIndexProviderFactory,
-                graphLayoutProviderFactory);
+        RedundantFilterPlanExtensionStrategy strategy = new RedundantFilterPlanExtensionStrategy(this.ontologyProvider, this.schemaProviderFactory);
 
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -106,10 +86,7 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
 
-        RedundantFilterPlanExtensionStrategy strategy = new RedundantFilterPlanExtensionStrategy(
-                ontologyProvider,
-                physicalIndexProviderFactory,
-                graphLayoutProviderFactory);
+        RedundantFilterPlanExtensionStrategy strategy = new RedundantFilterPlanExtensionStrategy(this.ontologyProvider, this.schemaProviderFactory);
 
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
@@ -158,5 +135,44 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                 )
                 .build();
     }
+
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                new StaticIndexPartitions(Collections.singletonList("index"))))
+                        .toJavaList();
+
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                relation.getrType(),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityA.id",
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityB.id",
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("firstName", "entityB.firstName", ont.property$("firstName").getType()),
+                                                new GraphRedundantPropertySchema.Impl("gender", "entityB.gender", ont.property$("gender").getType()),
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", ont.property$("firstName").getType()),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", ont.property$("type").getType())
+                                        ))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(Collections.singletonList("index"))),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+    }
+    //endregion
+
+    //region Fields
+    private OntologyProvider ontologyProvider;
+    private GraphElementSchemaProviderFactory schemaProviderFactory;
     //endregion
 }

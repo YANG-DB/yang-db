@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -22,11 +23,43 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         String getField();
         Object getInValue();
         Object getOutValue();
+
+        class Impl implements Direction {
+            //region Constructors
+            public Impl(String field, Object outValue, Object inValue) {
+                this.field = field;
+                this.outValue = outValue;
+                this.inValue = inValue;
+            }
+            //endregion
+
+            //region Direction Implementation
+            @Override
+            public String getField() {
+                return this.field;
+            }
+
+            @Override
+            public Object getInValue() {
+                return this.inValue;
+            }
+
+            @Override
+            public Object getOutValue() {
+                return this.outValue;
+            }
+            //endregion
+
+            //region Fields
+            private String field;
+            private Object inValue;
+            private Object outValue;
+            //endregion
+        }
     }
 
     Optional<End> getSource();
     Optional<End> getDestination();
-
     Optional<Direction> getDirection();
 
 
@@ -113,5 +146,81 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             private Optional<IndexPartitions> indexPartitions;
             //endregion
         }
+    }
+
+    class Impl extends GraphElementSchema.Impl implements GraphEdgeSchema {
+        //region Constructors
+        public Impl(String label,
+                    GraphElementRouting routing) {
+            this(label, label, Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(routing), Optional.empty(), Collections.emptyList());
+        }
+
+        public Impl(String label,
+                    IndexPartitions indexPartitions) {
+            this(label, label, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(indexPartitions), Collections.emptyList());
+        }
+
+        public Impl(String label,
+                    Optional<End> source,
+                    Optional<End> destination,
+                    Optional<Direction> direction,
+                    GraphElementRouting routing) {
+            this(label, label, source, destination, direction, Optional.of(routing), Optional.empty(), Collections.emptyList());
+        }
+
+        public Impl(String label,
+                    Optional<End> source,
+                    Optional<End> destination,
+                    Optional<Direction> direction,
+                    IndexPartitions indexPartitions) {
+            this(label, label, source, destination, direction, Optional.empty(), Optional.of(indexPartitions), Collections.emptyList());
+        }
+
+        public Impl(String label,
+                    Optional<End> source,
+                    Optional<End> destination,
+                    Optional<Direction> direction,
+                    Optional<GraphElementRouting> routing,
+                    Optional<IndexPartitions> indexPartitions) {
+            this(label, label, source, destination, direction, routing, indexPartitions, Collections.emptyList());
+        }
+
+        public Impl(String label,
+                    String type,
+                    Optional<End> source,
+                    Optional<End> destination,
+                    Optional<Direction> direction,
+                    Optional<GraphElementRouting> routing,
+                    Optional<IndexPartitions> indexPartitions,
+                    Iterable<GraphElementPropertySchema> properties) {
+            super(label, type, routing, indexPartitions, properties);
+            this.source = source;
+            this.destination = destination;
+            this.direction = direction;
+        }
+        //endregion
+
+        //region GraphEdgeSchema Implementation
+        @Override
+        public Optional<End> getSource() {
+            return this.source;
+        }
+
+        @Override
+        public Optional<End> getDestination() {
+            return this.destination;
+        }
+
+        @Override
+        public Optional<Direction> getDirection() {
+            return this.direction;
+        }
+        //endregion
+
+        //region Fields
+        private Optional<End> source;
+        private Optional<End> destination;
+        private Optional<Direction> direction;
+        //endregion
     }
 }

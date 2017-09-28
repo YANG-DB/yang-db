@@ -15,6 +15,8 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
+import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -22,6 +24,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static org.mockito.Matchers.any;
@@ -32,12 +36,6 @@ import static org.mockito.Mockito.when;
  * Created by liorp on 4/27/2017.
  */
 public class EBaseStatisticsProviderBasicTests {
-    GraphElementSchemaProvider graphElementSchemaProvider;
-    GraphStatisticsProvider graphStatisticsProvider;
-    Ontology ontology;
-    EBaseStatisticsProvider statisticsProvider;
-    PhysicalIndexProvider indexProvider;
-
     @Before
     public void setUp() throws Exception {
         List<Statistics.BucketInfo<Date>> dateBuckets = new ArrayList<>();
@@ -57,11 +55,8 @@ public class EBaseStatisticsProviderBasicTests {
         stringBuckets.add(new Statistics.BucketInfo<>(100L,10L, "a", "m"));
         stringBuckets.add(new Statistics.BucketInfo<>(50L,10L, "m", "z"));
 
-        indexProvider = Mockito.mock(PhysicalIndexProvider.class);
-        when(indexProvider.getIndexPartitionByLabel(any(), any())).thenReturn(new StaticIndexPartitions(Collections.emptyList()));
-
         ontology = OntologyTestUtils.createDragonsOntologyShort();
-        graphElementSchemaProvider = new OntologySchemaProvider(ontology, indexProvider);
+        graphElementSchemaProvider = buildSchemaProvider(new Ontology.Accessor(ontology));
         graphStatisticsProvider = Mockito.mock(GraphStatisticsProvider.class);
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenReturn(new Statistics.SummaryStatistics(1L, 1L));
@@ -629,4 +624,41 @@ public class EBaseStatisticsProviderBasicTests {
         Assert.assertEquals(50d, nodeStatistics.getTotal(), 0.1);
         Assert.assertEquals(1d, nodeStatistics.getCardinality(), 0.1);
     }
+
+    //region Private Methods
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                new StaticIndexPartitions(Collections.emptyList())))
+                        .toJavaList();
+
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                relation.getrType(),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(Collections.emptyList())),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+    }
+    //endregion
+
+    //region Fields
+    GraphElementSchemaProvider graphElementSchemaProvider;
+    GraphStatisticsProvider graphStatisticsProvider;
+    Ontology ontology;
+    EBaseStatisticsProvider statisticsProvider;
+    //endregion
 }

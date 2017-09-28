@@ -9,7 +9,9 @@ import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
@@ -490,60 +492,49 @@ public class PromiseEdgeIndexAppenderTest{
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, (label, elementType) -> {
+        return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
+                Collections.emptyList(),
+                Arrays.asList(
+                        new GraphEdgeSchema.Impl(STATIC_INDEX_EDGE, new StaticIndexPartitions(STATIC_INDEX_NAMES)),
+                        new GraphEdgeSchema.Impl(TIME_SERIES_INDEX_EDGE,
+                                new TimeSeriesIndexPartitions() {
+                                    @Override
+                                    public Optional<String> partitionField() {
+                                        return Optional.of("time");
+                                    }
 
-            if (elementType == ElementType.edge) {
-                switch(label){
+                                    @Override
+                                    public Iterable<Partition> partitions() {
+                                        return Collections.singletonList(() -> TIME_SERIES_INDEX_NAMES);
+                                    }
 
-                    case STATIC_INDEX_EDGE:
-                        return new StaticIndexPartitions(STATIC_INDEX_NAMES);
+                                    @Override
+                                    public String getDateFormat() {
+                                        return "YYYY-MM";
+                                    }
 
-                    case TIME_SERIES_INDEX_EDGE:
-                        return new TimeSeriesIndexPartitions() {
-                            @Override
-                            public Optional<String> partitionField() {
-                                return Optional.of("time");
-                            }
+                                    @Override
+                                    public String getIndexPrefix() {
+                                        return "ts";
+                                    }
 
-                            @Override
-                            public Iterable<Partition> partitions() {
-                                return Collections.singletonList(() -> TIME_SERIES_INDEX_NAMES);
-                            }
+                                    @Override
+                                    public String getIndexFormat() {
+                                        return getIndexPrefix() + "_%s";
+                                    }
 
-                            @Override
-                            public String getDateFormat() {
-                                return "YYYY-MM";
-                            }
+                                    @Override
+                                    public String getTimeField() {
+                                        return "time";
+                                    }
 
-                            @Override
-                            public String getIndexPrefix() {
-                                return "ts";
-                            }
-
-                            @Override
-                            public String getIndexFormat() {
-                                return getIndexPrefix() + "_%s";
-                            }
-
-                            @Override
-                            public String getTimeField() {
-                                return "time";
-                            }
-
-                            @Override
-                            public String getIndexName(Date date) {
-                                return null;
-                            }
-                        };
-
-                   default:
-                        return null;
-                }
-            } else {
-                // must fail
-                return null;
-            }
-        });
+                                    @Override
+                                    public String getIndexName(Date date) {
+                                        return null;
+                                    }
+                                })
+                )
+        ));
     }
 
     private Ontology getOntology() {

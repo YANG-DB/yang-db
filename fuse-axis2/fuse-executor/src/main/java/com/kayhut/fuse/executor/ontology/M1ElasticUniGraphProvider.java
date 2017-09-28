@@ -36,24 +36,20 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
             Client client,
             ElasticGraphConfiguration elasticGraphConfiguration,
             UniGraphConfiguration uniGraphConfiguration,
-            PhysicalIndexProviderFactory physicalIndexProviderFactory,
-            GraphLayoutProviderFactory graphLayoutProviderFactory) {
+            GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.client = client;
         this.elasticGraphConfiguration = elasticGraphConfiguration;
         this.uniGraphConfiguration = uniGraphConfiguration;
-        this.physicalIndexProviderFactory = physicalIndexProviderFactory;
-        this.graphLayoutProviderFactory = graphLayoutProviderFactory;
+        this.schemaProviderFactory = schemaProviderFactory;
     }
     //endregion
 
     @Override
     public UniGraph getGraph(Ontology ontology) throws Exception {
-        GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(
-                ontology,
-                this.physicalIndexProviderFactory.get(ontology),
-                this.graphLayoutProviderFactory.get(ontology));
-
-        return new UniGraph(this.uniGraphConfiguration, controllerManagerFactory(schemaProvider), new StandardStrategyProvider());
+        return new UniGraph(
+                this.uniGraphConfiguration,
+                controllerManagerFactory(schemaProviderFactory.get(ontology)),
+                new StandardStrategyProvider());
     }
 
     //region Private Methods
@@ -86,7 +82,6 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
     private final Client client;
     private final ElasticGraphConfiguration elasticGraphConfiguration;
     private final UniGraphConfiguration uniGraphConfiguration;
-    private final PhysicalIndexProviderFactory physicalIndexProviderFactory;
-    private final GraphLayoutProviderFactory graphLayoutProviderFactory;
+    private final GraphElementSchemaProviderFactory schemaProviderFactory;
     //endregion
 }

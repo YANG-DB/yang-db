@@ -4,6 +4,7 @@ import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
+import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -19,8 +20,7 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
     @Inject
     public M1PlanExtensionStrategy(
             OntologyProvider ontologyProvider,
-            PhysicalIndexProviderFactory physicalIndexProviderFactory,
-            GraphLayoutProviderFactory graphLayoutProviderFactory) {
+            GraphElementSchemaProviderFactory schemaProviderFactory) {
         super(
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
@@ -37,8 +37,7 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                         ),
                         new RedundantFilterPlanExtensionStrategy(
                                 ontologyProvider,
-                                physicalIndexProviderFactory,
-                                graphLayoutProviderFactory)
+                                schemaProviderFactory)
                 )
         );
     }

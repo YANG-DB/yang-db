@@ -31,16 +31,16 @@ public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<Ele
         }
         // If there is no Constraint
         if (context.getElementType() == ElementType.vertex) {
-            Iterable<String> vertexTypes = Stream.ofAll(context.getSchemaProvider().getVertexLabels())
+            Iterable<String> vertexLabels = Stream.ofAll(context.getSchemaProvider().getVertexLabels())
                     .map(label -> context.getSchemaProvider().getVertexSchema(label).get().getType())
                     .toJavaList();
-            queryBuilder.seekRoot().query().filtered().filter().bool().must().terms(this.getClass().getSimpleName(),"_type", vertexTypes);
+            queryBuilder.seekRoot().query().filtered().filter().bool().must().terms(this.getClass().getSimpleName(),"_type", vertexLabels);
         }
         else if (context.getElementType() == ElementType.edge) {
-            Iterable<String> edgeTypes = Stream.ofAll(context.getSchemaProvider().getEdgeLabels())
+            Iterable<String> edgeLabels = Stream.ofAll(context.getSchemaProvider().getEdgeLabels())
                     .map(label -> context.getSchemaProvider().getEdgeSchema(label).get().getType())
                     .toJavaList();
-            queryBuilder.seekRoot().query().filtered().filter().bool().must().terms(this.getClass().getSimpleName(),"_type", edgeTypes);
+            queryBuilder.seekRoot().query().filtered().filter().bool().must().terms(this.getClass().getSimpleName(),"_type", edgeLabels);
         }*/
 
         return true;

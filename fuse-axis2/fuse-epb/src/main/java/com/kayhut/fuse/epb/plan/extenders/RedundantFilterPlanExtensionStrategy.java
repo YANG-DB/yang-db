@@ -5,6 +5,7 @@ import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
 import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -32,11 +33,9 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
     @Inject
     public RedundantFilterPlanExtensionStrategy(
             OntologyProvider ontologyProvider,
-            PhysicalIndexProviderFactory physicalIndexProviderFactory,
-            GraphLayoutProviderFactory graphLayoutProviderFactory) {
+            GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.ontologyProvider = ontologyProvider;
-        this.physicalIndexProviderFactory = physicalIndexProviderFactory;
-        this.graphLayoutProviderFactory = graphLayoutProviderFactory;
+        this.schemaProviderFactory = schemaProviderFactory;
     }
     //endregion
 
@@ -70,10 +69,7 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         Plan newPlan = new Plan(plan.get().getOps());
 
-        GraphElementSchemaProvider schemaProvider = new OntologySchemaProvider(
-                $ont.get(),
-                this.physicalIndexProviderFactory.get($ont.get()),
-                this.graphLayoutProviderFactory.get($ont.get()));
+        GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get($ont.get());
 
         String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEBase().geteBase().getrType()).getName();
         Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
@@ -155,7 +151,6 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
     //region Fields
     private OntologyProvider ontologyProvider;
-    private PhysicalIndexProviderFactory physicalIndexProviderFactory;
-    private GraphLayoutProviderFactory graphLayoutProviderFactory;
+    private GraphElementSchemaProviderFactory schemaProviderFactory;
     //endregion
 }

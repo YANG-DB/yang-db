@@ -23,12 +23,15 @@ import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import javaslang.Tuple2;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
@@ -50,40 +53,11 @@ import static org.mockito.Mockito.when;
  * Created by benishue on 25-May-17.
  */
 public class ElasticStatisticsGraphProviderTest {
-
-
-    private static TransportClient statClient;
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
-    private static StatConfig statConfig;
-
-    private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
-
-    private static final String DATA_TYPE_DRAGON = "dragon";
-    private static final String DATA_TYPE_FIRE = "fire";
-
-    private static final String DATA_INDEX_NAME_1 = "index1";
-    private static final String DATA_INDEX_NAME_2 = "index2";
-    private static final String DATA_INDEX_NAME_3 = "index3";
-    private static final String DATA_INDEX_NAME_4 = "index4";
-
-    private static final String DATA_FIELD_NAME_NAME = "name"; //Dragon Name
-    private static final String DATA_FIELD_NAME_AGE = "age";
-    private static final String DATA_FIELD_NAME_ADDRESS = "address";
-    private static final String DATA_FIELD_NAME_COLOR = "color";
-    private static final String DATA_FIELD_NAME_GENDER = "gender";
-    private static final String DATA_FIELD_NAME_TYPE = "_type";
-
-    private static final List<String> DRAGON_GENDERS =
-            Arrays.asList("male", "female");
-
-    private static final List<String> VERTEX_INDICES = ImmutableList.of(DATA_INDEX_NAME_1, DATA_INDEX_NAME_2);
-    private static final List<String> EDGE_INDICES = ImmutableList.of(DATA_INDEX_NAME_3, DATA_INDEX_NAME_4);
-
-
     @Test
     public void getVertexCardinality() throws Exception {
-        OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(getOntology());
-        GraphVertexSchema vertexDragonSchema = ontologySchemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
+        Ontology.Accessor ont = new Ontology.Accessor(getOntology());
+        GraphElementSchemaProvider schemaProvider = buildSchemaProvider(ont);
+        GraphVertexSchema vertexDragonSchema = schemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
 
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
                 new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig)),
@@ -260,32 +234,46 @@ public class ElasticStatisticsGraphProviderTest {
                 .build();
     }
 
-    private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, (label, elementType) -> {
-            if (elementType == ElementType.vertex) {
-                return new StaticIndexPartitions(VERTEX_INDICES);
-            } else if (elementType == ElementType.edge) {
-                return new StaticIndexPartitions(EDGE_INDICES);
-            } else {
-                // must fail
-                Assert.assertTrue(false);
-                return null;
-            }
-        });
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                new StaticIndexPartitions(VERTEX_INDICES)))
+                        .toJavaList();
+
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                relation.getrType(),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(EDGE_INDICES)),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
     }
 
     private Ontology getOntology() {
         Ontology ontology = Mockito.mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
-            seteTypeA("2");
-            seteTypeB("1");
+            seteTypeA(DATA_TYPE_DRAGON);
+            seteTypeB(DATA_TYPE_DRAGON);
         }});
 
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()
-                .withRType("1").withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
+                .withRType(DATA_TYPE_FIRE).withName(DATA_TYPE_FIRE).withEPairs(ePairs).build();
 
-        Property nameProp = new Property(DATA_FIELD_NAME_NAME, "1", "string");
-        Property ageProp = new Property(DATA_FIELD_NAME_AGE, "2", "int");
+        Property nameProp = new Property(DATA_FIELD_NAME_NAME, DATA_FIELD_NAME_NAME, "string");
+        Property ageProp = new Property(DATA_FIELD_NAME_AGE, DATA_FIELD_NAME_AGE, "int");
 
         when(ontology.getProperties()).then(invocationOnMock -> Collections.singletonList(nameProp));
 
@@ -293,7 +281,7 @@ public class ElasticStatisticsGraphProviderTest {
                 {
                     ArrayList<EntityType> entityTypes = new ArrayList<>();
                     entityTypes.add(EntityType.Builder.get()
-                            .withEType("2").withName(DATA_TYPE_DRAGON)
+                            .withEType(DATA_TYPE_DRAGON).withName(DATA_TYPE_DRAGON)
                             .withProperties(Collections.singletonList(ageProp.getpType()))
                             .build());
                     return entityTypes;
@@ -366,5 +354,32 @@ public class ElasticStatisticsGraphProviderTest {
     }
     //endregion
 
+    //region Fields
+    private static TransportClient statClient;
+    private static ElasticEmbeddedNode elasticEmbeddedNode;
+    private static StatConfig statConfig;
 
+    private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
+
+    private static final String DATA_TYPE_DRAGON = "dragon";
+    private static final String DATA_TYPE_FIRE = "fire";
+
+    private static final String DATA_INDEX_NAME_1 = "index1";
+    private static final String DATA_INDEX_NAME_2 = "index2";
+    private static final String DATA_INDEX_NAME_3 = "index3";
+    private static final String DATA_INDEX_NAME_4 = "index4";
+
+    private static final String DATA_FIELD_NAME_NAME = "name"; //Dragon Name
+    private static final String DATA_FIELD_NAME_AGE = "age";
+    private static final String DATA_FIELD_NAME_ADDRESS = "address";
+    private static final String DATA_FIELD_NAME_COLOR = "color";
+    private static final String DATA_FIELD_NAME_GENDER = "gender";
+    private static final String DATA_FIELD_NAME_TYPE = "_type";
+
+    private static final List<String> DRAGON_GENDERS =
+            Arrays.asList("male", "female");
+
+    private static final List<String> VERTEX_INDICES = ImmutableList.of(DATA_INDEX_NAME_1, DATA_INDEX_NAME_2);
+    private static final List<String> EDGE_INDICES = ImmutableList.of(DATA_INDEX_NAME_3, DATA_INDEX_NAME_4);
+    //endregion
 }

@@ -30,7 +30,7 @@ public class DragonsPhysicalIndexProvider implements PhysicalIndexProvider {
 
     //region PhysicalIndexProvider Implementation
     @Override
-    public IndexPartitions getIndexPartitionByLabel(String label, ElementType elementType) {
+    public IndexPartitions getIndexPartitionsByLabel(String label, ElementType elementType) {
         return this.indexPartitions.getOrDefault(label, emptyIndexPartitions);
     }
     //endregion

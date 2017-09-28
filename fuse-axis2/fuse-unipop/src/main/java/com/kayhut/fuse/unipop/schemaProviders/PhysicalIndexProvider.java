@@ -17,7 +17,7 @@ public interface PhysicalIndexProvider {
 
         //region PhysicalIndexProvider Implementation
         @Override
-        public IndexPartitions getIndexPartitionByLabel(String label, ElementType elementType) {
+        public IndexPartitions getIndexPartitionsByLabel(String label, ElementType elementType) {
             return this.indexPartitions;
         }
         //endregion
@@ -27,5 +27,5 @@ public interface PhysicalIndexProvider {
         //endregion
     }
 
-    IndexPartitions getIndexPartitionByLabel(String label, ElementType elementType);
+    IndexPartitions getIndexPartitionsByLabel(String label, ElementType elementType);
 }

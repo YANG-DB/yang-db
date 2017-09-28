@@ -50,26 +50,6 @@ import static org.mockito.Mockito.when;
  * Created by moti on 24/05/2017.
  */
 public class SmartEpbSelectivityTests {
-
-    private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology ontology;
-    private Ontology.Accessor ont;
-    private PhysicalIndexProvider physicalIndexProvider;
-    private GraphStatisticsProvider graphStatisticsProvider;
-    private GraphLayoutProvider layoutProvider;
-
-    private EBaseStatisticsProvider eBaseStatisticsProvider;
-    private RegexPatternCostEstimator estimator;
-
-    private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
-    private long startTime;
-
-    private static String INDEX_PREFIX = "idx-";
-    private static String INDEX_FORMAT = "idx-%s";
-    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-    private Map<Tuple<String, Rel.Direction>, Long> globalSelectivityMap;
-
     @Before
     public void setup() throws ParseException {
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
@@ -142,65 +122,9 @@ public class SmartEpbSelectivityTests {
             return createDateHistogram(card,elementSchema,propertySchema, indices);
         });
 
-        IndexPartitions defaultIndexPartitions = new StaticIndexPartitions(Collections.singletonList("idx1"));
-        physicalIndexProvider = mock(PhysicalIndexProvider.class);
-        when(physicalIndexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
-            String type = invocationOnMock.getArgumentAt(0, String.class);
-            if(type.equals(PERSON.name)){
-                return new StaticIndexPartitions(Arrays.asList("Persons1","Persons2"));
-            }
-            if(type.equals(DRAGON.name)){
-                return new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2"));
-            }
-            if(type.equals(OWN.getName())){
-                return new TimeSeriesIndexPartitions() {
-                    @Override
-                    public Optional<String> partitionField() {
-                        return Optional.of(START_DATE.name);
-                    }
-
-                    @Override
-                    public Iterable<Partition> partitions() {
-                        return Collections.singletonList(() ->
-                                IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
-                                        map(this::getIndexName).collect(Collectors.toList()));
-                    }
-
-                    @Override
-                    public String getDateFormat() {
-                        return DATE_FORMAT_STRING;
-                    }
-
-                    @Override
-                    public String getIndexPrefix() {
-                        return INDEX_PREFIX;
-                    }
-
-                    @Override
-                    public String getIndexFormat() {
-                        return INDEX_FORMAT;
-                    }
-
-                    @Override
-                    public String getTimeField() {
-                        return START_DATE.name;
-                    }
-
-                    @Override
-                    public String getIndexName(Date date) {
-                        return String.format(getIndexFormat(), DATE_FORMAT.format(date));
-                    }
-                };
-            }
-            return defaultIndexPartitions;
-        });
-
-        layoutProvider = mock(GraphLayoutProvider.class);
-        when(layoutProvider.getRedundantProperty(any(), any())).thenReturn(Optional.empty());
-
         ontology = OntologyTestUtils.createDragonsOntologyShort();
         ont = new Ontology.Accessor(ontology);
-        graphElementSchemaProvider = new OntologySchemaProvider(ontology, physicalIndexProvider, layoutProvider);
+        graphElementSchemaProvider = buildSchemaProvider(ont);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
@@ -216,8 +140,7 @@ public class SmartEpbSelectivityTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
 
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ontology), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
-                //new M1NonRedundantPlanExtensionStrategy(),
+                new M1PlanExtensionStrategy(id -> Optional.of(ontology), ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -307,5 +230,92 @@ public class SmartEpbSelectivityTests {
         Assert.assertEquals(21.47, first.getCost().getGlobalCost().cost, 0.1);
     }
 
+    //region Private Methods
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                entity.geteType().equals(PERSON.name) ? new StaticIndexPartitions(Arrays.asList("Persons1","Persons2")) :
+                                        entity.geteType().equals(DRAGON.name) ? new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2")) :
+                                                new StaticIndexPartitions(Collections.singletonList("idx1"))))
+                        .toJavaList();
 
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                relation.getrType(),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(relation.getrType().equals(OWN.getName()) ?
+                                        new TimeSeriesIndexPartitions() {
+                                            @Override
+                                            public Optional<String> partitionField() {
+                                                return Optional.of(START_DATE.name);
+                                            }
+
+                                            @Override
+                                            public Iterable<Partition> partitions() {
+                                                return Collections.singletonList(() ->
+                                                        IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
+                                                                map(this::getIndexName).collect(Collectors.toList()));
+                                            }
+
+                                            @Override
+                                            public String getDateFormat() {
+                                                return DATE_FORMAT_STRING;
+                                            }
+
+                                            @Override
+                                            public String getIndexPrefix() {
+                                                return INDEX_PREFIX;
+                                            }
+
+                                            @Override
+                                            public String getIndexFormat() {
+                                                return INDEX_FORMAT;
+                                            }
+
+                                            @Override
+                                            public String getTimeField() {
+                                                return START_DATE.name;
+                                            }
+
+                                            @Override
+                                            public String getIndexName(Date date) {
+                                                return String.format(getIndexFormat(), DATE_FORMAT.format(date));
+                                            }
+                                        } : new StaticIndexPartitions(Collections.singletonList("idx1"))),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+    }
+    //endregion
+
+    //region Fields
+    private GraphElementSchemaProvider graphElementSchemaProvider;
+    private Ontology ontology;
+    private Ontology.Accessor ont;
+    private GraphStatisticsProvider graphStatisticsProvider;
+
+    private EBaseStatisticsProvider eBaseStatisticsProvider;
+    private RegexPatternCostEstimator estimator;
+
+    private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+    private long startTime;
+
+    private static String INDEX_PREFIX = "idx-";
+    private static String INDEX_FORMAT = "idx-%s";
+    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+    private Map<Tuple<String, Rel.Direction>, Long> globalSelectivityMap;
+    //endregion
 }

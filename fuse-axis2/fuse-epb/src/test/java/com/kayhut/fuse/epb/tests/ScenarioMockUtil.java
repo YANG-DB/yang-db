@@ -26,52 +26,11 @@ import static org.mockito.Mockito.when;
  * Created by moti on 5/17/2017.
  */
 public class ScenarioMockUtil {
-    private Ontology.Accessor ont;
-    private PhysicalIndexProvider indexProvider;
-    private GraphElementSchemaProvider graphElementSchemaProvider;
-    private GraphLayoutProvider graphLayoutProvider = null;
-    private Map<String, Map<String, String>> redundantProps = new HashMap<>();
-    private Map<Tuple<String, ElementType>, IndexPartitions> indexPartitionMap = new HashMap<>();
-    private static String INDEX_PREFIX = "idx-";
-    private static String INDEX_FORMAT = "idx-%s";
-    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-    private long scenarioTime = new Date().getTime();
-    private GraphStatisticsProvider graphStatisticsProvider;
-    private Map<String, Long> globalSelectivity = new HashMap<>();
-    private Map<String, Long> cardinalityPerTypePerIndex = new HashMap<>();
-    private Map<String, Statistics.HistogramStatistics> histogramPerPropPerIndex = new HashMap<>();
-
-    private long nodeScaleFactor;
-    private long edgeScaleFactor;
-
     public ScenarioMockUtil(long nodeScaleFactor, long edgeScaleFactor) {
         this.nodeScaleFactor = nodeScaleFactor;
         this.edgeScaleFactor = edgeScaleFactor;
-        this.graphLayoutProvider = mock(GraphLayoutProvider.class);
-        when(this.graphLayoutProvider.getRedundantProperty(any(), any())).thenAnswer(invocationOnMock -> {
-            String edgeType = invocationOnMock.getArgumentAt(0, String.class);
-            String property = invocationOnMock.getArgumentAt(1, String.class);
-            if(redundantProps.containsKey(edgeType)){
-                if(redundantProps.get(edgeType).containsKey(property)){
-                    return Optional.of(redundantProps.get(edgeType).get(property));
-                }
-            }
-            return Optional.empty();
-        });
 
         this.ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
-
-        this.indexProvider = mock(PhysicalIndexProvider.class);
-        IndexPartitions defaultPartition = new StaticIndexPartitions(Collections.singletonList("idx1"));
-        when(this.indexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
-            String label = invocationOnMock.getArgumentAt(0, String.class);
-            ElementType elementType = invocationOnMock.getArgumentAt(1, ElementType.class);
-            Tuple<String, ElementType> item = new Tuple<>(label, elementType);
-            return indexPartitionMap.getOrDefault(item, defaultPartition);
-        });
-
-        this.graphElementSchemaProvider = new OntologySchemaProvider(this.ont.get(), this.indexProvider, this.graphLayoutProvider);
 
         this.graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> {
@@ -83,7 +42,7 @@ public class ScenarioMockUtil {
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertex = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            IndexPartitions indexPartitions = indexProvider.getIndexPartitionByLabel(vertex.getType(), ElementType.vertex);
+            IndexPartitions indexPartitions = vertex.getIndexPartitions().get();
             return graphStatisticsProvider.getVertexCardinality(
                     vertex,
                     Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList());
@@ -97,7 +56,7 @@ public class ScenarioMockUtil {
 
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edge = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            IndexPartitions indexPartitions = indexProvider.getIndexPartitionByLabel(edge.getType(), ElementType.edge);
+            IndexPartitions indexPartitions = edge.getIndexPartitions().get();
             return graphStatisticsProvider.getEdgeCardinality(
                     edge,
                     Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList());
@@ -210,6 +169,11 @@ public class ScenarioMockUtil {
         return this;
     }
 
+    public ScenarioMockUtil build() {
+        this.graphElementSchemaProvider = buildSchemaProvider();
+        return this;
+    }
+
     public static ScenarioMockUtil start(long nodeScaleFactor, long edgeScaleFactor){
         return new ScenarioMockUtil(nodeScaleFactor, edgeScaleFactor);
     }
@@ -217,10 +181,6 @@ public class ScenarioMockUtil {
 
     public Ontology.Accessor getOntologyAccessor() {
         return ont;
-    }
-
-    public PhysicalIndexProvider getIndexProvider() {
-        return indexProvider;
     }
 
     public GraphElementSchemaProvider getGraphElementSchemaProvider() {
@@ -238,4 +198,67 @@ public class ScenarioMockUtil {
     public Map<String, Long> getGlobalSelectivity() {
         return globalSelectivity;
     }
+
+    //region Fields
+    private GraphElementSchemaProvider buildSchemaProvider() {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(this.ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                indexPartitionMap.getOrDefault(new Tuple<>(entity.geteType(), ElementType.vertex),
+                                        new StaticIndexPartitions(Collections.singletonList("idx1")))))
+                        .toJavaList();
+
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(this.ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                relation.getrType(),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()),
+                                        Stream.ofAll(this.redundantProps.getOrDefault(relation.getrType(), Collections.emptyMap()).entrySet())
+                                                .map(redundantEntry -> (GraphRedundantPropertySchema) new GraphRedundantPropertySchema.Impl(
+                                                        redundantEntry.getKey(),
+                                                        redundantEntry.getValue(),
+                                                        this.ont.property$(redundantEntry.getKey()).getType()))
+                                                .toJavaList())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()),
+                                        Stream.ofAll(this.redundantProps.getOrDefault(relation.getrType(), Collections.emptyMap()).entrySet())
+                                                .map(redundantEntry -> (GraphRedundantPropertySchema) new GraphRedundantPropertySchema.Impl(
+                                                        redundantEntry.getKey(),
+                                                        redundantEntry.getValue(),
+                                                        this.ont.property$(redundantEntry.getKey()).getType()))
+                                                .toJavaList())),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(indexPartitionMap.getOrDefault(new Tuple<>(relation.getrType(), ElementType.edge),
+                                        new StaticIndexPartitions(Collections.singletonList("idx1")))),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(this.ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+    }
+    //endregion
+
+    //region Fields
+    private Ontology.Accessor ont;
+    private GraphElementSchemaProvider graphElementSchemaProvider;
+    private Map<String, Map<String, String>> redundantProps = new HashMap<>();
+    private Map<Tuple<String, ElementType>, IndexPartitions> indexPartitionMap = new HashMap<>();
+    private static String INDEX_PREFIX = "idx-";
+    private static String INDEX_FORMAT = "idx-%s";
+    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+    private long scenarioTime = new Date().getTime();
+    private GraphStatisticsProvider graphStatisticsProvider;
+    private Map<String, Long> globalSelectivity = new HashMap<>();
+    private Map<String, Long> cardinalityPerTypePerIndex = new HashMap<>();
+    private Map<String, Statistics.HistogramStatistics> histogramPerPropPerIndex = new HashMap<>();
+
+    private long nodeScaleFactor;
+    private long edgeScaleFactor;
+    //endregion
 }

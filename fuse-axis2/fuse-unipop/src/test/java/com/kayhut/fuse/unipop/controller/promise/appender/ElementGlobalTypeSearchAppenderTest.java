@@ -11,7 +11,9 @@ import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControlle
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
+import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
@@ -66,24 +68,15 @@ public class ElementGlobalTypeSearchAppenderTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, (label, elementType) -> {
-            if (elementType == ElementType.vertex) {
-                if (label.equals("Dragon")){
-                    return new StaticIndexPartitions(Arrays.asList("dragonIndex1", "dragonIndex2"));
-                }
-                else if(label.equals("Person")){
-                    return new StaticIndexPartitions(Collections.singletonList("personIndex1"));
-                }
-                //Default
-                return new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2"));
-            } else if (elementType == ElementType.edge) {
-                return new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"));
-            } else {
-                // must fail
-                Assert.assertTrue(false);
-                return null;
-            }
-        });
+        return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
+                Arrays.asList(
+                        new GraphVertexSchema.Impl("Dragon", new StaticIndexPartitions(Arrays.asList("dragonIndex1", "dragonIndex2"))),
+                        new GraphVertexSchema.Impl("Person", new StaticIndexPartitions(Collections.singletonList("personIndex1")))
+                ),
+                Optional.of(new GraphVertexSchema.Impl("", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2")))),
+                Collections.emptyList(),
+                Optional.of(new GraphEdgeSchema.Impl("", new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
+        ));
     }
 
     private Ontology getOntology() {

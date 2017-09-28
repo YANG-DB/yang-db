@@ -50,24 +50,6 @@ import static org.mockito.Mockito.when;
  * Created by moti on 5/28/2017.
  */
 public class SmartEpbRedundancyTests {
-
-    private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology.Accessor ont;
-    private PhysicalIndexProvider physicalIndexProvider;
-    private GraphStatisticsProvider graphStatisticsProvider;
-    private GraphLayoutProvider layoutProvider;
-
-    private EBaseStatisticsProvider eBaseStatisticsProvider;
-    private RegexPatternCostEstimator estimator;
-
-    protected BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
-    protected long startTime;
-
-    private static String INDEX_PREFIX = "idx-";
-    private static String INDEX_FORMAT = "idx-%s";
-    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-
     @Before
     public void setup() throws ParseException {
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
@@ -137,88 +119,8 @@ public class SmartEpbRedundancyTests {
             return createDateHistogram(card,elementSchema,propertySchema, indices);
         });
 
-        IndexPartitions defaultIndexPartitions = new StaticIndexPartitions(Collections.singletonList("idx1"));
-        physicalIndexProvider = mock(PhysicalIndexProvider.class);
-        when(physicalIndexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
-            String type = invocationOnMock.getArgumentAt(0, String.class);
-            if(type.equals(PERSON.name)){
-                return new StaticIndexPartitions(Arrays.asList("Persons1","Persons2"));
-            }
-            if(type.equals(DRAGON.name)){
-                return new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2"));
-            }
-            if(type.equals(OWN.getName())){
-                return new TimeSeriesIndexPartitions() {
-                    @Override
-                    public Optional<String> partitionField() {
-                        return Optional.of(START_DATE.name);
-                    }
-
-                    @Override
-                    public Iterable<Partition> partitions() {
-                        return Collections.singletonList(
-                                () -> IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
-                                        map(this::getIndexName).collect(Collectors.toList()));
-                    }
-
-                    @Override
-                    public String getDateFormat() {
-                        return DATE_FORMAT_STRING;
-                    }
-
-                    @Override
-                    public String getIndexPrefix() {
-                        return INDEX_PREFIX;
-                    }
-
-                    @Override
-                    public String getIndexFormat() {
-                        return INDEX_FORMAT;
-                    }
-
-                    @Override
-                    public String getTimeField() {
-                        return START_DATE.name;
-                    }
-
-                    @Override
-                    public String getIndexName(Date date) {
-                        return String.format(getIndexFormat(), DATE_FORMAT.format(date));
-                    }
-                };
-            }
-            return defaultIndexPartitions;
-        });
-
-        layoutProvider = mock(GraphLayoutProvider.class);
-        when(layoutProvider.getRedundantProperty(any(), any())).thenAnswer(invocationOnMock -> {
-            String edgeType = invocationOnMock.getArgumentAt(0, String.class);
-            GraphElementPropertySchema property = invocationOnMock.getArgumentAt(1, GraphElementPropertySchema.class);
-            if(edgeType.equals(FREEZE.getName())){
-                if(property.getName().equals(NAME.name)){
-                    return Optional.of(new GraphRedundantPropertySchema() {
-                        @Override
-                        public String getPropertyRedundantName() {
-                            return "entityB.name";
-                        }
-
-                        @Override
-                        public String getName() {
-                            return NAME.name;
-                        }
-
-                        @Override
-                        public String getType() {
-                            return property.getType();
-                        }
-                    });
-                }
-            }
-            return Optional.empty();
-        });
-
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyLong());
-        graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), physicalIndexProvider, layoutProvider);
+        graphElementSchemaProvider = buildSchemaProvider(ont);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
@@ -233,7 +135,7 @@ public class SmartEpbRedundancyTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
+                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -321,4 +223,100 @@ public class SmartEpbRedundancyTests {
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(6).entityFilter(7).rel(4, Rel.Direction.L).relFilter(5).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
         PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
     }
+
+    //region Private Methods
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                entity.geteType().equals(PERSON.name) ? new StaticIndexPartitions(Arrays.asList("Persons1","Persons2")) :
+                                        entity.geteType().equals(DRAGON.name) ? new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2")) :
+                                                new StaticIndexPartitions(Collections.singletonList("idx1"))))
+                        .toJavaList();
+
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                relation.getrType(),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityA.id",
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()),
+                                        relation.getrType().equals(FREEZE.getName()) ?
+                                                Collections.singletonList(
+                                                        new GraphRedundantPropertySchema.Impl(NAME.name, "entityA.name", NAME.type)
+                                                ) : Collections.emptyList())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityB.id",
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()),
+                                        relation.getrType().equals(FREEZE.getName()) ?
+                                                Collections.singletonList(
+                                                        new GraphRedundantPropertySchema.Impl(NAME.name, "entityB.name", NAME.type)
+                                                ) : Collections.emptyList())),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(relation.getrType().equals(OWN.getName()) ?
+                                        new TimeSeriesIndexPartitions() {
+                                            @Override
+                                            public Optional<String> partitionField() {
+                                                return Optional.of(START_DATE.name);
+                                            }
+
+                                            @Override
+                                            public Iterable<Partition> partitions() {
+                                                return Collections.singletonList(() ->
+                                                        IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
+                                                                map(this::getIndexName).collect(Collectors.toList()));
+                                            }
+
+                                            @Override
+                                            public String getDateFormat() {
+                                                return DATE_FORMAT_STRING;
+                                            }
+
+                                            @Override
+                                            public String getIndexPrefix() {
+                                                return INDEX_PREFIX;
+                                            }
+
+                                            @Override
+                                            public String getIndexFormat() {
+                                                return INDEX_FORMAT;
+                                            }
+
+                                            @Override
+                                            public String getTimeField() {
+                                                return START_DATE.name;
+                                            }
+
+                                            @Override
+                                            public String getIndexName(Date date) {
+                                                return String.format(getIndexFormat(), DATE_FORMAT.format(date));
+                                            }
+                                        } : new StaticIndexPartitions(Collections.singletonList("idx1"))),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+    }
+    //endregion
+
+    //region Fields
+    private GraphElementSchemaProvider graphElementSchemaProvider;
+    private Ontology.Accessor ont;
+    private GraphStatisticsProvider graphStatisticsProvider;
+
+    private EBaseStatisticsProvider eBaseStatisticsProvider;
+    private RegexPatternCostEstimator estimator;
+
+    protected BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+    protected long startTime;
+
+    private static String INDEX_PREFIX = "idx-";
+    private static String INDEX_FORMAT = "idx-%s";
+    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+
+    //endregion
 }
