@@ -40,7 +40,7 @@ public class OntologySchemaProviderTest {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
-        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Person");
+        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Dragon");
 
         List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
         assertEquals(2, indices.size());
@@ -72,7 +72,12 @@ public class OntologySchemaProviderTest {
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
                 Optional.of(new GraphVertexSchema.Impl("", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2")))),
-                Optional.of(new GraphEdgeSchema.Impl("", new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
+                Optional.of(new GraphEdgeSchema.Impl(
+                        "",
+                        Optional.of(new GraphEdgeSchema.End.Impl("entityA.id", Optional.of("Dragon"))),
+                        Optional.of(new GraphEdgeSchema.End.Impl("entityB.id", Optional.of("Dragon"))),
+                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                        new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
         ));
     }
 
@@ -80,7 +85,7 @@ public class OntologySchemaProviderTest {
         Ontology ontology = Mockito.mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
             seteTypeA("Dragon");
-            seteTypeB("Person");
+            seteTypeB("Dragon");
         }});
 
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()

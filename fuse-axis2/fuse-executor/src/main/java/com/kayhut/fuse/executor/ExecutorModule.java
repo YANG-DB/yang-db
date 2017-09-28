@@ -4,11 +4,9 @@ import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
-import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
-import com.kayhut.fuse.executor.ontology.M1ElasticUniGraphProvider;
-import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
-import com.kayhut.fuse.executor.ontology.UniGraphProvider;
+import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
@@ -39,8 +37,7 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(Client.class).toInstance(createClient(elasticGraphConfiguration));
 
         binder.bind(UniGraphProvider.class).to(M1ElasticUniGraphProvider.class).asEagerSingleton();
-        binder.bind(PhysicalIndexProviderFactory.class).toInstance(createPhysicalIndexProviderFactory(conf));
-        binder.bind(GraphLayoutProviderFactory.class).toInstance(createGraphLayoutProviderFactory(conf));
+        binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
     }
     //endregion
 
@@ -79,12 +76,12 @@ public class ExecutorModule extends ModuleBase {
         return configuration;
     }
 
-    private PhysicalIndexProviderFactory createPhysicalIndexProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        return (PhysicalIndexProviderFactory)(Class.forName(conf.getString("fuse.physical_index_provider_factory_class")).newInstance());
-    }
+    private GraphElementSchemaProviderFactory createSchemaProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        GraphElementSchemaProviderFactory physicalSchemaProviderFactory =
+                (GraphElementSchemaProviderFactory)(Class.forName(
+                        conf.getString("fuse.physical_schema_provider_factory_class")).newInstance());
 
-    private GraphLayoutProviderFactory createGraphLayoutProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        return (GraphLayoutProviderFactory)(Class.forName(conf.getString("fuse.graph_layout_provider_factory_class")).newInstance());
+        return new OntologyGraphElementSchemaProviderFactory(physicalSchemaProviderFactory);
     }
     //endregion
 }
