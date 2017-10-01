@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services.engine2.data.schema;
+package com.kayhut.fuse.services.engine2.data.schema.promise;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.unipop.schemaProviders.*;

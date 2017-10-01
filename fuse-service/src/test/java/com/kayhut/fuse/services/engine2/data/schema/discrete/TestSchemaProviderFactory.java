@@ -1,9 +1,8 @@
-package com.kayhut.fuse.services.engine2.data.schema;
+package com.kayhut.fuse.services.engine2.data.schema.discrete;
 
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphLayoutProvider;
 
 import java.util.HashMap;
 import java.util.Map;
