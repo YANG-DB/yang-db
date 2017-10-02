@@ -1,13 +1,11 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
-import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;

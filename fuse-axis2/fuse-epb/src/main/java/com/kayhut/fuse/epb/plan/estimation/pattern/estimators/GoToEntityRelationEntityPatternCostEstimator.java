@@ -1,12 +1,8 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern.estimators;
 
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
-import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.GoToEntityRelationEntityPattern;
 import com.kayhut.fuse.epb.plan.estimation.pattern.Pattern;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
-import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
-import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;

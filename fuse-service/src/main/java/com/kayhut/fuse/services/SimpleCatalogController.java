@@ -3,7 +3,7 @@ package com.kayhut.fuse.services;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;

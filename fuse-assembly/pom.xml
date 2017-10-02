@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>fuse-assembly</artifactId>
-    <packaging>pom</packaging>
+    <!--<packaging>pom</packaging>-->
 
     <properties>
         <checkstyle.skip>true</checkstyle.skip>
@@ -81,6 +81,7 @@
                     <descriptors>
                         <descriptor>assembly/fuse.test.service.engine1.xml</descriptor>
                         <descriptor>assembly/fuse.test.service.engine2.xml</descriptor>
+                        <descriptor>assembly/fuse.test.service.engine3.knowledge.xml</descriptor>
                         <descriptor>assembly/fuse.test.stat.engine2.xml</descriptor>
                     </descriptors>
                 </configuration>

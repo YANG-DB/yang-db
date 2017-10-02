@@ -7,6 +7,7 @@ import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import javaslang.collection.Stream;
@@ -35,6 +36,11 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
                 Optional.of((EntityOp)planOp) :
                 PlanUtil.prev(plan, planOp, EntityOp.class);
 
+        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan, lastEntityOp.get(), RelationOp.class);
+        if (lastRelationOp.isPresent()) {
+            return traversal;
+        }
+
         if (!lastEntityOp.isPresent()) {
             return traversal;
         }
@@ -42,6 +48,8 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
         if (lastEntityOp.get().getAsgEBase().geteBase().getReportProps().isEmpty()) {
             return traversal;
         }
+
+
 
         Stream.ofAll(lastEntityOp.get().getAsgEBase().geteBase().getReportProps())
                 .forEach(eProp -> traversal.has(context.getOnt().$property$(eProp).getName(),

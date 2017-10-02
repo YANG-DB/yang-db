@@ -1,4 +1,4 @@
-package com.kayhut.fuse.dispatcher.ontolgy;
+package com.kayhut.fuse.dispatcher.ontology;
 
 import com.kayhut.fuse.model.ontology.Ontology;
 

@@ -9,7 +9,7 @@ import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgQuant1PropertiesGroupi
 import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.strategy.selection.AsgDefaultSelectionStrategy;
 import com.kayhut.fuse.asg.strategy.type.AsgUntypedInferTypeLeftSideRelationStrategy;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 
 import java.util.Arrays;
 

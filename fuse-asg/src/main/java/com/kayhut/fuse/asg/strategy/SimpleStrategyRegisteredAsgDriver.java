@@ -10,7 +10,7 @@ import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;

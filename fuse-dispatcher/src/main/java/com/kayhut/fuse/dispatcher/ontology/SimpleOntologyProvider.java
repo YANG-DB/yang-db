@@ -1,6 +1,5 @@
-package com.kayhut.fuse.dispatcher.driver;
+package com.kayhut.fuse.dispatcher.ontology;
 
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 

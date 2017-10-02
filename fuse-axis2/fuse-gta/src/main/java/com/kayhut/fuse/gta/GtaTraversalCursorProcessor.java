@@ -10,7 +10,7 @@ import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;

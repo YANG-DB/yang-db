@@ -1,12 +1,10 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.extenders.RedundantFilterPlanExtensionStrategy;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
-import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
@@ -18,9 +16,7 @@ import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
-import org.elasticsearch.common.collect.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

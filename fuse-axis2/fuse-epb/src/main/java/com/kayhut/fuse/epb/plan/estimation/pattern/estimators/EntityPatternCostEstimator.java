@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern.estimators;
 
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.pattern.EntityPattern;
 import com.kayhut.fuse.epb.plan.estimation.pattern.Pattern;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;

@@ -11,7 +11,7 @@ import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
@@ -20,10 +20,8 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import javaslang.collection.Stream;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.Utils.submit;
 

@@ -38,9 +38,9 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                         Optional.of(new GraphElementRouting.Impl(
                                 new GraphElementPropertySchema.Impl("personId", "string")
                         )),
-                        Optional.of(new IndexPartitions.Impl("_id",
-                                new IndexPartitions.Partition.Range.Impl<>("p001", "p005", "person1"),
-                                new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "person2")))
+                        Optional.of(new IndexPartitions.Impl("personId",
+                                new IndexPartitions.Partition.Range.Impl<>("p001", "p005", "dragon1"),
+                                new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "dragon2")))
                 ));
 
             case "Kingdom":
