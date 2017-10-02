@@ -71,7 +71,12 @@ public class OntologySchemaProviderTest {
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
         return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
-                Optional.of(new GraphVertexSchema.Impl("", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2")))),
+                Arrays.asList(
+                        new GraphVertexSchema.Impl("Person", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2"))),
+                        new GraphVertexSchema.Impl("Dragon", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2")))
+                        ),
+                Optional.empty(),
+                Collections.emptyList(),
                 Optional.of(new GraphEdgeSchema.Impl(
                         "",
                         Optional.of(new GraphEdgeSchema.End.Impl("entityA.id", Optional.of("Dragon"))),

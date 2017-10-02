@@ -22,6 +22,7 @@ import java.util.*;
 /**
  * Created by roman.margolis on 02/10/2017.
  */
+@Ignore
 public class SingleEntityTest {
     //region setup
     @BeforeClass

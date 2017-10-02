@@ -83,12 +83,12 @@ public interface GraphElementSchema {
 
         @Override
         public Iterable<GraphElementPropertySchema> getProperties() {
-            return null;
+            return this.properties.values();
         }
 
         @Override
         public Optional<GraphElementPropertySchema> getProperty(String name) {
-            return null;
+            return Optional.ofNullable(this.properties.get(name));
         }
         //endregion
 

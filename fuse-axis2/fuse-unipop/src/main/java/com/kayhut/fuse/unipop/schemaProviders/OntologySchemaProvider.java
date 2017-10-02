@@ -124,58 +124,20 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             return Optional.empty();
         }
 
-        return Optional.of(new GraphVertexSchema() {
-            @Override
-            public String getType() {
-                return label;
-            }
-
-            @Override
-            public Optional<GraphElementRouting> getRouting() {
-                return vertexSchema.getRouting();
-            }
-
-            @Override
-            public Optional<IndexPartitions> getIndexPartitions() {
-                return vertexSchema.getIndexPartitions();
-            }
-
-            @Override
-            public Iterable<GraphElementPropertySchema> getProperties() {
-                return Stream.ofAll(entityType.get().getProperties())
-                        .map(pType -> $ont.$property$(pType))
-                        .map(property -> (GraphElementPropertySchema)new GraphElementPropertySchema() {
-                                @Override
-                                public String getName() {
-                                    return property.getName();
-                                }
-
-                                @Override
-                                public String getType() {
-                                    return property.getType();
-                                }
-                            }).toJavaList();
-            }
-
-            @Override
-            public Optional<GraphElementPropertySchema> getProperty(String name) {
-                return Stream.ofAll(entityType.get().getProperties())
-                        .map(pType -> $ont.$property$(pType))
-                        .filter(property -> property.getName().equals(name))
-                        .toJavaOptional()
-                        .map(property -> new GraphElementPropertySchema() {
-                            @Override
-                            public String getName() {
-                                return property.getName();
-                            }
-
-                            @Override
-                            public String getType() {
-                                return property.getType();
-                            }
-                        });
-            }
-        });
+        return Optional.of(new GraphVertexSchema.Impl(
+                label,
+                vertexSchema.getType(),
+                vertexSchema.getRouting(),
+                vertexSchema.getIndexPartitions(),
+                Stream.ofAll(entityType.get().getProperties() == null ? Collections.emptyList() : entityType.get().getProperties())
+                        .map(pType -> $ont.$property(pType))
+                        .filter(property -> property.isPresent())
+                        .map(property -> (GraphElementPropertySchema)
+                                new GraphElementPropertySchema.Impl(
+                                        property.get().getName(),
+                                        property.get().getType()))
+                        .toJavaList()
+        ));
     }
 
     private Optional<GraphEdgeSchema> getRelationSchema(
@@ -188,135 +150,37 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             return Optional.empty();
         }
 
-        return Optional.of(new GraphEdgeSchema() {
-            @Override
-            public Optional<End> getSource() {
-                return Optional.of(new End() {
-                    @Override
-                    public String getIdField() {
-                        return edgeSchema.getSource().get().getIdField();
-                    }
-
-                    @Override
-                    public Optional<String> getLabel() {
-                        return Optional.of(sourceVertexLabel);
-                    }
-
-                    @Override
-                    public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                        return edgeSchema.getSource().get().getRedundantProperty(property);
-                    }
-
-                    @Override
-                    public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
-                        return edgeSchema.getSource().get().getRedundantProperties();
-                    }
-
-                    @Override
-                    public Optional<GraphElementRouting> getRouting() {
-                        return edgeSchema.getSource().get().getRouting();
-                    }
-
-                    @Override
-                    public Optional<IndexPartitions> getIndexPartitions() {
-                        return edgeSchema.getSource().get().getIndexPartitions();
-                    }
-                });
-            }
-
-            @Override
-            public Optional<End> getDestination() {
-                return Optional.of(new End() {
-                    @Override
-                    public String getIdField() {
-                        return edgeSchema.getDestination().get().getIdField();
-                    }
-
-                    @Override
-                    public Optional<String> getLabel() {
-                        return Optional.of(destinationVertexLabel);
-                    }
-
-                    @Override
-                    public Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property) {
-                        return edgeSchema.getDestination().get().getRedundantProperty(property);
-                    }
-
-                    @Override
-                    public Iterable<GraphRedundantPropertySchema> getRedundantProperties() {
-                        return edgeSchema.getDestination().get().getRedundantProperties();
-                    }
-
-                    @Override
-                    public Optional<GraphElementRouting> getRouting() {
-                        return edgeSchema.getDestination().get().getRouting();
-                    }
-
-                    @Override
-                    public Optional<IndexPartitions> getIndexPartitions() {
-                        return edgeSchema.getDestination().get().getIndexPartitions();
-                    }
-                });
-            }
-
-            @Override
-            public Optional<Direction> getDirection() {
-                return edgeSchema.getDirection();
-            }
-
-            @Override
-            public String getType() {
-                return label;
-            }
-
-            @Override
-            public Optional<GraphElementRouting> getRouting() {
-                return edgeSchema.getRouting();
-            }
-
-            @Override
-            public Optional<IndexPartitions> getIndexPartitions() {
-                return edgeSchema.getIndexPartitions();
-            }
-
-            @Override
-            public Iterable<GraphElementPropertySchema> getProperties() {
-                return Stream.ofAll(relationshipType.get().getProperties())
-                        .map(pType -> $ont.$property$(pType))
-                        .map(property -> (GraphElementPropertySchema) new GraphElementPropertySchema() {
-                            @Override
-                            public String getName() {
-                                return property.getName();
-                            }
-
-                            @Override
-                            public String getType() {
-                                return property.getType();
-
-                            }
-                        }).toJavaList();
-            }
-
-            @Override
-            public Optional<GraphElementPropertySchema> getProperty(String name) {
-                return Stream.ofAll(relationshipType.get().getProperties())
-                        .map(pType -> $ont.$property$(pType))
-                        .filter(property -> property.getName().equals(name))
-                        .toJavaOptional()
-                        .map(property -> (GraphElementPropertySchema) new GraphElementPropertySchema() {
-                            @Override
-                            public String getName() {
-                                return property.getName();
-                            }
-
-                            @Override
-                            public String getType() {
-                                return property.getType();
-
-                            }
-                        });
-            }
-        });
+        return Optional.of(new GraphEdgeSchema.Impl(
+                label,
+                edgeSchema.getType(),
+                edgeSchema.getSource().isPresent() ?
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                            edgeSchema.getSource().get().getIdField(),
+                            Optional.of(sourceVertexLabel),
+                            edgeSchema.getSource().get().getRedundantProperties(),
+                            edgeSchema.getSource().get().getRouting(),
+                            edgeSchema.getSource().get().getIndexPartitions())) :
+                        Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(sourceVertexLabel))),
+                edgeSchema.getDestination().isPresent() ?
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                        edgeSchema.getDestination().get().getIdField(),
+                        Optional.of(destinationVertexLabel),
+                        edgeSchema.getDestination().get().getRedundantProperties(),
+                        edgeSchema.getDestination().get().getRouting(),
+                        edgeSchema.getDestination().get().getIndexPartitions())) :
+                        Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(destinationVertexLabel))),
+                edgeSchema.getDirection(),
+                edgeSchema.getRouting(),
+                edgeSchema.getIndexPartitions(),
+                Stream.ofAll(relationshipType.get().getProperties() == null ? Collections.emptyList() : relationshipType.get().getProperties())
+                        .map(pType -> $ont.$property(pType))
+                        .filter(property -> property.isPresent())
+                        .map(property -> (GraphElementPropertySchema)
+                                new GraphElementPropertySchema.Impl(
+                                        property.get().getName(),
+                                        property.get().getType()))
+                        .toJavaList()
+        ));
     }
     //endregion
 
