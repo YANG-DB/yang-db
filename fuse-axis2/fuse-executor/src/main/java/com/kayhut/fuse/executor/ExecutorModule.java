@@ -3,9 +3,8 @@ package com.kayhut.fuse.executor;
 import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
+import com.kayhut.fuse.executor.cursor.promise.TraversalCursorFactory;
 import com.kayhut.fuse.executor.ontology.*;
-import com.kayhut.fuse.executor.ontology.promise.M1ElasticUniGraphProvider;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
@@ -26,7 +25,7 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(CursorFactory.class).to(TraversalCursorFactory.class).asEagerSingleton();
+        binder.bind(CursorFactory.class).to(getCursorFactoryClass(conf)).asEagerSingleton();
 
         ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
         UniGraphConfiguration uniGraphConfiguration = createUniGraphConfiguration(conf);
@@ -86,6 +85,10 @@ public class ExecutorModule extends ModuleBase {
 
     private Class<? extends UniGraphProvider> getUniGraphProviderClass(Config conf) throws ClassNotFoundException {
         return (Class<? extends  UniGraphProvider>)Class.forName(conf.getString("fuse.unigraph_provider"));
+    }
+
+    private Class<? extends CursorFactory> getCursorFactoryClass(Config conf) throws ClassNotFoundException {
+        return (Class<? extends  CursorFactory>)Class.forName(conf.getString("fuse.cursor_factory"));
     }
     //endregion
 }

@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 @Suite.SuiteClasses({
         SingleEntityTest.class
 })
-@Ignore
 public class RedundantTestSuite {
     @BeforeClass
     public static void setup() throws Exception {
