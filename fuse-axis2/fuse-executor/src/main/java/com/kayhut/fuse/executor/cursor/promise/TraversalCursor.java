@@ -1,4 +1,4 @@
-package com.kayhut.fuse.executor.cursor;
+package com.kayhut.fuse.executor.cursor.promise;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -8,6 +8,7 @@ import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -35,9 +36,9 @@ import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 /**
  * Created by liorp on 3/20/2017.
  */
-public class PromiseTraversalCursor implements Cursor {
+public class TraversalCursor implements Cursor {
     //region Constructors
-    public PromiseTraversalCursor(TraversalCursorContext context) {
+    public TraversalCursor(TraversalCursorContext context) {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
     }
