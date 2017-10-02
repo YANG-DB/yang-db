@@ -22,6 +22,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import static java.util.Collections.singletonList;
  */
 public class RealClusterTest {
     @Test
+    @Ignore
     public void test_fetchEntityById() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -77,6 +79,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void test1() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -104,6 +107,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void test2() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -134,6 +138,7 @@ public class RealClusterTest {
 
 
     @Test
+    @Ignore
     public void test3() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -165,6 +170,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void test4() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -196,6 +202,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void test5() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -228,6 +235,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void test6() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -259,6 +267,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void test7() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -290,6 +299,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void test8() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -322,6 +332,7 @@ public class RealClusterTest {
     }
 
     @Test
+    @Ignore
     public void loadData() throws UnknownHostException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

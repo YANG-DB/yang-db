@@ -20,6 +20,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -60,6 +61,7 @@ public class EntitySelectionTranslationStrategyTest {
     }
 
     @Test
+    @Ignore
     public void test_selection_entity3() {
         AsgQuery query = simpleQuery1("name", "ont");
 
