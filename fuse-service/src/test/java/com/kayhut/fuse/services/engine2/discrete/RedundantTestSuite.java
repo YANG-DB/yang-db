@@ -19,10 +19,9 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-       // SingleEntityTest.class
+        SingleEntityTest.class,
         EntityRelationEntityTest.class
 })
-@Ignore
 public class RedundantTestSuite {
     @BeforeClass
     public static void setup() throws Exception {
