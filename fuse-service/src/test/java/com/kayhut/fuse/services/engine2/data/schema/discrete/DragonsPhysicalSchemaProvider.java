@@ -61,7 +61,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
         switch (label) {
             case "own":
                 return Optional.of(new GraphEdgeSchema.Impl(
-                        label,
+                        "own",
                         "Dragon",
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 "personId",

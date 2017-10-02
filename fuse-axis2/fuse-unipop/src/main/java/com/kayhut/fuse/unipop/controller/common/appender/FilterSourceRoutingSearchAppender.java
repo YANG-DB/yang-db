@@ -51,6 +51,7 @@ public class FilterSourceRoutingSearchAppender implements SearchAppender<Element
             routingFields.addAll(
                     Stream.ofAll(context.getSchemaProvider().getEdgeLabels())
                     .map(label -> context.getSchemaProvider().getEdgeSchema(label))
+                    .filter(Optional::isPresent)
                     .flatMap(edgeSchema -> Arrays.asList(edgeSchema.get().getSource(), edgeSchema.get().getDestination()))
                     .filter(Optional::isPresent)
                     .filter(endSchema -> finalLabels.contains(endSchema.get().getLabel().get()))

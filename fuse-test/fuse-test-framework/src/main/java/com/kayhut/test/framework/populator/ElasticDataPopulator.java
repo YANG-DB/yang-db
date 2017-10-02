@@ -64,7 +64,7 @@ public class ElasticDataPopulator implements DataPopulator {
     private IndexRequestBuilder documentIndexRequest(Map<String, Object> doc){
         IndexRequestBuilder indexRequestBuilder = client.prepareIndex()
                 .setIndex(this.indexName)
-                .setRouting(this.routingField != null ? this.routingField : this.idField)
+                .setRouting(this.routingField != null ? (String)doc.get(this.routingField) : (String)doc.get(this.idField))
                 .setType(this.docType)
                 .setOpType(IndexRequest.OpType.INDEX);
 

@@ -19,7 +19,7 @@
     {
       "eNum": 2,
       "type": "Rel",
-      "rType": "owns",
+      "rType": "own",
       "dir": "R",
       "next": 3
     },

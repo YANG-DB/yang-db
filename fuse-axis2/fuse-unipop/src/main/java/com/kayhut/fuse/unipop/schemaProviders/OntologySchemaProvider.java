@@ -214,12 +214,12 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
                     @Override
                     public Optional<GraphElementRouting> getRouting() {
-                        return edgeSchema.getRouting();
+                        return edgeSchema.getSource().get().getRouting();
                     }
 
                     @Override
                     public Optional<IndexPartitions> getIndexPartitions() {
-                        return edgeSchema.getIndexPartitions();
+                        return edgeSchema.getSource().get().getIndexPartitions();
                     }
                 });
             }

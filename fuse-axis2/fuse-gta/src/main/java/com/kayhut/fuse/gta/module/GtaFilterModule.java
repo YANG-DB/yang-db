@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta.module.promise;
+package com.kayhut.fuse.gta.module;
 
 import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.ModuleBase;

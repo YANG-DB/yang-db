@@ -1,17 +1,20 @@
-package com.kayhut.fuse.executor.ontology;
+package com.kayhut.fuse.executor.ontology.discrete;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.discrete.DiscreteElementVertexController;
+import com.kayhut.fuse.unipop.controller.discrete.DiscreteVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import org.elasticsearch.client.Client;
 import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.process.strategyregistrar.StandardStrategyProvider;
@@ -63,16 +66,27 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
                         new ElementController(
-                                new PromiseElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider, metricRegistry),
-                                new PromiseElementEdgeController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
-                                metricRegistry),
-                        new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
-                        new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider ,metricRegistry)
+                                new DiscreteElementVertexController(
+                                        client,
+                                        elasticGraphConfiguration,
+                                        uniGraph,
+                                        schemaProvider,
+                                        new MetricRegistry()),
+                                null,
+                                new MetricRegistry()
+                        ),
+                        new DiscreteVertexController(
+                                client,
+                                elasticGraphConfiguration,
+                                uniGraph,
+                                schemaProvider,
+                                new MetricRegistry())
                 );
             }
 
             @Override
             public void close() {
+
             }
         };
     }

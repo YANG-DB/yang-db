@@ -38,7 +38,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
  */
 public class DiscreteVertexController extends VertexControllerBase {
     //region Constructors
-    DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         super(Stream.ofAll(schemaProvider.getEdgeLabels()).distinct().toJavaList());
         this.client = client;
         this.configuration = configuration;

@@ -5,8 +5,8 @@ import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
 import com.kayhut.fuse.executor.ontology.*;
+import com.kayhut.fuse.executor.ontology.promise.M1ElasticUniGraphProvider;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
@@ -36,7 +36,7 @@ public class ExecutorModule extends ModuleBase {
 
         binder.bind(Client.class).toInstance(createClient(elasticGraphConfiguration));
 
-        binder.bind(UniGraphProvider.class).to(M1ElasticUniGraphProvider.class).asEagerSingleton();
+        binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
         binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
     }
     //endregion
@@ -82,6 +82,10 @@ public class ExecutorModule extends ModuleBase {
                         conf.getString("fuse.physical_schema_provider_factory_class")).newInstance());
 
         return new OntologyGraphElementSchemaProviderFactory(physicalSchemaProviderFactory);
+    }
+
+    private Class<? extends UniGraphProvider> getUniGraphProviderClass(Config conf) throws ClassNotFoundException {
+        return (Class<? extends  UniGraphProvider>)Class.forName(conf.getString("fuse.unigraph_provider"));
     }
     //endregion
 }

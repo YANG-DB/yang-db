@@ -62,12 +62,18 @@ public class ValidatorStrategyRegisteredAsgDriver implements QueryValidationOper
 
             AsgStrategyContext asgStrategyContext = new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
             AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(), new NextEbaseFactory(), new BNextFactory()).get();
-            Stream<ValidationContext> validationContextStream = Stream.ofAll(this.strategies).toStream().map(strategy -> strategy.apply(asgQuery, asgStrategyContext));
+            List<ValidationContext> validationContexts = Stream.ofAll(this.strategies)
+                    .map(strategy -> strategy.apply(asgQuery, asgStrategyContext))
+                    .toJavaList();
 
             //if valid continue flow - other return error to client
-            if (validationContextStream.toJavaStream().anyMatch(p -> !p.valid())) {
-                List<String> errors = validationContextStream.toJavaStream().filter(p -> !p.valid())
-                        .flatMap(k -> Arrays.stream(k.errors())).collect(Collectors.toList());
+
+            List<String> errors = Stream.ofAll(validationContexts)
+                    .filter(validationContext -> !validationContext.valid())
+                    .flatMap(k -> Stream.of(k.errors()))
+                    .toJavaList();
+
+            if (!errors.isEmpty()) {
                 return new ValidationContext(false, errors.toArray(new String[errors.size()]));
             } else {
                 submit(eventBus, new QueryCreationOperationContext(context.getQueryMetadata(), context.getQuery()));

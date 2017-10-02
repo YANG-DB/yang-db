@@ -65,8 +65,8 @@
   ],
   "relationshipTypes": [
     {
-      "rType": "owns",
-      "name": "owns",
+      "rType": "own",
+      "name": "own",
       "directional": true,
       "ePairs": [
         {

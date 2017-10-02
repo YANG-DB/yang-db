@@ -33,7 +33,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
  */
 public class DiscreteElementVertexController implements SearchQuery.SearchController {
     //region Constructors
-    DiscreteElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public DiscreteElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
