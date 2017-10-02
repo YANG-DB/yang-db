@@ -72,8 +72,12 @@ public class FuseClient {
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
+        return this.postCursor(cursorStoreUrl, CreateCursorRequest.CursorType.paths);
+    }
+
+    public CursorResourceInfo postCursor(String cursorStoreUrl, CreateCursorRequest.CursorType cursorType) throws IOException {
         CreateCursorRequest request = new CreateCursorRequest();
-        request.setCursorType(CreateCursorRequest.CursorType.paths);
+        request.setCursorType(cursorType);
 
         return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, request)), CursorResourceInfo.class);
     }

@@ -12,6 +12,7 @@ import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
@@ -99,7 +100,7 @@ public class EntityRelationEntityTest {
 
     //region Tests
     @Test
-    public void test_Person_own_Dragon() throws IOException, InterruptedException {
+    public void test_Person_own_Dragon_paths() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", PERSON.type, singletonList(NAME.type), 2, 0),
@@ -124,7 +125,34 @@ public class EntityRelationEntityTest {
     }
 
     @Test
-    public void test_person1_own_Dragon() throws IOException, InterruptedException {
+    public void test_Person_own_Dragon_graph() throws IOException, InterruptedException {
+        Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", PERSON.type, singletonList(NAME.type), 2, 0),
+                new Rel(2, OWN.getrType(), Rel.Direction.R, null, 3, 0),
+                new ETyped(3, "B", DRAGON.type, singletonList(NAME.type), 0, 0)
+        )).build();
+
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(
+                queryResourceInfo.getCursorStoreUrl(),
+                CreateCursorRequest.CursorType.graph);
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+    @Test
+    public void test_person1_own_Dragon_paths() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", PERSON.type, singletonList(NAME.type), 2, 0),

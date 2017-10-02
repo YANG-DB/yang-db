@@ -12,7 +12,12 @@ public class TraversalCursorFactory implements CursorFactory {
     @Override
     public Cursor createCursor(Context context) {
         TraversalCursorContext traversalCursorContext = (TraversalCursorContext)context;
-        return new TraversalCursor(traversalCursorContext);
+        switch (traversalCursorContext.getCursorType()) {
+            case paths: return new PathsTraversalCursor(traversalCursorContext);
+            case graph: return new GraphTraversalCursor(new PathsTraversalCursor(traversalCursorContext));
+            default: return new PathsTraversalCursor(traversalCursorContext);
+        }
+
     }
     //endregion
 }

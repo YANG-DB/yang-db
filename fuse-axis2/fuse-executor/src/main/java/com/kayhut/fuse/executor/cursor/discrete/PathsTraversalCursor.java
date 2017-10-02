@@ -27,9 +27,9 @@ import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 /**
  * Created by roman.margolis on 02/10/2017.
  */
-public class TraversalCursor implements Cursor {
+public class PathsTraversalCursor implements Cursor {
     //region Constructors
-    public TraversalCursor(TraversalCursorContext context) {
+    public PathsTraversalCursor(TraversalCursorContext context) {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
     }

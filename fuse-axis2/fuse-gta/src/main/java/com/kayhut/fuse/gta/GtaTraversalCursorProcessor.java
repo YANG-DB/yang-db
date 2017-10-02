@@ -75,7 +75,12 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
                         uniGraphProvider.getGraph(ontology).traversal()));
 
         //submit
-        Cursor cursor = this.cursorFactory.createCursor(new TraversalCursorContext(ontology, context.getQueryResource(), traversal));
+        Cursor cursor = this.cursorFactory.createCursor(
+                new TraversalCursorContext(
+                        ontology,
+                        context.getQueryResource(),
+                        context.getCursorType(),
+                        traversal));
         time.stop();
         return submit(eventBus, context.of(cursor));
 

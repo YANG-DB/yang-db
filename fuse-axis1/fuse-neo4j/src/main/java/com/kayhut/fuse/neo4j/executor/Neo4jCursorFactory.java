@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.results.Assignment;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.results.Relationship;
+import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.neo4j.GraphProvider;
 import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalRelationship;
@@ -57,6 +58,11 @@ public class Neo4jCursorFactory implements CursorFactory {
         @Override
         public QueryResource getQueryResource() {
             return this.queryResource;
+        }
+
+        @Override
+        public CreateCursorRequest.CursorType getCursorType() {
+            return CreateCursorRequest.CursorType.paths;
         }
 
         public String getCypher() {
