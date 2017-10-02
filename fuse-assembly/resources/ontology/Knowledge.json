@@ -9,7 +9,10 @@
         "context",
         "category",
         "security1",
-        "security2"
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime"
       ]
     },
     {
@@ -20,7 +23,11 @@
         "context",
         "security1",
         "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
         "propertyId",
+        "bdt",
         "stringValue",
         "textValue",
         "dateValue",
@@ -68,8 +75,28 @@
       "type": "string"
     },
     {
+      "pType": "lastUpdateUser",
+      "name": "lastUpdateUser",
+      "type": "String"
+    },
+    {
+      "pType": "lastUpdateTime",
+      "name": "lastUpdateTime",
+      "type": "date"
+    },
+    {
+      "pType": "creationTime",
+      "name": "creationTime",
+      "type": "date"
+    },
+    {
       "pType": "propertyId",
       "name": "propertyId",
+      "type": "string"
+    },
+    {
+      "pType": "bdt",
+      "name": "bdt",
       "type": "string"
     },
     {
