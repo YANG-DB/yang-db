@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.processor.PageProcessor;
 import com.kayhut.fuse.dispatcher.context.processor.ResourcePersistProcessor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.*;
 import com.kayhut.fuse.dispatcher.interception.ExceptionHandlingMethodInterceptor;
 import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
@@ -32,7 +33,7 @@ public class DispatcherModule extends ModuleBase {
 
         // resource store and persist processor
         binder.bind(ResourceStore.class).to(InMemoryResourceStore.class).asEagerSingleton();
-        binder.bind(OntologyProvider.class).to(SimpleOntologyProvider.class).asEagerSingleton();
+        binder.bind(OntologyProvider.class).to(getOntologyProviderClass(conf)).asEagerSingleton();
         binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
 
         // page processor
@@ -61,4 +62,9 @@ public class DispatcherModule extends ModuleBase {
                 new ExceptionHandlingMethodInterceptor());
     }
 
+    //region Private Methods
+    private Class<? extends OntologyProvider> getOntologyProviderClass(Config conf) throws ClassNotFoundException {
+        return (Class<? extends  OntologyProvider>)Class.forName(conf.getString("fuse.ontology_provider"));
+    }
+    //endregion
 }

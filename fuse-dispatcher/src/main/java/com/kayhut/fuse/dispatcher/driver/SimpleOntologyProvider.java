@@ -25,6 +25,7 @@ public class SimpleOntologyProvider implements OntologyProvider {
         ontologyMap = new HashMap<>();
         Ontology ontology = asObject(readJsonFile(ONTOLOGY + "/" +DRAGONS+".json"), Ontology.class);
         ontology = OntologyFinalizer.finalize(ontology);
+
         ontologyMap.put(DRAGONS, ontology);
     }
 

@@ -8,10 +8,12 @@ import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
+import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.results.QueryResult;
+import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
 import java.io.IOException;
 
@@ -51,7 +53,12 @@ public class QueryCursorPageTestProcessor implements
     @Subscribe
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
         if (context.getCursor() == null) {
-            context = context.of(cursorFactory.createCursor(context::getQueryResource));
+            context = context.of(
+                    cursorFactory.createCursor(
+                            new CursorFactory.Context.Impl(
+                                    context.getQueryResource(),
+                                    CreateCursorRequest.CursorType.paths)));
+
             submit(eventBus, context);
         }
 
