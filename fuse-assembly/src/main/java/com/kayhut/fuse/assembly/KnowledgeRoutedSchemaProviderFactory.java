@@ -26,6 +26,15 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
 
     //region KnowledgeSchemaProvider
     public static class KnowledgeSchemaProvider implements GraphElementSchemaProvider {
+        //region Constructors
+        public KnowledgeSchemaProvider() {
+            this.entityPartitions = new IndexPartitions.Impl("logicalId",
+                    new IndexPartitions.Partition.Range.Impl<>("e000", "e010", "entity1"),
+                    new IndexPartitions.Partition.Range.Impl<>("e010", "e020", "entity2"),
+                    new IndexPartitions.Partition.Range.Impl<>("e020", "e999", "entity3"));
+        }
+        //endregion
+
         //region GraphElementSchemaProvider Implementation
         @Override
         public Optional<GraphVertexSchema> getVertexSchema(String label) {
@@ -37,11 +46,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                             Optional.of(new GraphElementRouting.Impl(
                                     new GraphElementPropertySchema.Impl("logicalId", "string")
                             )),
-                            Optional.of(new IndexPartitions.Impl(
-                                    "logicalId",
-                                    new IndexPartitions.Partition.Range.Impl<>("e000", "e010", "entity1"),
-                                    new IndexPartitions.Partition.Range.Impl<>("e010", "e020", "entity2")
-                            )),
+                            Optional.of(this.entityPartitions),
                             Collections.emptyList()
                     ));
 
@@ -50,11 +55,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                             "Value",
                             "Value",
                             Optional.empty(),
-                            Optional.of(new IndexPartitions.Impl(
-                                    "logicalId",
-                                    new IndexPartitions.Partition.Range.Impl<>("e000", "e010", "entity1"),
-                                    new IndexPartitions.Partition.Range.Impl<>("e010", "e020", "entity2")
-                            )),
+                            Optional.of(this.entityPartitions),
                             Collections.emptyList()
                     ));
 
@@ -76,9 +77,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                     Optional.of(new GraphElementRouting.Impl(
                                             new GraphElementPropertySchema.Impl("logicalId", "string")
                                     )),
-                                    Optional.of(new IndexPartitions.Impl("logicalId",
-                                            new IndexPartitions.Partition.Range.Impl<>("e000", "e010", "entity1"),
-                                            new IndexPartitions.Partition.Range.Impl<>("e010", "e020", "entity2"))))),
+                                    Optional.of(this.entityPartitions))),
                             Optional.of(new GraphEdgeSchema.End.Impl(
                                     "_id",
                                     Optional.of("Value"),
@@ -99,9 +98,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                     Optional.of(new GraphElementRouting.Impl(
                                             new GraphElementPropertySchema.Impl("logicalId", "string")
                                     )),
-                                    Optional.of(new IndexPartitions.Impl("logicalId",
-                                            new IndexPartitions.Partition.Range.Impl<>("e000", "e010", "entity1"),
-                                            new IndexPartitions.Partition.Range.Impl<>("e010", "e020", "entity2"))))),
+                                    Optional.of(this.entityPartitions))),
                             Optional.empty(),
                             Optional.empty(),
                             Optional.empty(),
@@ -136,6 +133,10 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
         public Iterable<String> getEdgeLabels() {
             return Collections.singletonList("hasValue");
         }
+        //endregion
+
+        //region Fields
+        private IndexPartitions entityPartitions;
         //endregion
     }
     //endregion
