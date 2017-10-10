@@ -12,6 +12,8 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +53,7 @@ public class EBaseStatisticsProviderRedundantTests {
 
         GraphVertexSchema graphVertexSchema = new GraphVertexSchema.Impl(
                 "Guild",
-                "Guild",
+                new GraphElementConstraint.Impl(__.has(T.label, "Guild")),
                 Optional.empty(),
                 Optional.of(new StaticIndexPartitions(Collections.emptyList())),
                 Arrays.asList(

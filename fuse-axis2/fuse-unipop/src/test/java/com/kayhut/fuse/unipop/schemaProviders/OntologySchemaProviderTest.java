@@ -6,6 +6,8 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,7 +29,7 @@ public class OntologySchemaProviderTest {
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
 
-        assertEquals(vertexPersonSchema.getType(), "Person");
+        assertEquals(vertexPersonSchema.getConstraint().getTraversalConstraint(), __.has(T.label, "Person"));
         List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
         assertEquals(2, indices.size());
 

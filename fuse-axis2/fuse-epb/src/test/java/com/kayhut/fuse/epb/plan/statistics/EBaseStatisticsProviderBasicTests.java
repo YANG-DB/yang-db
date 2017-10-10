@@ -17,6 +17,8 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -638,7 +640,7 @@ public class EBaseStatisticsProviderBasicTests {
                 Stream.ofAll(ont.relations())
                         .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
                                 relation.getrType(),
-                                relation.getrType(),
+                                new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         relation.getePairs().get(0).geteTypeA() + "IdA",
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),

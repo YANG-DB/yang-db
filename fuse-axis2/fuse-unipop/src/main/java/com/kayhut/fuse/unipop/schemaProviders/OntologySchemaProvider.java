@@ -126,7 +126,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
         return Optional.of(new GraphVertexSchema.Impl(
                 label,
-                vertexSchema.getType(),
+                vertexSchema.getConstraint(),
                 vertexSchema.getRouting(),
                 vertexSchema.getIndexPartitions(),
                 Stream.ofAll(entityType.get().getProperties() == null ? Collections.emptyList() : entityType.get().getProperties())
@@ -152,7 +152,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
         return Optional.of(new GraphEdgeSchema.Impl(
                 label,
-                edgeSchema.getType(),
+                edgeSchema.getConstraint(),
                 edgeSchema.getSource().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
                             edgeSchema.getSource().get().getIdField(),

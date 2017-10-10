@@ -4,12 +4,15 @@ import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.common.collect.Tuple;
 
 import java.text.SimpleDateFormat;
@@ -36,7 +39,12 @@ public class ScenarioMockUtil {
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema schema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
             List<String> indices = (List<String>) invocationOnMock.getArgumentAt(2, List.class);
-            Long globalSelectivity = this.globalSelectivity.getOrDefault(schema.getType(), 10L);
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(schema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            Long globalSelectivity = this.globalSelectivity.getOrDefault(constraintLabel, 10L);
             return globalSelectivity*indices.size();
         });
 
@@ -94,8 +102,12 @@ public class ScenarioMockUtil {
     }
 
     private Statistics.SummaryStatistics getCardinality(GraphElementSchema graphElementSchema, List<String> indices, long scale) {
-        return new Statistics.SummaryStatistics(cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size()* scale,
-                cardinalityPerTypePerIndex.getOrDefault(graphElementSchema.getType(), 1000L)*indices.size());
+        String constraintLabel = Stream.ofAll(
+                new TraversalValuesByKeyProvider().getValueByKey(graphElementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                .get(0);
+
+        return new Statistics.SummaryStatistics(cardinalityPerTypePerIndex.getOrDefault(constraintLabel, 1000L)*indices.size()* scale,
+                cardinalityPerTypePerIndex.getOrDefault(constraintLabel, 1000L)*indices.size());
     }
 
     public ScenarioMockUtil withLayoutRedundancy(String edgeType, String propertyName, String redundantPropertyName){
@@ -213,7 +225,7 @@ public class ScenarioMockUtil {
                 Stream.ofAll(this.ont.relations())
                         .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
                                 relation.getrType(),
-                                relation.getrType(),
+                                new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         relation.getePairs().get(0).geteTypeA() + "IdA",
                                         Optional.of(relation.getePairs().get(0).geteTypeA()),

@@ -4,6 +4,8 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,7 +44,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 case "Entity":
                     return Optional.of(new GraphVertexSchema.Impl(
                             "Entity",
-                            "Entity",
+                            new GraphElementConstraint.Impl(__.has(T.label, "Entity")),
                             Optional.of(new GraphElementRouting.Impl(
                                     new GraphElementPropertySchema.Impl("logicalId", "string")
                             )),
@@ -53,7 +55,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 case "Value":
                     return Optional.of(new GraphVertexSchema.Impl(
                             "Value",
-                            "Value",
+                            new GraphElementConstraint.Impl(__.has(T.label, "Value")),
                             Optional.empty(),
                             Optional.of(this.entityPartitions),
                             Collections.emptyList()
@@ -69,7 +71,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 case "hasValue":
                     return Optional.of(new GraphEdgeSchema.Impl(
                             "hasValue",
-                            "Value",
+                            new GraphElementConstraint.Impl(__.has(T.label, "Value")),
                             Optional.of(new GraphEdgeSchema.End.Impl(
                                     "entityId",
                                     Optional.of("Entity"),

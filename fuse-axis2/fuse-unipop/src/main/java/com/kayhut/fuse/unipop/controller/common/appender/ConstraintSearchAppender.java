@@ -9,6 +9,7 @@ import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementConstraint;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -48,26 +49,26 @@ public class ConstraintSearchAppender implements SearchAppender<ElementControlle
                 context.getConstraint().get().getTraversal().asAdmin().clone() :
                 __.has(T.label, P.within(labels));
 
-        Set<String> types =
+        List<GraphElementConstraint> elementConstraints =
                 Stream.ofAll(labels)
                 .map(label -> context.getElementType().equals(ElementType.vertex) ?
                               context.getSchemaProvider().getVertexSchema(label) :
                               context.getSchemaProvider().getEdgeSchema(label))
                 .filter(Optional::isPresent)
-                .map(elementSchema -> elementSchema.get().getType())
-                .toJavaSet();
+                .map(elementSchema -> elementSchema.get().getConstraint())
+                .toJavaList();
 
-        if (!types.isEmpty()) {
+        if (!elementConstraints.isEmpty()) {
             List<HasStep> labelHasSteps = Stream.ofAll(new TraversalHasStepFinder(step -> step.getHasContainers().get(0).getKey().equals(T.label.getAccessor()))
                     .getValue(newConstraint)).toJavaList();
-            if (labelHasSteps.isEmpty()) {
-                newConstraint = __.and(__.has(T.label, P.within(types)), newConstraint);
-            } else {
-                HasStep<?> newLabelsStep = new HasStep<>(labelHasSteps.get(0).getTraversal(),
-                        new HasContainer(T.label.getAccessor(), P.within(types)));
-                TraversalHelper.insertAfterStep(newLabelsStep, labelHasSteps.get(0), labelHasSteps.get(0).getTraversal());
+
+            if (!labelHasSteps.isEmpty()) {
                 labelHasSteps.get(0).getTraversal().removeStep(labelHasSteps.get(0));
             }
+
+            newConstraint = __.and(
+                    __.or(Stream.ofAll(elementConstraints).map(GraphElementConstraint::getTraversalConstraint).toJavaArray(Traversal.class)),
+                    newConstraint);
         }
 
         QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter();

@@ -4,6 +4,8 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,7 +64,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
             case "own":
                 return Optional.of(new GraphEdgeSchema.Impl(
                         "own",
-                        "Dragon",
+                        new GraphElementConstraint.Impl(__.has(T.label, "Dragon")),
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 "personId",
                                 Optional.of("Person"),

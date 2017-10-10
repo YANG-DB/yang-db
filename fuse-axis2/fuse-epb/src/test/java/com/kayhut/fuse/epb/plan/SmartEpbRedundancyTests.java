@@ -22,11 +22,14 @@ import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -75,7 +78,12 @@ public class SmartEpbRedundancyTests {
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.SummaryStatistics(typeCard.get(edgeSchema.getType())* indices.size(), typeCard.get(edgeSchema.getType())* indices.size());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(edgeSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            return new Statistics.SummaryStatistics(typeCard.get(constraintLabel)* indices.size(), typeCard.get(constraintLabel)* indices.size());
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
@@ -87,7 +95,12 @@ public class SmartEpbRedundancyTests {
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.SummaryStatistics(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(vertexSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            return new Statistics.SummaryStatistics(typeCard.get(constraintLabel)*indices.size(), typeCard.get(constraintLabel)*indices.size());
         });
 
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10L);
@@ -99,7 +112,11 @@ public class SmartEpbRedundancyTests {
             if(graphElementPropertySchema instanceof GraphRedundantPropertySchema){
                 return createStringHistogram(10, indices.size());
             }else {
-                int card = typeCard.get(elementSchema.getType());
+                String constraintLabel = Stream.ofAll(
+                        new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                        .get(0);
+
+                int card = typeCard.get(constraintLabel);
                 return createStringHistogram(card, indices.size());
             }
         });
@@ -107,14 +124,24 @@ public class SmartEpbRedundancyTests {
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Long.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            int card = typeCard.get(elementSchema.getType());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            int card = typeCard.get(constraintLabel);
             return createLongHistogram(card, indices.size());
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Date.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            int card = typeCard.get(elementSchema.getType());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            int card = typeCard.get(constraintLabel);
             GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
             return createDateHistogram(card,elementSchema,propertySchema, indices);
         });
@@ -239,7 +266,7 @@ public class SmartEpbRedundancyTests {
                 Stream.ofAll(ont.relations())
                         .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
                                 relation.getrType(),
-                                relation.getrType(),
+                                new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "entityA.id",
                                         Optional.of(relation.getePairs().get(0).geteTypeA()),

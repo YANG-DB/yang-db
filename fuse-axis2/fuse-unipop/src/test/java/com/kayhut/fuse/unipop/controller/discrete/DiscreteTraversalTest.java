@@ -13,6 +13,7 @@ import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -131,11 +132,12 @@ public class DiscreteTraversalTest {
 
     //region Tests
     @Test
-    @Ignore
     public void g_V() throws InterruptedException {
         List<Vertex> vertices = g.V().toList();
-        Assert.assertEquals(40, vertices.size());
-        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon") || vertex.label().equals("Coin")));
+        Assert.assertEquals(70, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon") ||
+                vertex.label().equals("Coin") ||
+                vertex.label().equals("Fire")));
         Assert.assertTrue(Stream.ofAll(vertices)
                 .filter(vertex -> vertex.label().equals("Dragon"))
                 .forAll(vertex -> vertex.value("faction") != null));
@@ -352,7 +354,7 @@ public class DiscreteTraversalTest {
                 Arrays.asList(
                         new GraphVertexSchema.Impl(
                                 "Dragon",
-                                "Dragon",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Dragon")),
                                 Optional.of(new GraphElementRouting.Impl(
                                         new GraphElementPropertySchema.Impl("faction")
                                 )),
@@ -362,7 +364,7 @@ public class DiscreteTraversalTest {
                                 Collections.emptyList()),
                         new GraphVertexSchema.Impl(
                                 "Coin",
-                                "Coin",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Coin")),
                                 Optional.empty(),
                                 Optional.of(new IndexPartitions.Impl("dragonId",
                                         new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
@@ -372,7 +374,7 @@ public class DiscreteTraversalTest {
                                         new GraphElementPropertySchema.Impl("weight", "int"))),
                         new GraphVertexSchema.Impl(
                                 "Fire",
-                                "Fire",
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "Fire"), __.has("direction", "out"))),
                                 Optional.of(new GraphElementRouting.Impl(
                                         new GraphElementPropertySchema.Impl("entityAId", "string"))),
                                 Optional.of(new IndexPartitions.Impl("entityAId",
@@ -382,7 +384,7 @@ public class DiscreteTraversalTest {
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(
                                 "hasCoin",
-                                "Coin",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Coin")),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "dragonId",
                                         Optional.of("Dragon"),
@@ -409,7 +411,7 @@ public class DiscreteTraversalTest {
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 "hasFire",
-                                "Fire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Fire")),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "entityAId",
                                         Optional.of("Dragon"),

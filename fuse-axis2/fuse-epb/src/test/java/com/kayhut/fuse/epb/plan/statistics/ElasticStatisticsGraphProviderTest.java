@@ -23,15 +23,14 @@ import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
-import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
@@ -246,7 +245,7 @@ public class ElasticStatisticsGraphProviderTest {
                 Stream.ofAll(ont.relations())
                         .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
                                 relation.getrType(),
-                                relation.getrType(),
+                                new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         relation.getePairs().get(0).geteTypeA() + "IdA",
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),

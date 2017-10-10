@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
 import java.util.List;
@@ -152,12 +154,26 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         //region Constructors
         public Impl(String label,
                     GraphElementRouting routing) {
-            this(label, label, Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(routing), Optional.empty(), Collections.emptyList());
+            this(label,
+                    new GraphElementConstraint.Impl(__.has(T.label, label)),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.of(routing),
+                    Optional.empty(),
+                    Collections.emptyList());
         }
 
         public Impl(String label,
                     IndexPartitions indexPartitions) {
-            this(label, label, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.of(indexPartitions), Collections.emptyList());
+            this(label,
+                    new GraphElementConstraint.Impl(__.has(T.label, label)),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.empty(),
+                    Optional.of(indexPartitions),
+                    Collections.emptyList());
         }
 
         public Impl(String label,
@@ -165,7 +181,14 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     Optional<End> destination,
                     Optional<Direction> direction,
                     GraphElementRouting routing) {
-            this(label, label, source, destination, direction, Optional.of(routing), Optional.empty(), Collections.emptyList());
+            this(label,
+                    new GraphElementConstraint.Impl(__.has(T.label, label)),
+                    source,
+                    destination,
+                    direction,
+                    Optional.of(routing),
+                    Optional.empty(),
+                    Collections.emptyList());
         }
 
         public Impl(String label,
@@ -173,7 +196,14 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     Optional<End> destination,
                     Optional<Direction> direction,
                     IndexPartitions indexPartitions) {
-            this(label, label, source, destination, direction, Optional.empty(), Optional.of(indexPartitions), Collections.emptyList());
+            this(label,
+                    new GraphElementConstraint.Impl(__.has(T.label, label)),
+                    source,
+                    destination,
+                    direction,
+                    Optional.empty(),
+                    Optional.of(indexPartitions),
+                    Collections.emptyList());
         }
 
         public Impl(String label,
@@ -182,30 +212,25 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     Optional<Direction> direction,
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions) {
-            this(label, label, source, destination, direction, routing, indexPartitions, Collections.emptyList());
+            this(label,
+                    new GraphElementConstraint.Impl(__.has(T.label, label)),
+                    source,
+                    destination,
+                    direction,
+                    routing,
+                    indexPartitions,
+                    Collections.emptyList());
         }
 
         public Impl(String label,
-                    String type,
+                    GraphElementConstraint constraint,
                     Optional<End> source,
                     Optional<End> destination,
                     Optional<Direction> direction,
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions,
                     Iterable<GraphElementPropertySchema> properties) {
-            this(label, type, source, destination, direction, routing, indexPartitions, properties, Optional.empty());
-        }
-
-        public Impl(String label,
-                    String type,
-                    Optional<End> source,
-                    Optional<End> destination,
-                    Optional<Direction> direction,
-                    Optional<GraphElementRouting> routing,
-                    Optional<IndexPartitions> indexPartitions,
-                    Iterable<GraphElementPropertySchema> properties,
-                    Optional<GraphElementConstraint> constraint) {
-            super(label, type, routing, indexPartitions, properties, constraint);
+            super(label, constraint, routing, indexPartitions, properties);
             this.source = source;
             this.destination = destination;
             this.direction = direction;
