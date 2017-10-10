@@ -193,7 +193,19 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions,
                     Iterable<GraphElementPropertySchema> properties) {
-            super(label, type, routing, indexPartitions, properties);
+            this(label, type, source, destination, direction, routing, indexPartitions, properties, Optional.empty());
+        }
+
+        public Impl(String label,
+                    String type,
+                    Optional<End> source,
+                    Optional<End> destination,
+                    Optional<Direction> direction,
+                    Optional<GraphElementRouting> routing,
+                    Optional<IndexPartitions> indexPartitions,
+                    Iterable<GraphElementPropertySchema> properties,
+                    Optional<GraphElementConstraint> constraint) {
+            super(label, type, routing, indexPartitions, properties, constraint);
             this.source = source;
             this.destination = destination;
             this.direction = direction;

@@ -49,34 +49,15 @@ public class EBaseStatisticsProviderRedundantTests {
                                 new GraphRedundantPropertySchema.Impl("firstName", "EntityB.firstName", "string")
                         ))));
 
-        GraphVertexSchema graphVertexSchema = new GraphVertexSchema() {
-            @Override
-            public String getType() {
-                return "Guild";
-            }
-
-            @Override
-            public Optional<GraphElementRouting> getRouting() {
-                return null;
-            }
-
-            @Override
-            public Optional<IndexPartitions> getIndexPartitions() {
-                return Optional.of(new StaticIndexPartitions(Collections.emptyList()));
-            }
-
-            @Override
-            public Iterable<GraphElementPropertySchema> getProperties() {
-                return Arrays.asList(
+        GraphVertexSchema graphVertexSchema = new GraphVertexSchema.Impl(
+                "Guild",
+                "Guild",
+                Optional.empty(),
+                Optional.of(new StaticIndexPartitions(Collections.emptyList())),
+                Arrays.asList(
                         new GraphElementPropertySchema.Impl("firstName", "string"),
-                        new GraphElementPropertySchema.Impl("lastName", "string"));
-            }
+                        new GraphElementPropertySchema.Impl("lastName", "string")));
 
-            @Override
-            public Optional<GraphElementPropertySchema> getProperty(String name) {
-                return Optional.of(new GraphElementPropertySchema.Impl(name, "string"));
-            }
-        };
         when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(ownSchema));
         when(graphElementSchemaProvider.getVertexSchema(any())).thenReturn(Optional.of(graphVertexSchema));
 

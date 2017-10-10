@@ -27,8 +27,21 @@ public interface GraphVertexSchema extends GraphElementSchema {
             super(label, routing, indexPartitions);
         }
 
-        public Impl(String label, String type, Optional<GraphElementRouting> routing, Optional<IndexPartitions> indexPartitions, Iterable<GraphElementPropertySchema> properties) {
+        public Impl(String label,
+                    String type,
+                    Optional<GraphElementRouting> routing,
+                    Optional<IndexPartitions> indexPartitions,
+                    Iterable<GraphElementPropertySchema> properties) {
             super(label, type, routing, indexPartitions, properties);
+        }
+
+        public Impl(String label,
+                    String type,
+                    Optional<GraphElementRouting> routing,
+                    Optional<IndexPartitions> indexPartitions,
+                    Iterable<GraphElementPropertySchema> properties,
+                    Optional<GraphElementConstraint> constraint) {
+            super(label, type, routing, indexPartitions, properties, constraint);
         }
         //endregion
     }

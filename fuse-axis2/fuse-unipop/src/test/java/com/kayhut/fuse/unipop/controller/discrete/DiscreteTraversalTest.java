@@ -89,45 +89,25 @@ public class DiscreteTraversalTest {
                 new StandardStrategyProvider());
 
         TransportClient client = elasticEmbeddedNode.getClient();
-        new ElasticDataPopulator(
-                client,
-                "dragons1",
-                "Dragon",
-                "id",
-                true,
-                "faction",
-                false,
-                () -> createDragons(0, 5)).populate();
+        new ElasticDataPopulator(client, "dragons1", "Dragon", "id", true, "faction", false, () -> createDragons(0, 5)).populate();
+        new ElasticDataPopulator(client, "dragons2", "Dragon", "id", true, "faction", false, () -> createDragons(5, 10)).populate();
+        new ElasticDataPopulator(client, "coins1", "Coin", "id", true, "faction", true, () -> createCoins(0, 5, 3)).populate();
+        new ElasticDataPopulator(client, "coins2", "Coin", "id", true, "faction", true, () -> createCoins(5, 10, 3)).populate();
 
-        new ElasticDataPopulator(
-                client,
-                "dragons2",
-                "Dragon",
-                "id",
-                true,
-                "faction",
-                false,
-                () -> createDragons(5, 10)).populate();
+        Iterable<Map<String, Object>> fireEvents1 = createFireEvents(0, 5, 10, 3);
+        Iterable<Map<String, Object>> fireEvents2 = createFireEvents(5, 10, 10, 3);
 
-        new ElasticDataPopulator(
-                client,
-                "coins1",
-                "Coin",
-                "id",
-                true,
-                "faction",
-                true,
-                () -> createCoins(0, 5, 3)).populate();
+        new ElasticDataPopulator(client, "dragons1", "Fire", "id", true, "entityAId", false,
+                () -> Stream.ofAll(fireEvents1)
+                        .appendAll(fireEvents2)
+                        .filter(fireEvent -> Integer.parseInt(((String)fireEvent.get("entityAId")).substring(1)) < 5))
+                .populate();
 
-        new ElasticDataPopulator(
-                client,
-                "coins2",
-                "Coin",
-                "id",
-                true,
-                "faction",
-                true,
-                () -> createCoins(5, 10, 3)).populate();
+        new ElasticDataPopulator(client, "dragons2", "Fire", "id", true, "entityAId", false,
+                () -> Stream.ofAll(fireEvents1)
+                        .appendAll(fireEvents2)
+                        .filter(fireEvent -> Integer.parseInt(((String)fireEvent.get("entityAId")).substring(1)) >= 5))
+                .populate();
 
         elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons1", "dragons2", "coins1", "coins2")).actionGet();
     }
@@ -151,6 +131,7 @@ public class DiscreteTraversalTest {
 
     //region Tests
     @Test
+    @Ignore
     public void g_V() throws InterruptedException {
         List<Vertex> vertices = g.V().toList();
         Assert.assertEquals(40, vertices.size());
@@ -367,172 +348,90 @@ public class DiscreteTraversalTest {
 
     //region SchemaProvider
     private static GraphElementSchemaProvider getSchemaProvider() {
-        return new GraphElementSchemaProvider() {
-            @Override
-            public Optional<GraphVertexSchema> getVertexSchema(String label) {
-                switch (label) {
-                    case "Dragon": return Optional.of(new GraphVertexSchema() {
-                        @Override
-                        public String getType() {
-                            return "Dragon";
-                        }
-
-                        @Override
-                        public Optional<GraphElementRouting> getRouting() {
-                            return Optional.of(new GraphElementRouting.Impl(
-                                    new GraphElementPropertySchema.Impl("faction")
-                            ));
-                        }
-
-                        @Override
-                        public Optional<IndexPartitions> getIndexPartitions() {
-                            return Optional.of(new IndexPartitions.Impl("_id",
-                                    new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
-                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2")));
-                        }
-
-                        @Override
-                        public Iterable<GraphElementPropertySchema> getProperties() {
-                            return null;
-                        }
-
-                        @Override
-                        public Optional<GraphElementPropertySchema> getProperty(String name) {
-                            return null;
-                        }
-                    });
-
-                    case "Coin": return Optional.of(new GraphVertexSchema() {
-                        @Override
-                        public String getType() {
-                            return "Coin";
-                        }
-
-                        @Override
-                        public Optional<GraphElementRouting> getRouting() {
-                            return Optional.empty();
-                        }
-
-                        @Override
-                        public Optional<IndexPartitions> getIndexPartitions() {
-                            return Optional.of(new IndexPartitions.Impl("dragonId",
-                                    new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
-                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2")));
-                        }
-
-                        @Override
-                        public Iterable<GraphElementPropertySchema> getProperties() {
-                            return Arrays.asList(
-                                    new GraphElementPropertySchema.Impl("material", "string"),
-                                    new GraphElementPropertySchema.Impl("weight", "int")
-                            );
-                        }
-
-                        @Override
-                        public Optional<GraphElementPropertySchema> getProperty(String name) {
-                            return null;
-                        }
-                    });
-                }
-
-                return Optional.empty();
-            }
-
-            @Override
-            public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-                switch (label) {
-                    case "hasCoin": return Optional.of(new GraphEdgeSchema() {
-                        @Override
-                        public Optional<End> getSource() {
-                            return Optional.of(
-                                    new End.Impl("dragonId",
-                                            Optional.of("Dragon"),
-                                            Collections.emptyList(),
-                                            Optional.of(new GraphElementRouting.Impl(
-                                                    new GraphElementPropertySchema.Impl("faction")
-                                            )),
-                                            Optional.of(new IndexPartitions.Impl("_id",
-                                                            new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
-                                                            new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2")))
-                                            ));
-                        }
-
-                        @Override
-                        public Optional<End> getDestination() {
-                            return Optional.of(
-                                    new End.Impl("_id",
-                                            Optional.of("Coin"),
-                                            Arrays.asList(
-                                                    new GraphRedundantPropertySchema.Impl("material", "material", "string"),
-                                                    new GraphRedundantPropertySchema.Impl("weight", "weight", "int")),
-                                            Optional.empty(),
-                                            Optional.of(new IndexPartitions.Impl("dragonId",
-                                                    new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
-                                                    new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2")))
-                                            ));
-                        }
-
-                        @Override
-                        public Optional<Direction> getDirection() {
-                            return Optional.empty();
-                        }
-
-                        @Override
-                        public String getType() {
-                            return "Coin";
-                        }
-
-                        @Override
-                        public String getLabel() {
-                            return "hasCoin";
-                        }
-
-                        @Override
-                        public Optional<GraphElementRouting> getRouting() {
-                            return Optional.empty();
-                        }
-
-                        @Override
-                        public Optional<IndexPartitions> getIndexPartitions() {
-                            return Optional.empty();
-                        }
-
-                        @Override
-                        public Iterable<GraphElementPropertySchema> getProperties() {
-                            return null;
-                        }
-
-                        @Override
-                        public Optional<GraphElementPropertySchema> getProperty(String name) {
-                            return null;
-                        }
-                    });
-                }
-
-                return Optional.empty();
-            }
-
-            @Override
-            public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-                Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
-                return graphEdgeSchema.<Iterable<GraphEdgeSchema>>map(Collections::singletonList).orElseGet(Collections::emptyList);
-            }
-
-            @Override
-            public Optional<GraphElementPropertySchema> getPropertySchema(String name) {
-                return null;
-            }
-
-            @Override
-            public Iterable<String> getVertexLabels() {
-                return Arrays.asList("Dragon", "Coin");
-            }
-
-            @Override
-            public Iterable<String> getEdgeLabels() {
-                return Arrays.asList("hasCoin");
-            }
-        };
+        return new GraphElementSchemaProvider.Impl(
+                Arrays.asList(
+                        new GraphVertexSchema.Impl(
+                                "Dragon",
+                                "Dragon",
+                                Optional.of(new GraphElementRouting.Impl(
+                                        new GraphElementPropertySchema.Impl("faction")
+                                )),
+                                Optional.of(new IndexPartitions.Impl("_id",
+                                        new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
+                                        new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))),
+                                Collections.emptyList()),
+                        new GraphVertexSchema.Impl(
+                                "Coin",
+                                "Coin",
+                                Optional.empty(),
+                                Optional.of(new IndexPartitions.Impl("dragonId",
+                                        new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
+                                        new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2"))),
+                                Arrays.asList(
+                                        new GraphElementPropertySchema.Impl("material", "string"),
+                                        new GraphElementPropertySchema.Impl("weight", "int"))),
+                        new GraphVertexSchema.Impl(
+                                "Fire",
+                                "Fire",
+                                Optional.of(new GraphElementRouting.Impl(
+                                        new GraphElementPropertySchema.Impl("entityAId", "string"))),
+                                Optional.of(new IndexPartitions.Impl("entityAId",
+                                        new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
+                                        new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))),
+                                Collections.emptyList())),
+                Arrays.asList(
+                        new GraphEdgeSchema.Impl(
+                                "hasCoin",
+                                "Coin",
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "dragonId",
+                                        Optional.of("Dragon"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("faction")
+                                        )),
+                                        Optional.of(new IndexPartitions.Impl("_id",
+                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
+                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2"))))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Coin"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("material", "material", "string"),
+                                                new GraphRedundantPropertySchema.Impl("weight", "weight", "int")),
+                                        Optional.empty(),
+                                        Optional.of(new IndexPartitions.Impl("dragonId",
+                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
+                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2"))))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList()),
+                        new GraphEdgeSchema.Impl(
+                                "hasFire",
+                                "Fire",
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityAId",
+                                        Optional.of("Dragon"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(new IndexPartitions.Impl("_id",
+                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
+                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "fireId",
+                                        Optional.of("Fire"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("entityAId", "string"))),
+                                        Optional.of(new IndexPartitions.Impl("entityAId",
+                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
+                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList())));
     }
     //endregion
 
@@ -575,6 +474,44 @@ public class DiscreteTraversalTest {
         }
 
         return coins;
+    }
+
+    private static Iterable<Map<String, Object>> createFireEvents(int dragonStartId, int dragonEndId, int totalNumDragons, int numFireEventsPerDragon) {
+        int fireEventId = dragonStartId * numFireEventsPerDragon * 2;
+        int fireDocEventId = fireEventId;
+
+        List<Map<String, Object>> fireEvents = new ArrayList<>();
+        for(int i = dragonStartId ; i < dragonEndId ; i++) {
+            for(int j = 0 ; j < numFireEventsPerDragon ; j++) {
+                Map<String, Object> fireEvent1 = new HashMap<>();
+                Map<String, Object> fireEvent2 = new HashMap<>();
+
+                String sourceDragonId = "d" + String.format("%03d", i);
+                String destDragonId = "d" + String.format("%03d", (i + j) % totalNumDragons);
+
+                fireEvent1.put("entityAId", sourceDragonId);
+                fireEvent1.put("entityBId", destDragonId);
+                fireEvent1.put("direction", "out");
+                fireEvent2.put("entityBId", sourceDragonId);
+                fireEvent2.put("entityAId", destDragonId);
+                fireEvent2.put("direction", "in");
+
+                int duration = dragonStartId * 100 + 1;
+                fireEvent1.put("duration", duration);
+                fireEvent2.put("duration", duration);
+
+                String logicalEventId = "f" + String.format("%04d", fireEventId++);
+                fireEvent1.put("fireId", logicalEventId);
+                fireEvent2.put("fireId", logicalEventId);
+
+                fireEvent1.put("id", "f" + fireDocEventId++);
+                fireEvent2.put("id", "f" + fireDocEventId++);
+
+                fireEvents.addAll(Arrays.asList(fireEvent1, fireEvent2));
+            }
+        }
+
+        return fireEvents;
     }
     //endregion
 

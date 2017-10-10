@@ -4,6 +4,7 @@ package com.kayhut.fuse.unipop.schemaProviders;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.util.AndP;
 
 import java.util.Collections;
 import java.util.Map;
@@ -15,9 +16,6 @@ import java.util.Optional;
 public interface GraphElementSchema {
     Class getSchemaElementType();
 
-    /**
-     * @return vertex/edge type (e.g., Dragon, Person, fire)
-     */
     String getType();
     default String getLabel() {
         return getType();
@@ -30,6 +28,8 @@ public interface GraphElementSchema {
     Iterable<GraphElementPropertySchema> getProperties();
 
     Optional<GraphElementPropertySchema> getProperty(String name);
+
+    Optional<GraphElementConstraint> getConstraint();
 
     abstract class Impl implements GraphElementSchema {
         //region Constructors
@@ -52,11 +52,21 @@ public interface GraphElementSchema {
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions,
                     Iterable<GraphElementPropertySchema> properties) {
+            this(label, type, routing, indexPartitions, properties, Optional.empty());
+        }
+
+        public Impl(String label,
+                    String type,
+                    Optional<GraphElementRouting> routing,
+                    Optional<IndexPartitions> indexPartitions,
+                    Iterable<GraphElementPropertySchema> properties,
+                    Optional<GraphElementConstraint> constraint) {
             this.label = label;
             this.type = type;
             this.routing = routing;
             this.indexPartitions = indexPartitions;
             this.properties = Stream.ofAll(properties).toJavaMap(property -> new Tuple2<>(property.getName(), property));
+            this.constraint = constraint;
         }
         //endregion
 
@@ -90,6 +100,11 @@ public interface GraphElementSchema {
         public Optional<GraphElementPropertySchema> getProperty(String name) {
             return Optional.ofNullable(this.properties.get(name));
         }
+
+        @Override
+        public Optional<GraphElementConstraint> getConstraint() {
+            return this.constraint;
+        }
         //endregion
 
         //region Fields
@@ -98,6 +113,7 @@ public interface GraphElementSchema {
         private Optional<GraphElementRouting> routing;
         private Optional<IndexPartitions> indexPartitions;
         private Map<String, GraphElementPropertySchema> properties;
+        private Optional<GraphElementConstraint> constraint;
         //endregion
     }
 }

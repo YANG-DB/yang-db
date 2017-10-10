@@ -40,7 +40,7 @@ import static java.util.Collections.singletonList;
  */
 public class RealClusterTest {
     @Test
-    //@Ignore
+    @Ignore
     public void test_fetchEntityById() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -202,7 +202,7 @@ public class RealClusterTest {
     }
 
     @Test
-    //@Ignore
+    @Ignore
     public void test5() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

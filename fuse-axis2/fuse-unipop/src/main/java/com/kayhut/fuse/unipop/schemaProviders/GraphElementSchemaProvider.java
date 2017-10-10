@@ -1,5 +1,10 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
+import javaslang.Tuple2;
+import javaslang.collection.Stream;
+
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -14,4 +19,67 @@ public interface GraphElementSchemaProvider {
 
     Iterable<String> getVertexLabels();
     Iterable<String> getEdgeLabels();
+
+    class Impl implements GraphElementSchemaProvider {
+        //region Constructors
+        public Impl(Iterable<GraphVertexSchema> vertexSchemas,
+                    Iterable<GraphEdgeSchema> edgeSchemas) {
+            this(vertexSchemas, edgeSchemas, Collections.emptyList());
+        }
+
+        public Impl(Iterable<GraphVertexSchema> vertexSchemas,
+                    Iterable<GraphEdgeSchema> edgeSchemas,
+                    Iterable<GraphElementPropertySchema> propertySchemas) {
+            this.vertexSchemas = Stream.ofAll(vertexSchemas)
+                    .toJavaMap(vertexSchema -> new Tuple2<>(vertexSchema.getLabel(), vertexSchema));
+            this.edgeSchemas = Stream.ofAll(edgeSchemas)
+                    .toJavaMap(edgeSchema -> new Tuple2<>(edgeSchema.getLabel(), edgeSchema));
+            this.propertySchemas = Stream.ofAll(propertySchemas)
+                    .toJavaMap(propertySchema -> new Tuple2<>(propertySchema.getName(), propertySchema));
+        }
+        //endregion
+
+        //region GraphElementSchemaProvider Implementation
+        @Override
+        public Optional<GraphVertexSchema> getVertexSchema(String label) {
+            return Optional.ofNullable(this.vertexSchemas.get(label));
+        }
+
+        @Override
+        public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
+            return Optional.ofNullable(this.edgeSchemas.get(label));
+        }
+
+        @Override
+        public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
+            Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
+            if (graphEdgeSchema.isPresent()) {
+                return Collections.singletonList(graphEdgeSchema.get());
+            }
+
+            return Collections.emptyList();
+        }
+
+        @Override
+        public Optional<GraphElementPropertySchema> getPropertySchema(String name) {
+            return Optional.ofNullable(this.propertySchemas.get(name));
+        }
+
+        @Override
+        public Iterable<String> getVertexLabels() {
+            return this.vertexSchemas.keySet();
+        }
+
+        @Override
+        public Iterable<String> getEdgeLabels() {
+            return this.edgeSchemas.keySet();
+        }
+        //endregion
+
+        //region Fields
+        private Map<String, GraphVertexSchema> vertexSchemas;
+        private Map<String, GraphEdgeSchema> edgeSchemas;
+        private Map<String, GraphElementPropertySchema> propertySchemas;
+        //endregion
+    }
 }

@@ -185,53 +185,14 @@ public class SingularEdgeSearchAppenderTest {
             @Override
             public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
                 switch (label) {
-                    case "edgeType1": return Optional.of(new GraphEdgeSchema() {
-                        @Override
-                        public Optional<End> getSource() {
-                            return Optional.of(
-                                    new End.Impl("vertexType1Id",
-                                            Optional.of("vertexType1"),
-                                            Collections.emptyList()));
-                        }
-
-                        @Override
-                        public Optional<End> getDestination() {
-                            return Optional.of(
-                                    new End.Impl("vertexType2Id",
-                                            Optional.of("vertexType2"),
-                                            Collections.emptyList()));
-                        }
-
-                        @Override
-                        public Optional<Direction> getDirection() {
-                            return Optional.empty();
-                        }
-
-                        @Override
-                        public String getType() {
-                            return "edgeType1";
-                        }
-
-                        @Override
-                        public Optional<GraphElementRouting> getRouting() {
-                            return null;
-                        }
-
-                        @Override
-                        public Optional<IndexPartitions> getIndexPartitions() {
-                            return Optional.empty();
-                        }
-
-                        @Override
-                        public Iterable<GraphElementPropertySchema> getProperties() {
-                            return null;
-                        }
-
-                        @Override
-                        public Optional<GraphElementPropertySchema> getProperty(String name) {
-                            return null;
-                        }
-                    });
+                    case "edgeType1":
+                        return Optional.of(new GraphEdgeSchema.Impl(
+                                "edgeType1",
+                                Optional.of(new GraphEdgeSchema.End.Impl("vertexType1Id", Optional.of("vertexType1"), Collections.emptyList())),
+                                Optional.of(new GraphEdgeSchema.End.Impl("vertexType2Id", Optional.of("vertexType2"), Collections.emptyList())),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty()));
                 }
 
                 return Optional.empty();
