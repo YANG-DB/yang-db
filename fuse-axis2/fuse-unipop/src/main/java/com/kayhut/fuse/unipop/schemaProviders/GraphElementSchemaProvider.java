@@ -4,6 +4,7 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
  */
 public interface GraphElementSchemaProvider {
     Optional<GraphVertexSchema> getVertexSchema(String label);
+
     Optional<GraphEdgeSchema> getEdgeSchema(String label);
     Iterable<GraphEdgeSchema> getEdgeSchemas(String label);
 
@@ -33,7 +35,8 @@ public interface GraphElementSchemaProvider {
             this.vertexSchemas = Stream.ofAll(vertexSchemas)
                     .toJavaMap(vertexSchema -> new Tuple2<>(vertexSchema.getLabel(), vertexSchema));
             this.edgeSchemas = Stream.ofAll(edgeSchemas)
-                    .toJavaMap(edgeSchema -> new Tuple2<>(edgeSchema.getLabel(), edgeSchema));
+                    .groupBy(GraphElementSchema::getLabel)
+                    .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
             this.propertySchemas = Stream.ofAll(propertySchemas)
                     .toJavaMap(propertySchema -> new Tuple2<>(propertySchema.getName(), propertySchema));
         }
@@ -47,17 +50,22 @@ public interface GraphElementSchemaProvider {
 
         @Override
         public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-            return Optional.ofNullable(this.edgeSchemas.get(label));
+            List<GraphEdgeSchema> edgeSchemas = this.edgeSchemas.get(label);
+            if (edgeSchemas == null || edgeSchemas.isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(edgeSchemas.get(0));
         }
 
         @Override
         public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-            Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
-            if (graphEdgeSchema.isPresent()) {
-                return Collections.singletonList(graphEdgeSchema.get());
+            List<GraphEdgeSchema> edgeSchemas = this.edgeSchemas.get(label);
+            if (edgeSchemas == null) {
+                return Collections.emptyList();
             }
 
-            return Collections.emptyList();
+            return edgeSchemas;
         }
 
         @Override
@@ -78,7 +86,7 @@ public interface GraphElementSchemaProvider {
 
         //region Fields
         private Map<String, GraphVertexSchema> vertexSchemas;
-        private Map<String, GraphEdgeSchema> edgeSchemas;
+        private Map<String, List<GraphEdgeSchema>> edgeSchemas;
         private Map<String, GraphElementPropertySchema> propertySchemas;
         //endregion
     }

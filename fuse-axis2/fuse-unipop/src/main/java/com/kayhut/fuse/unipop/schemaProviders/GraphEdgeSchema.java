@@ -8,18 +8,29 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by r on 1/16/2015.
  */
 public interface GraphEdgeSchema extends GraphElementSchema {
+    enum Application {
+        start,
+        source,
+        destination
+    };
+
     default Class getSchemaElementType() {
         return Edge.class;
     }
+
+    default Iterable<Application> getApplications() {
+        return Arrays.asList(Application.start, Application.source, Application.destination);
+    }
+
+    Optional<End> getSource();
+    Optional<End> getDestination();
+    Optional<Direction> getDirection();
 
     interface Direction {
         String getField();
@@ -59,10 +70,6 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             //endregion
         }
     }
-
-    Optional<End> getSource();
-    Optional<End> getDestination();
-    Optional<Direction> getDirection();
 
 
     interface End {
@@ -230,10 +237,31 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions,
                     Iterable<GraphElementPropertySchema> properties) {
+            this(label,
+                    constraint,
+                    source,
+                    destination,
+                    direction,
+                    routing,
+                    indexPartitions,
+                    properties,
+                    Collections.emptyList());
+        }
+
+        public Impl(String label,
+                    GraphElementConstraint constraint,
+                    Optional<End> source,
+                    Optional<End> destination,
+                    Optional<Direction> direction,
+                    Optional<GraphElementRouting> routing,
+                    Optional<IndexPartitions> indexPartitions,
+                    Iterable<GraphElementPropertySchema> properties,
+                    Iterable<Application> applications) {
             super(label, constraint, routing, indexPartitions, properties);
             this.source = source;
             this.destination = destination;
             this.direction = direction;
+            this.applications = applications;
         }
         //endregion
 
@@ -252,12 +280,18 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         public Optional<Direction> getDirection() {
             return this.direction;
         }
+
+        @Override
+        public Iterable<Application> getApplications() {
+            return this.applications;
+        }
         //endregion
 
         //region Fields
         private Optional<End> source;
         private Optional<End> destination;
         private Optional<Direction> direction;
+        private Iterable<Application> applications;
         //endregion
     }
 }

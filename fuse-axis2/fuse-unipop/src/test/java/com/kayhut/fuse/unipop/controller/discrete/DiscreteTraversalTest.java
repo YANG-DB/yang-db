@@ -27,6 +27,8 @@ import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -95,22 +97,24 @@ public class DiscreteTraversalTest {
         new ElasticDataPopulator(client, "coins1", "Coin", "id", true, "faction", true, () -> createCoins(0, 5, 3)).populate();
         new ElasticDataPopulator(client, "coins2", "Coin", "id", true, "faction", true, () -> createCoins(5, 10, 3)).populate();
 
-        Iterable<Map<String, Object>> fireEvents1 = createFireEvents(0, 5, 10, 3);
-        Iterable<Map<String, Object>> fireEvents2 = createFireEvents(5, 10, 10, 3);
-
-        new ElasticDataPopulator(client, "dragons1", "Fire", "id", true, "entityAId", false,
-                () -> Stream.ofAll(fireEvents1)
-                        .appendAll(fireEvents2)
-                        .filter(fireEvent -> Integer.parseInt(((String)fireEvent.get("entityAId")).substring(1)) < 5))
+        Iterable<Map<String, Object>> fireEventsDual1 = createFireEventsDual(0, 5, 10, 3);
+        Iterable<Map<String, Object>> fireEventsDual2 = createFireEventsDual(5, 10, 10, 3);
+        new ElasticDataPopulator(client, "dragons1", "FireDual", "id", true, "entityAId", false,
+                () -> Stream.ofAll(fireEventsDual1)
+                        .appendAll(fireEventsDual2)
+                        .filter(fireEvent -> Integer.parseInt(((String) fireEvent.get("entityAId")).substring(1)) < 5))
+                .populate();
+        new ElasticDataPopulator(client, "dragons2", "FireDual", "id", true, "entityAId", false,
+                () -> Stream.ofAll(fireEventsDual1)
+                        .appendAll(fireEventsDual2)
+                        .filter(fireEvent -> Integer.parseInt(((String) fireEvent.get("entityAId")).substring(1)) >= 5))
                 .populate();
 
-        new ElasticDataPopulator(client, "dragons2", "Fire", "id", true, "entityAId", false,
-                () -> Stream.ofAll(fireEvents1)
-                        .appendAll(fireEvents2)
-                        .filter(fireEvent -> Integer.parseInt(((String)fireEvent.get("entityAId")).substring(1)) >= 5))
-                .populate();
+        new ElasticDataPopulator(client, "fire1", "FireSingular", "id", true, null, false, () -> createFireEventsSingular(0, 5, 10, 3)).populate();
+        new ElasticDataPopulator(client, "fire2", "FireSingular", "id", true, null, false, () -> createFireEventsSingular(5, 10, 10, 3)).populate();
 
-        elasticEmbeddedNode.getClient().admin().indices().refresh(new RefreshRequest("dragons1", "dragons2", "coins1", "coins2")).actionGet();
+        elasticEmbeddedNode.getClient().admin().indices().refresh(
+                new RefreshRequest("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2")).actionGet();
     }
 
     @AfterClass
@@ -374,12 +378,11 @@ public class DiscreteTraversalTest {
                                         new GraphElementPropertySchema.Impl("weight", "int"))),
                         new GraphVertexSchema.Impl(
                                 "Fire",
-                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "Fire"), __.has("direction", "out"))),
-                                Optional.of(new GraphElementRouting.Impl(
-                                        new GraphElementPropertySchema.Impl("entityAId", "string"))),
-                                Optional.of(new IndexPartitions.Impl("entityAId",
-                                        new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
-                                        new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))),
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
+                                Optional.empty(),
+                                Optional.of(new IndexPartitions.Impl("_id",
+                                        new IndexPartitions.Partition.Range.Impl<>("f0000", "f0015", "fire1"),
+                                        new IndexPartitions.Partition.Range.Impl<>("f0015", "f0030", "fire2"))),
                                 Collections.emptyList())),
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(
@@ -411,7 +414,7 @@ public class DiscreteTraversalTest {
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 "hasFire",
-                                new GraphElementConstraint.Impl(__.has(T.label, "Fire")),
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "entityAId",
                                         Optional.of("Dragon"),
@@ -424,16 +427,32 @@ public class DiscreteTraversalTest {
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "fireId",
                                         Optional.of("Fire"),
-                                        Collections.emptyList(),
-                                        Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("entityAId", "string"))),
-                                        Optional.of(new IndexPartitions.Impl("entityAId",
-                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
-                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))))),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("duration", "duration", "int")
+                                        ))),
                                 Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.empty(),
-                                Collections.emptyList())));
+                                Collections.emptyList(),
+                                Arrays.asList(GraphEdgeSchema.Application.source)),
+                        new GraphEdgeSchema.Impl(
+                                "hasFire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Fire")),
+                                Optional.of(new GraphEdgeSchema.End.Impl("entityAId", Optional.of("Dragon"))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Fire"),
+                                        Collections.emptyList(),
+                                        Optional.empty(),
+                                        Optional.of(new IndexPartitions.Impl("_id",
+                                                        new IndexPartitions.Partition.Range.Impl<>("f0000", "f0015", "fire1"),
+                                                        new IndexPartitions.Partition.Range.Impl<>("f0015", "f0030", "fire2"))))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Arrays.asList(GraphEdgeSchema.Application.destination))
+                        ));
     }
     //endregion
 
@@ -478,7 +497,7 @@ public class DiscreteTraversalTest {
         return coins;
     }
 
-    private static Iterable<Map<String, Object>> createFireEvents(int dragonStartId, int dragonEndId, int totalNumDragons, int numFireEventsPerDragon) {
+    private static Iterable<Map<String, Object>> createFireEventsDual(int dragonStartId, int dragonEndId, int totalNumDragons, int numFireEventsPerDragon) {
         int fireEventId = dragonStartId * numFireEventsPerDragon * 2;
         int fireDocEventId = fireEventId;
 
@@ -510,6 +529,32 @@ public class DiscreteTraversalTest {
                 fireEvent2.put("id", "f" + fireDocEventId++);
 
                 fireEvents.addAll(Arrays.asList(fireEvent1, fireEvent2));
+            }
+        }
+
+        return fireEvents;
+    }
+
+    private static Iterable<Map<String, Object>> createFireEventsSingular(int dragonStartId, int dragonEndId, int totalNumDragons, int numFireEventsPerDragon) {
+        int fireEventId = dragonStartId * numFireEventsPerDragon;
+
+        List<Map<String, Object>> fireEvents = new ArrayList<>();
+        for(int i = dragonStartId ; i < dragonEndId ; i++) {
+            for(int j = 0 ; j < numFireEventsPerDragon ; j++) {
+                Map<String, Object> fireEvent = new HashMap<>();
+
+                String sourceDragonId = "d" + String.format("%03d", i);
+                String destDragonId = "d" + String.format("%03d", (i + j) % totalNumDragons);
+
+                fireEvent.put("entityAId", sourceDragonId);
+                fireEvent.put("entityBId", destDragonId);
+
+                int duration = dragonStartId * 100 + 1;
+                fireEvent.put("duration", duration);
+
+                fireEvent.put("id", "f" + String.format("%04d", fireEventId++));
+
+                fireEvents.add(fireEvent);
             }
         }
 
