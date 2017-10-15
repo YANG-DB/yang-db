@@ -24,8 +24,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         return Edge.class;
     }
 
-    default Iterable<Application> getApplications() {
-        return Arrays.asList(Application.start, Application.source, Application.destination);
+    default Set<Application> getApplications() {
+        return new HashSet<>(Arrays.asList(Application.start, Application.source, Application.destination));
     }
 
     Optional<End> getSource();
@@ -245,7 +245,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     routing,
                     indexPartitions,
                     properties,
-                    Collections.emptyList());
+                    Stream.of(Application.source, Application.destination, Application.start).toJavaSet());
         }
 
         public Impl(String label,
@@ -256,7 +256,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions,
                     Iterable<GraphElementPropertySchema> properties,
-                    Iterable<Application> applications) {
+                    Set<Application> applications) {
             super(label, constraint, routing, indexPartitions, properties);
             this.source = source;
             this.destination = destination;
@@ -282,7 +282,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         }
 
         @Override
-        public Iterable<Application> getApplications() {
+        public Set<Application> getApplications() {
             return this.applications;
         }
         //endregion
@@ -291,7 +291,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         private Optional<End> source;
         private Optional<End> destination;
         private Optional<Direction> direction;
-        private Iterable<Application> applications;
+        private Set<Application> applications;
         //endregion
     }
 }

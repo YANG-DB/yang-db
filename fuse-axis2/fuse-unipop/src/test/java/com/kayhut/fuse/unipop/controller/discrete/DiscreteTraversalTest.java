@@ -350,6 +350,20 @@ public class DiscreteTraversalTest {
         Assert.assertEquals(6, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
+
+    @Test
+    public void g_V_hasXlabel_FireX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Fire").toList();
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Fire")));
+    }
+
+    @Test
+    @Ignore
+    public void g_V_hasXlabel_FireX_inE_hasFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Fire").inE("hasFire").outV().toList();
+        int x = 5;
+    }
     //endregion
 
     //region SchemaProvider
@@ -434,7 +448,7 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Arrays.asList(GraphEdgeSchema.Application.source)),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasFire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "Fire")),
@@ -451,7 +465,7 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Arrays.asList(GraphEdgeSchema.Application.destination))
+                                Stream.of(GraphEdgeSchema.Application.destination).toJavaSet())
                         ));
     }
     //endregion

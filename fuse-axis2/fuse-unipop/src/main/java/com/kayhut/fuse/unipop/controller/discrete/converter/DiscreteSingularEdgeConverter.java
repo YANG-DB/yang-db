@@ -2,7 +2,7 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
-import com.kayhut.fuse.unipop.controller.discrete.util.SchemaUtil;
+import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
@@ -31,7 +31,7 @@ public class DiscreteSingularEdgeConverter<E extends Element> implements Element
     //region ElementConverter Implementation
     @Override
     public E convert(SearchHit searchHit) {
-        Iterable<GraphEdgeSchema> edgeSchemas = SchemaUtil.getRelevantSingularEdgeSchemas(context);
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().singular().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return null;
         }

@@ -1,16 +1,10 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
-import com.kayhut.fuse.unipop.controller.common.context.SchemaProviderContext;
-import com.kayhut.fuse.unipop.controller.common.context.SelectContext;
-import com.kayhut.fuse.unipop.controller.discrete.util.SchemaUtil;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
-import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.*;
