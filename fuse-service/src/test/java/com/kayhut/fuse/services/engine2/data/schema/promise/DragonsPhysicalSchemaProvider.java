@@ -47,14 +47,14 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                 label,
                 Optional.of(new GraphEdgeSchema.End.Impl(
                         "entityA.id",
-                        Optional.empty(),
+                        Optional.of("Dragon"),
                         Arrays.asList(
                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
                         ))),
                 Optional.of(new GraphEdgeSchema.End.Impl(
                         "entityB.id",
-                        Optional.empty(),
+                        Optional.of("Dragon"),
                         Arrays.asList(
                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")

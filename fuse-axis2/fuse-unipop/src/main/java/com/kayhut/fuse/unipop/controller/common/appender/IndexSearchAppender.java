@@ -20,6 +20,8 @@ import java.util.*;
 /**
  * Created by User on 27/03/2017.
  */
+
+// This appender will add indices to the search builder based on the elements IndexPartitions only.
 public class IndexSearchAppender implements SearchAppender<ElementControllerContext> {
 
     //region SearchAppender Implementation

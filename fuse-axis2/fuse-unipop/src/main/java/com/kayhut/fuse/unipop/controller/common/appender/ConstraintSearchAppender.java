@@ -2,14 +2,17 @@ package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
+import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
+import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementConstraint;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -51,11 +54,12 @@ public class ConstraintSearchAppender implements SearchAppender<ElementControlle
 
         List<GraphElementConstraint> elementConstraints =
                 Stream.ofAll(labels)
-                .map(label -> context.getElementType().equals(ElementType.vertex) ?
-                              context.getSchemaProvider().getVertexSchema(label) :
-                              context.getSchemaProvider().getEdgeSchema(label))
-                .filter(Optional::isPresent)
-                .map(elementSchema -> elementSchema.get().getConstraint())
+                        .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
+                                context.getSchemaProvider().getVertexSchema(label).isPresent() ?
+                                        Collections.singletonList(context.getSchemaProvider().getVertexSchema(label).get()) :
+                                        Collections.emptyList() :
+                                new EdgeSchemaSupplier((VertexControllerContext)context).labels().applicable().get())
+                .map(GraphElementSchema::getConstraint)
                 .toJavaList();
 
         if (!elementConstraints.isEmpty()) {

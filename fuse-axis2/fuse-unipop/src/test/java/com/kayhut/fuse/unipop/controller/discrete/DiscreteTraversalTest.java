@@ -15,6 +15,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -359,10 +360,26 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    @Ignore
     public void g_V_hasXlabel_FireX_inE_hasFire_outV() throws InterruptedException {
         List<Vertex> vertices = g.V().has(T.label, "Fire").inE("hasFire").outV().toList();
-        int x = 5;
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(10, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertTrue(Stream.ofAll(vertices).groupBy(Element::id).map(grouping -> grouping._2().size()).filter(size -> size != 3).isEmpty());
+    }
+
+    @Test
+    public void g_V_hasXlabel_FireX_outE_hasFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Fire").outE("hasFire").outV().toList();
+        Assert.assertEquals(0, vertices.size());
+    }
+
+    @Test
+    public void g_V_hasXlabel_FireX_hasXduration_lt_100X_inE_hasFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Fire").has("duration", P.lt(100)).inE("hasFire").outV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
     }
     //endregion
 
@@ -451,7 +468,7 @@ public class DiscreteTraversalTest {
                                 Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasFire",
-                                new GraphElementConstraint.Impl(__.has(T.label, "Fire")),
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
                                 Optional.of(new GraphEdgeSchema.End.Impl("entityAId", Optional.of("Dragon"))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "_id",
@@ -563,7 +580,7 @@ public class DiscreteTraversalTest {
                 fireEvent.put("entityAId", sourceDragonId);
                 fireEvent.put("entityBId", destDragonId);
 
-                int duration = dragonStartId * 100 + 1;
+                int duration = i * 100 + j;
                 fireEvent.put("duration", duration);
 
                 fireEvent.put("id", "f" + String.format("%04d", fireEventId++));
