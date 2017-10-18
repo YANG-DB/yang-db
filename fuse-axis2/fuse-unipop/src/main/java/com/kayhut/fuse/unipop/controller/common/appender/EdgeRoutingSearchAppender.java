@@ -1,6 +1,5 @@
-package com.kayhut.fuse.unipop.controller.discrete.appender;
+package com.kayhut.fuse.unipop.controller.common.appender;
 
-import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
@@ -12,17 +11,14 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Set;
 
-import static com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier.*;
-
 /**
- * Created by roman.margolis on 18/09/2017.
+ * Created by roman.margolis on 18/10/2017.
  */
-@Deprecated
-public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexControllerContext> {
+public class EdgeRoutingSearchAppender implements SearchAppender<VertexControllerContext> {
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().singular().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return false;
         }
@@ -30,9 +26,11 @@ public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexC
         //currently assuming only one schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
-        GraphEdgeSchema.End endSchema = context.getDirection().equals(Direction.OUT) ?
+        GraphEdgeSchema.End endSchema = edgeSchema.getDirection().isPresent() ?
                 edgeSchema.getSource().get() :
-                edgeSchema.getDestination().get();
+                context.getDirection().equals(Direction.OUT) ?
+                    edgeSchema.getSource().get() :
+                    edgeSchema.getDestination().get();
 
         if (endSchema.getRouting().isPresent()) {
             Set<String> routingValues =

@@ -5,12 +5,8 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
-import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeIndexSearchAppender;
-import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeRoutingSearchAppender;
-import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSearchAppender;
-import com.kayhut.fuse.unipop.controller.discrete.appender.SingularEdgeSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
-import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteSingularEdgeConverter;
+import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverter;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
@@ -86,10 +82,10 @@ public class DiscreteVertexController extends VertexControllerBase {
                         wrap(new FilterSourceSearchAppender()),
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new ElementRoutingSearchAppender()),
-                        wrap(new SingularEdgeSearchAppender()),
-                        wrap(new SingularEdgeSourceSearchAppender()),
-                        wrap(new SingularEdgeRoutingSearchAppender()),
-                        wrap(new SingularEdgeIndexSearchAppender()),
+                        wrap(new EdgeBulkSearchAppender()),
+                        wrap(new EdgeSourceSearchAppender()),
+                        wrap(new EdgeRoutingSearchAppender()),
+                        wrap(new EdgeIndexSearchAppender()),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
 
@@ -105,7 +101,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                 searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, Edge> elementConverter = new CompositeElementConverter<>(
-                new DiscreteSingularEdgeConverter<>(context));
+                new DiscreteEdgeConverter<>(context));
 
         return Stream.ofAll(searchHits)
                 .map(elementConverter::convert)

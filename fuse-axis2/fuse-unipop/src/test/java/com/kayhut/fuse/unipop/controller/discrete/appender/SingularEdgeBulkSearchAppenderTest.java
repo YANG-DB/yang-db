@@ -5,7 +5,6 @@ import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -22,11 +21,11 @@ import java.util.Optional;
 /**
  * Created by roman.margolis on 14/09/2017.
  */
-public class SingularEdgeSearchAppenderTest {
+public class SingularEdgeBulkSearchAppenderTest {
     //region Tests
     @Test
     public void testOut() {
-        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
+        SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
@@ -48,7 +47,7 @@ public class SingularEdgeSearchAppenderTest {
 
     @Test
     public void testOutEdgeType1() {
-        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
+        SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
@@ -70,7 +69,7 @@ public class SingularEdgeSearchAppenderTest {
 
     @Test
     public void testIn() {
-        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
+        SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
@@ -92,7 +91,7 @@ public class SingularEdgeSearchAppenderTest {
 
     @Test
     public void testInEdgeType1() {
-        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
+        SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
@@ -114,7 +113,7 @@ public class SingularEdgeSearchAppenderTest {
 
     @Test
     public void testOutEdgeTypeNonExistent() {
-        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
+        SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
@@ -134,7 +133,7 @@ public class SingularEdgeSearchAppenderTest {
 
     @Test
     public void testOutVertexType2() {
-        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
+        SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,
@@ -154,7 +153,7 @@ public class SingularEdgeSearchAppenderTest {
 
     @Test
     public void testInVertexType1() {
-        SingularEdgeSearchAppender appender = new SingularEdgeSearchAppender();
+        SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Default(
                 null,

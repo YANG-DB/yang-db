@@ -61,6 +61,17 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
         return this;
     }
 
+    public EdgeSchemaSupplier dual() {
+        //currently assuming all bulk vertices of same type
+        String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+
+        this.stream = this.stream
+                .filter(edgeSchema -> edgeSchema.getDirection().isPresent())
+                .filter(edgeSchema -> edgeSchema.getSource().get().getLabel().get().equals(vertexLabel));
+
+        return this;
+    }
+
     public EdgeSchemaSupplier applicable() {
         //currently assuming all bulk vertices of same type
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();

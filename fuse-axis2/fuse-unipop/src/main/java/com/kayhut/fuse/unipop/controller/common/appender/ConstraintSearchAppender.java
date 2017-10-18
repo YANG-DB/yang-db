@@ -19,6 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.process.traversal.step.filter.AndStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
@@ -70,9 +71,18 @@ public class ConstraintSearchAppender implements SearchAppender<ElementControlle
                 labelHasSteps.get(0).getTraversal().removeStep(labelHasSteps.get(0));
             }
 
-            newConstraint = __.and(
-                    __.or(Stream.ofAll(elementConstraints).map(GraphElementConstraint::getTraversalConstraint).toJavaArray(Traversal.class)),
-                    newConstraint);
+            Traversal elementConstraintsTraversal = elementConstraints.size() > 1 ?
+                    __.or(Stream.ofAll(elementConstraints).map(GraphElementConstraint::getTraversalConstraint).toJavaArray(Traversal.class)) :
+                    elementConstraints.get(0).getTraversalConstraint();
+
+            newConstraint = Stream.ofAll(new TraversalHasStepFinder(step -> true).getValue(newConstraint)).isEmpty() ?
+                    elementConstraintsTraversal :
+                    __.and(elementConstraintsTraversal, newConstraint);
+
+        }
+
+        if (!(newConstraint.asAdmin().getSteps().get(0) instanceof AndStep)) {
+            newConstraint = __.and(newConstraint);
         }
 
         QueryBuilder queryBuilder = searchBuilder.getQueryBuilder().seekRoot().query().filtered().filter();

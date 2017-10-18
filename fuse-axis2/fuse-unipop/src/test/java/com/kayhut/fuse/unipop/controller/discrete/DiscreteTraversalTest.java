@@ -14,10 +14,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
-import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.*;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.*;
@@ -360,8 +357,8 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_FireX_inE_hasFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Fire").inE("hasFire").outV().toList();
+    public void g_V_hasXlabel_FireX_inE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Fire").inE("hasOutFire").outV().toList();
         Assert.assertEquals(30, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(10, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -369,22 +366,43 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_FireX_outE_hasFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Fire").outE("hasFire").outV().toList();
+    public void g_V_hasXlabel_FireX_outE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Fire").outE("hasOutFire").outV().toList();
         Assert.assertEquals(0, vertices.size());
     }
 
     @Test
-    public void g_V_hasXlabel_FireX_hasXduration_lt_100X_inE_hasFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Fire").has("duration", P.lt(100)).inE("hasFire").outV().toList();
+    public void g_V_hasXlabel_FireX_hasXduration_lt_100X_inE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Fire").has("duration", P.lt(100)).inE("hasOutFire").outV().toList();
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasOutFire_inV_inE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasOutFire").inV().inE("hasOutFire").outV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertEquals("d000", Stream.ofAll(vertices).distinctBy(Element::id).get(0).id().toString());
     }
     //endregion
 
     //region SchemaProvider
     private static GraphElementSchemaProvider getSchemaProvider() {
+        List<IndexPartitions.Partition> dragonPartitions = Arrays.asList(
+                new IndexPartitions.Partition.Range.Impl<>("d000", "d005", "dragons1"),
+                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"));
+
+        List<IndexPartitions.Partition> coinPartitions = Arrays.asList(
+                new IndexPartitions.Partition.Range.Impl<>("d000", "d005", "coins1"),
+                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2"));
+
+        List<IndexPartitions.Partition> firePartitions = Arrays.asList(
+                new IndexPartitions.Partition.Range.Impl<>("f0000", "f0015", "fire1"),
+                new IndexPartitions.Partition.Range.Impl<>("f0015", "f0030", "fire2"));
+
         return new GraphElementSchemaProvider.Impl(
                 Arrays.asList(
                         new GraphVertexSchema.Impl(
@@ -393,17 +411,13 @@ public class DiscreteTraversalTest {
                                 Optional.of(new GraphElementRouting.Impl(
                                         new GraphElementPropertySchema.Impl("faction")
                                 )),
-                                Optional.of(new IndexPartitions.Impl("_id",
-                                        new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
-                                        new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))),
+                                Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)),
                                 Collections.emptyList()),
                         new GraphVertexSchema.Impl(
                                 "Coin",
                                 new GraphElementConstraint.Impl(__.has(T.label, "Coin")),
                                 Optional.empty(),
-                                Optional.of(new IndexPartitions.Impl("dragonId",
-                                        new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
-                                        new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2"))),
+                                Optional.of(new IndexPartitions.Impl("dragonId", coinPartitions)),
                                 Arrays.asList(
                                         new GraphElementPropertySchema.Impl("material", "string"),
                                         new GraphElementPropertySchema.Impl("weight", "int"))),
@@ -411,9 +425,7 @@ public class DiscreteTraversalTest {
                                 "Fire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
                                 Optional.empty(),
-                                Optional.of(new IndexPartitions.Impl("_id",
-                                        new IndexPartitions.Partition.Range.Impl<>("f0000", "f0015", "fire1"),
-                                        new IndexPartitions.Partition.Range.Impl<>("f0015", "f0030", "fire2"))),
+                                Optional.of(new IndexPartitions.Impl("_id", firePartitions)),
                                 Collections.emptyList())),
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(
@@ -426,9 +438,7 @@ public class DiscreteTraversalTest {
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl("faction")
                                         )),
-                                        Optional.of(new IndexPartitions.Impl("_id",
-                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
-                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2"))))),
+                                        Optional.of(new IndexPartitions.Impl("_id", coinPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "_id",
                                         Optional.of("Coin"),
@@ -436,25 +446,21 @@ public class DiscreteTraversalTest {
                                                 new GraphRedundantPropertySchema.Impl("material", "material", "string"),
                                                 new GraphRedundantPropertySchema.Impl("weight", "weight", "int")),
                                         Optional.empty(),
-                                        Optional.of(new IndexPartitions.Impl("dragonId",
-                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "coins1"),
-                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "coins2"))))),
+                                        Optional.of(new IndexPartitions.Impl("dragonId", coinPartitions)))),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
-                                "hasFire",
-                                new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
+                                "hasOutFire",
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has("direction", Direction.OUT.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "entityAId",
                                         Optional.of("Dragon"),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl("_id", "string"))),
-                                        Optional.of(new IndexPartitions.Impl("_id",
-                                                new IndexPartitions.Partition.Range.Impl<>("d001", "d005", "dragons1"),
-                                                new IndexPartitions.Partition.Range.Impl<>("d005", "d010", "dragons2"))))),
+                                        Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "fireId",
                                         Optional.of("Fire"),
@@ -467,7 +473,7 @@ public class DiscreteTraversalTest {
                                 Collections.emptyList(),
                                 Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
                         new GraphEdgeSchema.Impl(
-                                "hasFire",
+                                "hasOutFire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
                                 Optional.of(new GraphEdgeSchema.End.Impl("entityAId", Optional.of("Dragon"))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
@@ -475,9 +481,43 @@ public class DiscreteTraversalTest {
                                         Optional.of("Fire"),
                                         Collections.emptyList(),
                                         Optional.empty(),
-                                        Optional.of(new IndexPartitions.Impl("_id",
-                                                        new IndexPartitions.Partition.Range.Impl<>("f0000", "f0015", "fire1"),
-                                                        new IndexPartitions.Partition.Range.Impl<>("f0015", "f0030", "fire2"))))),
+                                        Optional.of(new IndexPartitions.Impl("_id", firePartitions)))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.destination).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "hasInFire",
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has("direction", Direction.IN.toString().toLowerCase()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityAId",
+                                        Optional.of("Dragon"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "fireId",
+                                        Optional.of("Fire"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("duration", "duration", "int")
+                                        ))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "hasInFire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
+                                Optional.of(new GraphEdgeSchema.End.Impl("entityBId", Optional.of("Dragon"))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Fire"),
+                                        Collections.emptyList(),
+                                        Optional.empty(),
+                                        Optional.of(new IndexPartitions.Impl("_id", firePartitions)))),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
@@ -543,10 +583,10 @@ public class DiscreteTraversalTest {
 
                 fireEvent1.put("entityAId", sourceDragonId);
                 fireEvent1.put("entityBId", destDragonId);
-                fireEvent1.put("direction", "out");
+                fireEvent1.put("direction", Direction.OUT.toString().toLowerCase());
                 fireEvent2.put("entityBId", sourceDragonId);
                 fireEvent2.put("entityAId", destDragonId);
-                fireEvent2.put("direction", "in");
+                fireEvent2.put("direction", Direction.IN.toString().toLowerCase());
 
                 int duration = dragonStartId * 100 + 1;
                 fireEvent1.put("duration", duration);

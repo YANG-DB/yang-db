@@ -1,9 +1,8 @@
-package com.kayhut.fuse.unipop.controller.discrete.appender;
+package com.kayhut.fuse.unipop.controller.common.appender;
 
-import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.ElementUtil;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -16,14 +15,13 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by roman.margolis on 24/09/2017.
+ * Created by roman.margolis on 18/10/2017.
  */
-@Deprecated
-public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexControllerContext> {
+public class EdgeIndexSearchAppender implements SearchAppender<VertexControllerContext> {
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().singular().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return false;
         }
@@ -35,9 +33,11 @@ public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexCon
             return false;
         }
 
-        GraphEdgeSchema.End endSchema = context.getDirection().equals(Direction.OUT) ?
+        GraphEdgeSchema.End endSchema = edgeSchema.getDirection().isPresent() ?
                 edgeSchema.getSource().get() :
-                edgeSchema.getDestination().get();
+                context.getDirection().equals(Direction.OUT) ?
+                    edgeSchema.getSource().get() :
+                    edgeSchema.getDestination().get();
 
         if (!endSchema.getIndexPartitions().isPresent()) {
             return false;
@@ -48,23 +48,23 @@ public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexCon
                 endSchema.getIndexPartitions().get().partitionField().get();
 
         List<Comparable> partitionValues = Stream.ofAll(context.getBulkVertices())
-                .map(vertex -> (Comparable)ElementUtil.value(vertex, partitionField))
+                .map(vertex -> (Comparable) ElementUtil.value(vertex, partitionField))
                 .distinct().sorted().toJavaList();
 
         List<IndexPartitions.Partition.Range> rangePartitions =
                 Stream.ofAll(endSchema.getIndexPartitions().get().partitions())
-                    .filter(partition -> partition instanceof IndexPartitions.Partition.Range)
-                    .map(partition -> (IndexPartitions.Partition.Range)partition)
-                    .<Comparable>sortBy(partition -> (Comparable)partition.to())
-                    .toJavaList();
+                        .filter(partition -> partition instanceof IndexPartitions.Partition.Range)
+                        .map(partition -> (IndexPartitions.Partition.Range)partition)
+                        .<Comparable>sortBy(partition -> (Comparable)partition.to())
+                        .toJavaList();
 
         Iterable<IndexPartitions.Partition.Range> relevantRangePartitions = findRelevantRangePartitions(rangePartitions, partitionValues);
         Set<String> indices =
                 Stream.ofAll(endSchema.getIndexPartitions().get().partitions())
-                .filter(partition -> !(partition instanceof IndexPartitions.Partition.Range))
-                .appendAll(relevantRangePartitions)
-                .flatMap(IndexPartitions.Partition::indices)
-                .toJavaSet();
+                        .filter(partition -> !(partition instanceof IndexPartitions.Partition.Range))
+                        .appendAll(relevantRangePartitions)
+                        .flatMap(IndexPartitions.Partition::indices)
+                        .toJavaSet();
 
         searchBuilder.getIndices().addAll(indices);
         return indices.size() > 0;
