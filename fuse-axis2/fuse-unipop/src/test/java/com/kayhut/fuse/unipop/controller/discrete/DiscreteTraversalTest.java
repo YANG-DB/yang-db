@@ -387,6 +387,63 @@ public class DiscreteTraversalTest {
         Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
         Assert.assertEquals("d000", Stream.ofAll(vertices).distinctBy(Element::id).get(0).id().toString());
     }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasOutFire_inV_inE_hasInFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasOutFire").inV().inE("hasInFire").outV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000", "d001", "d002").contains(vertex.id().toString())));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_inV_inE_hasInFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasInFire").inV().inE("hasInFire").outV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertEquals("d000", Stream.ofAll(vertices).distinctBy(Element::id).get(0).id().toString());
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_inV_inE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasInFire").inV().inE("hasOutFire").outV().toList();
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000", "d008", "d009").contains(vertex.id().toString())));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasOutFire_hasXduration_0X_inV_inE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000")
+                .outE("hasOutFire").has("duration", 0).inV().inE("hasOutFire").outV().toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertEquals("d000", Stream.ofAll(vertices).distinctBy(Element::id).get(0).id().toString());
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_hasXduration_0X_inV_inE_hasInFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000")
+                .outE("hasInFire").has("duration", 0).inV().inE("hasInFire").outV().toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertEquals("d000", Stream.ofAll(vertices).distinctBy(Element::id).get(0).id().toString());
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_hasXduration_gt_0X_inV_inE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000")
+                .outE("hasInFire").has("duration", P.gt(0)).inV().inE("hasOutFire").outV().toList();
+        Assert.assertEquals(2, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(2, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d008", "d009").contains(vertex.id().toString())));
+    }
     //endregion
 
     //region SchemaProvider
@@ -464,9 +521,7 @@ public class DiscreteTraversalTest {
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "fireId",
                                         Optional.of("Fire"),
-                                        Arrays.asList(
-                                                new GraphRedundantPropertySchema.Impl("duration", "duration", "int")
-                                        ))),
+                                        Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
                                 Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.empty(),
@@ -500,9 +555,7 @@ public class DiscreteTraversalTest {
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "fireId",
                                         Optional.of("Fire"),
-                                        Arrays.asList(
-                                                new GraphRedundantPropertySchema.Impl("duration", "duration", "int")
-                                        ))),
+                                        Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
                                 Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.empty(),
@@ -569,8 +622,8 @@ public class DiscreteTraversalTest {
     }
 
     private static Iterable<Map<String, Object>> createFireEventsDual(int dragonStartId, int dragonEndId, int totalNumDragons, int numFireEventsPerDragon) {
-        int fireEventId = dragonStartId * numFireEventsPerDragon * 2;
-        int fireDocEventId = fireEventId;
+        int fireEventId = dragonStartId * numFireEventsPerDragon;
+        int fireDocEventId = fireEventId * 2;
 
         List<Map<String, Object>> fireEvents = new ArrayList<>();
         for(int i = dragonStartId ; i < dragonEndId ; i++) {
@@ -588,7 +641,7 @@ public class DiscreteTraversalTest {
                 fireEvent2.put("entityAId", destDragonId);
                 fireEvent2.put("direction", Direction.IN.toString().toLowerCase());
 
-                int duration = dragonStartId * 100 + 1;
+                int duration = dragonStartId * 100 + j;
                 fireEvent1.put("duration", duration);
                 fireEvent2.put("duration", duration);
 
