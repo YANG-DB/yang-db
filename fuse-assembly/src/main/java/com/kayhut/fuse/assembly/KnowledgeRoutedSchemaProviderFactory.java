@@ -146,14 +146,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                                 new GraphElementPropertySchema.Impl("logicalId", "string")
                                         )),
                                         Optional.of(entityPartitions))),
-                                Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "logicalId",
-                                        Optional.of("Relation"),
-                                        relationDualRedundantProperties,
-                                        Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
-                                        )),
-                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl("relationId", Optional.of("Relation"), relationDualRedundantProperties)),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
@@ -170,14 +163,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                                 new GraphElementPropertySchema.Impl("logicalId", "string")
                                         )),
                                         Optional.of(entityPartitions))),
-                                Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "logicalId",
-                                        Optional.of("Relation"),
-                                        relationDualRedundantProperties,
-                                        Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
-                                        )),
-                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl("relationId", Optional.of("Relation"), relationDualRedundantProperties)),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
@@ -194,14 +180,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                                 new GraphElementPropertySchema.Impl("logicalId", "string")
                                         )),
                                         Optional.of(entityPartitions))),
-                                Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "logicalId",
-                                        Optional.of("Relation"),
-                                        relationDualRedundantProperties,
-                                        Optional.of(new GraphElementRouting.Impl(
-                                                new GraphElementPropertySchema.Impl("logicalId", "string")
-                                        )),
-                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl("relationId", Optional.of("Relation"), relationDualRedundantProperties)),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),

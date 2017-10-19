@@ -179,7 +179,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                                 new GraphElementPropertySchema.Impl(
                                         property.get().getName(),
                                         property.get().getType()))
-                        .toJavaList()
+                        .toJavaList(),
+                edgeSchema.getApplications()
         ));
     }
     //endregion

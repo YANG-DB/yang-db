@@ -3,6 +3,7 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
@@ -17,6 +18,7 @@ import org.elasticsearch.search.SearchHit;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -78,7 +80,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         if (idField.equals("_id")) {
             return searchHit.id();
         } else {
-            return properties.get(idField);
+            return MapHelper.value(properties, idField).orElse(null);
         }
     }
 
