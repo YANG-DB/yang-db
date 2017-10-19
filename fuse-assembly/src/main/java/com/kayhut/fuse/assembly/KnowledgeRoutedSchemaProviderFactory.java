@@ -4,7 +4,9 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Arrays;
@@ -22,124 +24,190 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
             return null;
         }
 
-        return new KnowledgeSchemaProvider();
-    }
-    //endregion
+        IndexPartitions entityPartitions = new IndexPartitions.Impl("logicalId",
+                new IndexPartitions.Partition.Range.Impl<>("e000", "e300", "e0"),
+                new IndexPartitions.Partition.Range.Impl<>("e300", "e600", "e1"),
+                new IndexPartitions.Partition.Range.Impl<>("e600", "e999", "e2"));
 
-    //region KnowledgeSchemaProvider
-    public static class KnowledgeSchemaProvider implements GraphElementSchemaProvider {
-        //region Constructors
-        public KnowledgeSchemaProvider() {
-            this.entityPartitions = new IndexPartitions.Impl("logicalId",
-                    new IndexPartitions.Partition.Range.Impl<>("e000", "e010", "entity1"),
-                    new IndexPartitions.Partition.Range.Impl<>("e010", "e020", "entity2"),
-                    new IndexPartitions.Partition.Range.Impl<>("e020", "e999", "entity3"));
-        }
-        //endregion
+        IndexPartitions relationPartitions = new IndexPartitions.Impl("relationId",
+                new IndexPartitions.Partition.Range.Impl<>("r0000", "r1000", "r0"),
+                new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "r1"),
+                new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "r2"));
 
-        //region GraphElementSchemaProvider Implementation
-        @Override
-        public Optional<GraphVertexSchema> getVertexSchema(String label) {
-            switch (label) {
-                case "Entity":
-                    return Optional.of(new GraphVertexSchema.Impl(
-                            "Entity",
-                            new GraphElementConstraint.Impl(__.has(T.label, "Entity")),
-                            Optional.of(new GraphElementRouting.Impl(
-                                    new GraphElementPropertySchema.Impl("logicalId", "string")
-                            )),
-                            Optional.of(this.entityPartitions),
-                            Collections.emptyList()
-                    ));
+        Iterable<GraphRedundantPropertySchema> valueEdgeRedundantProperties = Arrays.asList(
+                new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
+                new GraphRedundantPropertySchema.Impl("context", "context", "string"),
+                new GraphRedundantPropertySchema.Impl("security1", "security1", "string"),
+                new GraphRedundantPropertySchema.Impl("security2", "security2", "string"),
+                new GraphRedundantPropertySchema.Impl("lastUpdateUser", "lastUpdateUser", "string"),
+                new GraphRedundantPropertySchema.Impl("lastUpdateTime", "lastUpdateTime", "date"),
+                new GraphRedundantPropertySchema.Impl("creationTime", "creationTime", "date"),
+                new GraphRedundantPropertySchema.Impl("propertyId", "propertyId", "string"),
+                new GraphRedundantPropertySchema.Impl("bdt", "bdt", "string"),
+                new GraphRedundantPropertySchema.Impl("stringValue", "stringValue", "string"),
+                new GraphRedundantPropertySchema.Impl("textValue", "textValue", "string"),
+                new GraphRedundantPropertySchema.Impl("intValue", "intValue", "int"),
+                new GraphRedundantPropertySchema.Impl("dateValue", "dateValue", "date"));
 
-                case "Value":
-                    return Optional.of(new GraphVertexSchema.Impl(
-                            "Value",
-                            new GraphElementConstraint.Impl(__.has(T.label, "Value")),
-                            Optional.empty(),
-                            Optional.of(this.entityPartitions),
-                            Collections.emptyList()
-                    ));
+        Iterable<GraphRedundantPropertySchema> relationDualRedundantProperties = Arrays.asList(
+                new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
+                new GraphRedundantPropertySchema.Impl("context", "context", "string"),
+                new GraphRedundantPropertySchema.Impl("security1", "security1", "string"),
+                new GraphRedundantPropertySchema.Impl("security2", "security2", "string"),
+                new GraphRedundantPropertySchema.Impl("lastUpdateUser", "lastUpdateUser", "string"),
+                new GraphRedundantPropertySchema.Impl("lastUpdateTime", "lastUpdateTime", "date"),
+                new GraphRedundantPropertySchema.Impl("creationTime", "creationTime", "date"));
 
-                default: return Optional.empty();
-            }
-        }
-
-        @Override
-        public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-            switch (label) {
-                case "hasValue":
-                    return Optional.of(new GraphEdgeSchema.Impl(
-                            "hasValue",
-                            new GraphElementConstraint.Impl(__.has(T.label, "Value")),
-                            Optional.of(new GraphEdgeSchema.End.Impl(
-                                    "entityId",
-                                    Optional.of("Entity"),
-                                    Collections.emptyList(),
-                                    Optional.of(new GraphElementRouting.Impl(
-                                            new GraphElementPropertySchema.Impl("logicalId", "string")
-                                    )),
-                                    Optional.of(this.entityPartitions))),
-                            Optional.of(new GraphEdgeSchema.End.Impl(
-                                    "_id",
-                                    Optional.of("Value"),
-                                    Arrays.asList(
-                                            new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
-                                            new GraphRedundantPropertySchema.Impl("context", "context", "string"),
-                                            new GraphRedundantPropertySchema.Impl("security1", "security1", "string"),
-                                            new GraphRedundantPropertySchema.Impl("security2", "security2", "string"),
-                                            new GraphRedundantPropertySchema.Impl("lastUpdateUser", "lastUpdateUser", "string"),
-                                            new GraphRedundantPropertySchema.Impl("lastUpdateTime", "lastUpdateTime", "date"),
-                                            new GraphRedundantPropertySchema.Impl("creationTime", "creationTime", "date"),
-                                            new GraphRedundantPropertySchema.Impl("propertyId", "propertyId", "string"),
-                                            new GraphRedundantPropertySchema.Impl("bdt", "bdt", "string"),
-                                            new GraphRedundantPropertySchema.Impl("stringValue", "stringValue", "string"),
-                                            new GraphRedundantPropertySchema.Impl("textValue", "textValue", "string"),
-                                            new GraphRedundantPropertySchema.Impl("intValue", "intValue", "int"),
-                                            new GraphRedundantPropertySchema.Impl("dateValue", "dateValue", "date")),
-                                    Optional.of(new GraphElementRouting.Impl(
-                                            new GraphElementPropertySchema.Impl("logicalId", "string")
-                                    )),
-                                    Optional.of(this.entityPartitions))),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Optional.empty(),
-                            Collections.emptyList()
-                    ));
-
-                default: return Optional.empty();
-            }
-        }
-
-        @Override
-        public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-            Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
-            if (graphEdgeSchema.isPresent()) {
-                return Collections.singletonList(graphEdgeSchema.get());
-            }
-
-            return Collections.emptyList();
-        }
-
-        @Override
-        public Optional<GraphElementPropertySchema> getPropertySchema(String name) {
-            return Optional.empty();
-        }
-
-        @Override
-        public Iterable<String> getVertexLabels() {
-            return Arrays.asList("Entity", "Value");
-        }
-
-        @Override
-        public Iterable<String> getEdgeLabels() {
-            return Collections.singletonList("hasValue");
-        }
-        //endregion
-
-        //region Fields
-        private IndexPartitions entityPartitions;
-        //endregion
+        return new GraphElementSchemaProvider.Impl(
+                Arrays.asList(
+                        new GraphVertexSchema.Impl(
+                                "Entity",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Entity")),
+                                Optional.of(new GraphElementRouting.Impl(
+                                        new GraphElementPropertySchema.Impl("logicalId", "string")
+                                )),
+                                Optional.of(entityPartitions),
+                                Collections.emptyList()),
+                        new GraphVertexSchema.Impl(
+                                "Evalue",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Evalue")),
+                                Optional.empty(),
+                                Optional.of(entityPartitions),
+                                Collections.emptyList()),
+                        new GraphVertexSchema.Impl(
+                                "Relation",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Relation.S")),
+                                Optional.of(new GraphElementRouting.Impl(
+                                        new GraphElementPropertySchema.Impl("relationId", "string")
+                                )),
+                                Optional.of(relationPartitions),
+                                Collections.emptyList()),
+                        new GraphVertexSchema.Impl(
+                                "Rvalue",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Rvalue")),
+                                Optional.empty(),
+                                Optional.of(relationPartitions),
+                                Collections.emptyList())),
+                Arrays.asList(
+                        new GraphEdgeSchema.Impl(
+                                "hasEvalue",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Evalue")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityId",
+                                        Optional.of("Entity"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Evalue"),
+                                        valueEdgeRedundantProperties,
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList()),
+                        new GraphEdgeSchema.Impl(
+                                "hasRvalue",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Rvalue")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "relationId",
+                                        Optional.of("Relation"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("relationId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Rvalue"),
+                                        valueEdgeRedundantProperties,
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("relationId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList()),
+                        new GraphEdgeSchema.Impl(
+                                "hasRelation",
+                                new GraphElementConstraint.Impl(__.has(T.label, "Relation.D")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityA.id",
+                                        Optional.of("Entity"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "logicalId",
+                                        Optional.of("Relation"),
+                                        relationDualRedundantProperties,
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "hasOutRelation",
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "Relation.D"), __.has("direction", Direction.OUT.toString().toLowerCase()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityA.id",
+                                        Optional.of("Entity"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "logicalId",
+                                        Optional.of("Relation"),
+                                        relationDualRedundantProperties,
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "hasInRelation",
+                                new GraphElementConstraint.Impl(__.and(__.has(T.label, "Relation.D"), __.has("direction", Direction.IN.toString().toLowerCase()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityA.id",
+                                        Optional.of("Entity"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "logicalId",
+                                        Optional.of("Relation"),
+                                        relationDualRedundantProperties,
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet())
+                        ));
     }
     //endregion
 }

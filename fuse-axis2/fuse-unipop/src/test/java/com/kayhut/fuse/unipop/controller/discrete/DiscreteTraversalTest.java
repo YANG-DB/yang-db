@@ -444,6 +444,30 @@ public class DiscreteTraversalTest {
         Assert.assertEquals(2, Stream.ofAll(vertices).distinctBy(Element::id).size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d008", "d009").contains(vertex.id().toString())));
     }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_outE_hasOutFire_hasXduration_selectP_directionX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").outE("hasOutFire").has("duration", SelectP.raw("duration")).inV().toList();
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Fire")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("duration") != null));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasFire_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasFire").inV().toList();
+        Assert.assertEquals(6, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Fire")));
+    }
+
+    @Test
+    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasFire_inV_inE_hasOutFire_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasFire").inV().inE("hasOutFire").outV().toList();
+        Assert.assertEquals(6, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000", "d008", "d009").contains(vertex.id().toString())));
+    }
     //endregion
 
     //region SchemaProvider
@@ -575,7 +599,26 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.destination).toJavaSet())
+                                Stream.of(GraphEdgeSchema.Application.destination).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "hasFire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityAId",
+                                        Optional.of("Dragon"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "fireId",
+                                        Optional.of("Fire"),
+                                        Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet())
                         ));
     }
     //endregion

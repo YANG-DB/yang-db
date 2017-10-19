@@ -16,10 +16,41 @@
       ]
     },
     {
-      "eType": "Value",
-      "name": "Value",
+      "eType": "Evalue",
+      "name": "Evalue",
       "properties": [
         "logicalId",
+        "context",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "propertyId",
+        "bdt",
+        "stringValue",
+        "textValue",
+        "dateValue",
+        "intValue"
+      ]
+    },
+    {
+      "eType": "Relation",
+      "name": "Relation",
+      "properties": [
+        "context",
+        "category",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime"
+      ]
+    },
+    {
+      "eType": "Rvalue",
+      "name": "Rvalue",
+      "properties": [
         "context",
         "security1",
         "security2",
@@ -37,13 +68,57 @@
   ],
   "relationshipTypes": [
     {
-      "rType": "hasValue",
-      "name": "hasValue",
+      "rType": "hasEvalue",
+      "name": "hasEvalue",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "Entity",
-          "eTypeB": "Value"
+          "eTypeB": "Evalue"
+        }
+      ]
+    },
+    {
+      "rType": "hasRvalue",
+      "name": "hasRvalue",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Relation",
+          "eTypeB": "Rvalue"
+        }
+      ]
+    },
+    {
+      "rType": "hasRelation",
+      "name": "hasRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    },
+    {
+      "rType": "hasOutRelation",
+      "name": "hasOutRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    },
+    {
+      "rType": "hasInRelation",
+      "name": "hasInRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
         }
       ]
     }
