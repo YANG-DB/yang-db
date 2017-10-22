@@ -86,6 +86,47 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test_fetchEntityById2() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 6, 7), 0),
+                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e004")),
+                new EProp(4, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
+                new EProp(5, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
+                new EProp(10, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
+                new EProp(11, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
+                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
+        )).build();
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
     public void test1() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -456,6 +497,45 @@ public class RealClusterTest {
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
                 new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
                 new Rel(5, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
+                new ETyped(6, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
+                new Quant1(7, QuantType.all, Arrays.asList(8, 9, 10), 0),
+                new EProp(8, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "own")),
+                new EProp(9, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(10, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 11, 0),
+                new ETyped(11, "C", $ont.eType$("Rvalue"), $ont.$entity$("Rvalue").getProperties(), 0, 0)
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test13() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 7), 0),
+                new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
+                new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
+                new Rel(5, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
+                new Rel(6, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9, 10), 0),
                 new EProp(8, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "own")),
