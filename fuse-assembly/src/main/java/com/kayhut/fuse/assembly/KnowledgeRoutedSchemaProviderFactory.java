@@ -52,6 +52,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
         Iterable<GraphRedundantPropertySchema> relationDualRedundantProperties = Arrays.asList(
                 new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
                 new GraphRedundantPropertySchema.Impl("context", "context", "string"),
+                new GraphRedundantPropertySchema.Impl("category", "category", "string"),
                 new GraphRedundantPropertySchema.Impl("security1", "security1", "string"),
                 new GraphRedundantPropertySchema.Impl("security2", "security2", "string"),
                 new GraphRedundantPropertySchema.Impl("lastUpdateUser", "lastUpdateUser", "string"),
