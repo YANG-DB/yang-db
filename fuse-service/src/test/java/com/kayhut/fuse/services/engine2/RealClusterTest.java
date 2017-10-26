@@ -36,6 +36,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
@@ -562,6 +563,52 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test14() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 55, 6), 0),
+                new EProp(3, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
+                new EProp(5, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
+                new EProp(55, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
+                new Rel(6, $ont.rType$("hasRelation"), Rel.Direction.R, null, 7, 0),
+                new ETyped(7, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Arrays.asList(9, 10, 11, 12), 0),
+                new EProp(9, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(10, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
+                new EProp(11, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
+                new Rel(12, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 13, 0),
+                new ETyped(13, "C", $ont.eType$("Rvalue"), $ont.$entity$("Rvalue").getProperties(), 14, 0),
+                new Quant1(14, QuantType.all, Arrays.asList(15, 16, 17), 0),
+                new EProp(15, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(16, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
+                new EProp(17, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2"))
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+
+    @Test
+    @Ignore
     public void loadData() throws UnknownHostException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -594,7 +641,7 @@ public class RealClusterTest {
         int currentEntityLogicalId = 0;
         int evalueId = 0;
         while(currentEntityLogicalId < 100) {
-            for(String context : Arrays.asList("context1", "context2")) {
+            for(String context : Arrays.asList("context1", "context2", "global")) {
                 String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
                 String index = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
@@ -612,21 +659,89 @@ public class RealClusterTest {
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("propertyId", "name")
-                                .put("bdt", "name")
-                                .put("stringValue", UUID.randomUUID().toString())
-                                .put("lastUpdateUser", UUID.randomUUID().toString())
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
+                if (context.equals("global")) {
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "title")
+                                    .put("bdt", "title")
+                                    .put("textValue", UUID.randomUUID().toString())
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "description")
+                                    .put("bdt", "description")
+                                    .put("textValue", UUID.randomUUID().toString() + "\n" +
+                                            UUID.randomUUID().toString() + "\n" +
+                                            UUID.randomUUID().toString())
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+                } else {
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "name")
+                                    .put("bdt", "name")
+                                    .put("stringValue", UUID.randomUUID().toString())
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "name")
+                                    .put("bdt", "name")
+                                    .put("stringValue", UUID.randomUUID().toString())
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "age")
+                                    .put("bdt", "age")
+                                    .put("intValue", ThreadLocalRandom.current().nextInt(120))
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+                }
             }
 
             currentEntityLogicalId++;
@@ -635,7 +750,7 @@ public class RealClusterTest {
         List<String> colors = Arrays.asList("red", "blue", "green", "white", "black", "brown", "orange", "purple", "pink", "yellow");
         Random random = new Random();
         for(int i = 0 ; i < 20 ; i++, currentEntityLogicalId++) {
-            for (String context : Arrays.asList("context1", "context2")) {
+            for (String context : Arrays.asList("context1", "context2", "global")) {
                 String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
                 String index = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
@@ -653,37 +768,73 @@ public class RealClusterTest {
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("propertyId", "color")
-                                .put("bdt", "color")
-                                .put("stringValue", colors.get(random.nextInt(colors.size())))
-                                .put("lastUpdateUser", UUID.randomUUID().toString())
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
+                if (context.equals("global")) {
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "title")
+                                    .put("bdt", "title")
+                                    .put("textValue", UUID.randomUUID().toString())
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("propertyId", "licenseNumber")
-                                .put("bdt", "licenseNumber")
-                                .put("stringValue", UUID.randomUUID().toString())
-                                .put("lastUpdateUser", UUID.randomUUID().toString())
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "description")
+                                    .put("bdt", "description")
+                                    .put("textValue", UUID.randomUUID().toString() + "\n" +
+                                            UUID.randomUUID().toString() + "\n" +
+                                            UUID.randomUUID().toString())
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+                } else {
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "color")
+                                    .put("bdt", "color")
+                                    .put("stringValue", colors.get(random.nextInt(colors.size())))
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+
+                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "licenseNumber")
+                                    .put("bdt", "licenseNumber")
+                                    .put("stringValue", UUID.randomUUID().toString())
+                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+                }
             }
         }
 

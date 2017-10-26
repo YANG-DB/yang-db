@@ -112,7 +112,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
             return Optional.empty();
         }
 
-        return Optional.of(pageResource.get().getData());
+        return Optional.ofNullable(pageResource.get().getData());
     }
     //endregion
 
