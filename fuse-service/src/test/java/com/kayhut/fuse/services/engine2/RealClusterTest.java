@@ -626,9 +626,9 @@ public class RealClusterTest {
                 new IndexPartitions.Partition.Range.Impl<>("e600", "e999", "e2"));
 
         IndexPartitions relationPartitions = new IndexPartitions.Impl("relationId",
-                new IndexPartitions.Partition.Range.Impl<>("r0000", "r1000", "r0"),
-                new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "r1"),
-                new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "r2"));
+                new IndexPartitions.Partition.Range.Impl<>("r0000", "r1000", "rel0"),
+                new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "rel1"),
+                new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "rel2"));
 
         Iterable<String> allIndices = Stream.ofAll(entityPartitions.partitions()).appendAll(relationPartitions.partitions())
                 .flatMap(IndexPartitions.Partition::indices).distinct().toJavaList();
@@ -647,7 +647,7 @@ public class RealClusterTest {
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
                 String category = "person";
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Entity").setId(logicalId + "." + context)
+                bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("logicalId", logicalId)
@@ -657,10 +657,11 @@ public class RealClusterTest {
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", UUID.randomUUID().toString())
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                .put("creationUser", UUID.randomUUID().toString())
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -673,10 +674,11 @@ public class RealClusterTest {
                                     .put("textValue", UUID.randomUUID().toString())
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -691,10 +693,11 @@ public class RealClusterTest {
                                             UUID.randomUUID().toString())
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -707,10 +710,11 @@ public class RealClusterTest {
                                     .put("stringValue", UUID.randomUUID().toString())
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -723,10 +727,11 @@ public class RealClusterTest {
                                     .put("stringValue", UUID.randomUUID().toString())
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -739,6 +744,7 @@ public class RealClusterTest {
                                     .put("intValue", ThreadLocalRandom.current().nextInt(120))
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 }
@@ -756,7 +762,7 @@ public class RealClusterTest {
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
                 String category = ((i / 5) % 2) == 0 ? "car" : "boat";
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Entity").setId(logicalId + "." + context)
+                bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("logicalId", logicalId)
@@ -766,10 +772,11 @@ public class RealClusterTest {
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", UUID.randomUUID().toString())
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                .put("creationUser", UUID.randomUUID().toString())
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -782,10 +789,11 @@ public class RealClusterTest {
                                     .put("textValue", UUID.randomUUID().toString())
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -800,10 +808,11 @@ public class RealClusterTest {
                                             UUID.randomUUID().toString())
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -816,10 +825,11 @@ public class RealClusterTest {
                                     .put("stringValue", colors.get(random.nextInt(colors.size())))
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("Evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -832,6 +842,7 @@ public class RealClusterTest {
                                     .put("stringValue", UUID.randomUUID().toString())
                                     .put("lastUpdateUser", UUID.randomUUID().toString())
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", UUID.randomUUID().toString())
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 }
@@ -862,17 +873,13 @@ public class RealClusterTest {
                 String relationLastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
                 String relationCreateTime = sdf.format(new Date(System.currentTimeMillis()));
 
-                bulk.add(client.prepareIndex().setIndex(personIndex).setType("Relation.D").setId(relationIdString + "." + Direction.OUT.toString().toLowerCase())
+                bulk.add(client.prepareIndex().setIndex(personIndex).setType("e.relation").setId(relationIdString + "." + Direction.OUT.toString().toLowerCase())
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(personLogicalId)
                         .setSource(new MapBuilder<String, Object>()
-                                .put("entityA", new MapBuilder<String, Object>()
-                                        .put("id", personEntityId)
-                                        .put("category", "person")
-                                        .get())
-                                .put("entityB", new MapBuilder<String, Object>()
-                                        .put("id", propertyEntityId)
-                                        .put("category", propertyCategory)
-                                        .get())
+                                .put("entityAId", personEntityId)
+                                .put("entityACategory", "person")
+                                .put("entityBId", propertyEntityId)
+                                .put("entityBCategory", propertyCategory)
                                 .put("relationId", relationIdString)
                                 .put("direction", Direction.OUT.toString().toLowerCase())
                                 .put("context", context)
@@ -881,19 +888,16 @@ public class RealClusterTest {
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
+                                .put("creationUser", UUID.randomUUID().toString())
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("Relation.D").setId(relationIdString + "." + Direction.IN.toString().toLowerCase())
+                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("e.relation").setId(relationIdString + "." + Direction.IN.toString().toLowerCase())
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(propertyLogicalId)
                         .setSource(new MapBuilder<String, Object>()
-                                .put("entityB", new MapBuilder<String, Object>()
-                                        .put("id", personEntityId)
-                                        .put("category", "person")
-                                        .get())
-                                .put("entityA", new MapBuilder<String, Object>()
-                                        .put("id", propertyEntityId)
-                                        .put("category", propertyCategory)
-                                        .get())
+                                .put("entityBId", personEntityId)
+                                .put("entityBCategory", "person")
+                                .put("entityAId", propertyEntityId)
+                                .put("entityACategory", propertyCategory)
                                 .put("relationId", relationIdString)
                                 .put("direction", Direction.IN.toString().toLowerCase())
                                 .put("context", context)
@@ -902,28 +906,26 @@ public class RealClusterTest {
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
+                                .put("creationUser", UUID.randomUUID().toString())
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Relation.S").setId(relationIdString)
+                bulk.add(client.prepareIndex().setIndex(index).setType("relation").setId(relationIdString)
                         .setOpType(IndexRequest.OpType.INDEX)
                         .setSource(new MapBuilder<String, Object>()
-                                .put("entityA", new MapBuilder<String, Object>()
-                                        .put("id", personEntityId)
-                                        .put("category", "person")
-                                        .get())
-                                .put("entityB", new MapBuilder<String, Object>()
-                                        .put("id", propertyEntityId)
-                                        .put("category", propertyCategory)
-                                        .get())
+                                .put("entityAId", personEntityId)
+                                .put("entityACategory", "person")
+                                .put("entityBId", propertyEntityId)
+                                .put("entityBCategory", propertyCategory)
                                 .put("context", context)
                                 .put("category", category)
                                 .put("security1", "securityValue1")
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
+                                .put("creationUser", UUID.randomUUID().toString())
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Rvalue").setId("rv" + String.format("%05d", rvalueId++))
+                bulk.add(client.prepareIndex().setIndex(index).setType("rvalue").setId("rv" + String.format("%05d", rvalueId++))
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("relationId", relationIdString)
@@ -935,10 +937,11 @@ public class RealClusterTest {
                                 .put("dateValue", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("lastUpdateUser", UUID.randomUUID().toString())
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                .put("creationUser", UUID.randomUUID().toString())
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("Rvalue").setId("rv" + String.format("%05d", rvalueId++))
+                bulk.add(client.prepareIndex().setIndex(index).setType("rvalue").setId("rv" + String.format("%05d", rvalueId++))
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("relationId", relationIdString)
@@ -950,6 +953,7 @@ public class RealClusterTest {
                                 .put("intValue", random.nextInt(1000))
                                 .put("lastUpdateUser", UUID.randomUUID().toString())
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                .put("creationUser", UUID.randomUUID().toString())
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
             }
