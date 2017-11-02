@@ -61,7 +61,7 @@ public class PromiseVertexController extends VertexControllerBase {
         }
 
         if (searchVertexQuery.getVertices().size() == 0){
-            throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices to start with");
+            throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");
         }
 
         List<HasContainer> constraintHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
@@ -108,7 +108,7 @@ public class PromiseVertexController extends VertexControllerBase {
         compositeAppender.append(searchBuilder, context);
 
         if(searchBuilder.getIndices().size() == 0) {
-            //there is no relevant index to search...
+            //there is no relevant index getTo search...
             return Collections.emptyIterator();
         }
 

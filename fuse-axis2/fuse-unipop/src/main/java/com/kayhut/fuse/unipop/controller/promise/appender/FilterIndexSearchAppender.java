@@ -4,13 +4,11 @@ import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.IdPromise;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,8 +27,8 @@ public class FilterIndexSearchAppender implements SearchAppender<PromiseVertexFi
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(schema -> schema.getIndexPartitions().get())
-                .flatMap(IndexPartitions::partitions)
-                .flatMap(IndexPartitions.Partition::indices)
+                .flatMap(IndexPartitions::getPartitions)
+                .flatMap(IndexPartitions.Partition::getIndices)
                 .distinct()
                 .toJavaList();
 

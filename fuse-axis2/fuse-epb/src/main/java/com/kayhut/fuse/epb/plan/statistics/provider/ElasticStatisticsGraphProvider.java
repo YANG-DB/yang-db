@@ -1,14 +1,12 @@
 package com.kayhut.fuse.epb.plan.statistics.provider;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValueByKeyProvider;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -24,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     //region Static
-    //todo move it to a global enum across modules
+    //todo move it getTo a global enum across modules
     private static final String DATE = "date";
     private static final String ENUM = "enum";
     private static final String INT = "int";
@@ -50,8 +48,8 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Override
     public Statistics.SummaryStatistics getVertexCardinality(GraphVertexSchema graphVertexSchema) {
         return getVertexCardinality(graphVertexSchema,
-                Stream.ofAll(graphVertexSchema.getIndexPartitions().get().partitions())
-                .flatMap(IndexPartitions.Partition::indices)
+                Stream.ofAll(graphVertexSchema.getIndexPartitions().get().getPartitions())
+                .flatMap(IndexPartitions.Partition::getIndices)
                 .toJavaList());
     }
 
@@ -67,8 +65,8 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     @Override
     public Statistics.SummaryStatistics getEdgeCardinality(GraphEdgeSchema graphEdgeSchema) {
         return getEdgeCardinality(graphEdgeSchema,
-                Stream.ofAll(graphEdgeSchema.getIndexPartitions().get().partitions())
-                        .flatMap(IndexPartitions.Partition::indices)
+                Stream.ofAll(graphEdgeSchema.getIndexPartitions().get().getPartitions())
+                        .flatMap(IndexPartitions.Partition::getIndices)
                         .toJavaList());
     }
 
@@ -116,7 +114,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     }
 
     /**
-     * convert to specific type boundaries
+     * convert getTo specific type boundaries
      *
      * @param fieldType
      * @param statistics

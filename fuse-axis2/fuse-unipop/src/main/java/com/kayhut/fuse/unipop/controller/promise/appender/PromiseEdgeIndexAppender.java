@@ -1,6 +1,5 @@
 package com.kayhut.fuse.unipop.controller.promise.appender;
 
-import com.google.common.collect.Lists;
 import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
@@ -53,19 +52,19 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
                     Set<P> predicates = visitor.getPredicateByKey(context.getConstraint().get().getTraversal(), tsIndexPartition.getTimeField());
 
                     if(predicates.size() == 0) {
-                        //if there are no constraints, add all indices
-                        searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet());
+                        //if there are no constraints, add all getIndices
+                        searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet());
 
                     } else {
-                        //ass only indices satisfying the constraints
-                        searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.partitions())
-                            .flatMap(IndexPartitions.Partition::indices)
+                        //ass only getIndices satisfying the constraints
+                        searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.getPartitions())
+                            .flatMap(IndexPartitions.Partition::getIndices)
                                 .filter(index -> isIndexRelevant(index, predicates, tsIndexPartition))
                                 .toJavaSet());
                     }
                 } else {
-                    //index partition is static, add all indices
-                    searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet());
+                    //index partition is static, add all getIndices
+                    searchBuilder.getIndices().addAll(Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet());
                 }
 
             }
@@ -102,7 +101,7 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
             String indexName = getIndexName(predicate.getValue(), tsIndexPartition);
 
             // assuming the indexes are returned by order
-            List<String> list = Stream.ofAll(tsIndexPartition.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+            List<String> list = Stream.ofAll(tsIndexPartition.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
 
             return  list.indexOf(indexName) <= list.indexOf(index);
 
@@ -112,16 +111,16 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
             String indexName = getIndexName(predicate.getValue(), tsIndexPartition);
 
             // assuming the indexes are returned by order
-            List<String> list = Stream.ofAll(tsIndexPartition.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+            List<String> list = Stream.ofAll(tsIndexPartition.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return  list.indexOf(indexName) >= list.indexOf(index);
 
         } else if (predicate.getBiPredicate().equals(Compare.neq)) {
-            //all indices are relevant
+            //all getIndices are relevant
             return true;
         } else if (predicate.getBiPredicate().equals(Contains.within)) {
             return Stream.ofAll(CollectionUtil.listFromObjectValue(predicate.getValue())).map(date -> getIndexName(date, tsIndexPartition)).toJavaList().contains(index);
         } else if (predicate.getBiPredicate().equals(Contains.without)) {
-            //all indices are relevant ?
+            //all getIndices are relevant ?
             return true;
         } else {
             //default ??

@@ -499,12 +499,12 @@ public class PromiseEdgeIndexAppenderTest{
                         new GraphEdgeSchema.Impl(TIME_SERIES_INDEX_EDGE,
                                 new TimeSeriesIndexPartitions() {
                                     @Override
-                                    public Optional<String> partitionField() {
+                                    public Optional<String> getPartitionField() {
                                         return Optional.of("time");
                                     }
 
                                     @Override
-                                    public Iterable<Partition> partitions() {
+                                    public Iterable<Partition> getPartitions() {
                                         return Collections.singletonList(() -> TIME_SERIES_INDEX_NAMES);
                                     }
 

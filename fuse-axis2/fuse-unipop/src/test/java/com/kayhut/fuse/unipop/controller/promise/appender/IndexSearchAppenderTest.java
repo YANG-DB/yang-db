@@ -87,7 +87,7 @@ public class IndexSearchAppenderTest {
 
     @Test
     public void appendTest_Constraint_noLabel() throws Exception {
-        //This test should return all the indices of the schema
+        //This test should return all the getIndices of the schema
         Ontology ontology = getOntology();
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("color","sheker"));

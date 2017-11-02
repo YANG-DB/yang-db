@@ -43,27 +43,27 @@ public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexCon
             return false;
         }
 
-        String partitionField = endSchema.getIndexPartitions().get().partitionField().get().equals("_id") ?
+        String partitionField = endSchema.getIndexPartitions().get().getPartitionField().get().equals("_id") ?
                 T.id.getAccessor() :
-                endSchema.getIndexPartitions().get().partitionField().get();
+                endSchema.getIndexPartitions().get().getPartitionField().get();
 
         List<Comparable> partitionValues = Stream.ofAll(context.getBulkVertices())
                 .map(vertex -> (Comparable)ElementUtil.value(vertex, partitionField))
                 .distinct().sorted().toJavaList();
 
         List<IndexPartitions.Partition.Range> rangePartitions =
-                Stream.ofAll(endSchema.getIndexPartitions().get().partitions())
+                Stream.ofAll(endSchema.getIndexPartitions().get().getPartitions())
                     .filter(partition -> partition instanceof IndexPartitions.Partition.Range)
                     .map(partition -> (IndexPartitions.Partition.Range)partition)
-                    .<Comparable>sortBy(partition -> (Comparable)partition.to())
+                    .<Comparable>sortBy(partition -> (Comparable)partition.getTo())
                     .toJavaList();
 
         Iterable<IndexPartitions.Partition.Range> relevantRangePartitions = findRelevantRangePartitions(rangePartitions, partitionValues);
         Set<String> indices =
-                Stream.ofAll(endSchema.getIndexPartitions().get().partitions())
+                Stream.ofAll(endSchema.getIndexPartitions().get().getPartitions())
                 .filter(partition -> !(partition instanceof IndexPartitions.Partition.Range))
                 .appendAll(relevantRangePartitions)
-                .flatMap(IndexPartitions.Partition::indices)
+                .flatMap(IndexPartitions.Partition::getIndices)
                 .toJavaSet();
 
         searchBuilder.getIndices().addAll(indices);
@@ -86,7 +86,7 @@ public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexCon
             if (partition.isWithin(value)) {
                 foundPartitions.add(partition);
                 valueIndex++;
-            } else if (partition.to().compareTo(value) < 0) {
+            } else if (partition.getTo().compareTo(value) < 0) {
                 partitionIndex++;
             } else {
                 valueIndex++;

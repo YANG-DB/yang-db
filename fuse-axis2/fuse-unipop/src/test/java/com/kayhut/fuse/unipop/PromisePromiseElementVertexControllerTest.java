@@ -112,7 +112,7 @@ public class PromisePromiseElementVertexControllerTest {
                 new HasContainer(T.label.getAccessor(), P.within(GlobalConstants.Labels.PROMISE)),
                 new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
-        //create vertices to start from
+        //create vertices getTo start getFrom
         Vertex startVertex1 = mock(Vertex.class);
         when(startVertex1.id()).thenReturn("3");
         when(startVertex1.label()).thenReturn("dragon");

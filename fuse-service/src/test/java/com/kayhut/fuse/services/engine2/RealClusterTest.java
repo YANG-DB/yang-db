@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.engine2;
 
-import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -21,7 +20,6 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
@@ -36,11 +34,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
-import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
-import static java.util.Collections.singletonList;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -630,8 +623,8 @@ public class RealClusterTest {
                 new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "rel1"),
                 new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "rel2"));
 
-        Iterable<String> allIndices = Stream.ofAll(entityPartitions.partitions()).appendAll(relationPartitions.partitions())
-                .flatMap(IndexPartitions.Partition::indices).distinct().toJavaList();
+        Iterable<String> allIndices = Stream.ofAll(entityPartitions.getPartitions()).appendAll(relationPartitions.getPartitions())
+                .flatMap(IndexPartitions.Partition::getIndices).distinct().toJavaList();
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
                 .forEach(index -> client.admin().indices().delete(new DeleteIndexRequest(index)).actionGet());
@@ -683,8 +676,8 @@ public class RealClusterTest {
         while(currentEntityLogicalId < 100) {
             for(String context : contexts) {
                 String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
-                String index = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
-                        .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
+                String index = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
+                        .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
                 String category = "person";
                 String description = descriptions.get(random.nextInt(descriptions.size()));
 
@@ -799,8 +792,8 @@ public class RealClusterTest {
         for(int i = 0 ; i < 20 ; i++, currentEntityLogicalId++) {
             for (String context : contexts) {
                 String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
-                String index = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
-                        .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
+                String index = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
+                        .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
                 String category = ((i / 5) % 2) == 0 ? "car" : "boat";
                 String color = colors.get(random.nextInt(colors.size()));
                 String title = color + " " + category;
@@ -896,20 +889,20 @@ public class RealClusterTest {
         for(int i = 0 ; i < 20; i++) {
             for (String context : Arrays.asList("context1", "context2")) {
                 String relationIdString = "r" + String.format("%04d", relationId++);
-                String index = Stream.ofAll(relationPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(relationIdString)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
+                String index = Stream.ofAll(relationPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                        .filter(partition -> partition.isWithin(relationIdString)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
                 String category = "own";
 
                 String personLogicalId = "e" + String.format("%03d", i);
                 String personEntityId = personLogicalId + "." + context;
-                String personIndex = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(personLogicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
+                String personIndex = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                        .filter(partition -> partition.isWithin(personLogicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
                 String propertyLogicalId = "e" + String.format("%03d", 200 + i);
                 String propertyEntityId = propertyLogicalId + "." + context;
                 String propertyCategory = ((i / 5) % 2) == 0 ? "car" : "boat";
-                String propertyIndex = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
-                        .filter(partition -> partition.isWithin(propertyLogicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
+                String propertyIndex = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                        .filter(partition -> partition.isWithin(propertyLogicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
                 String relationLastUpdateUser = users.get(random.nextInt(users.size()));
                 String relationCreationUser = users.get(random.nextInt(users.size()));

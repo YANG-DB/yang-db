@@ -32,7 +32,7 @@ public class DragonsOntologyPhysicalIndexProviderFactoryTest {
 
         TimeSeriesIndexPartitions freez = (TimeSeriesIndexPartitions) provider.getIndexPartitionsByLabel("Freez", ElementType.edge);
 
-        Assert.assertEquals(Stream.ofAll(freez.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet(),
+        Assert.assertEquals(Stream.ofAll(freez.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet(),
                 new HashSet<>(Arrays.asList("idx_freez_2017-2","idx_freez_2017-4","idx_freez_2017-1")));
 
         Assert.assertEquals(freez.getDateFormat(), "YYYY-W");
@@ -51,7 +51,7 @@ public class DragonsOntologyPhysicalIndexProviderFactoryTest {
 
         StaticIndexPartitions person = (StaticIndexPartitions) provider.getIndexPartitionsByLabel("Person", ElementType.vertex);
 
-        Assert.assertEquals(Stream.ofAll(person.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet(), Collections.singleton("persons1"));
+        Assert.assertEquals(Stream.ofAll(person.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet(), Collections.singleton("persons1"));
     }
 
 }

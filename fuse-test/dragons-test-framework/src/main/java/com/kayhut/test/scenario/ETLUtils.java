@@ -100,7 +100,7 @@ public abstract class ETLUtils {
                     }
                 }
         );
-        //PutMappingResponse putMappingResponse = client.admin().indices().preparePutMapping(indices.toArray(new String[indices.size()])).setType("own").setSource(s).execute().get();
+        //PutMappingResponse putMappingResponse = client.admin().getIndices().preparePutMapping(getIndices.toArray(new String[getIndices.size()])).setType("own").setSource(s).execute().get();
         //System.out.println(putMappingResponse);
     }
 

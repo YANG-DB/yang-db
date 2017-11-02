@@ -31,11 +31,11 @@ public interface KnowsEdge {
         RedundantFieldTransformer redundantFieldTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(KNOWS, Direction.out,"A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 PERSON,
                 redundant(KNOWS, Direction.out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 PERSON);
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 

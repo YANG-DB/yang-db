@@ -45,7 +45,7 @@ public class EpbModule extends ModuleBase {
         binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
         binder.bind(StatDataProvider.class).to(ElasticStatDocumentProvider.class).asEagerSingleton();
 
-        //binder.bind(GraphElementSchemaProviderFactory.class).to(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
+        //binder.bind(GraphElementSchemaProviderFactory.class).getTo(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
         binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();
 
         binder.bind(CostEstimationConfig.class)

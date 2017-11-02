@@ -10,7 +10,6 @@ import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.Contains;
-import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.structure.T;
 
@@ -59,13 +58,13 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
                 return Collections.emptyList();
         }
 
-        if (!indexPartitions.get().partitionField().isPresent() || !context.getConstraint().isPresent()) {
-            return Stream.ofAll(indexPartitions.get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet();
+        if (!indexPartitions.get().getPartitionField().isPresent() || !context.getConstraint().isPresent()) {
+            return Stream.ofAll(indexPartitions.get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet();
         }
 
-        String partitionField = indexPartitions.get().partitionField().get().equals("_id") ?
+        String partitionField = indexPartitions.get().getPartitionField().get().equals("_id") ?
                 T.id.getAccessor() :
-                indexPartitions.get().partitionField().get();
+                indexPartitions.get().getPartitionField().get();
 
 
         //currently supporting only compare eq and contains within
@@ -76,23 +75,23 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
                 .getValue(context.getConstraint().get().getTraversal())).toJavaList();
 
         if (hasSteps.isEmpty()) {
-            return Stream.ofAll(indexPartitions.get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaSet();
+            return Stream.ofAll(indexPartitions.get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaSet();
         }
 
-        Set<String> indices = Stream.ofAll(indexPartitions.get().partitions())
+        Set<String> indices = Stream.ofAll(indexPartitions.get().getPartitions())
                 .filter(partition -> !(partition instanceof IndexPartitions.Partition.Range))
-                .flatMap(IndexPartitions.Partition::indices)
+                .flatMap(IndexPartitions.Partition::getIndices)
                 .toJavaSet();
 
         //currently assuming one has step
         HasStep<?> hasStep = hasSteps.get(0);
         List<Object> values = CollectionUtil.listFromObjectValue(hasStep.getHasContainers().get(0).getValue());
         if (!values.isEmpty() && values.get(0) instanceof Comparable) {
-            indices.addAll(Stream.ofAll(indexPartitions.get().partitions())
+            indices.addAll(Stream.ofAll(indexPartitions.get().getPartitions())
                     .filter(partition -> partition instanceof IndexPartitions.Partition.Range)
                     .map(partition -> (IndexPartitions.Partition.Range) partition)
                     .filter(partition -> Stream.ofAll(values).find(value -> partition.isWithin((Comparable)value)).toJavaOptional().isPresent())
-                    .flatMap(IndexPartitions.Partition::indices)
+                    .flatMap(IndexPartitions.Partition::getIndices)
                     .toJavaSet());
         }
 

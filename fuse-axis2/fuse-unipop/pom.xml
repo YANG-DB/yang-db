@@ -32,7 +32,7 @@
         <dependency>
             <groupId>unipop</groupId>
             <artifactId>unipop-core</artifactId>
-            <!--This is needed to avoid bringing log4j because it interferes with slf4j logback setup, which is the default for jooby-->
+            <!--This is neegetTod to avoid bringing log4j because it interferes with slf4j logback setup, which is the default for jooby-->
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

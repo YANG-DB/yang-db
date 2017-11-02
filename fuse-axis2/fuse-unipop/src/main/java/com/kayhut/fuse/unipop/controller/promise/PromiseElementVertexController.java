@@ -81,7 +81,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
     //region Private Methods
 
     /**
-     * This method will create promise vertices from promise and constraint predicates.
+     * This method will create promise vertices getFrom promise and constraint predicates.
      * The method need not actually query the data store for the vertices as it is a promise vertex with a promise predicate.
      *
      *

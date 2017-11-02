@@ -155,9 +155,14 @@ public class FuseApp extends Jooby {
     private void registerCatalogApi(AppUrlSupplier localUrlSupplier) {
         /** get the ontology by id */
         use("/fuse/catalog/ontology/:id")
-                /** check health */
                 .get(req -> {
-                    ContentResponse response = catalogCtrl().get(req.param("id").value());
+                    ContentResponse response = catalogCtrl().getOntology(req.param("id").value());
+                    return Results.with(response, response.status());
+                });
+
+        use("/fuse/catalog/schema/:id")
+                .get(req -> {
+                    ContentResponse response = catalogCtrl().getSchema(req.param("id").value());
                     return Results.with(response, response.status());
                 });
     }

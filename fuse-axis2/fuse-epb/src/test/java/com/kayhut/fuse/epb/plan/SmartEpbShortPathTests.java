@@ -27,11 +27,9 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.elasticsearch.common.collect.Tuple;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +70,7 @@ public class SmartEpbShortPathTests {
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getEdgeCardinality(edgeSchema, indices);
         });
 
@@ -89,7 +87,7 @@ public class SmartEpbShortPathTests {
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getVertexCardinality(vertexSchema, indices);
         });
 
@@ -490,12 +488,12 @@ public class SmartEpbShortPathTests {
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {
                                             @Override
-                                            public Optional<String> partitionField() {
+                                            public Optional<String> getPartitionField() {
                                                 return Optional.of(START_DATE.name);
                                             }
 
                                             @Override
-                                            public Iterable<Partition> partitions() {
+                                            public Iterable<Partition> getPartitions() {
                                                 return Collections.singletonList(() ->
                                                         IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
                                                                 map(this::getIndexName).collect(Collectors.toList()));

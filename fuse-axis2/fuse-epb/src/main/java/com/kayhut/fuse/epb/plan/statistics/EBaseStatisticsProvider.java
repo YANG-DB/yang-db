@@ -139,7 +139,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     private List<String> getRelevantIndicesForEdge(RelPropGroup relPropGroup, GraphEdgeSchema graphEdgeSchema) {
         IndexPartitions indexPartitions = graphEdgeSchema.getIndexPartitions().get();
-        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
         if(indexPartitions instanceof TimeSeriesIndexPartitions){
             relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions,relPropGroup);
         }
@@ -167,7 +167,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
-        // When we add an OR condition (and a complex condition tree), we need to take a different approach
+        // When we add an OR condition (and a complex condition tree), we need getTo take a different approach
         Statistics.SummaryStatistics minVertexSummaryStatistics = getVertexStatistics(graphVertexSchema, relevantIndices);
         for(EProp eProp : entityFilter.getProps()){
             Property property = ont.$property$( eProp.getpType() );
@@ -187,7 +187,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     private List<String> getVertexRelevantIndices(EPropGroup entityFilter, GraphVertexSchema graphVertexSchema) {
         IndexPartitions indexPartitions = graphVertexSchema.getIndexPartitions().get();
-        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
         if(indexPartitions instanceof TimeSeriesIndexPartitions){
             relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions, entityFilter);
         }
@@ -464,7 +464,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             }
         }
 
-        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
         if(timeConditions.size() == 0) {
             return relevantIndices;
         }
@@ -508,7 +508,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             }
         }
 
-        List<String> relevantIndices = Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
 
         if(timeConditions.size() == 0) {
             return relevantIndices;

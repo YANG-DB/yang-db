@@ -3,10 +3,7 @@ package com.kayhut.fuse.unipop.schemaProviders;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by r on 1/16/2015.
@@ -21,6 +18,18 @@ public interface GraphElementSchemaProvider {
 
     Iterable<String> getVertexLabels();
     Iterable<String> getEdgeLabels();
+
+    default Iterable<GraphVertexSchema> getVertexSchemas() {
+        return Stream.ofAll(getVertexLabels())
+                .map(label -> getVertexSchema(label).get())
+                .toJavaList();
+    }
+
+    default Iterable<GraphEdgeSchema> getEdgeSchemas() {
+        return Stream.ofAll(getEdgeLabels())
+                .flatMap(this::getEdgeSchemas)
+                .toJavaList();
+    }
 
     class Impl implements GraphElementSchemaProvider {
         //region Constructors

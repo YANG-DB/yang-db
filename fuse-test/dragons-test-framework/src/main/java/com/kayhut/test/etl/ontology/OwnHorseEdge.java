@@ -30,21 +30,21 @@ public interface OwnHorseEdge {
         RedundantFieldTransformer redundantOutTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(OWN, out, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 PERSON,
                 redundant(OWN, out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(HORSE).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(HORSE).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 HORSE,
                 out.name());
         RedundantFieldTransformer redundantInTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(OWN,  Direction.in, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(HORSE).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(HORSE).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 HORSE,
                 redundant(OWN, Direction.in,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(PERSON).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 PERSON, Direction.in.name());
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 

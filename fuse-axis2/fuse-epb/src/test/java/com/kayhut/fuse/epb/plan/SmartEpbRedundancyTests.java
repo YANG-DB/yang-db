@@ -71,7 +71,7 @@ public class SmartEpbRedundancyTests {
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getEdgeCardinality(edgeSchema, indices);
         });
 
@@ -88,7 +88,7 @@ public class SmartEpbRedundancyTests {
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getVertexCardinality(vertexSchema, indices);
         });
 
@@ -286,12 +286,12 @@ public class SmartEpbRedundancyTests {
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {
                                             @Override
-                                            public Optional<String> partitionField() {
+                                            public Optional<String> getPartitionField() {
                                                 return Optional.of(START_DATE.name);
                                             }
 
                                             @Override
-                                            public Iterable<Partition> partitions() {
+                                            public Iterable<Partition> getPartitions() {
                                                 return Collections.singletonList(() ->
                                                         IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
                                                                 map(this::getIndexName).collect(Collectors.toList()));

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -30,7 +29,7 @@ public class OntologySchemaProviderTest {
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
 
         assertEquals(vertexPersonSchema.getConstraint().getTraversalConstraint(), __.has(T.label, "Person"));
-        List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
         assertEquals(2, indices.size());
 
         assertEquals("vertexIndex1", Stream.ofAll(indices).get(0));
@@ -44,7 +43,7 @@ public class OntologySchemaProviderTest {
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
         assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Dragon");
 
-        List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList();
+        List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
         assertEquals(2, indices.size());
 
         assertEquals("edgeIndex1", Stream.ofAll(indices).get(0));

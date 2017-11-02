@@ -284,12 +284,12 @@ public class EBaseStatisticsProviderIndicesTests {
                                 Optional.empty(),
                                 Optional.of(new TimeSeriesIndexPartitions() {
                                     @Override
-                                    public Optional<String> partitionField() {
+                                    public Optional<String> getPartitionField() {
                                         return Optional.of("startDate");
                                     }
 
                                     @Override
-                                    public Iterable<Partition> partitions() {
+                                    public Iterable<Partition> getPartitions() {
                                         return Collections.singletonList(() -> indices);
                                     }
 

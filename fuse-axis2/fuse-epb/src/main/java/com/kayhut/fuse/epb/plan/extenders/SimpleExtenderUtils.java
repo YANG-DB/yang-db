@@ -57,7 +57,7 @@ public interface SimpleExtenderUtils {
     }
 
     /**
-     * Takes a flattened query and an execution plan, and seperates the query to two collections - parts that exist
+     * Takes a flattened query and an execution plan, and seperates the query getTo two collections - parts that exist
      * in the plan and parts that do not exist
      *
      * @param plan

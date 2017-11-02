@@ -23,7 +23,7 @@ public abstract class VertexControllerBase implements SearchVertexQuery.SearchVe
     @Override
     public Iterator<Edge> search(SearchVertexQuery searchVertexQuery) {
         if (searchVertexQuery.getVertices().size() == 0){
-            throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices to start with");
+            throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");
         }
 
         Iterable<String> supportedEdgeLabels = getSupportedEdgeLabels(searchVertexQuery.getPredicates().getPredicates());

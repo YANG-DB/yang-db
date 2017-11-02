@@ -13,7 +13,6 @@ import net.minidev.json.JSONArray;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.StreamSupport;
 
 import static com.kayhut.fuse.model.Utils.readJsonFile;
 
@@ -109,8 +108,8 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
         @Override
         public String getIndexName(Date date) {
             String format = String.format(getIndexFormat(), dateFormat.format(date));
-            List<String> indices = Stream.ofAll(partitions())
-                    .flatMap(Partition::indices)
+            List<String> indices = Stream.ofAll(getPartitions())
+                    .flatMap(Partition::getIndices)
                     .filter(index -> index.equals(format))
                     .toJavaList();
 
@@ -118,12 +117,12 @@ public class DragonsOntologyPhysicalIndexProviderFactory implements PhysicalInde
         }
 
         @Override
-        public Optional<String> partitionField() {
+        public Optional<String> getPartitionField() {
             return Optional.of(getTimeField());
         }
 
         @Override
-        public Iterable<Partition> partitions() {
+        public Iterable<Partition> getPartitions() {
             return Collections.singletonList(() -> Stream.ofAll(indices(values))
                     .map(p -> String.format(getIndexFormat(), p))
                     .distinct().sorted()

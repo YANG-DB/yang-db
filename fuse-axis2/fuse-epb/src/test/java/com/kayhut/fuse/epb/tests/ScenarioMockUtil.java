@@ -53,7 +53,7 @@ public class ScenarioMockUtil {
             IndexPartitions indexPartitions = vertex.getIndexPartitions().get();
             return graphStatisticsProvider.getVertexCardinality(
                     vertex,
-                    Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList());
+                    Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList());
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
@@ -67,7 +67,7 @@ public class ScenarioMockUtil {
             IndexPartitions indexPartitions = edge.getIndexPartitions().get();
             return graphStatisticsProvider.getEdgeCardinality(
                     edge,
-                    Stream.ofAll(indexPartitions.partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList());
+                    Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList());
         });
 
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
@@ -121,12 +121,12 @@ public class ScenarioMockUtil {
     public ScenarioMockUtil withTimeSeriesIndex(String type, ElementType elementType, String timeField, int numIndices){
         TimeSeriesIndexPartitions indexPartition = new TimeSeriesIndexPartitions() {
             @Override
-            public Optional<String> partitionField() {
+            public Optional<String> getPartitionField() {
                 return Optional.of(timeField);
             }
 
             @Override
-            public Iterable<Partition> partitions() {
+            public Iterable<Partition> getPartitions() {
                 return Collections.singletonList(
                         () ->  IntStream.range(0, numIndices).mapToObj(i -> new Date(scenarioTime - 60*60*1000 * i)).
                                 map(this::getIndexName).collect(Collectors.toList()));

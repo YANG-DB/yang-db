@@ -43,7 +43,7 @@ public class Bootstrap implements Jooby.Module {
                 new PerformanceStatistics(binder.getProvider(MetricRegistry.class)));
         binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(LoggerAnnotation.class),
                 new LogWrapper(binder.getProvider(MetricRegistry.class),loadDescriptors(binder)));
-        //load modules according to configuration
+        //load modules according getTo configuration
         loadModules(env, conf, binder);
 
     }

@@ -22,12 +22,12 @@ public class StaticIndexPartitions implements IndexPartitions {
 
     //region IndexPartitions Implementation
     @Override
-    public Optional<String> partitionField() {
+    public Optional<String> getPartitionField() {
         return Optional.empty();
     }
 
     @Override
-    public Iterable<Partition> partitions() {
+    public Iterable<Partition> getPartitions() {
         return Collections.singletonList(() -> this.indices);
     }
     //endregion

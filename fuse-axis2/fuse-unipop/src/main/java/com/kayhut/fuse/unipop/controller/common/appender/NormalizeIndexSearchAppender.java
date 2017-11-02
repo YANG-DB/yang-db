@@ -18,15 +18,15 @@ public class NormalizeIndexSearchAppender implements SearchAppender<ElementContr
     public boolean append(SearchBuilder searchBuilder, ElementControllerContext context) {
         if (searchBuilder.getIndices().size() > maxNumValues) {
             searchBuilder.getIndices().clear();
-            // if there are too many indices particiapting in the query, we risk getting an error from elastic
+            // if there are too many getIndices particiapting in the query, we risk getting an error getFrom elastic
             // that the query string is too long.
-            // at this point we do something very simple: replace all the specific indices with a wildcard to indicate
-            // searching in all the indices.
+            // at this point we do something very simple: replace all the specific getIndices with a wildcard getTo indicate
+            // searching in all the getIndices.
             // this might be neither be efficient nor correct in some cases, but right now its the best we can do.
-            // in the future, we can try and reduce the number of indices by searching for common prefixes, but
+            // in the future, we can try and reduce the number of getIndices by searching for common prefixes, but
             // that will not be correct in all cases.
-            // the correct solution is to split the request to multiple requests, but of course that will hinder efficiency.
-            // currently it is ok to sacrifice correctness simply because in the near future, all the required query scenarios
+            // the correct solution is getTo split the request getTo multiple requests, but of course that will hinder efficiency.
+            // currently it is ok getTo sacrifice correctness simply because in the near future, all the required query scenarios
             // will be correct under this policy, but further ahead this appender will be replaced.
             searchBuilder.getIndices().add("*");
             return true;

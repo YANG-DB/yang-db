@@ -97,7 +97,7 @@ public class PromiseEdgeTest{
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
-        //create vertices to start from
+        //create vertices getTo start getFrom
         Vertex startVertex1 = mock(Vertex.class);
         when(startVertex1.id()).thenReturn("d1");
         when(startVertex1.label()).thenReturn("Dragon");
@@ -163,7 +163,7 @@ public class PromiseEdgeTest{
 
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
-        //create vertices to start from (all)
+        //create vertices getTo start getFrom (all)
         List<Vertex> startVertices = new ArrayList<>();
         for(int i=0; i<13; i++) {
             Vertex v = mock(Vertex.class);

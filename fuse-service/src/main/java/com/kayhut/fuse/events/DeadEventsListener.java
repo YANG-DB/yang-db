@@ -12,6 +12,6 @@ public class DeadEventsListener {
     public void gotDeadEvent(DeadEvent deadEvent) {
         EventBus eventBus = (EventBus) deadEvent.getSource();
         //todo manage dead events - log ?
-        System.out.println("Got dead event " + deadEvent.getEvent() + ", from " + eventBus);
+        System.out.println("Got dead event " + deadEvent.getEvent() + ", getFrom " + eventBus);
     }
 }

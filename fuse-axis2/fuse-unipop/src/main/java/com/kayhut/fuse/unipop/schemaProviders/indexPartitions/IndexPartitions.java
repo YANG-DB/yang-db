@@ -5,16 +5,16 @@ import javaslang.collection.Stream;
 import java.util.Optional;
 
 public interface IndexPartitions {
-    Optional<String> partitionField();
-    Iterable<Partition> partitions();
+    Optional<String> getPartitionField();
+    Iterable<Partition> getPartitions();
 
     interface Partition {
-        Iterable<String> indices();
+        Iterable<String> getIndices();
 
         interface Range<T extends Comparable<T>> extends Partition {
-            T from();
+            T getFrom();
 
-            T to();
+            T getTo();
 
             boolean isWithin(T value);
 
@@ -33,17 +33,17 @@ public interface IndexPartitions {
 
                 //region Range Implementation
                 @Override
-                public Iterable<String> indices() {
+                public Iterable<String> getIndices() {
                     return this.indices;
                 }
 
                 @Override
-                public T from() {
+                public T getFrom() {
                     return this.from;
                 }
 
                 @Override
-                public T to() {
+                public T getTo() {
                     return this.to;
                 }
 
@@ -85,12 +85,12 @@ public interface IndexPartitions {
 
         //region IndexPartitions Implementation
         @Override
-        public Optional<String> partitionField() {
+        public Optional<String> getPartitionField() {
             return this.partitionField;
         }
 
         @Override
-        public Iterable<Partition> partitions() {
+        public Iterable<Partition> getPartitions() {
             return this.partitions;
         }
         //endregion

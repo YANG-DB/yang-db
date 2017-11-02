@@ -51,13 +51,13 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
 
 
         Plan newPlan = Plan.clone(plan.get());
-        //current pattern on plan is the "from" entity whether is entity or filter op
+        //current pattern on plan is the "getFrom" entity whether is entity or filter op
         RelationOp relationOp = new RelationOp(nextRelation.get(), Direction.reverse(nextRelation.get().geteBase().getDir()));
         newPlan = newPlan.withOp(relationOp);
         if (nextRelationPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
         }
-        //to entity pattern
+        //getTo entity pattern
         newPlan = newPlan.withOp(new EntityOp(toEntity.get()));
         if (toEntityPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));

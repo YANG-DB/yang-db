@@ -244,7 +244,7 @@ public class AggregationBuilder implements Cloneable {
 
     public <V> AggregationBuilder param(String name, V value) {
         if (this.current == this.root) {
-            throw new UnsupportedOperationException("parameters may not be added to the root aggregation");
+            throw new UnsupportedOperationException("parameters may not be added getTo the root aggregation");
         }
 
         if (seekLocalParam(this.current, name) != null) {
@@ -307,7 +307,7 @@ public class AggregationBuilder implements Cloneable {
 
     public AggregationBuilder having(String name, BiPredicate predicate, Object value)       {
         if (this.current == this.root) {
-            throw new UnsupportedOperationException("'having' may not be added to the root aggregation");
+            throw new UnsupportedOperationException("'having' may not be added getTo the root aggregation");
         }
 
 
@@ -391,7 +391,7 @@ public class AggregationBuilder implements Cloneable {
     }
 
     // The clone will return a deep clone of the aggregation builder (except leaf values: e.g the Object value in terms composite).
-    // The clone will set the current field to point to the root due to the difficulty in finding the cloned current composite in the clone AggregationBuilder.
+    // The clone will set the current field getTo point getTo the root due getTo the difficulty in finding the cloned current composite in the clone AggregationBuilder.
     @Override
     public AggregationBuilder clone() {
         try {

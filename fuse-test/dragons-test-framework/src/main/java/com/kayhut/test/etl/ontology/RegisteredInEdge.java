@@ -3,7 +3,6 @@ package com.kayhut.test.etl.ontology;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
-import com.sun.org.apache.regexp.internal.RE;
 import javaslang.collection.Stream;
 
 import java.io.IOException;
@@ -31,21 +30,21 @@ public interface RegisteredInEdge {
         RedundantFieldTransformer redundantOutTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(REGISTERED, out, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(GUILD).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(GUILD).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 GUILD,
                 redundant(REGISTERED, out,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(KINGDOM).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(KINGDOM).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 KINGDOM,
                 out.name());
         RedundantFieldTransformer redundantInTransformer = new RedundantFieldTransformer(getClient(),
                 redundant(REGISTERED,  Direction.in, "A"),
                 ENTITY_A_ID,
-                Stream.ofAll(indexPartition(KINGDOM).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(KINGDOM).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 KINGDOM,
                 redundant(REGISTERED, Direction.in,"B"),
                 ENTITY_B_ID,
-                Stream.ofAll(indexPartition(GUILD).partitions()).flatMap(IndexPartitions.Partition::indices).toJavaList(),
+                Stream.ofAll(indexPartition(GUILD).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 GUILD, Direction.in.name());
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 

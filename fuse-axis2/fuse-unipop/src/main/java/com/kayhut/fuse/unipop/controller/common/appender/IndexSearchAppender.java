@@ -1,12 +1,10 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
-import com.google.common.collect.Lists;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -21,7 +19,7 @@ import java.util.*;
  * Created by User on 27/03/2017.
  */
 
-// This appender will add indices to the search builder based on the elements IndexPartitions only.
+// This appender will add getIndices getTo the search builder based on the elements IndexPartitions only.
 public class IndexSearchAppender implements SearchAppender<ElementControllerContext> {
 
     //region SearchAppender Implementation
@@ -48,7 +46,7 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
                     }
                 });
                 return true;
-            } else // No specific label - append all index partitions filtered by the type of the element (vertex or edge)
+            } else // No specific label - append all index getPartitions filtered by the type of the element (vertex or edge)
             {
                 manageSpecialCase(context, schemaProvider, searchBuilder);
             }
@@ -83,8 +81,8 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
     private Collection<String> getEdgeSchemasIndices(Iterable<GraphEdgeSchema> edgeSchemas) {
         return Stream.ofAll(edgeSchemas)
                 .filter(edgeSchema -> edgeSchema.getIndexPartitions().isPresent())
-                .flatMap(edgeSchema -> edgeSchema.getIndexPartitions().get().partitions())
-                .flatMap(IndexPartitions.Partition::indices)
+                .flatMap(edgeSchema -> edgeSchema.getIndexPartitions().get().getPartitions())
+                .flatMap(IndexPartitions.Partition::getIndices)
                 .toJavaSet();
     }
 
@@ -93,8 +91,8 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
             return Collections.emptyList();
         }
 
-        return Stream.ofAll(vertexSchema.get().getIndexPartitions().get().partitions())
-                .flatMap(IndexPartitions.Partition::indices)
+        return Stream.ofAll(vertexSchema.get().getIndexPartitions().get().getPartitions())
+                .flatMap(IndexPartitions.Partition::getIndices)
                 .toJavaSet();
     }
 
