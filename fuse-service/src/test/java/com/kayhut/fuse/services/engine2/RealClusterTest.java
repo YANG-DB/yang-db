@@ -640,12 +640,53 @@ public class RealClusterTest {
 
         int currentEntityLogicalId = 0;
         int evalueId = 0;
+
+        Random random = new Random();
+
+        List<String> contexts = Arrays.asList("context1", "context2", "global");
+        List<String> users = Arrays.asList("Tonette Kwon", "Georgiana Vanasse", "Tena Barriere", "Sharilyn Dennis", "Yee Edgell", "Berneice Luz",
+                "Jasmin Mullally", "Suzette Saenger", "Jeri Miltenberger", "Lea Herren", "Brendon Richard", "Sonja Feeney", "Marcene Caffey",
+                "Lelia Kott", "Arletta Kollman", "Hien Vrabel", "Marguerita Willingham", "Oleta Specht", "Calista Clutter", "Elliot Dames",
+                "Kizzy Seekins", "Jodi Michaelis", "Curtis Yelvington", "Christina Bandy", "Ivory Capoccia", "Shakia Blakes", "Sindy Uselton",
+                "Pam Delong", "Beatrice Hix", "Kimbra Fiorenza", "Rodolfo Manthey", "Rosella Dann", "Azalee Jess", "Gale Dedios", "Alaine Le",
+                "Hope Brady", "Irene Dodrill", "Adrian Mister", "Doria Stacks", "Charlsie Iser", "Jean Lejeune", "Arla Navarrette", "Cara Commander",
+                "Zada Puthoff", "Micaela Pearlman", "Domenica Charters", "Brady Scheffler", "Signe Ketner", "Myrtle Macarthur", "Jamar Kissner",
+                "Ethelene Lacoste", "Lance Odonnell", "Lisandra Garceau", "Millie Ocon", "Hershel Aldana", "Kelley Ketner", "Janette Limones",
+                "Arnetta Arriaga", "Luis Hugo", "Racquel Vannorman", "Rosalind Foland", "Melaine Boerner", "Ivy Monty", "Huey Walke", "Tasha Fairless",
+                "Orval Everton", "Cathern Legge", "Vida Seely", "Lee Knoll", "Lucia Markel", "Brigette Wolfe", "Gita Ekstrom", "Porter Hillin",
+                "Carolyne Conway", "Fred Nye", "Carlo Crandell", "Syreeta Hahne", "Katy Thibault", "Corazon Hagstrom", "Zina Teston", "Doyle Cavalier",
+                "Freddie Wardlaw", "Sherley Windsor", "Iraida Quade", "Doria Andrews", "Luz Flavin", "Su Loper", "Mitchell Luster", "Arnulfo Bleakley",
+                "Sharolyn Pooler", "Benita Vantassell", "Mui Huls", "Susann Stoughton", "Prince Dearth", "Saul Tomasini", "Luise Kinnaman",
+                "Willette Madison", "Fernando Bransford", "Necole Haan", "Irmgard Gerardo");
+
+        List<String> descriptions = Arrays.asList("District Sales Manager", "E-Commerce Director", "Export Manager", "Regional Sales Manager",
+                "Sales Account Manager", "Sales Director", "Territory Sales Manager", "Contract Administrator", "Contracting Manager",
+                "Director of Strategic Sourcing", "Procurement Manager", "Purchasing Director", "Purchasing Manager", "Sourcing Manager",
+                "CEO", "Chief Executive Officer", "Chief Operating Officer", "Commissioner of Internal Revenue", "COO", "County Commissioner",
+                "Government Service Executive", "Governor", "Mayor", "Clerk of Court", "Director of Entertainment", "Environmental Control Administrator",
+                "Highway Patrol Commander", "Safety Coordinator", "Social Science Manager", "Utilities Manager", "Construction Coordinator",
+                "Construction Superintendent", "General Contractor", "Masonry Contractor Administrator", "C++ Professor",
+                "Computer Information Systems Professor", "Computer Programming Professor", "Information Systems Professor",
+                "Information Technology Professor", "IT Professor", "Java Programming Professor", "Electrical Design Engineer", "Electrical Engineer",
+                "Electrical Systems Engineer", "Illuminating Engineer", "Power Distribution Engineer", "Air Battle Manager", "Airdrop Systems Technician",
+                "Astronaut, Mission Specialist", "Fixed-Wing Transport Aircraft Specialist", "Helicopter Officer",
+                "Naval Flight Officer, Airborne Reconnaissance Officer", "Naval Flight Officer, Bombardier/Navigator",
+                "Naval Flight Officer, Electronic Warfare Officer", "Naval Flight Officer, Qualified Supporting Arms Coordinator (Airborne)",
+                "Naval Flight Officer, Radar Intercept Officer", "Naval Flight Officer, Weapons Systems Officer",
+                "Special Project Airborne Electronics Evaluator", "Advanced Seal Delivery System", "Combatant Diver Officer",
+                "Combatant Diver Qualified (Officer)", "Commanding Officer, Special Warfare Team", "Control And Recovery, Combat Rescue",
+                "Control And Recovery, Special Tactics", "Executive Officer, Special Warfare Team", "Parachute/Combatant Diver Officer",
+                "Parachutist/Combatant Diver Qualified (Officer)", "Sea-Air-Land Officer", "Seal Delivery Vehicle Officer", "Special Forces Officer",
+                "Special Forces Warrant Officer", "Special Weapons Unit Officer");
+
+
         while(currentEntityLogicalId < 100) {
-            for(String context : Arrays.asList("context1", "context2", "global")) {
+            for(String context : contexts) {
                 String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
                 String index = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
                 String category = "person";
+                String description = descriptions.get(random.nextInt(descriptions.size()));
 
                 bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
@@ -655,9 +696,9 @@ public class RealClusterTest {
                                 .put("category", category)
                                 .put("security1", "securityValue1")
                                 .put("security2", "securityValue2")
-                                .put("lastUpdateUser", UUID.randomUUID().toString())
+                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", UUID.randomUUID().toString())
+                                .put("creationUser", users.get(random.nextInt(users.size())))
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
@@ -671,10 +712,10 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "title")
                                     .put("bdt", "title")
-                                    .put("textValue", UUID.randomUUID().toString())
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("textValue", users.get(currentEntityLogicalId))
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
@@ -688,12 +729,10 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "description")
                                     .put("bdt", "description")
-                                    .put("textValue", UUID.randomUUID().toString() + "\n" +
-                                            UUID.randomUUID().toString() + "\n" +
-                                            UUID.randomUUID().toString())
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("textValue", description)
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 } else {
@@ -707,12 +746,15 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "name")
                                     .put("bdt", "name")
-                                    .put("stringValue", UUID.randomUUID().toString())
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("stringValue", users.get(currentEntityLogicalId))
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
+
+                    int age = random.nextInt(120);
+                    int anotherAge = age + (random.nextInt(8) - 4);
 
                     bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
@@ -722,12 +764,12 @@ public class RealClusterTest {
                                     .put("context", context)
                                     .put("security1", "securityValue1")
                                     .put("security2", "securityValue2")
-                                    .put("propertyId", "name")
-                                    .put("bdt", "name")
-                                    .put("stringValue", UUID.randomUUID().toString())
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("propertyId", "age")
+                                    .put("bdt", "age")
+                                    .put("intValue", age)
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
@@ -741,10 +783,10 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "age")
                                     .put("bdt", "age")
-                                    .put("intValue", ThreadLocalRandom.current().nextInt(120))
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("intValue", anotherAge)
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 }
@@ -754,13 +796,15 @@ public class RealClusterTest {
         }
 
         List<String> colors = Arrays.asList("red", "blue", "green", "white", "black", "brown", "orange", "purple", "pink", "yellow");
-        Random random = new Random();
         for(int i = 0 ; i < 20 ; i++, currentEntityLogicalId++) {
-            for (String context : Arrays.asList("context1", "context2", "global")) {
+            for (String context : contexts) {
                 String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
                 String index = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range)partition)
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
                 String category = ((i / 5) % 2) == 0 ? "car" : "boat";
+                String color = colors.get(random.nextInt(colors.size()));
+                String title = color + " " + category;
+                String description = title;
 
                 bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
@@ -770,9 +814,9 @@ public class RealClusterTest {
                                 .put("category", category)
                                 .put("security1", "securityValue1")
                                 .put("security2", "securityValue2")
-                                .put("lastUpdateUser", UUID.randomUUID().toString())
+                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", UUID.randomUUID().toString())
+                                .put("creationUser", users.get(random.nextInt(users.size())))
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
@@ -786,10 +830,10 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "title")
                                     .put("bdt", "title")
-                                    .put("textValue", UUID.randomUUID().toString())
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("textValue", title)
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
@@ -803,12 +847,10 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "description")
                                     .put("bdt", "description")
-                                    .put("textValue", UUID.randomUUID().toString() + "\n" +
-                                            UUID.randomUUID().toString() + "\n" +
-                                            UUID.randomUUID().toString())
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("textValue", description)
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 } else {
@@ -822,10 +864,10 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "color")
                                     .put("bdt", "color")
-                                    .put("stringValue", colors.get(random.nextInt(colors.size())))
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("stringValue", color)
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
@@ -839,10 +881,10 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "licenseNumber")
                                     .put("bdt", "licenseNumber")
-                                    .put("stringValue", UUID.randomUUID().toString())
-                                    .put("lastUpdateUser", UUID.randomUUID().toString())
+                                    .put("stringValue", UUID.randomUUID().toString().substring(0, 8))
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", UUID.randomUUID().toString())
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 }
@@ -869,7 +911,8 @@ public class RealClusterTest {
                 String propertyIndex = Stream.ofAll(entityPartitions.partitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(propertyLogicalId)).map(partition -> Stream.ofAll(partition.indices()).get(0)).get(0);
 
-                String relationLastUpdateUser = UUID.randomUUID().toString();
+                String relationLastUpdateUser = users.get(random.nextInt(users.size()));
+                String relationCreationUser = users.get(random.nextInt(users.size()));
                 String relationLastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
                 String relationCreateTime = sdf.format(new Date(System.currentTimeMillis()));
 
@@ -888,7 +931,7 @@ public class RealClusterTest {
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
-                                .put("creationUser", UUID.randomUUID().toString())
+                                .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
                 bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("e.relation").setId(relationIdString + "." + Direction.IN.toString().toLowerCase())
@@ -906,7 +949,7 @@ public class RealClusterTest {
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
-                                .put("creationUser", UUID.randomUUID().toString())
+                                .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
                 bulk.add(client.prepareIndex().setIndex(index).setType("relation").setId(relationIdString)
@@ -922,7 +965,7 @@ public class RealClusterTest {
                                 .put("security2", "securityValue2")
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
-                                .put("creationUser", UUID.randomUUID().toString())
+                                .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
                 bulk.add(client.prepareIndex().setIndex(index).setType("rvalue").setId("rv" + String.format("%05d", rvalueId++))
@@ -935,9 +978,9 @@ public class RealClusterTest {
                                 .put("propertyId", "since")
                                 .put("bdt", "date")
                                 .put("dateValue", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("lastUpdateUser", UUID.randomUUID().toString())
+                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", UUID.randomUUID().toString())
+                                .put("creationUser", users.get(random.nextInt(users.size())))
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
 
@@ -951,9 +994,9 @@ public class RealClusterTest {
                                 .put("propertyId", "paid")
                                 .put("bdt", "payment")
                                 .put("intValue", random.nextInt(1000))
-                                .put("lastUpdateUser", UUID.randomUUID().toString())
+                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", UUID.randomUUID().toString())
+                                .put("creationUser", users.get(random.nextInt(users.size())))
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
             }
