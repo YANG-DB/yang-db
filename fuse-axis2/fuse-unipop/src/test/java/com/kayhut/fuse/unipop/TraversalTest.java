@@ -3,20 +3,19 @@ package com.kayhut.fuse.unipop;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.PromiseElementController;
-import com.kayhut.fuse.unipop.controller.PromiseVertexController;
-import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHashProvider;
+import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.promise.TraversalPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.client.Client;
 import org.junit.Assert;
@@ -27,7 +26,6 @@ import org.unipop.query.controller.ControllerManager;
 import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -55,7 +53,10 @@ public class TraversalTest {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
+                        new ElementController(
+                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
+                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                registry),
                         new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry));
             }
 
@@ -92,7 +93,10 @@ public class TraversalTest {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
-                        new PromiseElementController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),registry),
+                        new ElementController(
+                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
+                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                registry),
                         new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),new MetricRegistry()));
             }
 

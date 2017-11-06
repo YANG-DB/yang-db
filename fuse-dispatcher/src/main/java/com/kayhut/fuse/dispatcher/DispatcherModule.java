@@ -9,15 +9,13 @@ import com.kayhut.fuse.dispatcher.context.processor.PageProcessor;
 import com.kayhut.fuse.dispatcher.context.processor.ResourcePersistProcessor;
 import com.kayhut.fuse.dispatcher.driver.*;
 import com.kayhut.fuse.dispatcher.interception.ExceptionHandlingMethodInterceptor;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.InMemoryResourceStore;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.typesafe.config.Config;
 import org.jooby.Env;
-
-import static com.kayhut.fuse.model.Utils.baseUrl;
 
 /**
  * Created by lior on 15/02/2017.
@@ -32,7 +30,7 @@ public class DispatcherModule extends ModuleBase {
 
         // resource store and persist processor
         binder.bind(ResourceStore.class).to(InMemoryResourceStore.class).asEagerSingleton();
-        binder.bind(OntologyProvider.class).to(SimpleOntologyProvider.class).asEagerSingleton();
+        binder.bind(OntologyProvider.class).to(getOntologyProviderClass(conf)).asEagerSingleton();
         binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
 
         // page processor
@@ -61,4 +59,9 @@ public class DispatcherModule extends ModuleBase {
                 new ExceptionHandlingMethodInterceptor());
     }
 
+    //region Private Methods
+    private Class<? extends OntologyProvider> getOntologyProviderClass(Config conf) throws ClassNotFoundException {
+        return (Class<? extends  OntologyProvider>)Class.forName(conf.getString("fuse.ontology_provider"));
+    }
+    //endregion
 }

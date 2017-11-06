@@ -11,18 +11,18 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
 
     //region GraphElementSchemaProvider Implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String type) {
+    public Optional<GraphVertexSchema> getVertexSchema(String label) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String type) {
+    public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<Iterable<GraphEdgeSchema>> getEdgeSchemas(String type) {
-        return Optional.empty();
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
+        return Collections.emptyList();
     }
 
     @Override
@@ -31,12 +31,12 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
     }
 
     @Override
-    public Iterable<String> getVertexTypes() {
+    public Iterable<String> getVertexLabels() {
         return Collections.emptyList();
     }
 
     @Override
-    public Iterable<String> getEdgeTypes() {
+    public Iterable<String> getEdgeLabels() {
         return Collections.emptyList();
     }
     //endregion

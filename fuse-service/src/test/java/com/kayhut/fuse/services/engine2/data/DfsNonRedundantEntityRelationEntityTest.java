@@ -1,9 +1,7 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
-import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import javaslang.collection.Stream;
@@ -12,11 +10,8 @@ import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.jooby.test.JoobyRule;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 
 import java.util.ArrayList;
 import java.util.List;

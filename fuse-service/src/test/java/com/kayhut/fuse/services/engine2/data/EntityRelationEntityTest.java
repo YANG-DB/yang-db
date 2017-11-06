@@ -1,6 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.kayhut.fuse.gta.strategy.utils.ConverstionUtil;
+import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -23,11 +23,11 @@ import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
-import com.kayhut.fuse.unipop.controller.GlobalConstants;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
-import com.kayhut.fuse.unipop.structure.PromiseVertex;
+import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.index.Mappings.Mapping;
@@ -702,13 +702,13 @@ public abstract class EntityRelationEntityTest {
                         FIRE.getName(),
                         Direction.OUT,
                         TEMPERATURE.name,
-                        ConverstionUtil.convertConstraint(of(op, value)),
+                        ConversionUtil.convertConstraint(of(op, value)),
                         null,
                         singleton(DRAGON.name)),
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
                                 .test(temperatureValueFunction.apply(intId)))
                         .isEmpty()));
     }
@@ -733,7 +733,7 @@ public abstract class EntityRelationEntityTest {
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("A"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
                                 .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
                         .isEmpty()));
     }
@@ -757,7 +757,7 @@ public abstract class EntityRelationEntityTest {
                 assignment -> !Stream.ofAll(assignment.getEntities())
                         .filter(entity -> entity.geteTag().contains("B"))
                         .map(entity -> Integer.parseInt(entity.geteID().substring("Dragon_".length())))
-                        .filter(intId -> ConverstionUtil.convertConstraint(of(op, value))
+                        .filter(intId -> ConversionUtil.convertConstraint(of(op, value))
                                 .test(birthDateValueFunctionFactory.apply(startingDate).apply(interval).apply(intId)))
                         .isEmpty()));
     }

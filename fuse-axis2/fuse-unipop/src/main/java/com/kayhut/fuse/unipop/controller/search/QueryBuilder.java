@@ -541,7 +541,7 @@ public class QueryBuilder {
 
     public <V> QueryBuilder param(String name, V value) {
         if (this.current == this.root) {
-            throw new UnsupportedOperationException("parameters may not be added to the root aggregation");
+            throw new UnsupportedOperationException("parameters may not be added getTo the root aggregation");
         }
 
         if (seekLocalParam(this.current, name) != null) {
@@ -559,10 +559,10 @@ public class QueryBuilder {
     }
 
     public <V> QueryBuilder from(V from) {
-        return this.param("from", from);
+        return this.param("getFrom", from);
     }
     public <V> QueryBuilder to(V to) {
-        return this.param("to", to);
+        return this.param("getTo", to);
     }
     public QueryBuilder includeLower(boolean includeLower) {
         return this.param("include_lower", includeLower);
@@ -698,7 +698,7 @@ public class QueryBuilder {
     }
 
     // The clone will return a deep clone of the query builder (except leaf values: e.g the Object value in terms composite).
-    // The clone will set the current field to point to the root due to the difficulty in finding the cloned current composite in the clone Builder.
+    // The clone will set the current field getTo point getTo the root due getTo the difficulty in finding the cloned current composite in the clone Builder.
     @Override
     public QueryBuilder clone() {
         try {
@@ -842,8 +842,8 @@ public class QueryBuilder {
                         case range:
                             QueryBuilder.RangeComposite rangeComposite = (QueryBuilder.RangeComposite)composite;
                             if (rangeComposite.getFieldName().equals(fieldName)) {
-                                Object from = CompositeHelper.getParamValue(rangeComposite, "from", null);
-                                Object to = CompositeHelper.getParamValue(rangeComposite, "to", null);
+                                Object from = CompositeHelper.getParamValue(rangeComposite, "getFrom", null);
+                                Object to = CompositeHelper.getParamValue(rangeComposite, "getTo", null);
                                 set.add(new ContextualFieldValues().new Range(from, to));
                             }
                             break;
@@ -1336,8 +1336,8 @@ public class QueryBuilder {
         //region Composite Implementation
         @Override
         protected Object build() {
-            Object from = CompositeHelper.getParamValue(this, "from", null);
-            Object to = CompositeHelper.getParamValue(this, "to", null);
+            Object from = CompositeHelper.getParamValue(this, "getFrom", null);
+            Object to = CompositeHelper.getParamValue(this, "getTo", null);
             boolean includeLower = CompositeHelper.getParamValue(this, "include_lower", true);
             boolean includeUpper = CompositeHelper.getParamValue(this, "include_upper", false);
             boolean cache = CompositeHelper.getParamValue(this, "cache", true);
@@ -1357,7 +1357,7 @@ public class QueryBuilder {
                         .to(to)
                         .includeUpper(includeUpper);
             } else {
-                throw new UnsupportedOperationException("range filter can only be built with full range using 'from' and 'to' or using the Compare predicate");
+                throw new UnsupportedOperationException("range filter can only be built with full range using 'getFrom' and 'getTo' or using the Compare predicate");
             }
         }
         //endregion

@@ -70,7 +70,7 @@ public class CursorTest {
                 .contentType("application/json;charset=UTF-8");
 
 
-        //create cuyrsor resource
+        //create cursor resource
         AtomicReference<String> cursorId = new AtomicReference<>();
         CreateCursorRequest cursorRequest = new CreateCursorRequest();
         cursorRequest.setCursorType(CreateCursorRequest.CursorType.graph);

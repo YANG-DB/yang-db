@@ -7,12 +7,13 @@ echo    -flavour id: the flavour id for the engine. Available ids are:
 echo                1 - test.engine1.m1.public
 echo                2 - test.engine1.m1.private
 echo                3 - test.engine1.m1.private.private
-echo                4 - test.engine1.m1.dfs.public
-echo                5 - test.engine1.m1.dfs.private
-echo                6 - test.engine1.m1.dfs.private.private
-echo                7 - test.engine1.m1.smart.public
-echo                8 - test.engine1.m1.smart.private
-echo                9 - test.engine1.m1.smart.private.private
+echo                4 - test.engine2.m1.dfs.public
+echo                5 - test.engine2.m1.dfs.private
+echo                6 - test.engine2.m1.dfs.private.private
+echo                7 - test.engine2.m1.smart.public
+echo                8 - test.engine2.m1.smart.private
+echo                9 - test.engine2.m1.smart.private.private
+echo               10 - test.engine3.m1.dfs.knowledge.public
 echo
 echo    -debug    : enable remote debugging on port 5005
 goto :exit
@@ -64,6 +65,9 @@ if "%flavourId%"=="8" (
 )
 if "%flavourId%"=="9" (
     set flavourName=test.engine2.m1.smart.private.private
+)
+if "%flavourId%"=="10" (
+    set flavourName=test.engine3.m1.dfs.knowledge.public
 )
 
 if "%flavourName%"=="" (

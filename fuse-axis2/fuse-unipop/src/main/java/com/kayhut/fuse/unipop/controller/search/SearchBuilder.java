@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.controller.search;
 
+import javaslang.collection.Stream;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
 
@@ -16,6 +17,7 @@ public class SearchBuilder {
         this.excludeSourceFields = new HashSet<>();
         this.indices = new HashSet<>();
         this.types = new HashSet<>();
+        this.routing = new HashSet<>();
 
         this.queryBuilder = new QueryBuilder();
         this.aggregationBuilder = new AggregationBuilder();
@@ -78,10 +80,14 @@ public class SearchBuilder {
     public Collection<String> getTypes() {
         return this.types;
     }
+
+    public Collection<String> getRouting() {
+        return this.routing;
+    }
     //endregion
 
     //region API
-    public SearchRequestBuilder compose(
+    public SearchRequestBuilder build(
             Client client,
             boolean includeAggregations) {
         String[] indices = getIndices().stream().toArray(String[]::new);
@@ -90,13 +96,17 @@ public class SearchBuilder {
         searchRequestBuilder.setSize((int) getLimit());
         searchRequestBuilder.setIndices(indices);
 
+        if (!routing.isEmpty()) {
+            searchRequestBuilder.setRouting(Stream.ofAll(this.routing).toJavaArray(String.class));
+        }
+
 
         if (getIncludeSourceFields().size() == 0) {
             searchRequestBuilder.setFetchSource(false);
         } else {
             searchRequestBuilder.setFetchSource(
-                    getIncludeSourceFields().stream().toArray(String[]::new),
-                    getExcludeSourceFields().stream().toArray(String[]::new));
+                    Stream.ofAll(getIncludeSourceFields()).toJavaArray(String.class),
+                    Stream.ofAll(getExcludeSourceFields()).toJavaArray(String.class));
         }
 
         if (includeAggregations) {
@@ -114,6 +124,7 @@ public class SearchBuilder {
     private Collection<String> includeSourceFields;
     private Collection<String> excludeSourceFields;
     private Collection<String> indices;
+    private Collection<String> routing;
 
     private QueryBuilder queryBuilder;
     private AggregationBuilder aggregationBuilder;

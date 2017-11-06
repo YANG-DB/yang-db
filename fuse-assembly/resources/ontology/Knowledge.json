@@ -1,0 +1,208 @@
+{
+  "ont": "Knowledge",
+  "entityTypes": [
+    {
+      "eType": "Entity",
+      "name": "Entity",
+      "properties": [
+        "logicalId",
+        "context",
+        "category",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime"
+      ]
+    },
+    {
+      "eType": "Evalue",
+      "name": "Evalue",
+      "properties": [
+        "logicalId",
+        "context",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "propertyId",
+        "bdt",
+        "stringValue",
+        "textValue",
+        "dateValue",
+        "intValue"
+      ]
+    },
+    {
+      "eType": "Relation",
+      "name": "Relation",
+      "properties": [
+        "context",
+        "category",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime"
+      ]
+    },
+    {
+      "eType": "Rvalue",
+      "name": "Rvalue",
+      "properties": [
+        "context",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "propertyId",
+        "bdt",
+        "stringValue",
+        "textValue",
+        "dateValue",
+        "intValue"
+      ]
+    }
+  ],
+  "relationshipTypes": [
+    {
+      "rType": "hasEvalue",
+      "name": "hasEvalue",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Evalue"
+        }
+      ]
+    },
+    {
+      "rType": "hasRvalue",
+      "name": "hasRvalue",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Relation",
+          "eTypeB": "Rvalue"
+        }
+      ]
+    },
+    {
+      "rType": "hasRelation",
+      "name": "hasRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    },
+    {
+      "rType": "hasOutRelation",
+      "name": "hasOutRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    },
+    {
+      "rType": "hasInRelation",
+      "name": "hasInRelation",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Relation"
+        }
+      ]
+    }
+  ],
+  "properties": [
+    {
+      "pType": "logicalId",
+      "name": "logicalId",
+      "type": "string"
+    },
+    {
+      "pType": "context",
+      "name": "context",
+      "type": "string"
+    },
+    {
+      "pType": "category",
+      "name": "category",
+      "type": "string"
+    },
+    {
+      "pType": "security1",
+      "name": "security1",
+      "type": "string"
+    },
+    {
+      "pType": "security2",
+      "name": "security2",
+      "type": "string"
+    },
+    {
+      "pType": "lastUpdateUser",
+      "name": "lastUpdateUser",
+      "type": "String"
+    },
+    {
+      "pType": "lastUpdateTime",
+      "name": "lastUpdateTime",
+      "type": "date"
+    },
+    {
+      "pType": "creationTime",
+      "name": "creationTime",
+      "type": "date"
+    },
+    {
+      "pType": "propertyId",
+      "name": "propertyId",
+      "type": "string"
+    },
+    {
+      "pType": "bdt",
+      "name": "bdt",
+      "type": "string"
+    },
+    {
+      "pType": "stringValue",
+      "name": "stringValue",
+      "type": "string"
+    },
+    {
+      "pType": "textValue",
+      "name": "textValue",
+      "type": "string"
+    },
+    {
+      "pType": "intValue",
+      "name": "intValue",
+      "type": "int"
+    },
+    {
+      "pType": "dateValue",
+      "name": "dateValue",
+      "type": "date"
+    },
+    {
+      "pType": "2147483647",
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "pType": "2147483646",
+      "name": "type",
+      "type": "string"
+    }
+  ]
+}

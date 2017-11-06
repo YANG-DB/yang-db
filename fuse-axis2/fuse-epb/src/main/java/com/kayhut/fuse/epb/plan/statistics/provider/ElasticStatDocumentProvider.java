@@ -8,10 +8,7 @@ import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -51,7 +48,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
                 metricRegistry,
                 this.client,
-                searchBuilder.compose(this.client, false),
+                searchBuilder.build(this.client, false),
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());

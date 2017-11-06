@@ -2,7 +2,7 @@
     "index:" [
     {
      "name":"",
-     "partitions":"",
+     "getPartitions":"",
      "types":["know","member","member"]
     }]
 }

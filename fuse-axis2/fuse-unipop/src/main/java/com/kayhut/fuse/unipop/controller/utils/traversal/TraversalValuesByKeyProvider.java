@@ -37,7 +37,7 @@ public class TraversalValuesByKeyProvider implements TraversalValueByKeyProvider
                 if (this.key.equals(hasContainer.getKey()))
                 {
                     if (Iterable.class.isAssignableFrom(hasContainer.getValue().getClass())) {
-                        return Stream.of(((Iterable) hasContainer.getValue())).map(Object::toString);
+                        return Stream.ofAll(((Iterable) hasContainer.getValue())).map(Object::toString).toJavaList();
                     }
                     else if (String[].class.isAssignableFrom(hasContainer.getValue().getClass())) {
                         return Stream.of((String[]) hasContainer.getValue());

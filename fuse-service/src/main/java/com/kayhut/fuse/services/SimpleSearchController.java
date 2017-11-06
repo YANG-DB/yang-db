@@ -28,8 +28,8 @@ public class SimpleSearchController implements SearchController {
                 .queryResourceResult(new QueryResourceInfo())
                 .data(GraphContent.GraphBuilder.builder(request.getId())
                         .data(new QueryResult())
-                        .compose())
-                .compose();
+                        .build())
+                .build();
         //publish execution isCompleted
         eventBus.post(new ExecutionCompleteCommand(response));
         return response;*/

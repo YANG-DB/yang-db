@@ -11,7 +11,7 @@ import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
@@ -20,10 +20,8 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import javaslang.collection.Stream;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.model.Utils.submit;
 
@@ -62,12 +60,18 @@ public class ValidatorStrategyRegisteredAsgDriver implements QueryValidationOper
 
             AsgStrategyContext asgStrategyContext = new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
             AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(), new NextEbaseFactory(), new BNextFactory()).get();
-            Stream<ValidationContext> validationContextStream = Stream.ofAll(this.strategies).toStream().map(strategy -> strategy.apply(asgQuery, asgStrategyContext));
+            List<ValidationContext> validationContexts = Stream.ofAll(this.strategies)
+                    .map(strategy -> strategy.apply(asgQuery, asgStrategyContext))
+                    .toJavaList();
 
             //if valid continue flow - other return error to client
-            if (validationContextStream.toJavaStream().anyMatch(p -> !p.valid())) {
-                List<String> errors = validationContextStream.toJavaStream().filter(p -> !p.valid())
-                        .flatMap(k -> Arrays.stream(k.errors())).collect(Collectors.toList());
+
+            List<String> errors = Stream.ofAll(validationContexts)
+                    .filter(validationContext -> !validationContext.valid())
+                    .flatMap(k -> Stream.of(k.errors()))
+                    .toJavaList();
+
+            if (!errors.isEmpty()) {
                 return new ValidationContext(false, errors.toArray(new String[errors.size()]));
             } else {
                 submit(eventBus, new QueryCreationOperationContext(context.getQueryMetadata(), context.getQuery()));

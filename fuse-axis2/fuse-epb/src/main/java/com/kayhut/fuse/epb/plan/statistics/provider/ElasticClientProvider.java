@@ -27,7 +27,7 @@ public class ElasticClientProvider {
             try {
                 esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), config.getStatTransportPort()));
             } catch (UnknownHostException e) {
-                throw new RuntimeException("Fatal Error: Unable to get host information");
+                throw new RuntimeException("Fatal Error: Unable getTo get host information");
             }
         }
         return esClient;

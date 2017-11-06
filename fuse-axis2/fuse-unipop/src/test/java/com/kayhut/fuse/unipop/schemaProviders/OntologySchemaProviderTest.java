@@ -2,8 +2,11 @@ package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.unipop.structure.ElementType;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -25,10 +28,9 @@ public class OntologySchemaProviderTest {
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
 
-        assertEquals(vertexPersonSchema.getType(), "Person");
-        assertEquals(2, Stream.ofAll(vertexPersonSchema.getIndexPartition().getIndices()).size());
-
-        Iterable<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartition().getIndices());
+        assertEquals(vertexPersonSchema.getConstraint().getTraversalConstraint(), __.has(T.label, "Person"));
+        List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
+        assertEquals(2, indices.size());
 
         assertEquals("vertexIndex1", Stream.ofAll(indices).get(0));
         assertEquals("vertexIndex2", Stream.ofAll(indices).get(1));
@@ -39,12 +41,10 @@ public class OntologySchemaProviderTest {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
-        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getType().get(), "Person");
+        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Dragon");
 
-
-        assertEquals(2, Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartition().getIndices()).size());
-
-        Iterable<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartition().getIndices());
+        List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
+        assertEquals(2, indices.size());
 
         assertEquals("edgeIndex1", Stream.ofAll(indices).get(0));
         assertEquals("edgeIndex2", Stream.ofAll(indices).get(1));
@@ -54,8 +54,8 @@ public class OntologySchemaProviderTest {
     public void getEdgeSchemas() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        Optional<Iterable<GraphEdgeSchema>> edgeSchemas = ontologySchemaProvider.getEdgeSchemas("Fire");
-        assertEquals(Lists.newArrayList(edgeSchemas.get()).size(), 1);
+        Iterable<GraphEdgeSchema> edgeSchemas = ontologySchemaProvider.getEdgeSchemas("Fire");
+        assertEquals(Lists.newArrayList(edgeSchemas).size(), 1);
     }
 
     @Test
@@ -71,24 +71,27 @@ public class OntologySchemaProviderTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, (label, elementType) -> {
-            if (elementType == ElementType.vertex) {
-                return () -> Arrays.<String>asList("vertexIndex1", "vertexIndex2");
-            } else if (elementType == ElementType.edge) {
-                return () -> Arrays.<String>asList("edgeIndex1", "edgeIndex2");
-            } else {
-                // must fail
-                Assert.assertTrue(false);
-                return null;
-            }
-        });
+        return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
+                Arrays.asList(
+                        new GraphVertexSchema.Impl("Person", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2"))),
+                        new GraphVertexSchema.Impl("Dragon", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2")))
+                        ),
+                Optional.empty(),
+                Collections.emptyList(),
+                Optional.of(new GraphEdgeSchema.Impl(
+                        "",
+                        Optional.of(new GraphEdgeSchema.End.Impl("entityA.id", Optional.of("Dragon"))),
+                        Optional.of(new GraphEdgeSchema.End.Impl("entityB.id", Optional.of("Dragon"))),
+                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                        new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
+        ));
     }
 
     private Ontology getOntology() {
         Ontology ontology = Mockito.mock(Ontology.class);
         List<EPair> ePairs = Arrays.asList(new EPair() {{
             seteTypeA("Dragon");
-            seteTypeB("Person");
+            seteTypeB("Dragon");
         }});
 
         RelationshipType fireRelationshipType = RelationshipType.Builder.get()

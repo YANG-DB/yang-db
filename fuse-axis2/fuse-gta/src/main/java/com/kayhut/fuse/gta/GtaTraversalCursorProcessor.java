@@ -10,9 +10,9 @@ import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
-import com.kayhut.fuse.executor.cursor.TraversalCursorFactory;
+import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
@@ -75,7 +75,12 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
                         uniGraphProvider.getGraph(ontology).traversal()));
 
         //submit
-        Cursor cursor = this.cursorFactory.createCursor(new TraversalCursorFactory.TraversalCursorContext(ontology, context.getQueryResource(), traversal));
+        Cursor cursor = this.cursorFactory.createCursor(
+                new TraversalCursorContext(
+                        ontology,
+                        context.getQueryResource(),
+                        context.getCursorType(),
+                        traversal));
         time.stop();
         return submit(eventBus, context.of(cursor));
 

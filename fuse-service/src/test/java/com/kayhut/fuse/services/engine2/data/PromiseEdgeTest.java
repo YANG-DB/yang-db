@@ -4,12 +4,13 @@ import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.PromiseVertexController;
-import com.kayhut.fuse.unipop.controller.PromiseVertexFilterController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
+import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.commons.collections.map.HashedMap;
@@ -96,7 +97,7 @@ public class PromiseEdgeTest{
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
-        //create vertices to start from
+        //create vertices getTo start getFrom
         Vertex startVertex1 = mock(Vertex.class);
         when(startVertex1.id()).thenReturn("d1");
         when(startVertex1.label()).thenReturn("Dragon");
@@ -120,10 +121,9 @@ public class PromiseEdgeTest{
         when(searchQuery.getVertices()).thenReturn(Arrays.asList(startVertex1, startVertex2, startVertex6, startVertex8));
 
         //prepare schema provider
-        IndexPartition indexPartition = mock(IndexPartition.class);
-        when(indexPartition.getIndices()).thenReturn(Arrays.asList("v1"));
+        IndexPartitions indexPartitions = new StaticIndexPartitions(Collections.singletonList("v1"));
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
-        when(edgeSchema.getIndexPartition()).thenReturn(indexPartition);
+        when(edgeSchema.getIndexPartitions()).thenReturn(Optional.of(indexPartitions));
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
@@ -163,7 +163,7 @@ public class PromiseEdgeTest{
 
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
 
-        //create vertices to start from (all)
+        //create vertices getTo start getFrom (all)
         List<Vertex> startVertices = new ArrayList<>();
         for(int i=0; i<13; i++) {
             Vertex v = mock(Vertex.class);

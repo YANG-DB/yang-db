@@ -22,10 +22,14 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,24 +52,6 @@ import static org.mockito.Mockito.when;
  * Created by moti on 20/05/2017.
  */
 public class SmartEpbShortPathTests {
-
-    private GraphElementSchemaProvider graphElementSchemaProvider;
-    private Ontology.Accessor ont;
-    private PhysicalIndexProvider physicalIndexProvider;
-    private GraphStatisticsProvider graphStatisticsProvider;
-    private GraphLayoutProvider layoutProvider;
-
-    private EBaseStatisticsProvider eBaseStatisticsProvider;
-    private RegexPatternCostEstimator estimator;
-
-    protected BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
-    protected long startTime;
-
-    private static String INDEX_PREFIX = "idx-";
-    private static String INDEX_FORMAT = "idx-%s";
-    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
-    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-
     @Before
     public void setup() throws ParseException {
         startTime = DATE_FORMAT.parse("2017-01-01-10").getTime();
@@ -84,26 +70,36 @@ public class SmartEpbShortPathTests {
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
-            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartition().getIndices()).toJavaList();
+            List<String> indices = Stream.ofAll(edgeSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getEdgeCardinality(edgeSchema, indices);
         });
 
         when(graphStatisticsProvider.getEdgeCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphEdgeSchema edgeSchema = invocationOnMock.getArgumentAt(0, GraphEdgeSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.SummaryStatistics(typeCard.get(edgeSchema.getType())* indices.size(), typeCard.get(edgeSchema.getType())* indices.size());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(edgeSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            return new Statistics.SummaryStatistics(typeCard.get(constraintLabel)* indices.size(), typeCard.get(constraintLabel)* indices.size());
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
-            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartition().getIndices()).toJavaList();
+            List<String> indices = Stream.ofAll(vertexSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
             return graphStatisticsProvider.getVertexCardinality(vertexSchema, indices);
         });
 
         when(graphStatisticsProvider.getVertexCardinality(any(), any())).thenAnswer(invocationOnMock -> {
             GraphVertexSchema vertexSchema = invocationOnMock.getArgumentAt(0, GraphVertexSchema.class);
             List indices = invocationOnMock.getArgumentAt(1, List.class);
-            return new Statistics.SummaryStatistics(typeCard.get(vertexSchema.getType())*indices.size(), typeCard.get(vertexSchema.getType())*indices.size());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(vertexSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            return new Statistics.SummaryStatistics(typeCard.get(constraintLabel)*indices.size(), typeCard.get(constraintLabel)*indices.size());
         });
 
         when(graphStatisticsProvider.getGlobalSelectivity(any(), any(), any())).thenReturn(10l);
@@ -111,78 +107,42 @@ public class SmartEpbShortPathTests {
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(String.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            int card = typeCard.get(elementSchema.getType());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            int card = typeCard.get(constraintLabel);
             return createStringHistogram(card, indices.size());
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Long.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            int card = typeCard.get(elementSchema.getType());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            int card = typeCard.get(constraintLabel);
             return createLongHistogram(card, indices.size());
         });
 
         when(graphStatisticsProvider.getConditionHistogram(any(), any(), any(), any(), eq(Date.class))).thenAnswer(invocationOnMock -> {
             GraphElementSchema elementSchema = invocationOnMock.getArgumentAt(0, GraphElementSchema.class);
             List<String> indices = invocationOnMock.getArgumentAt(1, List.class);
-            int card = typeCard.get(elementSchema.getType());
+
+            String constraintLabel = Stream.ofAll(
+                    new TraversalValuesByKeyProvider().getValueByKey(elementSchema.getConstraint().getTraversalConstraint(), org.apache.tinkerpop.gremlin.structure.T.label.getAccessor()))
+                    .get(0);
+
+            int card = typeCard.get(constraintLabel);
             GraphElementPropertySchema propertySchema = invocationOnMock.getArgumentAt(2, GraphElementPropertySchema.class);
             return createDateHistogram(card,elementSchema,propertySchema, indices);
         });
 
-        IndexPartition defaultIndexPartition = mock(IndexPartition.class);
-        when(defaultIndexPartition.getIndices()).thenReturn(Collections.singleton("idx1"));
-        physicalIndexProvider = mock(PhysicalIndexProvider.class);
-        when(physicalIndexProvider.getIndexPartitionByLabel(any(), any())).thenAnswer(invocationOnMock -> {
-            String type = invocationOnMock.getArgumentAt(0, String.class);
-            if(type.equals(PERSON.name)){
-                return (IndexPartition) () -> Arrays.asList("Persons1","Persons2");
-            }
-            if(type.equals(DRAGON.name)){
-                return (IndexPartition) () -> Arrays.asList("Dragons1","Dragons2");
-            }
-            if(type.equals(OWN.getName())){
-                return new TimeSeriesIndexPartition() {
-                    @Override
-                    public String getDateFormat() {
-                        return DATE_FORMAT_STRING;
-                    }
-
-                    @Override
-                    public String getIndexPrefix() {
-                        return INDEX_PREFIX;
-                    }
-
-                    @Override
-                    public String getIndexFormat() {
-                        return INDEX_FORMAT;
-                    }
-
-                    @Override
-                    public String getTimeField() {
-                        return START_DATE.name;
-                    }
-
-                    @Override
-                    public String getIndexName(Date date) {
-                        return String.format(getIndexFormat(), DATE_FORMAT.format(date));
-                    }
-
-                    @Override
-                    public Iterable<String> getIndices() {
-                        return IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
-                                map(this::getIndexName).collect(Collectors.toList());
-                    }
-                };
-            }
-            return defaultIndexPartition;
-        });
-
-        layoutProvider = mock(GraphLayoutProvider.class);
-        when(layoutProvider.getRedundantProperty(any(), any())).thenReturn(Optional.empty());
-
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
-        graphElementSchemaProvider = new OntologySchemaProvider(ont.get(), physicalIndexProvider, layoutProvider);
+        graphElementSchemaProvider = buildSchemaProvider(ont);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
@@ -197,7 +157,7 @@ public class SmartEpbShortPathTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), (ont) -> physicalIndexProvider, (ont) -> layoutProvider),
+                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -208,8 +168,8 @@ public class SmartEpbShortPathTests {
 
     private Statistics.HistogramStatistics<Date> createDateHistogram(long card, GraphElementSchema elementSchema, GraphElementPropertySchema graphElementPropertySchema,List<String> indices) {
         List<Statistics.BucketInfo<Date>> buckets = new ArrayList<>();
-        if(elementSchema.getIndexPartition() instanceof TimeSeriesIndexPartition){
-            TimeSeriesIndexPartition timeSeriesIndexPartition = (TimeSeriesIndexPartition) elementSchema.getIndexPartition();
+        if(elementSchema.getIndexPartitions().get() instanceof TimeSeriesIndexPartitions){
+            TimeSeriesIndexPartitions timeSeriesIndexPartition = (TimeSeriesIndexPartitions) elementSchema.getIndexPartitions().get();
             if(timeSeriesIndexPartition.getTimeField().equals(graphElementPropertySchema.getName())){
                 for(int i = 0;i<3;i++){
                     Date dt = new Date(startTime - i*60*60*1000);
@@ -501,6 +461,90 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(3001, first.getCost().getGlobalCost().cost, 0.1);
     }
 
+    //region Private Methods
+    private GraphElementSchemaProvider buildSchemaProvider(Ontology.Accessor ont) {
+        Iterable<GraphVertexSchema> vertexSchemas =
+                Stream.ofAll(ont.entities())
+                        .map(entity -> (GraphVertexSchema) new GraphVertexSchema.Impl(
+                                entity.geteType(),
+                                entity.geteType().equals(PERSON.name) ? new StaticIndexPartitions(Arrays.asList("Persons1","Persons2")) :
+                                        entity.geteType().equals(DRAGON.name) ? new StaticIndexPartitions(Arrays.asList("Dragons1","Dragons2")) :
+                                                new StaticIndexPartitions(Collections.singletonList("idx1"))))
+                        .toJavaList();
 
+        Iterable<GraphEdgeSchema> edgeSchemas =
+                Stream.ofAll(ont.relations())
+                        .map(relation -> (GraphEdgeSchema) new GraphEdgeSchema.Impl(
+                                relation.getrType(),
+                                new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Optional.of(relation.getePairs().get(0).geteTypeA()))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Optional.of(relation.getePairs().get(0).geteTypeB()))),
+                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(relation.getrType().equals(OWN.getName()) ?
+                                        new TimeSeriesIndexPartitions() {
+                                            @Override
+                                            public Optional<String> getPartitionField() {
+                                                return Optional.of(START_DATE.name);
+                                            }
 
+                                            @Override
+                                            public Iterable<Partition> getPartitions() {
+                                                return Collections.singletonList(() ->
+                                                        IntStream.range(0, 3).mapToObj(i -> new Date(startTime - 60*60*1000 * i)).
+                                                                map(this::getIndexName).collect(Collectors.toList()));
+                                            }
+
+                                            @Override
+                                            public String getDateFormat() {
+                                                return DATE_FORMAT_STRING;
+                                            }
+
+                                            @Override
+                                            public String getIndexPrefix() {
+                                                return INDEX_PREFIX;
+                                            }
+
+                                            @Override
+                                            public String getIndexFormat() {
+                                                return INDEX_FORMAT;
+                                            }
+
+                                            @Override
+                                            public String getTimeField() {
+                                                return START_DATE.name;
+                                            }
+
+                                            @Override
+                                            public String getIndexName(Date date) {
+                                                return String.format(getIndexFormat(), DATE_FORMAT.format(date));
+                                            }
+                                        } : new StaticIndexPartitions(Collections.singletonList("idx1"))),
+                                Collections.emptyList()))
+                        .toJavaList();
+
+        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+    }
+    //endregion
+
+    //region Fields
+    private GraphElementSchemaProvider graphElementSchemaProvider;
+    private Ontology.Accessor ont;
+    private GraphStatisticsProvider graphStatisticsProvider;
+
+    private EBaseStatisticsProvider eBaseStatisticsProvider;
+    private RegexPatternCostEstimator estimator;
+
+    protected BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
+    protected long startTime;
+
+    private static String INDEX_PREFIX = "idx-";
+    private static String INDEX_FORMAT = "idx-%s";
+    private static String DATE_FORMAT_STRING = "yyyy-MM-dd-HH";
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
+    //endregion
 }

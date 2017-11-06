@@ -33,15 +33,15 @@ public class TraversalValuesProvider implements TraversalValueProvider<Set<Strin
         @Override
         protected Boolean visitHasStep(HasStep<?> hasStep) {
             Stream.of(hasStep.getHasContainers()).flatMap((Object hasContainerObj) -> {
-                        HasContainer hasContainer = (HasContainer)hasContainerObj;
-                        if (Iterable.class.isAssignableFrom(hasContainer.getValue().getClass())) {
-                            return Stream.of(((Iterable)hasContainer.getValue())).map(Object::toString);
-                        } else if (String[].class.isAssignableFrom(hasContainer.getValue().getClass())) {
-                            return Stream.of((String[])hasContainer.getValue());
-                        } else {
-                            return Stream.of(hasContainer.getValue());
-                        }
-                    }).forEach(value -> this.values.add(value.toString()));
+                HasContainer hasContainer = (HasContainer)hasContainerObj;
+                if (Iterable.class.isAssignableFrom(hasContainer.getValue().getClass())) {
+                    return Stream.of(((Iterable)hasContainer.getValue())).map(Object::toString);
+                } else if (String[].class.isAssignableFrom(hasContainer.getValue().getClass())) {
+                    return Stream.of((String[])hasContainer.getValue());
+                } else {
+                    return Stream.of(hasContainer.getValue());
+                }
+            }).forEach(value -> this.values.add(value.toString()));
 
             return Boolean.TRUE;
         }

@@ -63,7 +63,7 @@ public class ElasticStatProvider {
 
     //region Public Methods
     /**
-     * @param indices       Data indices
+     * @param indices       Data getIndices
      * @param types         Data types
      * @param fields        Data Fields
      * @return List of all buckets satisfying the input arguments
@@ -79,7 +79,7 @@ public class ElasticStatProvider {
 
 
     /**
-     * @param indices       Data indices
+     * @param indices       Data getIndices
      * @param types         Data types
      * @param fields        Data Fields
      * @return Map<Index Name, List of buckets> of buckets group by Index name

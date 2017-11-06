@@ -20,11 +20,20 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     private final int httpTransportPort;
     private final String esWorkingDir;
     private final String nodeName;
+    private final int numberOfShards;
     private Node node;
     private TransportClient client = null;
     //endregion
 
     //region Constructors
+    public ElasticEmbeddedNode(String clusterName) throws Exception {
+        this("target/es", 9200, 9300, clusterName);
+    }
+
+    public ElasticEmbeddedNode(String clusterName, int numberOfShards) throws Exception {
+        this("target/es", 9200, 9300, clusterName, numberOfShards);
+    }
+
     public ElasticEmbeddedNode() throws Exception {
         this("target/es", 9200, 9300, "fuse.test_elastic");
     }
@@ -34,10 +43,15 @@ public class ElasticEmbeddedNode implements AutoCloseable {
     }
 
     public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, ElasticIndexConfigurer... configurers) throws Exception {
+        this(esWorkingDir, httpPort, httpTransportPort, nodeName, 1, configurers);
+    }
+
+    public ElasticEmbeddedNode(String esWorkingDir, int httpPort, int httpTransportPort, String nodeName, int numberOfShards, ElasticIndexConfigurer... configurers) throws Exception {
         this.esWorkingDir = esWorkingDir;
         this.httpPort = httpPort;
         this.httpTransportPort = httpTransportPort;
         this.nodeName = nodeName;
+        this.numberOfShards = numberOfShards;
         prepare();
 
         for (ElasticIndexConfigurer configurer : configurers) {
@@ -95,8 +109,8 @@ public class ElasticEmbeddedNode implements AutoCloseable {
                 .put("path.logs", esWorkingDir)
                 .put("http.port", httpPort)
                 .put("transport.tcp.port", httpTransportPort)
-                .put("index.number_of_shards", "1")
-                .put("index.number_of_replicas", "0")
+                .put("index.number_of_shards", numberOfShards)
+                .put("index.number_of_replicas", 0)
                 .put("discovery.zen.ping.multicast.enabled", "false")
                 .build();
         node = nodeBuilder().settings(settings).clusterName(nodeName).client(false).node();

@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Constraint;
@@ -14,8 +13,8 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartition;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartition;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -64,7 +63,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         }
 
         // We estimate each vertex type's statistics, and combine all statistics together
-        List<String> vertexTypes = getVertexTypes(entity, ont, graphElementSchemaProvider.getVertexTypes());
+        List<String> vertexTypes = getVertexTypes(entity, ont, graphElementSchemaProvider.getVertexLabels());
         Statistics.SummaryStatistics entityStats = getVertexStatistics(vertexTypes.get(0));
 
         for (int i = 1; i < vertexTypes.size(); i++) {
@@ -81,7 +80,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             List<Statistics.BucketInfo<String>> bucketInfos = Collections.singletonList(new Statistics.BucketInfo<String>(1L, 1L, ((EConcrete) entity).geteID(), ((EConcrete) entity).geteID()));
             return bucketInfos.get(0).getCardinalityObject();
         }
-        List<String> vertexTypes = getVertexTypes(entity,ont,graphElementSchemaProvider.getVertexTypes());
+        List<String> vertexTypes = getVertexTypes(entity,ont,graphElementSchemaProvider.getVertexLabels());
 
         Statistics.SummaryStatistics entityStats = estimateVertexPropertyGroup(vertexTypes.get(0),entityFilter);
 
@@ -107,7 +106,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             Property property = ont.$property$( relProp.getpType() );
 
             GraphElementPropertySchema graphElementPropertySchema;
-            if (relProp instanceof PushdownRelProp){
+            if (relProp instanceof RedundantRelProp){
                 graphElementPropertySchema = graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
             }else {
                 graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
@@ -123,8 +122,8 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.SummaryStatistics getRedundantNodeStatistics(EEntityBase entity, RelPropGroup relPropGroup) {
-        List<PushdownRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof PushdownRelProp).
-                map(PushdownRelProp.class::cast).collect(Collectors.toList());
+        List<RedundantRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof RedundantRelProp).
+                map(RedundantRelProp.class::cast).collect(Collectors.toList());
 
         EPropGroup ePropGroup = new EPropGroup(pushdownProps.stream().map(prop -> EProp.of(prop.getpType(), prop.geteNum(), prop.getCon())).collect(Collectors.toList()));
         return getNodeFilterStatistics(entity, ePropGroup);
@@ -139,10 +138,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> getRelevantIndicesForEdge(RelPropGroup relPropGroup, GraphEdgeSchema graphEdgeSchema) {
-        IndexPartition indexPartition = graphEdgeSchema.getIndexPartition();
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
-        if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition) indexPartition ,relPropGroup);
+        IndexPartitions indexPartitions = graphEdgeSchema.getIndexPartitions().get();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
+        if(indexPartitions instanceof TimeSeriesIndexPartitions){
+            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions,relPropGroup);
         }
         return relevantIndices;
     }
@@ -168,7 +167,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
-        // When we add an OR condition (and a complex condition tree), we need to take a different approach
+        // When we add an OR condition (and a complex condition tree), we need getTo take a different approach
         Statistics.SummaryStatistics minVertexSummaryStatistics = getVertexStatistics(graphVertexSchema, relevantIndices);
         for(EProp eProp : entityFilter.getProps()){
             Property property = ont.$property$( eProp.getpType() );
@@ -187,10 +186,10 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private List<String> getVertexRelevantIndices(EPropGroup entityFilter, GraphVertexSchema graphVertexSchema) {
-        IndexPartition indexPartition = graphVertexSchema.getIndexPartition();
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
-        if(indexPartition instanceof TimeSeriesIndexPartition){
-            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartition)indexPartition, entityFilter);
+        IndexPartitions indexPartitions = graphVertexSchema.getIndexPartitions().get();
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
+        if(indexPartitions instanceof TimeSeriesIndexPartitions){
+            relevantIndices = findRelevantTimeSeriesIndices((TimeSeriesIndexPartitions) indexPartitions, entityFilter);
         }
         return relevantIndices;
     }
@@ -435,11 +434,11 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         return mergeBucketsCardinality(bucketsAbove);
     }
 
-    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, EPropGroup entityFilter) {
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartitions indexPartitions, EPropGroup entityFilter) {
         List<EProp> timeConditions = new ArrayList<>();
         for (EProp eProp : entityFilter.getProps()){
             Property property =  ont.$property$(eProp.getpType());
-            if(property.getName().equals(indexPartition.getTimeField())){
+            if(property.getName().equals(indexPartitions.getTimeField())){
                 switch(eProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)eProp.getCon().getExpr();
@@ -465,23 +464,23 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             }
         }
 
-        if(timeConditions.size() == 0)
-            return Lists.newArrayList(indexPartition.getIndices());
-
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
+        if(timeConditions.size() == 0) {
+            return relevantIndices;
+        }
 
         for(EProp timeCondition : timeConditions) {
-            String indexName = indexPartition.getIndexName((Date) timeCondition.getCon().getExpr());
+            String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
             relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
         }
         return relevantIndices;
 
     }
 
-    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartition indexPartition, RelPropGroup relPropGroup) {
+    private List<String> findRelevantTimeSeriesIndices(TimeSeriesIndexPartitions indexPartitions, RelPropGroup relPropGroup) {
         List<RelProp> timeConditions = new ArrayList<>();
         for (RelProp relProp : relPropGroup.getProps()){
-            if (ont.$property$(relProp.getpType()).getName().equals(indexPartition.getTimeField())) {
+            if (ont.$property$(relProp.getpType()).getName().equals(indexPartitions.getTimeField())) {
                 switch(relProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();
@@ -509,14 +508,15 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             }
         }
 
-        if(timeConditions.size() == 0)
-            return Lists.newArrayList(indexPartition.getIndices());
+        List<String> relevantIndices = Stream.ofAll(indexPartitions.getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
 
-        List<String> relevantIndices = Lists.newArrayList(indexPartition.getIndices());
+        if(timeConditions.size() == 0) {
+            return relevantIndices;
+        }
 
         for(RelProp timeCondition : timeConditions) {
 
-            String indexName = indexPartition.getIndexName((Date) timeCondition.getCon().getExpr());
+            String indexName = indexPartitions.getIndexName((Date) timeCondition.getCon().getExpr());
             relevantIndices.removeAll(findIndicesToRemove(timeCondition.getCon(), relevantIndices, indexName));
         }
         return relevantIndices;

@@ -47,7 +47,7 @@ public class FuseRunner {
         String confFilename = options.getApplicationConfFilename() !=null ? options.getApplicationConfFilename() : "application.conf";
         File configFile = new File(confFilename);
         if (!configFile.exists()) {
-            System.out.println("ConfigFile  " + confFilename + " Not Found - fallback to application.conf");
+            System.out.println("ConfigFile  " + confFilename + " Not Found - fallback getTo application.conf");
         }
 
         Jooby.run(() -> {

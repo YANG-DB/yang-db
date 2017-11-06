@@ -11,26 +11,19 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 public class OntologyGraphElementSchemaProviderFactory implements GraphElementSchemaProviderFactory {
     //region Constructors
     @Inject
-    public OntologyGraphElementSchemaProviderFactory(
-            PhysicalIndexProviderFactory physicalIndexProviderFactory,
-            GraphLayoutProviderFactory graphLayoutProviderFactory) {
-        this.physicalIndexProviderFactory = physicalIndexProviderFactory;
-        this.graphLayoutProviderFactory = graphLayoutProviderFactory;
+    public OntologyGraphElementSchemaProviderFactory(GraphElementSchemaProviderFactory schemaProviderFactory) {
+        this.schemaProviderFactory = schemaProviderFactory;
     }
     //endregion
 
     //region GraphElementSchemaProviderFactory Implementation
     @Override
     public GraphElementSchemaProvider get(Ontology ontology) {
-        return new OntologySchemaProvider(
-                ontology,
-                this.physicalIndexProviderFactory.get(ontology),
-                this.graphLayoutProviderFactory.get(ontology));
+        return new OntologySchemaProvider(ontology, this.schemaProviderFactory.get(ontology));
     }
     //endregion
 
     //region Fields
-    private PhysicalIndexProviderFactory physicalIndexProviderFactory;
-    private GraphLayoutProviderFactory graphLayoutProviderFactory;
+    private GraphElementSchemaProviderFactory schemaProviderFactory;
     //endregion
 }

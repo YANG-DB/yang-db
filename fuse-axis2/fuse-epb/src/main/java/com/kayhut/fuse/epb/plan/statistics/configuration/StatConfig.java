@@ -96,7 +96,7 @@ public class StatConfig {
         try {
             statContainer = Optional.ofNullable(new ObjectMapper().readValue(statConfigJson, StatContainer.class));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load statistics configuration\n" + e.getMessage());
+            throw new RuntimeException("Failed getTo load statistics configuration\n" + e.getMessage());
         }
         return statContainer;
     }

@@ -1,9 +1,8 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.ontolgy.OntologyProvider;
-import com.kayhut.fuse.executor.ontology.GraphLayoutProviderFactory;
-import com.kayhut.fuse.executor.ontology.PhysicalIndexProviderFactory;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
+import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 
@@ -15,18 +14,19 @@ public class M1DfsRedundantPlanExtensionStrategy extends CompositePlanExtensionS
     @Inject
     public M1DfsRedundantPlanExtensionStrategy(
             OntologyProvider ontologyProvider,
-            PhysicalIndexProviderFactory physicalIndexProviderFactory,
-            GraphLayoutProviderFactory graphLayoutProviderFactory) {
+            GraphElementSchemaProviderFactory schemaProviderFactory) {
         super(
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
                                 new InitialPlanGeneratorExtensionStrategy(),
                                 new StepAdjacentDfsStrategy()
                         ),
-                        new PushDownSplitFilterPlanExtensionStrategy(
+                        new RedundantFilterPlanExtensionStrategy(
                                 ontologyProvider,
-                                physicalIndexProviderFactory,
-                                graphLayoutProviderFactory)
+                                schemaProviderFactory),
+                        new RedundantSelectionFilterPlanExtensionStrategy(
+                                ontologyProvider,
+                                schemaProviderFactory)
                 )
         );
     }
