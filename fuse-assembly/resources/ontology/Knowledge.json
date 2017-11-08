@@ -12,7 +12,8 @@
         "security2",
         "lastUpdateUser",
         "lastUpdateTime",
-        "creationTime"
+        "creationTime",
+        "creationUser"
       ]
     },
     {
@@ -26,6 +27,7 @@
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
+        "creationUser",
         "propertyId",
         "bdt",
         "stringValue",
@@ -44,7 +46,8 @@
         "security2",
         "lastUpdateUser",
         "lastUpdateTime",
-        "creationTime"
+        "creationTime",
+        "creationUser"
       ]
     },
     {
@@ -57,12 +60,30 @@
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
+        "creationUser",
         "propertyId",
         "bdt",
         "stringValue",
         "textValue",
         "dateValue",
         "intValue"
+      ]
+    },
+    {
+      "eType": "Reference",
+      "name": "Reference",
+      "properties": [
+        "content",
+        "url",
+        "context",
+        "system",
+        "agency",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser"
       ]
     }
   ],
@@ -121,6 +142,17 @@
           "eTypeB": "Relation"
         }
       ]
+    },
+    {
+      "rType": "hasReference",
+      "name": "hasReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Evalue",
+          "eTypeB": "Reference"
+        }
+      ]
     }
   ],
   "properties": [
@@ -132,6 +164,16 @@
     {
       "pType": "context",
       "name": "context",
+      "type": "string"
+    },
+    {
+      "pType": "content",
+      "name": "content",
+      "type": "string"
+    },
+    {
+      "pType": "url",
+      "name": "url",
       "type": "string"
     },
     {
@@ -152,7 +194,7 @@
     {
       "pType": "lastUpdateUser",
       "name": "lastUpdateUser",
-      "type": "String"
+      "type": "string"
     },
     {
       "pType": "lastUpdateTime",
@@ -163,6 +205,11 @@
       "pType": "creationTime",
       "name": "creationTime",
       "type": "date"
+    },
+    {
+      "pType": "creationUser",
+      "name": "creationUser",
+      "type": "string"
     },
     {
       "pType": "propertyId",

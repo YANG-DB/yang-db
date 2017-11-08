@@ -1,0 +1,173 @@
+{
+  "assignments": [
+    {
+      "entities": [
+        {
+          "eTag": [
+            "A"
+          ],
+          "eID": "e000.context1",
+          "eType": "Entity",
+          "properties": [
+            {
+              "pType": "context",
+              "value": "context1"
+            },
+            {
+              "pType": "logicalId",
+              "value": "e000"
+            },
+            {
+              "pType": "category",
+              "value": "person"
+            },
+            {
+              "pType": "security1",
+              "value": "securityValue1"
+            },
+            {
+              "pType": "security2",
+              "value": "securityValue2"
+            },
+            {
+              "pType": "creationUser",
+              "value": "user1"
+            },
+            {
+              "pType": "creationTime",
+              "value": "2017-01-01 00:00:00.000"
+            },
+            {
+              "pType": "lastUpdateUser",
+              "value": "user1"
+            },
+            {
+              "pType": "lastUpdateTime",
+              "value": "2017-01-01 00:00:00.000"
+            }
+          ]
+        },
+        {
+          "eTag": [
+            "B"
+          ],
+          "eID": "ev0",
+          "eType": "Evalue",
+          "properties": [
+            {
+              "pType": "context",
+              "value": "context1"
+            },
+            {
+              "pType": "logicalId",
+              "value": "e000"
+            },
+            {
+              "pType": "propertyId",
+              "value": "age"
+            },
+            {
+              "pType": "stringValue",
+              "value": "40"
+            },
+            {
+              "pType": "security1",
+              "value": "securityValue1"
+            },
+            {
+              "pType": "security2",
+              "value": "securityValue2"
+            },
+            {
+              "pType": "creationUser",
+              "value": "user1"
+            },
+            {
+              "pType": "creationTime",
+              "value": "2017-01-01 00:00:00.000"
+            },
+            {
+              "pType": "lastUpdateUser",
+              "value": "user1"
+            },
+            {
+              "pType": "lastUpdateTime",
+              "value": "2017-01-01 00:00:00.000"
+            }
+          ]
+        },
+        {
+          "eTag": [
+            "C"
+          ],
+          "eID": "ref000",
+          "eType": "Reference",
+          "properties": [
+            {
+              "pType": "url",
+              "value": "http://abcde.com"
+            },
+            {
+              "pType": "system",
+              "value": "system1"
+            },
+            {
+              "pType": "agency",
+              "value": "agency1"
+            },
+            {
+              "pType": "content",
+              "value": "This is a reference!"
+            },
+            {
+              "pType": "security1",
+              "value": "securityValue1"
+            },
+            {
+              "pType": "security2",
+              "value": "securityValue2"
+            },
+            {
+              "pType": "creationUser",
+              "value": "user1"
+            },
+            {
+              "pType": "creationTime",
+              "value": "2017-01-01 00:00:00.000"
+            },
+            {
+              "pType": "lastUpdateUser",
+              "value": "user1"
+            },
+            {
+              "pType": "lastUpdateTime",
+              "value": "2017-01-01 00:00:00.000"
+            }
+          ]
+        }
+      ],
+      "relationships": [
+        {
+          "rID": "a0",
+          "agg": false,
+          "rType": "hasEvalue",
+          "directional": true,
+          "eID1": "e000",
+          "eID2": "ev0",
+          "eTag1": "A",
+          "eTag2": "B"
+        },
+        {
+          "rID": "a1",
+          "agg": false,
+          "rType": "hasReference",
+          "directional": true,
+          "eID1": "ev0",
+          "eID2": "ref000",
+          "eTag1": "A",
+          "eTag2": "B"
+        }
+      ]
+    }
+  ]
+}
