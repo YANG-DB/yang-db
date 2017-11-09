@@ -126,7 +126,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
         ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
         time.stop();
         return Stream.ofAll(searchHits)
-                .map(converter::convert)
+                .flatMap(converter::convert)
                 .filter(Objects::nonNull).iterator();
     }
     //endregion

@@ -16,6 +16,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.search.SearchHit;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
     //region ElementConverter Implementation
     @Override
-    public E convert(SearchHit searchHit) {
+    public Iterable<E> convert(SearchHit searchHit) {
         Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return null;
@@ -71,7 +72,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
         }
 
-        return (E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), properties);
+        return Arrays.asList((E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), properties));
     }
     //endregion
 

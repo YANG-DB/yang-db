@@ -52,12 +52,12 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
 
     //region ElementConverter Implementation
     @Override
-    public E convert(SearchHit searchHit) {
-        return (E)new DiscreteVertex(
+    public Iterable<E> convert(SearchHit searchHit) {
+        return Arrays.asList((E)new DiscreteVertex(
                 searchHit.getId(),
                 this.vertexSchemas.get(searchHit.getType()).getLabel(),
                 context.getGraph(),
-                searchHit.sourceAsMap());
+                searchHit.sourceAsMap()));
     }
     //endregion
 

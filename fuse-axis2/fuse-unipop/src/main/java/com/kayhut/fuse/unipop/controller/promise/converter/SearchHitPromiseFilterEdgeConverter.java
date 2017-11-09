@@ -8,6 +8,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.search.SearchHit;
 import org.unipop.structure.UniGraph;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,11 +24,11 @@ public class SearchHitPromiseFilterEdgeConverter implements ElementConverter<Sea
     //endregion
 
     @Override
-    public Edge convert(SearchHit hit) {
+    public Iterable<Edge> convert(SearchHit hit) {
         Map<String, Object> propertiesMap = hit.sourceAsMap();
         PromiseVertex v = new PromiseVertex(Promise.as(hit.id(), hit.getType()), Optional.empty(), graph, propertiesMap);
 
-        return new PromiseFilterEdge(v, graph);
+        return Arrays.asList(new PromiseFilterEdge(v, graph));
     }
 
     //region Fields

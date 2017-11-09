@@ -169,7 +169,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
 
     private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable, ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {
         return Stream.ofAll(searchHitIterable)
-                .map(searchHitPromiseVertexConverter::convert)
+                .flatMap(searchHitPromiseVertexConverter::convert)
                 .filter(Objects::nonNull).iterator();
     }
 

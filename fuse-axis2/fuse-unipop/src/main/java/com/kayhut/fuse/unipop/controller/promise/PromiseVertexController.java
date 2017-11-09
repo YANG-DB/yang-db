@@ -126,7 +126,7 @@ public class PromiseVertexController extends VertexControllerBase {
         //timeEs es search took in ms
         timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
         time.stop();
-        return converter.convert(response.getAggregations().asMap());
+        return Stream.ofAll(converter.convert(response.getAggregations().asMap())).flatMap(edgeIterator -> () -> edgeIterator).iterator();
 
     }
     //endregion

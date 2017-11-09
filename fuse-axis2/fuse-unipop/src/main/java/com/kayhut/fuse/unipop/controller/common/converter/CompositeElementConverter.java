@@ -18,11 +18,11 @@ public class CompositeElementConverter<TElementSource, TElementDest> implements 
 
     //region ElementConverter Implementation
     @Override
-    public TElementDest convert(TElementSource tElementSource) {
+    public Iterable<TElementDest> convert(TElementSource tElementSource) {
         for(ElementConverter<TElementSource, TElementDest> elementConverter : this.elementConverters) {
-            TElementDest elementDest = elementConverter.convert(tElementSource);
-            if (elementDest != null) {
-                return elementDest;
+            Iterable<TElementDest> elementsDest = elementConverter.convert(tElementSource);
+            if (elementsDest != null) {
+                return elementsDest;
             }
         }
 

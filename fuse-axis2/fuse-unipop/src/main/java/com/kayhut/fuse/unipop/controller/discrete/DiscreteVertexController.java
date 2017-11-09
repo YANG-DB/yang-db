@@ -104,7 +104,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                 new DiscreteEdgeConverter<>(context));
 
         return Stream.ofAll(searchHits)
-                .map(elementConverter::convert)
+                .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
     }
     //endregion

@@ -31,7 +31,7 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
 
 
     @Override
-    public Iterator<Edge> convert(Map<String, Aggregation> aggMap) {
+    public Iterable<Iterator<Edge>> convert(Map<String, Aggregation> aggMap) {
         ArrayList<Edge> edges = new ArrayList<>();
 
         Terms layer1 = (Terms)aggMap.get(GlobalConstants.EdgeSchema.SOURCE);
@@ -64,7 +64,7 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
             });
         });
 
-        return edges.iterator();
+        return Arrays.asList(edges.iterator());
 
     }
 

@@ -91,7 +91,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
 
         ElementConverter<SearchHit, E> elementConverter = new DiscreteVertexConverter<>(context);
         return Stream.ofAll(searchHits)
-                .map(elementConverter::convert)
+                .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
     }
     //endregion
