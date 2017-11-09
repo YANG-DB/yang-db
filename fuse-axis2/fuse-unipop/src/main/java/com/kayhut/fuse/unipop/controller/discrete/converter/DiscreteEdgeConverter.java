@@ -16,10 +16,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -46,42 +43,57 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         Vertex inV = null;
         Map<String, Object> properties = new HashMap<>(searchHit.sourceAsMap());
 
+        List<E> edges = new ArrayList<>();
+
         if (context.getDirection().equals(Direction.OUT)) {
             GraphEdgeSchema.End outEndSchema = edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDestination().get();
 
-            Object outId = getIdFieldValue(searchHit, properties, outEndSchema.getIdField());
-            Object inId = getIdFieldValue(searchHit, properties, inEndSchema.getIdField());
-
-            outV = context.getVertex(outId);
-
             Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, properties);
             properties = createEdgeProperties(inEndSchema, properties);
-            inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
+
+            Iterable<Object> outIds = getIdFieldValues(searchHit, properties, outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, properties, inEndSchema.getIdField());
+
+            for(Object outId : outIds) {
+                for(Object inId : inIds) {
+                    outV = context.getVertex(outId);
+                    inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
+
+                    edges.add((E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), properties));
+                }
+            }
+
         } else {
             GraphEdgeSchema.End outEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getDestination().get() : edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getSource().get() : edgeSchema.getDestination().get();
 
-            Object outId = getIdFieldValue(searchHit, properties, outEndSchema.getIdField());
-            Object inId = getIdFieldValue(searchHit, properties, inEndSchema.getIdField());
-
-            inV = context.getVertex(inId);
-
             Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, properties);
             properties = createEdgeProperties(outEndSchema, properties);
-            outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
+
+            Iterable<Object> outIds = getIdFieldValues(searchHit, properties, outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, properties, inEndSchema.getIdField());
+
+            for(Object outId : outIds) {
+                for(Object inId : inIds) {
+                    inV = context.getVertex(inId);
+                    outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
+
+                    edges.add((E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), properties));
+                }
+            }
         }
 
-        return Arrays.asList((E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), properties));
+        return edges;
     }
     //endregion
 
     //region Private Methods
-    private Object getIdFieldValue(SearchHit searchHit, Map<String, Object> properties, String idField) {
+    private Iterable<Object> getIdFieldValues(SearchHit searchHit, Map<String, Object> properties, String idField) {
         if (idField.equals("_id")) {
-            return searchHit.id();
+            return Collections.singletonList(searchHit.id());
         } else {
-            return MapHelper.value(properties, idField).orElse(null);
+            return MapHelper.values(properties, idField);
         }
     }
 
