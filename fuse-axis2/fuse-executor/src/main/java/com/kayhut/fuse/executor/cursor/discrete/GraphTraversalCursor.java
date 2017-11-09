@@ -18,11 +18,10 @@ import java.util.Set;
  */
 public class GraphTraversalCursor implements Cursor {
     //region Constructors
-    public GraphTraversalCursor(PathsTraversalCursor pathsTraversalCursor) {
-        this.pathsTraversalCursor = pathsTraversalCursor;
+    public GraphTraversalCursor(Cursor cursor) {
+        this.cursor = cursor;
 
         this.fullGraph = new QueryResult();
-        this.fullGraph.setPattern(pathsTraversalCursor.getContext().getQueryResource().getQuery());
         this.fullGraph.setAssignments(new ArrayList<>());
         this.fullGraph.getAssignments().add(new Assignment());
         this.fullGraph.getAssignments().get(0).setEntities(new ArrayList<>());
@@ -36,7 +35,7 @@ public class GraphTraversalCursor implements Cursor {
     //region Cursor Implementation
     @Override
     public QueryResult getNextResults(int numResults) {
-        QueryResult newResult = pathsTraversalCursor.getNextResults(numResults);
+        QueryResult newResult = this.cursor.getNextResults(numResults);
         consolidateFullGraph(newResult);
 
         return this.fullGraph;
@@ -68,7 +67,7 @@ public class GraphTraversalCursor implements Cursor {
     //endregion
 
     //region Fields
-    private PathsTraversalCursor pathsTraversalCursor;
+    private Cursor cursor;
     private QueryResult fullGraph;
 
     private Set<String> entityIds;

@@ -4,6 +4,7 @@ import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.cursor.promise.TraversalCursorFactory;
+import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.typesafe.config.Config;
@@ -33,7 +34,7 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
         binder.bind(UniGraphConfiguration.class).toInstance(uniGraphConfiguration);
 
-        binder.bind(Client.class).toInstance(createClient(elasticGraphConfiguration));
+        binder.bind(Client.class).toInstance(createClient(conf, elasticGraphConfiguration));
 
         binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
         binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
@@ -41,7 +42,15 @@ public class ExecutorModule extends ModuleBase {
     //endregion
 
     //region Private Methods
-    private Client createClient(ElasticGraphConfiguration configuration) {
+    private Client createClient(Config conf, ElasticGraphConfiguration configuration) {
+        if (conf.hasPath("fuse.elasticsearch.mock")) {
+            boolean clientMock = conf.getBoolean("fuse.elasticsearch.mock");
+            if (clientMock) {
+                System.out.println("Using mock elasticsearch client!");
+                return new MockClient();
+            }
+        }
+
         Settings settings = Settings.settingsBuilder().put("cluster.name", configuration.getClusterName()).build();
         TransportClient client = TransportClient.builder().settings(settings).build();
         Stream.of(configuration.getClusterHosts()).forEach(host -> {

@@ -79,10 +79,11 @@
                 <version>3.0.0</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>assembly/fuse.test.service.engine1.xml</descriptor>
-                        <descriptor>assembly/fuse.test.service.engine2.xml</descriptor>
+                        <!--<descriptor>assembly/fuse.test.service.engine1.xml</descriptor>-->
+                        <!--<descriptor>assembly/fuse.test.service.engine2.xml</descriptor>-->
                         <descriptor>assembly/fuse.test.service.engine3.knowledge.xml</descriptor>
-                        <descriptor>assembly/fuse.test.stat.engine2.xml</descriptor>
+                        <!--<descriptor>assembly/fuse.test.service.engine3.knowledge.mock.xml</descriptor>-->
+                        <!--<descriptor>assembly/fuse.test.stat.engine2.xml</descriptor>-->
                     </descriptors>
                 </configuration>
                 <executions>

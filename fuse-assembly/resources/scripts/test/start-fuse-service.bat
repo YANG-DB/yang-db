@@ -14,6 +14,7 @@ echo                7 - test.engine2.m1.smart.public
 echo                8 - test.engine2.m1.smart.private
 echo                9 - test.engine2.m1.smart.private.private
 echo               10 - test.engine3.m1.dfs.knowledge.public
+echo               11 - test.engine3mock.m1.dfs.knowledge.public
 echo
 echo    -debug    : enable remote debugging on port 5005
 goto :exit
@@ -68,6 +69,9 @@ if "%flavourId%"=="9" (
 )
 if "%flavourId%"=="10" (
     set flavourName=test.engine3.m1.dfs.knowledge.public
+)
+if "%flavourId%"=="11" (
+    set flavourName=test.engine3mock.m1.dfs.knowledge.public
 )
 
 if "%flavourName%"=="" (
