@@ -152,7 +152,7 @@
           "agg": false,
           "rType": "hasEvalue",
           "directional": true,
-          "eID1": "e000",
+          "eID1": "e000.context1",
           "eID2": "ev0",
           "eTag1": "A",
           "eTag2": "B"
@@ -164,8 +164,8 @@
           "directional": true,
           "eID1": "ev0",
           "eID2": "ref000",
-          "eTag1": "A",
-          "eTag2": "B"
+          "eTag1": "B",
+          "eTag2": "C"
         }
       ]
     }
