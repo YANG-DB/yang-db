@@ -4,7 +4,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
+import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
@@ -27,6 +29,8 @@ import org.unipop.structure.UniGraph;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
+
+import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -146,64 +150,75 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXid_d001X() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d001").toList();
+    public void g_V_hasXconstraint_byXhasXid_d001XXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d001"))).toList();
         Assert.assertEquals(1, vertices.size());
+        Assert.assertEquals("d001", vertices.get(0).id());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
-    public void g_V_hasXid_d001X_hasXlabel_DragonX() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d001").has(T.label, "Dragon").toList();
+    public void g_V_hasXconstraint_byXhasXid_d001X_hasXlabel_DragonXXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d001").has(T.label, "Dragon"))).toList();
         Assert.assertEquals(1, vertices.size());
+        Assert.assertEquals("d001", vertices.get(0).id());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
-    public void g_V_hasXid_d007X() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d007").toList();
+    public void g_V_hasXconstraint_byXhasXid_d007XXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d007"))).toList();
         Assert.assertEquals(1, vertices.size());
+        Assert.assertEquals("d007", vertices.get(0).id());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
-    public void g_V_hasXid_d007X_hasXlabel_DragonX() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d007").has(T.label, "Dragon").toList();
+    public void g_V_hasXconstraint_byXhasXid_d007X_hasXlabel_DragonXXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d007").has(T.label, "Dragon"))).toList();
         Assert.assertEquals(1, vertices.size());
+        Assert.assertEquals("d007", vertices.get(0).id());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
-    public void g_V_hasXid_within_d001_d002X() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d002")).toList();
+    public void g_V_hasXconstraint_byXhasXid_within_d001_d002XXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, P.within("d001", "d002")))).toList();
         Assert.assertEquals(2, vertices.size());
+        Assert.assertEquals(Arrays.asList("d001", "d002"),
+                Stream.ofAll(vertices).map(vertex -> vertex.id()).sorted().toJavaList());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
-    public void g_V_hasXid_within_d001_d007X() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d007")).toList();
+    public void g_V_hasXconstraint_byXhasXid_within_d001_d007XXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, P.within("d001", "d007")))).toList();
         Assert.assertEquals(2, vertices.size());
+        Assert.assertEquals(Arrays.asList("d001", "d007"),
+                Stream.ofAll(vertices).map(vertex -> vertex.id()).sorted().toJavaList());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).toList();
         Assert.assertEquals(10, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
     @Test
-    public void g_V_hasXage_103X_hasXage_select_raw_ageX() throws InterruptedException {
-        List<Vertex> vertices = g.V().has("age", P.eq(103)).has("age", SelectP.raw("age")).toList();
+    public void g_V_hasXconstraint_byXhasXage_103XXX_hasXage_select_raw_ageX() throws InterruptedException {
+        List<Vertex> vertices = g.V()
+                .has(CONSTRAINT, Constraint.by(__.has("age", P.eq(103))))
+                .has("age", SelectP.raw("age")).toList();
+
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
         Assert.assertEquals((Integer)103, vertices.get(0).value("age"));
@@ -211,50 +226,76 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXfaction_faction1X() {
-        List<Vertex> vertices = g.V().has("faction", P.eq("faction1")).toList();
+    public void g_V_hasXconstraint_byXhasXfaction_faction1XXX() {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has("faction", P.eq("faction1")))).toList();
         Assert.assertEquals(2, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction").equals("faction1")));
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_hasCoin() throws InterruptedException {
-        List<Edge> edges = g.V().has(T.label, "Dragon").outE("hasCoin").toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasCoin() throws InterruptedException {
+        List<Edge> edges = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").toList();
         Assert.assertEquals(30, edges.size());
         Assert.assertTrue(Stream.ofAll(edges).forAll(edge -> edge.label().equals("hasCoin")));
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_out_hasCoin() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").out("hasCoin").toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX() throws InterruptedException {
+        List<Edge> edges = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).toList();
+        Assert.assertEquals(30, edges.size());
+        Assert.assertTrue(Stream.ofAll(edges).forAll(edge -> edge.label().equals("hasCoin")));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_out_hasCoin() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).out("hasCoin").toList();
         Assert.assertEquals(30, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_inE_hasCoin() throws InterruptedException {
-        List<Edge> edges = g.V().has(T.label, "Dragon").inE("hasCoin").toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_inE_hasCoin() throws InterruptedException {
+        List<Edge> edges = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).inE("hasCoin").toList();
         Assert.assertEquals(0, edges.size());
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_in_hasCoin() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").in("hasCoin").toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_inE_hasXconstraint_byXhasXlabel_hasCoinXXX() throws InterruptedException {
+        List<Edge> edges = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).toList();
+        Assert.assertEquals(0, edges.size());
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_in_hasCoin() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).in("hasCoin").toList();
         Assert.assertEquals(0, vertices.size());
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_SelectP_raw_materialX_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").outE("hasCoin").has("material", SelectP.raw("material")).inV().toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasCoin_hasXmaterial_SelectP_raw_materialX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).outE("hasCoin").has("material", SelectP.raw("material")).inV().toList();
         Assert.assertEquals(30, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material") != null));
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon")
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_hasXmaterial_SelectP_raw_materialX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin")))
+                .has("material", SelectP.raw("material")).inV().toList();
+
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material") != null));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasCoin_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .outE("hasCoin")
                 .has("material", SelectP.raw("material"))
                 .has("weight", SelectP.raw("weight"))
@@ -266,10 +307,22 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_goldX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon")
-                .outE("hasCoin")
-                .has("material", "gold")
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin")))
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(30, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material") != null));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight") != null));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasCoin_hasXconstraint_byXhasXmaterial_goldXXX_hasXmaterial_goldX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("material", "gold")))
                 .has("material", SelectP.raw("material"))
                 .has("weight", SelectP.raw("weight"))
                 .inV().toList();
@@ -280,10 +333,22 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXweight_30X_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon")
-                .outE("hasCoin")
-                .has("weight", 30)
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXandXhasXlabel_hasCoinX_hasXmaterial_goldXXXX_hasXmaterial_goldX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "hasCoin"), __.has("material", "gold"))))
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(8, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material").toString().equals("gold")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight") != null));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasCoin_hasXconstraint_byXhasXweight_30XXX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin").has(CONSTRAINT, Constraint.by(__.has("weight", 30)))
                 .has("material", SelectP.raw("material"))
                 .has("weight", SelectP.raw("weight"))
                 .inV().toList();
@@ -293,11 +358,21 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_hasCoin_hasXmaterial_goldX_hasXweight_30X_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon")
-                .outE("hasCoin")
-                .has("material", "gold")
-                .has("weight", 30)
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXandXhasXlabel_hasCoinX_hasXweight_30XXXX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "hasCoin"), __.has("weight", 30))))
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(4, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight").equals(30)));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasCoin_hasXconstraint_byXandXhasXmaterial_goldX_hasXweight_30XXXX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE("hasCoin").has(CONSTRAINT, Constraint.by(__.and(__.has("material", "gold"), __.has("weight", 30))))
                 .has("material", SelectP.raw("material"))
                 .has("weight", SelectP.raw("weight"))
                 .inV().toList();
@@ -308,57 +383,87 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXid_d001X_outE_hasCoin_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d001").outE("hasCoin").inV().toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXandXhasXlabel_hasCoinX_hasXmaterial_goldX_hasXweight_30XXXX_hasXmaterial_SelectP_raw_materialX_hasXweight_SelectP_raw_weightX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE().has(CONSTRAINT, Constraint.by(__.and(
+                        __.has(T.label, "hasCoin"),
+                        __.has("material", "gold"),
+                        __.has("weight", 30))))
+                .has("material", SelectP.raw("material"))
+                .has("weight", SelectP.raw("weight"))
+                .inV().toList();
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material").equals("gold")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("weight").equals(30)));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXid_d001XXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d001")))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).inV().toList();
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
-    public void g_V_hasXid_d001X_hasXlabel_DragonX_outE_hasCoin_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d001").has(T.label, "Dragon").outE("hasCoin").inV().toList();
+    public void g_V_hasXconstraint_byXandXhasXid_d001X_hasXlabel_DragonXXXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.id, "d001"),
+                __.has(T.label, "Dragon"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).inV().toList();
+
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
-    public void g_V_hasXid_d007X_outE_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d007").outE("hasCoin").inV().toList();
+    public void g_V_hasXconstraint_byXhasXid_d007XXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d007")))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).inV().toList();
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
-    public void g_V_hasXid_d007X_hasXlabel_DragonX_outE_hasCoin_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, "d007").has(T.label, "Dragon").outE("hasCoin").inV().toList();
+    public void g_V_hasXconstraint_byXandXhasXid_d007X_hasXlabel_DragonXXXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.id, "d007"),
+                __.has(T.label, "Dragon"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).inV().toList();
+
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
-    public void g_V_hasXid_within_d001_d002X_outE_hasCoin_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d002")).outE("hasCoin").inV().toList();
+    public void g_V_hasXconstraint_byXhasXid_within_d001_d002XXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, P.within("d001", "d002"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).inV().toList();
         Assert.assertEquals(6, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
-    public void g_V_hasXid_within_d001_d007X_outE_hasCoin_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.id, P.within("d001", "d007")).outE("hasCoin").inV().toList();
+    public void g_V_hasXconstraint_byXhasXid_within_d001_d007XXX_outE_hasXconstraint_byXhasXlabel_hasCoinXXX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, P.within("d001", "d007"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasCoin"))).inV().toList();
         Assert.assertEquals(6, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
     }
 
     @Test
-    public void g_V_hasXlabel_FireX() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Fire").toList();
+    public void g_V_hasXconstraint_byXhasXlabel_FireXXX() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Fire"))).toList();
         Assert.assertEquals(30, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Fire")));
     }
 
     @Test
-    public void g_V_hasXlabel_FireX_inE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Fire").inE("hasOutFire").outV().toList();
+    public void g_V_hasXconstraint_byXhasXlabel_FireXXX_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).outV().toList();
+
         Assert.assertEquals(30, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(10, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -366,22 +471,30 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_FireX_outE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Fire").outE("hasOutFire").outV().toList();
+    public void g_V_hasXconstraint_byXhasXlabel_FireXXX_outE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).outV().toList();
+
         Assert.assertEquals(0, vertices.size());
     }
 
     @Test
-    public void g_V_hasXlabel_FireX_hasXduration_lt_100X_inE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Fire").has("duration", P.lt(100)).inE("hasOutFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_FireX_hasXduration_lt_100XXXX_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("duration", P.lt(100)))))
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire")))
+                .outV().toList();
+
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasOutFire_inV_inE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasOutFire").inV().inE("hasOutFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasOutFireXXX_inV_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Dragon"), __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).outV().toList();
+
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -389,8 +502,11 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasOutFire_inV_inE_hasInFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasOutFire").inV().inE("hasInFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasOutFireXXX_inV_inE_hasXconstraint_byXhasXlabel_hasInFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Dragon"), __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasInFire"))).outV().toList();
+
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -398,8 +514,11 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_inV_inE_hasInFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasInFire").inV().inE("hasInFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasInFireXXX_inV_inE_hasXconstraint_byXhasXlabel_hasInFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Dragon"), __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasInFire"))).inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasInFire"))).outV().toList();
+
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -407,8 +526,11 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_inV_inE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasInFire").inV().inE("hasOutFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasInFireXXX_inV_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Dragon"), __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasInFire"))).inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).outV().toList();
+
         Assert.assertEquals(3, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -416,9 +538,14 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasOutFire_hasXduration_0X_inV_inE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000")
-                .outE("hasOutFire").has("duration", 0).inV().inE("hasOutFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXandXhasXlabel_hasOutFireX_hasXduration_0XXXX_inV_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Dragon"), __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.and(
+                        __.has(T.label, "hasOutFire"),
+                        __.has("duration", 0))))
+                .inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).outV().toList();
+
         Assert.assertEquals(1, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -426,9 +553,14 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_hasXduration_0X_inV_inE_hasInFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000")
-                .outE("hasInFire").has("duration", 0).inV().inE("hasInFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXandXhasXlabel_hasInFireX_hasXduration_0XXXX_inV_inE_hasXconstraint_byXhasXlabel_hasInFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Dragon"), __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.and(
+                        __.has(T.label, "hasInFire"),
+                        __.has("duration", 0))))
+                .inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasInFire"))).outV().toList();
+
         Assert.assertEquals(1, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(1, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -436,9 +568,14 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasInFire_hasXduration_gt_0X_inV_inE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000")
-                .outE("hasInFire").has("duration", P.gt(0)).inV().inE("hasOutFire").outV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXandXhasXlabel_hasInFireX_hasXduration_0XXXX_inV_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Dragon"), __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.and(
+                        __.has(T.label, "hasInFire"),
+                        __.has("duration", P.gt(0)))))
+                .inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).outV().toList();
+
         Assert.assertEquals(2, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(2, Stream.ofAll(vertices).distinctBy(Element::id).size());
@@ -446,23 +583,37 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_outE_hasOutFire_hasXduration_selectP_directionX_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").outE("hasOutFire").has("duration", SelectP.raw("duration")).inV().toList();
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXhasXlabel_hasOutFireXXX_hasXduration_selectP_directionX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire")))
+                       .has("duration", SelectP.raw("duration"))
+                .inV().toList();
+
         Assert.assertEquals(30, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Fire")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("duration") != null));
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasFire_inV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasFire").inV().toList();
+    public void g_V_hasXconstraint_byXandXhasXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasFireXXX_inV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.label, "Dragon"),
+                __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasFire")))
+                .inV().toList();
+
         Assert.assertEquals(6, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Fire")));
     }
 
     @Test
-    public void g_V_hasXlabel_DragonX_hasXid_d000X_outE_hasFire_inV_inE_hasOutFire_outV() throws InterruptedException {
-        List<Vertex> vertices = g.V().has(T.label, "Dragon").has(T.id, "d000").outE("hasFire").inV().inE("hasOutFire").outV().toList();
+    public void g_V_hasXxonstraintXhasXandXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasFireXXX_inV_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.label, "Dragon"),
+                __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasFire"))).inV()
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire"))).outV().toList();
+
         Assert.assertEquals(6, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());

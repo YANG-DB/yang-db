@@ -7,18 +7,22 @@ import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverter;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
+import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
@@ -47,8 +51,25 @@ public class DiscreteVertexController extends VertexControllerBase {
     //region VertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
-        if (Stream.ofAll(edgeLabels).isEmpty()) {
-            return Collections.emptyIterator();
+        List<HasContainer> constraintHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> hasContainer.getKey()
+                        .toLowerCase()
+                        .equals(GlobalConstants.HasKeys.CONSTRAINT))
+                .toJavaList();
+
+        if (constraintHasContainers.size() > 1){
+            throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
+        }
+
+        Optional<TraversalConstraint> constraint = Optional.empty();
+        if(constraintHasContainers.size() > 0) {
+            constraint = Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
+        }
+
+        if (!Stream.ofAll(edgeLabels).isEmpty()) {
+            constraint = constraint.isPresent() ?
+                    Optional.of(Constraint.by(__.and(__.has(T.label, P.within(Stream.ofAll(edgeLabels).toJavaList())), constraint.get().getTraversal()))) :
+                    Optional.of(Constraint.by(__.has(T.label, P.within(Stream.ofAll(edgeLabels).toJavaList()))));
         }
 
         List<HasContainer> selectPHasContainers = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
@@ -56,19 +77,10 @@ public class DiscreteVertexController extends VertexControllerBase {
                 .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
                 .toJavaList();
 
-        Traversal[] hasTraversals = Stream.ofAll(searchVertexQuery.getPredicates().getPredicates())
-                .filter(hasContainer -> !selectPHasContainers.contains(hasContainer))
-                .map(hasContainer -> (Traversal) __.has(hasContainer.getKey(), hasContainer.getPredicate()))
-                .toJavaArray(Traversal.class);
-
-        TraversalConstraint constraint = hasTraversals.length > 0 ?
-                new TraversalConstraint(__.and(hasTraversals)) :
-                TraversalConstraint.EMPTY ;
-
         DiscreteVertexControllerContext context = new DiscreteVertexControllerContext(
                 this.graph,
                 this.schemaProvider,
-                constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint),
+                constraint,
                 selectPHasContainers,
                 searchVertexQuery.getLimit(),
                 searchVertexQuery.getDirection(),

@@ -4,16 +4,19 @@ import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteElementControllerContext;
+import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexConverter;
 import com.kayhut.fuse.unipop.predicates.SelectP;
+import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Compare;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
@@ -45,25 +48,28 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
     //region SearchController Implementation
     @Override
     public <E extends Element> Iterator<E> search(SearchQuery<E> searchQuery) {
+        List<HasContainer> constraintHasContainers = Stream.ofAll(searchQuery.getPredicates().getPredicates())
+                .filter(hasContainer -> hasContainer.getKey().toLowerCase().equals(GlobalConstants.HasKeys.CONSTRAINT))
+                .toJavaList();
+        if (constraintHasContainers.size() > 1 ||
+                (!constraintHasContainers.isEmpty() && !constraintHasContainers.get(0).getBiPredicate().equals(Compare.eq))) {
+            throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
+        }
+
         List<HasContainer> selectPHasContainers = Stream.ofAll(searchQuery.getPredicates().getPredicates())
                 .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() != null)
                 .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
                 .toJavaList();
 
-        Traversal[] hasTraversals = Stream.ofAll(searchQuery.getPredicates().getPredicates())
-                .filter(hasContainer -> !selectPHasContainers.contains(hasContainer))
-                .map(hasContainer -> (Traversal)__.has(hasContainer.getKey(), hasContainer.getPredicate()))
-                .toJavaArray(Traversal.class);
-
-        TraversalConstraint constraint = hasTraversals.length > 0 ?
-                new TraversalConstraint(__.and(hasTraversals)) :
-                TraversalConstraint.EMPTY ;
+        Optional<TraversalConstraint> constraint = constraintHasContainers.isEmpty() ?
+                Optional.empty() :
+                Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
 
         DiscreteElementControllerContext context = new DiscreteElementControllerContext(
                 this.graph,
                 ElementType.vertex,
                 this.schemaProvider,
-                constraint.equals(TraversalConstraint.EMPTY) ? Optional.empty() : Optional.of(constraint),
+                constraint,
                 selectPHasContainers,
                 searchQuery.getLimit());
 
