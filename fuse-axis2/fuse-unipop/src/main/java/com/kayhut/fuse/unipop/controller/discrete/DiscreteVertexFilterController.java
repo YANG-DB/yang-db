@@ -9,6 +9,7 @@ import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerConte
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexFilterControllerContext;
+import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexFilterConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseFilterEdgeConverter;
@@ -123,7 +124,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
+        ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(graph);
         time.stop();
         return Stream.ofAll(searchHits)
                 .flatMap(converter::convert)

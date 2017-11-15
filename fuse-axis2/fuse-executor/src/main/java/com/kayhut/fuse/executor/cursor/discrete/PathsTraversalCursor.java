@@ -93,21 +93,33 @@ public class PathsTraversalCursor implements Cursor {
         DiscreteVertex vertex = path.get(element.geteTag());
 
         String eType = vertex.label();
-        List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+        List<Property> properties = Stream.ofAll(vertex::properties)
+                .map(this::toProperty)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
 
         return toEntity(vertex.id().toString(),eType,element.geteTag(), properties);
     }
 
     private Entity toEntity(Path path, EConcrete element) {
         DiscreteVertex vertex = path.get(element.geteTag());
-        List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+        List<Property> properties = Stream.ofAll(vertex::properties)
+                .map(this::toProperty)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
 
         return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
     }
 
     private Entity toEntity(Path path, ETyped element) {
         DiscreteVertex vertex = path.get(element.geteTag());
-        List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+        List<Property> properties = Stream.ofAll(vertex::properties)
+                .map(this::toProperty)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
 
         return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
     }
@@ -145,8 +157,12 @@ public class PathsTraversalCursor implements Cursor {
         return builder.build();
     }
 
-    private Property toProperty(VertexProperty vertexProperty) {
-        return new Property(ont.property$(vertexProperty.key()).getpType(), "raw", vertexProperty.value());
+    private Optional<Property> toProperty(VertexProperty vertexProperty) {
+        return Stream.of(vertexProperty.key())
+                .map(key -> this.ont.property(key))
+                .filter(Optional::isPresent)
+                .map(property -> new Property(property.get().getpType(), "raw", vertexProperty.value()))
+                .toJavaOptional();
     }
     //endregion
 
