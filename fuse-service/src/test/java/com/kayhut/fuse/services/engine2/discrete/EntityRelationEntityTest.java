@@ -35,6 +35,7 @@ import static java.util.Collections.singletonList;
 /**
  * Created by roman.margolis on 02/10/2017.
  */
+@Ignore
 public class EntityRelationEntityTest {
     //region setup
     @BeforeClass

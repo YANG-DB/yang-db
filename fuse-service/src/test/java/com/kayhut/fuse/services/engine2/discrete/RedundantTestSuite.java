@@ -22,6 +22,7 @@ import java.nio.file.Paths;
         SingleEntityTest.class,
         EntityRelationEntityTest.class
 })
+@Ignore
 public class RedundantTestSuite {
     @BeforeClass
     public static void setup() throws Exception {

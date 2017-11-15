@@ -7,6 +7,7 @@ import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
@@ -94,20 +95,21 @@ public class PromiseVertexFilterController extends VertexControllerBase {
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexFilterControllerContext context =
+        CompositeControllerContext context = new CompositeControllerContext.Impl(
+                null,
                 new PromiseVertexFilterControllerContext(
                         this.graph,
                         searchVertexQuery.getVertices(),
                         constraint,
                         selectPHasContainers,
                         schemaProvider,
-                        searchVertexQuery.getLimit());
+                        searchVertexQuery.getLimit()));
 
-        CompositeSearchAppender<PromiseVertexFilterControllerContext> appender =
+        CompositeSearchAppender<CompositeControllerContext> appender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                     wrap(new FilterVerticesSearchAppender()),
                     wrap(new SizeSearchAppender(configuration)),
-                    wrap(new ConstraintSearchAppender()),
+                    wrap(new PromiseConstraintSearchAppender()),
                     wrap(new FilterSourceSearchAppender()),
                     wrap(new FilterIndexSearchAppender()));
 

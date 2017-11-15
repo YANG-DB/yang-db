@@ -376,6 +376,7 @@ public class DiscreteTraversalTest {
                 .has("material", SelectP.raw("material"))
                 .has("weight", SelectP.raw("weight"))
                 .inV().toList();
+
         Assert.assertEquals(1, vertices.size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Coin")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("material").equals("gold")));

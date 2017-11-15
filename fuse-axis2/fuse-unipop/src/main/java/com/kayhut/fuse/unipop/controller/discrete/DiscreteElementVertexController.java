@@ -3,6 +3,7 @@ package com.kayhut.fuse.unipop.controller.discrete;
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteElementControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
@@ -65,15 +66,16 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 Optional.empty() :
                 Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
 
-        DiscreteElementControllerContext context = new DiscreteElementControllerContext(
-                this.graph,
-                ElementType.vertex,
-                this.schemaProvider,
-                constraint,
-                selectPHasContainers,
-                searchQuery.getLimit());
+        CompositeControllerContext context = new CompositeControllerContext.Impl(
+                    new DiscreteElementControllerContext(this.graph,
+                            ElementType.vertex,
+                            this.schemaProvider,
+                            constraint,
+                            selectPHasContainers,
+                            searchQuery.getLimit()),
+                    null);
 
-        CompositeSearchAppender<DiscreteElementControllerContext> searchAppender =
+        CompositeSearchAppender<CompositeControllerContext> searchAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new ElementIndexSearchAppender()),
                         wrap(new SizeSearchAppender(this.configuration)),

@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
@@ -94,12 +95,20 @@ public class PromiseVertexController extends VertexControllerBase {
         Timer timeEs = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges:elastic"));
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(graph, schemaProvider, constraint, Collections.emptyList(), 0, startVertices);
+        CompositeControllerContext context = new CompositeControllerContext.Impl(
+                null,
+                new PromiseVertexControllerContext(
+                        graph,
+                        schemaProvider,
+                        constraint,
+                        Collections.emptyList(),
+                        0,
+                        startVertices));
 
-        CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
+        CompositeSearchAppender<CompositeControllerContext> compositeAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new StartVerticesSearchAppender()),
-                        wrap(new ConstraintSearchAppender()),
+                        wrap(new PromiseConstraintSearchAppender()),
                         wrap(new PromiseEdgeAggregationAppender()),
                         wrap(new PromiseEdgeIndexAppender()));
 

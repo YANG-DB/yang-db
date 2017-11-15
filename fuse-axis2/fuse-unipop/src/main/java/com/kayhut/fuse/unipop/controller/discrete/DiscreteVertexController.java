@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverter;
@@ -60,12 +61,12 @@ public class DiscreteVertexController extends VertexControllerBase {
                         .equals(GlobalConstants.HasKeys.CONSTRAINT))
                 .toJavaList();
 
-        if (constraintHasContainers.size() > 1){
+        if (constraintHasContainers.size() > 1) {
             throw new UnsupportedOperationException("Single \"" + GlobalConstants.HasKeys.CONSTRAINT + "\" allowed");
         }
 
         Optional<TraversalConstraint> constraint = Optional.empty();
-        if(constraintHasContainers.size() > 0) {
+        if (constraintHasContainers.size() > 0) {
             constraint = Optional.of((TraversalConstraint) constraintHasContainers.get(0).getValue());
         }
 
@@ -80,16 +81,18 @@ public class DiscreteVertexController extends VertexControllerBase {
                 .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
                 .toJavaList();
 
-        DiscreteVertexControllerContext context = new DiscreteVertexControllerContext(
-                this.graph,
-                this.schemaProvider,
-                constraint,
-                selectPHasContainers,
-                searchVertexQuery.getLimit(),
-                searchVertexQuery.getDirection(),
-                searchVertexQuery.getVertices());
+        CompositeControllerContext context = new CompositeControllerContext.Impl(
+                null,
+                new DiscreteVertexControllerContext(
+                        this.graph,
+                        this.schemaProvider,
+                        constraint,
+                        selectPHasContainers,
+                        searchVertexQuery.getLimit(),
+                        searchVertexQuery.getDirection(),
+                        searchVertexQuery.getVertices()));
 
-        CompositeSearchAppender<DiscreteVertexControllerContext> searchAppender =
+        CompositeSearchAppender<CompositeControllerContext> searchAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new IndexSearchAppender()),
                         wrap(new SizeSearchAppender(this.configuration)),

@@ -3,6 +3,7 @@ package com.kayhut.fuse.unipop.controller.promise;
 import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
@@ -137,20 +138,22 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
                 .map(h -> (TraversalConstraint) h.getValue());
 
         SearchBuilder searchBuilder = new SearchBuilder();
-        PromiseElementControllerContext context = new PromiseElementControllerContext(
-                this.graph,
-                Collections.emptyList(),
-                constraint,
-                selectPHasContainers,
-                this.schemaProvider,
-                ElementType.vertex,
-                searchQuery.getLimit());
+        CompositeControllerContext context = new CompositeControllerContext.Impl(
+                new PromiseElementControllerContext(
+                        this.graph,
+                        Collections.emptyList(),
+                        constraint,
+                        selectPHasContainers,
+                        this.schemaProvider,
+                        ElementType.vertex,
+                        searchQuery.getLimit()),
+                null);
 
         //search appender
-        CompositeSearchAppender<PromiseElementControllerContext> searchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
+        CompositeSearchAppender<CompositeControllerContext> searchAppender = new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                 wrap(new IndexSearchAppender()),
                 wrap(new SizeSearchAppender(this.configuration)),
-                wrap(new ConstraintSearchAppender()),
+                wrap(new PromiseConstraintSearchAppender()),
                 wrap(new FilterSourceSearchAppender()));
 
         searchAppender.append(searchBuilder, context);

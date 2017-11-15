@@ -1,29 +1,24 @@
-package com.kayhut.fuse.unipop.controller.common.appender;
+package com.kayhut.fuse.unipop.controller.promise.appender;
 
+import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
-import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.AndStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
-import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 
@@ -35,7 +30,7 @@ import java.util.Set;
 /**
  * Created by Elad on 4/26/2017.
  */
-public class ConstraintSearchAppender implements SearchAppender<CompositeControllerContext> {
+public class PromiseConstraintSearchAppender implements SearchAppender<CompositeControllerContext> {
     //region ElementControllerContext Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, CompositeControllerContext context) {
@@ -87,10 +82,6 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
 
     //region Private Methods
     private Set<String> getContextRelevantLabels(CompositeControllerContext context) {
-        if (context.getVertexControllerContext().isPresent()) {
-            return getVertexContextRelevantLabels(context);
-        }
-
         return getElementContextRelevantLabels(context);
     }
 
