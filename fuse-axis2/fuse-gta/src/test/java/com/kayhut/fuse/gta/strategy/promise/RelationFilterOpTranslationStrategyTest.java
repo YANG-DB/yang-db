@@ -87,7 +87,7 @@ public class RelationFilterOpTranslationStrategyTest {
         RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
                 __.start().has("willBeDeleted", "doesnt matter"),
-                plan,
+                new PlanWithCost<>(plan, null),
                 plan.getOps().get(1),
                 context);
 
@@ -134,7 +134,7 @@ public class RelationFilterOpTranslationStrategyTest {
         RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
                 __.start().has("willBeDeleted", "doesnt matter"),
-                plan,
+                new PlanWithCost<>(plan, null),
                 plan.getOps().get(1),
                 context);
 

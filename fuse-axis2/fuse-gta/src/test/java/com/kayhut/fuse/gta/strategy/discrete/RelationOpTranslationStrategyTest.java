@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
@@ -56,7 +57,7 @@ public class RelationOpTranslationStrategyTest {
         when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start().outE(FIRE.getName()).as("A-->B");
 
@@ -76,7 +77,7 @@ public class RelationOpTranslationStrategyTest {
         when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start().inE(FIRE.getName()).as("B<--A");
 

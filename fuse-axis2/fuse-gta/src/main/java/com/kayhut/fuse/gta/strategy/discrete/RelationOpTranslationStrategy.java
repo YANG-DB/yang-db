@@ -4,10 +4,8 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
@@ -28,9 +26,9 @@ public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
-        Optional<EntityOp> prev = PlanUtil.prev(plan, planOp, EntityOp.class);
-        Optional<EntityOp> next = PlanUtil.next(plan, planOp, EntityOp.class);
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
+        Optional<EntityOp> prev = PlanUtil.prev(plan.getPlan(), planOp, EntityOp.class);
+        Optional<EntityOp> next = PlanUtil.next(plan.getPlan(), planOp, EntityOp.class);
 
         Rel rel = ((RelationOp)planOp).getAsgEBase().geteBase();
         String rTypeName = context.getOnt().$relation$(rel.getrType()).getName();

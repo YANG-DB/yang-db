@@ -7,6 +7,8 @@ import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import javaslang.collection.Stream;
@@ -30,10 +32,10 @@ public class SelectionTranslationStrategy extends PlanOpTranslationStrategyBase 
 
     //region PlanOpTranslationStrategyBase Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
         Optional<EntityOp> lastEntityOp = EntityOp.class.equals(planOp.getClass()) ?
                 Optional.of((EntityOp)planOp) :
-                PlanUtil.prev(plan, planOp, EntityOp.class);
+                PlanUtil.prev(plan.getPlan(), planOp, EntityOp.class);
 
         if (!lastEntityOp.isPresent()) {
             return traversal;
@@ -43,7 +45,7 @@ public class SelectionTranslationStrategy extends PlanOpTranslationStrategyBase 
             return traversal;
         }
 
-        if (!PlanUtil.isFirst(plan, lastEntityOp.get())) {
+        if (!PlanUtil.isFirst(plan.getPlan(), lastEntityOp.get())) {
             Optional<VertexStep> lastVertexStep = TraversalUtil.last(traversal, VertexStep.class);
             if (!lastVertexStep.isPresent()) {
                 return traversal;
@@ -67,7 +69,7 @@ public class SelectionTranslationStrategy extends PlanOpTranslationStrategyBase 
                 .forEach(eProp -> traversal.has(context.getOnt().$property$(eProp).getName(),
                         SelectP.raw(context.getOnt().$property$(eProp).getName())));
 
-        if (PlanUtil.isFirst(plan, lastEntityOp.get())) {
+        if (PlanUtil.isFirst(plan.getPlan(), lastEntityOp.get())) {
             return traversal;
         }
 

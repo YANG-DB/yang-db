@@ -6,10 +6,7 @@ import com.kayhut.fuse.gta.strategy.promise.SelectionTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -54,7 +51,7 @@ public class SelectionTranslationStrategyTest {
         when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
 
         PlanOpTranslationStrategy strategy = new SelectionTranslationStrategy(EntityOp.class);
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(0), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(0), context);
 
         GraphTraversal expectedTraversal = __.start()
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
@@ -76,7 +73,7 @@ public class SelectionTranslationStrategyTest {
         when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
 
         PlanOpTranslationStrategy strategy = new SelectionTranslationStrategy(EntityFilterOp.class);
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start()
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
@@ -99,7 +96,7 @@ public class SelectionTranslationStrategyTest {
 
         PlanOpTranslationStrategy strategy = new SelectionTranslationStrategy(EntityFilterOp.class);
         GraphTraversal actualTraversal = strategy.translate(
-                __.start().has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name)), plan, plan.getOps().get(1), context);
+                __.start().has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name)), new PlanWithCost<>(plan, null), plan.getOps().get(1), context);
 
         GraphTraversal expectedTraversal = __.start()
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
@@ -122,7 +119,7 @@ public class SelectionTranslationStrategyTest {
 
         PlanOpTranslationStrategy strategy = new SelectionTranslationStrategy(EntityOp.class);
         GraphTraversal actualTraversal = strategy.translate(
-                __.start().outE(GlobalConstants.Labels.PROMISE_FILTER).otherV(), plan, plan.getOps().get(2), context);
+                __.start().outE(GlobalConstants.Labels.PROMISE_FILTER).otherV(), new PlanWithCost<>(plan, null), plan.getOps().get(2), context);
 
         GraphTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)
@@ -148,7 +145,7 @@ public class SelectionTranslationStrategyTest {
 
         PlanOpTranslationStrategy strategy = new SelectionTranslationStrategy(EntityFilterOp.class);
         GraphTraversal actualTraversal = strategy.translate(
-                __.start().outE(GlobalConstants.Labels.PROMISE_FILTER), plan, plan.getOps().get(3), context);
+                __.start().outE(GlobalConstants.Labels.PROMISE_FILTER), new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
 
         GraphTraversal expectedTraversal = __.start()
                 .outE(GlobalConstants.Labels.PROMISE_FILTER)

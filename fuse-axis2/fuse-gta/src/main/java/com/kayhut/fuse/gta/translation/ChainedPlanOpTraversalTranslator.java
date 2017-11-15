@@ -3,6 +3,7 @@ package com.kayhut.fuse.gta.translation;
 import com.google.inject.Inject;
 import com.kayhut.fuse.gta.strategy.*;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
@@ -21,9 +22,9 @@ public class ChainedPlanOpTraversalTranslator implements PlanTraversalTranslator
     //endregion
 
     //region PlanTraversalTranslator Implementation
-    public Traversal<Element, Path> translate(Plan plan, TranslationContext context) throws Exception {
+    public Traversal<Element, Path> translate(PlanWithCost<Plan, PlanDetailedCost> plan, TranslationContext context) throws Exception {
         GraphTraversal traversal = __.start();
-        for (PlanOpBase planOp : plan.getOps()) {
+        for (PlanOpBase planOp : plan.getPlan().getOps()) {
             traversal = this.translationStrategy.translate(traversal, plan, planOp, context);
         }
 

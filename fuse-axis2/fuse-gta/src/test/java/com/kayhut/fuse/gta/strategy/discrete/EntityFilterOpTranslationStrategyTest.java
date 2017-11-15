@@ -4,10 +4,7 @@ import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
@@ -94,7 +91,7 @@ public class EntityFilterOpTranslationStrategyTest {
         EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(
                 __.start(),
-                plan,
+                new PlanWithCost<>(plan, null),
                 plan.getOps().get(1),
                 context);
 
@@ -140,7 +137,7 @@ public class EntityFilterOpTranslationStrategyTest {
         when(context.getOnt()).thenAnswer(invocationOnMock -> new Ontology.Accessor(ontology));
 
         EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(3), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
         GraphTraversal expectedTraversal = __.start().has("name", "value1").has("age", 30);
 
         Assert.assertEquals(expectedTraversal, actualTraversal);

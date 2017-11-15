@@ -5,10 +5,7 @@ import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -51,7 +48,7 @@ public class EntitySelectionTranslationStrategyTest {
         when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
 
         PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityOp.class);
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(0), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(0), context);
 
         GraphTraversal expectedTraversal = __.start()
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
@@ -75,7 +72,7 @@ public class EntitySelectionTranslationStrategyTest {
 
         PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityOp.class);
         GraphTraversal actualTraversal = strategy.translate(
-                __.start(), plan, plan.getOps().get(2), context);
+                __.start(), new PlanWithCost<>(plan, null), plan.getOps().get(2), context);
 
         GraphTraversal expectedTraversal = __.start()
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))

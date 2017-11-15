@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -42,7 +43,7 @@ public class GoToEntityOpTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
 
         GoToEntityOpTranslationStrategy strategy = new GoToEntityOpTranslationStrategy();
-        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(0), context);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(0), context);
         GraphTraversal expectedTraversal = __.start().select("A");
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

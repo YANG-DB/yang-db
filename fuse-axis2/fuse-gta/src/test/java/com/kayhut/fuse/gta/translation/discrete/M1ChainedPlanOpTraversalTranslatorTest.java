@@ -6,10 +6,7 @@ import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
@@ -61,7 +58,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     public void test_concrete_rel_untyped() throws Exception {
         Plan plan = create_Con_Rel_Unt_PathQuery();
         Ontology.Accessor ont = getOntologyAccessor();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal = new PromiseGraph().traversal()
                 .V().as("A").has(T.id, "12345678").outE("Fire").as("A-->B").inV().as("B").path();
@@ -73,7 +70,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     public void test_concrete_rel_typed() throws Exception {
         Plan plan = create_Con_Rel_Typ_PathQuery();
         Ontology.Accessor ont = getOntologyAccessor();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal = new PromiseGraph().traversal()
                 .V().as("A").has(T.id, "12345678").outE("Fire").as("A-->B").inV().as("B").path();
@@ -85,7 +82,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     public void test_typed_rel_concrete() throws Exception {
         Plan plan = create_Typ_Rel_Con_PathQuery();
         Ontology.Accessor ont = getOntologyAccessor();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal = new PromiseGraph().traversal()
                 .V().as("B").has(T.label, "Dragon").outE("Fire").as("B-->A").inV().as("A").path();
@@ -97,7 +94,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     public void test_typed_rel_typed() throws Exception {
         Plan plan = create_Typ_Rel_Typ_PathQuery();
         Ontology.Accessor ont = getOntologyAccessor();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal = new PromiseGraph().traversal()
                 .V().as("A").has(T.label, "Person").outE("Fire").as("A-->B").inV().as("B").path();
@@ -109,7 +106,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
     public void test_concrete_rel_typed_rel_untyped() throws Exception {
         Plan plan = create_Con_Rel_Typ_Rel_Unt_PathQuery();
         Ontology.Accessor ont = getOntologyAccessor();
-        Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
+        Traversal actualTraversal = translator.translate(new PlanWithCost<>(plan, null), new TranslationContext(ont, new PromiseGraph().traversal()));
 
         Traversal expectedTraversal = new PromiseGraph().traversal()
                 .V().as("A").has(T.id, "12345678").outE("Fire").as("A-->B").inV().as("B").outE("Fire").as("B-->C").inV().as("C").path();

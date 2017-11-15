@@ -8,6 +8,7 @@ import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -47,10 +48,10 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
     //endregion
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
         EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
 
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
+        Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan.getPlan(), planOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
@@ -67,7 +68,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         }
 
         EntityOp entityOp = (EntityOp)previousPlanOp.get();
-        if (PlanUtil.isFirst(plan, entityOp)) {
+        if (PlanUtil.isFirst(plan.getPlan(), entityOp)) {
             traversal = appendEntityAndPropertyGroup(
                     traversal,
                     entityOp.getAsgEBase().geteBase(),

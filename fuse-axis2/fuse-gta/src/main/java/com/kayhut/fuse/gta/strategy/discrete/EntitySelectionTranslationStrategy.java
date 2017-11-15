@@ -4,10 +4,8 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import javaslang.collection.Stream;
@@ -31,12 +29,12 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
 
     //region PlanOpTranslationStrategyBase Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
         Optional<EntityOp> lastEntityOp = EntityOp.class.equals(planOp.getClass()) ?
                 Optional.of((EntityOp)planOp) :
-                PlanUtil.prev(plan, planOp, EntityOp.class);
+                PlanUtil.prev(plan.getPlan(), planOp, EntityOp.class);
 
-        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan, lastEntityOp.get(), RelationOp.class);
+        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan.getPlan(), lastEntityOp.get(), RelationOp.class);
         if (lastRelationOp.isPresent()) {
             return traversal;
         }

@@ -69,7 +69,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
 
         Traversal<Element, Path> traversal  = this.planTraversalTranslator.translate(
-                executionPlan.getPlan(),
+                executionPlan,
                 new TranslationContext(
                         new Ontology.Accessor(ontology),
                         uniGraphProvider.getGraph(ontology).traversal()));

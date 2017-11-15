@@ -4,8 +4,10 @@ import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.ontology.RelationshipType;
@@ -88,7 +90,7 @@ public class RelationFilterOpTranslationStrategyTest {
         RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
                 __.start(),
-                plan,
+                new PlanWithCost<>(plan, null),
                 plan.getOps().get(1),
                 context);
 
@@ -130,7 +132,7 @@ public class RelationFilterOpTranslationStrategyTest {
         RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
                 __.start(),
-                plan,
+                new PlanWithCost<>(plan, null),
                 plan.getOps().get(1),
                 context);
 

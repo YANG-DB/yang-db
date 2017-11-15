@@ -6,6 +6,7 @@ import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -35,20 +36,20 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
         EntityOp entityOp = (EntityOp)planOp;
 
-        if (PlanUtil.isFirst(plan, planOp)) {
+        if (PlanUtil.isFirst(plan.getPlan(), planOp)) {
             traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEBase().geteBase().geteTag());
             appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
         } else {
-            Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
+            Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan.getPlan(), planOp);
             if (previousPlanOp.isPresent() &&
                     (previousPlanOp.get() instanceof RelationOp ||
                      previousPlanOp.get() instanceof RelationFilterOp)) {
                 RelationOp relationOp = previousPlanOp.get() instanceof RelationOp ?
                         (RelationOp)previousPlanOp.get() :
-                        PlanUtil.prev(plan, previousPlanOp.get(), RelationOp.class).get();
+                        PlanUtil.prev(plan.getPlan(), previousPlanOp.get(), RelationOp.class).get();
 
                 switch (this.options) {
                     case none:
