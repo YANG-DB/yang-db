@@ -36,16 +36,16 @@ public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase
         String rTypeName = context.getOnt().$relation$(rel.getrType()).getName();
 
         switch (rel.getDir()) {
-            case R: traversal.outE(rTypeName);
+            case R: traversal.outE();
                 break;
-            case L: traversal.inE(rTypeName);
+            case L: traversal.inE();
                 break;
-            case RL: traversal.bothE(rTypeName);
+            case RL: traversal.bothE();
                 break;
         }
 
-        return traversal.as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), rel.getDir(), next.get().getAsgEBase().geteBase()));
-
+        return traversal.as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), rel.getDir(), next.get().getAsgEBase().geteBase()))
+                .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.eq(rTypeName))));
     }
     //endregion
 

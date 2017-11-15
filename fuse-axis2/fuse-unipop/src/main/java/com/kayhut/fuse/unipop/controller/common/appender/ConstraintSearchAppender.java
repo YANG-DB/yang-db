@@ -53,15 +53,16 @@ public class ConstraintSearchAppender implements SearchAppender<ElementControlle
                 context.getConstraint().get().getTraversal().asAdmin().clone() :
                 __.has(T.label, P.within(labels));
 
-        List<GraphElementConstraint> elementConstraints =
+        List<GraphElementConstraint> elementConstraints = context.getElementType().equals(ElementType.vertex) ?
                 Stream.ofAll(labels)
-                        .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
-                                context.getSchemaProvider().getVertexSchema(label).isPresent() ?
-                                        Collections.singletonList(context.getSchemaProvider().getVertexSchema(label).get()) :
-                                        Collections.emptyList() :
-                                new EdgeSchemaSupplier((VertexControllerContext)context).labels().applicable().get())
-                .map(GraphElementSchema::getConstraint)
-                .toJavaList();
+                        .map(label -> context.getSchemaProvider().getVertexSchema(label))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(GraphElementSchema::getConstraint)
+                        .toJavaList() :
+                Stream.ofAll(new EdgeSchemaSupplier((VertexControllerContext)context).labels().applicable().get())
+                    .map(GraphElementSchema::getConstraint)
+                    .toJavaList();
 
         if (!elementConstraints.isEmpty()) {
             List<HasStep> labelHasSteps = Stream.ofAll(new TraversalHasStepFinder(step -> step.getHasContainers().get(0).getKey().equals(T.label.getAccessor()))

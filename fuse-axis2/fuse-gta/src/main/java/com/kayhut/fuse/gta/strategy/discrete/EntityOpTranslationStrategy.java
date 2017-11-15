@@ -45,20 +45,15 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
             Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan, planOp);
             if (previousPlanOp.isPresent() &&
                     (previousPlanOp.get() instanceof RelationOp ||
-                     previousPlanOp.get() instanceof RelationFilterOp)) {
-                RelationOp relationOp = previousPlanOp.get() instanceof RelationOp ?
-                        (RelationOp)previousPlanOp.get() :
-                        PlanUtil.prev(plan, previousPlanOp.get(), RelationOp.class).get();
+                            previousPlanOp.get() instanceof RelationFilterOp)) {
 
                 switch (this.options) {
-                    case none:
-                        switch (relationOp.getAsgEBase().geteBase().getDir()) {
-                            case R: return traversal.inV().as(entityOp.getAsgEBase().geteBase().geteTag());
-                            case L: return traversal.outV().as(entityOp.getAsgEBase().geteBase().geteTag());
-                            case RL: return traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
-                        }
+                    case none: return traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                     case filterEntity:
-                        //TODO: add vertex filtering mechanism for discrete queries
+                        traversal.otherV();
+                        traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
+                        appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
+                        traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
                 }
             }
         }
@@ -68,19 +63,26 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //endregion
 
     //region Private Methods
-    private GraphTraversal<?, ?> appendEntity(GraphTraversal<?, ?> traversal,
+    private GraphTraversal appendEntity(GraphTraversal traversal,
                                         EEntityBase entity,
                                         Ontology.Accessor ont) {
 
         if (entity instanceof EConcrete) {
-            traversal.has(T.id, P.eq(((EConcrete)entity).geteID()));
+            //traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
+            traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
+                    P.eq(Constraint.by(__.has(T.id, P.eq(((EConcrete)entity).geteID())))));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
             List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);
-            if (eTypeNames.size() == 1) {
-                traversal.has(T.label, P.eq(eTypeNames.get(0)));
+            if (eTypeNames.isEmpty()) {
+                traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.has(T.label, P.eq(GlobalConstants.Labels.NONE))));
+            } else if (eTypeNames.size() == 1) {
+                traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.has(T.label, P.eq(eTypeNames.get(0)))));
             } else if (eTypeNames.size() > 1) {
-                traversal.has(T.label, P.within(eTypeNames));
+                traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.has(T.label, P.within(eTypeNames))));
             }
         }
 

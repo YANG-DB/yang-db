@@ -42,7 +42,8 @@ public class PromiseVertexController extends VertexControllerBase {
 
     //region Constructors
     public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
-        super(Collections.singletonList(GlobalConstants.Labels.PROMISE));
+        super(labels -> Stream.ofAll(labels).size() == 1 &&
+                Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE));
 
         this.client = client;
         this.configuration = configuration;
@@ -56,9 +57,6 @@ public class PromiseVertexController extends VertexControllerBase {
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
         Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"search")).time();
-        if (Stream.ofAll(edgeLabels).isEmpty()) {
-            return Collections.emptyIterator();
-        }
 
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");

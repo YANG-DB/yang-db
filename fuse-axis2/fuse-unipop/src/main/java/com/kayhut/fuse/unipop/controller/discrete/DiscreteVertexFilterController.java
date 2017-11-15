@@ -41,7 +41,8 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class DiscreteVertexFilterController extends VertexControllerBase {
     //region Constructors
     public DiscreteVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
-        super(Collections.singletonList(GlobalConstants.Labels.PROMISE_FILTER));
+        super(labels -> Stream.ofAll(labels).size() == 1 &&
+                Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
         this.client = client;
         this.configuration = configuration;

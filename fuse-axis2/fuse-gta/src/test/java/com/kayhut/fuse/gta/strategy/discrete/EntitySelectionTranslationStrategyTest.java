@@ -2,6 +2,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategy;
+import com.kayhut.fuse.gta.strategy.promise.SelectionTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -61,7 +62,51 @@ public class EntitySelectionTranslationStrategyTest {
     }
 
     @Test
-    @Ignore
+    public void test_selection_entity1_filter5() {
+        AsgQuery query = simpleQuery1("name", "ont");
+
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 5))
+        );
+
+        TranslationContext context = Mockito.mock(TranslationContext.class);
+        when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
+
+        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityFilterOp.class);
+        GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
+
+        GraphTraversal expectedTraversal = __.start()
+                .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
+                .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name));
+
+        Assert.assertEquals(expectedTraversal, actualTraversal);
+    }
+
+    @Test
+    public void test_selection_entity1_filter5_distinct_select() {
+        AsgQuery query = simpleQuery1("name", "ont");
+
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 5))
+        );
+
+        TranslationContext context = Mockito.mock(TranslationContext.class);
+        when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
+
+        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityFilterOp.class);
+        GraphTraversal actualTraversal = strategy.translate(
+                __.start().has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name)), plan, plan.getOps().get(1), context);
+
+        GraphTraversal expectedTraversal = __.start()
+                .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
+                .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name));
+
+        Assert.assertEquals(expectedTraversal, actualTraversal);
+    }
+
+    @Test
     public void test_selection_entity3() {
         AsgQuery query = simpleQuery1("name", "ont");
 
@@ -75,11 +120,39 @@ public class EntitySelectionTranslationStrategyTest {
 
         PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityOp.class);
         GraphTraversal actualTraversal = strategy.translate(
-                __.start(), plan, plan.getOps().get(2), context);
+                __.start().outE(GlobalConstants.Labels.PROMISE_FILTER).otherV(), plan, plan.getOps().get(2), context);
 
         GraphTraversal expectedTraversal = __.start()
+                .outE(GlobalConstants.Labels.PROMISE_FILTER)
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
-                .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name));
+                .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name))
+                .otherV().as("B");
+
+        Assert.assertEquals(expectedTraversal, actualTraversal);
+    }
+
+    @Test
+    public void test_selection_filter5() {
+        AsgQuery query = simpleQuery1("name", "ont");
+
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new RelationOp(AsgQueryUtil.element$(query, 2)),
+                new EntityOp(AsgQueryUtil.element$(query, 3)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 5)));
+
+        TranslationContext context = Mockito.mock(TranslationContext.class);
+        when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
+
+        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityFilterOp.class);
+        GraphTraversal actualTraversal = strategy.translate(
+                __.start().outE(GlobalConstants.Labels.PROMISE_FILTER), plan, plan.getOps().get(3), context);
+
+        GraphTraversal expectedTraversal = __.start()
+                .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
+                .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name))
+                .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

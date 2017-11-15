@@ -1,6 +1,7 @@
 package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.gta.strategy.promise.*;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
@@ -33,7 +34,6 @@ import static org.mockito.Mockito.when;
  */
 public class RelationOpTranslationStrategyTest {
     Ontology ontology = OntologyTestUtils.createDragonsOntologyShort();
-    Ontology.Accessor ont = new Ontology.Accessor(ontology);
 
     public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
@@ -58,7 +58,9 @@ public class RelationOpTranslationStrategyTest {
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
 
-        GraphTraversal expectedTraversal = __.start().outE(FIRE.getName()).as("A-->B");
+        GraphTraversal expectedTraversal = __.start().outE().as("A-->B")
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.has(T.label, FIRE.getName())));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -78,7 +80,9 @@ public class RelationOpTranslationStrategyTest {
         RelationOpTranslationStrategy strategy = new RelationOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(1), context);
 
-        GraphTraversal expectedTraversal = __.start().inE(FIRE.getName()).as("B<--A");
+        GraphTraversal expectedTraversal = __.start().inE().as("B<--A")
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.has(T.label, FIRE.getName())));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

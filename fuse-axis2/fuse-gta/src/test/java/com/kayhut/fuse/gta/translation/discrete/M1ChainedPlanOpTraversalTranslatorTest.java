@@ -63,8 +63,13 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         Ontology.Accessor ont = getOntologyAccessor();
         Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
-        Traversal expectedTraversal = new PromiseGraph().traversal()
-                .V().as("A").has(T.id, "12345678").outE("Fire").as("A-->B").inV().as("B").path();
+        Traversal expectedTraversal =
+                __.start().V().as("A")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
+                        .outE().as("A-->B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .otherV().as("B")
+                        .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -75,8 +80,13 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         Ontology.Accessor ont = getOntologyAccessor();
         Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
-        Traversal expectedTraversal = new PromiseGraph().traversal()
-                .V().as("A").has(T.id, "12345678").outE("Fire").as("A-->B").inV().as("B").path();
+        Traversal expectedTraversal =
+                new PromiseGraph().traversal().V().as("A")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
+                        .outE().as("A-->B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .otherV().as("B")
+                        .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -87,8 +97,13 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         Ontology.Accessor ont = getOntologyAccessor();
         Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
-        Traversal expectedTraversal = new PromiseGraph().traversal()
-                .V().as("B").has(T.label, "Dragon").outE("Fire").as("B-->A").inV().as("A").path();
+        Traversal expectedTraversal =
+                new PromiseGraph().traversal().V().as("B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
+                        .outE().as("B-->A")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .otherV().as("A")
+                        .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -99,8 +114,13 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         Ontology.Accessor ont = getOntologyAccessor();
         Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
-        Traversal expectedTraversal = new PromiseGraph().traversal()
-                .V().as("A").has(T.label, "Person").outE("Fire").as("A-->B").inV().as("B").path();
+        Traversal expectedTraversal =
+                new PromiseGraph().traversal().V().as("A")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Person")))
+                        .outE().as("A-->B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .otherV().as("B")
+                        .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -111,8 +131,16 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         Ontology.Accessor ont = getOntologyAccessor();
         Traversal actualTraversal = translator.translate(plan, new TranslationContext(ont, new PromiseGraph().traversal()));
 
-        Traversal expectedTraversal = new PromiseGraph().traversal()
-                .V().as("A").has(T.id, "12345678").outE("Fire").as("A-->B").inV().as("B").outE("Fire").as("B-->C").inV().as("C").path();
+        Traversal expectedTraversal =
+                new PromiseGraph().traversal().V().as("A")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
+                        .outE().as("A-->B")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .otherV().as("B")
+                        .outE().as("B-->C")
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
+                        .otherV().as("C")
+                        .path();
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -380,5 +408,4 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         return new Ontology.Accessor(ontology);
     }
-
 }

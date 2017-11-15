@@ -2,6 +2,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
+import com.kayhut.fuse.gta.strategy.promise.*;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
@@ -33,6 +34,7 @@ import static com.kayhut.fuse.model.query.Constraint.of;
 import static com.kayhut.fuse.model.query.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
+import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
 import static org.mockito.Mockito.when;
 
 /**
@@ -93,12 +95,17 @@ public class EntityFilterOpTranslationStrategyTest {
 
         EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(
-                __.start(),
+                __.start().has("willBeDeleted", "doesnt matter"),
                 plan,
                 plan.getOps().get(1),
                 context);
 
-        GraphTraversal expectedTraversal = __.start().has("name", "value1").has("age", 30);
+        GraphTraversal expectedTraversal = __.start()
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.and(
+                                __.has(T.label, "Person"),
+                                __.has("name", "value1"),
+                                __.has("age", 30))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -141,7 +148,13 @@ public class EntityFilterOpTranslationStrategyTest {
 
         EntityFilterOpTranslationStrategy strategy = new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none);
         GraphTraversal actualTraversal = strategy.translate(__.start(), plan, plan.getOps().get(3), context);
-        GraphTraversal expectedTraversal = __.start().has("name", "value1").has("age", 30);
+        GraphTraversal expectedTraversal = __.start()
+                .outE(GlobalConstants.Labels.PROMISE_FILTER)
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.and(
+                                __.has("name", "value1"),
+                                __.has("age", 30))))
+                .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
