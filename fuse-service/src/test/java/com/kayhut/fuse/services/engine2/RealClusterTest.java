@@ -18,10 +18,17 @@ import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateRequest;
+import org.elasticsearch.action.admin.indices.template.delete.DeleteIndexTemplateResponse;
+import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequest;
+import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesResponse;
+import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
@@ -31,9 +38,11 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -180,6 +189,44 @@ public class RealClusterTest {
                 new ETyped(7, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
                 new EProp(9, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.notEmpty)),
+                new Rel(10, $ont.rType$("hasReference"), Rel.Direction.R, null, 11, 0),
+                new ETyped(11, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 0, 0)
+        )).build();
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_fetchEntityInsights() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("query2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 6), 0),
+                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e015")),
+                new Rel(6, $ont.rType$("hasInsight"), Rel.Direction.R, null, 7, 0),
+                new ETyped(7, "B", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
+                new EProp(9, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
                 new Rel(10, $ont.rType$("hasReference"), Rel.Direction.R, null, 11, 0),
                 new ETyped(11, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 0, 0)
         )).build();
@@ -685,7 +732,7 @@ public class RealClusterTest {
 
     @Test
     @Ignore
-    public void loadData() throws UnknownHostException {
+    public void loadData() throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -693,6 +740,21 @@ public class RealClusterTest {
                 .put("cluster.name", "roman.es").build();
         Client client = TransportClient.builder().settings(settings).build()
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+
+        String workingDir = System.getProperty("user.dir");
+        String templatesPath = Paths.get(workingDir, "../", "fuse-assembly", "resources", "indexTemplates").toString();
+
+        File[] templateFiles = new File(templatesPath).listFiles();
+        if (templateFiles != null) {
+            for (File templateFile : templateFiles) {
+                String templateName = FilenameUtils.getBaseName(templateFile.getName());
+                String template = FileUtils.readFileToString(templateFile, "utf-8");
+                if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
+                    client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();
+                }
+                client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template)).actionGet();
+            }
+        }
 
         IndexPartitions entityPartitions = new IndexPartitions.Impl("logicalId",
                 new IndexPartitions.Partition.Range.Impl<>("e000", "e300", "e0"),
@@ -708,7 +770,14 @@ public class RealClusterTest {
                 new IndexPartitions.Partition.Range.Impl<>("ref00000", "ref00200", "ref0"),
                 new IndexPartitions.Partition.Range.Impl<>("ref00200", "ref00400", "ref1"));
 
-        Iterable<String> allIndices = Stream.ofAll(entityPartitions.getPartitions()).appendAll(relationPartitions.getPartitions())
+        IndexPartitions insightPartitions = new IndexPartitions.Impl("_id",
+                new IndexPartitions.Partition.Range.Impl<>("i0000", "i0100", "i0"),
+                new IndexPartitions.Partition.Range.Impl<>("i0100", "i0200", "i1"));
+
+        Iterable<String> allIndices = Stream.ofAll(entityPartitions.getPartitions())
+                .appendAll(relationPartitions.getPartitions())
+                .appendAll(referencePartitions.getPartitions())
+                .appendAll(insightPartitions.getPartitions())
                 .flatMap(IndexPartitions.Partition::getIndices).distinct().toJavaList();
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
@@ -1267,6 +1336,52 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
             }
+        }
+        bulk.execute().actionGet();
+
+        bulk = client.prepareBulk();
+        int iId = 0;
+        for(int entityId = 0 ; entityId < 100 ; entityId++) {
+            List<String> logicalIds = Stream.ofAll(Arrays.asList(
+                    entityId, (entityId + 1) % 100, (entityId + 2) % 100, (entityId + 3) % 100))
+                    .map(id -> "e" + String.format("%03d", id))
+                    .toJavaList();
+
+            for(String context : Stream.ofAll(contexts).filter(context -> !context.equals("global"))) {
+                String insightId = "i" + String.format("%04d", iId++);
+                String index = Stream.ofAll(insightPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range<String>)partition)
+                        .filter(partition -> partition.isWithin(insightId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
+
+
+                bulk.add(client.prepareIndex().setIndex(index).setType("insight").setId(insightId)
+                        .setOpType(IndexRequest.OpType.INDEX)
+                        .setSource(new MapBuilder<String, Object>()
+                                .put("content", contents.get(random.nextInt(contents.size())))
+                                .put("context", context)
+                                .put("entityIds", Stream.ofAll(logicalIds).map(logicalId -> logicalId + "." + context).toJavaList())
+                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                        .toJavaList())
+                                .put("security1", "securityValue1")
+                                .put("security2", "securityValue2")
+                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
+                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                .put("creationUser", users.get(random.nextInt(users.size())))
+                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
+
+                for(String logicalId : logicalIds) {
+                    String logicalEntityIndex =
+                            Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range<String>)partition)
+                            .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
+
+                    bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType("e.insight").setId(logicalId + "." + insightId)
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("insightId", insightId).get()));
+                }
+            }
+
         }
         bulk.execute().actionGet();
     }

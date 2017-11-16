@@ -87,9 +87,24 @@
       "properties": [
         "content",
         "url",
-        "context",
         "system",
         "agency",
+        "security1",
+        "security2",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ]
+    },
+    {
+      "eType": "Insight",
+      "name": "Insight",
+      "properties": [
+        "content",
+        "context",
         "security1",
         "security2",
         "lastUpdateUser",
@@ -165,17 +180,25 @@
         {
           "eTypeA": "Evalue",
           "eTypeB": "Reference"
+        },
+        {
+          "eTypeA": "Rvalue",
+          "eTypeB": "Reference"
+        },
+        {
+          "eTypeA": "Insight",
+          "eTypeB": "Reference"
         }
       ]
     },
     {
-      "rType": "hasReference",
-      "name": "hasReference",
+      "rType": "hasInsight",
+      "name": "hasInsight",
       "directional": true,
       "ePairs": [
         {
-          "eTypeA": "Rvalue",
-          "eTypeB": "Reference"
+          "eTypeA": "Entity",
+          "eTypeB": "Insight"
         }
       ]
     }

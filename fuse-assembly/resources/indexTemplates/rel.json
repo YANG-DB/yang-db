@@ -1,6 +1,6 @@
 {
   "order": 0,
-  "template": "r*",
+  "template": "rel*",
   "settings": {
     "index": {
       "number_of_shards": "1",
@@ -8,21 +8,25 @@
     }
   },
   "mappings": {
-    "Rvalue": {
+    "r.value": {
       "properties": {
         "dateValue": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
         },
-        "textValue": {
+        "creationUser": {
+          "index": "not_analyzed",
           "type": "string"
         },
         "creationTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
         },
+        "textValue": {
+          "type": "string"
+        },
         "intValue": {
-          "type": "integer"
+          "type": "long"
         },
         "relationId": {
           "index": "not_analyzed",
@@ -44,6 +48,10 @@
           "index": "not_analyzed",
           "type": "string"
         },
+        "refs": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
         "context": {
           "index": "not_analyzed",
           "type": "string"
@@ -59,34 +67,34 @@
         "lastUpdateTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
+        },
+        "deleteUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "deleteTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
         }
       }
     },
-    "Relation.S": {
+    "relation": {
       "properties": {
-        "entityA": {
-          "properties": {
-            "id": {
-              "index": "not_analyzed",
-              "type": "string"
-            },
-            "category": {
-              "index": "not_analyzed",
-              "type": "string"
-            }
-          }
+        "entityBId": {
+          "index": "not_analyzed",
+          "type": "string"
         },
-        "entityB": {
-          "properties": {
-            "id": {
-              "index": "not_analyzed",
-              "type": "string"
-            },
-            "category": {
-              "index": "not_analyzed",
-              "type": "string"
-            }
-          }
+        "entityACategory": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "entityAId": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "creationUser": {
+          "index": "not_analyzed",
+          "type": "string"
         },
         "creationTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
@@ -112,7 +120,19 @@
           "index": "not_analyzed",
           "type": "string"
         },
+        "entityBCategory": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
         "lastUpdateTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "deleteUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "deleteTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
         }
