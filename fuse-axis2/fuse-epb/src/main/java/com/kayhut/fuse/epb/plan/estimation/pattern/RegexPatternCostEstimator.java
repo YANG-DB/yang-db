@@ -70,7 +70,9 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         //option 3 And node
         GOTO_ENTITY_RELATION_ENTITY("^(?<" + GOTO_ENTITY.value+">" + GoToEntityOp.class.getSimpleName() + ")" + ":" +
                 "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
-                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
+                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
+
+        ENTITY_JOIN("^(?<" + JOIN.value + ">" + EntityJoinOp.class.getSimpleName() + ")$" );
 
         //region Enum Constructors
         Pattern(String pattern) {
@@ -102,7 +104,9 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         OPTIONAL_REL_FILTER("optionalRelFilter"),
         ENTITY_ONLY("entityOnly"),
         OPTIONAL_ENTITY_ONLY_FILTER("optionalEntityOnlyFilter"),
-        GOTO_ENTITY("gotoEntity");
+        GOTO_ENTITY("gotoEntity"),
+        JOIN("join");
+
 
         private String value;
 
@@ -146,7 +150,8 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
                 com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern =
                                 regexPattern.equals(Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
                                 regexPattern.equals(Pattern.ENTITY_RELATION_ENTITY) ? buildEntityRelationEntityPattern(patternParts) :
-                                regexPattern.equals(Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) : null;
+                                regexPattern.equals(Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) :
+                                regexPattern.equals(Pattern.ENTITY_JOIN) ? buildEntityJoinPattern(patternParts): null;
 
                 PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(pattern, context);
 

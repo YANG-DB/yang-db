@@ -83,4 +83,9 @@ public class Pattern {
 
         return new EntityRelationEntityPattern(start, startFilter, rel, relFilter, end, endFilter);
     }
+
+    public static EntityJoinPattern buildEntityJoinPattern(Map<RegexPatternCostEstimator.PatternPart, PlanOpBase> patternParts) {
+        EntityJoinOp entityJoinOp = (EntityJoinOp) patternParts.get(JOIN);
+        return new EntityJoinPattern(entityJoinOp);
+    }
 }
