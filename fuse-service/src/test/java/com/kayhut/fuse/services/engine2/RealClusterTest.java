@@ -251,6 +251,41 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test_fetchEntityInsights2() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("query2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "1", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(15, 18), 0),
+                new EProp(18, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
+                new Rel(15, $ont.rType$("hasInsight"), Rel.Direction.R, null, 16, 0),
+                new ETyped(16, "16", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 17, 0),
+                new Quant1(17, QuantType.all, Arrays.asList(), 0)
+        )).build();
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
     public void test1() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

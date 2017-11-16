@@ -105,6 +105,7 @@
       "properties": [
         "content",
         "context",
+        "entityIds",
         "security1",
         "security2",
         "lastUpdateUser",
@@ -217,6 +218,11 @@
     {
       "pType": "content",
       "name": "content",
+      "type": "string"
+    },
+    {
+      "pType": "entityIds",
+      "name": "entityIds",
       "type": "string"
     },
     {
