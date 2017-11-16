@@ -3,6 +3,9 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
@@ -25,6 +28,12 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //region Constructors
     public DiscreteEdgeConverter(VertexControllerContext context) {
         this.context = context;
+        try {
+            this.edgeIdProvider = new HashEdgeIdProvider(context.getConstraint());
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.edgeIdProvider = new SimpleEdgeIdProvider();
+        }
     }
     //endregion
 
@@ -59,7 +68,13 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                     outV = context.getVertex(outId);
                     inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
 
-                    edges.add((E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), edgeProperties));
+                    edges.add((E)new DiscreteEdge(
+                            this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
+                            edgeSchema.getLabel(),
+                            outV,
+                            inV,
+                            context.getGraph(),
+                            edgeProperties));
                 }
             }
 
@@ -78,7 +93,13 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                     inV = context.getVertex(inId);
                     outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
 
-                    edges.add((E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), edgeProperties));
+                    edges.add((E)new DiscreteEdge(
+                            this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
+                            edgeSchema.getLabel(),
+                            outV,
+                            inV,
+                            context.getGraph(),
+                            edgeProperties));
                 }
             }
         }
@@ -123,5 +144,6 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
     //region Fields
     private VertexControllerContext context;
+    private EdgeIdProvider<String> edgeIdProvider;
     //endregion
 }

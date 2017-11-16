@@ -22,9 +22,11 @@ public class OntologyPropertyTypeFactory {
 
     //region Public Methods
     public Object supply(Property prop, Object exp) {
-        Function<Object, Object> tranformFunction = this.map.get(prop.getType());
-        if (tranformFunction != null) {
-            return tranformFunction.apply(exp);
+        if (exp != null) {
+            Function<Object, Object> tranformFunction = this.map.get(prop.getType());
+            if (tranformFunction != null) {
+                return tranformFunction.apply(exp);
+            }
         }
 
         return exp;

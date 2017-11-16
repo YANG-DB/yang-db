@@ -123,6 +123,87 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test_fetchEntityById22() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 6, 7), 0),
+                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e004")),
+                new EProp(4, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
+                new EProp(5, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
+                new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new Rel(7, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 8, 0),
+                new ETyped(8, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 9, 0),
+                new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12, 13), 0),
+                new EProp(10, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
+                new EProp(11, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
+                new EProp(12, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(13, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty))
+
+        )).build();
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_fetchEntityById3() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("query2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 6), 0),
+                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e015")),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 7, 0),
+                new ETyped(7, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
+                new EProp(9, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.notEmpty)),
+                new Rel(10, $ont.rType$("hasReference"), Rel.Direction.R, null, 11, 0),
+                new ETyped(11, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 0, 0)
+        )).build();
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
     public void test1() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -613,8 +694,6 @@ public class RealClusterTest {
         Client client = TransportClient.builder().settings(settings).build()
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
 
-        BulkRequestBuilder bulk = client.prepareBulk();
-
         IndexPartitions entityPartitions = new IndexPartitions.Impl("logicalId",
                 new IndexPartitions.Partition.Range.Impl<>("e000", "e300", "e0"),
                 new IndexPartitions.Partition.Range.Impl<>("e300", "e600", "e1"),
@@ -624,6 +703,10 @@ public class RealClusterTest {
                 new IndexPartitions.Partition.Range.Impl<>("r0000", "r1000", "rel0"),
                 new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "rel1"),
                 new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "rel2"));
+
+        IndexPartitions referencePartitions = new IndexPartitions.Impl("_id",
+                new IndexPartitions.Partition.Range.Impl<>("ref00000", "ref00200", "ref0"),
+                new IndexPartitions.Partition.Range.Impl<>("ref00200", "ref00400", "ref1"));
 
         Iterable<String> allIndices = Stream.ofAll(entityPartitions.getPartitions()).appendAll(relationPartitions.getPartitions())
                 .flatMap(IndexPartitions.Partition::getIndices).distinct().toJavaList();
@@ -674,7 +757,108 @@ public class RealClusterTest {
                 "Parachutist/Combatant Diver Qualified (Officer)", "Sea-Air-Land Officer", "Seal Delivery Vehicle Officer", "Special Forces Officer",
                 "Special Forces Warrant Officer", "Special Weapons Unit Officer");
 
+        List<String> nicknames = Arrays.asList("Babe", "Bitsy", "Dumdum", "Shy", "Scruffy", "Spider", "Sugar", "Boogie",
+                "Twinkle Toes", "Ginger", "Mamba", "Tricky", "Stone", "Tiny", "Gus", "Cuddles", "Brow", "Happy",
+                "Pugs", "Smitty", "Smasher", "Dusty", "Piggy", "Comet", "Chappie", "Gentle", "Punch", "Machine", "Bing",
+                "Mugs", "Rouge", "Sandy", "Bambam", "Diamond", "Butterfly", "Mac", "Scoop", "Wiz", "Old Buck", "Duke",
+                "Artsy", "Biggie", "Nimble", "Dawg", "Ox", "Flash", "Dizzy", "Captain", "Mugsy", "Basher", "Growl", "Yank",
+                "Aqua", "Dice", "Dimple", "Big Boy", "Hurricane", "Birds", "Beauty", "Twinkle", "Jumper", "Snake", "Sailor",
+                "Spud", "Berry", "Blush", "Skin", "Undertaker", "Snowflake", "Gem", "Jazzy", "Tiger", "Peanut", "Mitzi",
+                "Sparrow", "Honesty", "Stout", "Jolly", "Jelly", "Maniac", "Magic", "Dynamite", "Handsome", "Grouch", "Doc",
+                "Ducky", "Bash", "Toon", "Major", "Cutie", "Dino", "Mad Dog", "Rip", "Rusty", "Queen Bee", "Cyclops", "Pipi",
+                "Sizzle", "Goose", "Pitch", "Jumbo", "Bones", "Tigress", "Flip", "Bigshot", "Little", "Vulture", "Lucky",
+                "Worm", "Buster", "Guns", "Camille", "Mistletoe", "Gator", "Chip", "Prince", "Wonder", "Fury", "Creep", "Dog",
+                "Jacket", "Silence", "Dodo", "Flutters", "Groovy", "Ziggy", "Jackal", "Boots", "Landslide", "Assassin", "Dagger",
+                "Jewel", "Admiral", "Terminator", "Bulldog");
 
+        List<String> domains = Arrays.asList("com", "co.uk", "gov", "org", "net", "me", "ac", "ca", "biz", "cx", "dk", "es", "eu",
+                "gd", "gy", "in", "it", "la", "nz", "ph", "se", "yt");
+
+        List<String> contents = Arrays.asList(
+                "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was",
+        "born and I will give you a complete account of the system, and expound the actual teachings of the",
+        "great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or",
+        "avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue",
+        "pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone",
+        "who loves or pursues or desires to obtain pain of itself, because it is pain, but because",
+        "occasionally circumstances occur in which toil and pain can procure him some great pleasure. To",
+        "take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain",
+        "some advantage from it? But who has any right to find fault with a man who chooses to enjoy a",
+        "pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant",
+        "pleasure? On the other hand, we denounce with righteous indignation and dislike men who are so",
+        "beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they",
+        "cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who",
+        "fail in their duty through weakness of will, which is the same as saying through shrinking from",
+        "toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our",
+        "power of choice is untrammelled and when nothing prevents our being able to do what we like best,",
+        "every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to",
+        "the claims of duty or the obligations of business it will frequently occur that pleasures have to",
+        "be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this",
+        "principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures",
+        "pains to avoid worse pains. But I must explain to you how all this mistaken idea of denouncing",
+        "pleasure and praising pain was born and I will give you a complete account of the system, and",
+        "expound the actual teachings of the great explorer of the truth, the master-builder of human",
+        "happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because",
+        "those who do not know how to pursue pleasure rationally encounter consequences that are extremely",
+        "painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself,",
+        "because it is pain, but because occasionally circumstances occur in which toil and pain can procure",
+        "him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical",
+        "exercise, except to obtain some advantage from it? But who has any right to find fault with a man",
+        "who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that",
+        "produces no resultant pleasure? On the other hand, we denounce with righteous indignation and",
+        "dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded",
+        "by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame",
+        "belongs to those who fail in their duty through weakness of will, which is the same as saying",
+        "through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In",
+        "a free hour, when our power of choice is untrammelled and when nothing prevents our being able to",
+        "do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain",
+        "circumstances and owing to the claims of duty or the obligations of business it will frequently",
+        "occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always",
+        "holds in these matters to this principle of selection: he rejects pleasures to secure other greater",
+        "pleasures, or else he endures pains to avoid worse pains.But I must explain to you how all this",
+        "mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete",
+        "account of the system, and expound the actual teachings of the great explorer of the truth, the",
+        "master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it",
+        "is pleasure, but because those who do not know how to pursue pleasure rationally encounter",
+        "consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires",
+        "to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which",
+        "toil and pain can procure him some great pleasure. To take a trivial example, which of us ever",
+        "undertakes laborious physical exercise, except to obtain some advantage from it? But who has any",
+        "right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences,",
+        "or one who avoids a pain that produces no resultant pleasure? On the other hand, we denounce with",
+        "righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure",
+        "of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound",
+        "to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which",
+        "is the same as saying through shrinking from toil and pain. These cases are perfectly simple and",
+        "easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing",
+        "prevents our being able to do what we like best, every pleasure is to be welcomed and every pain",
+        "avoided. But in certain circumstances and owing to the claims of duty or the obligations of",
+        "business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The",
+        "wise man therefore always holds in these matters to this principle of selection:");
+
+        BulkRequestBuilder bulk = client.prepareBulk();
+        for(int refId = 0 ; refId < 400 ; refId++) {
+            String referenceId = "ref" + String.format("%05d", refId);
+            String index = Stream.ofAll(referencePartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range<String>)partition)
+                    .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
+
+            bulk.add(client.prepareIndex().setIndex(index).setType("reference").setId(referenceId)
+                    .setOpType(IndexRequest.OpType.INDEX)
+                    .setSource(new MapBuilder<String, Object>()
+                            .put("url", "http://" + UUID.randomUUID().toString() + "." + domains.get(random.nextInt(domains.size())))
+                            .put("content", contents.get(random.nextInt(contents.size())))
+                            .put("system", "system" + random.nextInt(10))
+                            .put("agency", "agency" + random.nextInt(10))
+                            .put("security1", "securityValue1")
+                            .put("security2", "securityValue2")
+                            .put("lastUpdateUser", users.get(random.nextInt(users.size())))
+                            .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                            .put("creationUser", users.get(random.nextInt(users.size())))
+                            .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
+        }
+        bulk.execute().actionGet();
+
+        bulk = client.prepareBulk();
         while(currentEntityLogicalId < 100) {
             for(String context : contexts) {
                 String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
@@ -682,6 +866,13 @@ public class RealClusterTest {
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
                 String category = "person";
                 String description = descriptions.get(random.nextInt(descriptions.size()));
+                List<String> personNicknames = Stream.ofAll(Arrays.asList(nicknames.get(random.nextInt(nicknames.size())),
+                        nicknames.get(random.nextInt(nicknames.size())),
+                        nicknames.get(random.nextInt(nicknames.size())),
+                        nicknames.get(random.nextInt(nicknames.size())),
+                        nicknames.get(random.nextInt(nicknames.size())),
+                        nicknames.get(random.nextInt(nicknames.size()))))
+                        .distinct().take(random.nextInt(2) + 1).toJavaList();
 
                 bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
@@ -697,7 +888,7 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -708,13 +899,16 @@ public class RealClusterTest {
                                     .put("propertyId", "title")
                                     .put("bdt", "title")
                                     .put("textValue", users.get(currentEntityLogicalId))
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -725,13 +919,38 @@ public class RealClusterTest {
                                     .put("propertyId", "description")
                                     .put("bdt", "description")
                                     .put("textValue", description)
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
+
+                    for(String personNickname : personNicknames) {
+                        bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                                .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                                .setSource(new MapBuilder<String, Object>()
+                                        .put("logicalId", logicalId)
+                                        .put("entityId", logicalId + "." + context)
+                                        .put("context", context)
+                                        .put("security1", "securityValue1")
+                                        .put("security2", "securityValue2")
+                                        .put("propertyId", "nicknames")
+                                        .put("bdt", "nicknames")
+                                        .put("textValue", personNickname)
+                                        .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                                .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                                .toJavaList())
+                                        .put("lastUpdateUser", users.get(random.nextInt(users.size())))
+                                        .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                        .put("creationUser", users.get(random.nextInt(users.size())))
+                                        .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                        .get()));
+                    }
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -741,6 +960,9 @@ public class RealClusterTest {
                                     .put("security2", "securityValue2")
                                     .put("propertyId", "name")
                                     .put("bdt", "name")
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("stringValue", users.get(currentEntityLogicalId))
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -751,7 +973,7 @@ public class RealClusterTest {
                     int age = random.nextInt(120);
                     int anotherAge = age + (random.nextInt(8) - 4);
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -762,13 +984,16 @@ public class RealClusterTest {
                                     .put("propertyId", "age")
                                     .put("bdt", "age")
                                     .put("intValue", age)
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -779,17 +1004,44 @@ public class RealClusterTest {
                                     .put("propertyId", "age")
                                     .put("bdt", "age")
                                     .put("intValue", anotherAge)
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .get()));
+
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
+                            .setSource(new MapBuilder<String, Object>()
+                                    .put("logicalId", logicalId)
+                                    .put("entityId", logicalId + "." + context)
+                                    .put("context", context)
+                                    .put("security1", "securityValue1")
+                                    .put("security2", "securityValue2")
+                                    .put("propertyId", "age")
+                                    .put("bdt", "age")
+                                    .put("intValue", anotherAge)
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
+                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
+                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("creationUser", users.get(random.nextInt(users.size())))
+                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
+                                    .put("deleteUser", users.get(random.nextInt(users.size())))
+                                    .put("deleteTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 }
             }
 
             currentEntityLogicalId++;
         }
+        bulk.execute().actionGet();
 
+        bulk = client.prepareBulk();
         List<String> colors = Arrays.asList("red", "blue", "green", "white", "black", "brown", "orange", "purple", "pink", "yellow");
         for(int i = 0 ; i < 20 ; i++, currentEntityLogicalId++) {
             for (String context : contexts) {
@@ -815,7 +1067,7 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -826,13 +1078,16 @@ public class RealClusterTest {
                                     .put("propertyId", "title")
                                     .put("bdt", "title")
                                     .put("textValue", title)
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -843,13 +1098,16 @@ public class RealClusterTest {
                                     .put("propertyId", "description")
                                     .put("bdt", "description")
                                     .put("textValue", description)
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -860,13 +1118,16 @@ public class RealClusterTest {
                                     .put("propertyId", "color")
                                     .put("bdt", "color")
                                     .put("stringValue", color)
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("evalue").setId("ev" + String.format("%05d", evalueId++))
+                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
                                     .put("logicalId", logicalId)
@@ -877,6 +1138,9 @@ public class RealClusterTest {
                                     .put("propertyId", "licenseNumber")
                                     .put("bdt", "licenseNumber")
                                     .put("stringValue", UUID.randomUUID().toString().substring(0, 8))
+                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .put("creationUser", users.get(random.nextInt(users.size())))
@@ -885,7 +1149,9 @@ public class RealClusterTest {
                 }
             }
         }
+        bulk.execute().actionGet();
 
+        bulk = client.prepareBulk();
         int relationId = 0;
         int rvalueId = 0;
         for(int i = 0 ; i < 20; i++) {
@@ -963,7 +1229,7 @@ public class RealClusterTest {
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("rvalue").setId("rv" + String.format("%05d", rvalueId++))
+                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("relationId", relationIdString)
@@ -973,13 +1239,16 @@ public class RealClusterTest {
                                 .put("propertyId", "since")
                                 .put("bdt", "date")
                                 .put("dateValue", sdf.format(new Date(System.currentTimeMillis())))
+                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                        .toJavaList())
                                 .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("creationUser", users.get(random.nextInt(users.size())))
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("rvalue").setId("rv" + String.format("%05d", rvalueId++))
+                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("relationId", relationIdString)
@@ -989,6 +1258,9 @@ public class RealClusterTest {
                                 .put("propertyId", "paid")
                                 .put("bdt", "payment")
                                 .put("intValue", random.nextInt(1000))
+                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
+                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                        .toJavaList())
                                 .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("creationUser", users.get(random.nextInt(users.size())))
@@ -996,7 +1268,6 @@ public class RealClusterTest {
                                 .get()));
             }
         }
-
         bulk.execute().actionGet();
     }
 }

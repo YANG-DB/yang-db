@@ -5,12 +5,11 @@ import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
-import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.PrefixedLabelProvider;
 import com.kayhut.fuse.unipop.controller.promise.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -127,7 +126,7 @@ public class PromiseVertexController extends VertexControllerBase {
         //convert result
         AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(
                 graph,
-                new PromiseEdgeIdProvider(constraint),
+                new HashEdgeIdProvider(constraint),
                 new PrefixedLabelProvider("_"));
 
         //timeEs es search took in ms

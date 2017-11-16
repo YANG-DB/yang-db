@@ -13,7 +13,9 @@
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
-        "creationUser"
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ]
     },
     {
@@ -28,6 +30,8 @@
         "lastUpdateTime",
         "creationTime",
         "creationUser",
+        "deleteTime",
+        "deleteUser",
         "propertyId",
         "bdt",
         "stringValue",
@@ -42,12 +46,18 @@
       "properties": [
         "context",
         "category",
+        "entityAId",
+        "entityACategory",
+        "entityBId",
+        "entityBCategory",
         "security1",
         "security2",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
-        "creationUser"
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ]
     },
     {
@@ -61,6 +71,8 @@
         "lastUpdateTime",
         "creationTime",
         "creationUser",
+        "deleteTime",
+        "deleteUser",
         "propertyId",
         "bdt",
         "stringValue",
@@ -83,7 +95,9 @@
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
-        "creationUser"
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ]
     }
   ],
@@ -153,6 +167,17 @@
           "eTypeB": "Reference"
         }
       ]
+    },
+    {
+      "rType": "hasReference",
+      "name": "hasReference",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Rvalue",
+          "eTypeB": "Reference"
+        }
+      ]
     }
   ],
   "properties": [
@@ -174,6 +199,16 @@
     {
       "pType": "url",
       "name": "url",
+      "type": "string"
+    },
+    {
+      "pType": "system",
+      "name": "system",
+      "type": "string"
+    },
+    {
+      "pType": "agency",
+      "name": "agency",
       "type": "string"
     },
     {
@@ -212,6 +247,16 @@
       "type": "string"
     },
     {
+      "pType": "deleteTime",
+      "name": "deleteTime",
+      "type": "date"
+    },
+    {
+      "pType": "deleteUser",
+      "name": "deleteUser",
+      "type": "string"
+    },
+    {
       "pType": "propertyId",
       "name": "propertyId",
       "type": "string"
@@ -240,6 +285,26 @@
       "pType": "dateValue",
       "name": "dateValue",
       "type": "date"
+    },
+    {
+      "pType": "entityAId",
+      "name": "entityAId",
+      "type": "string"
+    },
+    {
+      "pType": "entityBId",
+      "name": "entityBId",
+      "type": "string"
+    },
+    {
+      "pType": "entityACategory",
+      "name": "entityACategory",
+      "type": "string"
+    },
+    {
+      "pType": "entityBCategory",
+      "name": "entityBCategory",
+      "type": "string"
     },
     {
       "pType": "2147483647",

@@ -109,6 +109,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                         wrap(new FilterBulkSearchAppender()),
                         wrap(new FilterSourceSearchAppender()),
                         wrap(new FilterSourceRoutingSearchAppender()),
+                        wrap(new FilterRoutingSearchAppender()),
                         wrap(new FilterIndexSearchAppender()),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
@@ -124,7 +125,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(graph);
+        ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context);
         time.stop();
         return Stream.ofAll(searchHits)
                 .flatMap(converter::convert)

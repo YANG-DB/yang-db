@@ -14,9 +14,9 @@ import java.util.Optional;
 /**
  * Created by Roman on 15/05/2017.
  */
-public class PromiseEdgeIdProvider implements EdgeIdProvider<String> {
+public class HashEdgeIdProvider implements EdgeIdProvider<String> {
     //region Constructors
-    public PromiseEdgeIdProvider(Optional<TraversalConstraint> constraint) throws Exception {
+    public HashEdgeIdProvider(Optional<TraversalConstraint> constraint) throws Exception {
         this.traversalHashProvider = new TraversalHashProvider(Object::toString, "MD5", 8);
         this.constraintHash = this.traversalHashProvider
                 .getValue(constraint.map(TraversalPromise::getTraversal)
