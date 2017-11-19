@@ -32,7 +32,7 @@
         "creationUser",
         "deleteTime",
         "deleteUser",
-        "propertyId",
+        "fieldId",
         "bdt",
         "stringValue",
         "textValue",
@@ -73,7 +73,7 @@
         "creationUser",
         "deleteTime",
         "deleteUser",
-        "propertyId",
+        "fieldId",
         "bdt",
         "stringValue",
         "textValue",
@@ -286,8 +286,8 @@
       "type": "string"
     },
     {
-      "pType": "propertyId",
-      "name": "propertyId",
+      "pType": "fieldId",
+      "name": "fieldId",
       "type": "string"
     },
     {

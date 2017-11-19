@@ -64,7 +64,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                 new GraphRedundantPropertySchema.Impl("creationTime", "creationTime", "date"),
                 new GraphRedundantPropertySchema.Impl("deleteUser", "deleteUser", "string"),
                 new GraphRedundantPropertySchema.Impl("deleteTime", "deleteTime", "date"),
-                new GraphRedundantPropertySchema.Impl("propertyId", "propertyId", "string"),
+                new GraphRedundantPropertySchema.Impl("fieldId", "fieldId", "string"),
                 new GraphRedundantPropertySchema.Impl("bdt", "bdt", "string"),
                 new GraphRedundantPropertySchema.Impl("stringValue", "stringValue", "string"),
                 new GraphRedundantPropertySchema.Impl("textValue", "textValue", "string"),
