@@ -30,10 +30,6 @@
           "index": "not_analyzed",
           "type": "string"
         },
-        "security1": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
         "value": {
           "index": "not_analyzed",
           "type": "string"
@@ -42,9 +38,12 @@
           "index": "not_analyzed",
           "type": "string"
         },
-        "security2": {
+        "authorization": {
           "index": "not_analyzed",
           "type": "string"
+        },
+        "authorizationCount": {
+          "type": "integer"
         },
         "lastUpdateTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",

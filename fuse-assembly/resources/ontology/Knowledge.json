@@ -8,8 +8,7 @@
         "logicalId",
         "context",
         "category",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
@@ -24,8 +23,7 @@
       "properties": [
         "logicalId",
         "context",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
@@ -50,8 +48,7 @@
         "entityACategory",
         "entityBId",
         "entityBCategory",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
@@ -65,8 +62,7 @@
       "name": "Rvalue",
       "properties": [
         "context",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
@@ -89,8 +85,7 @@
         "url",
         "system",
         "agency",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
@@ -106,8 +101,7 @@
         "content",
         "context",
         "entityIds",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
@@ -246,13 +240,8 @@
       "type": "string"
     },
     {
-      "pType": "security1",
-      "name": "security1",
-      "type": "string"
-    },
-    {
-      "pType": "security2",
-      "name": "security2",
+      "pType": "authorization",
+      "name": "authorization",
       "type": "string"
     },
     {

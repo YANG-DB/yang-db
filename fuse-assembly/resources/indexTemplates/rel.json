@@ -25,20 +25,19 @@
         "textValue": {
           "type": "string"
         },
-        "intValue": {
+        "integerValue": {
           "type": "long"
         },
         "relationId": {
           "index": "not_analyzed",
           "type": "string"
         },
-        "security1": {
+        "authorization": {
           "index": "not_analyzed",
           "type": "string"
         },
-        "security2": {
-          "index": "not_analyzed",
-          "type": "string"
+        "authorizationCount": {
+          "type": "integer"
         },
         "stringValue": {
           "index": "not_analyzed",
@@ -112,13 +111,12 @@
           "index": "not_analyzed",
           "type": "string"
         },
-        "security1": {
+        "authorization": {
           "index": "not_analyzed",
           "type": "string"
         },
-        "security2": {
-          "index": "not_analyzed",
-          "type": "string"
+        "authorizationCount": {
+          "type": "integer"
         },
         "entityBCategory": {
           "index": "not_analyzed",

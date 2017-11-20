@@ -46,13 +46,12 @@
           "index": "not_analyzed",
           "type": "string"
         },
-        "security1": {
+        "authorization": {
           "index": "not_analyzed",
           "type": "string"
         },
-        "security2": {
-          "index": "not_analyzed",
-          "type": "string"
+        "authorizationCount": {
+          "type": "integer"
         },
         "lastUpdateTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
@@ -90,13 +89,12 @@
           "index": "not_analyzed",
           "type": "string"
         },
-        "security1": {
+        "authorization": {
           "index": "not_analyzed",
           "type": "string"
         },
-        "security2": {
-          "index": "not_analyzed",
-          "type": "string"
+        "authorizationCount": {
+          "type": "integer"
         },
         "entityBCategory": {
           "index": "not_analyzed",
@@ -153,20 +151,19 @@
         "textValue": {
           "type": "string"
         },
-        "intValue": {
+        "integerValue": {
           "type": "long"
         },
         "entityId": {
           "index": "not_analyzed",
           "type": "string"
         },
-        "security1": {
+        "authorization": {
           "index": "not_analyzed",
           "type": "string"
         },
-        "security2": {
-          "index": "not_analyzed",
-          "type": "string"
+        "authorizationCount": {
+          "type": "integer"
         },
         "stringValue": {
           "index": "not_analyzed",

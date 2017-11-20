@@ -184,7 +184,7 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 6), 0),
-                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e653")),
+                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
                 new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
@@ -791,28 +791,32 @@ public class RealClusterTest {
             }
         }
 
-        IndexPartitions entityPartitions = new IndexPartitions.Impl("logicalId",
+        List<IndexPartitions.Partition> ePartitions = Arrays.asList(
                 new IndexPartitions.Partition.Range.Impl<>("e000", "e300", "e0"),
                 new IndexPartitions.Partition.Range.Impl<>("e300", "e600", "e1"),
                 new IndexPartitions.Partition.Range.Impl<>("e600", "e999", "e2"));
+        String entityIdFormat = "%03d";
 
-        IndexPartitions relationPartitions = new IndexPartitions.Impl("relationId",
+        List<IndexPartitions.Partition> relPartitions = Arrays.asList(
                 new IndexPartitions.Partition.Range.Impl<>("r0000", "r1000", "rel0"),
                 new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "rel1"),
                 new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "rel2"));
+        String relationIdFormat = "%04d";
 
-        IndexPartitions referencePartitions = new IndexPartitions.Impl("_id",
+        List<IndexPartitions.Partition> refPartitions = Arrays.asList(
                 new IndexPartitions.Partition.Range.Impl<>("ref00000", "ref00200", "ref0"),
                 new IndexPartitions.Partition.Range.Impl<>("ref00200", "ref00400", "ref1"));
+        String referenceIdFormat = "%05d";
 
-        IndexPartitions insightPartitions = new IndexPartitions.Impl("_id",
+        List<IndexPartitions.Partition> iPartitions = Arrays.asList(
                 new IndexPartitions.Partition.Range.Impl<>("i0000", "i0100", "i0"),
                 new IndexPartitions.Partition.Range.Impl<>("i0100", "i0200", "i1"));
+        String insightIdFormat = "%04d";
 
-        Iterable<String> allIndices = Stream.ofAll(entityPartitions.getPartitions())
-                .appendAll(relationPartitions.getPartitions())
-                .appendAll(referencePartitions.getPartitions())
-                .appendAll(insightPartitions.getPartitions())
+        Iterable<String> allIndices = Stream.ofAll(ePartitions)
+                .appendAll(relPartitions)
+                .appendAll(refPartitions)
+                .appendAll(iPartitions)
                 .flatMap(IndexPartitions.Partition::getIndices).distinct().toJavaList();
         Stream.ofAll(allIndices)
                 .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
@@ -942,8 +946,8 @@ public class RealClusterTest {
 
         BulkRequestBuilder bulk = client.prepareBulk();
         for (int refId = 0; refId < 400; refId++) {
-            String referenceId = "ref" + String.format("%05d", refId);
-            String index = Stream.ofAll(referencePartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
+            String referenceId = "ref" + String.format(referenceIdFormat, refId);
+            String index = Stream.ofAll(refPartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                     .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
             bulk.add(client.prepareIndex().setIndex(index).setType("reference").setId(referenceId)
@@ -965,8 +969,8 @@ public class RealClusterTest {
         bulk = client.prepareBulk();
         while (currentEntityLogicalId < 100) {
             for (String context : contexts) {
-                String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
-                String index = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                String logicalId = "e" + String.format(entityIdFormat, currentEntityLogicalId);
+                String index = Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
                 String category = "person";
                 String description = descriptions.get(random.nextInt(descriptions.size()));
@@ -984,8 +988,8 @@ public class RealClusterTest {
                                 .put("logicalId", logicalId)
                                 .put("context", context)
                                 .put("category", category)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("creationUser", users.get(random.nextInt(users.size())))
@@ -998,13 +1002,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "title")
                                     .put("bdt", "title")
                                     .put("textValue", users.get(currentEntityLogicalId))
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1018,13 +1022,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "description")
                                     .put("bdt", "description")
                                     .put("textValue", description)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1039,13 +1043,13 @@ public class RealClusterTest {
                                         .put("logicalId", logicalId)
                                         .put("entityId", logicalId + "." + context)
                                         .put("context", context)
-                                        .put("security1", "securityValue1")
-                                        .put("security2", "securityValue2")
+                                        .put("authorization", "source1.procedure1")
+                                        .put("authorizationCount", 1)
                                         .put("fieldId", "nicknames")
                                         .put("bdt", "nicknames")
                                         .put("textValue", personNickname)
                                         .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                                .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                                .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                                 .toJavaList())
                                         .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                         .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1060,12 +1064,12 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "name")
                                     .put("bdt", "name")
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("stringValue", users.get(currentEntityLogicalId))
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
@@ -1083,13 +1087,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "age")
                                     .put("bdt", "age")
                                     .put("intValue", age)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1103,13 +1107,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "age")
                                     .put("bdt", "age")
                                     .put("intValue", anotherAge)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1123,13 +1127,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "age")
                                     .put("bdt", "age")
                                     .put("intValue", anotherAge)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1149,8 +1153,8 @@ public class RealClusterTest {
         List<String> colors = Arrays.asList("red", "blue", "green", "white", "black", "brown", "orange", "purple", "pink", "yellow");
         for (int i = 0; i < 20; i++, currentEntityLogicalId++) {
             for (String context : contexts) {
-                String logicalId = "e" + String.format("%03d", currentEntityLogicalId);
-                String index = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                String logicalId = "e" + String.format(entityIdFormat, currentEntityLogicalId);
+                String index = Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
                 String category = ((i / 5) % 2) == 0 ? "car" : "boat";
                 String color = colors.get(random.nextInt(colors.size()));
@@ -1163,8 +1167,8 @@ public class RealClusterTest {
                                 .put("logicalId", logicalId)
                                 .put("context", context)
                                 .put("category", category)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("creationUser", users.get(random.nextInt(users.size())))
@@ -1177,13 +1181,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "title")
                                     .put("bdt", "title")
                                     .put("textValue", title)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1197,13 +1201,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "description")
                                     .put("bdt", "description")
                                     .put("textValue", description)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1217,13 +1221,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "color")
                                     .put("bdt", "color")
                                     .put("stringValue", color)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1237,13 +1241,13 @@ public class RealClusterTest {
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
+                                    .put("authorization", "source1.procedure1")
+                                    .put("authorizationCount", 1)
                                     .put("fieldId", "licenseNumber")
                                     .put("bdt", "licenseNumber")
                                     .put("stringValue", UUID.randomUUID().toString().substring(0, 8))
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
                                     .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                     .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1260,20 +1264,20 @@ public class RealClusterTest {
         int rvalueId = 0;
         for (int i = 0; i < 20; i++) {
             for (String context : Arrays.asList("context1", "context2")) {
-                String relationIdString = "r" + String.format("%04d", relationId++);
-                String index = Stream.ofAll(relationPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                String relationIdString = "r" + String.format(relationIdFormat, relationId++);
+                String index = Stream.ofAll(relPartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(relationIdString)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
                 String category = "own";
 
-                String personLogicalId = "e" + String.format("%03d", i);
+                String personLogicalId = "e" + String.format(entityIdFormat, i);
                 String personEntityId = personLogicalId + "." + context;
-                String personIndex = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                String personIndex = Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(personLogicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
-                String propertyLogicalId = "e" + String.format("%03d", 200 + i);
+                String propertyLogicalId = "e" + String.format(entityIdFormat, 200 + i);
                 String propertyEntityId = propertyLogicalId + "." + context;
                 String propertyCategory = ((i / 5) % 2) == 0 ? "car" : "boat";
-                String propertyIndex = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
+                String propertyIndex = Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(propertyLogicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
                 String relationLastUpdateUser = users.get(random.nextInt(users.size()));
@@ -1281,7 +1285,7 @@ public class RealClusterTest {
                 String relationLastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
                 String relationCreateTime = sdf.format(new Date(System.currentTimeMillis()));
 
-                bulk.add(client.prepareIndex().setIndex(personIndex).setType("e.relation").setId(relationIdString + "." + Direction.OUT.toString().toLowerCase())
+                bulk.add(client.prepareIndex().setIndex(personIndex).setType("e.relation").setId(relationIdString + ".out")
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(personLogicalId)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("entityAId", personEntityId)
@@ -1289,17 +1293,17 @@ public class RealClusterTest {
                                 .put("entityBId", propertyEntityId)
                                 .put("entityBCategory", propertyCategory)
                                 .put("relationId", relationIdString)
-                                .put("direction", Direction.OUT.toString().toLowerCase())
+                                .put("direction", "out")
                                 .put("context", context)
                                 .put("category", category)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("e.relation").setId(relationIdString + "." + Direction.IN.toString().toLowerCase())
+                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("e.relation").setId(relationIdString + ".in")
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(propertyLogicalId)
                         .setSource(new MapBuilder<String, Object>()
                                 .put("entityBId", personEntityId)
@@ -1307,11 +1311,11 @@ public class RealClusterTest {
                                 .put("entityAId", propertyEntityId)
                                 .put("entityACategory", propertyCategory)
                                 .put("relationId", relationIdString)
-                                .put("direction", Direction.IN.toString().toLowerCase())
+                                .put("direction", "in")
                                 .put("context", context)
                                 .put("category", category)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
                                 .put("creationUser", relationCreationUser)
@@ -1326,8 +1330,8 @@ public class RealClusterTest {
                                 .put("entityBCategory", propertyCategory)
                                 .put("context", context)
                                 .put("category", category)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("lastUpdateUser", relationLastUpdateUser)
                                 .put("lastUpdateTime", relationLastUpdateTime)
                                 .put("creationUser", relationCreationUser)
@@ -1338,13 +1342,13 @@ public class RealClusterTest {
                         .setSource(new MapBuilder<String, Object>()
                                 .put("relationId", relationIdString)
                                 .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("fieldId", "since")
                                 .put("bdt", "date")
                                 .put("dateValue", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                         .toJavaList())
                                 .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1357,13 +1361,13 @@ public class RealClusterTest {
                         .setSource(new MapBuilder<String, Object>()
                                 .put("relationId", relationIdString)
                                 .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("fieldId", "paid")
                                 .put("bdt", "payment")
                                 .put("intValue", random.nextInt(1000))
                                 .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                         .toJavaList())
                                 .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
@@ -1379,12 +1383,12 @@ public class RealClusterTest {
         for (int entityId = 0; entityId < 100; entityId++) {
             List<String> logicalIds = Stream.ofAll(Arrays.asList(
                     entityId, (entityId + 1) % 100, (entityId + 2) % 100, (entityId + 3) % 100))
-                    .map(id -> "e" + String.format("%03d", id))
+                    .map(id -> "e" + String.format(entityIdFormat, id))
                     .toJavaList();
 
             for (String context : Stream.ofAll(contexts).filter(context -> !context.equals("global"))) {
-                String insightId = "i" + String.format("%04d", iId++);
-                String index = Stream.ofAll(insightPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
+                String insightId = "i" + String.format(insightIdFormat, iId++);
+                String index = Stream.ofAll(iPartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                         .filter(partition -> partition.isWithin(insightId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
 
@@ -1395,10 +1399,10 @@ public class RealClusterTest {
                                 .put("context", context)
                                 .put("entityIds", Stream.ofAll(logicalIds).map(logicalId -> logicalId + "." + context).toJavaList())
                                 .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
+                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                         .toJavaList())
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
+                                .put("authorization", "source1.procedure1")
+                                .put("authorizationCount", 1)
                                 .put("lastUpdateUser", users.get(random.nextInt(users.size())))
                                 .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .put("creationUser", users.get(random.nextInt(users.size())))
@@ -1406,7 +1410,7 @@ public class RealClusterTest {
 
                 for (String logicalId : logicalIds) {
                     String logicalEntityIndex =
-                            Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
+                            Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                                     .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
                     bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType("e.insight").setId(logicalId + "." + insightId)
@@ -1417,185 +1421,6 @@ public class RealClusterTest {
                 }
             }
 
-        }
-        bulk.execute().actionGet();
-
-
-        for (String context : contexts) {
-            String logicalId = "e" + String.format("%03d", 653);
-            String index = Stream.ofAll(entityPartitions.getPartitions()).map(partition -> (IndexPartitions.Partition.Range) partition)
-                    .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
-            String category = "person";
-            String description = descriptions.get(random.nextInt(descriptions.size()));
-            List<String> personNicknames = Stream.ofAll(Arrays.asList(nicknames.get(random.nextInt(nicknames.size())),
-                    nicknames.get(random.nextInt(nicknames.size())),
-                    nicknames.get(random.nextInt(nicknames.size())),
-                    nicknames.get(random.nextInt(nicknames.size())),
-                    nicknames.get(random.nextInt(nicknames.size())),
-                    nicknames.get(random.nextInt(nicknames.size()))))
-                    .distinct().take(random.nextInt(2) + 1).toJavaList();
-
-            bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
-                    .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                    .setSource(new MapBuilder<String, Object>()
-                            .put("logicalId", logicalId)
-                            .put("context", context)
-                            .put("category", category)
-                            .put("security1", "securityValue1")
-                            .put("security2", "securityValue2")
-                            .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                            .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                            .put("creationUser", users.get(random.nextInt(users.size())))
-                            .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
-
-            if (context.equals("global")) {
-                bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("fieldId", "title")
-                                .put("bdt", "title")
-                                .put("textValue", users.get(0))
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("fieldId", "description")
-                                .put("bdt", "description")
-                                .put("textValue", description)
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-
-                for (String personNickname : personNicknames) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
-                            .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                            .setSource(new MapBuilder<String, Object>()
-                                    .put("logicalId", logicalId)
-                                    .put("entityId", logicalId + "." + context)
-                                    .put("context", context)
-                                    .put("security1", "securityValue1")
-                                    .put("security2", "securityValue2")
-                                    .put("fieldId", "nicknames")
-                                    .put("bdt", "nicknames")
-                                    .put("textValue", personNickname)
-                                    .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                            .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
-                                            .toJavaList())
-                                    .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                    .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .put("creationUser", users.get(random.nextInt(users.size())))
-                                    .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                    .get()));
-                }
-            } else {
-                bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("fieldId", "name")
-                                .put("bdt", "name")
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
-                                        .toJavaList())
-                                .put("stringValue", users.get(0))
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-
-                int age = random.nextInt(120);
-                int anotherAge = age + (random.nextInt(8) - 4);
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("fieldId", "age")
-                                .put("bdt", "age")
-                                .put("intValue", age)
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("fieldId", "age")
-                                .put("bdt", "age")
-                                .put("intValue", anotherAge)
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-
-                bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
-                        .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
-                        .setSource(new MapBuilder<String, Object>()
-                                .put("logicalId", logicalId)
-                                .put("entityId", logicalId + "." + context)
-                                .put("context", context)
-                                .put("security1", "securityValue1")
-                                .put("security2", "securityValue2")
-                                .put("fieldId", "age")
-                                .put("bdt", "age")
-                                .put("intValue", anotherAge)
-                                .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
-                                        .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format("%05d", refId))
-                                        .toJavaList())
-                                .put("lastUpdateUser", users.get(random.nextInt(users.size())))
-                                .put("lastUpdateTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("creationUser", users.get(random.nextInt(users.size())))
-                                .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .put("deleteUser", users.get(random.nextInt(users.size())))
-                                .put("deleteTime", sdf.format(new Date(System.currentTimeMillis())))
-                                .get()));
-            }
         }
         bulk.execute().actionGet();
     }
