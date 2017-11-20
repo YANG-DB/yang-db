@@ -59,7 +59,7 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
         }
 
         AsgStrategyContext asgStrategyContext =  new AsgStrategyContext(new Ontology.Accessor(ontology.get()));
-        AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(),new NextEbaseFactory(), new BNextFactory() ).get();
+        AsgQuery asgQuery = new AsgQuerySupplier(context.getQuery(), new NextEbaseFactory(), new BNextFactory() ).get();
         Stream.ofAll(this.strategies).forEach(strategy -> strategy.apply(asgQuery,asgStrategyContext));
 
         return submit(eventBus, context.of(asgQuery));
