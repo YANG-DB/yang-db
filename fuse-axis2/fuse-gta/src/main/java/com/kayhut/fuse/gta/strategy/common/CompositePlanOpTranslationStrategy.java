@@ -15,6 +15,10 @@ public class CompositePlanOpTranslationStrategy implements PlanOpTranslationStra
     public CompositePlanOpTranslationStrategy(PlanOpTranslationStrategy...strategies) {
         this.strategies = Stream.of(strategies).toJavaList();
     }
+
+    public CompositePlanOpTranslationStrategy(Iterable<PlanOpTranslationStrategy> strategies) {
+        this.strategies = Stream.ofAll(strategies).toJavaList();
+    }
     //endregion
 
     //region PlanOpTranslationStrategy Implementation
@@ -29,6 +33,6 @@ public class CompositePlanOpTranslationStrategy implements PlanOpTranslationStra
     //endregion
 
     //region Fields
-    private Iterable<PlanOpTranslationStrategy> strategies;
+    protected Iterable<PlanOpTranslationStrategy> strategies;
     //endregion
 }

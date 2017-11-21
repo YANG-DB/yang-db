@@ -9,13 +9,13 @@ import java.util.List;
 /**
  * Created by roman.margolis on 20/11/2017.
  */
-public class Optional extends EBase {
+public class OptionalComp extends EBase {
     //region Constructors
-    public Optional() {
+    public OptionalComp() {
 
     }
 
-    public Optional(int eNum, int next) {
+    public OptionalComp(int eNum, int next) {
         super(eNum);
         this.next = next;
     }

@@ -37,7 +37,7 @@ public class StatConfig {
         this.statFieldStringLowerName = "lower_bound_string";
         this.statFieldStringUpperName = "upper_bound_string";
 
-//        Optional<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
+//        OptionalComp<StatContainer> statJsonConfiguration = getStatJsonConfiguration(config.getString("elasticsearch.stat.configuration.file"));
 //        statJsonConfiguration.ifPresent(statContainer -> this.statContainer = statContainer);
     }
 

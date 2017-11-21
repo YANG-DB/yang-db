@@ -5,6 +5,7 @@ import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.common.GoToEntityOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 /**
@@ -29,7 +30,12 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
 
                 new CompositePlanOpTranslationStrategy(
                         new RelationFilterOpTranslationStrategy(),
-                        new RelationSelectionTranslationStrategy(RelationFilterOp.class)));
+                        new RelationSelectionTranslationStrategy(RelationFilterOp.class))
+                );
+
+        this.strategies = Stream.ofAll(this.strategies).append(
+                new OptionalOpTranslationStrategy(this)
+        ).toJavaList();
     }
     //endregion
 

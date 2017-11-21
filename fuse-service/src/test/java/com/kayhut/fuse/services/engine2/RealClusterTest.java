@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -764,6 +765,42 @@ public class RealClusterTest {
         int x = 5;
     }
 
+    @Test
+    @Ignore
+    public void test15() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
+                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
+                new OptionalComp(4, 5),
+                new Rel(5, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 6, 0),
+                new ETyped(6, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 0, 0)
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
 
     @Test
     @Ignore
@@ -829,7 +866,7 @@ public class RealClusterTest {
 
         Random random = new Random();
 
-        List<String> contexts = Arrays.asList("context1", "context2", "global");
+        List<String> contexts = Arrays.asList("context1", "context2", "context3", "global");
         List<String> users = Arrays.asList("Tonette Kwon", "Georgiana Vanasse", "Tena Barriere", "Sharilyn Dennis", "Yee Edgell", "Berneice Luz",
                 "Jasmin Mullally", "Suzette Saenger", "Jeri Miltenberger", "Lea Herren", "Brendon Richard", "Sonja Feeney", "Marcene Caffey",
                 "Lelia Kott", "Arletta Kollman", "Hien Vrabel", "Marguerita Willingham", "Oleta Specht", "Calista Clutter", "Elliot Dames",
@@ -1057,6 +1094,8 @@ public class RealClusterTest {
                                         .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                         .get()));
                     }
+                } else if (context.equals("context3")) {
+
                 } else {
                     bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
@@ -1386,7 +1425,7 @@ public class RealClusterTest {
                     .map(id -> "e" + String.format(entityIdFormat, id))
                     .toJavaList();
 
-            for (String context : Stream.ofAll(contexts).filter(context -> !context.equals("global"))) {
+            for (String context : Stream.ofAll(contexts).filter(context -> !context.equals("global") && !context.equals("context3"))) {
                 String insightId = "i" + String.format(insightIdFormat, iId++);
                 String index = Stream.ofAll(iPartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                         .filter(partition -> partition.isWithin(insightId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);

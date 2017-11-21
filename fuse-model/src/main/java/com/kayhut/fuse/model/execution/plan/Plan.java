@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.log.Trace;
 import javaslang.Tuple2;
+import javaslang.collection.Stream;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -28,7 +29,7 @@ public class Plan extends CompositePlanOpBase implements Trace<String>, IPlan {
         super(ops);
     }
 
-    public Plan(List<PlanOpBase> ops) {
+    public Plan(Iterable<PlanOpBase> ops) {
         super(ops);
     }
 
@@ -38,18 +39,6 @@ public class Plan extends CompositePlanOpBase implements Trace<String>, IPlan {
     public int geteNum() {
         return 0;
     }
-    //endregion
-
-    //region Properties
-    public Plan withOp(PlanOpBase op) {
-        Plan newPlan = new Plan(this.getOps());
-        newPlan.getOps().add(op);
-        newPlan.trace = this.trace;
-        return newPlan;
-    }
-
-    //endregion
-
     //endregion
 
     @Override

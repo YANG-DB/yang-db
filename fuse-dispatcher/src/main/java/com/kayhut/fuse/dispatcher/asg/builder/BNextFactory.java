@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.aggregation.*;
 import com.kayhut.fuse.model.query.combiner.HComb;
 import com.kayhut.fuse.model.query.entity.*;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.HQuant;
@@ -46,6 +47,7 @@ public class BNextFactory implements BellowFactory{
         this.map.put(EConcrete.class, ebase -> (Collections.emptyList()));
         this.map.put(ELog.class, ebase -> (Collections.emptyList()));
         this.map.put(Start.class, ebase -> ((Start)ebase).getB() == 0 ? Collections.emptyList() : Collections.singletonList(((Start) ebase).getB()));
+        this.map.put(OptionalComp.class, (ebase) -> Collections.emptyList());
     }
     //endregion
 

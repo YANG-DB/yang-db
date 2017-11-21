@@ -22,6 +22,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -68,7 +69,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
 
-        Traversal<Element, Path> traversal  = this.planTraversalTranslator.translate(
+        GraphTraversal<?, ?> traversal  = this.planTraversalTranslator.translate(
                 executionPlan.getPlan(),
                 new TranslationContext(
                         new Ontology.Accessor(ontology),
@@ -80,7 +81,7 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
                         ontology,
                         context.getQueryResource(),
                         context.getCursorType(),
-                        traversal));
+                        traversal.path()));
         time.stop();
         return submit(eventBus, context.of(cursor));
 
