@@ -5,6 +5,7 @@ import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.query.properties.RedundantSelectionRelProp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
@@ -29,17 +30,20 @@ public class RelationSelectionTranslationStrategy extends PlanOpTranslationStrat
 
     //region PlanOpTranslationStrategyBase Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, Plan plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal,
+                                           PlanWithCost<Plan, PlanDetailedCost> planWithCost,
+                                           PlanOpBase planOp,
+                                           TranslationContext context) {
         Optional<RelationOp> lastRelationOp = RelationOp.class.equals(planOp.getClass()) ?
                 Optional.of((RelationOp) planOp) :
-                PlanUtil.prev(plan, planOp, RelationOp.class);
+                PlanUtil.prev(planWithCost.getPlan(), planOp, RelationOp.class);
 
         if (!lastRelationOp.isPresent()) {
             return traversal;
         }
 
-        Optional<RelationFilterOp> relationFilterOp = PlanUtil.next(plan, lastRelationOp.get(), RelationFilterOp.class);
-        Optional<PlanOpBase> adjacentToRelationOp = PlanUtil.adjacentNext(plan, lastRelationOp.get());
+        Optional<RelationFilterOp> relationFilterOp = PlanUtil.next(planWithCost.getPlan(), lastRelationOp.get(), RelationFilterOp.class);
+        Optional<PlanOpBase> adjacentToRelationOp = PlanUtil.adjacentNext(planWithCost.getPlan(), lastRelationOp.get());
 
         Stream.ofAll(TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class))
                 .filter(hasStep -> isSelectionHasStep((HasStep<?>) hasStep))
