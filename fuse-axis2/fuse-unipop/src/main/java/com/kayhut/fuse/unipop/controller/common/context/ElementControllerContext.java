@@ -13,9 +13,9 @@ import java.util.Optional;
  * Created by roman.margolis on 13/09/2017.
  */
 public interface ElementControllerContext extends ConstraintContext, SchemaProviderContext, ElementContext, GraphContext, LimitContext, SelectContext {
-    class Default implements ElementControllerContext {
+    class Impl implements ElementControllerContext {
         //region Constructors
-        public Default(
+        public Impl(
                 UniGraph graph,
                 ElementType elementType,
                 GraphElementSchemaProvider schemaProvider,

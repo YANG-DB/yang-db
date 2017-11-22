@@ -47,24 +47,24 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
 
         Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
 
-        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan.get(), EntityOp.class);
+        Plan flatPlan = PlanUtil.flat(plan.get());
+
+        Optional<EntityOp> lastEntityOp = PlanUtil.last(flatPlan, EntityOp.class);
         if (!lastEntityOp.isPresent()) {
             return Collections.singleton(plan.get());
         }
 
-        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan.get(), lastEntityOp.get(), RelationOp.class);
+        Optional<RelationOp> lastRelationOp = PlanUtil.prev(flatPlan, lastEntityOp.get(), RelationOp.class);
         if (!lastRelationOp.isPresent()) {
             return Collections.singleton(plan.get());
         }
 
-        Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(plan.get(), lastRelationOp.get(), RelationFilterOp.class);
+        Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(flatPlan, lastRelationOp.get(), RelationFilterOp.class);
         if (!lastRelationFilterOp.isPresent()) {
             return Collections.singleton(plan.get());
         }
 
         AtomicInteger maxEnum = new AtomicInteger(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get());
-
-        Plan newPlan = new Plan(plan.get().getOps());
 
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get($ont.get());
 
@@ -109,6 +109,8 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
         }
 
         RelationFilterOp newRelationFilterOp = new RelationFilterOp(AsgEBase.Builder.<RelPropGroup>get().withEBase(relPropGroup).build());
+
+        Plan newPlan = new Plan(plan.get().getOps());
         newPlan = PlanUtil.replace(newPlan, lastRelationFilterOp.get(), newRelationFilterOp);
 
         return Collections.singleton(newPlan);

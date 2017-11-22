@@ -24,7 +24,7 @@ import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
-import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
@@ -947,7 +947,7 @@ public abstract class EntityRelationEntityTest {
         String eTag2 = direction == Rel.Direction.R ? "B" : "A";
 
         QueryResult.Builder builder = QueryResult.Builder.instance();
-        PromiseEdgeIdProvider edgeIdProvider = new PromiseEdgeIdProvider(Optional.of(constraint));
+        HashEdgeIdProvider edgeIdProvider = new HashEdgeIdProvider(Optional.of(constraint));
 
         for(int i = 0 ; i < numDragons ; i++) {
             for (int j = 0; j < i; j++) {

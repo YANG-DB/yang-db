@@ -65,8 +65,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                         .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                        .otherV().as("B")
-                        .path();
+                        .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -82,8 +81,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
                         .outE(GlobalConstants.Labels.PROMISE).as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                        .otherV().as("B")
-                        .path();
+                        .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -99,8 +97,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                         .outE(GlobalConstants.Labels.PROMISE).as("B-->A")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(__.has(T.label, "Fire"), __.has("direction", Direction.OUT))))
-                        .otherV().as("A")
-                        .path();
+                        .otherV().as("A");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -118,8 +115,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
-                        .otherV().as("B")
-                        .path();
+                        .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -142,8 +138,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
                                 __.has(T.label, "Fire"),
                                 __.has(GlobalConstants.HasKeys.DIRECTION, Direction.OUT))))
-                        .otherV().as("C")
-                        .path();
+                        .otherV().as("C");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

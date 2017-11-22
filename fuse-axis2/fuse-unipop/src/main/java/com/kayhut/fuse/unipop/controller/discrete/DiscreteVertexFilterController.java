@@ -4,16 +4,14 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
-import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.*;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
+import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexFilterControllerContext;
+import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexFilterConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
-import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
-import com.kayhut.fuse.unipop.controller.promise.appender.FilterIndexSearchAppender;
-import com.kayhut.fuse.unipop.controller.promise.appender.FilterVerticesSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseFilterEdgeConverter;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
@@ -41,7 +39,8 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class DiscreteVertexFilterController extends VertexControllerBase {
     //region Constructors
     public DiscreteVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
-        super(Collections.singletonList(GlobalConstants.Labels.PROMISE_FILTER));
+        super(labels -> Stream.ofAll(labels).size() == 1 &&
+                Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
         this.client = client;
         this.configuration = configuration;
@@ -54,10 +53,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
     //region VertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
-        Timer.Context time = metricRegistry.timer(name(PromiseVertexFilterController.class.getSimpleName(),"search")).time();
-        if (Stream.ofAll(edgeLabels).isEmpty()) {
-            return Collections.emptyIterator();
-        }
+        Timer.Context time = metricRegistry.timer(name(DiscreteVertexFilterController.class.getSimpleName(),"search")).time();
 
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");
@@ -91,26 +87,32 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
             SearchVertexQuery searchVertexQuery,
             Optional<TraversalConstraint> constraint,
             List<HasContainer> selectPHasContainers) {
-        Timer.Context time = metricRegistry.timer(name(PromiseVertexFilterController.class.getSimpleName(),"filterVertices")).time();
+        Timer.Context time = metricRegistry.timer(name(DiscreteVertexFilterController.class.getSimpleName(),"filterVertices")).time();
 
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexFilterControllerContext context =
-                new PromiseVertexFilterControllerContext(
+        CompositeControllerContext context = new CompositeControllerContext.Impl(
+                null,
+                new DiscreteVertexFilterControllerContext(
                         this.graph,
                         searchVertexQuery.getVertices(),
                         constraint,
                         selectPHasContainers,
                         schemaProvider,
-                        searchVertexQuery.getLimit());
+                        searchVertexQuery.getLimit()));
 
-        CompositeSearchAppender<PromiseVertexFilterControllerContext> appender =
+        CompositeSearchAppender<CompositeControllerContext> appender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
-                        wrap(new FilterVerticesSearchAppender()),
                         wrap(new SizeSearchAppender(configuration)),
                         wrap(new ConstraintSearchAppender()),
+                        wrap(new ElementRoutingSearchAppender()),
+                        wrap(new FilterBulkSearchAppender()),
                         wrap(new FilterSourceSearchAppender()),
-                        wrap(new FilterIndexSearchAppender()));
+                        wrap(new FilterSourceRoutingSearchAppender()),
+                        wrap(new FilterRoutingSearchAppender()),
+                        wrap(new FilterIndexSearchAppender()),
+                        wrap(new NormalizeRoutingSearchAppender(50)),
+                        wrap(new NormalizeIndexSearchAppender(100)));
 
         appender.append(searchBuilder, context);
 
@@ -123,10 +125,10 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
+        ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context);
         time.stop();
         return Stream.ofAll(searchHits)
-                .map(converter::convert)
+                .flatMap(converter::convert)
                 .filter(Objects::nonNull).iterator();
     }
     //endregion

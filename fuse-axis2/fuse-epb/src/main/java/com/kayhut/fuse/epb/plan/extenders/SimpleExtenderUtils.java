@@ -1,12 +1,10 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.AsgEBasePlanOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -14,6 +12,7 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -35,12 +34,17 @@ public interface SimpleExtenderUtils {
 
     static void flattenQueryRecursive(AsgEBase element, Map<Integer, AsgEBase> allElements) {
         if (!allElements.containsKey(element.geteNum())) {
-            if (shouldAddElement(element))
+            if (shouldAddElement(element)) {
                 allElements.put(element.geteNum(), element);
-            if (shouldAdvanceToNext(element) && element.getNext() != null)
+            }
+
+            if (shouldAdvanceToNext(element) && element.getNext() != null) {
                 element.getNext().forEach(e -> flattenQueryRecursive((AsgEBase) e, allElements));
-            if (shouldAdvanceToBs(element) && element.getB() != null)
+            }
+
+            if (shouldAdvanceToBs(element) && element.getB() != null) {
                 element.getB().forEach(e -> flattenQueryRecursive((AsgEBase) e, allElements));
+            }
         }
     }
 
@@ -53,7 +57,9 @@ public interface SimpleExtenderUtils {
     }
 
     static boolean shouldAddElement(AsgEBase element) {
-        return element != null && !(element.geteBase() instanceof Start);
+        return element != null &&
+                !(element.geteBase() instanceof Start) &&
+                !(element.geteBase() instanceof OptionalComp);
     }
 
     /**
@@ -68,7 +74,8 @@ public interface SimpleExtenderUtils {
     static <C> Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> removeHandledQueryParts(Plan plan, Map<Integer, AsgEBase> queryParts) {
         Map<Integer, AsgEBase> unHandledParts = new HashMap<>(queryParts);
         List<AsgEBase> handledParts = new LinkedList<>();
-        plan.getOps().forEach(op -> {
+
+        Stream.ofAll(PlanUtil.flat(plan).getOps()).forEach(op -> {
             handledParts.add(queryParts.get(op.geteNum()));
             unHandledParts.remove(op.geteNum());
         });
@@ -92,7 +99,7 @@ public interface SimpleExtenderUtils {
     }
 
     static Set<Integer> markEntitiesAndRelations(Plan plan) {
-        return Stream.ofAll(plan.getOps()).map(op -> op.geteNum()).toJavaSet();
+        return Stream.ofAll(PlanUtil.flat(plan).getOps()).map(PlanOpBase::geteNum).toJavaSet();
     }
 
 

@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
@@ -51,16 +52,22 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
-        newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
+        Plan relationSegmentPlan = new Plan();
+        relationSegmentPlan = relationSegmentPlan.withOp(new RelationOp(nextRelation.get()));
         if (nextRelationPropGroup.isPresent()) {
-            newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
+            relationSegmentPlan = relationSegmentPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
         }
 
-        newPlan = newPlan.withOp(new EntityOp(toEntity.get()));
+        relationSegmentPlan = relationSegmentPlan.withOp(new EntityOp(toEntity.get()));
         if (toEntityPropGroup.isPresent()) {
-            newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
+            relationSegmentPlan = relationSegmentPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
+        if (nextRelation.get().getParents().get(0).geteBase() instanceof OptionalComp) {
+            newPlan = newPlan.withOp(new OptionalOp(relationSegmentPlan));
+        } else {
+            newPlan = newPlan.append(relationSegmentPlan);
+        }
 
         return Collections.singletonList(newPlan);
     }

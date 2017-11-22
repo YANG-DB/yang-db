@@ -7,6 +7,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.search.SearchHit;
 import org.unipop.structure.UniGraph;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 /**
@@ -20,8 +21,8 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
     //endregion
 
     @Override
-    public Element convert(SearchHit element) {
-        return new PromiseVertex(Promise.as(element.id(), element.getType()), Optional.empty(), graph, element.sourceAsMap());
+    public Iterable<Element> convert(SearchHit element) {
+        return Arrays.asList(new PromiseVertex(Promise.as(element.id(), element.getType()), Optional.empty(), graph, element.sourceAsMap()));
     }
     //endregion
 

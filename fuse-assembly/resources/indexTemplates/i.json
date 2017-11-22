@@ -1,0 +1,64 @@
+{
+  "order": 0,
+  "template": "i*",
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "number_of_replicas": "0"
+    }
+  },
+  "mappings": {
+    "insight": {
+      "properties": {
+        "creationUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "creationTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "refs": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "context": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "lastUpdateUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "value": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "entityIds": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "authorization": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "authorizationCount": {
+          "type": "integer"
+        },
+        "lastUpdateTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "deleteUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "deleteTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        }
+      }
+    }
+  },
+  "aliases": {}
+}

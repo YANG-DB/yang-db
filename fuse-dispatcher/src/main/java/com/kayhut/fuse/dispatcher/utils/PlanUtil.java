@@ -1,6 +1,7 @@
 package com.kayhut.fuse.dispatcher.utils;
 
 import com.kayhut.fuse.model.execution.plan.*;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,16 +57,16 @@ public class PlanUtil {
         return first(compositePlanOp, equalsPredicateFunction.apply(planOp));
     }
 
-    public static <T extends PlanOpBase> T first$(Plan plan, Predicate<PlanOpBase> predicate) {
-        return PlanUtil.<T>first(plan, predicate).get();
+    public static <T extends PlanOpBase> T first$(CompositePlanOpBase compositePlanOp, Predicate<PlanOpBase> predicate) {
+        return PlanUtil.<T>first(compositePlanOp, predicate).get();
     }
 
-    public static <T extends PlanOpBase> T first$(Plan plan, Class<T> klass) {
-        return PlanUtil.first(plan, klass).get();
+    public static <T extends PlanOpBase> T first$(CompositePlanOpBase compositePlanOp, Class<T> klass) {
+        return PlanUtil.first(compositePlanOp, klass).get();
     }
 
-    public static <T extends PlanOpBase> T first$(Plan plan, T planOp) {
-        return PlanUtil.first(plan, planOp).get();
+    public static <T extends PlanOpBase> T first$(CompositePlanOpBase compositePlanOp, T planOp) {
+        return PlanUtil.first(compositePlanOp, planOp).get();
     }
 
     public static <T extends PlanOpBase> Optional<T> last(CompositePlanOpBase compositePlanOp, Predicate<PlanOpBase> opPredicate) {
@@ -80,22 +81,44 @@ public class PlanUtil {
         return last(compositePlanOp, equalsPredicateFunction.apply(planOp));
     }
 
-    public static <T extends PlanOpBase> T last$(Plan plan, Predicate<PlanOpBase> predicate) {
-        return PlanUtil.<T>last(plan, predicate).get();
+    public static <T extends PlanOpBase> T last$(CompositePlanOpBase compositePlanOp, Predicate<PlanOpBase> predicate) {
+        return PlanUtil.<T>last(compositePlanOp, predicate).get();
     }
 
-    public static <T extends PlanOpBase> T last$(Plan plan, Class<T> klass) {
-        return PlanUtil.last(plan, klass).get();
+    public static <T extends PlanOpBase> T last$(CompositePlanOpBase compositePlanOp, Class<T> klass) {
+        return PlanUtil.last(compositePlanOp, klass).get();
     }
 
-    public static <T extends PlanOpBase> T last$(Plan plan, T planOp) {
-        return PlanUtil.last(plan, planOp).get();
+    public static <T extends PlanOpBase> T last$(CompositePlanOpBase compositePlanOp, T planOp) {
+        return PlanUtil.last(compositePlanOp, planOp).get();
     }
 
-    public static Plan replace(Plan plan, PlanOpBase oldOp, PlanOpBase newOp) {
-        Plan newPlan = new Plan(plan.getOps());
-        newPlan.getOps().set(plan.getOps().indexOf(oldOp), newOp);
-        return newPlan;
+    public static <T extends CompositePlanOpBase> T flat(CompositePlanOpBase compositePlanOp) {
+        return (T)flatten(compositePlanOp, truePredicate, truePredicate);
+    }
+
+    public static <T extends CompositePlanOpBase> T replace(CompositePlanOpBase compositePlanOp, PlanOpBase oldOp, PlanOpBase newOp) {
+        Plan newPlan = new Plan(compositePlanOp.getOps());
+        List<CompositePlanOpBase> composites = Stream.<CompositePlanOpBase>of(newPlan).toJavaList();
+
+        while(!composites.isEmpty()) {
+            compositePlanOp = composites.get(0);
+
+            int indexOfOld = compositePlanOp.getOps().indexOf(oldOp);
+            if (indexOfOld > 0) {
+                compositePlanOp.getOps().set(indexOfOld, newOp);
+                break;
+            } else {
+                composites.addAll(Stream.ofAll(compositePlanOp.getOps())
+                        .filter(planOp -> CompositePlanOpBase.class.isAssignableFrom(planOp.getClass()))
+                        .map(planOp -> (CompositePlanOpBase)planOp)
+                        .toJavaList());
+
+                composites.remove(0);
+            }
+        }
+
+        return (T)newPlan;
     }
     //endregion
 
@@ -116,6 +139,29 @@ public class PlanUtil {
         }
 
         return Optional.empty();
+    }
+
+    private static Plan flatten(
+            CompositePlanOpBase compositePlanOp,
+            Predicate<PlanOpBase> opPredicate,
+            Predicate<PlanOpBase> compositeOpPredicate) {
+        List<PlanOpBase> flattenedPlanOps = new ArrayList<>(compositePlanOp.getOps());
+        int index = 0;
+        while(index < flattenedPlanOps.size()) {
+            PlanOpBase planOp = flattenedPlanOps.get(index);
+            if (CompositePlanOpBase.class.isAssignableFrom(planOp.getClass())) {
+                CompositePlanOpBase innerCompositePlanOp = (CompositePlanOpBase)planOp;
+                flattenedPlanOps.remove(index);
+
+                if (compositeOpPredicate.test(innerCompositePlanOp)) {
+                    flattenedPlanOps.addAll(index, innerCompositePlanOp.getOps());
+                }
+            } else {
+                index++;
+            }
+        }
+
+        return new Plan(Stream.ofAll(flattenedPlanOps).filter(opPredicate::test));
     }
     //endregion
 

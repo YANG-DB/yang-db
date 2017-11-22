@@ -5,11 +5,11 @@ import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
-import com.kayhut.fuse.unipop.controller.utils.idProvider.PromiseEdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.labelProvider.PrefixedLabelProvider;
 import com.kayhut.fuse.unipop.controller.promise.converter.AggregationPromiseEdgeIterableConverter;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
@@ -42,7 +42,8 @@ public class PromiseVertexController extends VertexControllerBase {
 
     //region Constructors
     public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
-        super(Collections.singletonList(GlobalConstants.Labels.PROMISE));
+        super(labels -> Stream.ofAll(labels).size() == 1 &&
+                Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE));
 
         this.client = client;
         this.configuration = configuration;
@@ -56,9 +57,6 @@ public class PromiseVertexController extends VertexControllerBase {
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
         Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"search")).time();
-        if (Stream.ofAll(edgeLabels).isEmpty()) {
-            return Collections.emptyIterator();
-        }
 
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");
@@ -96,12 +94,20 @@ public class PromiseVertexController extends VertexControllerBase {
         Timer timeEs = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges:elastic"));
         SearchBuilder searchBuilder = new SearchBuilder();
 
-        PromiseVertexControllerContext context = new PromiseVertexControllerContext(graph, schemaProvider, constraint, Collections.emptyList(), 0, startVertices);
+        CompositeControllerContext context = new CompositeControllerContext.Impl(
+                null,
+                new PromiseVertexControllerContext(
+                        graph,
+                        schemaProvider,
+                        constraint,
+                        Collections.emptyList(),
+                        0,
+                        startVertices));
 
-        CompositeSearchAppender<PromiseVertexControllerContext> compositeAppender =
+        CompositeSearchAppender<CompositeControllerContext> compositeAppender =
                 new CompositeSearchAppender<>(CompositeSearchAppender.Mode.all,
                         wrap(new StartVerticesSearchAppender()),
-                        wrap(new ConstraintSearchAppender()),
+                        wrap(new PromiseConstraintSearchAppender()),
                         wrap(new PromiseEdgeAggregationAppender()),
                         wrap(new PromiseEdgeIndexAppender()));
 
@@ -120,13 +126,13 @@ public class PromiseVertexController extends VertexControllerBase {
         //convert result
         AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(
                 graph,
-                new PromiseEdgeIdProvider(constraint),
+                new HashEdgeIdProvider(constraint),
                 new PrefixedLabelProvider("_"));
 
         //timeEs es search took in ms
         timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
         time.stop();
-        return converter.convert(response.getAggregations().asMap());
+        return Stream.ofAll(converter.convert(response.getAggregations().asMap())).flatMap(edgeIterator -> () -> edgeIterator).iterator();
 
     }
     //endregion

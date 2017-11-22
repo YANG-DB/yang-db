@@ -17,14 +17,14 @@ public class PlanCostTests {
 
         //graph schema provider
         GraphElementSchemaProvider graphElementSchemaProvider = Mockito.mock(GraphElementSchemaProvider.class);
-        when(graphElementSchemaProvider.getVertexSchema(any())).thenReturn(Optional.of(new GraphVertexSchema() {
+        when(graphElementSchemaProvider.getVertexSchema(any())).thenReturn(OptionalComp.of(new GraphVertexSchema() {
             @Override
             public String getType() {
                 return null;
             }
 
             @Override
-            public Optional<GraphElementRouting> getRouting() {
+            public OptionalComp<GraphElementRouting> getRouting() {
                 return null;
             }
 

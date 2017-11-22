@@ -1,0 +1,56 @@
+{
+  "order": 0,
+  "template": "ref*",
+  "settings": {
+    "index": {
+      "number_of_shards": "1",
+      "number_of_replicas": "0"
+    }
+  },
+  "mappings": {
+    "reference": {
+      "properties": {
+        "system": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "creationUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "agency": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "creationTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "lastUpdateUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "authorization": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "authorizationCount": {
+          "type": "integer"
+        },
+        "lastUpdateTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        },
+        "deleteUser": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "deleteTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
+        }
+      }
+    }
+  },
+  "aliases": {}
+}

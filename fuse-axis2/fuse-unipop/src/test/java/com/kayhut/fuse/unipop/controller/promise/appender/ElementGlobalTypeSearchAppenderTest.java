@@ -5,12 +5,9 @@ import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.unipop.controller.common.appender.ElementGlobalTypeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
@@ -18,15 +15,12 @@ import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.unipop.query.search.SearchQuery;
-import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
@@ -47,7 +41,7 @@ public class ElementGlobalTypeSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         ElementGlobalTypeSearchAppender appender = new ElementGlobalTypeSearchAppender();
 
-        ElementControllerContext context = new ElementControllerContext.Default(
+        ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
                 ElementType.vertex,
                 schemaProvider,

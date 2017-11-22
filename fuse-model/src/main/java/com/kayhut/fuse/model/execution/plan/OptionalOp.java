@@ -2,32 +2,29 @@ package com.kayhut.fuse.model.execution.plan;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by User on 23/02/2017.
  */
-public class OptionalOp extends PlanOpBase {
+public class OptionalOp extends CompositePlanOpBase {
     //region Constructors
-    public OptionalOp() {
+    private OptionalOp() {}
 
+    public OptionalOp(List<PlanOpBase> ops) {
+        super(ops);
     }
 
-    public OptionalOp(Plan plan) {
-        this.plan = plan;
-    }
-    //endregion
-
-    //region Properties
-    public Plan getPlan() {
-        return this.plan;
+    public OptionalOp(PlanOpBase...ops) {
+        super(ops);
     }
 
-    public void setPlan(Plan value) {
-        this.plan = value;
+    public OptionalOp(CompositePlanOpBase compositePlanOp) {
+        super(compositePlanOp);
     }
     //endregion
-
-    //region Fields
-    private Plan plan;
 
     @Override
     public int geteNum() {

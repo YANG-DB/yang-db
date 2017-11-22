@@ -1,6 +1,8 @@
 package com.kayhut.fuse.unipop.controller.promise.appender;
 
 import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
+import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
@@ -17,10 +19,10 @@ import java.util.List;
 /**
  * Created by Elad on 4/26/2017.
  */
-public class StartVerticesSearchAppender implements SearchAppender<PromiseVertexControllerContext> {
+public class StartVerticesSearchAppender implements SearchAppender<VertexControllerContext> {
 
     @Override
-    public boolean append(SearchBuilder searchBuilder, PromiseVertexControllerContext context) {
+    public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
 
         Traversal traversal = buildStartVerticesConstraint(context.getBulkVertices());
 

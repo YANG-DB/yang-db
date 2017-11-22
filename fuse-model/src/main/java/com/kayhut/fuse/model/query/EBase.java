@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.query.aggregation.*;
 import com.kayhut.fuse.model.query.combiner.EComb;
 import com.kayhut.fuse.model.query.combiner.RComb;
 import com.kayhut.fuse.model.query.entity.*;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.HQuant;
@@ -43,7 +44,8 @@ import com.kayhut.fuse.model.query.quant.Quant2;
         @JsonSubTypes.Type(name = "AggM2", value = AggM2.class),
         @JsonSubTypes.Type(name = "AggM3", value = AggM3.class),
         @JsonSubTypes.Type(name = "AggM4", value = AggM4.class),
-        @JsonSubTypes.Type(name = "AggM5", value = AggM5.class)
+        @JsonSubTypes.Type(name = "AggM5", value = AggM5.class),
+        @JsonSubTypes.Type(name = "OptionalComp", value = OptionalComp.class)
 })
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
