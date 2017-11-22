@@ -6,6 +6,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.unipop.structure.UniEdge;
 import org.unipop.structure.UniGraph;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -14,8 +15,9 @@ import java.util.Map;
 public class DiscreteEdge extends UniEdge {
     //region Constructors
     public DiscreteEdge(Object id, String label, Vertex outV, Vertex inV, UniGraph graph, Map<String, Object> properties) {
-        super(new MapBuilder<>(properties).put(T.id.getAccessor(), id).put(T.label.getAccessor(), label)
-                .get(), outV, inV, graph);
+        super(properties, outV, inV, graph);
+        this.id = id.toString();
+        this.label = label;
     }
     //endregion
 }
