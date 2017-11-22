@@ -2,6 +2,7 @@ package com.kayhut.fuse.gta.strategy.utils;
 
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
+import com.kayhut.fuse.unipop.predicates.ExistsP;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 
@@ -29,6 +30,8 @@ public class ConversionUtil {
                 return P.outside(cast(range.get(0)), cast(range.get(1)));
             case inSet: return P.within(CollectionUtil.listFromObjectValue(constraint.getExpr()));
             case notInSet: return P.without(CollectionUtil.listFromObjectValue(constraint.getExpr()));
+            case empty: return P.not(new ExistsP<V>());
+            case notEmpty: return new ExistsP<>();
             default: throw new RuntimeException("not supported");
         }
     }

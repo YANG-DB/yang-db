@@ -46,22 +46,26 @@ public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTr
             EProp eProp = (EProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(eProp.getpType());
             Object expr = eProp.getCon().getExpr();
-            ConstraintOp op = eProp.getCon().getOp();
-            if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
-                List<Object> newList = transformToNewList(property.get(), expr);
-                Constraint newCon = new Constraint(eProp.getCon().getOp(), newList);
-                eProp.setCon(newCon);
+            if (expr != null) {
+                ConstraintOp op = eProp.getCon().getOp();
+                if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
+                    List<Object> newList = transformToNewList(property.get(), expr);
+                    Constraint newCon = new Constraint(eProp.getCon().getOp(), newList);
+                    eProp.setCon(newCon);
+                }
             }
         }
         if (eBase instanceof RelProp) {
             RelProp relProp = (RelProp) eBase;
             Optional<Property> property = context.getOntologyAccessor().$property(relProp.getpType());
             Object expr = relProp.getCon().getExpr();
-            ConstraintOp op = relProp.getCon().getOp();
-            if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
-                List<Object> newList = transformToNewList(property.get(), expr);
-                Constraint newCon = new Constraint(relProp.getCon().getOp(), newList);
-                relProp.setCon(newCon);
+            if (expr != null) {
+                ConstraintOp op = relProp.getCon().getOp();
+                if (isArrayOrIterable(expr) && isMultivaluedOp(op) && property.isPresent()) {
+                    List<Object> newList = transformToNewList(property.get(), expr);
+                    Constraint newCon = new Constraint(relProp.getCon().getOp(), newList);
+                    relProp.setCon(newCon);
+                }
             }
         }
     }

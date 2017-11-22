@@ -57,8 +57,12 @@ public class Constraint {
     private String iType = "[]";
     //endregion
 
+    public static Constraint of(ConstraintOp op) {
+        return of(op, null, "[]");
+    }
+
     public static Constraint of(ConstraintOp op, Object exp) {
-        return of(op,exp,"[]");
+        return of(op, exp, "[]");
     }
 
     public static Constraint of(ConstraintOp op,Object exp, String iType) {

@@ -3,6 +3,9 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
+import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
@@ -16,9 +19,7 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.search.SearchHit;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -27,12 +28,18 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //region Constructors
     public DiscreteEdgeConverter(VertexControllerContext context) {
         this.context = context;
+        try {
+            this.edgeIdProvider = new HashEdgeIdProvider(context.getConstraint());
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.edgeIdProvider = new SimpleEdgeIdProvider();
+        }
     }
     //endregion
 
     //region ElementConverter Implementation
     @Override
-    public E convert(SearchHit searchHit) {
+    public Iterable<E> convert(SearchHit searchHit) {
         Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return null;
@@ -43,62 +50,100 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
         Vertex outV = null;
         Vertex inV = null;
-        Map<String, Object> properties = new HashMap<>(searchHit.sourceAsMap());
+
+        List<E> edges = new ArrayList<>();
 
         if (context.getDirection().equals(Direction.OUT)) {
             GraphEdgeSchema.End outEndSchema = edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDestination().get();
 
-            Object outId = getIdFieldValue(searchHit, properties, outEndSchema.getIdField());
-            Object inId = getIdFieldValue(searchHit, properties, inEndSchema.getIdField());
+            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.sourceAsMap());
+            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.sourceAsMap(), inVertexProperties);
 
-            outV = context.getVertex(outId);
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
 
-            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, properties);
-            properties = createEdgeProperties(inEndSchema, properties);
-            inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
+            for(Object outId : outIds) {
+                for(Object inId : inIds) {
+                    outV = context.getVertex(outId);
+                    inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
+
+                    edges.add((E)new DiscreteEdge(
+                            this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
+                            edgeSchema.getLabel(),
+                            outV,
+                            inV,
+                            context.getGraph(),
+                            edgeProperties));
+                }
+            }
+
         } else {
             GraphEdgeSchema.End outEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getDestination().get() : edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getSource().get() : edgeSchema.getDestination().get();
 
-            Object outId = getIdFieldValue(searchHit, properties, outEndSchema.getIdField());
-            Object inId = getIdFieldValue(searchHit, properties, inEndSchema.getIdField());
+            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
+            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);
 
-            inV = context.getVertex(inId);
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
 
-            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, properties);
-            properties = createEdgeProperties(outEndSchema, properties);
-            outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
+            for(Object outId : outIds) {
+                for(Object inId : inIds) {
+                    inV = context.getVertex(inId);
+                    outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
+
+                    edges.add((E)new DiscreteEdge(
+                            this.edgeIdProvider.get(edgeSchema.getLabel(), outV, inV, edgeProperties),
+                            edgeSchema.getLabel(),
+                            outV,
+                            inV,
+                            context.getGraph(),
+                            edgeProperties));
+                }
+            }
         }
 
-        return (E)new DiscreteEdge(searchHit.getId(), edgeSchema.getLabel(), outV, inV, context.getGraph(), properties);
+        return edges;
     }
     //endregion
 
     //region Private Methods
-    private Object getIdFieldValue(SearchHit searchHit, Map<String, Object> properties, String idField) {
+    private Iterable<Object> getIdFieldValues(SearchHit searchHit, Map<String, Object> properties, String idField) {
         if (idField.equals("_id")) {
-            return searchHit.id();
+            return Collections.singletonList(searchHit.id());
         } else {
-            return MapHelper.value(properties, idField).orElse(null);
+            return MapHelper.values(properties, idField);
         }
     }
 
     private Map<String, Object> createVertexProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties) {
+        Optional<String> partitionField = endSchema.getIndexPartitions().isPresent() ?
+                endSchema.getIndexPartitions().get().getPartitionField() :
+                Optional.empty();
+
+        Optional<String> routingField = endSchema.getRouting().isPresent() ?
+                Optional.of(endSchema.getRouting().get().getRoutingProperty().getName()) :
+                Optional.empty();
+
         return Stream.ofAll(endSchema.getRedundantProperties())
-                .filter(redundantProperty -> properties.containsKey(redundantProperty.getPropertyRedundantName()))
-                .toJavaMap(redundantProperty -> new Tuple2<>(redundantProperty.getName(), properties.get(redundantProperty.getPropertyRedundantName())));
+                .map(GraphRedundantPropertySchema::getPropertyRedundantName)
+                .appendAll(partitionField.map(Collections::singletonList).orElseGet(Collections::emptyList))
+                .appendAll(routingField.map(Collections::singletonList).orElseGet(Collections::emptyList))
+                .distinct()
+                .filter(properties::containsKey)
+                .toJavaMap(fieldName -> new Tuple2<>(fieldName, properties.get(fieldName)));
     }
 
-    private Map<String, Object> createEdgeProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties) {
-        for(GraphRedundantPropertySchema redundantPropertySchema : endSchema.getRedundantProperties()) {
-            properties.remove(redundantPropertySchema.getPropertyRedundantName());
-        }
-        return properties;
+    private Map<String, Object> createEdgeProperties(GraphEdgeSchema.End endSchema, Map<String, Object> hitProperties, Map<String, Object> vertexProperties) {
+        return Stream.ofAll(hitProperties.entrySet())
+                .filter(entry -> !vertexProperties.containsKey(entry.getKey()))
+                .toJavaMap(entry -> new Tuple2<>(entry.getKey(), entry.getValue()));
     }
     //endregion
 
     //region Fields
     private VertexControllerContext context;
+    private EdgeIdProvider<String> edgeIdProvider;
     //endregion
 }

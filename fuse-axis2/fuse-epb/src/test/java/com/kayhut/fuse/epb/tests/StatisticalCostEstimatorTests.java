@@ -111,11 +111,14 @@ public class StatisticalCostEstimatorTests {
 
         RegexPatternCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
-        String s1 = new Plan().withOp(new EntityOp()).toPattern();
+        Plan plan1 = new Plan().withOp(new EntityOp());
+        String s1 = plan1.toPattern();
 
-        String s2 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).toPattern();
+        Plan plan2 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp());
+        String s2 = plan2.toPattern();
 
-        String s3 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationFilterOp()).toPattern();
+        Plan plan3 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationFilterOp());
+        String s3 = plan3.toPattern();
 
         java.util.regex.Pattern compileP2 = java.util.regex.Pattern.compile(supportedPattern[1].pattern());
 
@@ -139,13 +142,17 @@ public class StatisticalCostEstimatorTests {
     public void planEstimatorPatternOneTest() {
         RegexPatternCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
-        String s1 = new Plan().withOp(new EntityOp()).toPattern();
+        Plan plan1 = new Plan().withOp(new EntityOp());
+        String s1 = plan1.toPattern();
 
-        String s2 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).toPattern();
+        Plan plan2 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp());
+        String s2 = plan2.toPattern();
 
-        String s3 = new Plan().withOp(new EntityOp()).withOp(new RelationOp()).withOp(new EntityOp()).toPattern();
+        Plan plan3 = new Plan().withOp(new EntityOp()).withOp(new RelationOp()).withOp(new EntityOp());
+        String s3 = plan3.toPattern();
 
-        String s4 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationOp()).withOp(new RelationFilterOp()).withOp(new EntityOp()).withOp(new EntityFilterOp()).toPattern();
+        Plan plan4 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationOp()).withOp(new RelationFilterOp()).withOp(new EntityOp()).withOp(new EntityFilterOp());
+        String s4 = plan4.toPattern();
 
 
         java.util.regex.Pattern compileP1 = java.util.regex.Pattern.compile(supportedPattern[0].pattern());

@@ -10,6 +10,7 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteElementVertexController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteVertexController;
+import com.kayhut.fuse.unipop.controller.discrete.DiscreteVertexFilterController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
@@ -76,6 +77,12 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
                                 new MetricRegistry()
                         ),
                         new DiscreteVertexController(
+                                client,
+                                elasticGraphConfiguration,
+                                uniGraph,
+                                schemaProvider,
+                                new MetricRegistry()),
+                        new DiscreteVertexFilterController(
                                 client,
                                 elasticGraphConfiguration,
                                 uniGraph,

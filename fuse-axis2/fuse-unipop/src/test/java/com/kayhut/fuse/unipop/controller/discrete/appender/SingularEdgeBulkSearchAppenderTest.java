@@ -27,7 +27,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     public void testOut() {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
-        appender.append(searchBuilder, new VertexControllerContext.Default(
+        appender.append(searchBuilder, new VertexControllerContext.Impl(
                 null,
                 ElementType.edge,
                 getSchemaProvider(),
@@ -49,7 +49,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     public void testOutEdgeType1() {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
-        appender.append(searchBuilder, new VertexControllerContext.Default(
+        appender.append(searchBuilder, new VertexControllerContext.Impl(
                 null,
                 ElementType.edge,
                 getSchemaProvider(),
@@ -71,7 +71,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     public void testIn() {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
-        appender.append(searchBuilder, new VertexControllerContext.Default(
+        appender.append(searchBuilder, new VertexControllerContext.Impl(
                 null,
                 ElementType.edge,
                 getSchemaProvider(),
@@ -93,7 +93,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     public void testInEdgeType1() {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
-        appender.append(searchBuilder, new VertexControllerContext.Default(
+        appender.append(searchBuilder, new VertexControllerContext.Impl(
                 null,
                 ElementType.edge,
                 getSchemaProvider(),
@@ -115,7 +115,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     public void testOutEdgeTypeNonExistent() {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
-        appender.append(searchBuilder, new VertexControllerContext.Default(
+        appender.append(searchBuilder, new VertexControllerContext.Impl(
                 null,
                 ElementType.edge,
                 getSchemaProvider(),
@@ -135,7 +135,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     public void testOutVertexType2() {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
-        appender.append(searchBuilder, new VertexControllerContext.Default(
+        appender.append(searchBuilder, new VertexControllerContext.Impl(
                 null,
                 ElementType.edge,
                 getSchemaProvider(),
@@ -155,7 +155,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     public void testInVertexType1() {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
-        appender.append(searchBuilder, new VertexControllerContext.Default(
+        appender.append(searchBuilder, new VertexControllerContext.Impl(
                 null,
                 ElementType.edge,
                 getSchemaProvider(),

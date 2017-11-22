@@ -1,6 +1,5 @@
 package com.kayhut.fuse.unipop.controller.discrete.context;
 
-import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -13,7 +12,7 @@ import java.util.Optional;
 /**
  * Created by roman.margolis on 12/09/2017.
  */
-public class DiscreteElementControllerContext extends ElementControllerContext.Default {
+public class DiscreteElementControllerContext extends ElementControllerContext.Impl {
     public DiscreteElementControllerContext(UniGraph graph, ElementType elementType, GraphElementSchemaProvider schemaProvider, Optional<TraversalConstraint> constraint, Iterable<HasContainer> selectPHasContainers, int limit) {
         super(graph, elementType, schemaProvider, constraint, selectPHasContainers, limit);
     }

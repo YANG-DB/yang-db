@@ -1,6 +1,7 @@
 package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.gta.strategy.promise.*;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
@@ -89,12 +90,16 @@ public class RelationFilterOpTranslationStrategyTest {
 
         RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
-                __.start(),
+                __.start().has("willBeDeleted", "doesnt matter"),
                 new PlanWithCost<>(plan, null),
                 plan.getOps().get(1),
                 context);
 
-        GraphTraversal expectedTraversal = __.start().has("timestamp", P.gt(10));
+        GraphTraversal expectedTraversal = __.start()
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.has("timestamp", P.gt(10)))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -131,12 +136,16 @@ public class RelationFilterOpTranslationStrategyTest {
 
         RelationFilterOpTranslationStrategy strategy = new RelationFilterOpTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
-                __.start(),
+                __.start().has("willBeDeleted", "doesnt matter"),
                 new PlanWithCost<>(plan, null),
                 plan.getOps().get(1),
                 context);
 
-        GraphTraversal expectedTraversal = __.start().has("timestamp", P.gt(10));
+        GraphTraversal expectedTraversal = __.start()
+                .has(GlobalConstants.HasKeys.CONSTRAINT,
+                        Constraint.by(__.and(
+                                __.has(T.label, "Fire"),
+                                __.has("timestamp", P.gt(10)))));
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }

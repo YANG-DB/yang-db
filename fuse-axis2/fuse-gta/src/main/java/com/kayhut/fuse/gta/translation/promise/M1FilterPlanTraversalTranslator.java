@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.structure.Element;
 
 /**
@@ -25,7 +26,7 @@ public class M1FilterPlanTraversalTranslator extends ChainedPlanOpTraversalTrans
     //region Override Methods
     @Override
     @LoggerAnnotation(name = "translate", options = LoggerAnnotation.Options.returnValue, logLevel = Slf4jReporter.LoggingLevel.INFO)
-    public Traversal<Element, Path> translate(PlanWithCost<Plan, PlanDetailedCost> plan, TranslationContext context) throws Exception {
+    public GraphTraversal<?, ?> translate(PlanWithCost<Plan, PlanDetailedCost> plan, TranslationContext context) {
         return super.translate(plan, context);
     }
     //endregion

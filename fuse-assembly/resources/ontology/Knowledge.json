@@ -8,12 +8,13 @@
         "logicalId",
         "context",
         "category",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
-        "creationUser"
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ]
     },
     {
@@ -22,13 +23,14 @@
       "properties": [
         "logicalId",
         "context",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
         "creationUser",
-        "propertyId",
+        "deleteTime",
+        "deleteUser",
+        "fieldId",
         "bdt",
         "stringValue",
         "textValue",
@@ -42,12 +44,17 @@
       "properties": [
         "context",
         "category",
-        "security1",
-        "security2",
+        "entityAId",
+        "entityACategory",
+        "entityBId",
+        "entityBCategory",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
-        "creationUser"
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ]
     },
     {
@@ -55,13 +62,14 @@
       "name": "Rvalue",
       "properties": [
         "context",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
         "creationUser",
-        "propertyId",
+        "deleteTime",
+        "deleteUser",
+        "fieldId",
         "bdt",
         "stringValue",
         "textValue",
@@ -75,15 +83,31 @@
       "properties": [
         "content",
         "url",
-        "context",
         "system",
         "agency",
-        "security1",
-        "security2",
+        "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
         "creationTime",
-        "creationUser"
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
+      ]
+    },
+    {
+      "eType": "Insight",
+      "name": "Insight",
+      "properties": [
+        "content",
+        "context",
+        "entityIds",
+        "authorization",
+        "lastUpdateUser",
+        "lastUpdateTime",
+        "creationTime",
+        "creationUser",
+        "deleteTime",
+        "deleteUser"
       ]
     }
   ],
@@ -151,6 +175,25 @@
         {
           "eTypeA": "Evalue",
           "eTypeB": "Reference"
+        },
+        {
+          "eTypeA": "Rvalue",
+          "eTypeB": "Reference"
+        },
+        {
+          "eTypeA": "Insight",
+          "eTypeB": "Reference"
+        }
+      ]
+    },
+    {
+      "rType": "hasInsight",
+      "name": "hasInsight",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "Entity",
+          "eTypeB": "Insight"
         }
       ]
     }
@@ -172,8 +215,23 @@
       "type": "string"
     },
     {
+      "pType": "entityIds",
+      "name": "entityIds",
+      "type": "string"
+    },
+    {
       "pType": "url",
       "name": "url",
+      "type": "string"
+    },
+    {
+      "pType": "system",
+      "name": "system",
+      "type": "string"
+    },
+    {
+      "pType": "agency",
+      "name": "agency",
       "type": "string"
     },
     {
@@ -182,13 +240,8 @@
       "type": "string"
     },
     {
-      "pType": "security1",
-      "name": "security1",
-      "type": "string"
-    },
-    {
-      "pType": "security2",
-      "name": "security2",
+      "pType": "authorization",
+      "name": "authorization",
       "type": "string"
     },
     {
@@ -212,8 +265,18 @@
       "type": "string"
     },
     {
-      "pType": "propertyId",
-      "name": "propertyId",
+      "pType": "deleteTime",
+      "name": "deleteTime",
+      "type": "date"
+    },
+    {
+      "pType": "deleteUser",
+      "name": "deleteUser",
+      "type": "string"
+    },
+    {
+      "pType": "fieldId",
+      "name": "fieldId",
       "type": "string"
     },
     {
@@ -240,6 +303,26 @@
       "pType": "dateValue",
       "name": "dateValue",
       "type": "date"
+    },
+    {
+      "pType": "entityAId",
+      "name": "entityAId",
+      "type": "string"
+    },
+    {
+      "pType": "entityBId",
+      "name": "entityBId",
+      "type": "string"
+    },
+    {
+      "pType": "entityACategory",
+      "name": "entityACategory",
+      "type": "string"
+    },
+    {
+      "pType": "entityBCategory",
+      "name": "entityBCategory",
+      "type": "string"
     },
     {
       "pType": "2147483647",

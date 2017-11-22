@@ -34,11 +34,6 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
                 Optional.of((EntityOp)planOp) :
                 PlanUtil.prev(plan.getPlan(), planOp, EntityOp.class);
 
-        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan.getPlan(), lastEntityOp.get(), RelationOp.class);
-        if (lastRelationOp.isPresent()) {
-            return traversal;
-        }
-
         if (!lastEntityOp.isPresent()) {
             return traversal;
         }
@@ -47,13 +42,38 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
             return traversal;
         }
 
+        if (!PlanUtil.isFirst(plan.getPlan(), lastEntityOp.get())) {
+            Optional<VertexStep> lastVertexStep = TraversalUtil.last(traversal, VertexStep.class);
+            if (!lastVertexStep.isPresent()) {
+                return traversal;
+            }
 
+            if (!isFilterVertexStep(lastVertexStep.get())) {
+                traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
+            } else {
+                Optional<EdgeOtherVertexStep> lastEdgeOtherVertexStep =
+                        TraversalUtil.next(traversal, lastVertexStep.get(), EdgeOtherVertexStep.class);
+                lastEdgeOtherVertexStep.ifPresent(edgeOtherVertexStep ->
+                        TraversalUtil.remove(traversal, edgeOtherVertexStep));
+            }
+        }
+
+        Stream.ofAll(TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class))
+                .filter(hasStep -> isSelectionHasStep((HasStep<?>)hasStep))
+                .forEach(step -> traversal.asAdmin().removeStep(step));
 
         Stream.ofAll(lastEntityOp.get().getAsgEBase().geteBase().getReportProps())
                 .forEach(eProp -> traversal.has(context.getOnt().$property$(eProp).getName(),
                         SelectP.raw(context.getOnt().$property$(eProp).getName())));
 
-        return traversal;
+        if (PlanUtil.isFirst(plan.getPlan(), lastEntityOp.get())) {
+            return traversal;
+        }
+
+        Stream.ofAll(TraversalUtil.<Step>lastSteps(traversal, step -> step.getLabels().contains(lastEntityOp.get().getAsgEBase().geteBase().geteTag())))
+                .forEach(step -> step.removeLabel(lastEntityOp.get().getAsgEBase().geteBase().geteTag()));
+
+        return traversal.otherV().as(lastEntityOp.get().getAsgEBase().geteBase().geteTag());
     }
     //endregion
 

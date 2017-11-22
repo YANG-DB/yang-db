@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
+import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
@@ -34,34 +35,26 @@ import java.util.Set;
 /**
  * Created by Elad on 4/26/2017.
  */
-public class ConstraintSearchAppender implements SearchAppender<ElementControllerContext> {
+public class ConstraintSearchAppender implements SearchAppender<CompositeControllerContext> {
+    //region ElementControllerContext Implementation
     @Override
-    public boolean append(SearchBuilder searchBuilder, ElementControllerContext context) {
-        Set<String> labels = Collections.emptySet();
-        if (context.getConstraint().isPresent()) {
-            TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
-            labels = traversalValuesByKeyProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
-        }
-
-        if (labels.isEmpty()) {
-            labels = Stream.ofAll(context.getElementType().equals(ElementType.vertex) ?
-                    context.getSchemaProvider().getVertexLabels() :
-                    context.getSchemaProvider().getEdgeLabels()).toJavaSet();
-        }
+    public boolean append(SearchBuilder searchBuilder, CompositeControllerContext context) {
+        Set<String> labels = getContextRelevantLabels(context);
 
         Traversal newConstraint = context.getConstraint().isPresent() ?
                 context.getConstraint().get().getTraversal().asAdmin().clone() :
                 __.has(T.label, P.within(labels));
 
-        List<GraphElementConstraint> elementConstraints =
+        List<GraphElementConstraint> elementConstraints = context.getElementType().equals(ElementType.vertex) ?
                 Stream.ofAll(labels)
-                        .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
-                                context.getSchemaProvider().getVertexSchema(label).isPresent() ?
-                                        Collections.singletonList(context.getSchemaProvider().getVertexSchema(label).get()) :
-                                        Collections.emptyList() :
-                                new EdgeSchemaSupplier((VertexControllerContext)context).labels().applicable().get())
-                .map(GraphElementSchema::getConstraint)
-                .toJavaList();
+                        .map(label -> context.getSchemaProvider().getVertexSchema(label))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(GraphElementSchema::getConstraint)
+                        .toJavaList() :
+                Stream.ofAll(new EdgeSchemaSupplier((VertexControllerContext)context).labels().applicable().get())
+                    .map(GraphElementSchema::getConstraint)
+                    .toJavaList();
 
         if (!elementConstraints.isEmpty()) {
             List<HasStep> labelHasSteps = Stream.ofAll(new TraversalHasStepFinder(step -> step.getHasContainers().get(0).getKey().equals(T.label.getAccessor()))
@@ -90,4 +83,39 @@ public class ConstraintSearchAppender implements SearchAppender<ElementControlle
         traversalQueryTranslator.visit(newConstraint);
         return true;
     }
+    //endregion
+
+    //region Private Methods
+    private Set<String> getContextRelevantLabels(CompositeControllerContext context) {
+        if (context.getVertexControllerContext().isPresent()) {
+            return getVertexContextRelevantLabels(context);
+        }
+
+        return getElementContextRelevantLabels(context);
+    }
+
+    private Set<String> getElementContextRelevantLabels(ElementControllerContext context) {
+        Set<String> labels = Collections.emptySet();
+        if (context.getConstraint().isPresent()) {
+            TraversalValuesByKeyProvider traversalValuesByKeyProvider = new TraversalValuesByKeyProvider();
+            labels = traversalValuesByKeyProvider.getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor());
+        }
+
+        if (labels.isEmpty()) {
+            labels = Stream.ofAll(context.getElementType().equals(ElementType.vertex) ?
+                    context.getSchemaProvider().getVertexLabels() :
+                    context.getSchemaProvider().getEdgeLabels()).toJavaSet();
+        }
+
+        return labels;
+    }
+
+    private Set<String> getVertexContextRelevantLabels(VertexControllerContext context) {
+        // currently assuming homogeneous bulk
+        return Stream.ofAll(context.getBulkVertices())
+                .take(1)
+                .map(Element::label)
+                .toJavaSet();
+    }
+    //endregion
 }

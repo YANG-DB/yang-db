@@ -8,16 +8,14 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.sun.javafx.binding.StringFormatter;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.dispatcher.utils.ValidationContext.OK;
@@ -90,8 +88,10 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         }
 
         //expresion
-        if(property.getCon().getExpr()==null) {
-            errors.add(String.format(ERROR_3 ," expression ",property));
+        if (!Arrays.asList(ConstraintOp.empty, ConstraintOp.notEmpty).contains(property.getCon().getOp())) {
+            if (property.getCon().getExpr() == null) {
+                errors.add(String.format(ERROR_3, " expression ", property));
+            }
         }
 
         //operation

@@ -17,5 +17,5 @@ public interface PlanOpTranslationStrategy {
      * @param traversal - is mutated parameter
      * @return
      */
-    GraphTraversal translate(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context);
+    GraphTraversal<?, ?> translate(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context);
 }

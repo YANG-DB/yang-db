@@ -18,21 +18,28 @@ public class ChainedPlanOpTraversalTranslator implements PlanTraversalTranslator
     @Inject
     public ChainedPlanOpTraversalTranslator(PlanOpTranslationStrategy translationStrategy) {
         this.translationStrategy = translationStrategy;
+        this.startFrom = 0;
+    }
+
+    public ChainedPlanOpTraversalTranslator(PlanOpTranslationStrategy translationStrategy, int startFrom) {
+        this.translationStrategy = translationStrategy;
+        this.startFrom = startFrom;
     }
     //endregion
 
     //region PlanTraversalTranslator Implementation
-    public Traversal<Element, Path> translate(PlanWithCost<Plan, PlanDetailedCost> plan, TranslationContext context) throws Exception {
+    public GraphTraversal<?, ?> translate(PlanWithCost<Plan, PlanDetailedCost> planWithCost, TranslationContext context) {
         GraphTraversal traversal = __.start();
-        for (PlanOpBase planOp : plan.getPlan().getOps()) {
-            traversal = this.translationStrategy.translate(traversal, plan, planOp, context);
+        for (int planOpIndex = this.startFrom; planOpIndex < planWithCost.getPlan().getOps().size(); planOpIndex++) {
+            traversal = this.translationStrategy.translate(traversal, planWithCost, planWithCost.getPlan().getOps().get(planOpIndex), context);
         }
 
-        return traversal.path();
+        return traversal;
     }
     //endregion
 
     //region Fields
     private PlanOpTranslationStrategy translationStrategy;
+    private int startFrom;
     //endregion
 }

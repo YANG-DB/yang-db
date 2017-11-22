@@ -46,26 +46,26 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         Ontology.Accessor $ont = new Ontology.Accessor(ontologyProvider.get(query.getOnt()).get());
 
-        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan.get(), EntityOp.class);
+        Plan flatPlan = PlanUtil.flat(plan.get());
+
+        Optional<EntityOp> lastEntityOp = PlanUtil.last(flatPlan, EntityOp.class);
         if (!lastEntityOp.isPresent()) {
             return Collections.singleton(plan.get());
         }
 
-        Optional<RelationOp> lastRelationOp = PlanUtil.prev(plan.get(), lastEntityOp.get(), RelationOp.class);
+        Optional<RelationOp> lastRelationOp = PlanUtil.prev(flatPlan, lastEntityOp.get(), RelationOp.class);
         if (!lastRelationOp.isPresent()) {
             return Collections.singleton(plan.get());
         }
 
-        Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(plan.get(), lastRelationOp.get(), RelationFilterOp.class);
+        Optional<RelationFilterOp> lastRelationFilterOp = PlanUtil.next(flatPlan, lastRelationOp.get(), RelationFilterOp.class);
         if (!lastRelationFilterOp.isPresent()) {
             return Collections.singleton(plan.get());
         }
 
-        Optional<EntityFilterOp> lastEntityFilterOp = PlanUtil.next(plan.get(), lastEntityOp.get(), EntityFilterOp.class);
+        Optional<EntityFilterOp> lastEntityFilterOp = PlanUtil.next(flatPlan, lastEntityOp.get(), EntityFilterOp.class);
 
         AtomicInteger maxEnum = new AtomicInteger(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get());
-
-        Plan newPlan = new Plan(plan.get().getOps());
 
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get($ont.get());
 
@@ -123,6 +123,8 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
                 relPropGroup.getProps().add(relProp);
             }
         }
+
+        Plan newPlan = new Plan(plan.get().getOps());
 
         if(lastEntityFilterOp.isPresent()) {
             AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEBase().geteBase().clone()).build();

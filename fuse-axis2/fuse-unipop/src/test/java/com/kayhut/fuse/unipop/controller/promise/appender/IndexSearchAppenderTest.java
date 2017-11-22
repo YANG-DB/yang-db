@@ -5,9 +5,7 @@ import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
 import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
@@ -18,10 +16,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartiti
 import com.kayhut.fuse.unipop.structure.ElementType;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.junit.Assert;
 import org.junit.Test;
-import org.unipop.query.search.SearchQuery;
-import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
@@ -40,7 +35,7 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Dragon"));
 
-        ElementControllerContext context = new ElementControllerContext.Default(
+        ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
                 ElementType.vertex,
                 schemaProvider,
@@ -66,7 +61,7 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has(T.label, "Person"));
 
-        ElementControllerContext context = new ElementControllerContext.Default(
+        ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
                 ElementType.vertex,
                 schemaProvider,
@@ -92,7 +87,7 @@ public class IndexSearchAppenderTest {
         GraphElementSchemaProvider schemaProvider = getOntologySchemaProvider(ontology);
         TraversalConstraint traversalConstraint = new TraversalConstraint(__.has("color","sheker"));
 
-        ElementControllerContext context = new ElementControllerContext.Default(
+        ElementControllerContext context = new ElementControllerContext.Impl(
                 null,
                 ElementType.vertex,
                 schemaProvider,
