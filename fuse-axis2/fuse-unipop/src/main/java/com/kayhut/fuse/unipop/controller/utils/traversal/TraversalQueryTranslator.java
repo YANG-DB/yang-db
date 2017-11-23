@@ -3,11 +3,11 @@ package com.kayhut.fuse.unipop.controller.utils.traversal;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.translation.M1QueryTranslator;
 import com.kayhut.fuse.unipop.controller.search.translation.PredicateQueryTranslator;
-import com.kayhut.fuse.unipop.predicates.ExistsP;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.*;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.PropertiesStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
+import org.unipop.process.predicate.ExistsP;
 
 import java.util.function.Supplier;
 

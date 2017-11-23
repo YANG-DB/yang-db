@@ -2,9 +2,9 @@ package com.kayhut.fuse.gta.strategy.utils;
 
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
-import com.kayhut.fuse.unipop.predicates.ExistsP;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.unipop.process.predicate.ExistsP;
 
 import java.util.List;
 

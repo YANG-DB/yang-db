@@ -1,9 +1,9 @@
 package com.kayhut.fuse.unipop.controller.search.translation;
 
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
-import com.kayhut.fuse.unipop.predicates.ExistsP;
-import com.kayhut.fuse.unipop.predicates.NotExistsP;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
+import org.unipop.process.predicate.ExistsP;
+import org.unipop.process.predicate.NotExistsP;
 
 /**
  * Created by Roman on 18/05/2017.

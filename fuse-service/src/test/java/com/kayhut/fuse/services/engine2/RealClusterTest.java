@@ -801,6 +801,55 @@ public class RealClusterTest {
         int x = 5;
     }
 
+    @Test
+    @Ignore
+    public void test_slow_query() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 9, 15, 21), 0),
+                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
+                new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
+                new Rel(6, $ont.rType$("hasReference"), Rel.Direction.R, null, 7, 0),
+                new ETyped(7, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Collections.emptyList(), 0),
+                new Rel(9, $ont.rType$("hasRelation"), Rel.Direction.R, null, 10, 0),
+                new ETyped(10, "D", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 11, 0),
+                new Quant1(11, QuantType.all, Collections.emptyList(), 0),
+                new Rel(15, $ont.rType$("hasInsight"), Rel.Direction.R, null, 16, 0),
+                new ETyped(16, "E", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 17, 0),
+                //new Quant1(17, QuantType.all, Collections.singletonList(18), 0),
+                new Quant1(17, QuantType.all, Collections.emptyList(), 0),
+                new Rel(18, $ont.rType$("hasReference"), Rel.Direction.R, null, 19, 0),
+                new ETyped(19, "F", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 20, 0),
+                new Quant1(20, QuantType.all, Collections.emptyList(), 0),
+                new EProp(21, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000"))
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
 
     @Test
     @Ignore
