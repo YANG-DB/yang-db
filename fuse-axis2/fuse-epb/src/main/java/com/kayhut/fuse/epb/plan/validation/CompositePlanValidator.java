@@ -69,8 +69,10 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceC
             }
         }
 
-        if(this.mode == Mode.all)
+        if(this.mode == Mode.all) {
             return ValidationContext.OK;
+        }
+
         return new ValidationContext(false,"Not all valid");
     }
     //endregion

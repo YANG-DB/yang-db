@@ -77,8 +77,10 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
             }
         }
 
-        if(this.mode == Mode.all)
+        if(this.mode == Mode.all) {
             return ValidationContext.OK;
+        }
+
         return new ValidationContext(false,"Not all valid");
     }
     //endregion
