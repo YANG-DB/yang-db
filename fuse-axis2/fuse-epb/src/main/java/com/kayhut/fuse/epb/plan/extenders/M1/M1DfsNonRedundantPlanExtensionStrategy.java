@@ -1,6 +1,8 @@
-package com.kayhut.fuse.epb.plan.extenders;
+package com.kayhut.fuse.epb.plan.extenders.M1;
 
-import com.google.inject.Inject;
+import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.StepAdjacentDfsStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;
 

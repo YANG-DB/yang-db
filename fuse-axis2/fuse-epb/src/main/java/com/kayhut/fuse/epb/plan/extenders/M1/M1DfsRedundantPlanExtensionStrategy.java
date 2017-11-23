@@ -1,7 +1,8 @@
-package com.kayhut.fuse.epb.plan.extenders;
+package com.kayhut.fuse.epb.plan.extenders.M1;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
+import com.kayhut.fuse.epb.plan.extenders.*;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.Plan;

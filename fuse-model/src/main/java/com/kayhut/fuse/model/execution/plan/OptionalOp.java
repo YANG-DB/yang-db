@@ -1,5 +1,8 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
+import javaslang.collection.Stream;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
@@ -13,22 +16,22 @@ public class OptionalOp extends CompositePlanOpBase {
     //region Constructors
     private OptionalOp() {}
 
-    public OptionalOp(List<PlanOpBase> ops) {
-        super(ops);
-    }
-
     public OptionalOp(PlanOpBase...ops) {
-        super(ops);
+        this(Stream.of(ops));
     }
 
     public OptionalOp(CompositePlanOpBase compositePlanOp) {
-        super(compositePlanOp);
+        this(compositePlanOp.getOps());
+    }
+
+    public OptionalOp(Iterable<PlanOpBase> ops) {
+        super(ops);
     }
     //endregion
 
     @Override
     public int geteNum() {
-        throw new NotImplementedException();
+        return 0;
     }
     //endregion
 }

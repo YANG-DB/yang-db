@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -15,7 +16,6 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getLastOpOfType;
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDescendantUnmarkedOfType;
 
 /**
@@ -48,7 +48,7 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
         }
 
         Plan newPlan = plan.get();
-        if (getLastOpOfType(newPlan,EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
+        if (PlanUtil.last$(newPlan, EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 

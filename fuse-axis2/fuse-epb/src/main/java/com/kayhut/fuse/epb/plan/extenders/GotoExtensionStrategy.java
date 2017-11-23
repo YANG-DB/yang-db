@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.EntityOp;
@@ -13,8 +14,6 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getLastOpOfType;
-
 public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
 
     @Override
@@ -25,7 +24,7 @@ public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQue
 
         List<Plan> plans = new ArrayList<>();
 
-        EntityOp lastEntityOp = getLastOpOfType(plan.get(), EntityOp.class);
+        EntityOp lastEntityOp = PlanUtil.last$(plan.get(), EntityOp.class);
         List<EntityOp> ops = plan.get().getOps().stream().filter(op -> ((op instanceof EntityOp) && !(op instanceof GoToEntityOp) && !op.equals(lastEntityOp)))
                 .map(op -> (EntityOp) op).collect(Collectors.toList());
 
