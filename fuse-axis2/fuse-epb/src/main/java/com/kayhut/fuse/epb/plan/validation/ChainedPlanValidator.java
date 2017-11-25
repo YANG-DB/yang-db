@@ -3,9 +3,9 @@ package com.kayhut.fuse.epb.plan.validation;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.log.Trace;
 import com.kayhut.fuse.model.log.TraceComposite;
 import javaslang.Tuple2;
@@ -36,7 +36,7 @@ public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> ,Trac
 
     public interface PlanOpValidator extends Trace<String> {
         void reset();
-        ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex);
+        ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex);
     }
 
     //region Constructors
@@ -52,7 +52,7 @@ public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> ,Trac
         this.planOpValidator.reset();
 
         int opIndex = 0;
-        for (PlanOpBase planOp : plan.getOps()) {
+        for (PlanOp planOp : plan.getOps()) {
             ValidationContext valid = planOpValidator.isPlanOpValid(query, plan, opIndex++);
             if(!valid.valid()) return valid;
         }

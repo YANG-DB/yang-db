@@ -9,7 +9,11 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
@@ -64,10 +68,10 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
         List<Plan> extendedPlans = Stream.ofAll(strategy.extendPlan(Optional.of(plan), asgQuery)).toJavaList();
 
         assertEquals(extendedPlans.size(), 1);
-        assertEquals(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().size(),3);
+        assertEquals(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().size(),3);
         //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().get(1) instanceof RedundantRelProp);
-        Optional<RelProp> idRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().stream().
+        assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().get(1) instanceof RedundantRelProp);
+        Optional<RelProp> idRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().stream().
                 filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals("entityB.id")).findFirst();
         Assert.assertTrue(idRelProp.isPresent());
         Assert.assertEquals("123",idRelProp.get().getCon().getExpr());
@@ -90,17 +94,17 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
 
         assertEquals(extendedPlans.size(), 1);
 
-        assertEquals(0,PlanUtil.first$(extendedPlans.get(0), EntityFilterOp.class).getAsgEBase().geteBase().getProps().size());
-        assertEquals(4,PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().size());
+        assertEquals(0,PlanUtil.first$(extendedPlans.get(0), EntityFilterOp.class).getAsgEbase().geteBase().getProps().size());
+        assertEquals(4,PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().size());
 
         //first eProp is the old eprop filter condition (non pushdown)
-        assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().get(1) instanceof RedundantRelProp);
-        assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().get(2) instanceof RedundantRelProp);
+        assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().get(1) instanceof RedundantRelProp);
+        assertTrue(PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().get(2) instanceof RedundantRelProp);
 
-        Optional<RelProp> firstNameRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().stream().
+        Optional<RelProp> firstNameRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().stream().
                 filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals("entityB.firstName")).findFirst();
         Assert.assertTrue(firstNameRelProp.isPresent());
-        Optional<RelProp> typeRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEBase().geteBase().getProps().stream().
+        Optional<RelProp> typeRelProp = PlanUtil.first$(extendedPlans.get(0), RelationFilterOp.class).getAsgEbase().geteBase().getProps().stream().
                 filter(r -> r instanceof RedundantRelProp && ((RedundantRelProp) r).getRedundantPropName().equals("entityB.type")).findFirst();
         Assert.assertTrue(typeRelProp.isPresent());
         Assert.assertEquals("Dragon",((List<String>)typeRelProp.get().getCon().getExpr()).get(0));

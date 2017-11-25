@@ -2,8 +2,8 @@ package com.kayhut.fuse.gta.strategy.common;
 
 import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import javaslang.collection.Stream;
@@ -25,7 +25,7 @@ public class CompositePlanOpTranslationStrategy implements PlanOpTranslationStra
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, PlanWithCost<Plan,PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
+    public GraphTraversal translate(GraphTraversal traversal, PlanWithCost<Plan,PlanDetailedCost> plan, PlanOp planOp, TranslationContext context) {
         for(PlanOpTranslationStrategy planOpTranslationStrategy : this.strategies) {
             traversal = planOpTranslationStrategy.translate(traversal, plan, planOp, context);
         }

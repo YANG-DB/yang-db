@@ -9,8 +9,9 @@ import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Value;
@@ -164,11 +165,11 @@ public class CompoundBottomUpPlanSearcherTests {
         AsgEBase thirdElement = (AsgEBase) secondElement.getNext().get(0);
         boolean foundFirstPlan = false;
         for(PlanWithCost<Plan, PlanDetailedCost> planWithCost : planList){
-            List<PlanOpBase> ops = planWithCost.getPlan().getOps();
+            List<PlanOp> ops = planWithCost.getPlan().getOps();
 
-            if(firstElement.geteNum() == ops.get(0).geteNum() &&
-                    secondElement.geteNum() == ops.get(1).geteNum() &&
-                    thirdElement.geteNum() == ops.get(2).geteNum()) {
+            if(firstElement.geteNum() == ((AsgEBaseContainer)ops.get(0)).getAsgEbase().geteNum() &&
+                    secondElement.geteNum() == ((AsgEBaseContainer)ops.get(1)).getAsgEbase().geteNum() &&
+                    thirdElement.geteNum() == ((AsgEBaseContainer)ops.get(2)).getAsgEbase().geteNum()) {
                 foundFirstPlan = true;
             }
         }

@@ -1,6 +1,5 @@
 package com.kayhut.fuse.gta.strategy.utils;
 
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;

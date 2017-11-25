@@ -1,6 +1,10 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 
 /**
  * Created by Roman on 29/06/2017.

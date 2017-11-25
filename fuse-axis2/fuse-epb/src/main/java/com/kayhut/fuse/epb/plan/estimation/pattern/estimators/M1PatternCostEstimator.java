@@ -7,7 +7,7 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.*;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 

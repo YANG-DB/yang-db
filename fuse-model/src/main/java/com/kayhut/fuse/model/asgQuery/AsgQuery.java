@@ -124,7 +124,7 @@ public class AsgQuery implements IQuery{
             return new Builder(queryName,ontologyName);
         }
 
-        private AsgEBase addNextChild(AsgEBase element,boolean within) {
+        private AsgEBase addNextChild(AsgEBase element, boolean within) {
             current.addNextChild(element);
             if(!within) {
                 current = element;

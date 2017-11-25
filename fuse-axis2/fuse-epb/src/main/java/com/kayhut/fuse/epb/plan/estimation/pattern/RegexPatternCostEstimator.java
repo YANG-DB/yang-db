@@ -9,9 +9,14 @@ import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
@@ -141,7 +146,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
             java.util.regex.Pattern compile = regexPattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                Map<PatternPart, PlanOpBase> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
+                Map<PatternPart, PlanOp> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
 
                 com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern =
                                 regexPattern.equals(Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
@@ -160,7 +165,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
     //region Private Methods
     private static Plan extractNewPlanStep(Plan plan) {
-        List<PlanOpBase> planOps = new ArrayList<>();
+        List<PlanOp> planOps = new ArrayList<>();
         int entityCounter = 0;
         for (int i = plan.getOps().size() - 1 ; i >= 0 && entityCounter < 2; i--) {
             if (EntityOp.class.isAssignableFrom(plan.getOps().get(i).getClass())) {
@@ -173,7 +178,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
             return new Plan(planOps);
         }
 
-        return Plan.empty();
+        return new Plan();
     }
     private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(
             PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
@@ -215,8 +220,8 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         return new PlanWithCost<>(newPlan, newDetailedCost);
     }
 
-    private Map<PatternPart, PlanOpBase> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {
-        Map<PatternPart, PlanOpBase> map = new HashMap<>();
+    private Map<PatternPart, PlanOp> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {
+        Map<PatternPart, PlanOp> map = new HashMap<>();
         TreeSet<Map.Entry<String, Integer>> entries = new TreeSet<>(Comparator.comparingInt(Map.Entry::getValue));
         entries.addAll(groups.entrySet());
         int stepIndex = 0;

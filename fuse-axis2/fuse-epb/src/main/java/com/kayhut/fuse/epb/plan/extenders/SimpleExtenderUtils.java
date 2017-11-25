@@ -5,6 +5,8 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -17,7 +19,6 @@ import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.model.results.Entity;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -76,9 +77,12 @@ public interface SimpleExtenderUtils {
         Map<Integer, AsgEBase> unHandledParts = new HashMap<>(queryParts);
         List<AsgEBase> handledParts = new LinkedList<>();
 
-        Stream.ofAll(PlanUtil.flat(plan).getOps()).forEach(op -> {
-            handledParts.add(queryParts.get(op.geteNum()));
-            unHandledParts.remove(op.geteNum());
+        Stream.ofAll(PlanUtil.flat(plan).getOps())
+                .filter(op -> AsgEBaseContainer.class.isAssignableFrom(op.getClass()))
+                .map(op -> (AsgEBaseContainer)op)
+                .forEach(op -> {
+            handledParts.add(queryParts.get(op.getAsgEbase().geteNum()));
+            unHandledParts.remove(op.getAsgEbase().geteNum());
         });
         return new Tuple2<>(handledParts, unHandledParts);
     }
@@ -100,7 +104,10 @@ public interface SimpleExtenderUtils {
     }
 
     static Set<Integer> markEntitiesAndRelations(Plan plan) {
-        return Stream.ofAll(PlanUtil.flat(plan).getOps()).map(PlanOpBase::geteNum).toJavaSet();
+        return Stream.ofAll(PlanUtil.flat(plan).getOps())
+                .filter(op -> AsgEBaseContainer.class.isAssignableFrom(op.getClass()))
+                .map(op -> (AsgEBaseContainer)op)
+                .map(op -> op.getAsgEbase().geteNum()).toJavaSet();
     }
 
 
@@ -133,9 +140,9 @@ public interface SimpleExtenderUtils {
             return Optional.empty();
         }
 
-        Optional<AsgEBase<T>> nextRelation = getNextDescendantUnmarkedOfType(type, lastEntityOp.get().getAsgEBase(), markedElements);
+        Optional<AsgEBase<T>> nextRelation = getNextDescendantUnmarkedOfType(type, lastEntityOp.get().getAsgEbase(), markedElements);
         if (!nextRelation.isPresent()) {
-            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtil.ancestor(lastEntityOp.get().getAsgEBase(), EEntityBase.class);
+            Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtil.ancestor(lastEntityOp.get().getAsgEbase(), EEntityBase.class);
             while (parentEntity.isPresent()) {
                 nextRelation = getNextDescendantUnmarkedOfType(type, parentEntity.get(), markedElements);
                 if (nextRelation.isPresent()) {
@@ -162,12 +169,12 @@ public interface SimpleExtenderUtils {
             return Collections.emptyList();
         }
 
-        return AsgQueryUtil.nextDescendants(lastEntityOp.get().getAsgEBase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
+        return AsgQueryUtil.nextDescendants(lastEntityOp.get().getAsgEbase(),(child) -> type.isAssignableFrom(child.geteBase().getClass()) ,
                 p -> {
-                    if(p.equals(lastEntityOp.get().getAsgEBase()))
+                    if(p.equals(lastEntityOp.get().getAsgEbase()))
                         return true;
 
-                    List path = AsgQueryUtil.pathToAncestor(p, lastEntityOp.get().getAsgEBase().geteBase().geteNum());
+                    List path = AsgQueryUtil.pathToAncestor(p, lastEntityOp.get().getAsgEbase().geteBase().geteNum());
                     return !path.isEmpty() && path.size()<3;
                 });
     }
@@ -182,7 +189,7 @@ public interface SimpleExtenderUtils {
     static <T extends EBase> Optional<AsgEBase<T>> getNextAncestorUnmarkedOfType(Plan plan, Class<T> type) {
         Set<Integer> markedElements = markEntitiesAndRelations(plan);
         Optional<EntityOp> lastEntityOp = PlanUtil.last(plan, EntityOp.class);
-        return getNextAncestorUnmarkedOfType(type, lastEntityOp.get().getAsgEBase(), markedElements);
+        return getNextAncestorUnmarkedOfType(type, lastEntityOp.get().getAsgEbase(), markedElements);
     }
 
     /**
@@ -193,7 +200,7 @@ public interface SimpleExtenderUtils {
      */
     static <T extends EBase> Optional<AsgEBase<T>> getNextAncestorOfType(Plan plan, Class<T> type) {
         Optional<EntityOp> lastEntityOp = PlanUtil.last(plan, EntityOp.class);
-        return getNextAncestorUnmarkedOfType(type, lastEntityOp.get().getAsgEBase(), Collections.EMPTY_SET);
+        return getNextAncestorUnmarkedOfType(type, lastEntityOp.get().getAsgEbase(), Collections.EMPTY_SET);
     }
 }
 

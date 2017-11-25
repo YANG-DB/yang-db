@@ -1,7 +1,5 @@
 package com.kayhut.fuse.gta.translation;
 
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 

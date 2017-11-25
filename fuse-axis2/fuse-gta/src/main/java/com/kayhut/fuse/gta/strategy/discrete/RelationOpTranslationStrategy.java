@@ -5,7 +5,10 @@ import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
@@ -26,11 +29,11 @@ public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOp planOp, TranslationContext context) {
         Optional<EntityOp> prev = PlanUtil.prev(plan.getPlan(), planOp, EntityOp.class);
         Optional<EntityOp> next = PlanUtil.next(plan.getPlan(), planOp, EntityOp.class);
 
-        Rel rel = ((RelationOp)planOp).getAsgEBase().geteBase();
+        Rel rel = ((RelationOp)planOp).getAsgEbase().geteBase();
         String rTypeName = context.getOnt().$relation$(rel.getrType()).getName();
 
         switch (rel.getDir()) {
@@ -42,7 +45,7 @@ public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase
                 break;
         }
 
-        return traversal.as(createLabelForRelation(prev.get().getAsgEBase().geteBase(), rel.getDir(), next.get().getAsgEBase().geteBase()))
+        return traversal.as(createLabelForRelation(prev.get().getAsgEbase().geteBase(), rel.getDir(), next.get().getAsgEbase().geteBase()))
                 .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, P.eq(rTypeName))));
     }
     //endregion

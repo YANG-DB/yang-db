@@ -5,16 +5,15 @@ import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategyBase;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.properties.RedundantSelectionRelProp;
-import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeOtherVertexStep;
-import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 
 import java.util.Optional;
 
@@ -23,7 +22,7 @@ import java.util.Optional;
  */
 public class RelationSelectionTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
-    public RelationSelectionTranslationStrategy(Class<? extends PlanOpBase> klasses) {
+    public RelationSelectionTranslationStrategy(Class<? extends PlanOp> klasses) {
         super(klasses);
     }
     //endregion
@@ -32,7 +31,7 @@ public class RelationSelectionTranslationStrategy extends PlanOpTranslationStrat
     @Override
     protected GraphTraversal translateImpl(GraphTraversal traversal,
                                            PlanWithCost<Plan, PlanDetailedCost> planWithCost,
-                                           PlanOpBase planOp,
+                                           PlanOp planOp,
                                            TranslationContext context) {
         Optional<RelationOp> lastRelationOp = RelationOp.class.equals(planOp.getClass()) ?
                 Optional.of((RelationOp) planOp) :
@@ -43,20 +42,20 @@ public class RelationSelectionTranslationStrategy extends PlanOpTranslationStrat
         }
 
         Optional<RelationFilterOp> relationFilterOp = PlanUtil.next(planWithCost.getPlan(), lastRelationOp.get(), RelationFilterOp.class);
-        Optional<PlanOpBase> adjacentToRelationOp = PlanUtil.adjacentNext(planWithCost.getPlan(), lastRelationOp.get());
+        Optional<PlanOp> adjacentToRelationOp = PlanUtil.adjacentNext(planWithCost.getPlan(), lastRelationOp.get());
 
         Stream.ofAll(TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class))
                 .filter(hasStep -> isSelectionHasStep((HasStep<?>) hasStep))
                 .forEach(step -> traversal.asAdmin().removeStep(step));
 
-        Stream.ofAll(lastRelationOp.get().getAsgEBase().geteBase().getReportProps())
+        Stream.ofAll(lastRelationOp.get().getAsgEbase().geteBase().getReportProps())
                 .forEach(relProp -> traversal.has(context.getOnt().$property$(relProp).getName(),
                         SelectP.raw(context.getOnt().$property$(relProp).getName())));
 
         if (adjacentToRelationOp.isPresent() &&
                 relationFilterOp.isPresent() &&
                 adjacentToRelationOp.get().equals(relationFilterOp.get())) {
-            Stream.ofAll(relationFilterOp.get().getAsgEBase().geteBase().getProps())
+            Stream.ofAll(relationFilterOp.get().getAsgEbase().geteBase().getProps())
                     .filter(relProp -> RedundantSelectionRelProp.class.isAssignableFrom(relProp.getClass()))
                     .map(relProp -> (RedundantSelectionRelProp)relProp)
                     .forEach(relProp -> traversal.has(relProp.getRedundantPropName(),

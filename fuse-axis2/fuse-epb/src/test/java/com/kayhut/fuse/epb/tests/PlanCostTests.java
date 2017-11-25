@@ -46,7 +46,7 @@ public class PlanCostTests {
         //estimation calculator
         CostEstimator costEstimator = Mockito.mock(CostEstimator.class);
         when(costEstimator.estimateCost(any(), any())).thenReturn(new DoubleCost(1.0,1,1));
-        when(costEstimator.estimateCost(any(PlanOpBase.class))).thenReturn(new DoubleCost(1.0,1,1));
+        when(costEstimator.estimateCost(any(PlanOp.class))).thenReturn(new DoubleCost(1.0,1,1));
         OpCostCalculator<DoubleCost, DoubleCost, Plan<DoubleCost>> costCombiner = Mockito.mock(OpCostCalculator.class);
         when(costCombiner.calculateCost(any(), any())).thenReturn(new DoubleCost(1.0,1,1));
 

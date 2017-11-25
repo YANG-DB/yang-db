@@ -1,19 +1,20 @@
-package com.kayhut.fuse.model.execution.plan;
+package com.kayhut.fuse.model.execution.plan.composite;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.kayhut.fuse.model.execution.plan.FilterOp;
+import com.kayhut.fuse.model.execution.plan.LogicalOperator;
 
 import java.util.List;
 
 /**
  * Created by User on 23/02/2017.
  */
-public class CompositeFilterOp extends FilterOpBase {
+public class CompositeFilterOp extends FilterOp {
     //region Constructors
     public CompositeFilterOp() {
 
     }
 
-    public CompositeFilterOp(LogicalOperator op, List<FilterOpBase> filters) {
+    public CompositeFilterOp(LogicalOperator op, List<FilterOp> filters) {
         this.op = op;
         this.filters = filters;
     }
@@ -28,22 +29,17 @@ public class CompositeFilterOp extends FilterOpBase {
         this.op = op;
     }
 
-    public List<FilterOpBase> getFilters() {
+    public List<FilterOp> getFilters() {
         return this.filters;
     }
 
-    public void setFilters(List<FilterOpBase> value) {
+    public void setFilters(List<FilterOp> value) {
         this.filters = value;
     }
     //endregion
 
     //region Fields
     private LogicalOperator op;
-    private List<FilterOpBase> filters;
-
-    @Override
-    public int geteNum() {
-        throw new NotImplementedException();
-    }
+    private List<FilterOp> filters;
     //endregion
 }

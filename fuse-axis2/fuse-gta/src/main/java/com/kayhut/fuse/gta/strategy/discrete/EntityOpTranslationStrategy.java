@@ -6,9 +6,12 @@ import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -36,24 +39,24 @@ public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOp planOp, TranslationContext context) {
         EntityOp entityOp = (EntityOp)planOp;
 
         if (PlanUtil.isFirst(plan.getPlan(), planOp)) {
-            traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEBase().geteBase().geteTag());
-            appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
+            traversal = context.getGraphTraversalSource().V().as(entityOp.getAsgEbase().geteBase().geteTag());
+            appendEntity(traversal, entityOp.getAsgEbase().geteBase(), context.getOnt());
         } else {
-            Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(plan.getPlan(), planOp);
+            Optional<PlanOp> previousPlanOp = PlanUtil.adjacentPrev(plan.getPlan(), planOp);
             if (previousPlanOp.isPresent() &&
                     (previousPlanOp.get() instanceof RelationOp ||
                             previousPlanOp.get() instanceof RelationFilterOp)) {
                 switch (this.options) {
-                    case none: return traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
+                    case none: return traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag());
                     case filterEntity:
                         traversal.otherV();
                         traversal.outE(GlobalConstants.Labels.PROMISE_FILTER);
-                        appendEntity(traversal, entityOp.getAsgEBase().geteBase(), context.getOnt());
-                        traversal.otherV().as(entityOp.getAsgEBase().geteBase().geteTag());
+                        appendEntity(traversal, entityOp.getAsgEbase().geteBase(), context.getOnt());
+                        traversal.otherV().as(entityOp.getAsgEbase().geteBase().geteTag());
                 }
             }
         }

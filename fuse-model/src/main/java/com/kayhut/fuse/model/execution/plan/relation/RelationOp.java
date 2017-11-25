@@ -1,6 +1,7 @@
-package com.kayhut.fuse.model.execution.plan;
+package com.kayhut.fuse.model.execution.plan.relation;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.execution.plan.AsgEBasePlanOp;
 import com.kayhut.fuse.model.query.Rel;
 
 /**
@@ -18,7 +19,7 @@ public class RelationOp extends AsgEBasePlanOp<Rel> {
 
     public RelationOp(AsgEBase<Rel> relation, Rel.Direction direction) {
         super(new AsgEBase<>(relation.geteBase().clone()));
-        getAsgEBase().geteBase().setDir(direction);
+        getAsgEbase().geteBase().setDir(direction);
     }
     //endregion
 }

@@ -1,16 +1,15 @@
 package com.kayhut.fuse.gta.strategy.promise;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.gta.strategy.promise.RelationOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;

@@ -1,10 +1,12 @@
 package com.kayhut.fuse.gta.strategy.promise;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.gta.strategy.promise.RelationFilterOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.ontology.RelationshipType;

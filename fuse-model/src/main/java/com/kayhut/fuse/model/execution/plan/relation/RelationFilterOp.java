@@ -1,13 +1,15 @@
-package com.kayhut.fuse.model.execution.plan;
+package com.kayhut.fuse.model.execution.plan.relation;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.execution.plan.AsgEBasePlanOp;
+import com.kayhut.fuse.model.execution.plan.Filter;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 
 /**
  * Created by User on 22/02/2017.
  */
-public class RelationFilterOp extends AsgEBasePlanOp<RelPropGroup> implements Filter{
+public class RelationFilterOp extends AsgEBasePlanOp<RelPropGroup> implements Filter {
     //region Constructors
     public RelationFilterOp() {
 

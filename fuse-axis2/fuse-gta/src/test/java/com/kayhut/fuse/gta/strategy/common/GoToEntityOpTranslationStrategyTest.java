@@ -1,13 +1,12 @@
 package com.kayhut.fuse.gta.strategy.common;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.gta.strategy.common.GoToEntityOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;

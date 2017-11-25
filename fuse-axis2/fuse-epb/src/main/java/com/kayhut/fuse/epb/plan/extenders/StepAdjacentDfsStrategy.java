@@ -6,6 +6,12 @@ import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
@@ -48,7 +54,7 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
         }
 
         Plan newPlan = plan.get();
-        if (PlanUtil.last$(newPlan, EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
+        if (PlanUtil.last$(newPlan, EntityOp.class).getAsgEbase().geteNum() != fromEntity.get().geteNum()) {
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
@@ -64,7 +70,7 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
         }
 
         if (nextRelation.get().getParents().get(0).geteBase() instanceof OptionalComp) {
-            newPlan = newPlan.withOp(new OptionalOp(relationSegmentPlan));
+            newPlan = newPlan.withOp(new OptionalOp(null, relationSegmentPlan));
         } else {
             newPlan = newPlan.append(relationSegmentPlan);
         }

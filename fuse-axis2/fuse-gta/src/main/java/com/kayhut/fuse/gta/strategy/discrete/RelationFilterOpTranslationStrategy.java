@@ -6,16 +6,17 @@ import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
-import com.kayhut.fuse.model.query.properties.RedundantSelectionRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
-import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -25,7 +26,6 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 import org.apache.tinkerpop.gremlin.structure.T;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,7 +41,7 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
 
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOp planOp, TranslationContext context) {
         RelationFilterOp relationFilterOp = (RelationFilterOp)planOp;
         Optional<RelationOp> relationOp = PlanUtil.adjacentPrev(plan.getPlan(), relationFilterOp);
         if (!relationOp.isPresent()) {
@@ -52,8 +52,8 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
 
         traversal = appendRelationAndPropertyGroup(
                 traversal,
-                relationOp.get().getAsgEBase().geteBase(),
-                relationFilterOp.getAsgEBase().geteBase(),
+                relationOp.get().getAsgEbase().geteBase(),
+                relationFilterOp.getAsgEbase().geteBase(),
                 context.getOnt());
 
         return traversal;

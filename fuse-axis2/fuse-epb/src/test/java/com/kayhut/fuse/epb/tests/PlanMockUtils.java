@@ -5,9 +5,14 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
@@ -21,7 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Created by liorp on 4/26/2017.
@@ -61,7 +65,7 @@ public interface PlanMockUtils {
         private Map<String, Double> nodeFilterStatistics;
         private Map<String, Double> edgeTypeStatistics;
         private Map<String, Double> edgeFilterStatistics;
-        private Map<PlanOpBase, Double> costs;
+        private Map<PlanOp, Double> costs;
 
         private Plan plan;
         private Plan oldPlan;
@@ -103,7 +107,7 @@ public interface PlanMockUtils {
                 ((Typed.eTyped) instance).seteType(eType);
                 nodeTypeStatistics.put(eType, (double) total);
             }
-            entityOp.setAsgEBase(new AsgEBase<>(instance));
+            entityOp.setAsgEbase(new AsgEBase<>(instance));
             plan = plan.withOp(entityOp);
             //statistics simulator
             costs.put(entityOp, (double) total);
@@ -123,7 +127,7 @@ public interface PlanMockUtils {
                 ((Typed.eTyped) instance).seteType(eType);
                 nodeTypeStatistics.put(eType, (double) total);
             }
-            entityOp.setAsgEBase(new AsgEBase<>(instance));
+            entityOp.setAsgEbase(new AsgEBase<>(instance));
             plan = plan.withOp(entityOp);
             //statistics simulator
             costs.put(entityOp, (double) total);
@@ -213,11 +217,11 @@ public interface PlanMockUtils {
             return new PlanWithCost<>(oldPlan, new PlanDetailedCost(cost, planStepCosts));
         }
 
-        private DoubleCost getCost(PlanOpBase opBase) {
+        private DoubleCost getCost(PlanOp opBase) {
             return new DoubleCost(costs.getOrDefault(opBase, 1d));
         }
 
-        public Map<PlanOpBase, Double> costs() {
+        public Map<PlanOp, Double> costs() {
             return costs;
         }
 

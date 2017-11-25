@@ -11,7 +11,7 @@ import com.kayhut.fuse.epb.tests.BasicScenarioSetup;
 import com.kayhut.fuse.epb.tests.ScenarioMockUtil;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;

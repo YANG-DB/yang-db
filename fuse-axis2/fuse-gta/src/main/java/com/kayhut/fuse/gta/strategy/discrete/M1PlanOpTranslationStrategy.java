@@ -5,7 +5,12 @@ import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.common.GoToEntityOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
@@ -42,7 +47,7 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
 
 
     @Override
-    public GraphTraversal translate(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOpBase planOp, TranslationContext context) {
+    public GraphTraversal translate(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOp planOp, TranslationContext context) {
         return super.translate(traversal, plan, planOp, context);
     }
 }

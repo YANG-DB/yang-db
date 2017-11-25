@@ -1,14 +1,16 @@
 package com.kayhut.fuse.epb.plan.extenders.dfs;
 
-import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.extenders.GotoExtensionStrategy;
 import com.kayhut.fuse.model.OntologyTestUtils;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import javaslang.collection.Stream;
 import org.junit.Assert;

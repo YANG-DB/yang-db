@@ -3,16 +3,16 @@ package com.kayhut.fuse.epb.plan.extenders;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
 
@@ -25,11 +25,14 @@ public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQue
         List<Plan> plans = new ArrayList<>();
 
         EntityOp lastEntityOp = PlanUtil.last$(plan.get(), EntityOp.class);
-        List<EntityOp> ops = plan.get().getOps().stream().filter(op -> ((op instanceof EntityOp) && !(op instanceof GoToEntityOp) && !op.equals(lastEntityOp)))
-                .map(op -> (EntityOp) op).collect(Collectors.toList());
 
-        for (EntityOp ancestor : ops) {
-            Plan newPlan = plan.get().withOp(new GoToEntityOp(ancestor.getAsgEBase()));
+        List<EntityOp> entityOps = Stream.ofAll(plan.get().getOps())
+                .filter(op -> ((op instanceof EntityOp) && !(op instanceof GoToEntityOp) && !op.equals(lastEntityOp)))
+                .map(op -> (EntityOp)op)
+                .toJavaList();
+
+        for (EntityOp ancestorEntityOp : entityOps) {
+            Plan newPlan = plan.get().withOp(new GoToEntityOp(ancestorEntityOp.getAsgEbase()));
 
             if(!Plan.equals(plan.get(), newPlan)) {
                 newPlan.log("GotoExtensionStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);

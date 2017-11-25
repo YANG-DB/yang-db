@@ -5,7 +5,7 @@ import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.validation.opValidator.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 
 /**
  * Created by Roman on 04/05/2017.

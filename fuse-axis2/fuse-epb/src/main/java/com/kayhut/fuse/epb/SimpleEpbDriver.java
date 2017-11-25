@@ -10,7 +10,7 @@ import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.epb.plan.PlanNodeWrapper;
 import com.kayhut.fuse.epb.plan.PlanSearcher;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 

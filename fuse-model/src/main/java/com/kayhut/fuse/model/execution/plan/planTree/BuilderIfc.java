@@ -1,7 +1,6 @@
 package com.kayhut.fuse.model.execution.plan.planTree;
 
 import com.kayhut.fuse.model.execution.plan.IPlan;
-import com.kayhut.fuse.model.execution.plan.Plan;
 
 import java.util.Optional;
 

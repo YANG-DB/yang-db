@@ -3,7 +3,7 @@ package com.kayhut.fuse.epb.plan.validation.opValidator;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.CompositePlanOpBase;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.log.Trace;
 import com.kayhut.fuse.model.log.TraceComposite;
 import javaslang.Tuple2;
@@ -64,7 +64,7 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
     }
 
     @Override
-    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOpBase compositePlanOp, int opIndex) {
+    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         for(ChainedPlanValidator.PlanOpValidator planOpValidator : this.planOpValidators) {
             ValidationContext planOpValid = planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
 

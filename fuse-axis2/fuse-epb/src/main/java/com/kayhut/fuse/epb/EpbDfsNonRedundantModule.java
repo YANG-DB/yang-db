@@ -11,7 +11,7 @@ import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsNonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.typesafe.config.Config;

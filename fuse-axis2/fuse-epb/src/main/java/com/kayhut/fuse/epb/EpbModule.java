@@ -21,7 +21,7 @@ import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvid
 import com.kayhut.fuse.epb.plan.statistics.provider.StatDataProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
