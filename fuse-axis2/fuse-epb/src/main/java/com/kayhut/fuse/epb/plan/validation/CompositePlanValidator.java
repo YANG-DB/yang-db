@@ -13,29 +13,7 @@ import java.util.logging.Level;
 /**
  * Created by Roman on 30/04/2017.
  */
-public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceComposite<String> {
-    private TraceComposite<String> trace = TraceComposite.build(this.getClass().getSimpleName());
-
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String,String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public void with(Trace<String> trace) {
-        this.trace.with(trace);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
-
+public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q> {
     public enum Mode {
         one,
         all
@@ -45,7 +23,6 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceC
     public CompositePlanValidator(Mode mode, PlanValidator<P, Q>...validators) {
         this.mode = mode;
         this.validators = Stream.of(validators).toJavaList();
-        this.validators.forEach(this::with);
     }
 
     public CompositePlanValidator(Mode mode, Iterable<PlanValidator<P, Q>> validators) {
@@ -78,7 +55,7 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q>, TraceC
     //endregion
 
     //region Fields
-    private Mode mode;
-    private Iterable<PlanValidator<P, Q>> validators;
+    protected Mode mode;
+    protected Iterable<PlanValidator<P, Q>> validators;
     //endregion
 }

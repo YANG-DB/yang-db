@@ -15,45 +15,28 @@ import java.util.logging.Level;
 /**
  * Created by Roman on 24/04/2017.
  */
-public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpValidator , TraceComposite<String>{
-    private TraceComposite<String> trace = TraceComposite.build(this.getClass().getSimpleName());
-
+public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpValidator {
     public enum Mode {
         one,
         all
-    }
-
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String, String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
-
-    @Override
-    public void with(Trace<String> trace) {
-        this.trace.with(trace);
     }
 
     //region Constructors
     public CompositePlanOpValidator(Mode mode, ChainedPlanValidator.PlanOpValidator...planOpValidators) {
         this.mode = mode;
         this.planOpValidators = Stream.of(planOpValidators).toJavaList();
-        this.planOpValidators.forEach(p->trace.with(p));
     }
 
     public CompositePlanOpValidator(Mode mode, Iterable<ChainedPlanValidator.PlanOpValidator> planOpValidators) {
         this.mode = mode;
         this.planOpValidators = Stream.ofAll(planOpValidators).toJavaList();
-        this.planOpValidators.forEach(p->trace.with(p));
+    }
+    //endregion
+
+    //region Public Method
+    public CompositePlanOpValidator with(ChainedPlanValidator.PlanOpValidator planOpValidator) {
+        this.planOpValidators.add(planOpValidator);
+        return this;
     }
     //endregion
 
@@ -81,12 +64,12 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
             return ValidationContext.OK;
         }
 
-        return new ValidationContext(false,"Not all valid");
+        return new ValidationContext(false, "Not all valid");
     }
     //endregion
 
     //region Fields
-    private Iterable<ChainedPlanValidator.PlanOpValidator> planOpValidators;
+    private List<ChainedPlanValidator.PlanOpValidator> planOpValidators;
     private Mode mode;
     //endregion
 }

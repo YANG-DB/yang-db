@@ -179,7 +179,6 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
@@ -196,7 +195,6 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
@@ -212,7 +210,6 @@ public class M1PlanValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
@@ -231,7 +228,6 @@ public class M1PlanValidatorTests {
         );
 
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
@@ -359,7 +355,6 @@ public class M1PlanValidatorTests {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
         Plan plan = mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).plan();
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
     @Test
@@ -367,7 +362,6 @@ public class M1PlanValidatorTests {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
         Plan plan = mock(asgQuery).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).goTo(3).rel(2,Rel.Direction.L).relFilter(10).entity(1).plan();
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 

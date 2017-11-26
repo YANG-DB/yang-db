@@ -24,27 +24,10 @@ import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
  * Created by Roman on 30/04/2017.
  */
 public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpValidator {
-
-    private Trace<String> trace = Trace.build(ReverseRelationOpValidator.class.getSimpleName());
     //region ChainedPlanValidator.PlanOpValidator Implementation
     @Override
     public void reset() {
 
-    }
-
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String,String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
     }
 
     @Override
@@ -69,7 +52,6 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
         ValidationContext context = ValidationContext.OK;
         boolean result = areEntityAndRelationReversed(query, previousEntityAsg, relAsg);
         if(!result) {
-            log("Reverse:Validation failed on:"+toPattern(compositePlanOp) +"<"+opIndex+">", Level.INFO);
             context = new ValidationContext(result,"Reverse:Validation failed on:"+toPattern(compositePlanOp) +"<"+opIndex+">");
         }
         return context;

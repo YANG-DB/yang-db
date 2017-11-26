@@ -14,24 +14,7 @@ import java.util.logging.Level;
  */
 public class DummyValidator<P,Q> implements PlanValidator<P,Q> {
     @Override
-    public Trace<String> clone() {
-        return this;
-    }
-    @Override
     public ValidationContext isPlanValid(P plan, Q query) {
         return ValidationContext.OK;
-    }
-
-    @Override
-    public void log(String event, Level level) {}
-
-    @Override
-    public List<Tuple2<String,String>> getLogs(Level level) {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public String who() {
-        return DummyValidator.class.getSimpleName();
     }
 }

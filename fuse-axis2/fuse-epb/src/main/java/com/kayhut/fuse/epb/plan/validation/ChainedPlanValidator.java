@@ -16,25 +16,9 @@ import java.util.logging.Level;
 /**
  * Created by Roman on 24/04/2017.
  */
-public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> ,Trace<String>{
-    private TraceComposite<String> trace = TraceComposite.build(this.getClass().getSimpleName());
+public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> {
 
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String, String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
-
-    public interface PlanOpValidator extends Trace<String> {
+    public interface PlanOpValidator {
         void reset();
         ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex);
     }
@@ -42,7 +26,6 @@ public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> ,Trac
     //region Constructors
     public ChainedPlanValidator(PlanOpValidator planOpValidator) {
         this.planOpValidator = planOpValidator;
-        trace.with(planOpValidator);
     }
     //endregion
 
@@ -51,10 +34,11 @@ public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> ,Trac
     public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
         this.planOpValidator.reset();
 
-        int opIndex = 0;
-        for (PlanOp planOp : plan.getOps()) {
-            ValidationContext valid = planOpValidator.isPlanOpValid(query, plan, opIndex++);
-            if(!valid.valid()) return valid;
+        for (int opIndex = 0 ; opIndex < plan.getOps().size() ; opIndex++) {
+            ValidationContext valid = planOpValidator.isPlanOpValid(query, plan, opIndex);
+            if(!valid.valid()) {
+                return valid;
+            }
         }
 
         return ValidationContext.OK;

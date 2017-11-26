@@ -36,21 +36,6 @@ import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
 public class OptionalCompletePlanOpValidator implements ChainedPlanValidator.PlanOpValidator {
     //region PlanOpValidator Implementation
     @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String, String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
-
-    @Override
     public void reset() {
 
     }
@@ -94,9 +79,5 @@ public class OptionalCompletePlanOpValidator implements ChainedPlanValidator.Pla
 
         return optionalEnums.equals(optionalOpEnums);
     }
-    //endregion
-
-    //region Fields
-    private Trace<String> trace = Trace.build(AdjacentPlanOpValidator.class.getSimpleName());
     //endregion
 }

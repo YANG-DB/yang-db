@@ -20,24 +20,6 @@ import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
  * Created by Roman on 30/04/2017.
  */
 public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.PlanOpValidator {
-    private Trace<String> trace = Trace.build(RedundantGoToEntityOpValidator.class.getSimpleName());
-
-
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String,String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
-
     //region Constructors
     public RedundantGoToEntityOpValidator() {
         this.entityEnums = new HashSet<>();
@@ -55,7 +37,6 @@ public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.Plan
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if (planOp instanceof GoToEntityOp) {
             if (!this.entityEnums.contains(((AsgEBaseContainer)planOp).getAsgEbase().geteNum())) {
-                log("GoTo:Validation failed on:"+toPattern(compositePlanOp)+"<"+opIndex+">", Level.INFO);
                 return new ValidationContext(false,"GoTo:Validation failed on:"+toPattern(compositePlanOp)+"<"+opIndex+">");
             }
         }
