@@ -18,8 +18,8 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                         new AdjacentPlanOpValidator(),
                         new NoRedundantRelationOpValidator(),
                         new RedundantGoToEntityOpValidator(),
-                        new ReverseRelationOpValidator()))
-                );
+                        new ReverseRelationOpValidator(),
+                        new OptionalCompletePlanOpValidator())));
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
+import javaslang.collection.Stream;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -54,7 +55,10 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
         }
 
         Plan newPlan = plan.get();
-        if (PlanUtil.last$(newPlan, EntityOp.class).getAsgEbase().geteNum() != fromEntity.get().geteNum()) {
+
+        PlanOp lastPlanOp = plan.get().getOps().get(plan.get().getOps().size() - 1);
+        if (PlanUtil.last$(newPlan, EntityOp.class).getAsgEbase().geteNum() != fromEntity.get().geteNum() ||
+                Stream.of(EntityOp.class, EntityFilterOp.class).filter(klazz -> klazz.isAssignableFrom(lastPlanOp.getClass())).isEmpty()) {
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
