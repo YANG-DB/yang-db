@@ -11,12 +11,19 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.entity.ETyped;
+import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
+import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.RelProp;
+import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import javaslang.collection.Stream;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 23/11/2017.
@@ -41,8 +48,10 @@ public class OptionalBranchExtensionStrategy extends CompositePlanExtensionStrat
 
         PlanOp lastPlanOp = plan.get().getOps().get(plan.get().getOps().size() - 1);
         return OptionalOp.class.isAssignableFrom(lastPlanOp.getClass()) ?
-            continueOptionalOp((OptionalOp)lastPlanOp) :
-            startNewOptionalOps(plan, query);
+                isOptionalOpComplete((OptionalOp) lastPlanOp, query) ?
+                        startNewOptionalOps(plan.get(), query) :
+                        continueOptionalOp(plan.get(), (OptionalOp) lastPlanOp, query) :
+                startNewOptionalOps(plan.get(), query);
     }
     //endregion
 
@@ -62,12 +71,15 @@ public class OptionalBranchExtensionStrategy extends CompositePlanExtensionStrat
         return !Stream.ofAll(optionalElements).isEmpty();
     }
 
-    private Iterable<Plan> continueOptionalOp(OptionalOp optionalOp) {
-        return null;
+    private Iterable<Plan> continueOptionalOp(Plan plan, OptionalOp optionalOp, AsgQuery query) {
+        Plan priorOptionalPlan = plan.withoutOp(optionalOp);
+        return Stream.ofAll(super.extendPlan(Optional.of(new Plan(optionalOp.getOps())), query))
+                .map(extendedPlan -> priorOptionalPlan.<Plan>withOp(new OptionalOp(optionalOp.getAsgEbase(), extendedPlan.getOps())))
+                .toJavaList();
     }
 
-    private Iterable<Plan> startNewOptionalOps(Optional<Plan> plan, AsgQuery query) {
-        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan.get(), EntityOp.class);
+    private Iterable<Plan> startNewOptionalOps(Plan plan, AsgQuery query) {
+        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan, EntityOp.class);
         if (!lastEntityOp.isPresent()) {
             return Collections.emptyList();
         }
@@ -76,7 +88,9 @@ public class OptionalBranchExtensionStrategy extends CompositePlanExtensionStrat
             return Collections.emptyList();
         }
 
-        for(Plan extendedPlan : super.extendPlan(plan, query)) {
+        //TODO: optimization: retain only the optional query part
+        List<Plan> plansWithOptionals = new ArrayList<>();
+        for(Plan extendedPlan : super.extendPlan(Optional.of(plan), query)) {
             lastEntityOp = PlanUtil.first(extendedPlan, lastEntityOp.get());
             if (!lastEntityOp.isPresent()) {
                 continue;
@@ -92,13 +106,33 @@ public class OptionalBranchExtensionStrategy extends CompositePlanExtensionStrat
                     .toJavaOptional();
 
             if (optionalComp.isPresent()) {
-                extendedPlan.to(nextRelationOp.get())
+                plansWithOptionals.add(extendedPlan.to(nextRelationOp.get())
                         .withOp(new OptionalOp((AsgEBase<OptionalComp>)optionalComp.get(),
-                                extendedPlan.from(nextRelationOp.get()).getOps()));
+                                extendedPlan.from(nextRelationOp.get()).getOps())));
             }
         }
 
-        return super.extendPlan(plan, query);
+        return plansWithOptionals;
+    }
+
+    private boolean isOptionalOpComplete(OptionalOp optionalOp, AsgQuery query) {
+        AsgEBase<OptionalComp> optionalComp = AsgQueryUtil.element$(query, optionalOp.getAsgEbase().geteNum());
+
+        final Set<Class<? extends EBase>> classSet = Stream.of(ETyped.class, EConcrete.class, EUntyped.class, Rel.class,
+                EProp.class, EPropGroup.class, RelProp.class, RelPropGroup.class)
+                .toJavaSet();
+
+        Set<Integer> optionalEnums =
+                Stream.ofAll(AsgQueryUtil.nextDescendants(optionalComp, asgEBase -> classSet.contains(asgEBase.geteBase().getClass()), asgEBase -> true))
+                .map(asgEbase -> asgEbase.geteBase().geteNum())
+                .toJavaSet();
+
+        Set<Integer> optionalOpEnums = Stream.ofAll(PlanUtil.flat(optionalOp).getOps())
+                .filter(planOp -> AsgEBaseContainer.class.isAssignableFrom(planOp.getClass()))
+                .map(planOp -> ((AsgEBaseContainer)planOp).getAsgEbase().geteBase().geteNum())
+                .toJavaSet();
+
+        return optionalEnums.equals(optionalOpEnums);
     }
     //endregion
 }

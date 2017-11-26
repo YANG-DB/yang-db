@@ -58,21 +58,14 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
-        Plan relationSegmentPlan = new Plan();
-        relationSegmentPlan = relationSegmentPlan.withOp(new RelationOp(nextRelation.get()));
+        newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
         if (nextRelationPropGroup.isPresent()) {
-            relationSegmentPlan = relationSegmentPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
+            newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
         }
 
-        relationSegmentPlan = relationSegmentPlan.withOp(new EntityOp(toEntity.get()));
+        newPlan = newPlan.withOp(new EntityOp(toEntity.get()));
         if (toEntityPropGroup.isPresent()) {
-            relationSegmentPlan = relationSegmentPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
-        }
-
-        if (nextRelation.get().getParents().get(0).geteBase() instanceof OptionalComp) {
-            newPlan = newPlan.withOp(new OptionalOp(null, relationSegmentPlan));
-        } else {
-            newPlan = newPlan.append(relationSegmentPlan);
+            newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
         return Collections.singletonList(newPlan);

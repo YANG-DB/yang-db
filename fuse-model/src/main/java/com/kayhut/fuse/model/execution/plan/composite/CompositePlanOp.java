@@ -40,10 +40,6 @@ public abstract class CompositePlanOp extends PlanOp implements Cloneable {
     public CompositePlanOp(PlanOp...ops) {
         this(Stream.of(ops));
     }
-
-    public CompositePlanOp(CompositePlanOp compositePlanOp) {
-        this(compositePlanOp.getOps());
-    }
     //endregion
 
     //region Public Methods
@@ -51,6 +47,17 @@ public abstract class CompositePlanOp extends PlanOp implements Cloneable {
         try {
             CompositePlanOp clone = (CompositePlanOp)clone();
             clone.getOps().add(op);
+            return (T)clone;
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public <T extends CompositePlanOp> T withoutOp(PlanOp op) {
+        try {
+            CompositePlanOp clone = (CompositePlanOp)clone();
+            clone.getOps().remove(op);
             return (T)clone;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();

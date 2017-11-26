@@ -5,6 +5,7 @@ import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -274,10 +275,27 @@ public class AsgQuery implements IQuery{
             return new AsgEBase<>(group);
         }
 
+        public static AsgEBase<EPropGroup> ePropGroup(int eNum, EProp... props) {
+            EPropGroup group = new EPropGroup(Arrays.asList(props));
+            group.seteNum(eNum);
+            return new AsgEBase<>(group);
+        }
+
         public static AsgEBase<RelPropGroup> relProp(int eNum, RelProp ... props) {
             RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
             relPropGroup.seteNum(eNum);
             return new AsgEBase<>(relPropGroup);
+        }
+
+        public static AsgEBase<RelPropGroup> relPropGroup(int eNum, RelProp ... props) {
+            RelPropGroup relPropGroup = new RelPropGroup(Arrays.asList(props));
+            relPropGroup.seteNum(eNum);
+            return new AsgEBase<>(relPropGroup);
+        }
+
+        public static AsgEBase<OptionalComp> optional(int eNum) {
+            OptionalComp optionalComp = new OptionalComp(eNum, 0);
+            return new AsgEBase<>(optionalComp);
         }
 
         public AsgQuery build() {

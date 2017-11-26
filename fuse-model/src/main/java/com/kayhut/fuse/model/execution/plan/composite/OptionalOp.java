@@ -17,9 +17,5 @@ public class OptionalOp extends CompositeAsgEBasePlanOp<OptionalComp> {
     public OptionalOp(AsgEBase<OptionalComp> asgEBase, PlanOp...ops) {
         this(asgEBase, Stream.of(ops));
     }
-
-    public OptionalOp(AsgEBase<OptionalComp> asgEBase, CompositePlanOp compositePlanOp) {
-        this(asgEBase, compositePlanOp.getOps());
-    }
     //endregion
 }

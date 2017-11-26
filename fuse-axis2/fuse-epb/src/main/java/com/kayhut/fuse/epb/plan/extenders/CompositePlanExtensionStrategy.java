@@ -40,6 +40,6 @@ public class CompositePlanExtensionStrategy<P extends IPlan, Q extends IQuery> i
     //endregion
 
     //region Fields
-    private Iterable<PlanExtensionStrategy<P,Q>> innerExtenders;
+    protected Iterable<PlanExtensionStrategy<P,Q>> innerExtenders;
     //endregion
 }

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.extenders.dfs;
+package com.kayhut.fuse.epb.plan.extenders.M1;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;

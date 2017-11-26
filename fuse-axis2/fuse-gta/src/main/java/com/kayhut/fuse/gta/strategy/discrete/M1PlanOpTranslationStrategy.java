@@ -20,7 +20,10 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrategy {
     //region Constructors
     public M1PlanOpTranslationStrategy() {
-        super(new CompositePlanOpTranslationStrategy(
+        super();
+
+        this.strategies = Stream.of(
+                new CompositePlanOpTranslationStrategy(
                         new EntityOpTranslationStrategy(EntityTranslationOptions.none),
                         new EntitySelectionTranslationStrategy(EntityOp.class)),
 
@@ -36,10 +39,8 @@ public class M1PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
 
                 new CompositePlanOpTranslationStrategy(
                         new RelationFilterOpTranslationStrategy(),
-                        new RelationSelectionTranslationStrategy(RelationFilterOp.class))
-                );
+                        new RelationSelectionTranslationStrategy(RelationFilterOp.class)),
 
-        this.strategies = Stream.ofAll(this.strategies).append(
                 new OptionalOpTranslationStrategy(this)
         ).toJavaList();
     }
