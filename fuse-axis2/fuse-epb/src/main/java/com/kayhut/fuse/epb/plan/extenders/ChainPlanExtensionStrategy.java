@@ -28,7 +28,7 @@ public class ChainPlanExtensionStrategy<P extends IPlan, Q extends IQuery> imple
     public Iterable<P> extendPlan(Optional<P> plan, Q query) {
         Iterable<Optional<P>> plans = Collections.singletonList(plan);
 
-        for (PlanExtensionStrategy<P, Q> extensionStrategy : innerExtenders) {
+        for (PlanExtensionStrategy<P, Q> extensionStrategy : this.innerExtenders) {
             plans = Stream.ofAll(plans)
                     .map(childPlan -> extensionStrategy.extendPlan(childPlan, query))
                     .flatMap(childPlans -> childPlans)

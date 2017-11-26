@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.execution.plan.composite.CompositeAsgEBasePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
@@ -13,6 +14,18 @@ import org.junit.Assert;
  * Created by Roman on 25/04/2017.
  */
 public class PlanAssert {
+    public static void assertEquals(CompositeAsgEBasePlanOp expectedCompositePlanOp, CompositeAsgEBasePlanOp actualCompositePlanOp) {
+        assertEquals((CompositePlanOp)expectedCompositePlanOp, (CompositePlanOp)actualCompositePlanOp);
+
+        if (expectedCompositePlanOp.getAsgEbase() == null) {
+            Assert.assertTrue(actualCompositePlanOp.getAsgEbase() == null);
+        }
+
+        Assert.assertTrue(expectedCompositePlanOp.getAsgEbase() != null && actualCompositePlanOp.getAsgEbase() != null);
+        Assert.assertEquals(expectedCompositePlanOp.getAsgEbase().geteNum(), actualCompositePlanOp.getAsgEbase().geteNum());
+        Assert.assertTrue(expectedCompositePlanOp.getAsgEbase().geteBase().getClass().equals(actualCompositePlanOp.getAsgEbase().geteBase().getClass()));
+    }
+
     public static void assertEquals(CompositePlanOp expectedCompositePlanOp, CompositePlanOp actualCompositePlanOp) {
         if (expectedCompositePlanOp == null) {
             Assert.assertTrue(actualCompositePlanOp == null);
@@ -38,10 +51,14 @@ public class PlanAssert {
             Assert.assertTrue(expectedPlanOp != null && actualPlanOp != null);
             Assert.assertTrue(expectedPlanOp.getClass().isAssignableFrom(actualPlanOp.getClass()));
 
-            if (expectedPlanOp instanceof EntityOp) {
+            if (EntityOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
                 assertEquals((EntityOp)expectedPlanOp, (EntityOp)actualPlanOp);
-            } else if (expectedPlanOp instanceof RelationOp) {
+            } else if (RelationOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
                 assertEquals((RelationOp)expectedPlanOp, (RelationOp)actualPlanOp);
+            } else if (CompositeAsgEBasePlanOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
+                assertEquals((CompositeAsgEBasePlanOp)expectedPlanOp, (CompositeAsgEBasePlanOp)actualPlanOp);
+            } else if (CompositePlanOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
+                assertEquals((CompositePlanOp)expectedPlanOp, (CompositePlanOp)actualPlanOp);
             }
         }
     }

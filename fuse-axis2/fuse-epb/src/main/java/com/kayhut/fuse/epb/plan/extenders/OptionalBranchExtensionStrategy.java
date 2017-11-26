@@ -56,21 +56,6 @@ public class OptionalBranchExtensionStrategy extends CompositePlanExtensionStrat
     //endregion
 
     //region Private Methods
-    private boolean nearOptionalComponents(EntityOp entityOp) {
-        Iterable<AsgEBase<OptionalComp>> optionalElements = Collections.emptyList();
-        Optional<AsgEBase<Quant1>> lastEntityQuant = AsgQueryUtil.nextAdjacentDescendant(entityOp.getAsgEbase(), Quant1.class);
-        if (lastEntityQuant.isPresent()) {
-            optionalElements = AsgQueryUtil.nextAdjacentDescendants(lastEntityQuant.get(), OptionalComp.class);
-        } else {
-            Optional<AsgEBase<OptionalComp>> optionalElement = AsgQueryUtil.nextAdjacentDescendant(entityOp.getAsgEbase(), OptionalComp.class);
-            if (optionalElement.isPresent()) {
-                optionalElements = Collections.singletonList(optionalElement.get());
-            }
-        }
-
-        return !Stream.ofAll(optionalElements).isEmpty();
-    }
-
     private Iterable<Plan> continueOptionalOp(Plan plan, OptionalOp optionalOp, AsgQuery query) {
         Plan priorOptionalPlan = plan.withoutOp(optionalOp);
         return Stream.ofAll(super.extendPlan(Optional.of(new Plan(optionalOp.getOps())), query))
@@ -79,18 +64,18 @@ public class OptionalBranchExtensionStrategy extends CompositePlanExtensionStrat
     }
 
     private Iterable<Plan> startNewOptionalOps(Plan plan, AsgQuery query) {
-        Optional<EntityOp> lastEntityOp = PlanUtil.last(plan, EntityOp.class);
-        if (!lastEntityOp.isPresent()) {
-            return Collections.emptyList();
-        }
-
-        if (!nearOptionalComponents(lastEntityOp.get())) {
-            return Collections.emptyList();
-        }
-
-        //TODO: optimization: retain only the optional query part
         List<Plan> plansWithOptionals = new ArrayList<>();
         for(Plan extendedPlan : super.extendPlan(Optional.of(plan), query)) {
+            Optional<EntityOp> lastEntityOp = PlanUtil.last(extendedPlan, EntityOp.class);
+            if (!lastEntityOp.isPresent()) {
+                return Collections.emptyList();
+            }
+
+            Optional<EntityOp> previousEntityOp = PlanUtil.last(extendedPlan, EntityOp.class);
+            if (!lastEntityOp.isPresent()) {
+                return Collections.emptyList();
+            }
+
             lastEntityOp = PlanUtil.first(extendedPlan, lastEntityOp.get());
             if (!lastEntityOp.isPresent()) {
                 continue;
