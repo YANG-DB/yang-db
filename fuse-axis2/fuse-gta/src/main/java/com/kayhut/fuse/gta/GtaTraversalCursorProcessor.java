@@ -66,11 +66,16 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
 
-        GraphTraversal<?, ?> traversal  = this.planTraversalTranslator.translate(
-                executionPlan,
-                new TranslationContext(
-                        new Ontology.Accessor(ontology),
-                        uniGraphProvider.getGraph(ontology).traversal()));
+        GraphTraversal<?, ?> traversal = null;
+        try {
+            traversal = this.planTraversalTranslator.translate(
+                    executionPlan,
+                    new TranslationContext(
+                            new Ontology.Accessor(ontology),
+                            uniGraphProvider.getGraph(ontology).traversal()));
+        } catch(Exception ex) {
+            int x = 5;
+        }
 
         //submit
         Cursor cursor = this.cursorFactory.createCursor(

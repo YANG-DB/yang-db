@@ -244,6 +244,42 @@ public class M1DfsNonRedundantPlanExtensionStrategyTest {
         Assert.assertEquals(1, extendedPlans.size());
         PlanAssert.assertEquals(expectedPlan, extendedPlans.get(0));
     }
+
+    @Test
+    public void test_entity1_optional3Xrel4_entity5_optional6Xrel7_entity8XX_goto1_optional9Xrel10_entity11X_goto1_optional12Xrel13_entity14_optional15Xrel16_entity17XX() {
+        AsgQuery query = query1("name", "ont");
+
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new OptionalOp(AsgQueryUtil.element$(query, 3),
+                        new EntityNoOp(AsgQueryUtil.element$(query, 1)),
+                        new RelationOp(AsgQueryUtil.element$(query, 4)),
+                        new EntityOp(AsgQueryUtil.element$(query, 5)),
+                        new OptionalOp(AsgQueryUtil.element$(query, 6),
+                                new EntityNoOp(AsgQueryUtil.element$(query, 5)),
+                                new RelationOp(AsgQueryUtil.element$(query, 7)),
+                                new EntityOp(AsgQueryUtil.element$(query, 8)))),
+                new GoToEntityOp(AsgQueryUtil.element$(query, 1)),
+                new OptionalOp(AsgQueryUtil.element$(query, 9),
+                        new EntityNoOp(AsgQueryUtil.element$(query, 1)),
+                        new RelationOp(AsgQueryUtil.element$(query, 10)),
+                        new EntityOp(AsgQueryUtil.element$(query, 11))),
+                new GoToEntityOp(AsgQueryUtil.element$(query, 1)),
+                new OptionalOp(AsgQueryUtil.element$(query, 12),
+                        new EntityNoOp(AsgQueryUtil.element$(query, 1)),
+                        new RelationOp(AsgQueryUtil.element$(query, 13)),
+                        new EntityOp(AsgQueryUtil.element$(query, 14)),
+                        new OptionalOp(AsgQueryUtil.element$(query, 15),
+                                new EntityNoOp(AsgQueryUtil.element$(query, 14)),
+                                new RelationOp(AsgQueryUtil.element$(query, 16)),
+                                new EntityOp(AsgQueryUtil.element$(query, 17)))));
+
+        List<Plan> extendedPlans = Stream.ofAll(this.planExtensionStrategy.extendPlan(Optional.of(plan), query))
+                .filter(extendedPlan -> this.planValidator.isPlanValid(extendedPlan, query).valid())
+                .toJavaList();
+
+        Assert.assertEquals(0, extendedPlans.size());
+    }
     //endregion
 
     //region Queries

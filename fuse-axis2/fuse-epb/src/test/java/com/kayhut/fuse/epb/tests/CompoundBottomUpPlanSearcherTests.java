@@ -174,7 +174,6 @@ public class CompoundBottomUpPlanSearcherTests {
             }
         }
 
-        System.out.println(asString(planSearcher,Level.INFO,new StringJoiner("\n","[","]")));
         Assert.assertTrue(foundFirstPlan);
     }
 

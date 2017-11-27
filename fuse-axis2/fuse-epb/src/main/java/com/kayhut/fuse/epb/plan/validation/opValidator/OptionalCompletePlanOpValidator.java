@@ -69,7 +69,7 @@ public class OptionalCompletePlanOpValidator implements ChainedPlanValidator.Pla
                 .toJavaSet();
 
         Set<Integer> optionalEnums =
-                Stream.ofAll(AsgQueryUtil.nextDescendants(optionalComp, asgEBase -> classSet.contains(asgEBase.geteBase().getClass()), asgEBase -> true))
+                Stream.ofAll(AsgQueryUtil.descendantBDescendants(optionalComp, asgEBase -> classSet.contains(asgEBase.geteBase().getClass()), asgEBase -> true))
                         .map(asgEbase -> asgEbase.geteBase().geteNum())
                         .toJavaSet();
 

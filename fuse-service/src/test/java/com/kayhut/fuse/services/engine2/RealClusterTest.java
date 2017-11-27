@@ -965,6 +965,46 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test_entitiesQuery2() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(111, 112), 0),
+                new OptionalComp(111, 3),
+                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
+                new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
+                new OptionalComp(6, 7),
+                new Rel(7, $ont.rType$("hasReference"), Rel.Direction.R, null, 8, 0),
+                new ETyped(8, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 9, 0),
+                new Quant1(9, QuantType.all, Collections.emptyList(), 0),
+                new EProp(112, "category", Constraint.of(ConstraintOp.eq, "car")))).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
     public void loadData() throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

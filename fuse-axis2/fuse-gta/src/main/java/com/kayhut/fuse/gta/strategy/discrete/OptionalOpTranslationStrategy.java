@@ -30,12 +30,12 @@ public class OptionalOpTranslationStrategy extends PlanOpTranslationStrategyBase
         OptionalOp optionalOp = (OptionalOp)planOp;
 
         int indexOfOptional = planWithCost.getPlan().getOps().indexOf(planOp);
-        //Plan optionalPlan = new Plan(Stream.ofAll(planWithCost.getPlan().getOps()).take(indexOfOptional).toJavaList()).append(optionalOp);
+        Plan optionalPlan = new Plan(Stream.ofAll(planWithCost.getPlan().getOps()).take(indexOfOptional).toJavaList()).append(optionalOp);
 
         PlanTraversalTranslator planTraversalTranslator =
                 new ChainedPlanOpTraversalTranslator(this.planOpTranslationStrategy, indexOfOptional);
 
-        GraphTraversal<?, ?> optionalTraversal = planTraversalTranslator.translate(new PlanWithCost<>(planWithCost.getPlan(), planWithCost.getCost()), context);
+        GraphTraversal<?, ?> optionalTraversal = planTraversalTranslator.translate(new PlanWithCost<>(optionalPlan, planWithCost.getCost()), context);
         return traversal.optional(optionalTraversal);
     }
     //endregion
