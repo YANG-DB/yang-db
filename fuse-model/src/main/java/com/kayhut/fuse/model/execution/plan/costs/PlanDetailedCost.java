@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.execution.plan.costs;
 
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
@@ -31,7 +32,7 @@ public class PlanDetailedCost implements Cost {
         return globalCost;
     }
 
-    public List<PlanOpBase> getPlanOps() {
+    public List<PlanOp> getPlanOps() {
         if (planStepCosts != null) {
             return Stream.ofAll(planStepCosts).flatMap(pc -> Stream.ofAll(pc.getPlan().getOps())).toJavaList();
         }
@@ -43,7 +44,7 @@ public class PlanDetailedCost implements Cost {
         return planStepCosts;
     }
 
-    public Optional<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCost(PlanOpBase planOp) {
+    public Optional<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCost(PlanOp planOp) {
         return Stream.ofAll(planStepCosts).filter(pc -> pc.getPlan().getOps().contains(planOp)).toJavaOptional();
     }
     //endregion

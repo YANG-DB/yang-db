@@ -5,6 +5,11 @@ import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
@@ -34,9 +39,7 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
         if (!nextRelation.isPresent()) {
             return Collections.emptyList();
         }
-        //reverse direction
-        //nextRelation.get().geteBase().setDir(Direction.reverse(nextRelation.get().geteBase().getDir()));
-        //
+
         Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.bDescendant(nextRelation.get(), RelPropGroup.class);
 
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.ancestor(nextRelation.get(), EEntityBase.class);
@@ -63,9 +66,6 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
-        if(!Plan.equals(plan.get(), newPlan)) {
-            newPlan.log("StepAncestorAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
-        }
         return Collections.singletonList(newPlan);
     }
     //endregion

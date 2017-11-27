@@ -4,9 +4,9 @@ import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.utils.ConversionUtil;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -66,7 +66,7 @@ public class PathsTraversalCursor implements Cursor {
         Assignment.Builder builder = Assignment.Builder.instance();
         this.flatPlan.getOps().forEach(planOp -> {
             if (planOp instanceof EntityOp) {
-                EEntityBase entity = ((EntityOp)planOp).getAsgEBase().geteBase();
+                EEntityBase entity = ((EntityOp)planOp).getAsgEbase().geteBase();
                 if (path.hasLabel(entity.geteTag())) {
                     if (entity instanceof EConcrete) {
                         builder.withEntity(toEntity(path, (EConcrete) entity));
@@ -83,13 +83,13 @@ public class PathsTraversalCursor implements Cursor {
                 Optional<EntityOp> nextEntityOp =
                         PlanUtil.next(this.flatPlan, planOp, EntityOp.class);
 
-                if (path.hasLabel(prevEntityOp.get().getAsgEBase().geteBase().geteTag() +
-                        ConversionUtil.convertDirectionGraphic(relationOp.getAsgEBase().geteBase().getDir()) +
-                        nextEntityOp.get().getAsgEBase().geteBase().geteTag())) {
+                if (path.hasLabel(prevEntityOp.get().getAsgEbase().geteBase().geteTag() +
+                        ConversionUtil.convertDirectionGraphic(relationOp.getAsgEbase().geteBase().getDir()) +
+                        nextEntityOp.get().getAsgEbase().geteBase().geteTag())) {
                     builder.withRelationship(toRelationship(path,
-                            prevEntityOp.get().getAsgEBase().geteBase(),
-                            relationOp.getAsgEBase().geteBase(),
-                            nextEntityOp.get().getAsgEBase().geteBase()));
+                            prevEntityOp.get().getAsgEbase().geteBase(),
+                            relationOp.getAsgEbase().geteBase(),
+                            nextEntityOp.get().getAsgEbase().geteBase()));
                 }
             }
         });

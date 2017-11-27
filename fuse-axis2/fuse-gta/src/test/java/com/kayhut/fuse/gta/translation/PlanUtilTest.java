@@ -4,6 +4,9 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -26,29 +29,29 @@ public class PlanUtilTest {
 
     @Test
     public void isFirst() throws Exception {
-        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
-        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
+        PlanOp planOpFirst = planOf2.getOps().get(0);
+        PlanOp planOpSecond = planOf2.getOps().get(1);
 
-        assertTrue(PlanUtil.isFirst(planOf2, planOpBaseFirst));
-        assertFalse(PlanUtil.isFirst(planOf2, planOpBaseSecond));
+        assertTrue(PlanUtil.isFirst(planOf2, planOpFirst));
+        assertFalse(PlanUtil.isFirst(planOf2, planOpSecond));
     }
 
     @Test
     public void getNext() throws Exception {
-        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
-        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
+        PlanOp planOpFirst = planOf2.getOps().get(0);
+        PlanOp planOpSecond = planOf2.getOps().get(1);
 
-        assertEquals(planOpBaseSecond, PlanUtil.adjacentNext(planOf2, planOpBaseFirst).get());
-        assertNotEquals(planOpBaseFirst, PlanUtil.adjacentNext(planOf2, planOpBaseSecond).get());
+        assertEquals(planOpSecond, PlanUtil.adjacentNext(planOf2, planOpFirst).get());
+        assertNotEquals(planOpFirst, PlanUtil.adjacentNext(planOf2, planOpSecond).get());
     }
 
     @Test
     public void getPrev() throws Exception {
-        PlanOpBase planOpBaseFirst = planOf2.getOps().get(0);
-        PlanOpBase planOpBaseSecond = planOf2.getOps().get(1);
+        PlanOp planOpFirst = planOf2.getOps().get(0);
+        PlanOp planOpSecond = planOf2.getOps().get(1);
 
-        assertTrue(!PlanUtil.adjacentPrev(planOf2, planOpBaseFirst).isPresent());
-        assertEquals(planOpBaseFirst, PlanUtil.adjacentPrev(planOf2, planOpBaseSecond).get());
+        assertTrue(!PlanUtil.adjacentPrev(planOf2, planOpFirst).isPresent());
+        assertEquals(planOpFirst, PlanUtil.adjacentPrev(planOf2, planOpSecond).get());
     }
 
 
@@ -87,7 +90,7 @@ public class PlanUtilTest {
     }
 
     public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery) {
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOp> ops = new LinkedList<>();
 
         AsgEBase<Start> startAsg = asgQuery.getStart();
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);

@@ -2,7 +2,7 @@ package com.kayhut.fuse.epb.plan;
 
 import com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 
 import java.util.ArrayList;

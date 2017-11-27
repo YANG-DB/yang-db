@@ -24,12 +24,12 @@
 
     <servers>
         <server>
-            <id>nexuss.eu-west-1.compute.amazonaws.com-snapshots</id>
+            <id>nexus-releases</id>
             <username>admin</username>
             <password>admin123</password>
         </server>
         <server>
-            <id>nexuss.eu-west-1.compute.amazonaws.com-releases</id>
+            <id>nexus-proxy</id>
             <username>admin</username>
             <password>admin123</password>
         </server>

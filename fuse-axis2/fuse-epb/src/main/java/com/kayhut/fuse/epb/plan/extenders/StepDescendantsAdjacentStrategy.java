@@ -4,7 +4,11 @@ import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
@@ -43,10 +47,6 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
             Optional<Plan> computedPlan = compute(nextRelation, newPlan);
             if (computedPlan.isPresent()) {
                 plans.add(computedPlan.get());
-
-                if (!Plan.equals(plan.get(), newPlan)) {
-                    newPlan.log("StepDescendantsAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
-                }
             }
         }
 

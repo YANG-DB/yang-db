@@ -6,6 +6,6 @@ import com.kayhut.fuse.model.log.Trace;
 /**
  * Created by moti on 2/21/2017.
  */
-public interface PlanValidator<P, Q> extends Trace<String> {
+public interface PlanValidator<P, Q>{
     ValidationContext isPlanValid(P plan, Q query);
 }

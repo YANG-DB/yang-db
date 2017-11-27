@@ -3,8 +3,10 @@ package com.kayhut.fuse.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.query.EBase;
+import javaslang.collection.Stream;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -97,31 +99,34 @@ public interface Utils {
         }
     }
 
-    static String fullPattern(List<PlanOpBase> pattern) {
+    static String fullPattern(List<PlanOp> pattern) {
         StringJoiner sj = new StringJoiner(":", "[", "]");
         pattern.forEach(op -> sj.add(op.toString()));
         return sj.toString();
     }
 
-    static String pattern(List<PlanOpBase> pattern) {
+    static String pattern(List<PlanOp> pattern) {
         StringJoiner sj = new StringJoiner(":", "", "");
         pattern.forEach(op -> sj.add(op.getClass().getSimpleName()));
         return sj.toString();
     }
 
-    static String simplePattern(List<PlanOpBase> pattern) {
+    static String simplePattern(List<PlanOp> pattern) {
         StringJoiner sj = new StringJoiner(":", "[", "]");
-        pattern.forEach(op -> sj.add(Integer.toString(op.geteNum())));
+        Stream.ofAll(pattern)
+                .map(op -> AsgEBaseContainer.class.isAssignableFrom(op.getClass()) ?
+                    Integer.toString(((AsgEBaseContainer)op).getAsgEbase().geteNum()) : Integer.toString(0))
+                .forEach(sj::add);
         return sj.toString();
     }
 
-    static List<Class<? extends PlanOpBase>> fromPattern(String pattern) {
+    static List<Class<? extends PlanOp>> fromPattern(String pattern) {
         if(pattern.split("\\:").length ==0)
             return Collections.emptyList();
 
         return Arrays.asList(pattern.split("\\:")).stream().map(element -> {
             try {
-                return (Class<? extends PlanOpBase>)Class.forName(element);
+                return (Class<? extends PlanOp>)Class.forName(element);
             } catch (ClassNotFoundException e) {
                 throw new IllegalArgumentException("Class.forName(element) failed for "+element);
             }

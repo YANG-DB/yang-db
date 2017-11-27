@@ -1,21 +1,27 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
+import javaslang.collection.Stream;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getLastOpOfType;
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDescendantUnmarkedOfType;
 
 /**
@@ -48,25 +54,21 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
         }
 
         Plan newPlan = plan.get();
-        if (getLastOpOfType(newPlan,EntityOp.class).geteNum() != fromEntity.get().geteNum()) {
+
+        PlanOp lastPlanOp = plan.get().getOps().get(plan.get().getOps().size() - 1);
+        if (PlanUtil.last$(newPlan, EntityOp.class).getAsgEbase().geteNum() != fromEntity.get().geteNum() ||
+                Stream.of(EntityOp.class, EntityFilterOp.class).filter(klazz -> klazz.isAssignableFrom(lastPlanOp.getClass())).isEmpty()) {
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
-        Plan relationSegmentPlan = new Plan();
-        relationSegmentPlan = relationSegmentPlan.withOp(new RelationOp(nextRelation.get()));
+        newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
         if (nextRelationPropGroup.isPresent()) {
-            relationSegmentPlan = relationSegmentPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
+            newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
         }
 
-        relationSegmentPlan = relationSegmentPlan.withOp(new EntityOp(toEntity.get()));
+        newPlan = newPlan.withOp(new EntityOp(toEntity.get()));
         if (toEntityPropGroup.isPresent()) {
-            relationSegmentPlan = relationSegmentPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
-        }
-
-        if (nextRelation.get().getParents().get(0).geteBase() instanceof OptionalComp) {
-            newPlan = newPlan.withOp(new OptionalOp(relationSegmentPlan));
-        } else {
-            newPlan = newPlan.append(relationSegmentPlan);
+            newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
         return Collections.singletonList(newPlan);

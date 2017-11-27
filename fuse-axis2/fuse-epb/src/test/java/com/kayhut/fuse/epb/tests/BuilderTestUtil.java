@@ -2,10 +2,10 @@ package com.kayhut.fuse.epb.tests;
 
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -64,7 +64,7 @@ public class BuilderTestUtil {
     }
 
     public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery){
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOp> ops = new LinkedList<>();
 
         AsgEBase<Start> startAsg = asgQuery.getStart();
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);

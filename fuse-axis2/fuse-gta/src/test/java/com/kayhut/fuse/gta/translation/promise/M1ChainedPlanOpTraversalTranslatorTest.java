@@ -7,6 +7,9 @@ import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
@@ -171,7 +174,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(eTypedAsg).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOp> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> eTypBaseAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp typOp = new EntityOp(eTypBaseAsg);
@@ -212,7 +215,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(eTypedAsg1).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOp> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> typBaseAsg1 = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp typOp1 = new EntityOp(typBaseAsg1);
@@ -256,7 +259,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg1).build();
 
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOp> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp concOp = new EntityOp(entityAsg);
@@ -298,7 +301,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOp> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp concOp = new EntityOp(entityAsg);
@@ -354,7 +357,7 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
         start.setNext(1);
         AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg).build();
 
-        List<PlanOpBase> ops = new LinkedList<>();
+        List<PlanOp> ops = new LinkedList<>();
 
         AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
         EntityOp concOp = new EntityOp(entityAsg);

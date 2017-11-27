@@ -1,7 +1,5 @@
 package com.kayhut.fuse.model.asgQuery;
 
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
 import com.kayhut.fuse.model.ontology.Ontology;
 
 /**

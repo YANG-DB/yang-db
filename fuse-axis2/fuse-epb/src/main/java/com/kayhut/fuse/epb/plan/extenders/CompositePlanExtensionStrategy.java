@@ -6,6 +6,7 @@ import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
+import javaslang.collection.Stream;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,15 +16,19 @@ import java.util.Optional;
  * Created by moti on 2/27/2017.
  */
 public class CompositePlanExtensionStrategy<P extends IPlan, Q extends IQuery> implements PlanExtensionStrategy<P , Q> {
-
-    private PlanExtensionStrategy<P,Q>[] innerExtenders;
-
+    //region Constructors
     @Inject
     @SafeVarargs
     public CompositePlanExtensionStrategy(PlanExtensionStrategy<P, Q> ... innerExtenders) {
-        this.innerExtenders = innerExtenders;
+        this(Stream.of(innerExtenders));
     }
 
+    public CompositePlanExtensionStrategy(Iterable<PlanExtensionStrategy<P, Q>> innerExtenders) {
+        this.innerExtenders = Stream.ofAll(innerExtenders).toJavaList();
+    }
+    //endregion
+
+    //region PlanExtensionStrategy Implementation
     @Override
     public Iterable<P> extendPlan(Optional<P> plan, Q query) {
         List<P> plans = new LinkedList<>();
@@ -32,4 +37,9 @@ public class CompositePlanExtensionStrategy<P extends IPlan, Q extends IQuery> i
         }
         return plans;
     }
+    //endregion
+
+    //region Fields
+    protected Iterable<PlanExtensionStrategy<P,Q>> innerExtenders;
+    //endregion
 }

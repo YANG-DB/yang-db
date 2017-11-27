@@ -13,12 +13,11 @@ import com.kayhut.fuse.dispatcher.utils.*;
 import com.kayhut.fuse.events.DeadEventsListener;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.descriptor.Descriptor;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.unipop.descriptor.GraphTraversalDescriptor;
 import com.typesafe.config.Config;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.jooby.Env;
 import org.jooby.Jooby;
 

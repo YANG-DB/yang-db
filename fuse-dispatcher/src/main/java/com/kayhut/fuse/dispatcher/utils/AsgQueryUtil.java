@@ -134,6 +134,10 @@ public class AsgQueryUtil {
         return descendantBDescendant(asgEBase, enumPredicateFunction.apply(eNum));
     }
 
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> descendantBDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate, Predicate<AsgEBase> dfsPredicate){
+        return elements(asgEBase, AsgEBase::getB, AsgEBase::getNext, elementPredicate, dfsPredicate, Collections.emptyList());
+    }
+
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> ancestorBDescendant(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate){
         return element(asgEBase, AsgEBase::getB, AsgEBase::getParents, predicate, truePredicate);
     }

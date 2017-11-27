@@ -1,5 +1,9 @@
 package com.kayhut.fuse.model.execution.plan;
 
+import com.kayhut.fuse.model.execution.plan.composite.CompositeAsgEBasePlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.QueryAssert;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
@@ -10,7 +14,19 @@ import org.junit.Assert;
  * Created by Roman on 25/04/2017.
  */
 public class PlanAssert {
-    public static void assertEquals(CompositePlanOpBase expectedCompositePlanOp, CompositePlanOpBase actualCompositePlanOp) {
+    public static void assertEquals(CompositeAsgEBasePlanOp expectedCompositePlanOp, CompositeAsgEBasePlanOp actualCompositePlanOp) {
+        assertEquals((CompositePlanOp)expectedCompositePlanOp, (CompositePlanOp)actualCompositePlanOp);
+
+        if (expectedCompositePlanOp.getAsgEbase() == null) {
+            Assert.assertTrue(actualCompositePlanOp.getAsgEbase() == null);
+        }
+
+        Assert.assertTrue(expectedCompositePlanOp.getAsgEbase() != null && actualCompositePlanOp.getAsgEbase() != null);
+        Assert.assertEquals(expectedCompositePlanOp.getAsgEbase().geteNum(), actualCompositePlanOp.getAsgEbase().geteNum());
+        Assert.assertTrue(expectedCompositePlanOp.getAsgEbase().geteBase().getClass().equals(actualCompositePlanOp.getAsgEbase().geteBase().getClass()));
+    }
+
+    public static void assertEquals(CompositePlanOp expectedCompositePlanOp, CompositePlanOp actualCompositePlanOp) {
         if (expectedCompositePlanOp == null) {
             Assert.assertTrue(actualCompositePlanOp == null);
         }
@@ -25,8 +41,8 @@ public class PlanAssert {
         Assert.assertTrue(expectedCompositePlanOp.getOps().size() == actualCompositePlanOp.getOps().size());
 
         for(int i = 0 ; i < expectedCompositePlanOp.getOps().size() ; i++) {
-            PlanOpBase expectedPlanOp = expectedCompositePlanOp.getOps().get(i);
-            PlanOpBase actualPlanOp = actualCompositePlanOp.getOps().get(i);
+            PlanOp expectedPlanOp = expectedCompositePlanOp.getOps().get(i);
+            PlanOp actualPlanOp = actualCompositePlanOp.getOps().get(i);
 
             if (expectedPlanOp == null) {
                 Assert.assertTrue(actualPlanOp == null);
@@ -35,10 +51,14 @@ public class PlanAssert {
             Assert.assertTrue(expectedPlanOp != null && actualPlanOp != null);
             Assert.assertTrue(expectedPlanOp.getClass().isAssignableFrom(actualPlanOp.getClass()));
 
-            if (expectedPlanOp instanceof EntityOp) {
+            if (EntityOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
                 assertEquals((EntityOp)expectedPlanOp, (EntityOp)actualPlanOp);
-            } else if (expectedPlanOp instanceof RelationOp) {
+            } else if (RelationOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
                 assertEquals((RelationOp)expectedPlanOp, (RelationOp)actualPlanOp);
+            } else if (CompositeAsgEBasePlanOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
+                assertEquals((CompositeAsgEBasePlanOp)expectedPlanOp, (CompositeAsgEBasePlanOp)actualPlanOp);
+            } else if (CompositePlanOp.class.isAssignableFrom(expectedPlanOp.getClass())) {
+                assertEquals((CompositePlanOp)expectedPlanOp, (CompositePlanOp)actualPlanOp);
             }
         }
     }
@@ -49,21 +69,21 @@ public class PlanAssert {
         }
 
         Assert.assertTrue(expectedEntityOp != null && actualEntityOp != null);
-        Assert.assertTrue(expectedEntityOp.geteNum() == actualEntityOp.geteNum());
-        if(expectedEntityOp.getAsgEBase().geteBase().geteTag() != null) {
-            Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().geteTag().equals(actualEntityOp.getAsgEBase().geteBase().geteTag()));
+        Assert.assertTrue(expectedEntityOp.getAsgEbase().geteNum() == actualEntityOp.getAsgEbase().geteNum());
+        if(expectedEntityOp.getAsgEbase().geteBase().geteTag() != null) {
+            Assert.assertTrue(expectedEntityOp.getAsgEbase().geteBase().geteTag().equals(actualEntityOp.getAsgEbase().geteBase().geteTag()));
         }else{
-            Assert.assertTrue(actualEntityOp.getAsgEBase().geteBase().geteTag() == null);
+            Assert.assertTrue(actualEntityOp.getAsgEbase().geteBase().geteTag() == null);
         }
-        Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().geteNum() == actualEntityOp.getAsgEBase().geteBase().geteNum());
-        Assert.assertTrue(expectedEntityOp.getAsgEBase().geteBase().getClass().equals(actualEntityOp.getAsgEBase().geteBase().getClass()));
+        Assert.assertTrue(expectedEntityOp.getAsgEbase().geteBase().geteNum() == actualEntityOp.getAsgEbase().geteBase().geteNum());
+        Assert.assertTrue(expectedEntityOp.getAsgEbase().geteBase().getClass().equals(actualEntityOp.getAsgEbase().geteBase().getClass()));
 
-        if (expectedEntityOp.getAsgEBase().geteBase() instanceof EConcrete) {
-            QueryAssert.assertEquals((EConcrete)expectedEntityOp.getAsgEBase().geteBase(), (EConcrete)actualEntityOp.getAsgEBase().geteBase());
-        } else if (expectedEntityOp.getAsgEBase().geteBase() instanceof ETyped) {
-            QueryAssert.assertEquals((ETyped)expectedEntityOp.getAsgEBase().geteBase(), (ETyped)actualEntityOp.getAsgEBase().geteBase());
-        } else if (expectedEntityOp.getAsgEBase().geteBase() instanceof EUntyped) {
-            QueryAssert.assertEquals((EUntyped)expectedEntityOp.getAsgEBase().geteBase(), (EUntyped)actualEntityOp.getAsgEBase().geteBase());
+        if (expectedEntityOp.getAsgEbase().geteBase() instanceof EConcrete) {
+            QueryAssert.assertEquals((EConcrete)expectedEntityOp.getAsgEbase().geteBase(), (EConcrete)actualEntityOp.getAsgEbase().geteBase());
+        } else if (expectedEntityOp.getAsgEbase().geteBase() instanceof ETyped) {
+            QueryAssert.assertEquals((ETyped)expectedEntityOp.getAsgEbase().geteBase(), (ETyped)actualEntityOp.getAsgEbase().geteBase());
+        } else if (expectedEntityOp.getAsgEbase().geteBase() instanceof EUntyped) {
+            QueryAssert.assertEquals((EUntyped)expectedEntityOp.getAsgEbase().geteBase(), (EUntyped)actualEntityOp.getAsgEbase().geteBase());
         }
     }
 
@@ -73,9 +93,9 @@ public class PlanAssert {
         }
 
         Assert.assertTrue(expectedRelationOp != null && actualRelationOp != null);
-        Assert.assertTrue(expectedRelationOp.geteNum() == actualRelationOp.geteNum());
-        Assert.assertTrue(expectedRelationOp.getAsgEBase().geteNum() == actualRelationOp.getAsgEBase().geteNum());
+        Assert.assertTrue(expectedRelationOp.getAsgEbase().geteNum() == actualRelationOp.getAsgEbase().geteNum());
+        Assert.assertTrue(expectedRelationOp.getAsgEbase().geteNum() == actualRelationOp.getAsgEbase().geteNum());
 
-        QueryAssert.assertEquals(expectedRelationOp.getAsgEBase().geteBase(), actualRelationOp.getAsgEBase().geteBase());
+        QueryAssert.assertEquals(expectedRelationOp.getAsgEbase().geteBase(), actualRelationOp.getAsgEbase().geteBase());
     }
 }

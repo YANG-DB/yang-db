@@ -16,14 +16,11 @@ import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.gta.translation.PlanTraversalTranslator;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.structure.Element;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.model.Utils.submit;
@@ -69,11 +66,16 @@ public class GtaTraversalCursorProcessor implements CursorCreationOperationConte
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = context.getQueryResource().getExecutionPlan();
         Ontology ontology = provider.get(context.getQueryResource().getQuery().getOnt()).get();
 
-        GraphTraversal<?, ?> traversal  = this.planTraversalTranslator.translate(
-                executionPlan,
-                new TranslationContext(
-                        new Ontology.Accessor(ontology),
-                        uniGraphProvider.getGraph(ontology).traversal()));
+        GraphTraversal<?, ?> traversal = null;
+        try {
+            traversal = this.planTraversalTranslator.translate(
+                    executionPlan,
+                    new TranslationContext(
+                            new Ontology.Accessor(ontology),
+                            uniGraphProvider.getGraph(ontology).traversal()));
+        } catch(Exception ex) {
+            int x = 5;
+        }
 
         //submit
         Cursor cursor = this.cursorFactory.createCursor(

@@ -5,7 +5,12 @@ import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -16,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.logging.Level;
 
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
@@ -174,7 +178,6 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
@@ -191,7 +194,6 @@ public class M1PlanValidatorTests {
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get())
         );
 
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
 
@@ -207,7 +209,6 @@ public class M1PlanValidatorTests {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
         );
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
@@ -226,7 +227,6 @@ public class M1PlanValidatorTests {
         );
 
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
@@ -354,7 +354,6 @@ public class M1PlanValidatorTests {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
         Plan plan = mock(asgQuery).entity(1).rel(2).relFilter(10).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).plan();
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
     @Test
@@ -362,7 +361,6 @@ public class M1PlanValidatorTests {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
         Plan plan = mock(asgQuery).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).goTo(3).rel(2,Rel.Direction.L).relFilter(10).entity(1).plan();
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
-        validator.getLogs(Level.INFO).forEach(p-> System.out.println(p._1+":"+p._2));
         Assert.assertTrue(planValid);
     }
 
