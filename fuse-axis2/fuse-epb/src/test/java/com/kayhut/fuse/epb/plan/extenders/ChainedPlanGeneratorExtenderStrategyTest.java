@@ -51,12 +51,15 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
 
 
         ChainPlanExtensionStrategy chain = new ChainPlanExtensionStrategy<Plan, AsgQuery>(
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))),
-                (plan, query) -> Collections.singletonList(Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))),
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))
-                                             ,Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
+                (plan, query) -> Arrays.asList(
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 1))),
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))),
+                (plan, query) -> Collections.singletonList(
+                        plan.get().withOp(new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))),
+                (plan, query) -> Arrays.asList(
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 1))),
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 3))),
+                        plan.get().withOp(new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
 
 
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();
@@ -73,13 +76,16 @@ public class ChainedPlanGeneratorExtenderStrategyTest {
 
 
         ChainPlanExtensionStrategy chain =  new ChainPlanExtensionStrategy<Plan, AsgQuery>(
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 3)))),
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 7)))
-                                            , Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 9)))),
-                (plan, query) -> Arrays.asList(Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 1)))
-                                             , Plan.compose(plan.get(), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)))
-                                             ,Plan.compose(plan.get(), new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
+                (plan, query) -> Arrays.asList(
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 1))),
+                        plan.get().withOp(new RelationOp(AsgQueryUtil.element$(asgQuery, 3)))),
+                (plan, query) -> Arrays.asList(
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 7))),
+                        plan.get().withOp(new RelationOp(AsgQueryUtil.element$(asgQuery, 9)))),
+                (plan, query) -> Arrays.asList(
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 1))),
+                        plan.get().withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, 3))),
+                        plan.get().withOp(new RelationOp(AsgQueryUtil.element$(asgQuery, 5)))));
 
 
         List<Plan> extendedPlans = Stream.ofAll(chain.extendPlan(Optional.of(startPlan), asgQuery)).toJavaList();

@@ -16,6 +16,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Created by roman.margolis on 14/11/2017.
@@ -24,6 +25,10 @@ public class RelationSelectionTranslationStrategy extends PlanOpTranslationStrat
     //region Constructors
     public RelationSelectionTranslationStrategy(Class<? extends PlanOp> klasses) {
         super(klasses);
+    }
+
+    public RelationSelectionTranslationStrategy(Predicate<PlanOp> planOpPredicate) {
+        super(planOpPredicate);
     }
     //endregion
 

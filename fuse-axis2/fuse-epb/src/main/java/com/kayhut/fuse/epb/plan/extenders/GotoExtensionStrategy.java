@@ -4,7 +4,7 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
-import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import javaslang.collection.Stream;
 
@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 
 public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
 
@@ -33,10 +32,6 @@ public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQue
 
         for (EntityOp ancestorEntityOp : entityOps) {
             Plan newPlan = plan.get().withOp(new GoToEntityOp(ancestorEntityOp.getAsgEbase()));
-
-            if(!Plan.equals(plan.get(), newPlan)) {
-                newPlan.log("GotoExtensionStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
-            }
 
             plans.add(newPlan);
         }

@@ -32,7 +32,7 @@ import java.util.Optional;
 public class EntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
     public EntityOpTranslationStrategy(EntityTranslationOptions options) {
-        super(EntityOp.class);
+        super(planOp -> planOp.getClass().equals(EntityOp.class));
         this.options = options;
     }
     //endregion

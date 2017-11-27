@@ -47,10 +47,6 @@ public class StepDescendantsAdjacentStrategy implements PlanExtensionStrategy<Pl
             Optional<Plan> computedPlan = compute(nextRelation, newPlan);
             if (computedPlan.isPresent()) {
                 plans.add(computedPlan.get());
-
-                if (!Plan.equals(plan.get(), newPlan)) {
-                    newPlan.log("StepDescendantsAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
-                }
             }
         }
 

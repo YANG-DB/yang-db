@@ -23,7 +23,7 @@ import java.util.Optional;
 public class RelationOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
     public RelationOpTranslationStrategy() {
-        super(RelationOp.class);
+        super(planOp -> planOp.getClass().equals(RelationOp.class));
     }
     //endregion
 

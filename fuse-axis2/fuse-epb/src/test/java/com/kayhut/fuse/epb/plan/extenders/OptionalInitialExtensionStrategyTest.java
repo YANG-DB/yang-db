@@ -1,9 +1,9 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -41,6 +41,7 @@ public class OptionalInitialExtensionStrategyTest {
         Plan expectedPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 8),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 9)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 10))));
 
@@ -81,6 +82,7 @@ public class OptionalInitialExtensionStrategyTest {
         Plan expectedPlan = new Plan(
                 new GoToEntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 8),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 9)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 10))));
 

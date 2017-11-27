@@ -5,10 +5,10 @@ import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Constraint;
@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Date;
-import java.util.logging.Level;
 
 import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;

@@ -7,6 +7,7 @@ import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
@@ -18,6 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.map.EdgeOtherVertexSt
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.VertexStep;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Created by Roman on 28/05/2017.
@@ -26,6 +28,10 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
     //region Constructors
     public EntitySelectionTranslationStrategy(Class<? extends PlanOp> klasses) {
         super(klasses);
+    }
+
+    public EntitySelectionTranslationStrategy(Predicate<PlanOp> planOpPredicate) {
+        super(planOpPredicate);
     }
     //endregion
 

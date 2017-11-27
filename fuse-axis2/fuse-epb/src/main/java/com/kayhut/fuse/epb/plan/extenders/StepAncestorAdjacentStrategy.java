@@ -66,9 +66,6 @@ public class StepAncestorAdjacentStrategy implements PlanExtensionStrategy<Plan,
             newPlan = newPlan.withOp(new EntityFilterOp(toEntityPropGroup.get()));
         }
 
-        if(!Plan.equals(plan.get(), newPlan)) {
-            newPlan.log("StepAncestorAdjacentStrategy:[" + Plan.diff(plan.get(), newPlan) + "]", Level.INFO);
-        }
         return Collections.singletonList(newPlan);
     }
     //endregion

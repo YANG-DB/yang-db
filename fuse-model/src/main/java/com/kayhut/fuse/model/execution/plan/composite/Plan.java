@@ -14,9 +14,7 @@ import static com.kayhut.fuse.model.Utils.*;
 /**
  * Created by User on 22/02/2017.
  */
-public class Plan extends CompositePlanOp implements Trace<String>, IPlan {
-    private Trace<String> trace = Trace.build(Plan.class.getSimpleName());
-
+public class Plan extends CompositePlanOp implements IPlan {
     //region Constructors
     public Plan() {}
 
@@ -52,26 +50,6 @@ public class Plan extends CompositePlanOp implements Trace<String>, IPlan {
 
     public static boolean contains(Plan plan,PlanOp op) {
         return plan.getOps().stream().anyMatch(p->p.equals(op));
-    }
-
-    public static Plan compose(Plan plan,PlanOp op) {
-        return plan.withOp(op);
-    }
-
-
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event,level);
-    }
-
-    @Override
-    public List<Tuple2<String,String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
     }
 
     public static boolean equals(Plan plan, Plan newPlan) {

@@ -35,7 +35,7 @@ import java.util.Optional;
 public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
     public RelationFilterOpTranslationStrategy() {
-        super(RelationFilterOp.class);
+        super(planOp -> planOp.getClass().equals(RelationFilterOp.class));
     }
     //endregion
 

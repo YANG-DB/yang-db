@@ -5,7 +5,7 @@ import com.kayhut.fuse.gta.translation.TranslationContext;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.query.entity.EEntityBase;

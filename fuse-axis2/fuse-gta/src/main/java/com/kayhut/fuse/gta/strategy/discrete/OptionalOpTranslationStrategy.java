@@ -19,7 +19,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 public class OptionalOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
     public OptionalOpTranslationStrategy(PlanOpTranslationStrategy planOpTranslationStrategy) {
-        super(OptionalOp.class);
+        super(planOp -> planOp.getClass().equals(OptionalOp.class));
         this.planOpTranslationStrategy = planOpTranslationStrategy;
     }
     //endregion
@@ -29,14 +29,13 @@ public class OptionalOpTranslationStrategy extends PlanOpTranslationStrategyBase
     protected GraphTraversal<?, ?> translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> planWithCost, PlanOp planOp, TranslationContext context) {
         OptionalOp optionalOp = (OptionalOp)planOp;
 
-        // take all the ops preceding the optional op - this is necessary for proper context for the plan op translation strategies.
         int indexOfOptional = planWithCost.getPlan().getOps().indexOf(planOp);
-        Plan optionalPlan = new Plan(Stream.ofAll(planWithCost.getPlan().getOps()).take(indexOfOptional).toJavaList()).append(optionalOp);
+        //Plan optionalPlan = new Plan(Stream.ofAll(planWithCost.getPlan().getOps()).take(indexOfOptional).toJavaList()).append(optionalOp);
 
         PlanTraversalTranslator planTraversalTranslator =
                 new ChainedPlanOpTraversalTranslator(this.planOpTranslationStrategy, indexOfOptional);
 
-        GraphTraversal<?, ?> optionalTraversal = planTraversalTranslator.translate(new PlanWithCost<>(optionalPlan, planWithCost.getCost()), context);
+        GraphTraversal<?, ?> optionalTraversal = planTraversalTranslator.translate(new PlanWithCost<>(planWithCost.getPlan(), planWithCost.getCost()), context);
         return traversal.optional(optionalTraversal);
     }
     //endregion

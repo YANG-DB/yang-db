@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.EBase;
@@ -69,6 +70,7 @@ public class OptionalOpExtensionStrategy extends CompositePlanExtensionStrategy<
                         .toJavaSet();
 
         Set<Integer> optionalOpEnums = Stream.ofAll(PlanUtil.flat(optionalOp).getOps())
+                .filter(planOp -> !EntityNoOp.class.isAssignableFrom(planOp.getClass()))
                 .filter(planOp -> AsgEBaseContainer.class.isAssignableFrom(planOp.getClass()))
                 .map(planOp -> ((AsgEBaseContainer)planOp).getAsgEbase().geteBase().geteNum())
                 .toJavaSet();

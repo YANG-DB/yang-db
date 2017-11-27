@@ -6,13 +6,10 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
-import com.kayhut.fuse.model.log.Trace;
-import javaslang.Tuple2;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
 
 import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
 

@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
 import com.kayhut.fuse.model.log.Trace;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
@@ -73,6 +74,7 @@ public class OptionalCompletePlanOpValidator implements ChainedPlanValidator.Pla
                         .toJavaSet();
 
         Set<Integer> optionalOpEnums = Stream.ofAll(PlanUtil.flat(optionalOp).getOps())
+                .filter(planOp -> !EntityNoOp.class.isAssignableFrom(planOp.getClass()))
                 .filter(planOp -> AsgEBaseContainer.class.isAssignableFrom(planOp.getClass()))
                 .map(planOp -> ((AsgEBaseContainer)planOp).getAsgEbase().geteBase().geteNum())
                 .toJavaSet();

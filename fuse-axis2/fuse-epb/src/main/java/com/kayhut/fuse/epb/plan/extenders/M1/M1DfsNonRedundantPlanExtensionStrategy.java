@@ -1,10 +1,10 @@
 package com.kayhut.fuse.epb.plan.extenders.M1;
 
-import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.StepAdjacentDfsStrategy;
+import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import javaslang.collection.Stream;
 
 /**
  * Created by Roman on 22/05/2017.
@@ -12,12 +12,18 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 public class M1DfsNonRedundantPlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan, AsgQuery> {
     //region Constructors
     public M1DfsNonRedundantPlanExtensionStrategy() {
-        super(
-                new CompositePlanExtensionStrategy<>(
-                        new InitialPlanGeneratorExtensionStrategy(),
-                        new StepAdjacentDfsStrategy()
+        super();
+
+        this.innerExtenders = Stream.<PlanExtensionStrategy<Plan, AsgQuery>>of(
+                new ChainPlanExtensionStrategy<>(
+                        new CompositePlanExtensionStrategy<>(
+                                new InitialPlanGeneratorExtensionStrategy(),
+                                new StepAdjacentDfsStrategy(),
+                                new OptionalOpExtensionStrategy(this)
+                        ),
+                        new OptionalInitialExtensionStrategy()
                 )
-        );
+        ).toJavaList();
     }
     //endregion
 }

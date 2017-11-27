@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.EBase;
@@ -73,7 +74,9 @@ public class OptionalInitialExtensionStrategy implements PlanExtensionStrategy<P
             }
 
             Plan newPlan = plan.get().fromTo(plan.get().getOps().get(0), relationOp.get())
-                    .withOp(new OptionalOp(optionalComp.get(), plan.get().from(relationOp.get()).getOps()));
+                    .withOp(new OptionalOp(optionalComp.get(),
+                            new Plan(new EntityNoOp(previousEntityOp.get().getAsgEbase()))
+                                    .append(plan.get().from(relationOp.get())).getOps()));
             return Collections.singletonList(newPlan);
         }
     }

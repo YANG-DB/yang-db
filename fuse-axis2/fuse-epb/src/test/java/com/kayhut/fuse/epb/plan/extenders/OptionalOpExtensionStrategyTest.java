@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.composite.OptionalOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityNoOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -36,6 +37,7 @@ public class OptionalOpExtensionStrategyTest {
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 8),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 9)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 10))));
 
@@ -51,12 +53,14 @@ public class OptionalOpExtensionStrategyTest {
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 11),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 12)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 13))));
 
         Plan expectedPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 11),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 12)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 13)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 14)),
@@ -76,17 +80,20 @@ public class OptionalOpExtensionStrategyTest {
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 16),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 17)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 18))));
 
         Plan expectedPlan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 16),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 17)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 18)),
                         new OptionalOp(AsgQueryUtil.element$(asgQuery, 19),
-                            new RelationOp(AsgQueryUtil.element$(asgQuery, 20)),
-                            new EntityOp(AsgQueryUtil.element$(asgQuery, 21)))));
+                                new EntityNoOp(AsgQueryUtil.element$(asgQuery, 18)),
+                                new RelationOp(AsgQueryUtil.element$(asgQuery, 20)),
+                                new EntityOp(AsgQueryUtil.element$(asgQuery, 21)))));
 
         List<Plan> extendedPlans = Stream.ofAll(getPlanExtensionStrategy().extendPlan(Optional.of(plan), asgQuery))
                 .toJavaList();
@@ -102,9 +109,11 @@ public class OptionalOpExtensionStrategyTest {
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.element$(asgQuery, 3)),
                 new OptionalOp(AsgQueryUtil.element$(asgQuery, 16),
+                        new EntityNoOp(AsgQueryUtil.element$(asgQuery, 3)),
                         new RelationOp(AsgQueryUtil.element$(asgQuery, 17)),
                         new EntityOp(AsgQueryUtil.element$(asgQuery, 18)),
                         new OptionalOp(AsgQueryUtil.element$(asgQuery, 19),
+                                new EntityNoOp(AsgQueryUtil.element$(asgQuery, 18)),
                                 new RelationOp(AsgQueryUtil.element$(asgQuery, 20)),
                                 new EntityOp(AsgQueryUtil.element$(asgQuery, 21)))));
 

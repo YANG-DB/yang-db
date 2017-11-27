@@ -17,24 +17,41 @@ import java.util.Collections;
  */
 public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
 
+    //region Constructors
     public M1PlanValidator() {
         super(Mode.all);
 
-        CompositePlanOpValidator compositePlanOpValidator =
-                new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
-                new AdjacentPlanOpValidator(),
-                new NoRedundantRelationOpValidator(),
-                new RedundantGoToEntityOpValidator(),
-                new ReverseRelationOpValidator(),
-                new OptionalCompletePlanOpValidator());
-        compositePlanOpValidator.with(new ChainedPlanOpValidator(compositePlanOpValidator));
-
-        this.validators = Collections.singletonList(new ChainedPlanValidator(compositePlanOpValidator));
+        this.validators = Collections.singletonList(new ChainedPlanValidator(buildNestedPlanOpValidator(10)));
     }
+    //endregion
 
+    //region CompositePlanValidator Implementation
     @Override
     @LoggerAnnotation(name = "isPlanValid", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
         return super.isPlanValid(plan, query);
     }
+    //endregion
+
+    //region Private Methods
+    private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels) {
+        if (numNestingLevels == 0) {
+            return new ChainedPlanOpValidator(
+                    new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
+                            new AdjacentPlanOpValidator(),
+                            new NoRedundantRelationOpValidator(),
+                            new RedundantGoToEntityOpValidator(),
+                            new ReverseRelationOpValidator(),
+                            new OptionalCompletePlanOpValidator()));
+        }
+
+        return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
+                new AdjacentPlanOpValidator(),
+                new NoRedundantRelationOpValidator(),
+                new RedundantGoToEntityOpValidator(),
+                new ReverseRelationOpValidator(),
+                new OptionalCompletePlanOpValidator(),
+                buildNestedPlanOpValidator(numNestingLevels - 1));
+    }
+    //endregion
 }
