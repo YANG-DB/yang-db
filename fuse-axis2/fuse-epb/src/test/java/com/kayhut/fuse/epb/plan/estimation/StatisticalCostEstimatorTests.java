@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.tests;
+package com.kayhut.fuse.epb.plan.estimation;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
@@ -6,6 +6,7 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
+import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -34,9 +35,9 @@ import java.util.regex.Matcher;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.getSupportedPattern;
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.CONCRETE;
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
-import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
+import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.CONCRETE;
+import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.TYPED;
+import static com.kayhut.fuse.epb.utils.StatisticsMockUtils.build;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;

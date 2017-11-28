@@ -1,14 +1,15 @@
 package com.kayhut.fuse.epb.plan;
 
-import com.google.common.collect.Iterables;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1NonRedundantPlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
+import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
-import com.kayhut.fuse.epb.tests.BasicScenarioSetup;
-import com.kayhut.fuse.epb.tests.ScenarioMockUtil;
+import com.kayhut.fuse.epb.utils.BasicScenarioSetup;
+import com.kayhut.fuse.epb.utils.ScenarioMockUtil;
 import com.kayhut.fuse.model.OntologyTestUtils.PERSON;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;

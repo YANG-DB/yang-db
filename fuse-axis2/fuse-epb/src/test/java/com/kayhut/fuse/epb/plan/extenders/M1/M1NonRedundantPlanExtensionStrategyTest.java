@@ -2,7 +2,6 @@ package com.kayhut.fuse.epb.plan.extenders.M1;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.extenders.M1.M1NonRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -17,7 +16,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
+import static com.kayhut.fuse.epb.utils.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
 import static com.kayhut.fuse.model.query.ConstraintOp.eq;

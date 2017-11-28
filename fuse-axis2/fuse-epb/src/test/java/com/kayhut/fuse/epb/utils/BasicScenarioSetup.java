@@ -1,10 +1,10 @@
-package com.kayhut.fuse.epb.tests;
+package com.kayhut.fuse.epb.utils;
 
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
+import com.kayhut.fuse.epb.utils.ScenarioMockUtil;
 import com.kayhut.fuse.unipop.structure.ElementType;
 
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * Created by moti on 5/18/2017.

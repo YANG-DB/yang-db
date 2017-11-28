@@ -1,6 +1,7 @@
-package com.kayhut.fuse.epb.tests;
+package com.kayhut.fuse.epb.utils;
 
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
+import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import org.mockito.Mockito;
 
 /**

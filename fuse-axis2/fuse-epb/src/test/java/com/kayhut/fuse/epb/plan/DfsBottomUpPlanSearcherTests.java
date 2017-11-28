@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.tests;
+package com.kayhut.fuse.epb.plan;
 
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
@@ -7,7 +7,10 @@ import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.StepAdjacentDfsStrategy;
+import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
+import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
+import com.kayhut.fuse.epb.utils.BuilderTestUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
@@ -20,7 +23,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**

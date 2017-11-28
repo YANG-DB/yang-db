@@ -1,7 +1,8 @@
-package com.kayhut.fuse.epb.plan;
+package com.kayhut.fuse.epb.plan.selectors;
 
 import com.codahale.metrics.Slf4jReporter;
 import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
+import com.kayhut.fuse.epb.plan.PlanSelector;
 import com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;

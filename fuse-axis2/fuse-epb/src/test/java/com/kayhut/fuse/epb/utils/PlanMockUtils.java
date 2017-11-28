@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.tests;
+package com.kayhut.fuse.epb.utils;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;

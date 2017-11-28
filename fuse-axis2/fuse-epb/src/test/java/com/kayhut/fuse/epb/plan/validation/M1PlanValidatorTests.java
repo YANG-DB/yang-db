@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
+import static com.kayhut.fuse.epb.utils.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
