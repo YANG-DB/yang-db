@@ -1030,26 +1030,28 @@ public class RealClusterTest {
         }
 
         List<IndexPartitions.Partition> ePartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("e000", "e300", "e0"),
-                new IndexPartitions.Partition.Range.Impl<>("e300", "e600", "e1"),
-                new IndexPartitions.Partition.Range.Impl<>("e600", "e999", "e2"));
-        String entityIdFormat = "%03d";
+                new IndexPartitions.Partition.Range.Impl<>("e00000000", "e10000000", "e0"),
+                new IndexPartitions.Partition.Range.Impl<>("e10000000", "e20000000", "e1"),
+                new IndexPartitions.Partition.Range.Impl<>("e20000000", "e30000000", "e2"));
+        String entityIdFormat = "%08d";
 
         List<IndexPartitions.Partition> relPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("r0000", "r1000", "rel0"),
-                new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "rel1"),
-                new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "rel2"));
-        String relationIdFormat = "%04d";
+                new IndexPartitions.Partition.Range.Impl<>("r00000000", "r10000000", "rel0"),
+                new IndexPartitions.Partition.Range.Impl<>("r10000000", "r20000000", "rel1"),
+                new IndexPartitions.Partition.Range.Impl<>("r20000000", "r30000000", "rel2"));
+        String relationIdFormat = "%08d";
 
         List<IndexPartitions.Partition> refPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("ref00000", "ref00200", "ref0"),
-                new IndexPartitions.Partition.Range.Impl<>("ref00200", "ref00400", "ref1"));
-        String referenceIdFormat = "%05d";
+                new IndexPartitions.Partition.Range.Impl<>("ref00000000", "ref10000000", "ref0"),
+                new IndexPartitions.Partition.Range.Impl<>("ref10000000", "ref20000000", "ref1"),
+                new IndexPartitions.Partition.Range.Impl<>("ref20000000", "ref30000000", "ref2"));
+        String referenceIdFormat = "%08d";
 
         List<IndexPartitions.Partition> iPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("i0000", "i0100", "i0"),
-                new IndexPartitions.Partition.Range.Impl<>("i0100", "i0200", "i1"));
-        String insightIdFormat = "%04d";
+                new IndexPartitions.Partition.Range.Impl<>("i00000000", "i10000000", "i0"),
+                new IndexPartitions.Partition.Range.Impl<>("i10000000", "i20000000", "i1"),
+                new IndexPartitions.Partition.Range.Impl<>("i20000000", "i30000000", "i2"));
+        String insightIdFormat = "%08d";
 
         Iterable<String> allIndices = Stream.ofAll(ePartitions)
                 .appendAll(relPartitions)
