@@ -235,12 +235,12 @@ public class SmartEpbSelectivityTests {
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).goTo(1).rel(4).relFilter(5).entity(6).entityFilter(7).plan();
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(43.36, first.getCost().getGlobalCost().cost, 0.1);
+
+        Assert.assertNotNull(plan);
+        PlanAssert.assertEquals(expected, plan.getPlan());
+        Assert.assertEquals(43.36, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     @Test
@@ -255,12 +255,12 @@ public class SmartEpbSelectivityTests {
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(21.47, first.getCost().getGlobalCost().cost, 0.1);
+
+        Assert.assertNotNull(plan);
+        PlanAssert.assertEquals(expected, plan.getPlan());
+        Assert.assertEquals(21.47, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     //region Private Methods

@@ -226,10 +226,10 @@ public class SmartEpbRedundancyTests {
                                         .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.ge,"abc")))))).
                 build();
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        Assert.assertNotNull(plans);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        Assert.assertNotNull(plan);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
-        PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
+        PlanAssert.assertEquals(expected, plan.getPlan());
     }
 
     @Test
@@ -245,10 +245,10 @@ public class SmartEpbRedundancyTests {
                                         .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.eq,"abc")))))).
                 build();
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        Assert.assertNotNull(plans);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        Assert.assertNotNull(plan);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(6).entityFilter(7).rel(4, Rel.Direction.L).relFilter(5).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
-        PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
+        PlanAssert.assertEquals(expected, plan.getPlan());
     }
 
     //region Private Methods

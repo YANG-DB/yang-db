@@ -34,13 +34,9 @@ public class DfsBottomUpPlanSearcherTests {
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
 
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query.getLeft());
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query.getLeft());
 
-        List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
-        plans.forEach(planList::add);
-
-        Assert.assertEquals(1, planList.size());
-        Assert.assertEquals(3, planList.get(0).getPlan().getOps().size());
+        Assert.assertEquals(3, plan.getPlan().getOps().size());
     }
 
     @Test
@@ -51,43 +47,35 @@ public class DfsBottomUpPlanSearcherTests {
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
 
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query.getLeft());
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query.getLeft());
 
-        List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
-        plans.forEach(planList::add);
-
-        Assert.assertEquals(1, planList.size());
-        Assert.assertEquals(1, planList.get(0).getPlan().getOps().size());
+        Assert.assertEquals(1, plan.getPlan().getOps().size());
     }
 
     @Test
-    public void TestBuilderAllPaths(){
+    public void TestBuilderAllPaths() {
         Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
 
         BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
 
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> planWrappers = planSearcher.search(query.getLeft());
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query.getLeft());
 
-        List<PlanWithCost<Plan, PlanDetailedCost>> planList = new LinkedList<>();
-        planWrappers.forEach(planList::add);
-
-        Assert.assertEquals(1, planList.size());
-        Assert.assertEquals(3, planList.get(0).getPlan().getOps().size());
+        Assert.assertEquals(3, plan.getPlan().getOps().size());
 
         AsgEBase firstElement = query.getLeft().getStart().getNext().get(0);
         AsgEBase secondElement = (AsgEBase) firstElement.getNext().get(0);
         AsgEBase thirdElement = (AsgEBase) secondElement.getNext().get(0);
         boolean foundFirstPlan = false;
-        for(PlanWithCost<Plan, PlanDetailedCost> planWithCost : planList){
-            List<PlanOp> ops = planWithCost.getPlan().getOps();
 
-            if(firstElement.geteNum() == ((AsgEBaseContainer)ops.get(0)).getAsgEbase().geteNum() &&
-                    secondElement.geteNum() == ((AsgEBaseContainer)ops.get(1)).getAsgEbase().geteNum() &&
-                    thirdElement.geteNum() == ((AsgEBaseContainer)ops.get(2)).getAsgEbase().geteNum()) {
-                foundFirstPlan = true;
-            }
+        List<PlanOp> ops = plan.getPlan().getOps();
+
+        if (firstElement.geteNum() == ((AsgEBaseContainer) ops.get(0)).getAsgEbase().geteNum() &&
+                secondElement.geteNum() == ((AsgEBaseContainer) ops.get(1)).getAsgEbase().geteNum() &&
+                thirdElement.geteNum() == ((AsgEBaseContainer) ops.get(2)).getAsgEbase().geteNum()) {
+            foundFirstPlan = true;
         }
+
         Assert.assertTrue(foundFirstPlan);
     }
 

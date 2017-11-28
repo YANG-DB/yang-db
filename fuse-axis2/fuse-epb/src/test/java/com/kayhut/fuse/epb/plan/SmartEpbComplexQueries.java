@@ -244,12 +244,12 @@ public class SmartEpbComplexQueries {
     @Ignore // Stats Double Bug
     public void testPathSelectionEConcreteComplexQuery(){
         AsgQuery query = simpleQuery2("q1", "Dragons");
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+
+        Assert.assertNotNull(plan);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(20).entityFilter(21).rel(16, L).relFilter(18).entity(7).entityFilter(9).rel(12 ).relFilter(122).entity(13).entityFilter(14).goTo(7).rel(4, L).relFilter(5).entity(1).entityFilter(2).plan();
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(111.11, first.getCost().getGlobalCost().cost, 0.1);
+        PlanAssert.assertEquals(expected, plan.getPlan());
+        Assert.assertEquals(111.11, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     //region Private Methods

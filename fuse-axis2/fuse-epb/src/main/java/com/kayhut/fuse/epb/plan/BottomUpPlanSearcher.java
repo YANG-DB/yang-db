@@ -59,7 +59,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
     //region Methods
     @Override
     @LoggerAnnotation(name = "search", options = LoggerAnnotation.Options.returnValue, logLevel = Slf4jReporter.LoggingLevel.INFO)
-    public Iterable<PlanWithCost<P, C>> search(Q query) {
+    public PlanWithCost<P, C> search(Q query) {
         Iterable<PlanWithCost<P, C>> selectedPlans;
 
         // Generate seed plans (plan is null)
@@ -88,7 +88,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
             selectedPlans = Stream.ofAll(selectedPlans).appendAll(this.localPlanSelector.select(query, currentPlans)).toJavaList();
         }
 
-        return this.globalPlanSelector.select(query, selectedPlans);
+        return Stream.ofAll(this.globalPlanSelector.select(query, selectedPlans)).get(0);
     }
     //endregion
     //region Logger

@@ -46,13 +46,8 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
         }
 
         AsgQuery query = context.getAsgQuery();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        PlanWithCost<Plan, PlanDetailedCost> first = plans.iterator().next();
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
 
-        if(plans instanceof PlanNodeWrapper) {
-            context = context.of(((PlanNodeWrapper) plans).planNode());
-        }
-
-        return submit(bus, context.of(first));
+        return submit(bus, context.of(plan));
     }
 }

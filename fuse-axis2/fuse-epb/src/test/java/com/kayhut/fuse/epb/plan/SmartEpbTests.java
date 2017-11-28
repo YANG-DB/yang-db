@@ -72,10 +72,10 @@ public class SmartEpbTests {
                 next(eProp(2,EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        Assert.assertEquals(first.getCost().getGlobalCost(),new DoubleCost(10));
-        Assert.assertEquals(new CountEstimatesCost(10, 10), first.getCost().getPlanStepCosts().iterator().next().getCost());
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+
+        Assert.assertNotNull(plan);
+        Assert.assertEquals(plan.getCost().getGlobalCost(),new DoubleCost(10));
+        Assert.assertEquals(new CountEstimatesCost(10, 10), plan.getCost().getPlanStepCosts().iterator().next().getCost());
     }
 }
