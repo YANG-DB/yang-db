@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan;
+package com.kayhut.fuse.dispatcher.epb;
 
 /**
  * Created by moti on 2/21/2017.

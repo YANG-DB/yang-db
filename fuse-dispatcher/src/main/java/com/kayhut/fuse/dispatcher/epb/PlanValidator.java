@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan;
+package com.kayhut.fuse.dispatcher.epb;
 
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.log.Trace;

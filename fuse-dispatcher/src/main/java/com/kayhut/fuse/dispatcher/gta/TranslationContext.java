@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta.translation;
+package com.kayhut.fuse.dispatcher.gta;
 
 import com.kayhut.fuse.model.ontology.Ontology;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;

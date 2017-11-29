@@ -1,13 +1,7 @@
 package com.kayhut.fuse.model.execution.plan.composite;
 
-import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
-import com.kayhut.fuse.model.log.Trace;
-import javaslang.Tuple2;
-
-import java.util.List;
-import java.util.logging.Level;
 
 import static com.kayhut.fuse.model.Utils.*;
 
@@ -76,19 +70,4 @@ public class Plan extends CompositePlanOp implements IPlan {
     public static Plan clone(Plan plan) {
         return new Plan(plan.getOps());
     }
-
-    public static class PlanDescriptor implements Descriptor<Plan> {
-
-        @Override
-        public String name(Plan plan) {
-            return String.valueOf(plan.hashCode());
-        }
-
-        @Override
-        public String describe(Plan plan) {
-            return plan.toString();
-        }
-    }
 }
-
-

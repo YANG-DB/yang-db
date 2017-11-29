@@ -1,4 +1,4 @@
-package com.kayhut.fuse.dispatcher;
+package com.kayhut.fuse.dispatcher.modules;
 
 import com.google.inject.Binder;
 import com.typesafe.config.Config;

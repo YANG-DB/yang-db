@@ -4,7 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
 import com.google.inject.Provider;
-import com.kayhut.fuse.model.descriptor.Descriptor;
+import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
@@ -22,9 +22,9 @@ import static com.codahale.metrics.MetricRegistry.name;
 /**
  * Created by liorp on 6/18/2017.
  */
-public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
+//public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
 
-    private Provider<MetricRegistry> metricRegistry;
+    /*private Provider<MetricRegistry> metricRegistry;
     private Map<Class, Descriptor> map;
 
     public LogWrapper(Provider<MetricRegistry> metricRegistry, Map<Class,Descriptor> map) {
@@ -132,5 +132,5 @@ public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
         Class cls = object.getClass();
         Descriptor descriptor = map.get(cls);
         return descriptor;
-    }
-}
+    }*/
+//}

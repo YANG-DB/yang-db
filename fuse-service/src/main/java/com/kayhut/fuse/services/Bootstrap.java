@@ -12,7 +12,7 @@ import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
 import com.kayhut.fuse.dispatcher.utils.*;
 import com.kayhut.fuse.events.DeadEventsListener;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.descriptor.Descriptor;
+import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.unipop.descriptor.GraphTraversalDescriptor;
@@ -40,26 +40,9 @@ public class Bootstrap implements Jooby.Module {
 
         binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(TimerAnnotation.class),
                 new PerformanceStatistics(binder.getProvider(MetricRegistry.class)));
-        binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(LoggerAnnotation.class),
-                new LogWrapper(binder.getProvider(MetricRegistry.class),loadDescriptors(binder)));
+
         //load modules according getTo configuration
         loadModules(env, conf, binder);
-
-    }
-
-    private Map loadDescriptors(Binder binder) {
-        HashMap<Class,Descriptor> map = new HashMap<>();
-        map.put(AsgQuery.class,new AsgQueryUtil.AsgQueryDescriptor());
-        map.put(PlanWithCost.class,new PlanWithCost.PlanWithCostDescriptor());
-        map.put(Plan.class,new Plan.PlanDescriptor());
-        map.put(ValidationContext.class,new ValidationContext.ValidationContextDescriptor());
-        map.put(DefaultGraphTraversal.class, new GraphTraversalDescriptor());
-        map.put(CursorCreationOperationContext.class, new CursorCreationOperationContext.CursorCreationOperationContextDescriptor());
-        map.put(PageCreationOperationContext.class, new PageCreationOperationContext.PageCreationOperationContextDescriptor());
-        map.put(QueryCreationOperationContext.class, new QueryCreationOperationContext.QueryCreationOperationContextDescriptor());
-        map.put(QueryValidationOperationContext.class, new QueryValidationOperationContext.QueryValidationOperationContextDescriptor());
-        binder.bind(new TypeLiteral<Map<Class,Descriptor>>(){}).toInstance(map);
-        return map;
     }
 
     private void loadModules(Env env, Config conf, Binder binder) {

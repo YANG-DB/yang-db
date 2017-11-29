@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import javaslang.collection.Stream;

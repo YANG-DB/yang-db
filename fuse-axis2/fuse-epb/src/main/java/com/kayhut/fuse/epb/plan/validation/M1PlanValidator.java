@@ -1,14 +1,9 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.codahale.metrics.Slf4jReporter;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.epb.plan.validation.opValidator.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import javaslang.collection.Stream;
 
 import java.util.Collections;
 
@@ -27,7 +22,6 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
 
     //region CompositePlanValidator Implementation
     @Override
-    @LoggerAnnotation(name = "isPlanValid", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
         return super.isPlanValid(plan, query);
     }

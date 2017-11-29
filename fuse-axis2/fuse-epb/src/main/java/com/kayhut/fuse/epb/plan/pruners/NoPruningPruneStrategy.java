@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.pruners;
 
-import com.kayhut.fuse.epb.plan.PlanPruneStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 
 /**

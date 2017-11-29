@@ -2,9 +2,7 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
-import com.kayhut.fuse.model.descriptor.Descriptor;
-
-import java.io.IOException;
+import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 
 /**
  * Created by User on 06/03/2017.
@@ -63,17 +61,4 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
     private int pageSize;
     private PageResource pageResource;
     //endregion
-
-    public static class PageCreationOperationContextDescriptor implements Descriptor<PageCreationOperationContext>{
-
-        @Override
-        public String name(PageCreationOperationContext context) {
-            return context.getPageId();
-        }
-
-        @Override
-        public String describe(PageCreationOperationContext context) {
-            return context.getPageId();
-        }
-    }
 }

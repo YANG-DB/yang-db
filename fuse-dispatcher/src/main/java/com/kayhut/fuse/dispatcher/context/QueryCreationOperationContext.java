@@ -2,7 +2,7 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.descriptor.Descriptor;
+import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -109,21 +109,4 @@ public final class QueryCreationOperationContext extends OperationContextBase<Qu
     private PlanWithCost<Plan, PlanDetailedCost> executionPlan;
     private Optional<PlanNode<Plan>> planNode;
     //endregion
-
-    public static class QueryCreationOperationContextDescriptor implements Descriptor<QueryCreationOperationContext>{
-
-        @Override
-        public String name(QueryCreationOperationContext query) {
-            return query.getQuery().getName();
-        }
-
-        @Override
-        public String describe(QueryCreationOperationContext query) {
-            String asg = "null";
-            if(query.getAsgQuery() != null)
-                asg = AsgQueryUtil.patternValue(query.getAsgQuery());
-            return "{Query: {Name:" + query.getQuery().getName() + ",Ont:" + query.getQuery().getOnt()+"}," +
-                    "AsgQuery: {" +asg + "}}" ;
-        }
-    }
 }

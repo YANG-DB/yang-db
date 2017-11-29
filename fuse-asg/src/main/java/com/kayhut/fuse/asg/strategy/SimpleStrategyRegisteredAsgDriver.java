@@ -1,7 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
 
-import com.codahale.metrics.Slf4jReporter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -11,7 +10,6 @@ import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -47,7 +45,6 @@ public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperation
     @Override
     @Subscribe
     @TimerAnnotation
-    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         if(context.getAsgQuery() != null) {
             return context;

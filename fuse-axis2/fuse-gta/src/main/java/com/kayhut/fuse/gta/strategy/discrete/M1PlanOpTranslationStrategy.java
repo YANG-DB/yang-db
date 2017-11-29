@@ -3,7 +3,7 @@ package com.kayhut.fuse.gta.strategy.discrete;
 import com.kayhut.fuse.gta.strategy.common.CompositePlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.common.GoToEntityOpTranslationStrategy;
-import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;

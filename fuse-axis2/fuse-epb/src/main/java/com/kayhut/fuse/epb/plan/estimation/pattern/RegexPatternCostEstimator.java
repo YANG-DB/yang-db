@@ -1,8 +1,6 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
-import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
@@ -134,7 +132,6 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
     //region CostEstimator Implementation
     @Override
-    @LoggerAnnotation(name = "estimate", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
             Plan plan,
             IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {

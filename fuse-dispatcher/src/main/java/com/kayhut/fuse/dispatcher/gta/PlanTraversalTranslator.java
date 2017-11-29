@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta.translation;
+package com.kayhut.fuse.dispatcher.gta;
 
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;

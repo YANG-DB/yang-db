@@ -2,7 +2,7 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.descriptor.Descriptor;
+import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 
@@ -59,17 +59,4 @@ public class QueryValidationOperationContext extends OperationContextBase<QueryV
     private QueryMetadata queryMetadata;
     private Query query;
     private AsgQuery asgQuery;
-
-    public static class QueryValidationOperationContextDescriptor implements Descriptor<QueryValidationOperationContext>{
-
-        @Override
-        public String name(QueryValidationOperationContext query) {
-            return query.getQuery().getName();
-        }
-
-        @Override
-        public String describe(QueryValidationOperationContext query) {
-            return "{Name:" + query.getQuery().getName() + ",Ont:" + query.getQuery().getOnt()+"}" ;
-        }
-    }
 }

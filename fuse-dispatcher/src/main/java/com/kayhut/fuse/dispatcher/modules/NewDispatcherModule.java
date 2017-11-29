@@ -1,4 +1,4 @@
-package com.kayhut.fuse.dispatcher;
+package com.kayhut.fuse.dispatcher.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.matcher.Matchers;
@@ -9,6 +9,7 @@ import com.kayhut.fuse.dispatcher.context.processor.PageProcessor;
 import com.kayhut.fuse.dispatcher.context.processor.ResourcePersistProcessor;
 import com.kayhut.fuse.dispatcher.driver.*;
 import com.kayhut.fuse.dispatcher.interception.ExceptionHandlingMethodInterceptor;
+import com.kayhut.fuse.dispatcher.ontology.DirectoryOntologyProvider;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.InMemoryResourceStore;
 import com.kayhut.fuse.dispatcher.resource.ResourceStore;
@@ -22,7 +23,7 @@ import org.jooby.Env;
  *
  * This module is called by the fuse-service scanner class loader
  */
-public class DispatcherModule extends ModuleBase {
+public class NewDispatcherModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
@@ -30,7 +31,7 @@ public class DispatcherModule extends ModuleBase {
 
         // resource store and persist processor
         binder.bind(ResourceStore.class).to(InMemoryResourceStore.class).asEagerSingleton();
-        binder.bind(OntologyProvider.class).to(getOntologyProviderClass(conf)).asEagerSingleton();
+        binder.bind(OntologyProvider.class).toInstance(getOntologyProvider(conf));
         binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
 
         // page processor
@@ -60,8 +61,8 @@ public class DispatcherModule extends ModuleBase {
     }
 
     //region Private Methods
-    private Class<? extends OntologyProvider> getOntologyProviderClass(Config conf) throws ClassNotFoundException {
-        return (Class<? extends  OntologyProvider>)Class.forName(conf.getString("fuse.ontology_provider"));
+    private OntologyProvider getOntologyProvider(Config conf) throws ClassNotFoundException {
+        return new DirectoryOntologyProvider(conf.getString("fuse.ontology_provider_dir"));
     }
     //endregion
 }

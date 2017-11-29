@@ -1,14 +1,11 @@
 package com.kayhut.fuse.epb;
 
-import com.codahale.metrics.Slf4jReporter;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.TimerAnnotation;
-import com.kayhut.fuse.epb.plan.PlanNodeWrapper;
-import com.kayhut.fuse.epb.plan.PlanSearcher;
+import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
@@ -19,13 +16,13 @@ import static com.kayhut.fuse.model.Utils.submit;
 /**
  * Created by liorp on 3/20/2017.
  */
-public class SimpleEpbDriver implements QueryCreationOperationContext.Processor {
+public class SimpleEpbProcessor implements QueryCreationOperationContext.Processor {
 
     private EventBus bus;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
 
     @Inject
-    public SimpleEpbDriver(EventBus bus, PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
+    public SimpleEpbProcessor(EventBus bus, PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
         this.bus = bus;
         this.planSearcher = planSearcher;
         this.bus.register(this);
@@ -34,7 +31,6 @@ public class SimpleEpbDriver implements QueryCreationOperationContext.Processor 
     @Override
     @Subscribe
     @TimerAnnotation
-    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         //if asg not ready yet -> return
         if (context.getAsgQuery() == null) {

@@ -1,27 +1,17 @@
 package com.kayhut.fuse.epb.plan;
 
-import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
-import com.kayhut.fuse.dispatcher.utils.NDC;
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.dispatcher.epb.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
-import com.kayhut.fuse.model.execution.plan.planTree.BuilderIfc;
-import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
-import com.kayhut.fuse.model.log.Trace;
-import com.kayhut.fuse.model.log.TraceComposite;
-import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.logging.Level;
 
 
 /**
@@ -58,7 +48,6 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
 
     //region Methods
     @Override
-    @LoggerAnnotation(name = "search", options = LoggerAnnotation.Options.returnValue, logLevel = Slf4jReporter.LoggingLevel.INFO)
     public PlanWithCost<P, C> search(Q query) {
         Iterable<PlanWithCost<P, C>> selectedPlans;
 

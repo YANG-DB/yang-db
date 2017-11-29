@@ -1,14 +1,11 @@
 package com.kayhut.fuse.services.module;
 
 import com.google.inject.Binder;
-import com.kayhut.fuse.dispatcher.ModuleBase;
+import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.services.dispatcher.context.processor.QueryCursorPageTestProcessor;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
 import org.jooby.Env;
-import org.jooby.Jooby;
 
 /**
  * Created by Roman on 04/04/2017.

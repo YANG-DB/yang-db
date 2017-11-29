@@ -1,14 +1,8 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.PlanValidator;
-import com.kayhut.fuse.model.log.Trace;
-import com.kayhut.fuse.model.log.TraceComposite;
-import javaslang.Tuple2;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import javaslang.collection.Stream;
-
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Created by Roman on 30/04/2017.
