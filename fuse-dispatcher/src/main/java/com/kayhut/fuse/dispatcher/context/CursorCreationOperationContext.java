@@ -9,20 +9,14 @@ import com.kayhut.fuse.model.transport.CreateCursorRequest;
 /**
  * Created by User on 07/03/2017.
  */
-public class CursorCreationOperationContext extends OperationContextBase<CursorCreationOperationContext> implements QueryMetadata.QueryMetadataAble {
-
-    @Override
-    public QueryMetadata getQueryMetadata() {
-        return getQueryResource().getQueryMetadata();
-    }
-
+public class CursorCreationOperationContext extends OperationContextBase<CursorCreationOperationContext>{
     public interface Processor {
         CursorCreationOperationContext process(CursorCreationOperationContext context) throws Exception;
     }
 
     //region Constructors
-    public CursorCreationOperationContext(QueryResource queryResource, String cursorId, CreateCursorRequest.CursorType cursorType) {
-        this.queryResource = queryResource;
+    public CursorCreationOperationContext(String queryId, String cursorId, CreateCursorRequest.CursorType cursorType) {
+        this.queryId = queryId;
         this.cursorId = cursorId;
         this.cursorType = cursorType;
     }
@@ -37,8 +31,8 @@ public class CursorCreationOperationContext extends OperationContextBase<CursorC
     //endregion
 
     //region Properties
-    public QueryResource getQueryResource() {
-        return this.queryResource;
+    public String getQueryId() {
+        return this.queryId;
     }
 
     public String getCursorId() {
@@ -57,14 +51,14 @@ public class CursorCreationOperationContext extends OperationContextBase<CursorC
     //region OperationContextBase Implementaion
     @Override
     protected CursorCreationOperationContext cloneImpl() {
-        CursorCreationOperationContext clone = new CursorCreationOperationContext(this.queryResource, this.cursorId, this.cursorType);
+        CursorCreationOperationContext clone = new CursorCreationOperationContext(this.queryId, this.cursorId, this.cursorType);
         clone.cursor = this.cursor;
         return clone;
     }
     //endregion
 
     //region Fields
-    private QueryResource queryResource;
+    private String queryId;
     private String cursorId;
     private CreateCursorRequest.CursorType cursorType;
     private Cursor cursor;

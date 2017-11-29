@@ -10,7 +10,8 @@ import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -36,12 +37,12 @@ public class Neo4jOperationContextProcessor implements
     @Inject
     public Neo4jOperationContextProcessor(
             EventBus eventBus,
-            ResourceStore store,
+            ResourceStore resourceStore,
             OntologyProvider ontologyProvider,
             CursorFactory cursorFactory) {
         this.cursorFactory = cursorFactory;
         this.eventBus = eventBus;
-        this.store = store;
+        this.resourceStore = resourceStore;
         this.ontologyProvider = ontologyProvider;
         this.eventBus.register(this);
     }
@@ -84,23 +85,29 @@ public class Neo4jOperationContextProcessor implements
         //TODO: called twice !!
         Timer.Context time = metricRegistry.timer(
                 name(QueryCreationOperationContext.class.getSimpleName(),
-                        context.getQueryResource().getQueryMetadata().getId(),
+                        context.getQueryId(),
                         Neo4jOperationContextProcessor.class.getSimpleName())).time();
+
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(context.getQueryId());
+        if (!queryResource.isPresent()) {
+            // maybe the resource was deleted so bail early
+            return context;
+        }
 
         //Compile the query and get the cursor ready
         String cypherQuery;
         try {
             cypherQuery = CypherCompiler.compile(
-                    context.getQueryResource().getAsgQuery(),
-                    ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get());
+                    queryResource.get().getAsgQuery(),
+                    ontologyProvider.get(queryResource.get().getQuery().getOnt()).get());
         } catch (Exception ex) {
             throw new RuntimeException("Failed parsing cypher query " + ex);
         }
 
         Cursor cursor = this.cursorFactory.createCursor(
-                new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(),
+                new Neo4jCursorFactory.Neo4jCursorContext(queryResource.get(),
                                                           cypherQuery,
-                                                          ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get()));
+                                                          ontologyProvider.get(queryResource.get().getQuery().getOnt()).get()));
 
         time.stop();
 
@@ -111,7 +118,7 @@ public class Neo4jOperationContextProcessor implements
 
     //region Fields
     protected EventBus eventBus;
-    private ResourceStore store;
+    private ResourceStore resourceStore;
     private OntologyProvider ontologyProvider;
     private CursorFactory cursorFactory;
     //endregion

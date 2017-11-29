@@ -9,7 +9,7 @@ import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
-import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 
 /**
  * Created by User on 08/03/2017.
@@ -37,8 +37,7 @@ public class ResourcePersistProcessor implements
             return context;
         }
 
-        //store as query resource
-        resourceStore.addQueryResource(new QueryResource(
+        this.resourceStore.addQueryResource(new QueryResource(
                 context.getQuery(),
                 context.getAsgQuery(),
                 context.getQueryMetadata(),
@@ -57,8 +56,9 @@ public class ResourcePersistProcessor implements
             return context;
         }
 
-        context.getQueryResource().addCursorResource(context.getCursorId(),
+        this.resourceStore.addCursorResource(context.getQueryId(),
                 new CursorResource(context.getCursorId(), context.getCursor(), context.getCursorType()));
+
         return context.complete();
     }
     //endregion
@@ -71,7 +71,8 @@ public class ResourcePersistProcessor implements
             return context;
         }
 
-        context.getCursorResource().addPageResource(context.getPageId(), context.getPageResource());
+        this.resourceStore.addPageResource(context.getQueryId(), context.getCursorId(), context.getPageResource());
+
         return context.complete();
     }
     //endregion

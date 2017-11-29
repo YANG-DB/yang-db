@@ -25,11 +25,11 @@ import static com.kayhut.fuse.model.Utils.submit;
  * Created by lior on 20/02/2017.
  */
 @Singleton
-public class SimpleStrategyRegisteredAsgDriver implements QueryCreationOperationContext.Processor {
+public class AsgQueryProcessor implements QueryCreationOperationContext.Processor {
 
     //region Constructors
     @Inject
-    public SimpleStrategyRegisteredAsgDriver(
+    public AsgQueryProcessor(
             EventBus eventBus,
             AsgStrategyRegistrar registrar,
             OntologyProvider ontologyProvider) {

@@ -2,6 +2,7 @@ package com.kayhut.fuse.dispatcher.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.matcher.Matchers;
+import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
@@ -10,8 +11,9 @@ import com.kayhut.fuse.dispatcher.context.processor.ResourcePersistProcessor;
 import com.kayhut.fuse.dispatcher.driver.*;
 import com.kayhut.fuse.dispatcher.interception.ExceptionHandlingMethodInterceptor;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.resource.InMemoryResourceStore;
-import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.LoggingResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.typesafe.config.Config;
@@ -29,7 +31,14 @@ public class DispatcherModule extends ModuleBase {
         binder.bind(AppUrlSupplier.class).toInstance(new DefaultAppUrlSupplier(conf.getString("appUrlSupplier.public.baseUri")));
 
         // resource store and persist processor
-        binder.bind(ResourceStore.class).to(InMemoryResourceStore.class).asEagerSingleton();
+        binder.bind(ResourceStore.class)
+                .annotatedWith(Names.named(LoggingResourceStore.injectionName))
+                .to(InMemoryResourceStore.class)
+                .asEagerSingleton();
+        binder.bind(ResourceStore.class)
+                .to(LoggingResourceStore.class)
+                .asEagerSingleton();
+
         binder.bind(OntologyProvider.class).to(getOntologyProviderClass(conf)).asEagerSingleton();
         binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
 

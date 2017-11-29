@@ -5,7 +5,7 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.epb.*;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.epb.SimpleEpbProcessor;
+import com.kayhut.fuse.epb.EpbProcessor;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
@@ -28,7 +28,7 @@ public class EpbDfsRedundantModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(SimpleEpbProcessor.class).asEagerSingleton();
+        binder.bind(EpbProcessor.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .annotatedWith(Names.named(LoggingPlanSearcher.injectionName))

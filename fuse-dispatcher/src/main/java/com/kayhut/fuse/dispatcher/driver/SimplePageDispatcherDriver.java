@@ -6,7 +6,7 @@ import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
-import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -43,7 +43,7 @@ public class SimplePageDispatcherDriver implements PageDispatcherDriver {
         }
 
         String pageId = cursorResource.get().getNextPageId();
-        submit(this.eventBus, new PageCreationOperationContext(cursorResource.get(), pageId, pageSize)
+        submit(this.eventBus, new PageCreationOperationContext(queryId, cursorId, pageId, pageSize)
                 .of(new PageResource(pageId, null, pageSize,0)));
 
         return Optional.of(new PageResourceInfo(urlSupplier.resourceUrl(queryId, cursorId, pageId), pageId, pageSize, 0,0, false));

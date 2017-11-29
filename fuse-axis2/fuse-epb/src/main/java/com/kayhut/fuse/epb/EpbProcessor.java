@@ -16,13 +16,13 @@ import static com.kayhut.fuse.model.Utils.submit;
 /**
  * Created by liorp on 3/20/2017.
  */
-public class SimpleEpbProcessor implements QueryCreationOperationContext.Processor {
+public class EpbProcessor implements QueryCreationOperationContext.Processor {
 
     private EventBus bus;
     private PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher;
 
     @Inject
-    public SimpleEpbProcessor(EventBus bus, PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
+    public EpbProcessor(EventBus bus, PlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher) {
         this.bus = bus;
         this.planSearcher = planSearcher;
         this.bus.register(this);

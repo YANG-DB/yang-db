@@ -7,6 +7,9 @@ import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
 import com.kayhut.fuse.dispatcher.descriptors.*;
+import com.kayhut.fuse.dispatcher.resource.CursorResource;
+import com.kayhut.fuse.dispatcher.resource.PageResource;
+import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -27,6 +30,10 @@ public class DescriptorsModule extends ModuleBase {
         binder.bind(new TypeLiteral<Descriptor<PlanWithCost<Plan, PlanDetailedCost>>>(){}).to(PlanWithCostDescriptor.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<Descriptor<GraphTraversal<?, ?>>>(){}).to(GraphTraversalDescriptor.class).asEagerSingleton();
+
+        binder.bind(new TypeLiteral<Descriptor<QueryResource>>(){}).to(QueryResourceDescriptor.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<Descriptor<CursorResource>>(){}).to(CursorResourceDescriptor.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<Descriptor<PageResource>>(){}).to(PageResourceDescriptor.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<Descriptor<QueryCreationOperationContext>>(){}).to(QueryCreationOperationContextDescriptor.class).asEagerSingleton();
         binder.bind(new TypeLiteral<Descriptor<QueryValidationOperationContext>>(){}).to(QueryValidationOperationContextDescriptor.class).asEagerSingleton();

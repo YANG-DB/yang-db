@@ -6,7 +6,7 @@ import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
-import com.kayhut.fuse.dispatcher.resource.ResourceStore;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -41,7 +41,7 @@ public class SimpleCursorDispatcherDriver implements CursorDispatcherDriver {
         }
 
         String cursorId = queryResource.get().getNextCursorId();
-        submit(eventBus, new CursorCreationOperationContext(queryResource.get(), cursorId, cursorType));
+        submit(eventBus, new CursorCreationOperationContext(queryId, cursorId, cursorType));
 
         return Optional.of(new CursorResourceInfo(
                 urlSupplier.resourceUrl(queryId, cursorId),

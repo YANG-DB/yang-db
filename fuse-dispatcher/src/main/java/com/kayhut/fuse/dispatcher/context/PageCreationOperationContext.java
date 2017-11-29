@@ -13,8 +13,9 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
     }
 
     //region Constructors
-    public PageCreationOperationContext(CursorResource cursorResource, String pageId, int pageSize) {
-        this.cursorResource = cursorResource;
+    public PageCreationOperationContext(String queryId, String cursorId, String pageId, int pageSize) {
+        this.queryId = queryId;
+        this.cursorId = cursorId;
         this.pageId = pageId;
         this.pageSize = pageSize;
     }
@@ -23,7 +24,7 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
     //region OperationContextBase Implementation
     @Override
     protected PageCreationOperationContext cloneImpl() {
-        PageCreationOperationContext clone = new PageCreationOperationContext(this.cursorResource, this.pageId, this.pageSize);
+        PageCreationOperationContext clone = new PageCreationOperationContext(this.queryId, this.cursorId, this.pageId, this.pageSize);
         clone.pageResource = this.pageResource;
         return clone;
     }
@@ -38,8 +39,12 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
     //endregion
 
     //region Properties
-    public CursorResource getCursorResource() {
-        return this.cursorResource;
+    public String getQueryId() {
+        return this.queryId;
+    }
+
+    public String getCursorId() {
+        return this.cursorId;
     }
 
     public String getPageId() {
@@ -56,7 +61,8 @@ public class PageCreationOperationContext extends OperationContextBase<PageCreat
     //endregion
 
     //region Fields
-    private CursorResource cursorResource;
+    private String queryId;
+    private String cursorId;
     private String pageId;
     private int pageSize;
     private PageResource pageResource;
