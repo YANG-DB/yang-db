@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.execution.plan.composite;
 
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
@@ -112,7 +113,7 @@ public abstract class CompositePlanOp extends PlanOp implements Cloneable {
     //region Override Methods
     @Override
     public String toString() {
-        return CompositePlanOpDescriptor.getFull().describe(this);
+        return new CompositePlanOpDescriptor(IterablePlanOpDescriptor.getFull()).describe(this);
     }
 
     public Object clone()throws CloneNotSupportedException{

@@ -3,6 +3,7 @@ package com.kayhut.fuse.model.execution.plan.composite;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 
 import static com.kayhut.fuse.model.Utils.*;
 
@@ -27,8 +28,8 @@ public class Plan extends CompositePlanOp implements IPlan {
     }
 
     public static boolean equals(Plan plan, Plan newPlan) {
-        return CompositePlanOpDescriptor.getSimple().describe(newPlan)
-                .compareTo(CompositePlanOpDescriptor.getSimple().describe(plan)) == 0;
+        return IterablePlanOpDescriptor.getSimple().describe(newPlan.getOps())
+                .compareTo(IterablePlanOpDescriptor.getSimple().describe(plan.getOps())) == 0;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class Plan extends CompositePlanOp implements IPlan {
 
     @Override
     public int hashCode() {
-        return CompositePlanOpDescriptor.getSimple().describe(this).hashCode();
+        return IterablePlanOpDescriptor.getSimple().describe(this.getOps()).hashCode();
     }
 
     public static Plan clone(Plan plan) {
