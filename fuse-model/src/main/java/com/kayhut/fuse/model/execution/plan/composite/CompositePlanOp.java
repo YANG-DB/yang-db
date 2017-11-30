@@ -1,12 +1,11 @@
 package com.kayhut.fuse.model.execution.plan.composite;
 
 import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
 import java.util.List;
-
-import static com.kayhut.fuse.model.Utils.fullPattern;
 
 /**
  * Created by Roman on 24/04/2017.
@@ -113,7 +112,7 @@ public abstract class CompositePlanOp extends PlanOp implements Cloneable {
     //region Override Methods
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[" + fullPattern(this.getOps()) + "]";
+        return CompositePlanOpDescriptor.getFull().describe(this);
     }
 
     public Object clone()throws CloneNotSupportedException{

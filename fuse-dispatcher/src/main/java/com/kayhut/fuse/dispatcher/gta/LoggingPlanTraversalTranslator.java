@@ -2,8 +2,7 @@ package com.kayhut.fuse.dispatcher.gta;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
-import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;

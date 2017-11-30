@@ -1,6 +1,6 @@
 package com.kayhut.fuse.dispatcher.descriptors;
 
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 /**

@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.execution.plan.composite;
 
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
 
 import static com.kayhut.fuse.model.Utils.*;
 
@@ -21,37 +22,13 @@ public class Plan extends CompositePlanOp implements IPlan {
     }
     //endregion
 
-    @Override
-    public String toString() {
-        return toFullPattern(this);
-    }
-
-    public String toPattern() {
-        return toPattern(this);
-    }
-
-    public static String toSimplePattern(Plan plan) {
-        return simplePattern(plan.getOps());
-    }
-
-    public static String toFullPattern(CompositePlanOp plan) {
-        return fullPattern(plan.getOps());
-    }
-
-    public static String toPattern(CompositePlanOp plan) {
-        return pattern(plan.getOps());
-    }
-
-    public static boolean contains(Plan plan,PlanOp op) {
+    public static boolean contains(Plan plan, PlanOp op) {
         return plan.getOps().stream().anyMatch(p->p.equals(op));
     }
 
     public static boolean equals(Plan plan, Plan newPlan) {
-        return toSimplePattern(newPlan).compareTo(toSimplePattern(plan))==0;
-    }
-
-    public static String diff(Plan plan, Plan newPlan) {
-        return toSimplePattern(newPlan).replace(toSimplePattern(plan),"");
+        return CompositePlanOpDescriptor.getSimple().describe(newPlan)
+                .compareTo(CompositePlanOpDescriptor.getSimple().describe(plan)) == 0;
     }
 
     @Override
@@ -64,7 +41,7 @@ public class Plan extends CompositePlanOp implements IPlan {
 
     @Override
     public int hashCode() {
-        return toPattern().hashCode();
+        return CompositePlanOpDescriptor.getSimple().describe(this).hashCode();
     }
 
     public static Plan clone(Plan plan) {

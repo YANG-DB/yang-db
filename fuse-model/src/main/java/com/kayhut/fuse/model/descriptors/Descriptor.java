@@ -1,4 +1,4 @@
-package com.kayhut.fuse.dispatcher.descriptors;
+package com.kayhut.fuse.model.descriptors;
 
 
 /**

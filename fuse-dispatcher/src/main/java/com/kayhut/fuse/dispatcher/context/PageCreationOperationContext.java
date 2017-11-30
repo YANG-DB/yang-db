@@ -1,8 +1,6 @@
 package com.kayhut.fuse.dispatcher.context;
 
-import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
-import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 
 /**
  * Created by User on 06/03/2017.

@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
-
 /**
  * Created by roman.margolis on 26/11/2017.
  */
@@ -53,7 +51,9 @@ public class OptionalCompletePlanOpValidator implements ChainedPlanValidator.Pla
         }
 
         if (!isOptionalOpComplete((OptionalOp)currentPlanOp, query)) {
-            return new ValidationContext(false,"OptionalOpValidation failed on:" + toPattern(compositePlanOp)+"<"+opIndex+">");
+            return new ValidationContext(
+                    false,
+                    "OptionalOpValidation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
         }
 
         return ValidationContext.OK;

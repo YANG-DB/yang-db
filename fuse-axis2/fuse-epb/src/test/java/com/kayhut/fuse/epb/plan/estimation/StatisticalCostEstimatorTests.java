@@ -11,6 +11,8 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
@@ -118,13 +120,13 @@ public class StatisticalCostEstimatorTests {
         RegexPatternCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
         Plan plan1 = new Plan().withOp(new EntityOp());
-        String s1 = plan1.toPattern();
+        String s1 = IterablePlanOpDescriptor.getLight().describe(plan1.getOps());
 
         Plan plan2 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp());
-        String s2 = plan2.toPattern();
+        String s2 = IterablePlanOpDescriptor.getLight().describe(plan2.getOps());
 
         Plan plan3 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationFilterOp());
-        String s3 = plan3.toPattern();
+        String s3 = IterablePlanOpDescriptor.getLight().describe(plan3.getOps());
 
         java.util.regex.Pattern compileP2 = java.util.regex.Pattern.compile(supportedPattern[1].pattern());
 
@@ -149,16 +151,16 @@ public class StatisticalCostEstimatorTests {
         RegexPatternCostEstimator.Pattern[] supportedPattern = getSupportedPattern();
 
         Plan plan1 = new Plan().withOp(new EntityOp());
-        String s1 = plan1.toPattern();
+        String s1 = IterablePlanOpDescriptor.getLight().describe(plan1.getOps());
 
         Plan plan2 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp());
-        String s2 = plan2.toPattern();
+        String s2 = IterablePlanOpDescriptor.getLight().describe(plan2.getOps());
 
         Plan plan3 = new Plan().withOp(new EntityOp()).withOp(new RelationOp()).withOp(new EntityOp());
-        String s3 = plan3.toPattern();
+        String s3 = IterablePlanOpDescriptor.getLight().describe(plan3.getOps());
 
         Plan plan4 = new Plan().withOp(new EntityOp()).withOp(new EntityFilterOp()).withOp(new RelationOp()).withOp(new RelationFilterOp()).withOp(new EntityOp()).withOp(new EntityFilterOp());
-        String s4 = plan4.toPattern();
+        String s4 = IterablePlanOpDescriptor.getLight().describe(plan4.getOps());
 
 
         java.util.regex.Pattern compileP1 = java.util.regex.Pattern.compile(supportedPattern[0].pattern());

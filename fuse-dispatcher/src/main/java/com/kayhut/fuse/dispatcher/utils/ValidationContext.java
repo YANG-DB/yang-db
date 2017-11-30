@@ -1,7 +1,5 @@
 package com.kayhut.fuse.dispatcher.utils;
 
-import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
-
 import java.util.Arrays;
 import java.util.StringJoiner;
 

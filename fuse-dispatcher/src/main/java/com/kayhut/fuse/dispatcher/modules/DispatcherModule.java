@@ -52,20 +52,20 @@ public class DispatcherModule extends ModuleBase {
 
         // inteceptors
 
-        binder.bindInterceptor(
+        /*binder.bindInterceptor(
                 Matchers.subclassesOf(QueryCreationOperationContext.Processor.class),
                 Matchers.any(),
-                new ExceptionHandlingMethodInterceptor());
+                new ExceptionHandlingMethodInterceptor());*/
 
-        binder.bindInterceptor(
+        /*binder.bindInterceptor(
                 Matchers.subclassesOf(CursorCreationOperationContext.Processor.class),
                 Matchers.any(),
-                new ExceptionHandlingMethodInterceptor());
+                new ExceptionHandlingMethodInterceptor());*/
 
-        binder.bindInterceptor(
+        /*binder.bindInterceptor(
                 Matchers.subclassesOf(PageCreationOperationContext.Processor.class),
                 Matchers.any(),
-                new ExceptionHandlingMethodInterceptor());
+                new ExceptionHandlingMethodInterceptor());*/
     }
 
     //region Private Methods

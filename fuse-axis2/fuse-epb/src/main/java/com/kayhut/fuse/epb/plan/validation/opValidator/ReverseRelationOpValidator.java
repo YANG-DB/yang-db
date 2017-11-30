@@ -18,8 +18,6 @@ import javaslang.Tuple2;
 import java.util.*;
 import java.util.logging.Level;
 
-import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
-
 /**
  * Created by Roman on 30/04/2017.
  */
@@ -52,7 +50,9 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
         ValidationContext context = ValidationContext.OK;
         boolean result = areEntityAndRelationReversed(query, previousEntityAsg, relAsg);
         if(!result) {
-            context = new ValidationContext(result,"Reverse:Validation failed on:"+toPattern(compositePlanOp) +"<"+opIndex+">");
+            context = new ValidationContext(
+                    result,
+                    "Reverse:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
         }
         return context;
     }

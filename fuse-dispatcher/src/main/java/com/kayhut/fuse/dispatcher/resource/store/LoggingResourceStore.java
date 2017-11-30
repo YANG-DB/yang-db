@@ -2,7 +2,7 @@ package com.kayhut.fuse.dispatcher.resource.store;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
@@ -102,10 +102,17 @@ public class LoggingResourceStore implements ResourceStore {
         this.innerResourceStore.addPageResource(queryId, cursorId, pageResource);
 
         if (queryResource.isPresent() && cursorResource.isPresent()) {
-            this.logger.info("PageResource was added: {} {} {}",
-                    this.queryResourceDescriptor.describe(queryResource.get()),
-                    this.cursorResourceDescriptor.describe(cursorResource.get()),
-                    this.pageResourceDescriptor.describe(pageResource));
+            if (pageResource.isAvailable()) {
+                this.logger.info("PageResource is available: {} {} {}",
+                        this.queryResourceDescriptor.describe(queryResource.get()),
+                        this.cursorResourceDescriptor.describe(cursorResource.get()),
+                        this.pageResourceDescriptor.describe(pageResource));
+            } else {
+                this.logger.info("PageResource was added: {} {} {}",
+                        this.queryResourceDescriptor.describe(queryResource.get()),
+                        this.cursorResourceDescriptor.describe(cursorResource.get()),
+                        this.pageResourceDescriptor.describe(pageResource));
+            }
         }
     }
 

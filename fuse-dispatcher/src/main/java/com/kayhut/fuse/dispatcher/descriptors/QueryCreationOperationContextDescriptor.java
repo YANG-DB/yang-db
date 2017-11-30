@@ -2,13 +2,13 @@ package com.kayhut.fuse.dispatcher.descriptors;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 
 /**
  * Created by roman.margolis on 29/11/2017.
  */
-public class QueryCreationOperationContextDescriptor implements Descriptor<QueryCreationOperationContext>{
+public class QueryCreationOperationContextDescriptor implements Descriptor<QueryCreationOperationContext> {
     //region Constructors
     @Inject
     public QueryCreationOperationContextDescriptor(Descriptor<AsgQuery> asgQueryDescriptor) {

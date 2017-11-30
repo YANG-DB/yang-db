@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
-
 /**
  * Created by Roman on 30/04/2017.
  */
@@ -44,7 +42,9 @@ public class NoRedundantRelationOpValidator implements ChainedPlanValidator.Plan
             return ValidationContext.OK;
         }
 
-        return new ValidationContext(false,"NoRedundant:Validation failed on:"+toPattern(compositePlanOp)+"<"+opIndex+">");
+        return new ValidationContext(
+                false,
+                "NoRedundant:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
     }
     //endregion
 

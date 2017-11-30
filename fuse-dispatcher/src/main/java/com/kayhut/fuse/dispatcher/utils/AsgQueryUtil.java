@@ -1,6 +1,5 @@
 package com.kayhut.fuse.dispatcher.utils;
 
-import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;

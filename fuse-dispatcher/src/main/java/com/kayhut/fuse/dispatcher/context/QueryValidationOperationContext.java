@@ -2,7 +2,6 @@ package com.kayhut.fuse.dispatcher.context;
 
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 

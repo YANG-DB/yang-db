@@ -2,8 +2,7 @@ package com.kayhut.fuse.dispatcher.epb;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.descriptors.Descriptor;
-import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

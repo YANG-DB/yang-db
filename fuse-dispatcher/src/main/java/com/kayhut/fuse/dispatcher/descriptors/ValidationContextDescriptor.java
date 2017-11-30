@@ -1,6 +1,7 @@
 package com.kayhut.fuse.dispatcher.descriptors;
 
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 
 /**
  * Created by roman.margolis on 29/11/2017.
