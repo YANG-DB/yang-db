@@ -80,7 +80,4 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
         return Stream.ofAll(this.globalPlanSelector.select(query, selectedPlans)).get(0);
     }
     //endregion
-    //region Logger
-    //endregion
-
 }
