@@ -50,23 +50,6 @@ public class NewDispatcherModule extends ModuleBase {
         binder.bind(QueryDispatcherDriver.class).to(SimpleQueryDispatcherDriver.class).asEagerSingleton();
         binder.bind(CursorDispatcherDriver.class).to(SimpleCursorDispatcherDriver.class).asEagerSingleton();
         binder.bind(PageDispatcherDriver.class).to(SimplePageDispatcherDriver.class).asEagerSingleton();
-
-        // inteceptors
-
-        /*binder.bindInterceptor(
-                Matchers.subclassesOf(QueryCreationOperationContext.Processor.class),
-                Matchers.any(),
-                new ExceptionHandlingMethodInterceptor());*/
-
-        /*binder.bindInterceptor(
-                Matchers.subclassesOf(CursorCreationOperationContext.Processor.class),
-                Matchers.any(),
-                new ExceptionHandlingMethodInterceptor());*/
-
-        /*binder.bindInterceptor(
-                Matchers.subclassesOf(PageCreationOperationContext.Processor.class),
-                Matchers.any(),
-                new ExceptionHandlingMethodInterceptor());*/
     }
 
     //region Private Methods
