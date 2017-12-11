@@ -13,6 +13,7 @@ import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
@@ -73,7 +74,12 @@ public class OngoingJoinStrategyTest {
         Iterable<Plan> plans = join.extendPlan(Optional.of(plan), asgQuery);
 
         JoinOngoingExtensionStrategy joinOngoing = new JoinOngoingExtensionStrategy(m1ExtensionStrategy);
-        Iterable<Plan> joinExtensionPlans = joinOngoing.extendPlan(Optional.of(plans.iterator().next()), asgQuery);
+        Iterator<Plan> iterator = plans.iterator();
+        Iterable<Plan> joinExtensionPlans = joinOngoing.extendPlan(Optional.of(iterator.next()), asgQuery);
+
+        Assert.assertEquals(0, Stream.ofAll(joinExtensionPlans).length());
+
+        joinExtensionPlans = joinOngoing.extendPlan(Optional.of(iterator.next()), asgQuery);
 
         Assert.assertEquals(1, Stream.ofAll(joinExtensionPlans).length());
     }

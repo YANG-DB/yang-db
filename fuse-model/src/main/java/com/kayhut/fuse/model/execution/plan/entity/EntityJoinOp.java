@@ -1,6 +1,9 @@
 package com.kayhut.fuse.model.execution.plan.entity;
 
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+
+import java.util.Optional;
 
 /**
  * Created by mordechaic on 11/14/2017.
@@ -23,6 +26,14 @@ public class EntityJoinOp extends EntityOp {
 
     public Plan getRightBranch() {
         return rightBranch;
+    }
+
+    public boolean isComplete(){
+        Optional<PlanOp> entityOp = rightBranch.getOps().stream().filter(op -> EntityOp.class.isAssignableFrom(op.getClass())).reduce((a, b) -> b);
+        if(entityOp.isPresent()){
+            return ((EntityOp)entityOp.get()).getAsgEbase().geteNum() == this.getAsgEbase().geteNum();
+        }
+        return false;
     }
 
     private Plan leftBranch;

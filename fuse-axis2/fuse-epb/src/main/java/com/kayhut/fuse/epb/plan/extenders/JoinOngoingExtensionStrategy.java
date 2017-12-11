@@ -30,6 +30,9 @@ public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan,
 
         if (plan.get().getOps().size() == 1 && plan.get().getOps().get(0) instanceof EntityJoinOp) {
             EntityJoinOp joinOp = (EntityJoinOp) plan.get().getOps().get(0);
+            if(joinOp.isComplete())
+                return Collections.emptyList();
+
             Iterable<Plan> plans = innerExpander.extendPlan(Optional.of(joinOp.getRightBranch()), query);
             List<Plan> newPlans = new ArrayList<>();
             for (Plan innerPlan : plans) {
