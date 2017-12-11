@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
@@ -14,10 +14,8 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 
 /**
  * Created by moti on 2/27/2017.

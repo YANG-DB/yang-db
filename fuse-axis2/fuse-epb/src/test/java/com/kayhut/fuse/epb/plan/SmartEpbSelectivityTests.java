@@ -1,15 +1,20 @@
 package com.kayhut.fuse.epb.plan;
 
-import com.google.common.collect.Iterables;
+import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanSelector;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
+import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
+import com.kayhut.fuse.epb.plan.selectors.CheapestPlanSelector;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
-import com.kayhut.fuse.epb.tests.PlanMockUtils;
+import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -235,12 +240,12 @@ public class SmartEpbSelectivityTests {
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).goTo(1).rel(4).relFilter(5).entity(6).entityFilter(7).plan();
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(43.36, first.getCost().getGlobalCost().cost, 0.1);
+
+        Assert.assertNotNull(plan);
+        PlanAssert.assertEquals(expected, plan.getPlan());
+        Assert.assertEquals(43.36, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     @Test
@@ -255,12 +260,12 @@ public class SmartEpbSelectivityTests {
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(21.47, first.getCost().getGlobalCost().cost, 0.1);
+
+        Assert.assertNotNull(plan);
+        PlanAssert.assertEquals(expected, plan.getPlan());
+        Assert.assertEquals(21.47, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     //region Private Methods

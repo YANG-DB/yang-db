@@ -1,30 +1,13 @@
 package com.kayhut.fuse.dispatcher.utils;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Slf4jReporter;
-import com.codahale.metrics.Timer;
-import com.google.inject.Provider;
-import com.kayhut.fuse.model.descriptor.Descriptor;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Created by liorp on 6/18/2017.
  */
-public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
+//public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
 
-    private Provider<MetricRegistry> metricRegistry;
+    /*private Provider<MetricRegistry> metricRegistry;
     private Map<Class, Descriptor> map;
 
     public LogWrapper(Provider<MetricRegistry> metricRegistry, Map<Class,Descriptor> map) {
@@ -50,9 +33,9 @@ public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
 
         if (annotation.options() == LoggerAnnotation.Options.full || annotation.options() == LoggerAnnotation.Options.arguments) {
             for (int i = 0; i < invocation.getArguments().length; i++) {
-                Descriptor descriptor = getDescriptor(invocation.getArguments()[i]);
-                if (descriptor != null) {
-                    String describe = descriptor.describe(invocation.getArguments()[i]);
+                Descriptor descriptors = getDescriptor(invocation.getArguments()[i]);
+                if (descriptors != null) {
+                    String describe = descriptors.describe(invocation.getArguments()[i]);
                     String paramName = "Argument " + i;
                     reportParameter(logger, level, paramName, describe, annotationName);
                     Class<?> argumentClass = invocation.getArguments()[i].getClass();
@@ -79,9 +62,9 @@ public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
     }
 
     private void reportProceed(Slf4jReporter.LoggingLevel level, Logger logger, Object proceed, String annotationName) {
-        Descriptor descriptor = getDescriptor(proceed);
-        if(descriptor!=null) {
-            String description = descriptor.describe(proceed);
+        Descriptor descriptors = getDescriptor(proceed);
+        if(descriptors!=null) {
+            String description = descriptors.describe(proceed);
             String message = "[annotationName:{}][return-value:{}]";
             List<String> args = new ArrayList<>(4);
             args.add(annotationName);
@@ -130,7 +113,7 @@ public class LogWrapper<D extends Descriptor> implements MethodInterceptor {
 
     private Descriptor getDescriptor(Object object){
         Class cls = object.getClass();
-        Descriptor descriptor = map.get(cls);
-        return descriptor;
-    }
-}
+        Descriptor descriptors = map.get(cls);
+        return descriptors;
+    }*/
+//}

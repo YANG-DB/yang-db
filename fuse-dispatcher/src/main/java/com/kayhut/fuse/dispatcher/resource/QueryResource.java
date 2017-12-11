@@ -18,7 +18,7 @@ import java.util.Optional;
 public class QueryResource {
     //region Constructors
 
-    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan,Optional<PlanNode<Plan>> planNode) {
+    public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan, Optional<PlanNode<Plan>> planNode) {
         this.query = query;
         this.asgQuery = asgQuery;
         this.queryMetadata = queryMetadata;
@@ -28,7 +28,7 @@ public class QueryResource {
     }
 
     public QueryResource(Query query, AsgQuery asgQuery, QueryMetadata queryMetadata, PlanWithCost<Plan, PlanDetailedCost> executionPlan) {
-        this(query,asgQuery,queryMetadata,executionPlan,Optional.empty());
+        this(query, asgQuery, queryMetadata, executionPlan, Optional.empty());
     }
     //endregion
 
@@ -75,7 +75,7 @@ public class QueryResource {
         return planNode;
     }
 
-//endregion
+    //endregion
 
     //region Fields
     private Query query;

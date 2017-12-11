@@ -1,6 +1,5 @@
 package com.kayhut.fuse.dispatcher.utils;
 
-import com.kayhut.fuse.model.descriptor.Descriptor;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
@@ -364,23 +363,6 @@ public class AsgQueryUtil {
         });
         return joiner.toString();
     }
-    public static String patternValue(AsgQuery query) {
-        List<AsgEBase> elements = elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, truePredicate, truePredicate, Collections.EMPTY_LIST);
-        StringJoiner joiner = new StringJoiner(":","","");
-        elements.forEach(e-> {
-            if(e.geteBase() instanceof EEntityBase)
-                joiner.add(EEntityBase.class.getSimpleName() +"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof Rel)
-                joiner.add(Relation.class.getSimpleName()+"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof EPropGroup)
-                joiner.add(EPropGroup.class.getSimpleName()+"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof RelPropGroup)
-                joiner.add(RelPropGroup.class.getSimpleName()+"["+e.geteNum()+"]");
-            else
-                joiner.add(e.geteBase().getClass().getSimpleName()+"["+e.geteNum()+"]");
-        });
-        return joiner.toString();
-    }
 
     private static List<AsgEBase<? extends EBase>> path(
             AsgEBase<? extends EBase> asgEBase,
@@ -421,17 +403,4 @@ public class AsgQueryUtil {
 
     private static Function<AsgEBase, Predicate<AsgEBase>> adjacentDfsPredicate = (asgEBase -> (asgEBase1 -> asgEBase == asgEBase1));
     //endregion
-
-    public static class AsgQueryDescriptor implements Descriptor<AsgQuery> {
-
-        @Override
-        public String name(AsgQuery query) {
-            return query.getName();
-        }
-
-        @Override
-        public String describe(AsgQuery query) {
-            return patternValue(query);
-        }
-    }
 }

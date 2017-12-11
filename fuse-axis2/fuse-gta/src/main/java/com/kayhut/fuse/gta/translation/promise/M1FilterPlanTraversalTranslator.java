@@ -1,10 +1,8 @@
 package com.kayhut.fuse.gta.translation.promise;
 
-import com.codahale.metrics.Slf4jReporter;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.gta.strategy.promise.M1FilterPlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
-import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -22,7 +20,6 @@ public class M1FilterPlanTraversalTranslator extends ChainedPlanOpTraversalTrans
 
     //region Override Methods
     @Override
-    @LoggerAnnotation(name = "translate", options = LoggerAnnotation.Options.returnValue, logLevel = Slf4jReporter.LoggingLevel.INFO)
     public GraphTraversal<?, ?> translate(PlanWithCost<Plan, PlanDetailedCost> plan, TranslationContext context) {
         return super.translate(plan, context);
     }

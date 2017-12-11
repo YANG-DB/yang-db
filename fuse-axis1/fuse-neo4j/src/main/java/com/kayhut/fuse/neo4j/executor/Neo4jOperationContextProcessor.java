@@ -1,7 +1,6 @@
 package com.kayhut.fuse.neo4j.executor;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -11,8 +10,8 @@ import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.dispatcher.resource.ResourceStore;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
+import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -38,12 +37,12 @@ public class Neo4jOperationContextProcessor implements
     @Inject
     public Neo4jOperationContextProcessor(
             EventBus eventBus,
-            ResourceStore store,
+            ResourceStore resourceStore,
             OntologyProvider ontologyProvider,
             CursorFactory cursorFactory) {
         this.cursorFactory = cursorFactory;
         this.eventBus = eventBus;
-        this.store = store;
+        this.resourceStore = resourceStore;
         this.ontologyProvider = ontologyProvider;
         this.eventBus.register(this);
     }
@@ -52,7 +51,6 @@ public class Neo4jOperationContextProcessor implements
     //region QueryCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public QueryCreationOperationContext process(QueryCreationOperationContext context) {
         if(context.getAsgQuery() == null || context.getExecutionPlan() != null) {
             return context;
@@ -78,7 +76,6 @@ public class Neo4jOperationContextProcessor implements
     //region CursorCreationOperationContext.Processor Implementation
     @Override
     @Subscribe
-    @LoggerAnnotation(name = "process", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
 
         if (context.getCursor() != null) {
@@ -88,23 +85,29 @@ public class Neo4jOperationContextProcessor implements
         //TODO: called twice !!
         Timer.Context time = metricRegistry.timer(
                 name(QueryCreationOperationContext.class.getSimpleName(),
-                        context.getQueryResource().getQueryMetadata().getId(),
+                        context.getQueryId(),
                         Neo4jOperationContextProcessor.class.getSimpleName())).time();
+
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(context.getQueryId());
+        if (!queryResource.isPresent()) {
+            // maybe the resource was deleted so bail early
+            return context;
+        }
 
         //Compile the query and get the cursor ready
         String cypherQuery;
         try {
             cypherQuery = CypherCompiler.compile(
-                    context.getQueryResource().getAsgQuery(),
-                    ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get());
+                    queryResource.get().getAsgQuery(),
+                    ontologyProvider.get(queryResource.get().getQuery().getOnt()).get());
         } catch (Exception ex) {
             throw new RuntimeException("Failed parsing cypher query " + ex);
         }
 
         Cursor cursor = this.cursorFactory.createCursor(
-                new Neo4jCursorFactory.Neo4jCursorContext(context.getQueryResource(),
+                new Neo4jCursorFactory.Neo4jCursorContext(queryResource.get(),
                                                           cypherQuery,
-                                                          ontologyProvider.get(context.getQueryResource().getQuery().getOnt()).get()));
+                                                          ontologyProvider.get(queryResource.get().getQuery().getOnt()).get()));
 
         time.stop();
 
@@ -115,7 +118,7 @@ public class Neo4jOperationContextProcessor implements
 
     //region Fields
     protected EventBus eventBus;
-    private ResourceStore store;
+    private ResourceStore resourceStore;
     private OntologyProvider ontologyProvider;
     private CursorFactory cursorFactory;
     //endregion

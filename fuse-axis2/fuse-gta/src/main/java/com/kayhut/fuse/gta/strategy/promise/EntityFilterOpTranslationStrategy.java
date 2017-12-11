@@ -6,7 +6,7 @@ import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
-import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;

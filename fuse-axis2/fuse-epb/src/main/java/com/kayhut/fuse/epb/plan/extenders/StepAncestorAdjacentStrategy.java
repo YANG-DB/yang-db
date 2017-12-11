@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -18,7 +18,6 @@ import com.kayhut.fuse.model.query.quant.Quant1;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.logging.Level;
 
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorOfType;
 import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextAncestorUnmarkedOfType;

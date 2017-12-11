@@ -7,7 +7,10 @@ import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
 import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
+import com.kayhut.fuse.dispatcher.resource.QueryResource;
+import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -15,6 +18,7 @@ import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import static com.kayhut.fuse.model.Utils.submit;
 
@@ -27,8 +31,9 @@ public class QueryCursorPageTestProcessor implements
         PageCreationOperationContext.Processor {
     //region Constructors
     @Inject
-    public QueryCursorPageTestProcessor(EventBus eventBus, CursorFactory cursorFactory) {
+    public QueryCursorPageTestProcessor(EventBus eventBus, ResourceStore resourceStore, CursorFactory cursorFactory) {
         this.eventBus = eventBus;
+        this.resourceStore = resourceStore;
         this.cursorFactory = cursorFactory;
         this.eventBus.register(this);
     }
@@ -52,10 +57,15 @@ public class QueryCursorPageTestProcessor implements
     @Subscribe
     public CursorCreationOperationContext process(CursorCreationOperationContext context) {
         if (context.getCursor() == null) {
+            Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(context.getQueryId());
+            if (!queryResource.isPresent()) {
+                return context;
+            }
+
             context = context.of(
                     cursorFactory.createCursor(
                             new CursorFactory.Context.Impl(
-                                    context.getQueryResource(),
+                                    queryResource.get(),
                                     CreateCursorRequest.CursorType.paths)));
 
             submit(eventBus, context);
@@ -70,7 +80,12 @@ public class QueryCursorPageTestProcessor implements
     @Subscribe
     public PageCreationOperationContext process(PageCreationOperationContext context) throws IOException {
         if (context.getPageResource() == null) {
-            QueryResult queryResult = context.getCursorResource().getCursor().getNextResults(context.getPageSize());
+            Optional<CursorResource> cursorResource = this.resourceStore.getCursorResource(context.getQueryId(), context.getCursorId());
+            if (!cursorResource.isPresent()) {
+                return context;
+            }
+
+            QueryResult queryResult = cursorResource.get().getCursor().getNextResults(context.getPageSize());
             context = context.of(new PageResource(context.getPageId(), queryResult, context.getPageSize(),0));
             submit(eventBus, context);
         }
@@ -81,6 +96,7 @@ public class QueryCursorPageTestProcessor implements
 
     //region Fields
     private EventBus eventBus;
+    private ResourceStore resourceStore;
     private CursorFactory cursorFactory;
     //endregion
 }

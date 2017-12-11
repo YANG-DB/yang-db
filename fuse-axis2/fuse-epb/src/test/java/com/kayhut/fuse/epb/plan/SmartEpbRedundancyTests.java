@@ -1,14 +1,20 @@
 package com.kayhut.fuse.epb.plan;
 
+import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanSelector;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
+import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
+import com.kayhut.fuse.epb.plan.selectors.CheapestPlanSelector;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
-import com.kayhut.fuse.epb.tests.PlanMockUtils;
+import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -226,10 +232,10 @@ public class SmartEpbRedundancyTests {
                                         .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.ge,"abc")))))).
                 build();
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        Assert.assertNotNull(plans);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        Assert.assertNotNull(plan);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(3).rel(4).relFilter(5).entity(6).entityFilter(7).goTo(1).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
-        PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
+        PlanAssert.assertEquals(expected, plan.getPlan());
     }
 
     @Test
@@ -245,10 +251,10 @@ public class SmartEpbRedundancyTests {
                                         .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.eq,"abc")))))).
                 build();
 
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        Assert.assertNotNull(plans);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        Assert.assertNotNull(plan);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(6).entityFilter(7).rel(4, Rel.Direction.L).relFilter(5).entity(1).entityFilter(3).rel(8).relFilter(9).entity(10).entityFilter(11).plan();
-        PlanAssert.assertEquals(expected, plans.iterator().next().getPlan());
+        PlanAssert.assertEquals(expected, plan.getPlan());
     }
 
     //region Private Methods

@@ -11,8 +11,6 @@ import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.kayhut.fuse.model.execution.plan.composite.Plan.toPattern;
-
 /**
  * Created by Roman on 30/04/2017.
  */
@@ -34,7 +32,9 @@ public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.Plan
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if (planOp instanceof GoToEntityOp) {
             if (!this.entityEnums.contains(((AsgEBaseContainer)planOp).getAsgEbase().geteNum())) {
-                return new ValidationContext(false,"GoTo:Validation failed on:"+toPattern(compositePlanOp)+"<"+opIndex+">");
+                return new ValidationContext(
+                        false,
+                        "GoTo:Validation failed on:" +   compositePlanOp.toString() + "<" + opIndex + ">");
             }
         }
 

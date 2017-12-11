@@ -1,6 +1,8 @@
 package com.kayhut.fuse.gta.translation;
 
 import com.google.inject.Inject;
+import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.gta.strategy.*;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;

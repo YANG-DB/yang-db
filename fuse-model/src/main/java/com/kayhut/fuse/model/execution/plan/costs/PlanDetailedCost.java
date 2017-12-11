@@ -1,14 +1,13 @@
 package com.kayhut.fuse.model.execution.plan.costs;
 
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static com.kayhut.fuse.model.Utils.fullPattern;
 
 /**
  * Created by Roman on 20/04/2017.
@@ -58,7 +57,7 @@ public class PlanDetailedCost implements Cost {
     @Override
     public String toString() {
         return " { " +
-                "plan:" + fullPattern(getPlanOps()) + "," + "\n" +
+                "plan:" + new Plan(getPlanOps()).toString() + "," + "\n" +
                 "estimation:" + (globalCost != null ? globalCost.toString() + "\n" : "")
                 + " } ";
     }

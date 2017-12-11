@@ -1,7 +1,7 @@
 package com.kayhut.fuse.gta.strategy.discrete;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;

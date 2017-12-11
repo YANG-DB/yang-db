@@ -1,9 +1,8 @@
 package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
-import com.kayhut.fuse.dispatcher.ModuleBase;
+import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.executor.cursor.promise.TraversalCursorFactory;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;

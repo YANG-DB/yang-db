@@ -1,17 +1,10 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.PlanValidator;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOp;
-import com.kayhut.fuse.model.log.Trace;
-import com.kayhut.fuse.model.log.TraceComposite;
-import javaslang.Tuple2;
-
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Created by Roman on 24/04/2017.

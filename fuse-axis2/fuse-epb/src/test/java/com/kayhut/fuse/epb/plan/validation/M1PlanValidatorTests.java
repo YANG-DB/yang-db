@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.PlanValidator;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.PlanMockBuilder.mock;
+import static com.kayhut.fuse.epb.utils.PlanMockUtils.PlanMockBuilder.mock;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;

@@ -1,7 +1,7 @@
 package com.kayhut.fuse.gta.strategy.common;
 
 import com.kayhut.fuse.gta.strategy.PlanOpTranslationStrategy;
-import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;

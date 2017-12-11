@@ -4,7 +4,7 @@ import com.google.inject.Binder;
 import com.kayhut.fuse.asg.strategy.AsgValidatorStrategyRegistrar;
 import com.kayhut.fuse.asg.strategy.AsgValidatorStrategyRegistrarImpl;
 import com.kayhut.fuse.asg.strategy.ValidatorStrategyRegisteredAsgDriver;
-import com.kayhut.fuse.dispatcher.ModuleBase;
+import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
 import com.typesafe.config.Config;
 import org.jooby.Env;
