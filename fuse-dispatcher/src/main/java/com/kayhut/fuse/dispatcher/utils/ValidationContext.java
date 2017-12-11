@@ -1,7 +1,5 @@
 package com.kayhut.fuse.dispatcher.utils;
 
-import com.kayhut.fuse.model.descriptor.Descriptor;
-
 import java.util.Arrays;
 import java.util.StringJoiner;
 
@@ -38,18 +36,5 @@ public class ValidationContext {
         StringJoiner joiner = new StringJoiner(":","[","]");
         Arrays.asList(elements).forEach(element -> joiner.add(element.toString()));
         return joiner.toString();
-    }
-
-    public static class ValidationContextDescriptor implements Descriptor<ValidationContext> {
-
-        @Override
-        public String name(ValidationContext validationContext) {
-            return validationContext.toString();
-        }
-
-        @Override
-        public String describe(ValidationContext validationContext) {
-            return String.valueOf(validationContext.valid());
-        }
     }
 }

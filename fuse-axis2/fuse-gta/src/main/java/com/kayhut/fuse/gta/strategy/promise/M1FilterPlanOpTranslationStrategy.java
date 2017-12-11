@@ -3,8 +3,8 @@ package com.kayhut.fuse.gta.strategy.promise;
 import com.kayhut.fuse.gta.strategy.common.CompositePlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.common.GoToEntityOpTranslationStrategy;
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 
 /**
  * Created by Roman on 14/05/2017.

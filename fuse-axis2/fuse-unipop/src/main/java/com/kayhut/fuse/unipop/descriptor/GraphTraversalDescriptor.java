@@ -1,6 +1,6 @@
 package com.kayhut.fuse.unipop.descriptor;
 
-import com.kayhut.fuse.model.descriptor.Descriptor;
+import com.kayhut.fuse.model.descriptors.Descriptor;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 
 /**
@@ -8,12 +8,17 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTrav
  */
 public class GraphTraversalDescriptor implements Descriptor<DefaultGraphTraversal> {
     @Override
-    public String name(DefaultGraphTraversal query) {
-        return query.toString();
-    }
-
-    @Override
     public String describe(DefaultGraphTraversal query) {
-        return query.toString();
+        StringBuilder sb = new StringBuilder();
+        for(Object step : query.asAdmin().getSteps()) {
+            /*if (TraversalParent.class.isAssignableFrom(step.getClass())) {
+                TraversalParent traversalParent = (TraversalParent)step;
+                traversalParent.getGlobalChildren()
+            } else {*/
+                sb.append(step.toString());
+            //}
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

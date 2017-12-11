@@ -1,17 +1,25 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
-import com.codahale.metrics.Slf4jReporter;
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.utils.LoggerAnnotation;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
+import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import javaslang.collection.Stream;
 
 import java.lang.reflect.Method;
@@ -20,7 +28,6 @@ import java.util.regex.Matcher;
 
 import static com.kayhut.fuse.epb.plan.estimation.pattern.Pattern.*;
 import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.PatternPart.*;
-import static com.kayhut.fuse.model.Utils.pattern;
 
 /**
  * Created by moti on 01/04/2017.
@@ -132,20 +139,19 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
     //region CostEstimator Implementation
     @Override
-    @LoggerAnnotation(name = "estimate", options = LoggerAnnotation.Options.full, logLevel = Slf4jReporter.LoggingLevel.DEBUG)
     public PlanWithCost<Plan, PlanDetailedCost> estimate(
             Plan plan,
             IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
         PlanWithCost<Plan, PlanDetailedCost> newPlan = null;
         Plan planStep = context.getPreviousCost().isPresent() ? extractNewPlanStep(plan) : plan;
 
-        String opsString = pattern(planStep.getOps());
+        String opsString = IterablePlanOpDescriptor.getLight().describe(planStep.getOps());
         Pattern[] supportedPattern = getSupportedPattern();
         for (Pattern regexPattern : supportedPattern) {
             java.util.regex.Pattern compile = regexPattern.getCompiledPattern();
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
-                Map<PatternPart, PlanOpBase> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
+                Map<PatternPart, PlanOp> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
 
                 com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern =
                                 regexPattern.equals(Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
@@ -165,7 +171,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
     //region Private Methods
     private static Plan extractNewPlanStep(Plan plan) {
-        List<PlanOpBase> planOps = new ArrayList<>();
+        List<PlanOp> planOps = new ArrayList<>();
         int entityCounter = 0;
         for (int i = plan.getOps().size() - 1 ; i >= 0 && entityCounter < 2; i--) {
             if (EntityOp.class.isAssignableFrom(plan.getOps().get(i).getClass())) {
@@ -178,7 +184,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
             return new Plan(planOps);
         }
 
-        return Plan.empty();
+        return new Plan();
     }
     private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(
             PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
@@ -220,8 +226,8 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         return new PlanWithCost<>(newPlan, newDetailedCost);
     }
 
-    private Map<PatternPart, PlanOpBase> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {
-        Map<PatternPart, PlanOpBase> map = new HashMap<>();
+    private Map<PatternPart, PlanOp> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {
+        Map<PatternPart, PlanOp> map = new HashMap<>();
         TreeSet<Map.Entry<String, Integer>> entries = new TreeSet<>(Comparator.comparingInt(Map.Entry::getValue));
         entries.addAll(groups.entrySet());
         int stepIndex = 0;

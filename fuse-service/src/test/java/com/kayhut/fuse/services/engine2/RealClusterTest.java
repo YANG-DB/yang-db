@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -801,6 +802,206 @@ public class RealClusterTest {
         int x = 5;
     }
 
+    @Test
+    @Ignore
+    public void test_slow_query() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 9, 15, 21), 0),
+                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
+                new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
+                new Rel(6, $ont.rType$("hasReference"), Rel.Direction.R, null, 7, 0),
+                new ETyped(7, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Collections.emptyList(), 0),
+                new Rel(9, $ont.rType$("hasRelation"), Rel.Direction.R, null, 10, 0),
+                new ETyped(10, "D", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 11, 0),
+                new Quant1(11, QuantType.all, Collections.singleton(12), 0),
+                new Rel(12, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 13, 0),
+                new ETyped(13, "E", $ont.eType$("Rvalue"), $ont.$entity$("Rvalue").getProperties(), 14, 0),
+                new Quant1(14, QuantType.all, Collections.emptyList(), 0),
+                new Rel(15, $ont.rType$("hasInsight"), Rel.Direction.R, null, 16, 0),
+                new ETyped(16, "F", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 17, 0),
+                new Quant1(17, QuantType.all, Collections.singletonList(18), 0),
+                new Rel(18, $ont.rType$("hasReference"), Rel.Direction.R, null, 19, 0),
+                new ETyped(19, "G", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 20, 0),
+                new Quant1(20, QuantType.all, Collections.emptyList(), 0),
+                new EProp(21, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000"))
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_slow_query_optional() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q3").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 21), 0),
+                new OptionalComp(3, 300),
+                new Rel(300, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
+                new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
+                new Rel(6, $ont.rType$("hasReference"), Rel.Direction.R, null, 7, 0),
+                new ETyped(7, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Collections.emptyList(), 0),
+                new EProp(21, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000"))
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_relationValuesQuery() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new EConcrete(1, "A", $ont.eType$("Relation"), "r0000", "A", $ont.$entity$("Relation").getProperties(), 2, 0),
+                new Rel(2, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 3, 0),
+                new EConcrete(1, "A", $ont.eType$("Relation"), "r0000", "A", $ont.$entity$("Relation").getProperties(), 2, 0)
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_entitiesQuery() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(111, 112), 0),
+                new OptionalComp(111, 3),
+                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
+                new Quant1(5, QuantType.all, Collections.emptyList(), 0),
+                new EProp(112, "category", Constraint.of(ConstraintOp.eq, "car")))).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+
+    @Test
+    @Ignore
+    public void test_entitiesQuery2() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(111, 112), 0),
+                new OptionalComp(111, 3),
+                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
+                new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
+                new OptionalComp(6, 7),
+                new Rel(7, $ont.rType$("hasReference"), Rel.Direction.R, null, 8, 0),
+                new ETyped(8, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 9, 0),
+                new Quant1(9, QuantType.all, Collections.emptyList(), 0),
+                new EProp(112, "category", Constraint.of(ConstraintOp.eq, "car")))).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
 
     @Test
     @Ignore
@@ -829,26 +1030,28 @@ public class RealClusterTest {
         }
 
         List<IndexPartitions.Partition> ePartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("e000", "e300", "e0"),
-                new IndexPartitions.Partition.Range.Impl<>("e300", "e600", "e1"),
-                new IndexPartitions.Partition.Range.Impl<>("e600", "e999", "e2"));
-        String entityIdFormat = "%03d";
+                new IndexPartitions.Partition.Range.Impl<>("e00000000", "e10000000", "e0"),
+                new IndexPartitions.Partition.Range.Impl<>("e10000000", "e20000000", "e1"),
+                new IndexPartitions.Partition.Range.Impl<>("e20000000", "e30000000", "e2"));
+        String entityIdFormat = "%08d";
 
         List<IndexPartitions.Partition> relPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("r0000", "r1000", "rel0"),
-                new IndexPartitions.Partition.Range.Impl<>("r1000", "r2000", "rel1"),
-                new IndexPartitions.Partition.Range.Impl<>("r2000", "r9999", "rel2"));
-        String relationIdFormat = "%04d";
+                new IndexPartitions.Partition.Range.Impl<>("r00000000", "r10000000", "rel0"),
+                new IndexPartitions.Partition.Range.Impl<>("r10000000", "r20000000", "rel1"),
+                new IndexPartitions.Partition.Range.Impl<>("r20000000", "r30000000", "rel2"));
+        String relationIdFormat = "%08d";
 
         List<IndexPartitions.Partition> refPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("ref00000", "ref00200", "ref0"),
-                new IndexPartitions.Partition.Range.Impl<>("ref00200", "ref00400", "ref1"));
-        String referenceIdFormat = "%05d";
+                new IndexPartitions.Partition.Range.Impl<>("ref00000000", "ref10000000", "ref0"),
+                new IndexPartitions.Partition.Range.Impl<>("ref10000000", "ref20000000", "ref1"),
+                new IndexPartitions.Partition.Range.Impl<>("ref20000000", "ref30000000", "ref2"));
+        String referenceIdFormat = "%08d";
 
         List<IndexPartitions.Partition> iPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("i0000", "i0100", "i0"),
-                new IndexPartitions.Partition.Range.Impl<>("i0100", "i0200", "i1"));
-        String insightIdFormat = "%04d";
+                new IndexPartitions.Partition.Range.Impl<>("i00000000", "i10000000", "i0"),
+                new IndexPartitions.Partition.Range.Impl<>("i10000000", "i20000000", "i1"),
+                new IndexPartitions.Partition.Range.Impl<>("i20000000", "i30000000", "i2"));
+        String insightIdFormat = "%08d";
 
         Iterable<String> allIndices = Stream.ofAll(ePartitions)
                 .appendAll(relPartitions)

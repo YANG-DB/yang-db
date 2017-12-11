@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 
 /**
  * Created by Roman on 29/06/2017.

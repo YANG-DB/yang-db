@@ -1,0 +1,110 @@
+package com.kayhut.fuse.epb.plan;
+
+import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanSelector;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
+import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
+import com.kayhut.fuse.epb.plan.extenders.CompositePlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.InitialPlanGeneratorExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.StepAdjacentDfsStrategy;
+import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
+import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
+import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
+import com.kayhut.fuse.epb.utils.BuilderTestUtil;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.query.EBase;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.List;
+
+/**
+ * Created by moti on 2/23/2017.
+ */
+public class DfsBottomUpPlanSearcherTests {
+    @Test
+    public void TestBuilderSimplePath(){
+        Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
+
+        BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
+
+
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query.getLeft());
+
+        Assert.assertEquals(3, plan.getPlan().getOps().size());
+    }
+
+    @Test
+    public void TestBuilderSingleEntity(){
+
+        Pair<AsgQuery, AsgEBase> query = BuilderTestUtil.createSingleEntityQuery();
+
+        BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
+
+
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query.getLeft());
+
+        Assert.assertEquals(1, plan.getPlan().getOps().size());
+    }
+
+    @Test
+    public void TestBuilderAllPaths() {
+        Pair<AsgQuery, AsgEBase<? extends EBase>> query = BuilderTestUtil.createTwoEntitiesPathQuery();
+
+        BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> planSearcher = createBottomUpPlanSearcher();
+
+
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query.getLeft());
+
+        Assert.assertEquals(3, plan.getPlan().getOps().size());
+
+        AsgEBase firstElement = query.getLeft().getStart().getNext().get(0);
+        AsgEBase secondElement = (AsgEBase) firstElement.getNext().get(0);
+        AsgEBase thirdElement = (AsgEBase) secondElement.getNext().get(0);
+        boolean foundFirstPlan = false;
+
+        List<PlanOp> ops = plan.getPlan().getOps();
+
+        if (firstElement.geteNum() == ((AsgEBaseContainer) ops.get(0)).getAsgEbase().geteNum() &&
+                secondElement.geteNum() == ((AsgEBaseContainer) ops.get(1)).getAsgEbase().geteNum() &&
+                thirdElement.geteNum() == ((AsgEBaseContainer) ops.get(2)).getAsgEbase().geteNum()) {
+            foundFirstPlan = true;
+        }
+
+        Assert.assertTrue(foundFirstPlan);
+    }
+
+    private BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery> createBottomUpPlanSearcher() {
+        CompositePlanExtensionStrategy<Plan, AsgQuery> compositePlanExtensionStrategy = new CompositePlanExtensionStrategy<>(
+                new InitialPlanGeneratorExtensionStrategy(),
+                new StepAdjacentDfsStrategy());
+
+        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
+        PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
+
+        CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> costEstimator =
+                new DummyCostEstimator<>(new PlanDetailedCost());
+
+        PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> planSelector = new AllCompletePlanSelector<>();
+
+        return new BottomUpPlanSearcher<>(
+                compositePlanExtensionStrategy,
+                pruneStrategy,
+                pruneStrategy,
+                planSelector,
+                planSelector,
+                validator,
+                costEstimator);
+    }
+
+
+}

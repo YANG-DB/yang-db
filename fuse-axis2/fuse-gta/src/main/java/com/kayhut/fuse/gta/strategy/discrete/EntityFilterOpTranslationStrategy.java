@@ -6,9 +6,12 @@ import com.kayhut.fuse.gta.strategy.common.EntityTranslationOptions;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.gta.strategy.utils.EntityTranslationUtil;
 import com.kayhut.fuse.gta.strategy.utils.TraversalUtil;
-import com.kayhut.fuse.gta.translation.TranslationContext;
+import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -40,16 +43,16 @@ import java.util.Optional;
 public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
     public EntityFilterOpTranslationStrategy(EntityTranslationOptions options) {
-        super(EntityFilterOp.class);
+        super(planOp -> planOp.getClass().equals(EntityFilterOp.class));
         this.options = options;
     }
     //endregion
     //region PlanOpTranslationStrategy Implementation
     @Override
-    protected GraphTraversal translateImpl(GraphTraversal traversal,PlanWithCost<Plan, PlanDetailedCost> planWithCost, PlanOpBase planOp, TranslationContext context) {
+    protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> planWithCost, PlanOp planOp, TranslationContext context) {
         EntityFilterOp entityFilterOp = (EntityFilterOp)planOp;
 
-        Optional<PlanOpBase> previousPlanOp = PlanUtil.adjacentPrev(planWithCost.getPlan(), planOp);
+        Optional<PlanOp> previousPlanOp = PlanUtil.adjacentPrev(planWithCost.getPlan(), planOp);
         if (!previousPlanOp.isPresent()) {
             return traversal;
         }
@@ -60,15 +63,15 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
         if (PlanUtil.isFirst(planWithCost.getPlan(), entityOp)) {
             traversal = appendEntityAndPropertyGroup(
                     traversal,
-                    entityOp.getAsgEBase().geteBase(),
-                    entityFilterOp.getAsgEBase().geteBase(),
+                    entityOp.getAsgEbase().geteBase(),
+                    entityFilterOp.getAsgEbase().geteBase(),
                     context.getOnt());
 
         } else {
             traversal = appendPropertyGroup(
                     traversal,
-                    entityOp.getAsgEBase().geteBase(),
-                    entityFilterOp.getAsgEBase().geteBase(),
+                    entityOp.getAsgEbase().geteBase(),
+                    entityFilterOp.getAsgEbase().geteBase(),
                     context.getOnt());
         }
 

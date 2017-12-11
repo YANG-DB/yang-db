@@ -5,13 +5,16 @@ import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
-import com.kayhut.fuse.epb.tests.PlanMockUtils;
+import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -28,8 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.epb.tests.PlanMockUtils.Type.TYPED;
-import static com.kayhut.fuse.epb.tests.StatisticsMockUtils.build;
+import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.TYPED;
+import static com.kayhut.fuse.epb.utils.StatisticsMockUtils.build;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -86,9 +89,9 @@ public class BasicPatternCostEstimatorTest {
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
 
-        HashMap<RegexPatternCostEstimator.PatternPart, PlanOpBase> map = new HashMap<>();
+        HashMap<RegexPatternCostEstimator.PatternPart, PlanOp> map = new HashMap<>();
         EntityOp entityOp = new EntityOp();
-        entityOp.setAsgEBase(new AsgEBase<>(new EConcrete()));
+        entityOp.setAsgEbase(new AsgEBase<>(new EConcrete()));
         map.put(RegexPatternCostEstimator.PatternPart.ENTITY_ONLY, entityOp);
         PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(Pattern.buildEntityPattern(map), new IncrementalEstimationContext<>(Optional.empty(), query));
         List<PlanWithCost<Plan, CountEstimatesCost>> costs = result.getPlanStepCosts();
@@ -116,7 +119,7 @@ public class BasicPatternCostEstimatorTest {
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
 
-        HashMap<RegexPatternCostEstimator.PatternPart, PlanOpBase> map = new HashMap<>();
+        HashMap<RegexPatternCostEstimator.PatternPart, PlanOp> map = new HashMap<>();
         int numOps = plan.getOps().size();
         map.put(RegexPatternCostEstimator.PatternPart.ENTITY_ONE, plan.getOps().get(numOps-6));
         map.put(RegexPatternCostEstimator.PatternPart.OPTIONAL_ENTITY_ONE_FILTER, plan.getOps().get(numOps-5));

@@ -4,11 +4,15 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.query.Constraint;
@@ -69,16 +73,16 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get($ont.get());
 
-        String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEBase().geteBase().getrType()).getName();
+        String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEbase().geteBase().getrType()).getName();
         Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
 
         // label
         List<String> vTypes = new ArrayList<>();
-        if(lastEntityOp.get().getAsgEBase().geteBase() instanceof ETyped) {
-            vTypes.add(((ETyped) lastEntityOp.get().getAsgEBase().geteBase()).geteType());
+        if(lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped) {
+            vTypes.add(((ETyped) lastEntityOp.get().getAsgEbase().geteBase()).geteType());
         }
-        if(lastEntityOp.get().getAsgEBase().geteBase() instanceof EUntyped){
-            EUntyped eUntyped = (EUntyped) lastEntityOp.get().getAsgEBase().geteBase();
+        if(lastEntityOp.get().getAsgEbase().geteBase() instanceof EUntyped){
+            EUntyped eUntyped = (EUntyped) lastEntityOp.get().getAsgEbase().geteBase();
             if(eUntyped.getvTypes().size() > 0){
                 vTypes.addAll(eUntyped.getvTypes());
             }else{
@@ -87,10 +91,10 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
             }
         }
 
-        RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEBase().geteBase().clone();
+        RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEbase().geteBase().clone();
 
         //currently supports only ETyped
-        GraphEdgeSchema.End endSchema = lastEntityOp.get().getAsgEBase().geteBase() instanceof ETyped ?
+        GraphEdgeSchema.End endSchema = lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped ?
                                             edgeSchema.get().getSource().get().getLabel().get().equals(vTypes.get(0)) ?
                                                 edgeSchema.get().getSource().get() :
                                                 edgeSchema.get().getDestination().get() :
@@ -110,8 +114,8 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
             }
         }
 
-        if(lastEntityOp.get().getAsgEBase().geteBase() instanceof EConcrete){
-            EConcrete eConcrete = (EConcrete) lastEntityOp.get().getAsgEBase().geteBase();
+        if(lastEntityOp.get().getAsgEbase().geteBase() instanceof EConcrete){
+            EConcrete eConcrete = (EConcrete) lastEntityOp.get().getAsgEbase().geteBase();
             Constraint constraint = Constraint.of(ConstraintOp.eq, eConcrete.geteID());
 
             Optional<GraphRedundantPropertySchema> redundantIdProperty = endSchema
@@ -127,7 +131,7 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
         Plan newPlan = new Plan(plan.get().getOps());
 
         if(lastEntityFilterOp.isPresent()) {
-            AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEBase().geteBase().clone()).build();
+            AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEbase().geteBase().clone()).build();
             Stream.ofAll(ePropGroup.geteBase().getProps()).toJavaList().forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());

@@ -1,7 +1,9 @@
 package com.kayhut.fuse.model.execution.plan;
 
-
-import com.kayhut.fuse.model.descriptor.Descriptor;
+import com.kayhut.fuse.model.descriptors.ToStringDescriptor;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
+import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 
 /**
  * Created by Roman on 20/04/2017.
@@ -65,22 +67,6 @@ public class PlanWithCost<P, C> implements IPlan {
 
     @Override
     public String toString() {
-        return "{" +
-                " plan:" + plan.toString() + "," + "\n" +
-                " estimation:" + (cost != null ? cost.toString() + "\n" : "")
-                + "}";
-    }
-
-    public static class PlanWithCostDescriptor implements Descriptor<PlanWithCost> {
-
-        @Override
-        public String name(PlanWithCost plan) {
-            return String.valueOf(plan.hashCode());
-        }
-
-        @Override
-        public String describe(PlanWithCost plan) {
-            return plan.toString();
-        }
+        return new PlanWithCostDescriptor<>(new ToStringDescriptor<P>(), new ToStringDescriptor<C>()).describe(this);
     }
 }

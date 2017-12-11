@@ -1,18 +1,23 @@
 package com.kayhut.fuse.epb.plan;
 
-import com.google.common.collect.Iterables;
+import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanSelector;
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M1PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M1.M1PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
+import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
+import com.kayhut.fuse.epb.plan.selectors.CheapestPlanSelector;
 import com.kayhut.fuse.epb.plan.statistics.EBaseStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
-import com.kayhut.fuse.epb.tests.PlanMockUtils;
+import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -244,12 +249,12 @@ public class SmartEpbComplexQueries {
     @Ignore // Stats Double Bug
     public void testPathSelectionEConcreteComplexQuery(){
         AsgQuery query = simpleQuery2("q1", "Dragons");
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = planSearcher.search(query);
-        PlanWithCost<Plan, PlanDetailedCost> first = Iterables.getFirst(plans, null);
-        Assert.assertNotNull(first);
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+
+        Assert.assertNotNull(plan);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(20).entityFilter(21).rel(16, L).relFilter(18).entity(7).entityFilter(9).rel(12 ).relFilter(122).entity(13).entityFilter(14).goTo(7).rel(4, L).relFilter(5).entity(1).entityFilter(2).plan();
-        PlanAssert.assertEquals(expected, first.getPlan());
-        Assert.assertEquals(111.11, first.getCost().getGlobalCost().cost, 0.1);
+        PlanAssert.assertEquals(expected, plan.getPlan());
+        Assert.assertEquals(111.11, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     //region Private Methods

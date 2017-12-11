@@ -1,9 +1,13 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -50,7 +54,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         if(SimpleExtenderUtils.shouldAdvanceToNext(handledPartToExtend)){
             for(AsgEBase<? extends EBase> next : handledPartToExtend.getNext()){
                 if(SimpleExtenderUtils.shouldAddElement(next) && queryPartsNotHandled.containsKey(next.geteNum())){
-                    PlanOpBase op = createOpForElement(next);
+                    PlanOp op = createOpForElement(next);
                     plans.add(new Plan(originalPlan.getOps()).withOp(op));
                 }
             }
@@ -59,7 +63,7 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         if(SimpleExtenderUtils.shouldAdvanceToParents(handledPartToExtend)){
             for(AsgEBase<? extends  EBase> parent : handledPartToExtend.getParents()){
                 if(SimpleExtenderUtils.shouldAddElement(parent) && queryPartsNotHandled.containsKey(parent.geteNum())){
-                    PlanOpBase op = createOpForElement(parent, true);
+                    PlanOp op = createOpForElement(parent, true);
                     plans.add(new Plan(originalPlan.getOps()).withOp(op));
                     /*Plan<C> newPlan = Plan.PlanBuilder.search(originalPlan.getPlanOps())
                             .operation(new PlanOpWithCost<C>(op,costEstimator.estimateCost(originalPlan,op)))
@@ -71,11 +75,11 @@ public class AllDirectionsPlanExtensionStrategy implements PlanExtensionStrategy
         return plans;
     }
 
-    private PlanOpBase createOpForElement(AsgEBase element) {
+    private PlanOp createOpForElement(AsgEBase element) {
         return createOpForElement(element, false);
     }
 
-    private PlanOpBase createOpForElement(AsgEBase element, boolean reverseDirection) {
+    private PlanOp createOpForElement(AsgEBase element, boolean reverseDirection) {
         if(element.geteBase() instanceof EEntityBase){
             EntityOp op = new EntityOp(element);
             return op;

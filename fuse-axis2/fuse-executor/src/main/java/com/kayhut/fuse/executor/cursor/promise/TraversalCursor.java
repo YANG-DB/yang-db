@@ -5,12 +5,10 @@ package com.kayhut.fuse.executor.cursor.promise;
  */
 
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.RelationOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -23,8 +21,6 @@ import com.kayhut.fuse.unipop.structure.promise.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.Collections;
@@ -72,7 +68,7 @@ public class TraversalCursor implements Cursor {
         Assignment.Builder builder = Assignment.Builder.instance();
         context.getQueryResource().getExecutionPlan().getPlan().getOps().forEach(planOp -> {
             if (planOp instanceof EntityOp) {
-                EEntityBase entity = ((EntityOp)planOp).getAsgEBase().geteBase();
+                EEntityBase entity = ((EntityOp)planOp).getAsgEbase().geteBase();
 
                 if(entity instanceof EConcrete) {
                     builder.withEntity(toEntity(path, (EConcrete) entity));
@@ -89,9 +85,9 @@ public class TraversalCursor implements Cursor {
                         PlanUtil.next(this.context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
 
                 builder.withRelationship(toRelationship(path,
-                        prevEntityOp.get().getAsgEBase().geteBase(),
-                        relationOp.getAsgEBase().geteBase(),
-                        nextEntityOp.get().getAsgEBase().geteBase()));
+                        prevEntityOp.get().getAsgEbase().geteBase(),
+                        relationOp.getAsgEbase().geteBase(),
+                        nextEntityOp.get().getAsgEbase().geteBase()));
             }
         });
 
