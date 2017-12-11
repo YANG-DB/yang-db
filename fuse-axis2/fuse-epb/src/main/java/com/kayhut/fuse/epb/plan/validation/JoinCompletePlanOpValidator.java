@@ -1,21 +1,18 @@
 package com.kayhut.fuse.epb.plan.validation;
 
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityFilterOp;
-import com.kayhut.fuse.model.execution.plan.EntityJoinOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.log.Trace;
-import javaslang.Tuple2;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 
-import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
+
 
 /**
  * Created by benishue on 7/4/2017.
@@ -23,21 +20,6 @@ import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
 public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery> {
     private Trace<String> trace = Trace.build(JoinCompletePlanOpValidator.class.getSimpleName());
 
-    //region PlanValidator Implementation
-    @Override
-    public void log(String event, Level level) {
-        trace.log(event, level);
-    }
-
-    @Override
-    public List<Tuple2<String, String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
 
     @Override
     public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
@@ -49,7 +31,7 @@ public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery
         */
         if (plan.getOps().size() > 1 && joinOp.isPresent() && PlanUtil.isFirst(plan, joinOp.get())
                 && !isJoinOpComplete(joinOp.get())) {
-            return new ValidationContext(false, "JoinOp complete validation failed: " + toPattern(plan));
+            return new ValidationContext(false, "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(plan.getOps()));
         }
         return ValidationContext.OK;
     }
@@ -70,7 +52,7 @@ public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery
         }
 
         Optional<EntityOp> rightEntityOp = PlanUtil.<EntityOp>first(joinOp.getRightBranch(),
-                op -> (op.geteNum() == leftEntityOp.get().geteNum()));
+                op -> ((op instanceof EntityOp) && (((EntityOp)op).getAsgEbase().geteNum() == leftEntityOp.get().getAsgEbase().geteNum())));
 
         if (!rightEntityOp.isPresent()) {
             return false;
@@ -80,7 +62,7 @@ public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery
         if (leftEntityFilterOp.isPresent()) {
             Optional<EntityFilterOp> rightEntityFilterOp = PlanUtil.next(joinOp.getRightBranch(), rightEntityOp.get(), EntityFilterOp.class);
             if (!rightEntityFilterOp.isPresent() ||
-                    rightEntityFilterOp.get().geteNum() != leftEntityFilterOp.get().geteNum()) {
+                    rightEntityFilterOp.get().getAsgEbase().geteNum() != leftEntityFilterOp.get().getAsgEbase().geteNum()) {
                 return false;
             }
         }

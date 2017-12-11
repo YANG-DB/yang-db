@@ -4,6 +4,7 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
@@ -90,7 +91,7 @@ public class Pattern {
         return new EntityRelationEntityPattern(start, startFilter, rel, relFilter, end, endFilter);
     }
 
-    public static EntityJoinPattern buildEntityJoinPattern(Map<RegexPatternCostEstimator.PatternPart, PlanOpBase> patternParts) {
+    public static EntityJoinPattern buildEntityJoinPattern(Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts) {
         EntityJoinOp entityJoinOp = (EntityJoinOp) patternParts.get(JOIN);
         return new EntityJoinPattern(entityJoinOp);
     }

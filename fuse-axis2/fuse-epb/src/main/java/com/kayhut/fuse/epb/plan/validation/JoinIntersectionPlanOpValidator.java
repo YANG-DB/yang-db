@@ -1,23 +1,20 @@
 package com.kayhut.fuse.epb.plan.validation;
 
+import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
-import com.kayhut.fuse.epb.plan.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityJoinOp;
-import com.kayhut.fuse.model.execution.plan.EntityOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
-import com.kayhut.fuse.model.execution.plan.PlanOpBase;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.log.Trace;
-import javaslang.Tuple2;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-
-import static com.kayhut.fuse.model.execution.plan.Plan.toPattern;
 
 /**
  * Created by benishue on 7/5/2017.
@@ -27,21 +24,6 @@ public class JoinIntersectionPlanOpValidator implements PlanValidator<Plan, AsgQ
 
     //region PlanValidator Implementation
     @Override
-    public void log(String event, Level level) {
-        trace.log(event, level);
-    }
-
-    @Override
-    public List<Tuple2<String, String>> getLogs(Level level) {
-        return trace.getLogs(level);
-    }
-
-    @Override
-    public String who() {
-        return trace.who();
-    }
-
-    @Override
     public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
         Optional<EntityJoinOp> joinOp = PlanUtil.first(plan, EntityJoinOp.class);
         /*
@@ -50,7 +32,7 @@ public class JoinIntersectionPlanOpValidator implements PlanValidator<Plan, AsgQ
         is 0 or 1.
         */
         if (plan.getOps().size() == 1 && joinOp.isPresent() && !isIntersectionValid(joinOp.get())) {
-            return new ValidationContext(false, "JoinOp intersection validation failed: " + toPattern(plan));
+            return new ValidationContext(false, "JoinOp intersection validation failed: " + IterablePlanOpDescriptor.getSimple().describe(plan.getOps()));
         }
         return ValidationContext.OK;
     }
@@ -70,16 +52,16 @@ public class JoinIntersectionPlanOpValidator implements PlanValidator<Plan, AsgQ
             return true;
         }
         if (intersection.size() == 1) {
-            return (joinOp.getAsgEBase().geteNum() == intersection.iterator().next());
+            return (joinOp.getAsgEbase().geteNum() == intersection.iterator().next());
         }
 
         return false;
     }
 
-    private Set<Integer> getEntityOpsRecursively(List<PlanOpBase> ops, Set<Integer> set) {
-        for (PlanOpBase op : ops) {
+    private Set<Integer> getEntityOpsRecursively(List<PlanOp> ops, Set<Integer> set) {
+        for (PlanOp op : ops) {
             if (op instanceof EntityOp) {
-                set.add(op.geteNum());
+                set.add(((EntityOp)op).getAsgEbase().geteNum());
             }
             if (op instanceof EntityJoinOp) {
                 getEntityOpsRecursively(((EntityJoinOp) op).getLeftBranch().getOps(), set);

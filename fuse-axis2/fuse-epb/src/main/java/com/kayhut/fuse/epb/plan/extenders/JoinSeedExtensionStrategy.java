@@ -1,9 +1,9 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
-import com.kayhut.fuse.epb.plan.PlanExtensionStrategy;
+import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.EntityJoinOp;
-import com.kayhut.fuse.model.execution.plan.Plan;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 
 import java.util.ArrayList;
 import java.util.Collections;
