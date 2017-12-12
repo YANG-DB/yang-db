@@ -41,6 +41,8 @@ public class JoinIntersectionPlanOpValidator implements PlanValidator<Plan, AsgQ
     //region Private Methods
 
     private boolean isIntersectionValid(EntityJoinOp joinOp) {
+        Optional<EntityOp> leftLast = PlanUtil.last(joinOp.getLeftBranch(), EntityOp.class);
+        Optional<EntityOp> rightLast = PlanUtil.last(joinOp.getRightBranch(), EntityOp.class);
         Set<Integer> leftEopSet = getEntityOpsRecursively(joinOp.getLeftBranch().getOps(), new HashSet<>());
         Set<Integer> rightEopSet = getEntityOpsRecursively(joinOp.getRightBranch().getOps(), new HashSet<>());
 
@@ -52,7 +54,8 @@ public class JoinIntersectionPlanOpValidator implements PlanValidator<Plan, AsgQ
             return true;
         }
         if (intersection.size() == 1) {
-            return (joinOp.getAsgEbase().geteNum() == intersection.iterator().next());
+            return leftLast.isPresent() && rightLast.isPresent() && leftLast.get().getAsgEbase().geteNum() == rightLast.get().getAsgEbase().geteNum();
+            //return (joinOp.getAsgEbase().geteNum() == intersection.iterator().next());
         }
 
         return false;

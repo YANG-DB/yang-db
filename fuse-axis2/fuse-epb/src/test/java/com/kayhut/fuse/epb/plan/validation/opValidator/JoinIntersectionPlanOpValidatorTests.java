@@ -97,5 +97,14 @@ public class JoinIntersectionPlanOpValidatorTests {
         Assert.assertFalse(validator.isPlanValid(new Plan(join), asgQuery).valid());
 
     }
-    
+
+    @Test
+    public void notValidPlanTest2(){
+        AsgQuery asgQuery = simpleQuery1("name", "ont");
+        Plan left = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)), new RelationOp(AsgQueryUtil.element$(asgQuery,2)), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
+        Plan right = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)), new RelationOp(AsgQueryUtil.element$(asgQuery,4)), new EntityOp(AsgQueryUtil.element$(asgQuery, 5)));
+        EntityJoinOp join = new EntityJoinOp(left, right);
+        JoinIntersectionPlanOpValidator validator = new JoinIntersectionPlanOpValidator();
+        Assert.assertFalse(validator.isPlanValid(new Plan(join), asgQuery).valid());
+    }
 }
