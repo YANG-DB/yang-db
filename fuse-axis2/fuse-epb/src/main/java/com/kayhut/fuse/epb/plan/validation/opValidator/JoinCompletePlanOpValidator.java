@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.validation;
+package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
@@ -18,8 +18,6 @@ import java.util.Optional;
  * Created by benishue on 7/4/2017.
  */
 public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery> {
-    private Trace<String> trace = Trace.build(JoinCompletePlanOpValidator.class.getSimpleName());
-
 
     @Override
     public ValidationContext isPlanValid(Plan plan, AsgQuery query) {

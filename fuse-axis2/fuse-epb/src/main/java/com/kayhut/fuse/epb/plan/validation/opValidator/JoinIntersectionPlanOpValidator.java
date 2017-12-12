@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.validation;
+package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
