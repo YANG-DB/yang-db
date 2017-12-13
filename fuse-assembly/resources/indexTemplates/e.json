@@ -4,7 +4,8 @@
   "settings": {
     "index": {
       "number_of_shards": "1",
-      "number_of_replicas": "0"
+      "number_of_replicas": "0",
+      "refresh_interval": "100ms"
     }
   },
   "mappings": {
@@ -35,6 +36,10 @@
           "type": "string"
         },
         "context": {
+          "index": "not_analyzed",
+          "type": "string"
+        },
+        "refs": {
           "index": "not_analyzed",
           "type": "string"
         },
