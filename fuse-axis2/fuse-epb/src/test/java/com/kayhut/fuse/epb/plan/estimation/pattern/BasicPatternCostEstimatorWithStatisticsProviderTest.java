@@ -59,39 +59,16 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
         graphElementSchemaProvider = mock(GraphElementSchemaProvider.class);
         GraphEdgeSchema graphEdgeSchema = mock(GraphEdgeSchema.class);
         when(graphEdgeSchema.getProperty(any()))
-                .thenAnswer(invocationOnMock -> Optional.of(new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return invocationOnMock.getArguments()[0].toString();
-                    }
-
-                    @Override
-                    public String getType() {
-                        return invocationOnMock.getArguments()[0].toString();
-                    }
-                }));
+                .thenAnswer(invocationOnMock -> Optional.of(new GraphElementPropertySchema.Impl(
+                        invocationOnMock.getArguments()[0].toString(),
+                        invocationOnMock.getArguments()[0].toString())));
         when(graphEdgeSchema.getIndexPartitions())
                 .thenReturn(Optional.of(new StaticIndexPartitions(Collections.singleton("index"))));
         GraphEdgeSchema.End edgeEnd = mock(GraphEdgeSchema.End.class);
         when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];
             if(property.equals("lastName")){
-                return Optional.of(new GraphRedundantPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return "lastName";
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-
-                    @Override
-                    public String getPropertyRedundantName() {
-                        return "entityB.lastName";
-                    }
-                });
+                return Optional.of(new GraphRedundantPropertySchema.Impl("lastName", "entityB.lastName", "string"));
             }
 
 
