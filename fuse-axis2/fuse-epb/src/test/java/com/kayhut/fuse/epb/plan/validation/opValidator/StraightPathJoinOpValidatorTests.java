@@ -94,7 +94,7 @@ public class StraightPathJoinOpValidatorTests {
         EntityJoinOp join = new EntityJoinOp(left, right);
 
         StraightPathJoinOpValidator validator = new StraightPathJoinOpValidator();
-        Assert.assertTrue(validator.isPlanValid(new Plan(join), asgQuery).valid());
+        Assert.assertTrue(validator.isPlanOpValid(asgQuery, new Plan(join), 0).valid());
 
     }
 
@@ -107,7 +107,7 @@ public class StraightPathJoinOpValidatorTests {
         EntityJoinOp join = new EntityJoinOp(left, right);
 
         StraightPathJoinOpValidator validator = new StraightPathJoinOpValidator();
-        Assert.assertTrue(validator.isPlanValid(new Plan(join), asgQuery).valid());
+        Assert.assertTrue(validator.isPlanOpValid(asgQuery, new Plan(join), 0).valid());
 
     }
 
@@ -121,7 +121,7 @@ public class StraightPathJoinOpValidatorTests {
         Plan right = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)));
         EntityJoinOp join = new EntityJoinOp(left, right);
         StraightPathJoinOpValidator validator = new StraightPathJoinOpValidator();
-        Assert.assertFalse(validator.isPlanValid(new Plan(join), query).valid());
+        Assert.assertFalse(validator.isPlanOpValid(query, new Plan(join), 0).valid());
     }
 
     @Test
@@ -132,6 +132,6 @@ public class StraightPathJoinOpValidatorTests {
         Plan right = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)));
         EntityJoinOp join = new EntityJoinOp(left, right);
         StraightPathJoinOpValidator validator = new StraightPathJoinOpValidator();
-        Assert.assertTrue(validator.isPlanValid(new Plan(join), query).valid());
+        Assert.assertTrue(validator.isPlanOpValid(query, new Plan(join), 0).valid());
     }
 }

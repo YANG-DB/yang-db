@@ -4,9 +4,11 @@ import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
@@ -16,17 +18,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 
 import java.util.*;
 
-public class StraightPathJoinOpValidator implements PlanValidator<Plan, AsgQuery> {
-    @Override
-    public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
-        Optional<EntityJoinOp> joinOp = PlanUtil.first(plan, EntityJoinOp.class);
-
-        if(plan.getOps().size() == 1 && joinOp.isPresent() && !isPathAvailable(joinOp.get(), query)){
-            return new ValidationContext(false, "JoinOp path validation failed: " + IterablePlanOpDescriptor.getSimple().describe(plan.getOps()));
-        }
-        return ValidationContext.OK;
-    }
-
+public class StraightPathJoinOpValidator implements ChainedPlanValidator.PlanOpValidator {
     private boolean isPathAvailable(EntityJoinOp entityJoinOp, AsgQuery query) {
         Set<Integer> leftEntities = getEntityOpsRecursively(entityJoinOp.getLeftBranch().getOps(),new HashSet<>());
         EntityOp lastRightEntity = PlanUtil.last(entityJoinOp.getRightBranch(), EntityOp.class).get();
@@ -75,5 +67,22 @@ public class StraightPathJoinOpValidator implements PlanValidator<Plan, AsgQuery
             }
         }
         return set;
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+        PlanOp planOp = compositePlanOp.getOps().get(opIndex);
+        if(planOp instanceof EntityJoinOp){
+            EntityJoinOp join = (EntityJoinOp) planOp;
+            if(opIndex == 0 && compositePlanOp.getOps().size() == 1 && !isPathAvailable(join, query)){
+                return new ValidationContext(false, "JoinOp path validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+            }
+        }
+        return ValidationContext.OK;
     }
 }
