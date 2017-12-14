@@ -69,7 +69,7 @@ public class JoinCompletePlanOpValidatorTests {
         EntityJoinOp join = new EntityJoinOp(left, right);
 
         JoinCompletePlanOpValidator validator = new JoinCompletePlanOpValidator();
-        Assert.assertTrue(validator.isPlanValid(new Plan(join, new RelationOp(AsgQueryUtil.element$(asgQuery, 4)), new EntityOp(AsgQueryUtil.element$(asgQuery, 5))), asgQuery).valid());
+        Assert.assertTrue(validator.isPlanOpValid(asgQuery, new Plan(join, new RelationOp(AsgQueryUtil.element$(asgQuery, 4)), new EntityOp(AsgQueryUtil.element$(asgQuery, 5))), 0).valid());
 
     }
 
@@ -81,7 +81,7 @@ public class JoinCompletePlanOpValidatorTests {
         EntityJoinOp join = new EntityJoinOp(left, right);
 
         JoinCompletePlanOpValidator validator = new JoinCompletePlanOpValidator();
-        Assert.assertFalse(validator.isPlanValid(new Plan(join, new RelationOp(AsgQueryUtil.element$(asgQuery, 4)), new EntityOp(AsgQueryUtil.element$(asgQuery, 5))), asgQuery).valid());
+        Assert.assertFalse(validator.isPlanOpValid(asgQuery, new Plan(join, new RelationOp(AsgQueryUtil.element$(asgQuery, 4)), new EntityOp(AsgQueryUtil.element$(asgQuery, 5))), 0).valid());
 
     }
 }

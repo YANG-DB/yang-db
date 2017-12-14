@@ -70,7 +70,7 @@ public class JoinIntersectionPlanOpValidatorTests {
         EntityJoinOp join = new EntityJoinOp(left, right);
 
         JoinIntersectionPlanOpValidator validator = new JoinIntersectionPlanOpValidator();
-        Assert.assertTrue(validator.isPlanValid(new Plan(join), asgQuery).valid());
+        Assert.assertTrue(validator.isPlanOpValid(asgQuery, new Plan(join), 0).valid());
 
     }
 
@@ -82,7 +82,7 @@ public class JoinIntersectionPlanOpValidatorTests {
         EntityJoinOp join = new EntityJoinOp(left, right);
 
         JoinIntersectionPlanOpValidator validator = new JoinIntersectionPlanOpValidator();
-        Assert.assertTrue(validator.isPlanValid(new Plan(join), asgQuery).valid());
+        Assert.assertTrue(validator.isPlanOpValid(asgQuery, new Plan(join), 0).valid());
 
     }
 
@@ -94,7 +94,7 @@ public class JoinIntersectionPlanOpValidatorTests {
         EntityJoinOp join = new EntityJoinOp(left, right);
 
         JoinIntersectionPlanOpValidator validator = new JoinIntersectionPlanOpValidator();
-        Assert.assertFalse(validator.isPlanValid(new Plan(join), asgQuery).valid());
+        Assert.assertFalse(validator.isPlanOpValid(asgQuery, new Plan(join), 0).valid());
 
     }
 
@@ -105,6 +105,6 @@ public class JoinIntersectionPlanOpValidatorTests {
         Plan right = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)), new RelationOp(AsgQueryUtil.element$(asgQuery,4)), new EntityOp(AsgQueryUtil.element$(asgQuery, 5)));
         EntityJoinOp join = new EntityJoinOp(left, right);
         JoinIntersectionPlanOpValidator validator = new JoinIntersectionPlanOpValidator();
-        Assert.assertFalse(validator.isPlanValid(new Plan(join), asgQuery).valid());
+        Assert.assertFalse(validator.isPlanOpValid(asgQuery, new Plan(join), 0).valid());
     }
 }

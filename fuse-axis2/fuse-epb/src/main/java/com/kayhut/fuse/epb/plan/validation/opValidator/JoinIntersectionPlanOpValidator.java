@@ -3,8 +3,10 @@ package com.kayhut.fuse.epb.plan.validation.opValidator;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
@@ -19,24 +21,9 @@ import java.util.Set;
 /**
  * Created by benishue on 7/5/2017.
  */
-public class JoinIntersectionPlanOpValidator implements PlanValidator<Plan, AsgQuery> {
+public class JoinIntersectionPlanOpValidator implements ChainedPlanValidator.PlanOpValidator {
     private Trace<String> trace = Trace.build(JoinIntersectionPlanOpValidator.class.getSimpleName());
 
-    //region PlanValidator Implementation
-    @Override
-    public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
-        Optional<EntityJoinOp> joinOp = PlanUtil.first(plan, EntityJoinOp.class);
-        /*
-        We need to check validity only if the # of Ops is exactly 1 and the Op is JoinOp,
-        if so, we need to check that the intersection of the Join branches (left, right)
-        is 0 or 1.
-        */
-        if (plan.getOps().size() == 1 && joinOp.isPresent() && !isIntersectionValid(joinOp.get())) {
-            return new ValidationContext(false, "JoinOp intersection validation failed: " + IterablePlanOpDescriptor.getSimple().describe(plan.getOps()));
-        }
-        return ValidationContext.OK;
-    }
-    //endregion
 
     //region Private Methods
 
@@ -72,6 +59,25 @@ public class JoinIntersectionPlanOpValidator implements PlanValidator<Plan, AsgQ
             }
         }
         return set;
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+        if(opIndex > 0)
+            return ValidationContext.OK;
+        PlanOp planOp = compositePlanOp.getOps().get(opIndex);
+        if(planOp instanceof EntityJoinOp) {
+            EntityJoinOp joinOp = (EntityJoinOp) planOp;
+            if (compositePlanOp.getOps().size() == 1 && !isIntersectionValid(joinOp)) {
+                return new ValidationContext(false, "JoinOp intersection validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+            }
+        }
+        return ValidationContext.OK;
     }
 
     //endregion

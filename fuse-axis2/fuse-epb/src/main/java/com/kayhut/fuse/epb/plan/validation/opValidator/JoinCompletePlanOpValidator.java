@@ -3,7 +3,10 @@ package com.kayhut.fuse.epb.plan.validation.opValidator;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
@@ -17,24 +20,7 @@ import java.util.Optional;
 /**
  * Created by benishue on 7/4/2017.
  */
-public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery> {
-
-    @Override
-    public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
-        Optional<EntityJoinOp> joinOp = PlanUtil.first(plan, EntityJoinOp.class);
-        /*
-        We need to check validity only if the # of Ops is at least 2, if so, we need to check
-        that this JoinOp is a 'Complete' one (See function below).
-        The 'Extenders' (according to Mr. R) will always make sure that the JoinOp will be the first element.
-        */
-        if (plan.getOps().size() > 1 && joinOp.isPresent() && PlanUtil.isFirst(plan, joinOp.get())
-                && !isJoinOpComplete(joinOp.get())) {
-            return new ValidationContext(false, "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(plan.getOps()));
-        }
-        return ValidationContext.OK;
-    }
-    //endregion
-
+public class JoinCompletePlanOpValidator implements ChainedPlanValidator.PlanOpValidator {
     //region Private Methods
 
     /*
@@ -65,6 +51,25 @@ public class JoinCompletePlanOpValidator implements PlanValidator<Plan, AsgQuery
             }
         }
         return true;
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+        if(opIndex > 0)
+            return ValidationContext.OK;
+        PlanOp planOp = compositePlanOp.getOps().get(opIndex);
+        if(planOp instanceof EntityJoinOp) {
+            EntityJoinOp joinOp = (EntityJoinOp) planOp;
+            if (compositePlanOp.getOps().size() > 1 && !isJoinOpComplete(joinOp)) {
+                return new ValidationContext(false, "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+            }
+        }
+        return ValidationContext.OK;
     }
 
     //endregion
