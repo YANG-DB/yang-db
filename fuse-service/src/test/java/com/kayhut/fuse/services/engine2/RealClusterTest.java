@@ -1040,6 +1040,131 @@ public class RealClusterTest {
 
     @Test
     @Ignore
+    public void test_entityToLogicalEntityQuery() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 112), 0),
+                new Rel(3, $ont.rType$("hasEntity"), Rel.Direction.L, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("LogicalEntity"), $ont.$entity$("LogicalEntity").getProperties(), 5, 0),
+                new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
+                new Rel(6, $ont.rType$("hasEntity"), Rel.Direction.R, null, 7, 0),
+                new ETyped(7, "C", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Collections.singletonList(9), 0),
+                new EProp(9, "context", Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(112, "logicalId", Constraint.of(ConstraintOp.eq, "e00000000")))).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_basicSearchTemplate_partial() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 6), 0),
+                new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
+                new EProp(4, "stringValue", Constraint.of(ConstraintOp.inSet, Arrays.asList("toon", "tena"))),
+                new EProp(5, "context", Constraint.of(ConstraintOp.eq, "global")),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.L, null, 7, 0),
+                new ETyped(7, "B", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 8, 0),
+                new Rel(8, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 9, 0),
+                new ETyped(9, "C", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 10, 0),
+                new EProp(10, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames", "description")))))
+                .build();
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_basicSearchTemplate_full() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 6), 0),
+                new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
+                new EProp(4, "stringValue", Constraint.of(ConstraintOp.inSet, Arrays.asList("toon", "tena"))),
+                new EProp(5, "context", Constraint.of(ConstraintOp.eq, "global")),
+                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.L, null, 7, 0),
+                new ETyped(7, "B", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 8, 0),
+                new Quant1(8, QuantType.all, Arrays.asList(9, 12), 0),
+                new Rel(9, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 10, 0),
+                new ETyped(10, "C", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 11, 0),
+                new EProp(11, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames", "description"))),
+                new Rel(12, $ont.rType$("hasEntity"), Rel.Direction.L, null, 13, 0),
+                new ETyped(13, "D", $ont.eType$("LogicalEntity"), $ont.$entity$("LogicalEntity").getProperties(), 14, 0),
+                new Rel(14, $ont.rType$("hasEntity"), Rel.Direction.R, null, 15, 0),
+                new ETyped(15, "E", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 16, 0),
+                new Quant1(16, QuantType.all, Arrays.asList(17, 18), 0),
+                new EProp(17, "context", Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(18, "category", Constraint.of(ConstraintOp.eq, "person"))))
+                .build();
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
     public void loadData() throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -1230,7 +1355,7 @@ public class RealClusterTest {
                     .setSource(new MapBuilder<String, Object>()
                             .put("title", "Title of - " + referenceId)
                             .put("url", "http://" + UUID.randomUUID().toString() + "." + domains.get(random.nextInt(domains.size())))
-                            .put("content", contents.get(random.nextInt(contents.size())))
+                            .put("value", contents.get(random.nextInt(contents.size())))
                             .put("system", "system" + random.nextInt(10))
                             .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
                             .put("authorizationCount", 1)
@@ -1284,7 +1409,7 @@ public class RealClusterTest {
                                     .put("authorizationCount", 1)
                                     .put("fieldId", "title")
                                     .put("bdt", "title")
-                                    .put("textValue", users.get(currentEntityLogicalId))
+                                    .put("stringValue", users.get(currentEntityLogicalId))
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
                                             .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
@@ -1304,7 +1429,7 @@ public class RealClusterTest {
                                     .put("authorizationCount", 1)
                                     .put("fieldId", "description")
                                     .put("bdt", "description")
-                                    .put("textValue", description)
+                                    .put("stringValue", description)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
                                             .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
@@ -1325,7 +1450,7 @@ public class RealClusterTest {
                                         .put("authorizationCount", 1)
                                         .put("fieldId", "nicknames")
                                         .put("bdt", "nicknames")
-                                        .put("textValue", personNickname)
+                                        .put("stringValue", personNickname)
                                         .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
                                                 .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                                 .toJavaList())
@@ -1468,7 +1593,7 @@ public class RealClusterTest {
                                     .put("authorizationCount", 1)
                                     .put("fieldId", "title")
                                     .put("bdt", "title")
-                                    .put("textValue", title)
+                                    .put("stringValue", title)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
                                             .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())
@@ -1488,7 +1613,7 @@ public class RealClusterTest {
                                     .put("authorizationCount", 1)
                                     .put("fieldId", "description")
                                     .put("bdt", "description")
-                                    .put("textValue", description)
+                                    .put("stringValue", description)
                                     .put("refs", Stream.ofAll(Arrays.asList(random.nextInt(400), random.nextInt(400), random.nextInt(400), random.nextInt(400)))
                                             .distinct().take(random.nextInt(2) + 1).map(refId -> "ref" + String.format(referenceIdFormat, refId))
                                             .toJavaList())

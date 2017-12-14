@@ -124,6 +124,10 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             return Optional.empty();
         }
 
+        if (GraphVirtualVertexSchema.class.isAssignableFrom(vertexSchema.getClass())) {
+            return Optional.of(vertexSchema);
+        }
+
         return Optional.of(new GraphVertexSchema.Impl(
                 label,
                 vertexSchema.getConstraint(),

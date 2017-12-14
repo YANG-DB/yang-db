@@ -3,7 +3,7 @@
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>[%d{ISO8601}]-[%thread] %-5level %logger - %msg%n</pattern>
+      <pattern>[%d{ISO8601}] %-5level %logger - %msg%n</pattern>
     </encoder>
   </appender>
   <!-- appenders -->
@@ -13,6 +13,7 @@
   <logger name="org.elasticsearch" additivity="false"/>
   <logger name="io.netty" additivity="false"/>
   <logger name="org.unipop" additivity="false"/>
+  <logger name="com.kayhut.fuse.dispatcher.resource" additivity="false"/>
   <!-- Ignore loggers -->
 
   <!-- root -->

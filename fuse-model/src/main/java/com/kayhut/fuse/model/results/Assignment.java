@@ -65,14 +65,12 @@ public class Assignment {
 
         //region Public Methods
         public Builder withEntity(Entity entity) {
-            // currently merging is disabled due to request from the UI
-            /*Entity entityToMerge = this.entities.get(entity.hashCode());
-            if (entityToMerge != null) {
-                entity = Entity.Builder.instance().withEntity(entity).withEntity(entityToMerge).build();
-            }*/
+            Entity currentEntity = this.entities.get(entity.geteID());
+            if (currentEntity != null) {
+                entity = Entity.Builder.instance().withEntity(currentEntity).withEntity(entity).build();
+            }
 
-            //entities.put(entity.hashCode(), entity);
-            entities.put(entity.geteTag().get(0), entity);
+            entities.put(entity.geteID(), entity);
             return this;
         }
 

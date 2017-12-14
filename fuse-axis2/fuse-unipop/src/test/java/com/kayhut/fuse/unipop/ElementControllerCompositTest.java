@@ -59,6 +59,8 @@ public class ElementControllerCompositTest {
         when(client.prepareSearchScroll(anyString())).thenReturn(scrollRequestBuilder);
         when(client.prepareSearch()).thenReturn(requestBuilder);
         when(client.prepareSearch(Matchers.any(String[].class))).then(invocationOnMock -> requestBuilder);
+        when(client.search(Matchers.any())).thenReturn(actionFuture);
+        when(client.searchScroll(Matchers.any())).thenReturn(actionFuture);
 
         //SearchRequestBuilder
         when(requestBuilder.setScroll(Matchers.any(TimeValue.class))).thenReturn(requestBuilder);
