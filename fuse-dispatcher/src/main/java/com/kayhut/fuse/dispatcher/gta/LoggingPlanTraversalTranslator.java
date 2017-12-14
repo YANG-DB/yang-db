@@ -28,9 +28,21 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
     //region PlanTraversalTranslator
     @Override
     public GraphTraversal<?, ?> translate(PlanWithCost<Plan, PlanDetailedCost> planWithCost, TranslationContext context) {
-        GraphTraversal<?, ?> traversal = this.innerTranslator.translate(planWithCost, context);
-        this.logger.debug("traversal: {}", this.descriptor.describe(traversal));
-        return traversal;
+        boolean thrownException = false;
+
+        try {
+            this.logger.debug("start translate");
+            GraphTraversal<?, ?> traversal = this.innerTranslator.translate(planWithCost, context);
+            this.logger.debug("traversal: {}", this.descriptor.describe(traversal));
+            return traversal;
+        } catch (Exception ex) {
+            this.logger.error("failed translate: {}", ex);
+            return null;
+        } finally {
+            if (!thrownException) {
+                this.logger.debug("finish translate");
+            }
+        }
     }
     //endregion
 

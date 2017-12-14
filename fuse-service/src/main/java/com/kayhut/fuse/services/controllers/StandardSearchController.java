@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.controllers;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -10,15 +10,15 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
  * Created by lior on 19/02/2017.
  */
 @Singleton
-public class SimpleSearchController implements SearchController {
-    private EventBus eventBus;
-
+public class StandardSearchController implements SearchController {
+    //region Constructors
     @Inject
-    public SimpleSearchController(EventBus eventBus) {
+    public StandardSearchController(EventBus eventBus) {
         this.eventBus = eventBus;
     }
+    //endregion
 
-
+    //region SearchController Implementation
     @Override
     public ContentResponse search(CreateQueryRequest request) {
         /*String id = getOrCreateId(request.getId());
@@ -35,4 +35,9 @@ public class SimpleSearchController implements SearchController {
         return response;*/
         return null;
     }
+    //endregion
+
+    //region Fields
+    private EventBus eventBus;
+    //endregion
 }

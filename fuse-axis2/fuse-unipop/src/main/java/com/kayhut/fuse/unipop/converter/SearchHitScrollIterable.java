@@ -2,9 +2,7 @@ package com.kayhut.fuse.unipop.converter;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
@@ -130,32 +128,33 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             }
 
             Timer.Context time = metricRegistry.timer(name(SearchHitScrollIterable.class.getSimpleName(), "Scroll")).time();
-            Timer timeEs = metricRegistry.timer(name(SearchHitScrollIterable.class.getSimpleName(),"Scroll:elastic"));
-            SearchResponse response;
+            Timer timeEs = metricRegistry.timer(name(SearchHitScrollIterable.class.getSimpleName(), "Scroll:elastic"));
             if (this.scrollId == null) {
-                response = this.iterable.getSearchRequestBuilder()
+                SearchResponse response = this.iterable.getSearchRequestBuilder()
                         .setSearchType(SearchType.SCAN)
                         .setScroll(new TimeValue(iterable.getScrollTime()))
                         .setSize(Math.min(iterable.getScrollSize(),
-                                (int)Math.min((long)Integer.MAX_VALUE, iterable.getLimit())))
+                                (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
                         .execute()
                         .actionGet();
+
                 this.scrollId = response.getScrollId();
                 //update es execution time
                 timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
                 time.stop();
                 Scroll();
             } else {
-                response = this.iterable.getClient().prepareSearchScroll(this.scrollId)
-                        .setScroll(new TimeValue(this.iterable.getScrollTime()))
-                        .execute()
-                        .actionGet();
+                SearchResponse response =
+                        this.iterable.getClient().prepareSearchScroll(this.scrollId)
+                                .setScroll(new TimeValue(this.iterable.getScrollTime()))
+                                .execute()
+                                .actionGet();
 
                 //update es execution time
                 time.stop();
                 timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
 
-                for(SearchHit hit : response.getHits().getHits()) {
+                for (SearchHit hit : response.getHits().getHits()) {
                     if (counter < this.iterable.getLimit()) {
                         this.searchHits.add(hit);
                         counter++;

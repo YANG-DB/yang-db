@@ -3,6 +3,7 @@ package com.kayhut.fuse.executor;
 import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.executor.elasticsearch.LoggingClient;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
@@ -60,7 +61,7 @@ public class ExecutorModule extends ModuleBase {
             }
         });
 
-        return client;
+        return new LoggingClient(client);
     }
 
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {

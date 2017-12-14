@@ -158,6 +158,9 @@ public class Entity {
 
         //region Private Methods
         private Entity merge(Entity e1, Entity e2) {
+            e1.seteID(e1.geteID() == null ? e2.geteID() : e1.geteID());
+            e1.seteType(e1.geteType() == null ? e2.geteType() : e1.geteType());
+
             e1.seteTag(Stream.ofAll(e1.geteTag())
                     .appendAll(e2.geteTag())
                     .distinct()

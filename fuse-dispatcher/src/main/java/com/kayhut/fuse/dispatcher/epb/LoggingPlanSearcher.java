@@ -25,9 +25,21 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
     //region PlanSearcher Implementation
     @Override
     public PlanWithCost<P, C> search(Q query) {
-       PlanWithCost<P, C> planWithCost = this.innerPlanSearcher.search(query);
-       this.logger.debug("execution plan: {}", this.descriptor.describe(planWithCost));
-       return planWithCost;
+        boolean thrownException = false;
+
+        try {
+            this.logger.debug("start search");
+            PlanWithCost<P, C> planWithCost = this.innerPlanSearcher.search(query);
+            this.logger.debug("execution plan: {}", this.descriptor.describe(planWithCost));
+            return planWithCost;
+        } catch (Exception ex) {
+            this.logger.error("failed search: {}", ex);
+            return null;
+        } finally {
+            if (!thrownException) {
+                this.logger.debug("finish search");
+            }
+        }
     }
     //endregion
 

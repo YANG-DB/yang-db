@@ -2,6 +2,11 @@
   "ont": "Knowledge",
   "entityTypes": [
     {
+      "eType": "LogicalEntity",
+      "name": "LogicalEntity",
+      "properties": []
+    },
+    {
       "eType": "Entity",
       "name": "Entity",
       "properties": [
@@ -112,6 +117,17 @@
     }
   ],
   "relationshipTypes": [
+    {
+      "rType": "hasEntity",
+      "name": "hasEntity",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "LogicalEntity",
+          "eTypeB": "Entity"
+        }
+      ]
+    },
     {
       "rType": "hasEvalue",
       "name": "hasEvalue",

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.controllers;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -26,10 +26,10 @@ import static org.jooby.Status.*;
  * Created by lior on 19/02/2017.
  */
 @Singleton
-public class SimpleQueryController implements QueryController {
-
+public class StandardQueryController implements QueryController {
+    //region Constructors
     @Inject
-    public SimpleQueryController(
+    public StandardQueryController(
             EventBus eventBus,
             QueryDispatcherDriver driver,
             CursorController cursorController,
@@ -41,7 +41,9 @@ public class SimpleQueryController implements QueryController {
         this.cursorController = cursorController;
         this.pageController = pageController;
     }
+    //endregion
 
+    //region QueryController Implementation
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
         String queryId = getOrCreateId(request.getId());
@@ -163,6 +165,7 @@ public class SimpleQueryController implements QueryController {
                 .data(this.driver.delete(queryId))
                 .compose();
     }
+    //endregion
 
     //region Fields
     private EventBus eventBus;
