@@ -4,7 +4,36 @@
   "settings": {
     "index": {
       "number_of_shards": "1",
-      "number_of_replicas": "0"
+      "number_of_replicas": "0",
+      "refresh_interval": "100ms",
+      "analysis": {
+        "analyzer": {
+          "knowledge_ngram_analyzer": {
+            "type": "custom",
+            "tokenizer": "knowledge_ngram_tokenizer",
+            "filter": [ "standard", "lowercase", "knowledge_stopwords" ]
+          },
+          "knowledge_standard_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [ "standard", "lowercase", "knowledge_stopwords" ]
+          }
+        },
+        "tokenizer": {
+          "knowledge_ngram_tokenizer": {
+            "type": "nGram",
+            "min_gram": "1",
+            "max_gram": "10",
+            "token_chars": [ "letter", "digit" ]
+          }
+        },
+        "filter": {
+          "knowledge_stopwords": {
+            "type": "stop",
+            "stopwords": "_none"
+          }
+        }
+      }
     }
   },
   "mappings": {
@@ -31,8 +60,15 @@
           "type": "string"
         },
         "value": {
-          "index": "not_analyzed",
-          "type": "string"
+          "type": "string",
+          "analyzer": "knowledge_ngram_analyzer",
+          "search_analyzer": "knowledge_standard_analyzer",
+          "fields": {
+            "keyword": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
         },
         "entityIds": {
           "index": "not_analyzed",

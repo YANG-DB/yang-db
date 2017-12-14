@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.controllers;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -18,10 +18,10 @@ import static org.jooby.Status.*;
  * Created by lior on 19/02/2017.
  */
 @Singleton
-public class SimplePageController implements PageController {
+public class StandardPageController implements PageController {
     //region Constructors
     @Inject
-    public SimplePageController(EventBus eventBus, PageDispatcherDriver driver) {
+    public StandardPageController(EventBus eventBus, PageDispatcherDriver driver) {
         this.driver = driver;
         eventBus.register(this);
     }

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.controllers;
 
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;

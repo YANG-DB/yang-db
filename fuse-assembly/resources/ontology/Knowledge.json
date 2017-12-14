@@ -2,6 +2,11 @@
   "ont": "Knowledge",
   "entityTypes": [
     {
+      "eType": "LogicalEntity",
+      "name": "LogicalEntity",
+      "properties": []
+    },
+    {
       "eType": "Entity",
       "name": "Entity",
       "properties": [
@@ -81,10 +86,10 @@
       "eType": "Reference",
       "name": "Reference",
       "properties": [
+        "title",
         "content",
         "url",
         "system",
-        "agency",
         "authorization",
         "lastUpdateUser",
         "lastUpdateTime",
@@ -112,6 +117,17 @@
     }
   ],
   "relationshipTypes": [
+    {
+      "rType": "hasEntity",
+      "name": "hasEntity",
+      "directional": true,
+      "ePairs": [
+        {
+          "eTypeA": "LogicalEntity",
+          "eTypeB": "Entity"
+        }
+      ]
+    },
     {
       "rType": "hasEvalue",
       "name": "hasEvalue",
@@ -173,7 +189,15 @@
       "directional": true,
       "ePairs": [
         {
+          "eTypeA": "Entity",
+          "eTypeB": "Reference"
+        },
+        {
           "eTypeA": "Evalue",
+          "eTypeB": "Reference"
+        },
+        {
+          "eTypeA": "Relation",
           "eTypeB": "Reference"
         },
         {
@@ -212,6 +236,11 @@
     {
       "pType": "content",
       "name": "content",
+      "type": "string"
+    },
+    {
+      "pType": "title",
+      "name": "title",
       "type": "string"
     },
     {

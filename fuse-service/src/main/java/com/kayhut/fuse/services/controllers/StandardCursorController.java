@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.controllers;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -18,20 +18,18 @@ import static org.jooby.Status.*;
  * Created by lior on 19/02/2017.
  */
 @Singleton
-public class SimpleCursorController implements CursorController {
-
-    private Config conf;
-    private EventBus eventBus;
-    private CursorDispatcherDriver driver;
-
+public class StandardCursorController implements CursorController {
+    //region Constructors
     @Inject
-    public SimpleCursorController(Config conf, EventBus eventBus, CursorDispatcherDriver driver) {
+    public StandardCursorController(Config conf, EventBus eventBus, CursorDispatcherDriver driver) {
         this.conf = conf;
         this.eventBus = eventBus;
         this.eventBus.register(this);
         this.driver = driver;
     }
+    //endregion
 
+    //region CursorController Implementation
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
         return Builder.<CursorResourceInfo>builder(randomUUID().toString(),CREATED, SERVER_ERROR)
@@ -58,4 +56,11 @@ public class SimpleCursorController implements CursorController {
         return Builder.<Boolean>builder(randomUUID().toString(),ACCEPTED, NOT_FOUND)
                 .data(this.driver.delete(queryId, cursorId)).compose();
     }
+    //endregion
+
+    //region Fields
+    private Config conf;
+    private EventBus eventBus;
+    private CursorDispatcherDriver driver;
+    //endregion
 }

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.controllers;
 
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -13,7 +13,6 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 
 import java.util.Optional;
 
@@ -25,12 +24,12 @@ import static org.jooby.Status.OK;
  * Created by lior on 19/02/2017.
  */
 @Singleton
-public class SimpleCatalogController implements CatalogController {
+public class StandardCatalogController implements CatalogController {
     //region Constructors
     @Inject
-    public SimpleCatalogController(EventBus eventBus,
-                                   OntologyProvider ontologyProvider,
-                                   GraphElementSchemaProviderFactory schemaProviderFactory) {
+    public StandardCatalogController(EventBus eventBus,
+                                     OntologyProvider ontologyProvider,
+                                     GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.eventBus = eventBus;
         this.ontologyProvider = ontologyProvider;
         this.schemaProviderFactory = schemaProviderFactory;

@@ -55,11 +55,24 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
 
         IndexPartitions insightPartitions = new IndexPartitions.Impl("_id", iPartitions);
 
+        Iterable<GraphRedundantPropertySchema> entityEdgeRedundantProperties = Arrays.asList(
+                new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
+                new GraphRedundantPropertySchema.Impl("context", "context", "string"),
+                new GraphRedundantPropertySchema.Impl("authorization", "authorization", "string"),
+                new GraphRedundantPropertySchema.Impl("authorizationCount", "authorizationCount", "string"),
+                new GraphRedundantPropertySchema.Impl("lastUpdateUser", "lastUpdateUser", "string"),
+                new GraphRedundantPropertySchema.Impl("lastUpdateTime", "lastUpdateTime", "date"),
+                new GraphRedundantPropertySchema.Impl("creationUser", "creationUser", "string"),
+                new GraphRedundantPropertySchema.Impl("creationTime", "creationTime", "date"),
+                new GraphRedundantPropertySchema.Impl("deleteUser", "deleteUser", "string"),
+                new GraphRedundantPropertySchema.Impl("deleteTime", "deleteTime", "date")
+        );
+
         Iterable<GraphRedundantPropertySchema> valueEdgeRedundantProperties = Arrays.asList(
                 new GraphRedundantPropertySchema.Impl("logicalId", "logicalId", "string"),
                 new GraphRedundantPropertySchema.Impl("context", "context", "string"),
-                new GraphRedundantPropertySchema.Impl("security1", "security1", "string"),
-                new GraphRedundantPropertySchema.Impl("security2", "security2", "string"),
+                new GraphRedundantPropertySchema.Impl("authorization", "authorization", "string"),
+                new GraphRedundantPropertySchema.Impl("authorizationCount", "authorizationCount", "string"),
                 new GraphRedundantPropertySchema.Impl("lastUpdateUser", "lastUpdateUser", "string"),
                 new GraphRedundantPropertySchema.Impl("lastUpdateTime", "lastUpdateTime", "date"),
                 new GraphRedundantPropertySchema.Impl("creationUser", "creationUser", "string"),
@@ -88,6 +101,7 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
 
         return new GraphElementSchemaProvider.Impl(
                 Arrays.asList(
+                        new GraphVirtualVertexSchema.Impl("LogicalEntity"),
                         new GraphVertexSchema.Impl(
                                 "Entity",
                                 new GraphElementConstraint.Impl(__.has(T.label, "entity")),
@@ -129,6 +143,29 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Optional.of(insightPartitions),
                                 Collections.emptyList())),
                 Arrays.asList(
+                        new GraphEdgeSchema.Impl(
+                                "hasEntity",
+                                new GraphElementConstraint.Impl(__.has(T.label, "entity")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "logicalId",
+                                        Optional.of("LogicalEntity"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Entity"),
+                                        entityEdgeRedundantProperties,
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityValuePartitions))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList()),
                         new GraphEdgeSchema.Impl(
                                 "hasEvalue",
                                 new GraphElementConstraint.Impl(__.has(T.label, "e.value")),
@@ -228,6 +265,23 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                 Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasReference",
+                                new GraphElementConstraint.Impl(__.has(T.label, "entity")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Entity"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("logicalId", "string")
+                                        )),
+                                        Optional.of(entityPartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl("refs", Optional.of("Reference"), Collections.emptyList())),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "hasReference",
                                 new GraphElementConstraint.Impl(__.has(T.label, "e.value")),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         "_id",
@@ -237,6 +291,23 @@ public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaP
                                                 new GraphElementPropertySchema.Impl("logicalId", "string")
                                         )),
                                         Optional.of(entityValuePartitions))),
+                                Optional.of(new GraphEdgeSchema.End.Impl("refs", Optional.of("Reference"), Collections.emptyList())),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "hasReference",
+                                new GraphElementConstraint.Impl(__.has(T.label, "relation")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "_id",
+                                        Optional.of("Relation"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string")
+                                        )),
+                                        Optional.of(relationPartitions))),
                                 Optional.of(new GraphEdgeSchema.End.Impl("refs", Optional.of("Reference"), Collections.emptyList())),
                                 Optional.empty(),
                                 Optional.empty(),
