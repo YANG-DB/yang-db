@@ -96,9 +96,19 @@ public class AsgQueryUtil {
         return elements(asgEBase, emptyIterableFunction, AsgEBase::getNext, elementPredicate, dfsPredicate, Collections.emptyList());
     }
 
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextDescendants(AsgEBase<T> asgEBase, Class<?> klass) {
+        return nextDescendants(asgEBase, classPredicateFunction.apply(klass), truePredicate);
+    }
+
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextAdjacentDescendants(AsgEBase<T> asgEBase, Predicate<AsgEBase> elementPredicate) {
         return nextDescendants(asgEBase, elementPredicate, adjacentDfsPredicate.apply(asgEBase));
     }
+
+    public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextDescendantsSingleHop(AsgEBase<T> asgEBase, Class<?> klass) {
+        return nextDescendants(asgEBase, (asgEBase1 -> classPredicateFunction.apply(klass).test(asgEBase1) && asgEBase1 != asgEBase), (asgEBase1 -> asgEBase1 == asgEBase || !classPredicateFunction.apply(klass).test(asgEBase1)) );
+    }
+
+
 
     public static <T extends EBase, S extends EBase> List<AsgEBase<S>> nextAdjacentDescendants(AsgEBase<T> asgEBase, Class<?> klass) {
         return nextDescendants(asgEBase, classPredicateFunction.apply(klass), adjacentDfsPredicate.apply(asgEBase));
