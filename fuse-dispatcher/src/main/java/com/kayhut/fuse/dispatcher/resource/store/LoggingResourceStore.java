@@ -25,7 +25,7 @@ public class LoggingResourceStore implements ResourceStore {
             Descriptor<CursorResource> cursorResourceDescriptor,
             Descriptor<PageResource> pageResourceDescriptor) {
 
-        this.logger = LoggerFactory.getLogger(this.getClass());
+        this.logger = LoggerFactory.getLogger(innerResourceStore.getClass());
         this.innerResourceStore = innerResourceStore;
         this.queryResourceDescriptor = queryResourceDescriptor;
         this.cursorResourceDescriptor = cursorResourceDescriptor;
@@ -66,7 +66,7 @@ public class LoggingResourceStore implements ResourceStore {
         this.innerResourceStore.deleteQueryResource(queryId);
 
         if (queryResourceToDelete.isPresent()) {
-            this.logger.info("QueryResource was deleted: {}", this.queryResourceDescriptor.describe(queryResourceToDelete.get()));
+            this.logger.debug("QueryResource was deleted: {}", this.queryResourceDescriptor.describe(queryResourceToDelete.get()));
         }
     }
 
@@ -76,7 +76,7 @@ public class LoggingResourceStore implements ResourceStore {
         this.innerResourceStore.addCursorResource(queryId, cursorResource);
 
         if (queryResource.isPresent()) {
-            this.logger.info("CursorResource was added: {} {}",
+            this.logger.debug("CursorResource was added: {} {}",
                     this.queryResourceDescriptor.describe(queryResource.get()),
                     this.cursorResourceDescriptor.describe(cursorResource));
         }
@@ -88,7 +88,7 @@ public class LoggingResourceStore implements ResourceStore {
         Optional<CursorResource> cursorResourceToDelete = queryResource.flatMap(queryResource1 -> queryResource1.getCursorResource(cursorId));
 
         if (queryResource.isPresent() && cursorResourceToDelete.isPresent()) {
-            this.logger.info("CursorResource was deleted: {} {}",
+            this.logger.debug("CursorResource was deleted: {} {}",
                     this.queryResourceDescriptor.describe(queryResource.get()),
                     this.cursorResourceDescriptor.describe(cursorResourceToDelete.get()));
         }
@@ -103,12 +103,12 @@ public class LoggingResourceStore implements ResourceStore {
 
         if (queryResource.isPresent() && cursorResource.isPresent()) {
             if (pageResource.isAvailable()) {
-                this.logger.info("PageResource is available: {} {} {}",
+                this.logger.debug("PageResource is available: {} {} {}",
                         this.queryResourceDescriptor.describe(queryResource.get()),
                         this.cursorResourceDescriptor.describe(cursorResource.get()),
                         this.pageResourceDescriptor.describe(pageResource));
             } else {
-                this.logger.info("PageResource was added: {} {} {}",
+                this.logger.debug("PageResource was added: {} {} {}",
                         this.queryResourceDescriptor.describe(queryResource.get()),
                         this.cursorResourceDescriptor.describe(cursorResource.get()),
                         this.pageResourceDescriptor.describe(pageResource));
@@ -125,7 +125,7 @@ public class LoggingResourceStore implements ResourceStore {
         this.innerResourceStore.deletePageResource(queryId, cursorId, pageId);
 
         if (queryResource.isPresent() && cursorResource.isPresent() && pageResourceToDelete.isPresent()) {
-            this.logger.info("PageResource was deleted: {} {} {}",
+            this.logger.debug("PageResource was deleted: {} {} {}",
                     this.queryResourceDescriptor.describe(queryResource.get()),
                     this.cursorResourceDescriptor.describe(cursorResource.get()),
                     this.pageResourceDescriptor.describe(pageResourceToDelete.get()));

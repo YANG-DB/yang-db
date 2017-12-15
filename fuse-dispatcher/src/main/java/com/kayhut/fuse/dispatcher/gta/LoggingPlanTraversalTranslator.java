@@ -19,7 +19,7 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
     //region Constructors
     @Inject
     public LoggingPlanTraversalTranslator(@Named(injectionName) PlanTraversalTranslator innerTranslator, Descriptor<GraphTraversal<?, ?>> descriptor) {
-        this.logger = LoggerFactory.getLogger(this.getClass());
+        this.logger = LoggerFactory.getLogger(innerTranslator.getClass());
         this.innerTranslator = innerTranslator;
         this.descriptor = descriptor;
     }
@@ -31,7 +31,7 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
         boolean thrownException = false;
 
         try {
-            this.logger.debug("start translate");
+            this.logger.trace("start translate");
             GraphTraversal<?, ?> traversal = this.innerTranslator.translate(planWithCost, context);
             this.logger.debug("traversal: {}", this.descriptor.describe(traversal));
             return traversal;
@@ -40,7 +40,7 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.debug("finish translate");
+                this.logger.trace("finish translate");
             }
         }
     }

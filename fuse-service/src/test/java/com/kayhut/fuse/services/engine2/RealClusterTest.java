@@ -1170,7 +1170,7 @@ public class RealClusterTest {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "roman.es").build();
+                .put("cluster.name", "knowledge").build();
         Client client = TransportClient.builder().settings(settings).build()
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
 

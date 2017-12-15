@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="15 seconds" debug="false">
+  <conversionRule conversionWord="elapsed"
+                  converterClass="com.kayhut.fuse.logging.ElapsedConverter" />
+
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
     <encoder>
-      <pattern>[%d{ISO8601}] %-5level %logger - %msg%n</pattern>
+      <pattern>%white(%-26d{ISO8601}) %yellow(%-6elapsed) %highlight(%-7level) %cyan(%-46logger{5}) %white(%msg%n)</pattern>
     </encoder>
   </appender>
   <!-- appenders -->
@@ -17,7 +21,7 @@
   <!-- Ignore loggers -->
 
   <!-- root -->
-  <root level="debug">
+  <root level="trace">
     <appender-ref ref="stdout" />
   </root>
   <!-- root -->
