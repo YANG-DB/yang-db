@@ -1,9 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.dummy;
 
-import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.dispatcher.epb.CostEstimator;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-
-import java.util.Optional;
 
 /**
  * Created by moti on 3/28/2017.

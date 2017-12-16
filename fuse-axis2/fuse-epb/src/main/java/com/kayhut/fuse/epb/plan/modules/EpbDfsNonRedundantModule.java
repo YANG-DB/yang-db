@@ -6,7 +6,7 @@ import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.epb.*;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
-import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
+import com.kayhut.fuse.dispatcher.epb.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsNonRedundantPlanExtensionStrategy;
