@@ -8,10 +8,12 @@ import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.dispatcher.epb.CostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
+import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
 import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
@@ -31,6 +33,7 @@ import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.typesafe.config.Config;
 import org.jooby.Env;
+import org.jooby.scope.RequestScoped;
 
 /**
  * Created by lior on 22/02/2017.
@@ -42,10 +45,14 @@ public class EpbModule extends ModuleBase {
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .annotatedWith(Names.named(LoggingPlanSearcher.injectionName))
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                .asEagerSingleton();
+                .in(RequestScoped.class);
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
+                .annotatedWith(Names.named(PlanTracer.Searcher.injectionName))
                 .to(new TypeLiteral<LoggingPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                .asEagerSingleton();
+                .in(RequestScoped.class);
+        binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
+                .to(new TypeLiteral<PlanTracer.Searcher<Plan, PlanDetailedCost, AsgQuery>>(){})
+                .in(RequestScoped.class);
 
         binder.bind(StatConfig.class).toInstance(new StatConfig(conf));
         binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
@@ -59,9 +66,26 @@ public class EpbModule extends ModuleBase {
                 .to(M1PatternCostEstimator.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
+                .annotatedWith(Names.named(PlanTracer.Estimator.injectionName))
                 .to(RegexPatternCostEstimator.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
+                .to(new TypeLiteral<PlanTracer.Estimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
+                .in(RequestScoped.class);
 
-        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){}).to(M1PlanExtensionStrategy.class);
+        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
+                .annotatedWith(Names.named(PlanTracer.ExtensionStrategy.injectionName))
+                .to(M1PlanExtensionStrategy.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
+                .to(new TypeLiteral<PlanTracer.ExtensionStrategy<Plan, AsgQuery>>(){})
+                .in(RequestScoped.class);
+
+        binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})
+                .annotatedWith(Names.named(PlanTracer.Validator.injectionName))
+                .to(M1PlanValidator.class)
+                .asEagerSingleton();
+        binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})
+                .to(new TypeLiteral<PlanTracer.Validator<Plan, AsgQuery>>(){})
+                .in(RequestScoped.class);
 
         binder.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                 .annotatedWith(Names.named("GlobalPruningStrategy"))
@@ -79,8 +103,6 @@ public class EpbModule extends ModuleBase {
                 .annotatedWith(Names.named("LocalPlanSelector"))
                 .toInstance(new AllCompletePlanSelector<>());
 
-        binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){}).to(M1PlanValidator.class).asEagerSingleton();
-
-
+        binder.bind(PlanTracer.Builder.class).in(RequestScoped.class);
     }
 }

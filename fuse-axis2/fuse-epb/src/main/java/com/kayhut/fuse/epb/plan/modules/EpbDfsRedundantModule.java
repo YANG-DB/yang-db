@@ -40,7 +40,6 @@ public class EpbDfsRedundantModule extends ModuleBase {
                 .to(new TypeLiteral<PlanTracer.Searcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .in(RequestScoped.class);
 
-
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .annotatedWith(Names.named(PlanTracer.Estimator.injectionName))
                 .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
