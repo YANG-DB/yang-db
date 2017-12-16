@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
@@ -26,10 +25,8 @@ import static org.jooby.Status.OK;
 public class StandardCatalogController implements CatalogController {
     //region Constructors
     @Inject
-    public StandardCatalogController(EventBus eventBus,
-                                     OntologyProvider ontologyProvider,
+    public StandardCatalogController(OntologyProvider ontologyProvider,
                                      GraphElementSchemaProviderFactory schemaProviderFactory) {
-        this.eventBus = eventBus;
         this.ontologyProvider = ontologyProvider;
         this.schemaProviderFactory = schemaProviderFactory;
     }
@@ -89,7 +86,6 @@ public class StandardCatalogController implements CatalogController {
     //endregion
 
     //region Fields
-    private EventBus eventBus;
     private OntologyProvider ontologyProvider;
     private GraphElementSchemaProviderFactory schemaProviderFactory;
     //endregion

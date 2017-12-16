@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
@@ -29,14 +28,10 @@ public class StandardQueryController implements QueryController {
     //region Constructors
     @Inject
     public StandardQueryController(
-            EventBus eventBus,
             QueryDriver driver,
             CursorController cursorController,
             PageController pageController) {
-        this.eventBus = eventBus;
-        this.eventBus.register(this);
         this.driver = driver;
-
         this.cursorController = cursorController;
         this.pageController = pageController;
     }
@@ -167,7 +162,6 @@ public class StandardQueryController implements QueryController {
     //endregion
 
     //region Fields
-    private EventBus eventBus;
     private QueryDriver driver;
 
     private CursorController cursorController;

@@ -2,8 +2,6 @@ package com.kayhut.fuse.neo4j.executor;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
@@ -19,7 +17,6 @@ import com.kayhut.fuse.neo4j.cypher.CypherCompiler;
 import java.util.Optional;
 
 import static com.codahale.metrics.MetricRegistry.name;
-import static com.kayhut.fuse.model.Utils.submit;
 
 /**
  * Created by User on 08/03/2017.
@@ -34,15 +31,12 @@ import static com.kayhut.fuse.model.Utils.submit;
     //region Constructors
     @Inject
     public Neo4jOperationContextProcessor(
-            EventBus eventBus,
             ResourceStore resourceStore,
             OntologyProvider ontologyProvider,
             CursorFactory cursorFactory) {
         this.cursorFactory = cursorFactory;
-        this.eventBus = eventBus;
         this.resourceStore = resourceStore;
         this.ontologyProvider = ontologyProvider;
-        this.eventBus.register(this);
     }
     //endregion
 
@@ -67,7 +61,7 @@ import static com.kayhut.fuse.model.Utils.submit;
         PlanWithCost<Plan, PlanDetailedCost> planWithCost = new PlanWithCost<>(new Plan(), new PlanDetailedCost());
 
         time.stop();
-        return submit(eventBus, context.of(planWithCost));
+        return context.of(planWithCost);
     }
     //endregion
 
@@ -109,13 +103,12 @@ import static com.kayhut.fuse.model.Utils.submit;
 
         time.stop();
 
-        return submit(eventBus, context.of(cursor));
+        return context.of(cursor);
 
     }
     //endregion
 
     //region Fields
-    protected EventBus eventBus;
     private ResourceStore resourceStore;
     private OntologyProvider ontologyProvider;
     private CursorFactory cursorFactory;

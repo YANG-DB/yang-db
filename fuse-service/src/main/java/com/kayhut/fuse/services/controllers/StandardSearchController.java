@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -12,8 +11,8 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 public class StandardSearchController implements SearchController {
     //region Constructors
     @Inject
-    public StandardSearchController(EventBus eventBus) {
-        this.eventBus = eventBus;
+    public StandardSearchController() {
+
     }
     //endregion
 
@@ -29,14 +28,11 @@ public class StandardSearchController implements SearchController {
                         .data(new QueryResult())
                         .build())
                 .build();
-        //publish execution isCompleted
-        eventBus.post(new ExecutionCompleteCommand(response));
         return response;*/
         return null;
     }
     //endregion
 
     //region Fields
-    private EventBus eventBus;
     //endregion
 }

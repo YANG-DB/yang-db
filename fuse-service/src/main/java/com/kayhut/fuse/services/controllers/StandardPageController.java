@@ -1,8 +1,6 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -20,9 +18,8 @@ import static org.jooby.Status.*;
 public class StandardPageController implements PageController {
     //region Constructors
     @Inject
-    public StandardPageController(EventBus eventBus, PageDriver driver) {
+    public StandardPageController(PageDriver driver) {
         this.driver = driver;
-        eventBus.register(this);
     }
     //endregion
 

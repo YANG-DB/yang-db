@@ -1,6 +1,5 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
@@ -20,10 +19,7 @@ import static org.jooby.Status.*;
 public class StandardCursorController implements CursorController {
     //region Constructors
     @Inject
-    public StandardCursorController(Config conf, EventBus eventBus, CursorDriver driver) {
-        this.conf = conf;
-        this.eventBus = eventBus;
-        this.eventBus.register(this);
+    public StandardCursorController(CursorDriver driver) {
         this.driver = driver;
     }
     //endregion
@@ -58,8 +54,6 @@ public class StandardCursorController implements CursorController {
     //endregion
 
     //region Fields
-    private Config conf;
-    private EventBus eventBus;
     private CursorDriver driver;
     //endregion
 }
