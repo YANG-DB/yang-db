@@ -3,7 +3,7 @@ package com.kayhut.fuse.services.controllers;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
+import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -25,13 +25,12 @@ import static org.jooby.Status.*;
 /**
  * Created by lior on 19/02/2017.
  */
-@Singleton
 public class StandardQueryController implements QueryController {
     //region Constructors
     @Inject
     public StandardQueryController(
             EventBus eventBus,
-            QueryDispatcherDriver driver,
+            QueryDriver driver,
             CursorController cursorController,
             PageController pageController) {
         this.eventBus = eventBus;
@@ -169,7 +168,7 @@ public class StandardQueryController implements QueryController {
 
     //region Fields
     private EventBus eventBus;
-    private QueryDispatcherDriver driver;
+    private QueryDriver driver;
 
     private CursorController cursorController;
     private PageController pageController;

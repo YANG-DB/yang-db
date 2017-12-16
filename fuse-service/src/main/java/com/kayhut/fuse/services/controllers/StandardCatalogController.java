@@ -23,7 +23,6 @@ import static org.jooby.Status.OK;
 /**
  * Created by lior on 19/02/2017.
  */
-@Singleton
 public class StandardCatalogController implements CatalogController {
     //region Constructors
     @Inject

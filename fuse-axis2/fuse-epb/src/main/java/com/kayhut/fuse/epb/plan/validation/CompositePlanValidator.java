@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import javaslang.collection.Stream;
 
@@ -27,12 +27,12 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q> {
 
     //region PlanValidator Implementation
     @Override
-    public ValidationContext isPlanValid(P plan, Q query) {
+    public QueryValidation isPlanValid(P plan, Q query) {
         for(PlanValidator<P, Q> validator : this.validators) {
-            ValidationContext planValid = validator.isPlanValid(plan, query);
+            QueryValidation planValid = validator.isPlanValid(plan, query);
 
             if (planValid.valid() && this.mode == Mode.one) {
-                return ValidationContext.OK;
+                return QueryValidation.OK;
             }
 
             if (!planValid.valid() && this.mode == Mode.all) {
@@ -41,10 +41,10 @@ public class CompositePlanValidator<P, Q> implements PlanValidator<P, Q> {
         }
 
         if(this.mode == Mode.all) {
-            return ValidationContext.OK;
+            return QueryValidation.OK;
         }
 
-        return new ValidationContext(false,"Not all valid");
+        return new QueryValidation(false,"Not all valid");
     }
     //endregion
 

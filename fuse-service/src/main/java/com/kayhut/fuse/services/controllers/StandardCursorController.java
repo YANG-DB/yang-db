@@ -3,7 +3,7 @@ package com.kayhut.fuse.services.controllers;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.dispatcher.driver.CursorDispatcherDriver;
+import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -17,11 +17,10 @@ import static org.jooby.Status.*;
 /**
  * Created by lior on 19/02/2017.
  */
-@Singleton
 public class StandardCursorController implements CursorController {
     //region Constructors
     @Inject
-    public StandardCursorController(Config conf, EventBus eventBus, CursorDispatcherDriver driver) {
+    public StandardCursorController(Config conf, EventBus eventBus, CursorDriver driver) {
         this.conf = conf;
         this.eventBus = eventBus;
         this.eventBus.register(this);
@@ -61,6 +60,6 @@ public class StandardCursorController implements CursorController {
     //region Fields
     private Config conf;
     private EventBus eventBus;
-    private CursorDispatcherDriver driver;
+    private CursorDriver driver;
     //endregion
 }

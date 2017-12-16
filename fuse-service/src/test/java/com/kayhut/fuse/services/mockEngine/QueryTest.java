@@ -9,6 +9,7 @@ import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.test.data.DragonsOntology;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -60,6 +61,7 @@ public class QueryTest {
     }
 
     @Test
+    @Ignore
     public void createQueryAndFetch() throws IOException {
         CreateCursorRequest createCursorRequest = new CreateCursorRequest();
         createCursorRequest.setCursorType(CreateCursorRequest.CursorType.paths);

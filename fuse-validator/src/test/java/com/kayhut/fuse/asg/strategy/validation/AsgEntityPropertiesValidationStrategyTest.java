@@ -1,6 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.asg.strategy.AsgEntityPropertiesValidatorStrategy;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -11,6 +12,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
+import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,8 +48,8 @@ public class AsgEntityPropertiesValidationStrategyTest {
     @Test
     public void testValidQuery() {
         AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(validationContext.valid());
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(queryValidation.valid());
     }
 
     @Test
@@ -61,9 +63,9 @@ public class AsgEntityPropertiesValidationStrategyTest {
                 .build();
 
         AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertTrue(validationContext.errors()[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_1));
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(queryValidation.valid());
+        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_1));
     }
 
     @Test
@@ -79,9 +81,9 @@ public class AsgEntityPropertiesValidationStrategyTest {
                 build();
 
         AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertTrue(validationContext.errors()[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_1));
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(queryValidation.valid());
+        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_1));
     }
 
     @Test
@@ -96,9 +98,9 @@ public class AsgEntityPropertiesValidationStrategyTest {
                 .build();
 
         AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertTrue(validationContext.errors()[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_2));
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(queryValidation.valid());
+        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_2));
     }
 
     @Test
@@ -113,9 +115,9 @@ public class AsgEntityPropertiesValidationStrategyTest {
                 .build();
 
         AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertTrue(validationContext.errors()[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_2));
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(queryValidation.valid());
+        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgEntityPropertiesValidatorStrategy.ERROR_2));
     }
     @Test
     public void testNotValidPropConstraintIntervalTypeQuery() {
@@ -129,9 +131,9 @@ public class AsgEntityPropertiesValidationStrategyTest {
                 .build();
 
         AsgEntityPropertiesValidatorStrategy strategy = new AsgEntityPropertiesValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertEquals(validationContext.errors().length,2);
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(queryValidation.valid());
+        Assert.assertEquals(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class).length, 2);
     }
 
 

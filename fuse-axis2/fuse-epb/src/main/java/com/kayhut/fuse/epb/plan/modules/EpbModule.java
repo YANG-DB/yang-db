@@ -5,7 +5,6 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.epb.*;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.epb.EpbProcessor;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimator;
@@ -40,8 +39,6 @@ public class EpbModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(EpbProcessor.class).asEagerSingleton();
-
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .annotatedWith(Names.named(LoggingPlanSearcher.injectionName))
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
@@ -54,7 +51,6 @@ public class EpbModule extends ModuleBase {
         binder.bind(GraphStatisticsProvider.class).to(ElasticStatisticsGraphProvider.class).asEagerSingleton();
         binder.bind(StatDataProvider.class).to(ElasticStatDocumentProvider.class).asEagerSingleton();
 
-        //binder.bind(GraphElementSchemaProviderFactory.class).getTo(OntologyGraphElementSchemaProviderFactory.class).asEagerSingleton();
         binder.bind(StatisticsProviderFactory.class).to(EBaseStatisticsProviderFactory.class).asEagerSingleton();
 
         binder.bind(CostEstimationConfig.class)

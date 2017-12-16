@@ -9,7 +9,6 @@ import com.kayhut.fuse.model.transport.CreateQueryRequest;
 /**
  * Created by lior on 19/02/2017.
  */
-@Singleton
 public class StandardSearchController implements SearchController {
     //region Constructors
     @Inject

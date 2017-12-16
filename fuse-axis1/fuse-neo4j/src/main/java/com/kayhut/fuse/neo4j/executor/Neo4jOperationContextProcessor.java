@@ -5,8 +5,6 @@ import com.codahale.metrics.Timer;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
@@ -26,7 +24,7 @@ import static com.kayhut.fuse.model.Utils.submit;
 /**
  * Created by User on 08/03/2017.
  */
-public class Neo4jOperationContextProcessor implements
+/*public class Neo4jOperationContextProcessor implements
         CursorCreationOperationContext.Processor,
         QueryCreationOperationContext.Processor {
 
@@ -122,4 +120,4 @@ public class Neo4jOperationContextProcessor implements
     private OntologyProvider ontologyProvider;
     private CursorFactory cursorFactory;
     //endregion
-}
+}*/

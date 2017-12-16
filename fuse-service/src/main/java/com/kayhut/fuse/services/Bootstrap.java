@@ -1,11 +1,9 @@
 package com.kayhut.fuse.services;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Binder;
 import com.google.inject.matcher.Matchers;
 import com.kayhut.fuse.dispatcher.utils.*;
-import com.kayhut.fuse.events.DeadEventsListener;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.Jooby;
@@ -21,9 +19,6 @@ import java.util.List;
 public class Bootstrap implements Jooby.Module {
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
-        //register eventBus with service life cycle
-        binder.bind(EventBus.class).toInstance(new EventBus(new GlobalSubscriberExceptionHandler()));
-        binder.bind(DeadEventsListener.class).toInstance(new DeadEventsListener());
 
         binder.bindInterceptor(Matchers.any(), Matchers.annotatedWith(TimerAnnotation.class),
                 new PerformanceStatistics(binder.getProvider(MetricRegistry.class)));
