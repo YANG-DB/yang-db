@@ -16,7 +16,7 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
     //region Constructors
     @Inject
     public LoggingPlanSearcher(@Named(injectionName) PlanSearcher<P, C, Q> innerPlanSearcher, Descriptor<PlanWithCost<P, C>> descriptor) {
-        this.logger = LoggerFactory.getLogger(this.getClass());
+        this.logger = LoggerFactory.getLogger(innerPlanSearcher.getClass());
         this.innerPlanSearcher = innerPlanSearcher;
         this.descriptor = descriptor;
     }
@@ -28,7 +28,7 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
         boolean thrownException = false;
 
         try {
-            this.logger.debug("start search");
+            this.logger.trace("start search");
             PlanWithCost<P, C> planWithCost = this.innerPlanSearcher.search(query);
             this.logger.debug("execution plan: {}", this.descriptor.describe(planWithCost));
             return planWithCost;
@@ -37,7 +37,7 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.debug("finish search");
+                this.logger.trace("finish search");
             }
         }
     }

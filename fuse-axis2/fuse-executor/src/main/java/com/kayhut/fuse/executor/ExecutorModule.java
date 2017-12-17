@@ -1,8 +1,15 @@
 package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
+import com.google.inject.Singleton;
+import com.kayhut.fuse.dispatcher.driver.CursorDriver;
+import com.kayhut.fuse.dispatcher.driver.PageDriver;
+import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
+import com.kayhut.fuse.executor.driver.StandardCursorDriver;
+import com.kayhut.fuse.executor.driver.StandardPageDriver;
+import com.kayhut.fuse.executor.driver.StandardQueryDriver;
 import com.kayhut.fuse.executor.elasticsearch.LoggingClient;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.*;
@@ -14,6 +21,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.jooby.Env;
+import org.jooby.scope.RequestScoped;
 import org.unipop.configuration.UniGraphConfiguration;
 
 import java.net.InetAddress;
@@ -38,6 +46,10 @@ public class ExecutorModule extends ModuleBase {
 
         binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
         binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
+
+        binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
+        binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
+        binder.bind(PageDriver.class).to(StandardPageDriver.class).in(RequestScoped.class);
     }
     //endregion
 

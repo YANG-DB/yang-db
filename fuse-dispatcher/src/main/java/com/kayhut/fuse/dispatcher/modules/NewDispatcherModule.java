@@ -1,15 +1,8 @@
 package com.kayhut.fuse.dispatcher.modules;
 
 import com.google.inject.Binder;
-import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Names;
-import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.processor.PageProcessor;
-import com.kayhut.fuse.dispatcher.context.processor.ResourcePersistProcessor;
 import com.kayhut.fuse.dispatcher.driver.*;
-import com.kayhut.fuse.dispatcher.interception.ExceptionHandlingMethodInterceptor;
 import com.kayhut.fuse.dispatcher.ontology.DirectoryOntologyProvider;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.store.InMemoryResourceStore;
@@ -41,15 +34,15 @@ public class NewDispatcherModule extends ModuleBase {
                 .asEagerSingleton();
 
         binder.bind(OntologyProvider.class).toInstance(getOntologyProvider(conf));
-        binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
+        //binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
 
         // page processor
-        binder.bind(PageCreationOperationContext.Processor.class).to(PageProcessor.class).asEagerSingleton();
+        //binder.bind(PageCreationOperationContext.Processor.class).to(PageProcessor.class).asEagerSingleton();
 
         // service controllers
-        binder.bind(QueryDispatcherDriver.class).to(SimpleQueryDispatcherDriver.class).asEagerSingleton();
-        binder.bind(CursorDispatcherDriver.class).to(SimpleCursorDispatcherDriver.class).asEagerSingleton();
-        binder.bind(PageDispatcherDriver.class).to(SimplePageDispatcherDriver.class).asEagerSingleton();
+        /*binder.bind(QueryDriver.class).to(SimpleQueryDispatcherDriver.class).asEagerSingleton();
+        binder.bind(CursorDriver.class).to(SimpleCursorDispatcherDriver.class).asEagerSingleton();
+        binder.bind(PageDriver.class).to(SimplePageDispatcherDriver.class).asEagerSingleton();*/
     }
 
     //region Private Methods

@@ -2,7 +2,6 @@ package com.kayhut.fuse.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.EventBus;
 import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.query.EBase;
@@ -33,11 +32,6 @@ public interface Utils {
             }
             return null;
         }).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-
-    static <T> T submit(EventBus eventBus, T data) {
-        eventBus.post(data);
-        return data;
     }
 
     static String getOrCreateId(String id) {

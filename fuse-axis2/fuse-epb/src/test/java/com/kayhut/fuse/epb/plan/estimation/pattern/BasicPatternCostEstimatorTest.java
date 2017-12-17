@@ -53,22 +53,7 @@ public class BasicPatternCostEstimatorTest {
         when(edgeEnd.getRedundantProperty(any())).thenAnswer(invocationOnMock -> {
             String property = (String)invocationOnMock.getArguments()[0];
             if(property.equals("lastName")){
-                return Optional.of(new GraphRedundantPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return "lastName";
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "string";
-                    }
-
-                    @Override
-                    public String getPropertyRedundantName() {
-                        return "entityB.lastName";
-                    }
-                });
+                return Optional.of(new GraphRedundantPropertySchema.Impl("lastName", "entityB.lastName", "string"));
             }
 
 

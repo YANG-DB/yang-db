@@ -93,17 +93,14 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             return Optional.empty();
         }
 
-        return Optional.of(new GraphElementPropertySchema() {
-            @Override
-            public String getName() {
-                return property.get().getName();
-            }
+        Optional<GraphElementPropertySchema> propertySchema = this.schemaProvider.getPropertySchema(name);
 
-            @Override
-            public String getType() {
-                return property.get().getType();
-            }
-        });
+        return Optional.of(new GraphElementPropertySchema.Impl(
+                property.get().getName(),
+                property.get().getType(),
+                propertySchema.map(GraphElementPropertySchema::getIndexingSchemes)
+                        .orElseGet(() -> Collections.singletonList(new GraphElementPropertySchema.IndexingSchema.Impl(
+                                            GraphElementPropertySchema.IndexingSchema.Type.exact, property.get().getName())))));
     }
 
     @Override
@@ -135,13 +132,14 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 vertexSchema.getIndexPartitions(),
                 Stream.ofAll(entityType.get().getProperties() == null ? Collections.emptyList() : entityType.get().getProperties())
                         .map(pType -> $ont.$property(pType))
-                        .filter(property -> property.isPresent())
+                        .filter(Optional::isPresent)
                         .map(property -> (GraphElementPropertySchema)
+                                (vertexSchema.getProperty(property.get().getName()).isPresent() ?
                                 new GraphElementPropertySchema.Impl(
                                         property.get().getName(),
-                                        property.get().getType()))
-                        .toJavaList()
-        ));
+                                        property.get().getType(),
+                                        vertexSchema.getProperty(property.get().getName()).get().getIndexingSchemes()) :
+                                new GraphElementPropertySchema.Impl(property.get().getName(), property.get().getType())))));
     }
 
     private Optional<GraphEdgeSchema> getRelationSchema(
@@ -159,19 +157,19 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 edgeSchema.getConstraint(),
                 edgeSchema.getSource().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                            edgeSchema.getSource().get().getIdField(),
-                            Optional.of(sourceVertexLabel),
-                            edgeSchema.getSource().get().getRedundantProperties(),
-                            edgeSchema.getSource().get().getRouting(),
-                            edgeSchema.getSource().get().getIndexPartitions())) :
+                                edgeSchema.getSource().get().getIdField(),
+                                Optional.of(sourceVertexLabel),
+                                edgeSchema.getSource().get().getRedundantProperties(),
+                                edgeSchema.getSource().get().getRouting(),
+                                edgeSchema.getSource().get().getIndexPartitions())) :
                         Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(sourceVertexLabel))),
                 edgeSchema.getDestination().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                        edgeSchema.getDestination().get().getIdField(),
-                        Optional.of(destinationVertexLabel),
-                        edgeSchema.getDestination().get().getRedundantProperties(),
-                        edgeSchema.getDestination().get().getRouting(),
-                        edgeSchema.getDestination().get().getIndexPartitions())) :
+                                edgeSchema.getDestination().get().getIdField(),
+                                Optional.of(destinationVertexLabel),
+                                edgeSchema.getDestination().get().getRedundantProperties(),
+                                edgeSchema.getDestination().get().getRouting(),
+                                edgeSchema.getDestination().get().getIndexPartitions())) :
                         Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(destinationVertexLabel))),
                 edgeSchema.getDirection(),
                 edgeSchema.getRouting(),
@@ -180,10 +178,12 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                         .map(pType -> $ont.$property(pType))
                         .filter(property -> property.isPresent())
                         .map(property -> (GraphElementPropertySchema)
-                                new GraphElementPropertySchema.Impl(
-                                        property.get().getName(),
-                                        property.get().getType()))
-                        .toJavaList(),
+                                (edgeSchema.getProperty(property.get().getName()).isPresent() ?
+                                        new GraphElementPropertySchema.Impl(
+                                                property.get().getName(),
+                                                property.get().getType(),
+                                                edgeSchema.getProperty(property.get().getName()).get().getIndexingSchemes()) :
+                                        new GraphElementPropertySchema.Impl(property.get().getName(), property.get().getType()))),
                 edgeSchema.getApplications()
         ));
     }

@@ -20,7 +20,7 @@ public class DragonsOntologyGraphLayoutProviderFactoryTest {
     public void testSingleRedundantProp() throws IOException {
         DragonsOntologyGraphLayoutProviderFactory factory = new DragonsOntologyGraphLayoutProviderFactory("GraphLayoutProviderFactory.conf");
         GraphLayoutProvider layoutProvider = factory.get(createDragonsOntologyLong());
-        Optional<GraphRedundantPropertySchema> property = layoutProvider.getRedundantProperty("Freez", new DragonsOntologyGraphLayoutProviderFactory.DragonLayout("name", "name"));
+        Optional<GraphRedundantPropertySchema> property = layoutProvider.getRedundantProperty("Freez", new GraphRedundantPropertySchema.Impl("name", "name", "string"));
 
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
         Assert.assertEquals(property.get().getType(),"string");
@@ -31,13 +31,13 @@ public class DragonsOntologyGraphLayoutProviderFactoryTest {
     public void testDoubleRedundantProp() throws IOException {
         DragonsOntologyGraphLayoutProviderFactory factory = new DragonsOntologyGraphLayoutProviderFactory("GraphLayoutProviderFactory.conf");
         GraphLayoutProvider layoutProvider = factory.get(createDragonsOntologyLong());
-        Optional<GraphRedundantPropertySchema> property = layoutProvider.getRedundantProperty("Fire", new DragonsOntologyGraphLayoutProviderFactory.DragonLayout("color", "color"));
+        Optional<GraphRedundantPropertySchema> property = layoutProvider.getRedundantProperty("Fire", new GraphRedundantPropertySchema.Impl("color", "color", "string"));
 
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.color");
         Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"color");
 
-        property = layoutProvider.getRedundantProperty("Fire", new DragonsOntologyGraphLayoutProviderFactory.DragonLayout("name", "name"));
+        property = layoutProvider.getRedundantProperty("Fire", new GraphRedundantPropertySchema.Impl("name", "name", "string"));
         Assert.assertEquals(property.get().getPropertyRedundantName(),"entityB.name");
         Assert.assertEquals(property.get().getType(),"string");
         Assert.assertEquals(property.get().getName(),"name");

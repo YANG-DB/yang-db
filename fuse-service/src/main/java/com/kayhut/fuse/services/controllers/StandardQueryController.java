@@ -1,9 +1,8 @@
 package com.kayhut.fuse.services.controllers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.kayhut.fuse.dispatcher.driver.QueryDispatcherDriver;
+import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -25,19 +24,14 @@ import static org.jooby.Status.*;
 /**
  * Created by lior on 19/02/2017.
  */
-@Singleton
 public class StandardQueryController implements QueryController {
     //region Constructors
     @Inject
     public StandardQueryController(
-            EventBus eventBus,
-            QueryDispatcherDriver driver,
+            QueryDriver driver,
             CursorController cursorController,
             PageController pageController) {
-        this.eventBus = eventBus;
-        this.eventBus.register(this);
         this.driver = driver;
-
         this.cursorController = cursorController;
         this.pageController = pageController;
     }
@@ -48,12 +42,6 @@ public class StandardQueryController implements QueryController {
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
         String queryId = getOrCreateId(request.getId());
         QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis());
-        //plan verbose flag
-        if (request.isVerbose()) {
-            MDC.put(PlanNode.PLAN_VERBOSE, "true");
-        } else {
-            MDC.put(PlanNode.PLAN_VERBOSE, null);
-        }
 
         return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR )
                 .data(driver.create(metadata, request.getQuery()))
@@ -168,8 +156,7 @@ public class StandardQueryController implements QueryController {
     //endregion
 
     //region Fields
-    private EventBus eventBus;
-    private QueryDispatcherDriver driver;
+    private QueryDriver driver;
 
     private CursorController cursorController;
     private PageController pageController;

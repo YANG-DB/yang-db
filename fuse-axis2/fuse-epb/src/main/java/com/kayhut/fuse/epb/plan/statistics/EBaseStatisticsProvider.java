@@ -212,17 +212,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
             if(enumeratedType.isPresent()) {
                 //todo: Hack for present time, remove!!!
                 //Value value = (Value) constraint.getExpr();
-                GraphElementPropertySchema tmp  = new GraphElementPropertySchema() {
-                    @Override
-                    public String getName() {
-                        return graphElementPropertySchema.getName();
-                    }
-
-                    @Override
-                    public String getType() {
-                        return "enum";
-                    }
-                };
+                GraphElementPropertySchema tmp  = new GraphElementPropertySchema.Impl( graphElementPropertySchema.getName(), "enum");
                 return getValueConditionCardinality(graphElementSchema, tmp, constraint, constraint.getExpr(), relevantIndices, String.class);
             }
         }

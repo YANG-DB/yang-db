@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.epb.plan.validation.opValidator.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -22,7 +22,7 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
 
     //region CompositePlanValidator Implementation
     @Override
-    public ValidationContext isPlanValid(Plan plan, AsgQuery query) {
+    public QueryValidation isPlanValid(Plan plan, AsgQuery query) {
         return super.isPlanValid(plan, query);
     }
     //endregion
