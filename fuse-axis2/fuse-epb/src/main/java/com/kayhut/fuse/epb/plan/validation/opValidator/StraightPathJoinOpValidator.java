@@ -3,7 +3,6 @@ package com.kayhut.fuse.epb.plan.validation.opValidator;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -15,6 +14,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.validation.QueryValidation;
 
 import java.util.*;
 
@@ -75,14 +75,14 @@ public class StraightPathJoinOpValidator implements ChainedPlanValidator.PlanOpV
     }
 
     @Override
-    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if(planOp instanceof EntityJoinOp){
             EntityJoinOp join = (EntityJoinOp) planOp;
             if(opIndex == 0 && compositePlanOp.getOps().size() == 1 && !isPathAvailable(join, query)){
-                return new ValidationContext(false, "JoinOp path validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+                return new QueryValidation(false, "JoinOp path validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
             }
         }
-        return ValidationContext.OK;
+        return QueryValidation.OK;
     }
 }

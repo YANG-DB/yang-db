@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -12,6 +11,7 @@ import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,7 +64,7 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
         Plan plan = new Plan(
                 new EntityJoinOp(new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)))
                         , new Plan(new EntityOp(AsgQueryUtil.element$(query,3)))));
-        ValidationContext planValid = this.validator.isPlanValid(plan, query);
+        QueryValidation planValid = this.validator.isPlanValid(plan, query);
         Assert.assertTrue(planValid.valid());
 
     }
@@ -77,7 +77,7 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
                         , new Plan(new EntityOp(AsgQueryUtil.element$(query,3)),
                         new RelationOp(reverseRelation(AsgQueryUtil.element$(query,2))),
                         new EntityOp(AsgQueryUtil.element$(query,1)))));
-        ValidationContext planValid = this.validator.isPlanValid(plan, query);
+        QueryValidation planValid = this.validator.isPlanValid(plan, query);
         Assert.assertTrue(planValid.valid());
 
     }
@@ -89,7 +89,7 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
                         , new Plan(new EntityOp(AsgQueryUtil.element$(query,1)),
                         new RelationOp(AsgQueryUtil.element$(query,2)),
                         new EntityOp(AsgQueryUtil.element$(query,3)))));
-        ValidationContext planValid = this.validator.isPlanValid(plan, query);
+        QueryValidation planValid = this.validator.isPlanValid(plan, query);
         Assert.assertFalse(planValid.valid());
 
     }
@@ -117,7 +117,7 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
         EntityJoinOp joinOp2 = new EntityJoinOp(new Plan(joinOp1), right2);
 
 
-        ValidationContext validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);
+        QueryValidation validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);
         Assert.assertTrue(validationContext.valid());
 
     }
@@ -141,7 +141,7 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
         EntityJoinOp joinOp2 = new EntityJoinOp(new Plan(joinOp1), right2);
 
 
-        ValidationContext validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);
+        QueryValidation validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);
         Assert.assertFalse(validationContext.valid());
 
     }
@@ -166,7 +166,7 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
         EntityJoinOp joinOp2 = new EntityJoinOp(new Plan(joinOp1), right2);
 
 
-        ValidationContext validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);
+        QueryValidation validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);
         Assert.assertFalse(validationContext.valid());
 
     }
