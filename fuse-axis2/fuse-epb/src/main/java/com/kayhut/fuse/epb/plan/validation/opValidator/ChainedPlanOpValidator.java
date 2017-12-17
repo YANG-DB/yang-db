@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
@@ -23,22 +23,22 @@ public class ChainedPlanOpValidator implements ChainedPlanValidator.PlanOpValida
     }
 
     @Override
-    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp currentPlanOp = compositePlanOp.getOps().get(opIndex);
         if (!CompositePlanOp.class.isAssignableFrom(currentPlanOp.getClass())) {
-            return ValidationContext.OK;
+            return QueryValidation.OK;
         }
 
         CompositePlanOp currentCompositePlanOp = (CompositePlanOp)currentPlanOp;
         this.planOpValidator.reset();
         for (int innerOpIndex = 0 ; innerOpIndex < currentCompositePlanOp.getOps().size() ; innerOpIndex++) {
-            ValidationContext valid = planOpValidator.isPlanOpValid(query, currentCompositePlanOp, innerOpIndex);
+            QueryValidation valid = planOpValidator.isPlanOpValid(query, currentCompositePlanOp, innerOpIndex);
             if(!valid.valid()) {
                 return valid;
             }
         }
 
-        return ValidationContext.OK;
+        return QueryValidation.OK;
     }
     //endregion
 

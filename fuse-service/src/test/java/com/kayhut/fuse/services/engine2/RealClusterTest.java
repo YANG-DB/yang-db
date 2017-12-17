@@ -1098,7 +1098,7 @@ public class RealClusterTest {
                 new EProp(10, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames", "description")))))
                 .build();
 
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, true);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
 
         long start = System.currentTimeMillis();
@@ -1170,7 +1170,7 @@ public class RealClusterTest {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "roman.es").build();
+                .put("cluster.name", "knowledge").build();
         Client client = TransportClient.builder().settings(settings).build()
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
 

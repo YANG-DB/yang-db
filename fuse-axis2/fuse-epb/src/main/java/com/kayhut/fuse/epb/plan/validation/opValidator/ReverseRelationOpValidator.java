@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -9,14 +9,11 @@ import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.log.Trace;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import javaslang.Tuple2;
 
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * Created by Roman on 30/04/2017.
@@ -29,28 +26,28 @@ public class ReverseRelationOpValidator implements ChainedPlanValidator.PlanOpVa
     }
 
     @Override
-    public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         if (opIndex == 0) {
-            return ValidationContext.OK;
+            return QueryValidation.OK;
         }
 
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if (!(planOp instanceof RelationOp)) {
-            return ValidationContext.OK;
+            return QueryValidation.OK;
         }
 
         Optional<EntityOp> previousEntityOp = getPreviousOp(compositePlanOp, opIndex, EntityOp.class);
         if (!previousEntityOp.isPresent()) {
-            return ValidationContext.OK;
+            return QueryValidation.OK;
         }
 
         AsgEBase<EEntityBase> previousEntityAsg = previousEntityOp.get().getAsgEbase();
         AsgEBase<Rel> relAsg = ((RelationOp)planOp).getAsgEbase();
 
-        ValidationContext context = ValidationContext.OK;
+        QueryValidation context = QueryValidation.OK;
         boolean result = areEntityAndRelationReversed(query, previousEntityAsg, relAsg);
         if(!result) {
-            context = new ValidationContext(
+            context = new QueryValidation(
                     result,
                     "Reverse:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
         }

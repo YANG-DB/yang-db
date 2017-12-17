@@ -1,11 +1,15 @@
 package com.kayhut.fuse.asg;
 
 import com.google.inject.Binder;
-import com.kayhut.fuse.asg.strategy.AsgValidatorStrategyRegistrar;
-import com.kayhut.fuse.asg.strategy.AsgValidatorStrategyRegistrarImpl;
-import com.kayhut.fuse.asg.strategy.ValidatorStrategyRegisteredAsgDriver;
+import com.google.inject.TypeLiteral;
+import com.kayhut.fuse.asg.validation.AsgQueryValidator;
+import com.kayhut.fuse.asg.validation.AsgValidatorStrategyRegistrar;
+import com.kayhut.fuse.asg.validation.AsgValidatorStrategyRegistrarImpl;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
+import com.kayhut.fuse.dispatcher.validation.QueryValidator;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.descriptors.Descriptor;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
@@ -15,7 +19,12 @@ import org.jooby.Env;
 public class AsgValidationModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(AsgValidatorStrategyRegistrar.class).to(AsgValidatorStrategyRegistrarImpl.class).asEagerSingleton();
-        binder.bind(QueryValidationOperationContext.Processor.class).to(ValidatorStrategyRegisteredAsgDriver.class).asEagerSingleton();
+        binder.bind(AsgValidatorStrategyRegistrar.class)
+                .to(AsgValidatorStrategyRegistrarImpl.class)
+                .asEagerSingleton();
+
+        binder.bind(new TypeLiteral<QueryValidator<AsgQuery>>(){})
+                .to(AsgQueryValidator.class)
+                .asEagerSingleton();
     }
 }

@@ -1,12 +1,15 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.asg.strategy.AsgCycleValidatorStrategy;
+import com.kayhut.fuse.asg.strategy.AsgRelPropertiesValidatorStrategy;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,8 +45,8 @@ public class AsgCycleValidationStrategyTest {
     @Test
     public void testValidQuery() {
         AsgCycleValidatorStrategy strategy = new AsgCycleValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(validationContext.valid());
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(queryValidation.valid());
     }
 
     @Test
@@ -58,9 +61,9 @@ public class AsgCycleValidationStrategyTest {
                 .build();
 
         AsgRelPropertiesValidatorStrategy strategy = new AsgRelPropertiesValidatorStrategy();
-        ValidationContext validationContext = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(validationContext.valid());
-        Assert.assertTrue(validationContext.errors()[0].contains(AsgRelPropertiesValidatorStrategy.ERROR_2));
+        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(queryValidation.valid());
+        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgRelPropertiesValidatorStrategy.ERROR_2));
     }
 
 }

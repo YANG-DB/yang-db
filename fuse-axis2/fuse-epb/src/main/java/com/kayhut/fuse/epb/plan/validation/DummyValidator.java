@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.kayhut.fuse.dispatcher.utils.ValidationContext;
+import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 
 /**
@@ -8,7 +8,7 @@ import com.kayhut.fuse.dispatcher.epb.PlanValidator;
  */
 public class DummyValidator<P,Q> implements PlanValidator<P,Q> {
     @Override
-    public ValidationContext isPlanValid(P plan, Q query) {
-        return ValidationContext.OK;
+    public QueryValidation isPlanValid(P plan, Q query) {
+        return QueryValidation.OK;
     }
 }

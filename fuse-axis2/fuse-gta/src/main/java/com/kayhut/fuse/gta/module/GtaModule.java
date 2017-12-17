@@ -4,8 +4,6 @@ import com.google.inject.Binder;
 import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.gta.LoggingPlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
-import com.kayhut.fuse.gta.GtaTraversalCursorProcessor;
 import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.typesafe.config.Config;
 import org.jooby.Env;
@@ -23,11 +21,6 @@ public class GtaModule extends ModuleBase {
                 .asEagerSingleton();
         binder.bind(PlanTraversalTranslator.class)
                 .to(LoggingPlanTraversalTranslator.class)
-                .asEagerSingleton();
-
-
-        binder.bind(CursorCreationOperationContext.Processor.class)
-                .to(GtaTraversalCursorProcessor.class)
                 .asEagerSingleton();
     }
     //endregion

@@ -2,10 +2,6 @@ package com.kayhut.fuse.dispatcher.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.TypeLiteral;
-import com.kayhut.fuse.dispatcher.context.CursorCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.PageCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.QueryCreationOperationContext;
-import com.kayhut.fuse.dispatcher.context.QueryValidationOperationContext;
 import com.kayhut.fuse.dispatcher.descriptors.*;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.PageResource;
@@ -49,10 +45,10 @@ public class DescriptorsModule extends ModuleBase {
         binder.bind(new TypeLiteral<Descriptor<CursorResource>>(){}).to(CursorResourceDescriptor.class).asEagerSingleton();
         binder.bind(new TypeLiteral<Descriptor<PageResource>>(){}).to(PageResourceDescriptor.class).asEagerSingleton();
 
-        binder.bind(new TypeLiteral<Descriptor<QueryCreationOperationContext>>(){}).to(QueryCreationOperationContextDescriptor.class).asEagerSingleton();
+        /*binder.bind(new TypeLiteral<Descriptor<QueryCreationOperationContext>>(){}).to(QueryCreationOperationContextDescriptor.class).asEagerSingleton();
         binder.bind(new TypeLiteral<Descriptor<QueryValidationOperationContext>>(){}).to(QueryValidationOperationContextDescriptor.class).asEagerSingleton();
         binder.bind(new TypeLiteral<Descriptor<CursorCreationOperationContext>>(){}).to(CursorCreationOperationContextDescriptor.class).asEagerSingleton();
-        binder.bind(new TypeLiteral<Descriptor<PageCreationOperationContext>>(){}).to(PageCreationOperationContextDescriptor.class).asEagerSingleton();
+        binder.bind(new TypeLiteral<Descriptor<PageCreationOperationContext>>(){}).to(PageCreationOperationContextDescriptor.class).asEagerSingleton();*/
     }
     //endregion
 }

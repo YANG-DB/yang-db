@@ -38,8 +38,10 @@ public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutPro
                 if(!first.isPresent()) return Optional.empty();
 
                 Map redundantProperty = (Map) first.get();
-                return Optional.of(new DragonLayout(redundantProperty.get("name").toString(),
-                        redundantProperty.get("redundant_name").toString()));
+                return Optional.of(new GraphRedundantPropertySchema.Impl(
+                        redundantProperty.get("name").toString(),
+                        redundantProperty.get("redundant_name").toString(),
+                        "string"));
             } catch (Exception e) {
                 return Optional.empty();
             }
@@ -57,31 +59,4 @@ public class DragonsOntologyGraphLayoutProviderFactory implements GraphLayoutPro
     //region Fields
     private Map<String, GraphLayoutProvider> graphLayoutProviders;
     //endregion
-
-    public static class DragonLayout implements GraphRedundantPropertySchema {
-
-
-        private final String name;
-        private final String redundant;
-
-        public DragonLayout(String name, String redundant) {
-            this.name = name;
-            this.redundant = redundant;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String getType() {
-            return STRING;
-        }
-
-        @Override
-        public String getPropertyRedundantName() {
-            return redundant;
-        }
-    }
 }
