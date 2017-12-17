@@ -1098,7 +1098,7 @@ public class RealClusterTest {
                 new EProp(10, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames", "description")))))
                 .build();
 
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, true);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
 
         long start = System.currentTimeMillis();

@@ -2,6 +2,9 @@ package com.kayhut.fuse.services;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
+import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.CreatePageRequest;
+import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.*;
 import com.kayhut.fuse.services.controllers.logging.*;
 import com.typesafe.config.Config;
@@ -54,5 +57,11 @@ public class ServicesModule implements Jooby.Module {
                 .to(StandardCatalogController.class);
         binder.bind(CatalogController.class)
                 .to(LoggingCatalogController.class);
+
+
+        // bind requests
+        binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
+        binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
+        binder.bind(CreatePageRequest.class).in(RequestScoped.class);
     }
 }

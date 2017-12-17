@@ -42,12 +42,6 @@ public class StandardQueryController implements QueryController {
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
         String queryId = getOrCreateId(request.getId());
         QueryMetadata metadata = new QueryMetadata(queryId, request.getName(), System.currentTimeMillis());
-        //plan verbose flag
-        if (request.isVerbose()) {
-            MDC.put(PlanNode.PLAN_VERBOSE, "true");
-        } else {
-            MDC.put(PlanNode.PLAN_VERBOSE, null);
-        }
 
         return Builder.<QueryResourceInfo>builder(request.getId(), CREATED, SERVER_ERROR )
                 .data(driver.create(metadata, request.getQuery()))
