@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.kayhut.fuse.model.validation.QueryValidation.OK;
+import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
 
 public class AsgOntologyEntityValidatorStrategy implements AsgValidatorStrategy {
@@ -22,7 +22,7 @@ public class AsgOntologyEntityValidatorStrategy implements AsgValidatorStrategy 
     public static final String ERROR_2 = "Ontology not containing Relation type ";
 
     @Override
-    public QueryValidation apply(AsgQuery query, AsgStrategyContext context) {
+    public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
         Ontology.Accessor accessor = context.getOntologyAccessor();
         List<AsgEBase<EBase>> list = elements(query.getStart(), (asgEBase -> Collections.emptyList()), AsgEBase::getNext,
@@ -40,7 +40,7 @@ public class AsgOntologyEntityValidatorStrategy implements AsgValidatorStrategy 
         if(errors.isEmpty())
             return OK;
 
-        return new QueryValidation(false,errors.toArray(new String[errors.size()]));
+        return new ValidationResult(false,errors.toArray(new String[errors.size()]));
     }
     //endregion
 }

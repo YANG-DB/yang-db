@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
@@ -13,7 +13,7 @@ public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> {
 
     public interface PlanOpValidator {
         void reset();
-        QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex);
+        ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex);
     }
 
     //region Constructors
@@ -24,17 +24,17 @@ public class ChainedPlanValidator implements PlanValidator<Plan, AsgQuery> {
 
     //region PlanValidator Implementation
     @Override
-    public QueryValidation isPlanValid(Plan plan, AsgQuery query) {
+    public ValidationResult isPlanValid(Plan plan, AsgQuery query) {
         this.planOpValidator.reset();
 
         for (int opIndex = 0 ; opIndex < plan.getOps().size() ; opIndex++) {
-            QueryValidation valid = planOpValidator.isPlanOpValid(query, plan, opIndex);
+            ValidationResult valid = planOpValidator.isPlanOpValid(query, plan, opIndex);
             if(!valid.valid()) {
                 return valid;
             }
         }
 
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
     //endregion
 

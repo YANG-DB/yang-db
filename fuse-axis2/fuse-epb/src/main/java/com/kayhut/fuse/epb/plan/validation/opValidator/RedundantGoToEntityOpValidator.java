@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
@@ -28,11 +28,11 @@ public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.Plan
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if (planOp instanceof GoToEntityOp) {
             if (!this.entityEnums.contains(((AsgEBaseContainer)planOp).getAsgEbase().geteNum())) {
-                return new QueryValidation(
+                return new ValidationResult(
                         false,
                         "GoTo:Validation failed on:" +   compositePlanOp.toString() + "<" + opIndex + ">");
             }
@@ -42,7 +42,7 @@ public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.Plan
             this.entityEnums.add(((AsgEBaseContainer)planOp).getAsgEbase().geteNum());
         }
 
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
     //endregion
 

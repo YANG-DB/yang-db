@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
@@ -27,18 +27,18 @@ public class NoRedundantRelationOpValidator implements ChainedPlanValidator.Plan
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if (!(planOp instanceof RelationOp)) {
-            return QueryValidation.OK;
+            return ValidationResult.OK;
         }
 
         if (!this.relationEnums.contains(((RelationOp) planOp).getAsgEbase().geteNum())){
             this.relationEnums.add(((RelationOp) planOp).getAsgEbase().geteNum());
-            return QueryValidation.OK;
+            return ValidationResult.OK;
         }
 
-        return new QueryValidation(
+        return new ValidationResult(
                 false,
                 "NoRedundant:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
     }

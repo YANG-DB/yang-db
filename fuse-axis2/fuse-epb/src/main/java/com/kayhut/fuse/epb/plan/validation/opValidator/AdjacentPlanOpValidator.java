@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -33,14 +33,14 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         if (opIndex == 0) {
             if (!(compositePlanOp.getOps().get(0) instanceof EntityOp)) {
-                return new QueryValidation(
+                return new ValidationResult(
                         false,
                         "Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             } else
-                return QueryValidation.OK;
+                return ValidationResult.OK;
         }
 
         PlanOp currentPlanOp = compositePlanOp.getOps().get(opIndex);
@@ -48,7 +48,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
 
         if (currentPlanOp instanceof EntityFilterOp) {
             if (!(previousPlanOp instanceof EntityOp)) {
-                return new QueryValidation(
+                return new ValidationResult(
                         false,
                         "Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             }
@@ -61,7 +61,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
 
         if (currentPlanOp instanceof RelationFilterOp) {
             if (!(previousPlanOp instanceof RelationOp)) {
-                return new QueryValidation(
+                return new ValidationResult(
                         false,
                         "Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
 
@@ -74,13 +74,13 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         }
 
         if (currentPlanOp instanceof GoToEntityOp) {
-            return QueryValidation.OK;
+            return ValidationResult.OK;
         }
 
         if (currentPlanOp instanceof EntityOp) {
             Optional<RelationOp> previousRelationOp = getPreviousOp(compositePlanOp, opIndex, RelationOp.class);
             if (!previousRelationOp.isPresent()) {
-                return new QueryValidation(
+                return new ValidationResult(
                         false,
                         "Adjacent:Validation failed on:" + compositePlanOp + "<" + opIndex + ">");
             }
@@ -94,7 +94,7 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
         if (currentPlanOp instanceof RelationOp) {
             Optional<EntityOp> previousEntityOp = getPreviousOp(compositePlanOp, opIndex, EntityOp.class);
             if (!previousEntityOp.isPresent()) {
-                return new QueryValidation(false,"Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
+                return new ValidationResult(false,"Adjacent:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
             }
 
             List<AsgEBase<? extends EBase>> path = AsgQueryUtil.path(query,
@@ -103,45 +103,45 @@ public class AdjacentPlanOpValidator implements ChainedPlanValidator.PlanOpValid
             return areEntityAndRelationAdjacent(path, compositePlanOp);
         }
 
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
     //endregion
 
     //region Private Methods
-    private QueryValidation areFilterAndEntityAdjacent(List<AsgEBase<? extends EBase>> path, CompositePlanOp compositePlanOp) {
+    private ValidationResult areFilterAndEntityAdjacent(List<AsgEBase<? extends EBase>> path, CompositePlanOp compositePlanOp) {
         boolean b = Stream.ofAll(path).count(asgEBase -> EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()) ||
                 EPropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
         if (!b) {
-            return new QueryValidation(
+            return new ValidationResult(
                     false,
                     "Adjacent:Validation failed on:" + compositePlanOp.toString());
         }
-        return QueryValidation.OK;
+        return ValidationResult.OK;
 
     }
 
-    private QueryValidation areFilterAndRelationAdjacent(List<AsgEBase<? extends EBase>> path, CompositePlanOp compositePlanOp) {
+    private ValidationResult areFilterAndRelationAdjacent(List<AsgEBase<? extends EBase>> path, CompositePlanOp compositePlanOp) {
         boolean b = Stream.ofAll(path).count(asgEBase -> Rel.class.isAssignableFrom(asgEBase.geteBase().getClass()) ||
                 RelPropGroup.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
         if (!b) {
-            return new QueryValidation(
+            return new ValidationResult(
                     false,
                     "Adjacent:Validation failed on:" + compositePlanOp.toString());
 
         }
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
 
-    private QueryValidation areEntityAndRelationAdjacent(List<AsgEBase<? extends EBase>> path, CompositePlanOp compositePlanOp) {
+    private ValidationResult areEntityAndRelationAdjacent(List<AsgEBase<? extends EBase>> path, CompositePlanOp compositePlanOp) {
         boolean b = Stream.ofAll(path).count(asgEBase -> EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()) ||
                 Rel.class.isAssignableFrom(asgEBase.geteBase().getClass())) == 2;
         if (!b) {
-            return new QueryValidation(
+            return new ValidationResult(
                     false,
                     "Adjacent:Validation failed on:" + compositePlanOp.toString());
 
         }
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
 
     private <T extends PlanOp> Optional<T> getPreviousOp(CompositePlanOp compositePlanOp, int opIndex, Class<?> klass) {

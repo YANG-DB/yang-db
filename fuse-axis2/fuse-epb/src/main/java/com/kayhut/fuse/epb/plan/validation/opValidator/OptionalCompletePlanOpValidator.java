@@ -2,7 +2,7 @@ package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -36,23 +36,23 @@ public class OptionalCompletePlanOpValidator implements ChainedPlanValidator.Pla
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp currentPlanOp = compositePlanOp.getOps().get(opIndex);
         if (!OptionalOp.class.isAssignableFrom(currentPlanOp.getClass())) {
-            return QueryValidation.OK;
+            return ValidationResult.OK;
         }
 
         if (opIndex == compositePlanOp.getOps().size() - 1) {
-            return QueryValidation.OK;
+            return ValidationResult.OK;
         }
 
         if (!isOptionalOpComplete((OptionalOp)currentPlanOp, query)) {
-            return new QueryValidation(
+            return new ValidationResult(
                     false,
                     "OptionalOpValidation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
         }
 
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
     //endregion
 
