@@ -30,13 +30,12 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
     //region Private Methods
     private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels) {
         if (numNestingLevels == 0) {
-            return new ChainedPlanOpValidator(
-                    new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
-                            new AdjacentPlanOpValidator(),
-                            new NoRedundantRelationOpValidator(),
-                            new RedundantGoToEntityOpValidator(),
-                            new ReverseRelationOpValidator(),
-                            new OptionalCompletePlanOpValidator()));
+            return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
+                    new AdjacentPlanOpValidator(),
+                    new NoRedundantRelationOpValidator(),
+                    new RedundantGoToEntityOpValidator(),
+                    new ReverseRelationOpValidator(),
+                    new OptionalCompletePlanOpValidator());
         }
 
         return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
@@ -45,7 +44,7 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                 new RedundantGoToEntityOpValidator(),
                 new ReverseRelationOpValidator(),
                 new OptionalCompletePlanOpValidator(),
-                buildNestedPlanOpValidator(numNestingLevels - 1));
+                new ChainedPlanOpValidator(buildNestedPlanOpValidator(numNestingLevels - 1)));
     }
     //endregion
 }
