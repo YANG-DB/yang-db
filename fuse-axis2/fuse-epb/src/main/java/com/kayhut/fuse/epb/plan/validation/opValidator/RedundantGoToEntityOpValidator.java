@@ -5,8 +5,10 @@ import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.results.Entity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,9 +44,34 @@ public class RedundantGoToEntityOpValidator implements ChainedPlanValidator.Plan
             this.entityEnums.add(((AsgEBaseContainer)planOp).getAsgEbase().geteNum());
         }
 
+        if(planOp instanceof EntityJoinOp){
+            recursiveEntityNums((EntityJoinOp) planOp);
+        }
+
         return ValidationContext.OK;
     }
     //endregion
+
+    private void recursiveEntityNums(EntityJoinOp joinOp){
+        joinOp.getLeftBranch().getOps().forEach(op -> {
+            if(op instanceof EntityOp){
+                this.entityEnums.add(((AsgEBaseContainer)op).getAsgEbase().geteNum());
+            }
+            if(op instanceof EntityJoinOp){
+                recursiveEntityNums((EntityJoinOp) op);
+            }
+        });
+
+        joinOp.getRightBranch().getOps().forEach(op -> {
+            if(op instanceof EntityOp){
+                this.entityEnums.add(((AsgEBaseContainer)op).getAsgEbase().geteNum());
+            }
+            if(op instanceof EntityJoinOp){
+                recursiveEntityNums((EntityJoinOp) op);
+            }
+        });
+
+    }
 
     //region Fields
     private Set<Integer> entityEnums;

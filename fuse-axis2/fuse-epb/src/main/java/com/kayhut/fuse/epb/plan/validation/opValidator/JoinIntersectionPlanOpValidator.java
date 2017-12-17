@@ -68,8 +68,6 @@ public class JoinIntersectionPlanOpValidator implements ChainedPlanValidator.Pla
 
     @Override
     public ValidationContext isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
-        if(opIndex > 0)
-            return ValidationContext.OK;
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if(planOp instanceof EntityJoinOp) {
             EntityJoinOp joinOp = (EntityJoinOp) planOp;

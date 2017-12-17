@@ -22,13 +22,22 @@ import java.util.Optional;
  */
 public class JoinCompletePlanOpValidator implements ChainedPlanValidator.PlanOpValidator {
     //region Private Methods
+    private boolean validateIfOnlyJoin = false;
+
+    public JoinCompletePlanOpValidator() {
+        validateIfOnlyJoin = false;
+    }
+
+    public JoinCompletePlanOpValidator(boolean validateIfOnlyJoin) {
+        this.validateIfOnlyJoin = validateIfOnlyJoin;
+    }
 
     /*
-     * "Complete Join Op" - on the left branch of the JoinOp we are looking
-     * for the last EntityOp(EOP) or EOP + attached EntityFilterOp (EFO).
-     * We should check that we have this EOP (or EOP + EFO) at the right branch of the JoinOp.
-     * i.e., The enums should be the same.
-     */
+         * "Complete Join Op" - on the left branch of the JoinOp we are looking
+         * for the last EntityOp(EOP) or EOP + attached EntityFilterOp (EFO).
+         * We should check that we have this EOP (or EOP + EFO) at the right branch of the JoinOp.
+         * i.e., The enums should be the same.
+         */
     private boolean isJoinOpComplete(EntityJoinOp joinOp) {
         Optional<EntityOp> leftEntityOp = PlanUtil.last(joinOp.getLeftBranch(), EntityOp.class);
         if (!leftEntityOp.isPresent()) {
@@ -65,7 +74,7 @@ public class JoinCompletePlanOpValidator implements ChainedPlanValidator.PlanOpV
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if(planOp instanceof EntityJoinOp) {
             EntityJoinOp joinOp = (EntityJoinOp) planOp;
-            if (compositePlanOp.getOps().size() > 1 && !isJoinOpComplete(joinOp)) {
+            if ((compositePlanOp.getOps().size() > 1 || validateIfOnlyJoin) && !isJoinOpComplete(joinOp)) {
                 return new ValidationContext(false, "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
             }
         }

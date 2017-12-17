@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
@@ -161,6 +162,24 @@ public class RedundantGoToEntityOpValidatorTests {
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
     }
+
+    @Test
+    public void testValidPlanWithJoin(){
+        AsgQuery asgQuery = simpleQuery2("name", "ont");
+        Plan plan = new Plan(
+                new EntityJoinOp(new Plan(new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())),
+                        new Plan(new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                                new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 9).get()),
+                                new RelationOp( AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(asgQuery, 10).get()),
+                                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()))),
+                new GoToEntityOp(AsgQueryUtil.element$(asgQuery, 3)),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get())
+
+        );
+        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
+    }
     //endregion
 
     //region Invalid Plan Tests
@@ -184,6 +203,20 @@ public class RedundantGoToEntityOpValidatorTests {
                 new GoToEntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
         );
 
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
+    }
+
+    @Test
+    public void testInvalidPlanWithJoin(){
+        AsgQuery asgQuery = simpleQuery2("name", "ont");
+        Plan plan = new Plan(
+                new EntityJoinOp(new Plan(new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())),
+                        new Plan(new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                                new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 9).get()),
+                                new RelationOp( AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                                new RelationFilterOp(AsgQueryUtil.<RelPropGroup>element(asgQuery, 10).get()),
+                                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()))),
+                new GoToEntityOp(AsgQueryUtil.element$(asgQuery, 6)));
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
     }
     //endregion

@@ -626,7 +626,7 @@ public class M1PlanValidatorTests {
     //endregion
 
     //region Private Methods
-    private AsgEBase<Rel> reverseRelation(AsgEBase<Rel> relAsgEBase) {
+    protected AsgEBase<Rel> reverseRelation(AsgEBase<Rel> relAsgEBase) {
         Rel reversedRel = new Rel();
         reversedRel.seteNum(relAsgEBase.geteNum());
         reversedRel.setrType(relAsgEBase.geteBase().getrType());
@@ -637,6 +637,6 @@ public class M1PlanValidatorTests {
     //endregion
 
     //region Fields
-    private PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
+    protected PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
     //endregion
 }
