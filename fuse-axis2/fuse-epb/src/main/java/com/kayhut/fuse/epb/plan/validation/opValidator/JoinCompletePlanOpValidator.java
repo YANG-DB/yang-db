@@ -12,7 +12,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.log.Trace;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 
 import java.util.Optional;
 
@@ -69,17 +69,17 @@ public class JoinCompletePlanOpValidator implements ChainedPlanValidator.PlanOpV
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         if(opIndex > 0)
-            return QueryValidation.OK;
+            return ValidationResult.OK;
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if(planOp instanceof EntityJoinOp) {
             EntityJoinOp joinOp = (EntityJoinOp) planOp;
             if ((compositePlanOp.getOps().size() > 1 || validateIfOnlyJoin) && !isJoinOpComplete(joinOp)) {
-                return new QueryValidation(false, "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+                return new ValidationResult(false, "JoinOp complete validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
             }
         }
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
 
     //endregion

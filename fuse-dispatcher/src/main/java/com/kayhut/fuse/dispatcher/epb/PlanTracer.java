@@ -1,14 +1,13 @@
 package com.kayhut.fuse.dispatcher.epb;
 
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 
 import java.util.Optional;
 
@@ -163,7 +162,7 @@ public class PlanTracer {
 
         //region PlanValidator Implementation
         @Override
-        public QueryValidation isPlanValid(P plan, Q query) {
+        public ValidationResult isPlanValid(P plan, Q query) {
             return this.planValidator.isPlanValid(plan, query);
         }
         //endregion

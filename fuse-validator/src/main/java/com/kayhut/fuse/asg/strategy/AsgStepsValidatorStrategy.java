@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.model.validation.QueryValidation.OK;
+import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgStepsValidatorStrategy implements AsgValidatorStrategy {
 
@@ -34,7 +34,7 @@ public class AsgStepsValidatorStrategy implements AsgValidatorStrategy {
     public static final String FULL_STEP_DOUBLE_ENTITY = ENTITY+"((:"+ENTITY_PROPS+")?):"+ENTITY+"((:"+ENTITY_PROPS+")?)";
 
     @Override
-    public QueryValidation apply(AsgQuery query, AsgStrategyContext context) {
+    public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
         String pattern = AsgQueryUtil.pattern(query);
         Optional<String> match1 = Utils.match(pattern, FULL_STEP_DOUBLE_ENTITY);
@@ -48,7 +48,7 @@ public class AsgStepsValidatorStrategy implements AsgValidatorStrategy {
         if (errors.isEmpty())
             return OK;
 
-        return new QueryValidation(false, errors.toArray(new String[errors.size()]));
+        return new ValidationResult(false, errors.toArray(new String[errors.size()]));
     }
     //endregion
 }

@@ -3,7 +3,7 @@ package com.kayhut.fuse.epb.plan.validation;
 import com.kayhut.fuse.epb.plan.validation.opValidator.*;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 
 import java.util.Arrays;
 
@@ -23,7 +23,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
 
     //region CompositePlanValidator Implementation
     @Override
-    public QueryValidation isPlanValid(Plan plan, AsgQuery query) {
+    public ValidationResult isPlanValid(Plan plan, AsgQuery query) {
         return super.isPlanValid(plan, query);
     }
     //endregion

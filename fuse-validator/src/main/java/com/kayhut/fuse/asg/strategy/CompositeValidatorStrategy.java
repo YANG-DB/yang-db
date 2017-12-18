@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import javaslang.collection.Stream;
@@ -24,8 +24,8 @@ public class CompositeValidatorStrategy implements AsgValidatorStrategy {
 
     //region AsgValidatorStrategy Implementation
     @Override
-    public QueryValidation apply(AsgQuery query, AsgStrategyContext context) {
-        List<QueryValidation> contexts = new ArrayList<>();
+    public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
+        List<ValidationResult> contexts = new ArrayList<>();
         for(AsgValidatorStrategy strategy : this.strategies) {
             try {
                 contexts.add(strategy.apply(query, context));
@@ -39,7 +39,7 @@ public class CompositeValidatorStrategy implements AsgValidatorStrategy {
                 .flatMap(validationContext -> Stream.ofAll(validationContext.errors()))
                 .toJavaList();
 
-        return new QueryValidation(errors.isEmpty(), errors);
+        return new ValidationResult(errors.isEmpty(), errors);
     }
     //endregion
 

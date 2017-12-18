@@ -1,6 +1,6 @@
 package com.kayhut.fuse.asg.strategy;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -16,8 +16,8 @@ import javaslang.collection.Stream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.model.validation.QueryValidation.OK;
-import static com.kayhut.fuse.model.validation.QueryValidation.print;
+import static com.kayhut.fuse.model.validation.ValidationResult.OK;
+import static com.kayhut.fuse.model.validation.ValidationResult.print;
 
 public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrategy {
 
@@ -26,7 +26,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
     public static final String ERROR_3 = "No %s type found for constraint %s";
 
     @Override
-    public QueryValidation apply(AsgQuery query, AsgStrategyContext context) {
+    public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
 
         Ontology.Accessor accessor = context.getOntologyAccessor();
@@ -52,7 +52,7 @@ public class AsgEntityPropertiesValidatorStrategy implements AsgValidatorStrateg
         if (errors.isEmpty())
             return OK;
 
-        return new QueryValidation(false, errors.toArray(new String[errors.size()]));
+        return new ValidationResult(false, errors.toArray(new String[errors.size()]));
     }
     //endregion
 

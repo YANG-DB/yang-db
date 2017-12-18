@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 
 public class JoinOpCompositeValidator implements ChainedPlanValidator.PlanOpValidator{
     private PlanValidator<Plan, AsgQuery> leftValidator;
@@ -24,19 +24,19 @@ public class JoinOpCompositeValidator implements ChainedPlanValidator.PlanOpVali
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if(planOp instanceof EntityJoinOp){
             EntityJoinOp joinOp = (EntityJoinOp) planOp;
-            QueryValidation leftValidationContext = this.leftValidator.isPlanValid(joinOp.getLeftBranch(), query);
+            ValidationResult leftValidationContext = this.leftValidator.isPlanValid(joinOp.getLeftBranch(), query);
             if(leftValidationContext.valid()){
-                QueryValidation rightValidationContext = this.rightValidator.isPlanValid(joinOp.getRightBranch(), query);
+                ValidationResult rightValidationContext = this.rightValidator.isPlanValid(joinOp.getRightBranch(), query);
                 if(!rightValidationContext.valid()){
                     return rightValidationContext;
                 }
             }else
                 return leftValidationContext;
         }
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
 }

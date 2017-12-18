@@ -8,8 +8,8 @@ import java.util.StringJoiner;
 /**
  * Created by liorp on 5/29/2017.
  */
-public class QueryValidation {
-    public static QueryValidation OK = new QueryValidation(true);
+public class ValidationResult {
+    public static ValidationResult OK = new ValidationResult(true);
 
     public static String print(Object ... elements) {
         StringJoiner joiner = new StringJoiner(":","[","]");
@@ -18,11 +18,11 @@ public class QueryValidation {
     }
 
     //region Constructors
-    public QueryValidation(boolean valid, String ... errors) {
+    public ValidationResult(boolean valid, String ... errors) {
         this(valid, Stream.of(errors));
     }
 
-    public QueryValidation(boolean valid, Iterable<String> errors) {
+    public ValidationResult(boolean valid, Iterable<String> errors) {
         this.valid = valid;
         this.errors = Stream.ofAll(errors).toJavaList();
     }

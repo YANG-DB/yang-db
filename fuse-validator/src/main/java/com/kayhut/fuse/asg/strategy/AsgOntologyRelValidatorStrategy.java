@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -21,14 +21,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.kayhut.fuse.dispatcher.utils.AsgQueryUtil.elements;
-import static com.kayhut.fuse.model.validation.QueryValidation.OK;
+import static com.kayhut.fuse.model.validation.ValidationResult.OK;
 
 public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
     public static final String ERROR_1 = "Ontology doesn't Allow Relation with No entity Attached to ";
     public static final String ERROR_2 = "Ontology doesn't Allow such Relation with Entities construct ";
 
     @Override
-    public QueryValidation apply(AsgQuery query, AsgStrategyContext context) {
+    public ValidationResult apply(AsgQuery query, AsgStrategyContext context) {
         List<String> errors = new ArrayList<>();
         Ontology.Accessor accessor = context.getOntologyAccessor();
         List<AsgEBase<Rel>> list = elements(query.getStart(),
@@ -60,19 +60,19 @@ public class AsgOntologyRelValidatorStrategy implements AsgValidatorStrategy {
 
             if (!sideATypes.isEmpty()) {
                 if(allowedSideA.intersect(sideATypes).size() < sideATypes.size())
-                    errors.add(ERROR_2 + ":" + QueryValidation.print(sideA.get(), rel, sideB.get()));
+                    errors.add(ERROR_2 + ":" + ValidationResult.print(sideA.get(), rel, sideB.get()));
             }
 
             if (!sideBTypes.isEmpty()) {
                 if(allowedSideB.intersect(sideBTypes).size() < sideBTypes.size())
-                    errors.add(ERROR_2 + ":" + QueryValidation.print(sideA.get(), rel, sideB.get()));
+                    errors.add(ERROR_2 + ":" + ValidationResult.print(sideA.get(), rel, sideB.get()));
             }
         });
 
         if (errors.isEmpty())
             return OK;
 
-        return new QueryValidation(false, errors.toArray(new String[errors.size()]));
+        return new ValidationResult(false, errors.toArray(new String[errors.size()]));
     }
 
     private Set<String> getSideTypes(Optional<AsgEBase<EEntityBase>> side) {

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.strategy.propertiesGrouping;
+package com.kayhut.fuse.asg.strategy.propertyGrouping;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;

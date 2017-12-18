@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOp
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.log.Trace;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 
 import java.util.HashSet;
 import java.util.List;
@@ -66,15 +66,15 @@ public class JoinIntersectionPlanOpValidator implements ChainedPlanValidator.Pla
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
         if(planOp instanceof EntityJoinOp) {
             EntityJoinOp joinOp = (EntityJoinOp) planOp;
             if (compositePlanOp.getOps().size() == 1 && !isIntersectionValid(joinOp)) {
-                return new QueryValidation(false, "JoinOp intersection validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
+                return new ValidationResult(false, "JoinOp intersection validation failed: " + IterablePlanOpDescriptor.getSimple().describe(compositePlanOp.getOps()));
             }
         }
-        return QueryValidation.OK;
+        return ValidationResult.OK;
     }
 
     //endregion

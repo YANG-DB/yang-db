@@ -1,7 +1,6 @@
 package com.kayhut.fuse.dispatcher.driver;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.dispatcher.query.QueryTransformer;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
@@ -17,7 +16,7 @@ import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.FuseError;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 
 import java.util.Arrays;
@@ -46,11 +45,11 @@ public abstract class QueryDriverBase  implements QueryDriver {
     public Optional<QueryResourceInfo> create(QueryMetadata metadata, Query query) {
         AsgQuery asgQuery = this.queryTransformer.transform(query);
 
-        QueryValidation queryValidation = this.queryValidator.validate(asgQuery);
-        if (!queryValidation.valid()) {
+        ValidationResult validationResult = this.queryValidator.validate(asgQuery);
+        if (!validationResult.valid()) {
             return Optional.of(new QueryResourceInfo().error(
                     new FuseError(Query.class.getSimpleName(),
-                            Arrays.toString(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)))));
+                            Arrays.toString(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)))));
         }
 
         this.resourceStore.addQueryResource(createResource(query, asgQuery, metadata));

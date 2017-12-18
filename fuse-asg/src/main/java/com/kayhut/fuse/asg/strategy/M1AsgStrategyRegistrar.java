@@ -1,12 +1,12 @@
 package com.kayhut.fuse.asg.strategy;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.asg.strategy.constraintTransformation.AsgConstraintIterableTransformationStrategy;
-import com.kayhut.fuse.asg.strategy.constraintTransformation.AsgConstraintTypeTransformationStrategy;
-import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgEntityPropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgHQuantifierPropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgQuant1PropertiesGroupingStrategy;
-import com.kayhut.fuse.asg.strategy.propertiesGrouping.AsgRelPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.constraint.AsgConstraintIterableTransformationStrategy;
+import com.kayhut.fuse.asg.strategy.constraint.AsgConstraintTypeTransformationStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.AsgEntityPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.AsgHQuantifierPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.AsgQuant1PropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.AsgRelPropertiesGroupingStrategy;
 import com.kayhut.fuse.asg.strategy.selection.AsgDefaultSelectionStrategy;
 import com.kayhut.fuse.asg.strategy.type.AsgUntypedInferTypeLeftSideRelationStrategy;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;

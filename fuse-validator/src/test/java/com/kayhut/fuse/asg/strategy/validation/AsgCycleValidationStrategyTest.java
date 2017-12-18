@@ -2,7 +2,7 @@ package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgCycleValidatorStrategy;
 import com.kayhut.fuse.asg.strategy.AsgRelPropertiesValidatorStrategy;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -45,8 +45,8 @@ public class AsgCycleValidationStrategyTest {
     @Test
     public void testValidQuery() {
         AsgCycleValidatorStrategy strategy = new AsgCycleValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -61,9 +61,9 @@ public class AsgCycleValidationStrategyTest {
                 .build();
 
         AsgRelPropertiesValidatorStrategy strategy = new AsgRelPropertiesValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgRelPropertiesValidatorStrategy.ERROR_2));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgRelPropertiesValidatorStrategy.ERROR_2));
     }
 
 }

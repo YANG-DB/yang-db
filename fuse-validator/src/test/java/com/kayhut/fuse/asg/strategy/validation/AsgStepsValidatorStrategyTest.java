@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgStepsValidatorStrategy;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -47,8 +47,8 @@ public class AsgStepsValidatorStrategyTest {
     @Test
     public void testValidQuery() {
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -59,9 +59,9 @@ public class AsgStepsValidatorStrategyTest {
                 .build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
     }
 
     @Test
@@ -74,9 +74,9 @@ public class AsgStepsValidatorStrategyTest {
                 .build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
     }
 
     @Test
@@ -90,9 +90,9 @@ public class AsgStepsValidatorStrategyTest {
                 .build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_2));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_2));
     }
 
     @Test
@@ -107,9 +107,9 @@ public class AsgStepsValidatorStrategyTest {
                 .build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_2));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_2));
     }
 
     @Test
@@ -125,9 +125,9 @@ public class AsgStepsValidatorStrategyTest {
                 build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
     }
 
     @Test
@@ -154,9 +154,9 @@ public class AsgStepsValidatorStrategyTest {
                 ).build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgStepsValidatorStrategy.ERROR_1));
     }
 
 }

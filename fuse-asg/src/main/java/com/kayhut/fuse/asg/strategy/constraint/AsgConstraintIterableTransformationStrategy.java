@@ -1,4 +1,4 @@
-package com.kayhut.fuse.asg.strategy.constraintTransformation;
+package com.kayhut.fuse.asg.strategy.constraint;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * Created by benishue on 11-May-17.
  */
-public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTransformationBase implements AsgStrategy {
+public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTransformationBase {
     //region Constructors
     public AsgConstraintIterableTransformationStrategy() {
         this.propertyTypeFactory = new OntologyPropertyTypeFactory();

@@ -1,7 +1,7 @@
 package com.kayhut.fuse.asg.strategy.validation;
 
 import com.kayhut.fuse.asg.strategy.AsgOntologyRelValidatorStrategy;
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
@@ -57,8 +57,8 @@ public class AsgOntologyRelValidatorStrategyTest {
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
     @Test
     public void testNotValidDirectionParentEntityWithQuantUntypedQuery() {
@@ -73,9 +73,9 @@ public class AsgOntologyRelValidatorStrategyTest {
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_2));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_2));
     }
 
     @Test
@@ -91,8 +91,8 @@ public class AsgOntologyRelValidatorStrategyTest {
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -110,8 +110,8 @@ public class AsgOntologyRelValidatorStrategyTest {
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -129,8 +129,8 @@ public class AsgOntologyRelValidatorStrategyTest {
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -146,16 +146,16 @@ public class AsgOntologyRelValidatorStrategyTest {
                 build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_1));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_1));
     }
 
     @Test
     public void testValidTypeQuery() {
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -167,8 +167,8 @@ public class AsgOntologyRelValidatorStrategyTest {
                 .next(concrete(3, "HorseWithNoName", OntologyTestUtils.HORSE.type, "display", "eTag"))
                 .build();
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -180,8 +180,8 @@ public class AsgOntologyRelValidatorStrategyTest {
                 .next(unTyped(3))
                 .build();
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertTrue(queryValidation.valid());
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertTrue(validationResult.valid());
     }
 
     @Test
@@ -192,9 +192,9 @@ public class AsgOntologyRelValidatorStrategyTest {
                 .next(concrete(3, "HorseWithNoName", OntologyTestUtils.HORSE.type, "display", "eTag"))
                 .build();
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_1));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_1));
 
     }
 
@@ -208,9 +208,9 @@ public class AsgOntologyRelValidatorStrategyTest {
                 .build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_2));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_2));
 
     }
 
@@ -224,9 +224,9 @@ public class AsgOntologyRelValidatorStrategyTest {
                 .build();
 
         AsgOntologyRelValidatorStrategy strategy = new AsgOntologyRelValidatorStrategy();
-        QueryValidation queryValidation = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
-        Assert.assertFalse(queryValidation.valid());
-        Assert.assertTrue(Stream.ofAll(queryValidation.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_2));
+        ValidationResult validationResult = strategy.apply(query, new AsgStrategyContext(new Ontology.Accessor(ontology)));
+        Assert.assertFalse(validationResult.valid());
+        Assert.assertTrue(Stream.ofAll(validationResult.errors()).toJavaArray(String.class)[0].contains(AsgOntologyRelValidatorStrategy.ERROR_2));
 
     }
 

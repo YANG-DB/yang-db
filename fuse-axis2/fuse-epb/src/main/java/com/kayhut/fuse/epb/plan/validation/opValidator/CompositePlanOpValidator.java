@@ -1,6 +1,6 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
-import com.kayhut.fuse.model.validation.QueryValidation;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
@@ -43,12 +43,12 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
     }
 
     @Override
-    public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
+    public ValidationResult isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         for(ChainedPlanValidator.PlanOpValidator planOpValidator : this.planOpValidators) {
-            QueryValidation planOpValid = planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
+            ValidationResult planOpValid = planOpValidator.isPlanOpValid(query, compositePlanOp, opIndex);
 
             if (planOpValid.valid() && this.mode == Mode.one) {
-                return QueryValidation.OK;
+                return ValidationResult.OK;
             }
 
             if (!planOpValid.valid() && this.mode == Mode.all) {
@@ -57,10 +57,10 @@ public class CompositePlanOpValidator implements ChainedPlanValidator.PlanOpVali
         }
 
         if(this.mode == Mode.all) {
-            return QueryValidation.OK;
+            return ValidationResult.OK;
         }
 
-        return new QueryValidation(false, "Not all valid");
+        return new ValidationResult(false, "Not all valid");
     }
     //endregion
 
