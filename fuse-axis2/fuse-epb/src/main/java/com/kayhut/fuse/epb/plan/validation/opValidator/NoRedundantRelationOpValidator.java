@@ -1,5 +1,7 @@
 package com.kayhut.fuse.epb.plan.validation.opValidator;
 
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.validation.QueryValidation;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -29,6 +31,18 @@ public class NoRedundantRelationOpValidator implements ChainedPlanValidator.Plan
     @Override
     public QueryValidation isPlanOpValid(AsgQuery query, CompositePlanOp compositePlanOp, int opIndex) {
         PlanOp planOp = compositePlanOp.getOps().get(opIndex);
+        if(planOp instanceof EntityJoinOp){
+            boolean isOk = recursiveJoinTraversal((EntityJoinOp) planOp);
+            if(isOk) {
+                return QueryValidation.OK;
+            }
+            else{
+                return new QueryValidation(
+                        false,
+                        "NoRedundant:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
+            }
+        }
+
         if (!(planOp instanceof RelationOp)) {
             return QueryValidation.OK;
         }
@@ -41,6 +55,35 @@ public class NoRedundantRelationOpValidator implements ChainedPlanValidator.Plan
         return new QueryValidation(
                 false,
                 "NoRedundant:Validation failed on:" + compositePlanOp.toString() + "<" + opIndex + ">");
+    }
+
+    private boolean recursiveJoinTraversal(EntityJoinOp planOp) {
+        boolean isOk = true;
+        for (PlanOp op : planOp.getLeftBranch().getOps()) {
+            if(op instanceof EntityJoinOp){
+                isOk &= recursiveJoinTraversal((EntityJoinOp) op);
+            }
+            if(op instanceof RelationOp) {
+                if (!this.relationEnums.contains(((RelationOp) op).getAsgEbase().geteNum())) {
+                    this.relationEnums.add(((RelationOp) op).getAsgEbase().geteNum());
+                } else {
+                    isOk = false;
+                }
+            }
+        }
+        for (PlanOp op : planOp.getRightBranch().getOps()) {
+            if(op instanceof EntityJoinOp){
+                isOk &= recursiveJoinTraversal((EntityJoinOp) op);
+            }
+            if(op instanceof RelationOp) {
+                if (!this.relationEnums.contains(((RelationOp) op).getAsgEbase().geteNum())) {
+                    this.relationEnums.add(((RelationOp) op).getAsgEbase().geteNum());
+                } else {
+                    isOk = false;
+                }
+            }
+        }
+        return isOk;
     }
     //endregion
 
