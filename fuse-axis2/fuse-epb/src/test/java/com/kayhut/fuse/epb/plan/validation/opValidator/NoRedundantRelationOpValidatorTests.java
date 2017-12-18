@@ -5,6 +5,8 @@ import com.kayhut.fuse.dispatcher.epb.PlanValidator;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
@@ -80,6 +82,26 @@ public class NoRedundantRelationOpValidatorTests {
         );
 
         Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
+    }
+
+    @Test
+    public void testValidPlanJoin(){
+        AsgQuery asgQuery = simpleQuery2("name", "ont");
+        Plan left = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
+
+        Plan right = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 6).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 5).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
+
+        EntityJoinOp joinOp = new EntityJoinOp(left,right);
+
+        Assert.assertTrue(validator.isPlanValid(new Plan(joinOp), asgQuery).valid());
     }
     //endregion
 
@@ -162,6 +184,26 @@ public class NoRedundantRelationOpValidatorTests {
         );
 
         Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
+    }
+
+    @Test
+    public void testInvalidPlanJoin(){
+        AsgQuery asgQuery = simpleQuery2("name", "ont");
+        Plan left = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
+
+        Plan right = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get()),
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 9)));
+
+        EntityJoinOp joinOp = new EntityJoinOp(left,right);
+
+        Assert.assertFalse(validator.isPlanValid(new Plan(joinOp), asgQuery).valid());
     }
     //endregion
 
