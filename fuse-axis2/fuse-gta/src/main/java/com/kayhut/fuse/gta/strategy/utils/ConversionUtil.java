@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.unipop.process.predicate.ExistsP;
+import org.unipop.process.predicate.Text;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class ConversionUtil {
             case notInSet: return P.without(CollectionUtil.listFromObjectValue(constraint.getExpr()));
             case empty: return P.not(new ExistsP<V>());
             case notEmpty: return new ExistsP<>();
+            case match: return Text.like((V)constraint.getExpr());
             default: throw new RuntimeException("not supported");
         }
     }
