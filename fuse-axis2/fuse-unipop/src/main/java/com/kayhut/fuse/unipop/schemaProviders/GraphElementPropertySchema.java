@@ -16,6 +16,7 @@ public interface GraphElementPropertySchema {
         enum Type {
             none,
             exact,
+            fullText,
             ngrams
         }
 
