@@ -54,6 +54,10 @@ public class TextQueryTranslator implements PredicateQueryTranslator {
                         queryBuilder.pop();
                 }
                 break;
+
+            case LIKE:
+                queryBuilder.push().match(key, predicate.getValue().toString()).pop();
+                break;
         }
 
         return queryBuilder;
