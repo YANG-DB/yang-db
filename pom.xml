@@ -71,7 +71,7 @@
         <neo4j-java-driver.version>1.1.0</neo4j-java-driver.version>
 
         <!-- tinkerpop -->
-        <tinkerpop.version>3.2.4</tinkerpop.version>
+        <tinkerpop.version>3.2.5</tinkerpop.version>
 
         <!-- unipop -->
         <unipop.version>0.2</unipop.version>

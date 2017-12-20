@@ -11,7 +11,6 @@ import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatResultBase;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import javaslang.collection.Stream;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +114,7 @@ public class StatUtil {
     public static Iterable<Map<String, Object>> prepareStatDocs(List<? extends StatResultBase> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
         for (StatResultBase bucketStatResult : bucketStatResults) {
-            Map<String, Object> bucket = new HashedMap();
+            Map<String, Object> bucket = new HashMap();
             //Deafualt fields for all statistics documents
             bucket.put("index", bucketStatResult.getIndex());
             bucket.put("type", bucketStatResult.getType());

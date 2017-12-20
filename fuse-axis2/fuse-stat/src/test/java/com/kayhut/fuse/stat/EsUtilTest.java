@@ -10,7 +10,7 @@ import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
