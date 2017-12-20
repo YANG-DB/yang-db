@@ -1,6 +1,7 @@
 package com.kayhut.fuse.dispatcher.descriptors;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.descriptors.Descriptor;
@@ -9,11 +10,14 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantBase;
 
 import javax.management.relation.Relation;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * Created by roman.margolis on 28/11/2017.
@@ -38,7 +42,12 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
 
         StringJoiner joiner = new StringJoiner(":","","");
         elements.forEach(e-> {
-            if(e.geteBase() instanceof EEntityBase)
+            if(e.geteBase() instanceof QuantBase) {
+                List<Integer> next = ((Next<List>) e.geteBase()).getNext();
+                String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
+                joiner.add(e.geteBase().getClass().getSimpleName() +"["+e.geteNum()+"]").add("{"+join+"}");
+            }
+            else if(e.geteBase() instanceof EEntityBase)
                 joiner.add(EEntityBase.class.getSimpleName() +"["+e.geteNum()+"]");
             else if(e.geteBase() instanceof Rel)
                 joiner.add(Relation.class.getSimpleName()+"["+e.geteNum()+"]");
