@@ -4,10 +4,10 @@
 
     <mirrors>
         <mirror>
-            <id>central-proxy</id>
-            <name>Local proxy of central repo</name>
-            <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-central/</url>
-            <mirrorOf>central</mirrorOf>
+            <id>public-proxy</id>
+            <name>Local proxy of public repo</name>
+            <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-public/</url>
+            <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
 
@@ -15,33 +15,23 @@
         <profile>
             <repositories>
                 <repository>
-                    <id>nexus-releases</id>
-                    <name>mxsnapshots</name>
-                    <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-releases/</url>
-                </repository>
-                <repository>
-                    <id>nexus-proxy</id>
+                    <id>public-proxy</id>
                     <name>mxsnapshots-proxy</name>
-                    <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-central/</url>
+                    <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-public/</url>
                 </repository>
             </repositories>
-            <id>nexuss</id>
+            <id>public</id>
         </profile>
     </profiles>
     <activeProfiles>
-        <activeProfile>nexuss</activeProfile>
+        <activeProfile>public</activeProfile>
     </activeProfiles>
 
     <servers>
         <server>
-            <id>nexus-releases</id>
-            <username>admin</username>
-            <password>admin123</password>
-        </server>
-        <server>
-            <id>nexus-proxy</id>
-            <username>admin</username>
-            <password>admin123</password>
+            <id>public-proxy</id>
+            <username>fuse</username>
+            <password>Xw4cMS15Hw4k3y3B09BM</password>
         </server>
     </servers>
 </settings>
