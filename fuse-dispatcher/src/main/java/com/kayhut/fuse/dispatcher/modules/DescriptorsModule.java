@@ -17,6 +17,7 @@ import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanO
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
+import com.kayhut.fuse.model.query.Query;
 import com.typesafe.config.Config;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.jooby.Env;
@@ -28,6 +29,7 @@ public class DescriptorsModule extends ModuleBase {
     //region ModuleBase Implementation
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
+        binder.bind(new TypeLiteral<Descriptor<Query>>(){}).to(QueryDescriptor.class).asEagerSingleton();
         binder.bind(new TypeLiteral<Descriptor<AsgQuery>>(){}).to(AsgQueryDescriptor.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<Descriptor<Iterable<PlanOp>>>(){}).toInstance(IterablePlanOpDescriptor.getFull());
