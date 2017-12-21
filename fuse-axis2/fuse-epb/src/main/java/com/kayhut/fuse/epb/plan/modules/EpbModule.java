@@ -8,12 +8,10 @@ import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.epb.plan.*;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.dispatcher.epb.CostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.dummy.DummyCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
 import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
@@ -47,7 +45,7 @@ public class EpbModule extends ModuleBase {
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .in(RequestScoped.class);
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                .annotatedWith(Names.named(PlanTracer.Searcher.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.Searcher.Provider.planSearcherParameter))
                 .to(new TypeLiteral<LoggingPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .in(RequestScoped.class);
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
@@ -66,21 +64,21 @@ public class EpbModule extends ModuleBase {
                 .to(M1PatternCostEstimator.class).asEagerSingleton();
 
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
-                .annotatedWith(Names.named(PlanTracer.Estimator.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.Estimator.Provider.costEstimatorParameter))
                 .to(RegexPatternCostEstimator.class).asEagerSingleton();
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .toProvider(new TypeLiteral<PlanTracer.Estimator.Provider<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .in(RequestScoped.class);
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
-                .annotatedWith(Names.named(PlanTracer.ExtensionStrategy.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.ExtensionStrategy.Provider.planExtensionStrategyParameter))
                 .to(M1PlanExtensionStrategy.class).asEagerSingleton();
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
                 .toProvider(new TypeLiteral<PlanTracer.ExtensionStrategy.Provider<Plan, AsgQuery>>(){})
                 .in(RequestScoped.class);
 
         binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})
-                .annotatedWith(Names.named(PlanTracer.Validator.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.Validator.Provider.planValidatorParameter))
                 .to(M1PlanValidator.class)
                 .asEagerSingleton();
         binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})

@@ -33,7 +33,7 @@ public class EpbDfsRedundantModule extends ModuleBase {
                 .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .in(RequestScoped.class);
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                .annotatedWith(Names.named(PlanTracer.Searcher.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.Searcher.Provider.planSearcherParameter))
                 .to(new TypeLiteral<LoggingPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                 .in(RequestScoped.class);
         binder.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
@@ -41,21 +41,21 @@ public class EpbDfsRedundantModule extends ModuleBase {
                 .in(RequestScoped.class);
 
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
-                .annotatedWith(Names.named(PlanTracer.Estimator.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.Estimator.Provider.costEstimatorParameter))
                 .toInstance(new DummyCostEstimator<>(new PlanDetailedCost()));
         binder.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .toProvider(new TypeLiteral<PlanTracer.Estimator.Provider<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                 .in(RequestScoped.class);
 
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
-                .annotatedWith(Names.named(PlanTracer.ExtensionStrategy.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.ExtensionStrategy.Provider.planExtensionStrategyParameter))
                 .to(M1DfsRedundantPlanExtensionStrategy.class).asEagerSingleton();
         binder.bind(new TypeLiteral<PlanExtensionStrategy<Plan, AsgQuery>>(){})
                 .toProvider(new TypeLiteral<PlanTracer.ExtensionStrategy.Provider<Plan, AsgQuery>>(){})
                 .in(RequestScoped.class);
 
         binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})
-                .annotatedWith(Names.named(PlanTracer.Validator.Provider.injectionName))
+                .annotatedWith(Names.named(PlanTracer.Validator.Provider.planValidatorParameter))
                 .to(M1PlanValidator.class)
                 .asEagerSingleton();
         binder.bind(new TypeLiteral<PlanValidator<Plan, AsgQuery>>(){})
