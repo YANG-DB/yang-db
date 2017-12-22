@@ -61,6 +61,39 @@ public class QueryTest {
     }
 
     @Test
+    public void queryCreateVerbose() throws IOException {
+        //query request
+        CreateQueryRequest request = new CreateQueryRequest();
+        request.setId("1");
+        request.setName("test");
+        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setVerbose(true);
+        //submit query
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .body(request)
+                .post("/fuse/query")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
+                        Map data = (Map) contentResponse.getData();
+                        assertTrue(data.get("resourceUrl").toString().endsWith("/fuse/query/1"));
+                        assertTrue(data.get("cursorStoreUrl").toString().endsWith("/fuse/query/1/cursor"));
+                        return contentResponse.getData()!=null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(201)
+                .contentType("application/json;charset=UTF-8");
+
+    }
+
+    @Test
     @Ignore
     public void createQueryAndFetch() throws IOException {
         CreateCursorRequest createCursorRequest = new CreateCursorRequest();
