@@ -1,16 +1,13 @@
 package com.kayhut.fuse.dispatcher.descriptors;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.Next;
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
-import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantBase;
 
 import javax.management.relation.Relation;
@@ -19,44 +16,34 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-/**
- * Created by roman.margolis on 28/11/2017.
- */
-public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
+public class QueryDescriptor implements Descriptor<Query> {
     //region Descriptor Implementation
     @Override
-    public String describe(AsgQuery query) {
+    public String describe(Query query) {
         return patternValue(query);
     }
     //endregion
 
     //region Private Methods
-    private String patternValue(AsgQuery query) {
-        List<AsgEBase<EBase>> elements = AsgQueryUtil.elements(
-                query.getStart(),
-                AsgEBase::getB,
-                AsgEBase::getNext,
-                asgEBase -> true,
-                asgEBase -> true,
-                Collections.emptyList());
-
+    private String patternValue(Query query) {
+        List<EBase> elements = query.getElements()!=null ? query.getElements() : Collections.EMPTY_LIST;
         StringJoiner joiner = new StringJoiner(":","","");
         elements.forEach(e-> {
-            if(e.geteBase() instanceof QuantBase) {
-                List<Integer> next = ((Next<List>) e.geteBase()).getNext();
+            if(e instanceof QuantBase) {
+                List<Integer> next = ((Next<List>) e).getNext();
                 String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
-                joiner.add(e.geteBase().getClass().getSimpleName() +"["+e.geteNum()+"]").add("{"+join+"}");
+                joiner.add(e.getClass().getSimpleName() +"["+e.geteNum()+"]").add("{"+join+"}");
             }
-            else if(e.geteBase() instanceof EEntityBase)
+            else if(e instanceof EEntityBase)
                 joiner.add(EEntityBase.class.getSimpleName() +"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof Rel)
+            else if(e instanceof Rel)
                 joiner.add(Relation.class.getSimpleName()+"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof EPropGroup)
+            else if(e instanceof EPropGroup)
                 joiner.add(EPropGroup.class.getSimpleName()+"["+e.geteNum()+"]");
-            else if(e.geteBase() instanceof RelPropGroup)
+            else if(e instanceof RelPropGroup)
                 joiner.add(RelPropGroup.class.getSimpleName()+"["+e.geteNum()+"]");
             else
-                joiner.add(e.geteBase().getClass().getSimpleName()+"["+e.geteNum()+"]");
+                joiner.add(e.getClass().getSimpleName()+"["+e.geteNum()+"]");
         });
         return joiner.toString();
     }

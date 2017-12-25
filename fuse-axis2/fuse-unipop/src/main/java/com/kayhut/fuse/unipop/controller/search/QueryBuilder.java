@@ -37,8 +37,9 @@ public class QueryBuilder {
         terms,
         range,
         prefix,
-        //        wildcard,
+        wildcard,
         regexp,
+        match,
         ids,
         type,
         exists,
@@ -368,28 +369,53 @@ public class QueryBuilder {
         return this;
     }
 
-//    public Builder wildcard(String fieldName, String wildcard) { return wildcard(null, fieldName, wildcard); }
-//
-//    public Builder wildcard(String name, String fieldName, String wildcard) {
-//        if (this.root == null) {
-//            throw new UnsupportedOperationException("'wildcard' may not appear as first statement");
-//        }
-//
-//        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
-//            throw new UnsupportedOperationException("'wildcard' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
-//        }
-//
-//        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
-//            this.current = seekLocalName(current, name);
-//            return this;
-//        }
-//
-//        Composite wildcardComposite = new WildcardComposite(name, fieldName, wildcard, current);
-//        this.current.children.add(wildcardComposite);
-//        this.current = wildcardComposite;
-//
-//        return this;
-//    }
+    public QueryBuilder wildcard(String fieldName, String wildcard) { return wildcard(null, fieldName, wildcard); }
+
+    public QueryBuilder wildcard(String name, String fieldName, String wildcard) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'wildcard' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'wildcard' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite wildcardComposite = new WildcardComposite(name, fieldName, wildcard, current);
+        this.current.children.add(wildcardComposite);
+        this.current = wildcardComposite;
+
+        return this;
+    }
+
+    public QueryBuilder match(String fieldName, Object value) {
+        return this.match(null, fieldName, value);
+    }
+
+    public QueryBuilder match(String name, String fieldName, Object value) {
+        if (this.root == null) {
+            throw new UnsupportedOperationException("'match' may not appear as first statement");
+        }
+
+        if (this.current.op != Op.filter && current.op != Op.must && current.op != Op.mustNot && current.op != Op.should) {
+            throw new UnsupportedOperationException("'match' may only appear in the 'filter', 'must', 'mustNot' or 'should' context");
+        }
+
+        if (StringUtils.isNotBlank(name) && seekLocalName(current, name) != null) {
+            this.current = seekLocalName(current, name);
+            return this;
+        }
+
+        Composite matchComposite = new MatchComposite(name, fieldName, value, current);
+        this.current.children.add(matchComposite);
+        this.current = matchComposite;
+
+        return this;
+    }
 
     public QueryBuilder range(String fieldName) {
         return this.range(null, fieldName);
@@ -1412,6 +1438,58 @@ public class QueryBuilder {
 
         //region Fields
         private String regexp;
+        //endregion
+    }
+
+    public class WildcardComposite extends FieldComposite {
+        //region Constructor
+        protected WildcardComposite(String name, String fieldName, String value, Composite parent) {
+            super(name, fieldName, Op.wildcard, parent);
+            this.value = value;
+        }
+        //endregion
+
+        //region Composite Implementation
+        @Override
+        protected Object build() {
+            return QueryBuilders.wildcardQuery(this.getFieldName(), this.value);
+        }
+        //endregion
+
+        //region Properties
+        public String getValue() {
+            return this.value;
+        }
+        //endregion
+
+        //region Fields
+        private String value;
+        //endregion
+    }
+
+    public class MatchComposite extends FieldComposite {
+        //region Constructor
+        protected MatchComposite(String name, String fieldName, Object value, Composite parent) {
+            super(name, fieldName, Op.match, parent);
+            this.value = value;
+        }
+        //endregion
+
+        //region Composite Implementation
+        @Override
+        protected Object build() {
+            return QueryBuilders.matchQuery(this.getFieldName(), this.value);
+        }
+        //endregion
+
+        //region Properties
+        public Object getValue() {
+            return this.value;
+        }
+        //endregion
+
+        //region Fields
+        private Object value;
         //endregion
     }
 

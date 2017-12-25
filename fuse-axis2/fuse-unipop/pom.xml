@@ -49,10 +49,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>unipop</groupId>
-            <artifactId>unipop-elastic</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
         </dependency>

@@ -18,12 +18,17 @@ import java.util.*;
  * Created by moti on 2/21/2017.
  */
 public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQuery> implements PlanSearcher<P, C, Q> {
+    public static final String globalPruneStrategyParameter = "BottomUpPlanSearcher.@globalPruneStrategy";
+    public static final String localPruneStrategyParameter = "BottomUpPlanSearcher.@localPruneStrategy";
+    public static final String globalPlanSelectorParameter = "BottomUpPlanSearcher.@globalPlanSelector";
+    public static final String localPlanSelectorParameter = "BottomUpPlanSearcher.@localPlanSelector";
+
     @Inject
     public BottomUpPlanSearcher(PlanExtensionStrategy<P, Q> extensionStrategy,
-                                @Named("GlobalPruningStrategy") PlanPruneStrategy<PlanWithCost<P, C>> globalPruneStrategy,
-                                @Named("LocalPruningStrategy") PlanPruneStrategy<PlanWithCost<P, C>> localPruneStrategy,
-                                @Named("GlobalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector,
-                                @Named("LocalPlanSelector") PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector,
+                                @Named(globalPruneStrategyParameter) PlanPruneStrategy<PlanWithCost<P, C>> globalPruneStrategy,
+                                @Named(localPruneStrategyParameter) PlanPruneStrategy<PlanWithCost<P, C>> localPruneStrategy,
+                                @Named(globalPlanSelectorParameter) PlanSelector<PlanWithCost<P, C>, Q> globalPlanSelector,
+                                @Named(localPlanSelectorParameter) PlanSelector<PlanWithCost<P, C>, Q> localPlanSelector,
                                 PlanValidator<P, Q> planValidator,
                                 CostEstimator<P, C, IncrementalEstimationContext<P, C, Q>> costEstimator) {
         this.extensionStrategy = extensionStrategy;
