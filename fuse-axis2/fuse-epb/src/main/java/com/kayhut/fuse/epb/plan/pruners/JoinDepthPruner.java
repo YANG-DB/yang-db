@@ -2,14 +2,16 @@ package com.kayhut.fuse.epb.plan.pruners;
 
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import javaslang.collection.Stream;
 
-public class JoinDepthPruner implements PlanPruneStrategy<Plan> {
+public class JoinDepthPruner implements PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> {
     @Override
-    public Iterable<Plan> prunePlans(Iterable<Plan> plans) {
-        return Stream.ofAll(plans).filter(p -> isPlanValid(p, maxDepth)).toJavaList();
+    public Iterable<PlanWithCost<Plan, PlanDetailedCost>> prunePlans(Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {
+        return Stream.ofAll(plans).filter(p -> isPlanValid(p.getPlan(), maxDepth)).toJavaList();
     }
 
     private boolean isPlanValid(Plan plan, int depth){

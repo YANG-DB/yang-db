@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
@@ -21,6 +22,7 @@ import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 
 import java.util.*;
 
@@ -92,6 +94,25 @@ public interface SimpleExtenderUtils {
     }
 
     static <C> boolean checkIfPlanIsComplete(Plan plan, AsgQuery query) {
+        boolean allPartsCovered = checkIfAllPlanPartsCovered(plan, query);
+        return allPartsCovered && checkIfAllJoinsAreComplete(plan);
+    }
+
+    static boolean checkIfAllJoinsAreComplete(Plan plan) {
+        boolean allValid = true;
+        for (PlanOp planOp : plan.getOps()) {
+            if(planOp instanceof EntityJoinOp) {
+                allValid &= checkJoinRecursive((EntityJoinOp)planOp);
+            }
+        }
+        return allValid;
+    }
+
+    static boolean checkJoinRecursive(EntityJoinOp planOp) {
+        return planOp.isComplete() && checkIfAllJoinsAreComplete(planOp.getLeftBranch()) && checkIfAllJoinsAreComplete(planOp.getRightBranch());
+    }
+
+    static boolean checkIfAllPlanPartsCovered(Plan plan, AsgQuery query) {
         Map<Integer, AsgEBase> queryParts = SimpleExtenderUtils.flattenQuery(query);
         Tuple2<List<AsgEBase>, Map<Integer, AsgEBase>> partsTuple = SimpleExtenderUtils.removeHandledQueryParts(plan, queryParts);
 
@@ -102,6 +123,7 @@ public interface SimpleExtenderUtils {
         return Stream.ofAll(partsTuple._2().values()).filter(asgEBase -> handledClasses.contains(asgEBase.geteBase().getClass()))
                 .isEmpty();
     }
+
 
     static Set<Integer> markEntitiesAndRelations(Plan plan) {
         return Stream.ofAll(PlanUtil.flat(plan).getOps())

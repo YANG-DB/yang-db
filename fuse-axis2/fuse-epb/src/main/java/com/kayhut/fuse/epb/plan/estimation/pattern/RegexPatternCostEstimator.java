@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
+import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
@@ -77,7 +78,10 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
                 "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
                 "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
 
-        ENTITY_JOIN("^(?<" + JOIN.value + ">" + EntityJoinOp.class.getSimpleName() + ")$" );
+        ENTITY_JOIN("^(?<" + JOIN.value + ">" + EntityJoinOp.class.getSimpleName() + ")$" ),
+        ENTITY_JOIN_RELATION_ENTITY("^(?<" + JOIN.value+">" + EntityJoinOp.class.getSimpleName() + ")" + ":" +
+                "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
+                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
 
         //region Enum Constructors
         Pattern(String pattern) {
@@ -155,11 +159,12 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
                                 regexPattern.equals(Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
                                 regexPattern.equals(Pattern.ENTITY_RELATION_ENTITY) ? buildEntityRelationEntityPattern(patternParts) :
                                 regexPattern.equals(Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) :
-                                regexPattern.equals(Pattern.ENTITY_JOIN) ? buildEntityJoinPattern(patternParts): null;
+                                regexPattern.equals(Pattern.ENTITY_JOIN) ? buildEntityJoinPattern(patternParts):
+                                regexPattern.equals(Pattern.ENTITY_JOIN_RELATION_ENTITY) ? buildEntityJoinEntityPattern(patternParts ) : null;
 
                 PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(pattern, context);
 
-                newPlan = buildNewPlan(result, context.getPreviousCost());
+                newPlan = buildNewPlan(pattern, result, context.getPreviousCost());
                 break;
             }
         }
@@ -184,18 +189,34 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
         return new Plan();
     }
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(
-            PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
-            Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern,
+                                                              PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
+                                                              Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
 
         DoubleCost previousPlanGlobalCost;
         List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
         if (previousCost.isPresent()) {
+            if(pattern instanceof EntityJoinPattern){
+                Plan joinPlan = result.getPlanStepCosts().get(0).getPlan();
+                JoinCost joinCost = (JoinCost) result.getPlanStepCosts().get(0).getCost();
+                PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(joinCost.getCost() + joinCost.getLeftBranchCost().getGlobalCost().cost + joinCost.getRightBranchCost().getGlobalCost().cost),
+                        Collections.singleton(new PlanWithCost<>(joinPlan, joinCost)));
+                return new PlanWithCost<>( joinPlan, planDetailedCost);
+            }
             previousPlanGlobalCost = previousCost.get().getCost().getGlobalCost();
+
             previousPlanStepCosts = Stream.ofAll(previousCost.get().getCost().getPlanStepCosts())
-                    .map(planStepCost -> new PlanWithCost<>(
-                            planStepCost.getPlan(),
-                            new CountEstimatesCost(planStepCost.getCost().getCost(), planStepCost.getCost().getCountEstimates())))
+                    .map(planStepCost -> {
+                        try {
+                            return new PlanWithCost<>(
+                                    planStepCost.getPlan(),
+                                    (CountEstimatesCost)planStepCost.getCost().clone());
+                        } catch (CloneNotSupportedException e) {
+                            return new PlanWithCost<>(
+                                    planStepCost.getPlan(),
+                                    new CountEstimatesCost(planStepCost.getCost().getCost(), planStepCost.getCost().getCountEstimates()));
+                        }
+                    })
                     .toJavaList();
         } else {
             previousPlanGlobalCost = new DoubleCost(0);
@@ -239,6 +260,10 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         return map;
     }
     //endregion
+
+    public PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> getEstimator() {
+        return estimator;
+    }
 
     //region Fields
     private PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator;

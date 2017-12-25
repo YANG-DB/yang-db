@@ -27,6 +27,11 @@ public class CompositePatternCostEstimator<P, C, TContext> implements PatternCos
     }
     //endregion
 
+
+    public Map<Class<? extends Pattern>, PatternCostEstimator<P, C, TContext>> getEstimators() {
+        return estimators;
+    }
+
     //region Fields
     private Map<Class<? extends Pattern>, PatternCostEstimator<P, C, TContext>> estimators;
     //endregion

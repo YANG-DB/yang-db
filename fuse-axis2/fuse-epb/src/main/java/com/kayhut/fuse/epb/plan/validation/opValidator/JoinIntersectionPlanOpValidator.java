@@ -40,7 +40,7 @@ public class JoinIntersectionPlanOpValidator implements ChainedPlanValidator.Pla
             return true;
         }
         if (intersection.size() == 1) {
-            return leftLast.isPresent() && rightLast.isPresent() && leftLast.get().getAsgEbase().geteNum() == rightLast.get().getAsgEbase().geteNum();
+            return leftLast.isPresent() && rightLast.isPresent() && leftLast.get().getAsgEbase().geteNum() == rightLast.get().getAsgEbase().geteNum() && !joinOp.getLeftBranch().equals(joinOp.getRightBranch());
             //return (joinOp.getAsgEbase().geteNum() == intersection.iterator().next());
         }
 

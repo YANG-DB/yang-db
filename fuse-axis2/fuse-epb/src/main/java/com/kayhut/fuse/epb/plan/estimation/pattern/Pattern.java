@@ -95,4 +95,28 @@ public class Pattern {
         EntityJoinOp entityJoinOp = (EntityJoinOp) patternParts.get(JOIN);
         return new EntityJoinPattern(entityJoinOp);
     }
+
+    public static com.kayhut.fuse.epb.plan.estimation.pattern.Pattern buildEntityJoinEntityPattern(Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts) {
+        EntityJoinOp entityJoinOp = (EntityJoinOp) patternParts.get(JOIN);
+
+        //relation
+        RelationOp rel = (RelationOp) patternParts.get(RELATION);
+
+        if (!patternParts.containsKey(OPTIONAL_REL_FILTER)) {
+            patternParts.put(OPTIONAL_REL_FILTER, new RelationFilterOp());
+        }
+        RelationFilterOp relFilter = (RelationFilterOp) patternParts.get(OPTIONAL_REL_FILTER);
+        relFilter.setRel(rel.getAsgEbase());
+
+        //entity
+        EntityOp end = (EntityOp) patternParts.get(ENTITY_TWO);
+        if (!patternParts.containsKey(OPTIONAL_ENTITY_TWO_FILTER)) {
+            patternParts.put(OPTIONAL_ENTITY_TWO_FILTER, new EntityFilterOp());
+        }
+
+        EntityFilterOp endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
+        endFilter.setEntity(end.getAsgEbase());
+
+        return new EntityJoinEntityPattern(entityJoinOp, null, rel, relFilter, end, endFilter,entityJoinOp);
+    }
 }

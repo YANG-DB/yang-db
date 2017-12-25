@@ -3,6 +3,7 @@ package com.kayhut.fuse.dispatcher.utils;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
@@ -157,7 +158,14 @@ public class PlanUtil {
                 if (compositeOpPredicate.test(innerCompositePlanOp)) {
                     flattenedPlanOps.addAll(index, innerCompositePlanOp.getOps());
                 }
-            } else {
+            } else if(EntityJoinOp.class.isAssignableFrom(planOp.getClass())){
+                EntityJoinOp entityJoinOp = (EntityJoinOp) planOp;
+                flattenedPlanOps.remove(index);
+                if(compositeOpPredicate.test(entityJoinOp)){
+                    flattenedPlanOps.addAll(index, entityJoinOp.getRightBranch().getOps());
+                    flattenedPlanOps.addAll(index, entityJoinOp.getLeftBranch().getOps());
+                }
+            }else{
                 index++;
             }
         }

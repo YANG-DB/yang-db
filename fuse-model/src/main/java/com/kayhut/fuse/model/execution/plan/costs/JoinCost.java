@@ -18,6 +18,11 @@ public class JoinCost extends CountEstimatesCost {
         this.rightBranchCost = rightBranchCost;
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new JoinCost(this.getCost(), this.getCountEstimates(), this.getLeftBranchCost(), this.getRightBranchCost());
+    }
+
     public PlanDetailedCost getLeftBranchCost() {
         return leftBranchCost;
     }

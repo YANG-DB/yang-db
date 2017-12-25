@@ -122,7 +122,12 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
 
         CountEstimatesCost newEntityOneCost = new CountEstimatesCost(entityOneCost.getCost(), N1);
         newEntityOneCost.push(N1*lambda);
-        PlanWithCost<Plan, CountEstimatesCost> entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
+        PlanWithCost<Plan, CountEstimatesCost> entityOnePlanCost ;
+        if(startFilter == null){
+            entityOnePlanCost = new PlanWithCost<>(new Plan(start), newEntityOneCost);
+        } else{
+            entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
+        }
 
         CountEstimatesCost newRelCost = new CountEstimatesCost(relCost.getCost(), R);
         PlanWithCost<Plan, CountEstimatesCost> relPlanCost = new PlanWithCost<>(new Plan(rel, relationFilter), newRelCost);
