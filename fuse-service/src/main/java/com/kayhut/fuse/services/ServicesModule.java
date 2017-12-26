@@ -5,6 +5,7 @@ import com.google.inject.name.Names;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.services.controllers.*;
 import com.kayhut.fuse.services.controllers.logging.*;
 import com.typesafe.config.Config;
@@ -63,5 +64,8 @@ public class ServicesModule implements Jooby.Module {
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
         binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreatePageRequest.class).in(RequestScoped.class);
+
+        //bind request parameters
+        binder.bind(PlanTraceOptions.class).in(RequestScoped.class);
     }
 }

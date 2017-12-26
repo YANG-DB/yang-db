@@ -31,7 +31,7 @@ import static com.codahale.metrics.MetricRegistry.name;
         org.slf4j.Logger logger = LoggerFactory.getLogger(declaringClass);
 
 
-        if (annotation.options() == LoggerAnnotation.Options.full || annotation.options() == LoggerAnnotation.Options.arguments) {
+        if (annotation.options() == LoggerAnnotation.Level.full || annotation.options() == LoggerAnnotation.Level.arguments) {
             for (int i = 0; i < invocation.getArguments().length; i++) {
                 Descriptor descriptors = getDescriptor(invocation.getArguments()[i]);
                 if (descriptors != null) {
@@ -47,7 +47,7 @@ import static com.codahale.metrics.MetricRegistry.name;
         Object proceed = invocation.proceed();
         time.stop();
 
-        if (annotation.options() == LoggerAnnotation.Options.full || annotation.options() == LoggerAnnotation.Options.returnValue) {
+        if (annotation.options() == LoggerAnnotation.Level.full || annotation.options() == LoggerAnnotation.Level.returnValue) {
             if (proceed != null) {
                 String finalName = annotationName;
                 if (proceed instanceof Iterable) {

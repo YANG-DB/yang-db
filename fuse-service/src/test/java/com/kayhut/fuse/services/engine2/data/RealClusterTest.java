@@ -1,7 +1,6 @@
 package com.kayhut.fuse.services.engine2.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.model.Utils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -15,6 +14,7 @@ import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
+import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -169,7 +169,7 @@ public class RealClusterTest {
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
-        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query,true);
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, PlanTraceOptions.of(PlanTraceOptions.Level.verbose));
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 100);
 

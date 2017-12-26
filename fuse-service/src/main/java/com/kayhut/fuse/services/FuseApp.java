@@ -178,6 +178,7 @@ public class FuseApp extends Jooby {
                 .post(req -> {
                     CreateQueryRequest createQueryRequest = req.body(CreateQueryRequest.class);
                     req.set(CreateQueryRequest.class, createQueryRequest);
+                    req.set(PlanTraceOptions.class, createQueryRequest.getPlanTraceOptions());
                     ContentResponse<QueryResourceInfo> response = queryCtrl().create(createQueryRequest);
 
                     return Results.with(response, response.status());

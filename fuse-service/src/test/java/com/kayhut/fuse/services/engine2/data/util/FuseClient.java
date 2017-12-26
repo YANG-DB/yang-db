@@ -6,10 +6,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.*;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.kayhut.fuse.model.transport.CreatePageRequest;
-import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -32,15 +29,15 @@ public class FuseClient {
     }
 
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException {
-        return postQuery(queryStoreUrl,query, false);
+        return postQuery(queryStoreUrl,query, PlanTraceOptions.of(PlanTraceOptions.Level.none));
     }
 
-    public QueryResourceInfo postQuery(String queryStoreUrl, Query query, boolean verbose) throws IOException {
+    public QueryResourceInfo postQuery(String queryStoreUrl, Query query, PlanTraceOptions planTraceOptions) throws IOException {
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
         request.setQuery(query);
-        request.setVerbose(verbose);
+        request.setPlanTraceOptions(planTraceOptions);
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
     }
 
