@@ -1,14 +1,14 @@
 package com.kayhut.fuse.dispatcher.epb;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import com.google.inject.*;
 import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.costs.Cost;
-import com.kayhut.fuse.model.transport.CreateQueryRequest;
+import com.kayhut.fuse.model.transport.PlanTraceOptions;
 import com.kayhut.fuse.model.validation.ValidationResult;
+import javaslang.Tuple;
 import javaslang.collection.Stream;
 
 import java.util.*;
@@ -17,6 +17,60 @@ import java.util.*;
  * Created by Roman on 12/16/2017.
  */
 public class PlanTracer {
+
+    //region Wrapper
+    public static class Wrapper<P extends IPlan, C, CContext, Q extends IQuery>{
+        //region Constructors
+        public Wrapper(PlanTraceOptions planTraceOptions) {
+            this.planTraceOptions = planTraceOptions;
+
+            this.planSearcherClasses = new ArrayList<>();
+            this.planExtensionStrategyClasses = new ArrayList<>();
+            this.planValidatorClasses = new ArrayList<>();
+            this.costEstimatorClasses = new ArrayList<>();
+            this.planPruneStrategyClasses = new ArrayList<>();
+            this.planSelectorClasses = new ArrayList<>();
+        }
+        //endregion
+
+        //region Public Methods
+        public Wrapper<P, C, CContext, Q> bind(Class<?> clazz) {
+            this.bind(null, clazz);
+            return this;
+        }
+
+        public Wrapper<P, C, CContext, Q> bind(String name, Class<?> clazz) {
+            if (PlanSearcher.class.isAssignableFrom(clazz)) {
+                this.planSearcherClasses.add(new AbstractMap.SimpleEntry<>(name, (Class<? extends PlanSearcher<P, C, Q>>)clazz));
+            } else if (PlanExtensionStrategy.class.isAssignableFrom(clazz)) {
+                this.planExtensionStrategyClasses.add(new AbstractMap.SimpleEntry<>(name, (Class<? extends PlanExtensionStrategy<P, Q>>)clazz));
+            } else if (PlanValidator.class.isAssignableFrom(clazz)) {
+                this.planValidatorClasses.add(new AbstractMap.SimpleEntry<>(name, (Class<? extends PlanValidator<P, Q>>)clazz));
+            } else if (CostEstimator.class.isAssignableFrom(clazz)) {
+                this.costEstimatorClasses.add(new AbstractMap.SimpleEntry<>(name, (Class<? extends CostEstimator<P, C, CContext>>)clazz));
+            } else if (PlanPruneStrategy.class.isAssignableFrom(clazz)) {
+                this.planPruneStrategyClasses.add(new AbstractMap.SimpleEntry<>(name, (Class<? extends PlanPruneStrategy<PlanWithCost<P, C>>>)clazz));
+            } else if (PlanSelector.class.isAssignableFrom(clazz)) {
+                this.planSelectorClasses.add(new AbstractMap.SimpleEntry<>(name, (Class<? extends PlanSelector<PlanWithCost<P, C>, Q>>)clazz));
+            }
+
+            return this;
+        }
+        //endregion
+
+        //region Fields
+        private PlanTraceOptions planTraceOptions;
+
+        private List<Map.Entry<String, Class<? extends PlanSearcher<P, C, Q>>>> planSearcherClasses;
+        private List<Map.Entry<String, Class<? extends PlanExtensionStrategy<P, Q>>>> planExtensionStrategyClasses;
+        private List<Map.Entry<String, Class<? extends PlanValidator<P, Q>>>> planValidatorClasses;
+        private List<Map.Entry<String, Class<? extends CostEstimator<P, C, CContext>>>> costEstimatorClasses;
+        private List<Map.Entry<String, Class<? extends PlanPruneStrategy<PlanWithCost<P, C>>>>> planPruneStrategyClasses;
+        private List<Map.Entry<String, Class<? extends PlanSelector<PlanWithCost<P, C>, Q>>>> planSelectorClasses;
+        //endregion
+    }
+    //endregion
+
     //region PlanNode
     public static class PlanNode<P, C> {
         //region Constructors
@@ -235,10 +289,12 @@ public class PlanTracer {
         public Searcher(
                 @Named(planSearcherParameter) PlanSearcher<P, C, Q> planSearcher,
                 @Named(planSearcherNameParameter) String planSearcherName,
-                PlanTracer.Builder<P, C> builder) {
+                PlanTracer.Builder<P, C> builder,
+                PlanTraceOptions planTraceOptions) {
             this.planSearcher = planSearcher;
             this.planSearcherName = planSearcherName;
             this.builder = builder;
+            this.planTraceOptions = planTraceOptions;
         }
         //endregion
 
@@ -251,10 +307,17 @@ public class PlanTracer {
         }
         //endregion
 
+        //region Properties
+        public Builder<P, C> getBuilder() {
+            return this.builder;
+        }
+        //endregion
+
         //region Fields
         private PlanSearcher<P, C, Q> planSearcher;
         private String planSearcherName;
         private PlanTracer.Builder<P, C> builder;
+        private PlanTraceOptions planTraceOptions;
         //endregion
 
         //region Provider
@@ -268,20 +331,20 @@ public class PlanTracer {
                     @Named(planSearcherParameter) PlanSearcher<P, C, Q> planSearcher,
                     @Named(planSearcherNameParameter) String planSearcherName,
                     PlanTracer.Builder<P, C> builder,
-                    CreateQueryRequest createQueryRequest) {
+                    PlanTraceOptions planTraceOptions) {
                 this.planSearcher = planSearcher;
                 this.planSearcherName = planSearcherName;
                 this.builder = builder;
-                this.isVerbose = createQueryRequest.isVerbose();
+                this.planTraceOptions = planTraceOptions;
             }
             //endregion
 
             //region Provider Implementation
             @Override
             public PlanSearcher<P, C, Q> get() {
-                return isVerbose ?
-                        new Searcher<>(this.planSearcher, this.planSearcherName, this.builder) :
-                        this.planSearcher;
+                return this.planTraceOptions.getLevel() == PlanTraceOptions.Level.none ?
+                        this.planSearcher :
+                        new Searcher<>(this.planSearcher, this.planSearcherName, this.builder, this.planTraceOptions);
             }
             //endregion
 
@@ -289,7 +352,7 @@ public class PlanTracer {
             private PlanSearcher<P, C, Q> planSearcher;
             private String planSearcherName;
             private PlanTracer.Builder<P, C> builder;
-            private boolean isVerbose;
+            private PlanTraceOptions planTraceOptions;
             //endregion
         }
         //endregion
@@ -306,10 +369,12 @@ public class PlanTracer {
         public ExtensionStrategy(
                 @Named(planExtensionStrategyParameter) PlanExtensionStrategy<P, Q> planExtensionStrategy,
                 @Named(planExtensionStrategyNameParameter) String planExtensionStrategyName,
-                PlanTracer.Builder<P, C> builder) {
+                PlanTracer.Builder<P, C> builder,
+                PlanTraceOptions planTraceOptions) {
             this.planExtensionStrategy = planExtensionStrategy;
             this.planExtensionStrategyName = planExtensionStrategyName;
             this.builder = builder;
+            this.planTraceOptions = planTraceOptions;
         }
         //endregion
 
@@ -327,10 +392,17 @@ public class PlanTracer {
         }
         //endregion
 
+        //region Properties
+        public Builder<P, C> getBuilder() {
+            return this.builder;
+        }
+        //endregion
+
         //region Fields
         private PlanExtensionStrategy<P, Q> planExtensionStrategy;
         private String planExtensionStrategyName;
         private PlanTracer.Builder<P, C> builder;
+        private PlanTraceOptions planTraceOptions;
         //endregion
 
         //region Provider
@@ -344,20 +416,21 @@ public class PlanTracer {
                     @Named(planExtensionStrategyParameter) PlanExtensionStrategy<P, Q> planExtensionStrategy,
                     @Named(planExtensionStrategyNameParameter) String planExtensionStrategyName,
                     PlanTracer.Builder<P, C> builder,
-                    CreateQueryRequest createQueryRequest) {
+                    PlanTraceOptions planTraceOptions) {
                 this.planExtensionStrategy = planExtensionStrategy;
                 this.planExtensionStrategyName = planExtensionStrategyName;
                 this.builder = builder;
-                this.isVerbose = createQueryRequest.isVerbose();
+                this.planTraceOptions = planTraceOptions;
             }
             //endregion
 
             //region Provider Implementation
             @Override
             public PlanExtensionStrategy<P, Q> get() {
-                return isVerbose ?
-                        new ExtensionStrategy<>(this.planExtensionStrategy, this.planExtensionStrategyName, this.builder) :
-                        this.planExtensionStrategy;
+                return this.planTraceOptions.getLevel() == PlanTraceOptions.Level.none ?
+                        this.planExtensionStrategy :
+                        new ExtensionStrategy<>(this.planExtensionStrategy, this.planExtensionStrategyName, this.builder, this.planTraceOptions);
+
             }
             //endregion
 
@@ -365,7 +438,7 @@ public class PlanTracer {
             private PlanExtensionStrategy<P, Q> planExtensionStrategy;
             private String planExtensionStrategyName;
             private PlanTracer.Builder<P, C> builder;
-            private boolean isVerbose;
+            private PlanTraceOptions planTraceOptions;
             //endregion
         }
         //endregion
@@ -382,10 +455,12 @@ public class PlanTracer {
         public Validator(
                 @Named(planValidatorParameter) PlanValidator<P, Q> planValidator,
                 @Named(planValidatorNameParameter) String planValidatorName,
-                PlanTracer.Builder<P, C> builder) {
+                PlanTracer.Builder<P, C> builder,
+                PlanTraceOptions planTraceOptions) {
             this.planValidator = planValidator;
             this.planValidatorName = planValidatorName;
             this.builder = builder;
+            this.planTraceOptions = planTraceOptions;
         }
         //endregion
 
@@ -398,10 +473,17 @@ public class PlanTracer {
         }
         //endregion
 
+        //region Properties
+        public Builder<P, C> getBuilder() {
+            return this.builder;
+        }
+        //endregion
+
         //region Fields
         private PlanValidator<P, Q> planValidator;
         private String planValidatorName;
         private PlanTracer.Builder<P, C> builder;
+        private PlanTraceOptions planTraceOptions;
         //endregion
 
         //region Provider
@@ -415,20 +497,21 @@ public class PlanTracer {
                     @Named(planValidatorParameter) PlanValidator<P, Q> planValidator,
                     @Named(planValidatorNameParameter) String planValidatorName,
                     PlanTracer.Builder<P, C> builder,
-                    CreateQueryRequest createQueryRequest) {
+                    PlanTraceOptions planTraceOptions) {
                 this.planValidator = planValidator;
                 this.planValidatorName = planValidatorName;
                 this.builder = builder;
-                this.isVerbose = createQueryRequest.isVerbose();
+                this.planTraceOptions = planTraceOptions;
             }
             //endregion
 
             //region Provider Implementation
             @Override
             public PlanValidator<P, Q> get() {
-                return isVerbose ?
-                        new Validator<>(this.planValidator, this.planValidatorName, this.builder) :
-                        this.planValidator;
+                return this.planTraceOptions.getLevel() == PlanTraceOptions.Level.none ?
+                        this.planValidator :
+                        new Validator<>(this.planValidator, this.planValidatorName, this.builder, this.planTraceOptions);
+
             }
             //endregion
 
@@ -436,7 +519,7 @@ public class PlanTracer {
             private PlanValidator<P, Q> planValidator;
             private String planValidatorName;
             private PlanTracer.Builder<P, C> builder;
-            private boolean isVerbose;
+            private PlanTraceOptions planTraceOptions;
             //endregion
         }
         //endregion
@@ -453,10 +536,12 @@ public class PlanTracer {
         public Estimator(
                 @Named(costEstimatorParameter) CostEstimator<P, C, TContext> costEstimator,
                 @Named(costEstimatorNameParameter) String costEstimatorName,
-                PlanTracer.Builder<P, C> builder) {
+                PlanTracer.Builder<P, C> builder,
+                PlanTraceOptions planTraceOptions) {
             this.costEstimator = costEstimator;
             this.costEstimatorName = costEstimatorName;
             this.builder = builder;
+            this.planTraceOptions = planTraceOptions;
         }
         //endregion
 
@@ -469,10 +554,17 @@ public class PlanTracer {
         }
         //endregion
 
+        //region Properties
+        public Builder<P, C> getBuilder() {
+            return this.builder;
+        }
+        //endregion
+
         //region Fields
         private CostEstimator<P, C, TContext> costEstimator;
         private String costEstimatorName;
         private PlanTracer.Builder<P, C> builder;
+        private PlanTraceOptions planTraceOptions;
         //endregion
 
         //region Provider
@@ -486,20 +578,21 @@ public class PlanTracer {
                     @Named(costEstimatorParameter) CostEstimator<P, C, TContext> costEstimator,
                     @Named(costEstimatorNameParameter) String costEstimatorName,
                     PlanTracer.Builder<P, C> builder,
-                    CreateQueryRequest createQueryRequest) {
+                    PlanTraceOptions planTraceOptions) {
                 this.costEstimator = costEstimator;
                 this.costEstimatorName = costEstimatorName;
                 this.builder = builder;
-                this.isVerbose = createQueryRequest.isVerbose();
+                this.planTraceOptions = planTraceOptions;
             }
             //endregion
 
             //region Provider Implementation
             @Override
             public CostEstimator<P, C, TContext> get() {
-                return isVerbose ?
-                        new Estimator<>(this.costEstimator, this.costEstimatorName, this.builder) :
-                        this.costEstimator;
+                return this.planTraceOptions.getLevel() == PlanTraceOptions.Level.none ?
+                        this.costEstimator :
+                        new Estimator<>(this.costEstimator, this.costEstimatorName, this.builder, this.planTraceOptions);
+
             }
             //endregion
 
@@ -507,7 +600,7 @@ public class PlanTracer {
             private CostEstimator<P, C, TContext> costEstimator;
             private String costEstimatorName;
             private PlanTracer.Builder<P, C> builder;
-            private boolean isVerbose;
+            private PlanTraceOptions planTraceOptions;
             //endregion
         }
         //endregion
@@ -524,10 +617,12 @@ public class PlanTracer {
         public PruneStrategy(
                 @Named(planPruneStrategyParameter) PlanPruneStrategy<PlanWithCost<P, C>> planPruneStrategy,
                 @Named(planPruneStrategyNameParameter) String planPruneStrategyName,
-                PlanTracer.Builder<P, C> builder) {
+                PlanTracer.Builder<P, C> builder,
+                PlanTraceOptions planTraceOptions) {
             this.planPruneStrategy = planPruneStrategy;
             this.planPruneStrategyName = planPruneStrategyName;
             this.builder = builder;
+            this.planTraceOptions = planTraceOptions;
         }
         //endregion
 
@@ -544,10 +639,17 @@ public class PlanTracer {
         }
         //endregion
 
+        //region Properties
+        public Builder<P, C> getBuilder() {
+            return this.builder;
+        }
+        //endregion
+
         //region Fields
         private PlanPruneStrategy<PlanWithCost<P, C>> planPruneStrategy;
         private String planPruneStrategyName;
         private PlanTracer.Builder<P, C> builder;
+        private PlanTraceOptions planTraceOptions;
         //endregion
 
         //region Provider
@@ -561,20 +663,20 @@ public class PlanTracer {
                     @Named(planPruneStrategyParameter) PlanPruneStrategy<PlanWithCost<P, C>> planPruneStrategy,
                     @Named(planPruneStrategyNameParameter) String planPruneStrategyName,
                     PlanTracer.Builder<P, C> builder,
-                    CreateQueryRequest createQueryRequest) {
+                    PlanTraceOptions planTraceOptions) {
                 this.planPruneStrategy = planPruneStrategy;
                 this.planPruneStrategyName = planPruneStrategyName;
                 this.builder = builder;
-                this.isVerbose = createQueryRequest.isVerbose();
+                this.planTraceOptions = planTraceOptions;
             }
             //endregion
 
             //region Provider Implementation
             @Override
             public PlanPruneStrategy<PlanWithCost<P, C>> get() {
-                return isVerbose ?
-                        new PruneStrategy<>(this.planPruneStrategy, this.planPruneStrategyName, this.builder) :
-                        this.planPruneStrategy;
+                return this.planTraceOptions.getLevel() == PlanTraceOptions.Level.none ?
+                        this.planPruneStrategy :
+                        new PruneStrategy<>(this.planPruneStrategy, this.planPruneStrategyName, this.builder, this.planTraceOptions);
             }
             //endregion
 
@@ -582,7 +684,7 @@ public class PlanTracer {
             private PlanPruneStrategy<PlanWithCost<P, C>> planPruneStrategy;
             private String planPruneStrategyName;
             private PlanTracer.Builder<P, C> builder;
-            private boolean isVerbose;
+            private PlanTraceOptions planTraceOptions;
             //endregion
         }
         //endregion
@@ -599,10 +701,12 @@ public class PlanTracer {
         public Selector(
                 @Named(planSelectorParameter) PlanSelector<PlanWithCost<P, C>, Q> planSelector,
                 @Named(planSelectorNameParameter) String planSelectorName,
-                PlanTracer.Builder<P, C> builder) {
+                PlanTracer.Builder<P, C> builder,
+                PlanTraceOptions planTraceOptions) {
             this.planSelector = planSelector;
             this.planSelectorName = planSelectorName;
             this.builder = builder;
+            this.planTraceOptions = planTraceOptions;
         }
         //endregion
 
@@ -615,10 +719,17 @@ public class PlanTracer {
         }
         //endregion
 
+        //region Properties
+        public Builder<P, C> getBuilder() {
+            return this.builder;
+        }
+        //endregion
+
         //region Fields
         private PlanSelector<PlanWithCost<P, C>, Q> planSelector;
         private String planSelectorName;
         private PlanTracer.Builder<P, C> builder;
+        private PlanTraceOptions planTraceOptions;
         //endregion
 
         //region Provider
@@ -632,20 +743,20 @@ public class PlanTracer {
                     @Named(planSelectorParameter) PlanSelector<PlanWithCost<P, C>, Q> planSelector,
                     @Named(planSelectorNameParameter) String planSelectorName,
                     PlanTracer.Builder<P, C> builder,
-                    CreateQueryRequest createQueryRequest) {
+                    PlanTraceOptions planTraceOptions) {
                 this.planSelector = planSelector;
                 this.planSelectorName = planSelectorName;
                 this.builder = builder;
-                this.isVerbose = createQueryRequest.isVerbose();
+                this.planTraceOptions = planTraceOptions;
             }
             //endregion
 
             //region Provider Implementation
             @Override
             public PlanSelector<PlanWithCost<P, C>, Q> get() {
-                return this.isVerbose ?
-                        new Selector<>(this.planSelector, this.planSelectorName, this.builder) :
-                        this.planSelector;
+                return this.planTraceOptions.getLevel() == PlanTraceOptions.Level.none ?
+                        this.planSelector :
+                        new Selector<>(this.planSelector, this.planSelectorName, this.builder, this.planTraceOptions);
             }
             //endregion
 
@@ -653,7 +764,7 @@ public class PlanTracer {
             private PlanSelector<PlanWithCost<P, C>, Q> planSelector;
             private String planSelectorName;
             private PlanTracer.Builder<P, C> builder;
-            private boolean isVerbose;
+            private PlanTraceOptions planTraceOptions;
             //endregion
         }
         //endregion

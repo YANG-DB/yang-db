@@ -10,30 +10,24 @@ import com.kayhut.fuse.model.query.Query;
 public class CreateQueryRequest {
     //region Constructors
     public CreateQueryRequest() {
-
+        this.planTraceOptions = new PlanTraceOptions();
+        this.planTraceOptions.setLevel(PlanTraceOptions.Level.none);
     }
 
     public CreateQueryRequest(String id, String name, Query query) {
+        this();
         this.id = id;
         this.name = name;
         this.query = query;
     }
 
-    public CreateQueryRequest(String id, String name, Query query, boolean verbose) {
+    public CreateQueryRequest(String id, String name, Query query, PlanTraceOptions planTraceOptions) {
         this(id, name, query);
-        this.verbose = verbose;
+        this.planTraceOptions = planTraceOptions;
     }
     //endregion
 
     //region Properties
-    public boolean isVerbose() {
-        return verbose;
-    }
-
-    public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
-    }
-
     public String getId() {
         return id;
     }
@@ -57,12 +51,20 @@ public class CreateQueryRequest {
     public Query getQuery() {
         return query;
     }
+
+    public PlanTraceOptions getPlanTraceOptions() {
+        return planTraceOptions;
+    }
+
+    public void setPlanTraceOptions(PlanTraceOptions planTraceOptions) {
+        this.planTraceOptions = planTraceOptions;
+    }
     //endregion
 
     //region Fields
     private String id;
-    private boolean verbose;
     private String name;
     private Query query;
+    private PlanTraceOptions planTraceOptions;
     //endregion
 }

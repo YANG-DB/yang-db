@@ -67,7 +67,7 @@ public class QueryTest {
         request.setId("1");
         request.setName("test");
         request.setQuery(TestUtils.loadQuery("Q001.json"));
-        request.setVerbose(true);
+        request.setPlanTraceOptions(PlanTraceOptions.of(PlanTraceOptions.Level.verbose));
         //submit query
         given()
                 .contentType("application/json")
