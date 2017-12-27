@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.descriptors.ToStringDescriptor;
 import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import javaslang.collection.Stream;
 
 import java.util.HashMap;
@@ -48,6 +49,7 @@ public class IterablePlanOpDescriptor implements Descriptor<Iterable<PlanOp>> {
 
         Map<Class<?>, Descriptor<? extends PlanOp>> descriptors = new HashMap<>();
         descriptors.put(CompositePlanOp.class, new CompositePlanOpDescriptor(iterablePlanOpDescriptor));
+        descriptors.put(EntityJoinOp.class, new EntityJoinOpDescriptor(iterablePlanOpDescriptor));
 
         iterablePlanOpDescriptor.compositeDescriptor = new CompositeDescriptor<>(descriptors, new ToStringDescriptor<>());
         return iterablePlanOpDescriptor;
