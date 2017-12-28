@@ -14,6 +14,9 @@ public class EntityJoinOpDescriptor implements Descriptor<EntityJoinOp> {
     public String describe(EntityJoinOp item) {
         return new StringBuilder()
                 .append(item.getClass().getSimpleName())
+                .append("(")
+                .append(item)
+                .append(")")
                 .append("[left:[")
                 .append(this.planOpsDescriptor.describe(item.getLeftBranch().getOps()))
                 .append("], right:[")

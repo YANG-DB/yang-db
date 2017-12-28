@@ -9,6 +9,7 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.EntityJoinPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M2PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M2PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.pruners.M2GlobalPruner;
 import com.kayhut.fuse.epb.plan.pruners.M2LocalPruner;
 import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
 import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
@@ -168,7 +169,7 @@ public class EpbJoinSelectionTests {
         ((EntityJoinPatternCostEstimator)((M2PatternCostEstimator)regexPatternCostEstimator.getEstimator()).getEstimators().get(EntityJoinPattern.class)).setCostEstimator(regexPatternCostEstimator);
         estimator = regexPatternCostEstimator;
 
-        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
+        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPruner = new M2GlobalPruner();
         PlanValidator<Plan, AsgQuery> validator = new M2PlanValidator();
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPruner = new M2LocalPruner();
@@ -178,7 +179,7 @@ public class EpbJoinSelectionTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
                 new M2PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
-                pruneStrategy,
+                globalPruner,
                 localPruner,
                 globalPlanSelector,
                 localPlanSelector,
@@ -297,7 +298,7 @@ public class EpbJoinSelectionTests {
     }
 
     @Test
-    public void test(){
+    public void testJoinPlanSelection(){
             AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                     next(typed(1, PERSON.type)).
                     next(eProp(2, EProp.of(NAME.name, 2, of(eq, "abc")))).
@@ -320,17 +321,6 @@ public class EpbJoinSelectionTests {
                     PlanMockUtils.PlanMockBuilder.mock(query).entity(17).entityFilter(18).rel(15, Rel.Direction.R).relFilter(16).entity(13).entityFilter(14).rel(11, Rel.Direction.R).relFilter(12).entity(9).entityFilter(10).plan()).plan();
             PlanAssert.assertEquals(expected, plan.getPlan());
     }
-
-
-
-
-    private void assertNoJoinPlans(Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {
-        for (PlanWithCost<Plan, PlanDetailedCost> plan : plans) {
-            Assert.assertFalse(plan.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp));
-        }
-    }
-
-
 
     //region Fields
     private GraphElementSchemaProvider graphElementSchemaProvider;

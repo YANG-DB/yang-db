@@ -154,7 +154,7 @@ public class EpbJoinTests {
         ((EntityJoinPatternCostEstimator)((M2PatternCostEstimator)regexPatternCostEstimator.getEstimator()).getEstimators().get(EntityJoinPattern.class)).setCostEstimator(regexPatternCostEstimator);
         estimator = regexPatternCostEstimator;
 
-        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
+        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPruner = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M2PlanValidator();
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPruner = new M2LocalPruner();
@@ -164,7 +164,7 @@ public class EpbJoinTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
                 new M2PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
-                pruneStrategy,
+                globalPruner,
                 localPruner,
                 globalPlanSelector,
                 localPlanSelector,
