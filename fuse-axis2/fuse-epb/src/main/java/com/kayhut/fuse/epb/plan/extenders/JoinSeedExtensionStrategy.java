@@ -12,6 +12,8 @@ import java.util.Optional;
 
 /**
  * Created by moti on 7/3/2017.
+ * Generated new Join ops, places the old plan as the left branch of the join, and creates seeds
+ * for the right branch (with a seed strategy)
  */
 public class JoinSeedExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     private PlanExtensionStrategy<Plan, AsgQuery> seedStrategy;
@@ -22,6 +24,7 @@ public class JoinSeedExtensionStrategy implements PlanExtensionStrategy<Plan, As
 
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
+        // Cannot create a new join from an empty plan
         if (!plan.isPresent() || plan.get().getOps().isEmpty()) {
             return Collections.emptyList();
         }

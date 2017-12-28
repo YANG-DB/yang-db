@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.extenders;
+package com.kayhut.fuse.epb.plan.extenders.M2;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;

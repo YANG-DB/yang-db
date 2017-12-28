@@ -12,6 +12,7 @@ import java.util.Optional;
 
 /**
  * Created by moti on 7/3/2017.
+ * Extends join ops that are the last op in the plan
  */
 public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     private PlanExtensionStrategy<Plan, AsgQuery> innerExpander;
@@ -28,11 +29,13 @@ public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan,
             return Collections.emptyList();
         }
 
+        // Check if the plan has a Join op and this is the last op
         if (plan.get().getOps().size() == 1 && plan.get().getOps().get(0) instanceof EntityJoinOp) {
             EntityJoinOp joinOp = (EntityJoinOp) plan.get().getOps().get(0);
             if(joinOp.isComplete())
                 return Collections.emptyList();
 
+            // extend right branch and create new plans
             Iterable<Plan> plans = innerExpander.extendPlan(Optional.of(joinOp.getRightBranch()), query);
             List<Plan> newPlans = new ArrayList<>();
             for (Plan innerPlan : plans) {

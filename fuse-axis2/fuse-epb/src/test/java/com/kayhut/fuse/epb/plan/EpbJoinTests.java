@@ -8,7 +8,7 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.EntityJoinPattern;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.EntityJoinPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M2PatternCostEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M2PlanExtensionStrategy;
+import com.kayhut.fuse.epb.plan.extenders.M2.M2PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.pruners.M2LocalPruner;
 import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
 import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
