@@ -117,6 +117,6 @@ public class Pattern {
         EntityFilterOp endFilter = (EntityFilterOp) patternParts.get(OPTIONAL_ENTITY_TWO_FILTER);
         endFilter.setEntity(end.getAsgEbase());
 
-        return new EntityJoinEntityPattern(entityJoinOp, null, rel, relFilter, end, endFilter,entityJoinOp);
+        return new EntityJoinEntityPattern(entityJoinOp, rel, relFilter, end, endFilter);
     }
 }
