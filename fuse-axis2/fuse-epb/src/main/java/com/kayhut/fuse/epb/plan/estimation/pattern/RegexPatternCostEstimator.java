@@ -155,12 +155,7 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
             if (matcher.find()) {
                 Map<PatternPart, PlanOp> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
 
-                com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern =
-                                regexPattern.equals(Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
-                                regexPattern.equals(Pattern.ENTITY_RELATION_ENTITY) ? buildEntityRelationEntityPattern(patternParts) :
-                                regexPattern.equals(Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) :
-                                regexPattern.equals(Pattern.ENTITY_JOIN) ? buildEntityJoinPattern(patternParts):
-                                regexPattern.equals(Pattern.ENTITY_JOIN_RELATION_ENTITY) ? buildEntityJoinEntityPattern(patternParts ) : null;
+                com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern = buildPattern(regexPattern, patternParts, plan);
 
                 PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(pattern, context);
 
@@ -225,8 +220,8 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
 
         double lambda = result.lambda();
         previousPlanStepCosts.forEach(planStepCost -> {
-            if(planStepCost.getPlan().getOps().get(0).getClass().equals(EntityOp.class)) {
-                planStepCost.getCost().push(planStepCost.getCost().peek() * lambda);
+            if(planStepCost.getPlan().getOps().get(0) instanceof EntityOp) {
+                planStepCost.getCost().applyLambda(lambda);
             }
         });
 

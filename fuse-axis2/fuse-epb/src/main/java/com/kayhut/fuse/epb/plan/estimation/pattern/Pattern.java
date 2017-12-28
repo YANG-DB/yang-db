@@ -119,4 +119,12 @@ public class Pattern {
 
         return new EntityJoinEntityPattern(entityJoinOp, rel, relFilter, end, endFilter);
     }
+
+    public static Pattern buildPattern(RegexPatternCostEstimator.Pattern regexPattern, Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts , Plan plan ){
+        return regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
+            regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY_RELATION_ENTITY) ? buildEntityRelationEntityPattern(patternParts) :
+            regexPattern.equals(RegexPatternCostEstimator.Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) :
+            regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY_JOIN) ? buildEntityJoinPattern(patternParts):
+            regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY_JOIN_RELATION_ENTITY) ? buildEntityJoinEntityPattern(patternParts ) : null;
+    }
 }

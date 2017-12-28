@@ -27,6 +27,10 @@ public class CountEstimatesCost implements Cost, Cloneable {
     public double peek() {
         return countEstimates.peek();
     }
+
+    public void applyLambda(double lambda){
+        push(lambda * peek());
+    }
     //endregion
 
     //region Override Methods

@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.execution.plan.costs;
 
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+
 import java.util.Stack;
 
 /**
@@ -21,6 +23,21 @@ public class JoinCost extends CountEstimatesCost {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new JoinCost(this.getCost(), this.getCountEstimates(), this.getLeftBranchCost(), this.getRightBranchCost());
+    }
+
+    @Override
+    public void applyLambda(double lambda){
+        super.applyLambda(lambda);
+        this.leftBranchCost.getPlanStepCosts().forEach(op -> {
+            if(op.getPlan().getOps().get(0) instanceof EntityOp)
+               op.getCost().applyLambda(lambda);
+
+        });
+
+        this.rightBranchCost.getPlanStepCosts().forEach(op -> {
+            if (op.getPlan().getOps().get(0) instanceof EntityOp)
+                op.getCost().applyLambda(lambda);
+        });
     }
 
     public PlanDetailedCost getLeftBranchCost() {
