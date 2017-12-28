@@ -1,9 +1,16 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
+import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
+
+import java.util.Optional;
 
 /**
  * Created by Roman on 29/06/2017.

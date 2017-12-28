@@ -1,16 +1,21 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
+import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.PatternCostEstimator;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
+import javaslang.collection.Stream;
 
-import java.util.Map;
+import java.util.*;
 
 import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.PatternPart.*;
 import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator.PatternPart.OPTIONAL_ENTITY_TWO_FILTER;
@@ -18,8 +23,67 @@ import static com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstima
 /**
  * Created by moti on 6/1/2017.
  */
-public class Pattern {
-   public static GoToEntityRelationEntityPattern buildGoToPattern(Plan plan, Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts) {
+public abstract class Pattern {
+    public PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
+                                                             Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost){
+        DoubleCost previousPlanGlobalCost = previousPlanGlobalCost(previousCost);
+        List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts = previousPlanStepCosts(previousCost);
+
+        updatePreviousCosts(result, previousPlanStepCosts);
+
+        List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts =
+                Stream.ofAll(result.getPlanStepCosts())
+                        .filter(planStepCost -> !previousCost.isPresent() ||
+                                !PlanUtil.first(previousCost.get().getPlan(), planStepCost.getPlan().getOps().get(0)).isPresent())
+                        .toJavaList();
+
+        double sumOfPlanStepCosts = Stream.ofAll(planStepCosts).map(planStepCost -> planStepCost.getCost().getCost()).sum().doubleValue();
+        double newCost = previousPlanGlobalCost.getCost() + sumOfPlanStepCosts;
+        List<PlanWithCost<Plan, CountEstimatesCost>> newPlanStepCosts = Stream.ofAll(previousPlanStepCosts).appendAll(planStepCosts).toJavaList();
+
+        Plan newPlan = new Plan(Stream.ofAll(newPlanStepCosts).flatMap(planStepCost -> Stream.ofAll(planStepCost.getPlan().getOps())).toJavaList());
+        PlanDetailedCost newDetailedCost = new PlanDetailedCost(new DoubleCost(newCost), newPlanStepCosts);
+        return new PlanWithCost<>(newPlan, newDetailedCost);
+    }
+
+    private void updatePreviousCosts(PatternCostEstimator.Result<Plan, CountEstimatesCost> result, List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts) {
+        double countsUpdateFactor = result.countsUpdateFactor();
+        previousPlanStepCosts.forEach(planStepCost -> {
+            if(planStepCost.getPlan().getOps().get(0) instanceof EntityOp) {
+                planStepCost.getCost().applyCountsUpdateFactor(countsUpdateFactor);
+            }
+        });
+    }
+
+    private List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts(Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+        if (previousCost.isPresent()) {
+            return Stream.ofAll(previousCost.get().getCost().getPlanStepCosts())
+                    .map(planStepCost -> {
+                        try {
+                            return new PlanWithCost<>(
+                                    planStepCost.getPlan(),
+                                    (CountEstimatesCost)planStepCost.getCost().clone());
+                        } catch (CloneNotSupportedException e) {
+                            return new PlanWithCost<>(
+                                    planStepCost.getPlan(),
+                                    new CountEstimatesCost(planStepCost.getCost().getCost(), planStepCost.getCost().getCountEstimates()));
+                        }
+                    })
+                    .toJavaList();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    private DoubleCost previousPlanGlobalCost(Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
+        if (previousCost.isPresent()) {
+            return previousCost.get().getCost().getGlobalCost();
+        }else{
+            return new DoubleCost(0);
+        }
+    }
+
+    public static GoToEntityRelationEntityPattern buildGoToPattern(Plan plan, Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts) {
         GoToEntityOp startGoTo = (GoToEntityOp) patternParts.get(GOTO_ENTITY);
 
         EntityOp start = (EntityOp) plan.getOps().stream().

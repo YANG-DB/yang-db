@@ -118,7 +118,7 @@ public class BasicPatternCostEstimatorTest {
         Assert.assertEquals(0.4, result.getPlanStepCosts().get(1).getCost().getCost(), 0.1);
         Assert.assertEquals(50, result.getPlanStepCosts().get(2).getCost().getCost(), 0.1);
 
-        Assert.assertEquals(1.0, result.lambda(), 0.1);
+        Assert.assertEquals(1.0, result.countsUpdateFactor(), 0.1);
     }
 
 }

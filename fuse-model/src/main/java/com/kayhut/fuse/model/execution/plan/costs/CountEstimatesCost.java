@@ -28,8 +28,8 @@ public class CountEstimatesCost implements Cost, Cloneable {
         return countEstimates.peek();
     }
 
-    public void applyLambda(double lambda){
-        push(lambda * peek());
+    public void applyCountsUpdateFactor(double countUpdateFactor){
+        push(countUpdateFactor * peek());
     }
     //endregion
 

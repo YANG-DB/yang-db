@@ -154,12 +154,9 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
             Matcher matcher = compile.matcher(opsString);
             if (matcher.find()) {
                 Map<PatternPart, PlanOp> patternParts = getStepPatternParts(planStep, getNamedGroups(compile), matcher);
-
                 com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern = buildPattern(regexPattern, patternParts, plan);
-
                 PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(pattern, context);
-
-                newPlan = buildNewPlan(pattern, result, context.getPreviousCost());
+                newPlan = pattern.buildNewPlan(result, context.getPreviousCost());
                 break;
             }
         }
@@ -183,61 +180,6 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         }
 
         return new Plan();
-    }
-    private PlanWithCost<Plan, PlanDetailedCost> buildNewPlan(com.kayhut.fuse.epb.plan.estimation.pattern.Pattern pattern,
-                                                              PatternCostEstimator.Result<Plan, CountEstimatesCost> result,
-                                                              Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost) {
-
-        DoubleCost previousPlanGlobalCost;
-        List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts;
-        if (previousCost.isPresent()) {
-            if(pattern instanceof EntityJoinPattern){
-                Plan joinPlan = result.getPlanStepCosts().get(0).getPlan();
-                JoinCost joinCost = (JoinCost) result.getPlanStepCosts().get(0).getCost();
-                PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(joinCost.getCost() + joinCost.getLeftBranchCost().getGlobalCost().cost + joinCost.getRightBranchCost().getGlobalCost().cost),
-                        Collections.singleton(new PlanWithCost<>(joinPlan, joinCost)));
-                return new PlanWithCost<>( joinPlan, planDetailedCost);
-            }
-            previousPlanGlobalCost = previousCost.get().getCost().getGlobalCost();
-
-            previousPlanStepCosts = Stream.ofAll(previousCost.get().getCost().getPlanStepCosts())
-                    .map(planStepCost -> {
-                        try {
-                            return new PlanWithCost<>(
-                                    planStepCost.getPlan(),
-                                    (CountEstimatesCost)planStepCost.getCost().clone());
-                        } catch (CloneNotSupportedException e) {
-                            return new PlanWithCost<>(
-                                    planStepCost.getPlan(),
-                                    new CountEstimatesCost(planStepCost.getCost().getCost(), planStepCost.getCost().getCountEstimates()));
-                        }
-                    })
-                    .toJavaList();
-        } else {
-            previousPlanGlobalCost = new DoubleCost(0);
-            previousPlanStepCosts = new ArrayList<>();
-        }
-
-        double lambda = result.lambda();
-        previousPlanStepCosts.forEach(planStepCost -> {
-            if(planStepCost.getPlan().getOps().get(0) instanceof EntityOp) {
-                planStepCost.getCost().applyLambda(lambda);
-            }
-        });
-
-        List<PlanWithCost<Plan, CountEstimatesCost>> planStepCosts =
-                Stream.ofAll(result.getPlanStepCosts())
-                .filter(planStepCost -> !previousCost.isPresent() ||
-                        !PlanUtil.first(previousCost.get().getPlan(), planStepCost.getPlan().getOps().get(0)).isPresent())
-                .toJavaList();
-
-        double sumOfPlanStepCosts = Stream.ofAll(planStepCosts).map(planStepCost -> planStepCost.getCost().getCost()).sum().doubleValue();
-        double newCost = previousPlanGlobalCost.getCost() + sumOfPlanStepCosts;
-        List<PlanWithCost<Plan, CountEstimatesCost>> newPlanStepCosts = Stream.ofAll(previousPlanStepCosts).appendAll(planStepCosts).toJavaList();
-
-        Plan newPlan = new Plan(Stream.ofAll(newPlanStepCosts).flatMap(planStepCost -> Stream.ofAll(planStepCost.getPlan().getOps())).toJavaList());
-        PlanDetailedCost newDetailedCost = new PlanDetailedCost(new DoubleCost(newCost), newPlanStepCosts);
-        return new PlanWithCost<>(newPlan, newDetailedCost);
     }
 
     private Map<PatternPart, PlanOp> getStepPatternParts(Plan step, Map<String, Integer> groups, Matcher matcher) {

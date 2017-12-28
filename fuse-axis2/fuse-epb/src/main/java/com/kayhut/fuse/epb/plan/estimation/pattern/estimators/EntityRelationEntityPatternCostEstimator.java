@@ -51,8 +51,8 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
      * <p>
      * N2 = min(N2-1, N2-2)
      * <p>
-     * lambda = (R/R1)*(N2/N2-1)
-     * N1' = lambda*N1 (back propagate count estimate)
+     * countsUpdateFactor = (R/R1)*(N2/N2-1)
+     * N1' = countsUpdateFactor*N1 (back propagate count estimate)
      * ********************************************************
      * @param config
      * @param statisticsProvider
@@ -114,7 +114,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         //estimate back propagation weight
         double lambdaEdge = R / R2;
         double lambdaNode = N2 / N2_2;
-        // lambda = (R/R1)*(N2/N2-1)
+        // countsUpdateFactor = (R/R1)*(N2/N2-1)
         double lambda = lambdaEdge * lambdaNode;
 
         //estimation if zero since the real estimation is residing on the adjacent filter (rel filter)

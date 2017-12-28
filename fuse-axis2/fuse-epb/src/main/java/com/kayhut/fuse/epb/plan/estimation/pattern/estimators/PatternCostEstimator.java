@@ -18,7 +18,7 @@ public interface PatternCostEstimator<P1, C1, TContext> {
                 }
 
                 @Override
-                public double lambda() {
+                public double countsUpdateFactor() {
                     return 0;
                 }
             };
@@ -28,7 +28,7 @@ public interface PatternCostEstimator<P1, C1, TContext> {
     interface Result<P2, C2> {
         List<PlanWithCost<P2, C2>> getPlanStepCosts();
 
-        double lambda();
+        double countsUpdateFactor();
 
         @SafeVarargs
         static <P2, C2> Result<P2, C2> of(double lambda, PlanWithCost<P2, C2> ... planStepCosts) {
@@ -39,7 +39,7 @@ public interface PatternCostEstimator<P1, C1, TContext> {
                 }
 
                 @Override
-                public double lambda() {
+                public double countsUpdateFactor() {
                     return lambda;
                 }
             };

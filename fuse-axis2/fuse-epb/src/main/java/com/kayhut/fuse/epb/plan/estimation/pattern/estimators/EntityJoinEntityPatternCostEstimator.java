@@ -2,10 +2,8 @@ package com.kayhut.fuse.epb.plan.estimation.pattern.estimators;
 
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.EntityJoinEntityPattern;
-import com.kayhut.fuse.epb.plan.estimation.pattern.GoToEntityRelationEntityPattern;
 import com.kayhut.fuse.epb.plan.estimation.pattern.Pattern;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -36,7 +34,7 @@ public class EntityJoinEntityPatternCostEstimator implements PatternCostEstimato
                 this.entityRelationEntityPatternCostEstimator.estimate(entityJoinEntityPattern, context);
 
         return Result.of(
-                result.lambda(),
+                result.countsUpdateFactor(),
                 context.getPreviousCost().get().getCost().getPlanStepCost(entityJoinEntityPattern.getEntityJoinOp()).get(),
                 result.getPlanStepCosts().get(1),
                 result.getPlanStepCosts().get(2));
