@@ -36,6 +36,7 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -295,6 +296,7 @@ public class EpbJoinSelectionTests {
     }
 
     @Test
+    @Ignore
     public void testJoinPlanSelection(){
             AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                     next(typed(1, PERSON.type)).

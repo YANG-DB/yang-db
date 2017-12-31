@@ -1,10 +1,13 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
@@ -73,6 +76,51 @@ public class GotoGeneratorExtenderStrategyTest {
                 )
                 .build();
     }
+
+    public static AsgQuery lineQuery() {
+        return AsgQuery.Builder.start("q", "o")
+                .next(typed(1, OntologyTestUtils.PERSON.type))
+                .next(eProp(2))
+                .next(rel(3, OWN.getrType(), R).below(relProp(4)))
+                .next(typed(5, OntologyTestUtils.DRAGON.type))
+                .next(eProp(6))
+                .next(rel(7, FREEZE.getrType(), R).below(relProp(8)))
+                .next(unTyped(9))
+                .next(eProp(10))
+                .next(rel(11, FREEZE.getrType(), R).below(relProp(12)))
+                .next(unTyped(13))
+                .next(eProp(14))
+                .build();
+    }
+
+    @Test
+    public void testJoinGoto(){
+        AsgQuery asgQuery = lineQuery();
+        Plan plan = new Plan(new EntityJoinOp(
+                new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)),
+                        new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 2)),
+                        new RelationOp(AsgQueryUtil.element$(asgQuery, 3)),
+                        new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 4)),
+                        new EntityOp(AsgQueryUtil.element$(asgQuery, 5)),
+                        new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 6))),
+                new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 9)),
+                        new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 10)),
+                        new RelationOp(AsgQueryUtil.element$(asgQuery, 7)),
+                        new RelationFilterOp(AsgQueryUtil.element$(asgQuery, 8)),
+                        new EntityOp(AsgQueryUtil.element$(asgQuery, 5)),
+                        new EntityFilterOp(AsgQueryUtil.element$(asgQuery, 6)))));
+        Iterable<Plan> plans = new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery);
+        Assert.assertEquals(2, Stream.ofAll(plans).length());
+        Assert.assertTrue(Stream.ofAll(plans).exists(p -> {
+            PlanOp planOp = p.getOps().get(p.getOps().size() - 1);
+            return planOp instanceof GoToEntityOp && ((GoToEntityOp) planOp).getAsgEbase().geteNum() == 1;
+        }));
+        Assert.assertTrue(Stream.ofAll(plans).exists(p -> {
+            PlanOp planOp = p.getOps().get(p.getOps().size() - 1);
+            return planOp instanceof GoToEntityOp && ((GoToEntityOp) planOp).getAsgEbase().geteNum() == 9;
+        }));
+    }
+
 
     @Test
     public void test_simpleQuery2_secondPlan() {
