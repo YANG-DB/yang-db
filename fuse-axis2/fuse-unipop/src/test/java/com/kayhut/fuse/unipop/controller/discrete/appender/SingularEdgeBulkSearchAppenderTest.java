@@ -10,6 +10,7 @@ import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -24,7 +25,7 @@ import java.util.Optional;
 public class SingularEdgeBulkSearchAppenderTest {
     //region Tests
     @Test
-    public void testOut() {
+    public void testOut() throws JSONException {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Impl(
@@ -46,7 +47,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     }
 
     @Test
-    public void testOutEdgeType1() {
+    public void testOutEdgeType1() throws JSONException {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Impl(
@@ -68,7 +69,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     }
 
     @Test
-    public void testIn() {
+    public void testIn() throws JSONException {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Impl(
@@ -90,7 +91,7 @@ public class SingularEdgeBulkSearchAppenderTest {
     }
 
     @Test
-    public void testInEdgeType1() {
+    public void testInEdgeType1() throws JSONException {
         SingularEdgeBulkSearchAppender appender = new SingularEdgeBulkSearchAppender();
         SearchBuilder searchBuilder = new SearchBuilder();
         appender.append(searchBuilder, new VertexControllerContext.Impl(

@@ -3,6 +3,7 @@ package com.kayhut.fuse.stat;
 import com.kayhut.fuse.stat.model.histogram.Histogram;
 import com.kayhut.fuse.stat.model.histogram.HistogramDynamic;
 import com.kayhut.fuse.stat.util.StatTestUtil;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -12,8 +13,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static com.kayhut.fuse.stat.StatTestSuite.dataClient;
-import static com.kayhut.fuse.stat.StatTestSuite.statClient;
+import static com.kayhut.fuse.stat.StatTestSuite.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -75,10 +75,11 @@ public class StatCalculatorDynamicFieldTest {
 
     @BeforeClass
     public static void setup() throws Exception {
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_1,
-                DATA_TYPE_DRAGON,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_1,
                         DRAGON_MIN_AGE,
@@ -88,10 +89,11 @@ public class StatCalculatorDynamicFieldTest {
                         DRAGON_GENDERS,
                         DRAGON_ADDRESS_LENGTH)).populate();
 
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_2,
-                DATA_TYPE_DRAGON,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX_2,
                         DRAGON_MIN_AGE,
@@ -101,11 +103,11 @@ public class StatCalculatorDynamicFieldTest {
                         DRAGON_GENDERS,
                         DRAGON_ADDRESS_LENGTH)).populate();
 
-
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_3,
-                DATA_TYPE_FIRE,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragonFireDragonEdges(
                         NUM_OF_DRAGONS_IN_INDEX_3,
@@ -115,10 +117,11 @@ public class StatCalculatorDynamicFieldTest {
                         DRAGON_MAX_TEMP
                 )).populate();
 
+        new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH).configure(dataClient);
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME_4,
-                DATA_TYPE_FIRE,
+                "pge",
                 "id",
                 () -> StatTestUtil.createDragonFireDragonEdges(
                         NUM_OF_DRAGONS_IN_INDEX_4,
@@ -127,6 +130,10 @@ public class StatCalculatorDynamicFieldTest {
                         DRAGON_MIN_TEMP,
                         DRAGON_MAX_TEMP
                 )).populate();
+
+        if (statClient != null) {
+            new MappingFileElasticConfigurer(STAT_INDEX_NAME, MAPPING_STAT_FILE_PATH).configure(statClient);
+        }
 
         dataClient.admin().indices().refresh(new RefreshRequest(
                 DATA_INDEX_NAME_1, DATA_INDEX_NAME_2, DATA_INDEX_NAME_3, DATA_INDEX_NAME_4))

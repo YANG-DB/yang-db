@@ -60,7 +60,7 @@ public class ElasticStatProviderTest {
     private static final String DATA_FIELD_NAME_ADDRESS = "address";
     private static final String DATA_FIELD_NAME_COLOR = "color";
     private static final String DATA_FIELD_NAME_GENDER = "gender";
-    private static final String DATA_FIELD_NAME_TYPE = "_type";
+    private static final String DATA_FIELD_NAME_TYPE = "type";
 
     private static final int DRAGON_MIN_AGE = 1;
     private static final int DRAGON_MAX_AGE = 10;
@@ -159,7 +159,7 @@ public class ElasticStatProviderTest {
         new ElasticDataPopulator(
                 dataClient,
                 DATA_INDEX_NAME,
-                DATA_TYPE_NAME,
+                "pge",
                 "id",
                 () -> dragonsList
         ).populate();

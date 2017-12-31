@@ -1,25 +1,26 @@
 package com.kayhut.fuse.unipop.controller.discrete;
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
-import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.*;
 import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.process.strategyregistrar.StandardStrategyProvider;
@@ -28,10 +29,9 @@ import org.unipop.query.controller.UniQueryController;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
+import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
  * Created by roman.margolis on 14/09/2017.
@@ -95,26 +95,35 @@ public class DiscreteTraversalTest {
                 new StandardStrategyProvider());
 
         TransportClient client = elasticEmbeddedNode.getClient();
-        new ElasticDataPopulator(client, "dragons1", "Dragon", "id", true, "faction", false, () -> createDragons(0, 5)).populate();
-        new ElasticDataPopulator(client, "dragons2", "Dragon", "id", true, "faction", false, () -> createDragons(5, 10)).populate();
-        new ElasticDataPopulator(client, "coins1", "Coin", "id", true, "faction", true, () -> createCoins(0, 5, 3)).populate();
-        new ElasticDataPopulator(client, "coins2", "Coin", "id", true, "faction", true, () -> createCoins(5, 10, 3)).populate();
+        client.admin().indices().preparePutTemplate("all")
+                .setPatterns(Collections.singletonList("*"))
+                .setSettings(Settings.builder()
+                        .put("number_of_shards", 1)
+                        .put("number_of_replicas", 0).build())
+                .addMapping("pge", new ObjectMapper().writeValueAsString(new Mappings.Mapping()
+                        .addProperty("type", new Mappings.Mapping.Property(keyword))), XContentType.JSON)
+                .execute().actionGet();
+
+        new ElasticDataPopulator(client, "dragons1", "pge", "id", true, "faction", false, () -> createDragons(0, 5)).populate();
+        new ElasticDataPopulator(client, "dragons2", "pge", "id", true, "faction", false, () -> createDragons(5, 10)).populate();
+        new ElasticDataPopulator(client, "coins1", "pge", "id", true, "faction", true, () -> createCoins(0, 5, 3)).populate();
+        new ElasticDataPopulator(client, "coins2", "pge", "id", true, "faction", true, () -> createCoins(5, 10, 3)).populate();
 
         Iterable<Map<String, Object>> fireEventsDual1 = createFireEventsDual(0, 5, 10, 3);
         Iterable<Map<String, Object>> fireEventsDual2 = createFireEventsDual(5, 10, 10, 3);
-        new ElasticDataPopulator(client, "dragons1", "FireDual", "id", true, "entityAId", false,
+        new ElasticDataPopulator(client, "dragons1", "pge", "id", true, "entityAId", false,
                 () -> Stream.ofAll(fireEventsDual1)
                         .appendAll(fireEventsDual2)
                         .filter(fireEvent -> Integer.parseInt(((String) fireEvent.get("entityAId")).substring(1)) < 5))
                 .populate();
-        new ElasticDataPopulator(client, "dragons2", "FireDual", "id", true, "entityAId", false,
+        new ElasticDataPopulator(client, "dragons2", "pge", "id", true, "entityAId", false,
                 () -> Stream.ofAll(fireEventsDual1)
                         .appendAll(fireEventsDual2)
                         .filter(fireEvent -> Integer.parseInt(((String) fireEvent.get("entityAId")).substring(1)) >= 5))
                 .populate();
 
-        new ElasticDataPopulator(client, "fire1", "FireSingular", "id", true, null, false, () -> createFireEventsSingular(0, 5, 10, 3)).populate();
-        new ElasticDataPopulator(client, "fire2", "FireSingular", "id", true, null, false, () -> createFireEventsSingular(5, 10, 10, 3)).populate();
+        new ElasticDataPopulator(client, "fire1", "pge", "id", true, null, false, () -> createFireEventsSingular(0, 5, 10, 3)).populate();
+        new ElasticDataPopulator(client, "fire2", "pge", "id", true, null, false, () -> createFireEventsSingular(5, 10, 10, 3)).populate();
 
         elasticEmbeddedNode.getClient().admin().indices().refresh(
                 new RefreshRequest("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2")).actionGet();
@@ -784,6 +793,7 @@ public class DiscreteTraversalTest {
         for(int i = startId ; i < endId ; i++) {
             Map<String, Object> dragon = new HashMap();
             dragon.put("id", "d" + String.format("%03d", i));
+            dragon.put("type", "Dragon");
             dragon.put("faction", factions.get(i % factions.size()));
             dragon.put("name", "dragon" + i);
             dragon.put("age", 100 + i);
@@ -804,6 +814,7 @@ public class DiscreteTraversalTest {
             for(int j = 0; j < numCoinsPerDragon ; j++) {
                 Map<String, Object> coin = new HashMap();
                 coin.put("id", "c" + Integer.toString(coinId));
+                coin.put("type", "Coin");
                 coin.put("faction", factions.get(i % factions.size()));
                 coin.put("dragonId", "d" + String.format("%03d", i));
                 coin.put("material", materials.get(coinId % materials.size()));
@@ -830,9 +841,11 @@ public class DiscreteTraversalTest {
                 String sourceDragonId = "d" + String.format("%03d", i);
                 String destDragonId = "d" + String.format("%03d", (i + j) % totalNumDragons);
 
+                fireEvent1.put("type", "FireDual");
                 fireEvent1.put("entityAId", sourceDragonId);
                 fireEvent1.put("entityBId", destDragonId);
                 fireEvent1.put("direction", Direction.OUT.toString().toLowerCase());
+                fireEvent2.put("type", "FireDual");
                 fireEvent2.put("entityBId", sourceDragonId);
                 fireEvent2.put("entityAId", destDragonId);
                 fireEvent2.put("direction", Direction.IN.toString().toLowerCase());
@@ -866,6 +879,7 @@ public class DiscreteTraversalTest {
                 String sourceDragonId = "d" + String.format("%03d", i);
                 String destDragonId = "d" + String.format("%03d", (i + j) % totalNumDragons);
 
+                fireEvent.put("type", "FireSingular");
                 fireEvent.put("entityAId", sourceDragonId);
                 fireEvent.put("entityBId", destDragonId);
 

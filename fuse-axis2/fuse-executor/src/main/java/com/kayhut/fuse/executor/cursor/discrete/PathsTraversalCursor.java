@@ -7,13 +7,14 @@ import com.kayhut.fuse.executor.utils.ConversionUtil;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.collection.Stream;
@@ -35,6 +36,8 @@ public class PathsTraversalCursor implements Cursor {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
         this.flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
+
+        this.typeProperty = this.ont.property$("type");
     }
     //endregion
 
@@ -169,6 +172,7 @@ public class PathsTraversalCursor implements Cursor {
         return Stream.of(vertexProperty.key())
                 .map(key -> this.ont.property(key))
                 .filter(Optional::isPresent)
+                .filter(property -> !property.get().getpType().equals(this.typeProperty.getpType()))
                 .map(property -> new Property(property.get().getpType(), "raw", vertexProperty.value()))
                 .toJavaOptional();
     }
@@ -178,5 +182,7 @@ public class PathsTraversalCursor implements Cursor {
     private TraversalCursorContext context;
     private Ontology.Accessor ont;
     private Plan flatPlan;
+
+    private com.kayhut.fuse.model.ontology.Property typeProperty;
     //endregion
 }

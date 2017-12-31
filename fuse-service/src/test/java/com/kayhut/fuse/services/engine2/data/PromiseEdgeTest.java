@@ -58,14 +58,14 @@ public class PromiseEdgeTest{
         new ElasticDataPopulator(
                 client,
                 INDEX_NAME,
-                "Dragon",
+                "pge",
                 idField,
                 () -> createDragons(10)).populate();
 
         new ElasticDataPopulator(
                 client,
                 INDEX_NAME,
-                "Fire",
+                "pge",
                 idField,
                 () -> createFire(100)).populate();
 
@@ -92,7 +92,7 @@ public class PromiseEdgeTest{
     public void testPromiseEdges() {
 
         //basic edge constraint
-        Traversal constraint = __.and(__.has(T.label, "Fire"), __.has("direction", "out"));
+        Traversal constraint = __.and(__.has(T.label, "fire"), __.has("direction", "out"));
 
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Arrays.asList(new HasContainer("constraint", P.eq(Constraint.by(constraint)))));
@@ -143,11 +143,12 @@ public class PromiseEdgeTest{
         new ElasticDataPopulator(
                 client,
                 INDEX_NAME,
-                "Dragon",
+                "pge",
                 "id",
                 () -> {
                     Map<String, Object> dragon = new HashedMap();
                     dragon.put("id", purpleDragonId);
+                    dragon.put("type", "Dragon");
                     dragon.put("name", "dragon" + purpleDragonId);
                     dragon.put("age", 100);
                     dragon.put("color", "purple");
@@ -207,6 +208,7 @@ public class PromiseEdgeTest{
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashedMap();
             dragon.put("id", "d" + Integer.toString(i));
+            dragon.put("type", "Dragon");
             dragon.put("name", "dragon" + i);
             dragon.put("age", r.nextInt(100));
             dragon.put("color", colors.get(r.nextInt(colors.size())));
@@ -224,6 +226,7 @@ public class PromiseEdgeTest{
             Map<String, Object> fire = new HashedMap();
 
             fire.put("id", "f" + i);
+            fire.put("type", "fire");
 
             Map<String, Object> entityA = new HashMap<>();
             entityA.put("id", "d" + r.nextInt(9));

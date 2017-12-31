@@ -5,53 +5,35 @@ import org.elasticsearch.action.*;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.action.count.CountRequest;
-import org.elasticsearch.action.count.CountRequestBuilder;
-import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.exists.ExistsRequest;
-import org.elasticsearch.action.exists.ExistsRequestBuilder;
-import org.elasticsearch.action.exists.ExistsResponse;
 import org.elasticsearch.action.explain.ExplainRequest;
 import org.elasticsearch.action.explain.ExplainRequestBuilder;
 import org.elasticsearch.action.explain.ExplainResponse;
-import org.elasticsearch.action.fieldstats.FieldStatsRequest;
-import org.elasticsearch.action.fieldstats.FieldStatsRequestBuilder;
-import org.elasticsearch.action.fieldstats.FieldStatsResponse;
+import org.elasticsearch.action.fieldcaps.FieldCapabilitiesRequest;
+import org.elasticsearch.action.fieldcaps.FieldCapabilitiesRequestBuilder;
+import org.elasticsearch.action.fieldcaps.FieldCapabilitiesResponse;
 import org.elasticsearch.action.get.*;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.indexedscripts.delete.DeleteIndexedScriptRequest;
-import org.elasticsearch.action.indexedscripts.delete.DeleteIndexedScriptRequestBuilder;
-import org.elasticsearch.action.indexedscripts.delete.DeleteIndexedScriptResponse;
-import org.elasticsearch.action.indexedscripts.get.GetIndexedScriptRequest;
-import org.elasticsearch.action.indexedscripts.get.GetIndexedScriptRequestBuilder;
-import org.elasticsearch.action.indexedscripts.get.GetIndexedScriptResponse;
-import org.elasticsearch.action.indexedscripts.put.PutIndexedScriptRequest;
-import org.elasticsearch.action.indexedscripts.put.PutIndexedScriptRequestBuilder;
-import org.elasticsearch.action.indexedscripts.put.PutIndexedScriptResponse;
-import org.elasticsearch.action.percolate.*;
 import org.elasticsearch.action.search.*;
-import org.elasticsearch.action.suggest.SuggestRequest;
-import org.elasticsearch.action.suggest.SuggestRequestBuilder;
-import org.elasticsearch.action.suggest.SuggestResponse;
 import org.elasticsearch.action.termvectors.*;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.support.Headers;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.threadpool.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
- * Created by roman.margolis on 13/12/2017.
+ * Created by roman.margolis on 28/12/2017.
  */
 public class LoggingClient implements Client {
     //region Constructors
@@ -170,66 +152,6 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public PutIndexedScriptRequestBuilder preparePutIndexedScript() {
-        return client.preparePutIndexedScript();
-    }
-
-    @Override
-    public PutIndexedScriptRequestBuilder preparePutIndexedScript(String s, String s1, String s2) {
-        return client.preparePutIndexedScript(s, s1, s2);
-    }
-
-    @Override
-    public void deleteIndexedScript(DeleteIndexedScriptRequest deleteIndexedScriptRequest, ActionListener<DeleteIndexedScriptResponse> actionListener) {
-        client.deleteIndexedScript(deleteIndexedScriptRequest, actionListener);
-    }
-
-    @Override
-    public ActionFuture<DeleteIndexedScriptResponse> deleteIndexedScript(DeleteIndexedScriptRequest deleteIndexedScriptRequest) {
-        return client.deleteIndexedScript(deleteIndexedScriptRequest);
-    }
-
-    @Override
-    public DeleteIndexedScriptRequestBuilder prepareDeleteIndexedScript() {
-        return client.prepareDeleteIndexedScript();
-    }
-
-    @Override
-    public DeleteIndexedScriptRequestBuilder prepareDeleteIndexedScript(String s, String s1) {
-        return client.prepareDeleteIndexedScript(s, s1);
-    }
-
-    @Override
-    public void putIndexedScript(PutIndexedScriptRequest putIndexedScriptRequest, ActionListener<PutIndexedScriptResponse> actionListener) {
-        client.putIndexedScript(putIndexedScriptRequest, actionListener);
-    }
-
-    @Override
-    public ActionFuture<PutIndexedScriptResponse> putIndexedScript(PutIndexedScriptRequest putIndexedScriptRequest) {
-        return client.putIndexedScript(putIndexedScriptRequest);
-    }
-
-    @Override
-    public GetIndexedScriptRequestBuilder prepareGetIndexedScript() {
-        return client.prepareGetIndexedScript();
-    }
-
-    @Override
-    public GetIndexedScriptRequestBuilder prepareGetIndexedScript(String s, String s1) {
-        return client.prepareGetIndexedScript(s, s1);
-    }
-
-    @Override
-    public void getIndexedScript(GetIndexedScriptRequest getIndexedScriptRequest, ActionListener<GetIndexedScriptResponse> actionListener) {
-        client.getIndexedScript(getIndexedScriptRequest, actionListener);
-    }
-
-    @Override
-    public ActionFuture<GetIndexedScriptResponse> getIndexedScript(GetIndexedScriptRequest getIndexedScriptRequest) {
-        return client.getIndexedScript(getIndexedScriptRequest);
-    }
-
-    @Override
     public ActionFuture<MultiGetResponse> multiGet(MultiGetRequest multiGetRequest) {
         return client.multiGet(multiGetRequest);
     }
@@ -242,57 +164,6 @@ public class LoggingClient implements Client {
     @Override
     public MultiGetRequestBuilder prepareMultiGet() {
         return client.prepareMultiGet();
-    }
-
-    @Override
-    @Deprecated
-    public ActionFuture<CountResponse> count(CountRequest countRequest) {
-        return client.count(countRequest);
-    }
-
-    @Override
-    @Deprecated
-    public void count(CountRequest countRequest, ActionListener<CountResponse> actionListener) {
-        client.count(countRequest, actionListener);
-    }
-
-    @Override
-    @Deprecated
-    public CountRequestBuilder prepareCount(String... strings) {
-        return client.prepareCount(strings);
-    }
-
-    @Override
-    @Deprecated
-    public ActionFuture<ExistsResponse> exists(ExistsRequest existsRequest) {
-        return client.exists(existsRequest);
-    }
-
-    @Override
-    @Deprecated
-    public void exists(ExistsRequest existsRequest, ActionListener<ExistsResponse> actionListener) {
-        client.exists(existsRequest, actionListener);
-    }
-
-    @Override
-    @Deprecated
-    public ExistsRequestBuilder prepareExists(String... strings) {
-        return client.prepareExists(strings);
-    }
-
-    @Override
-    public ActionFuture<SuggestResponse> suggest(SuggestRequest suggestRequest) {
-        return client.suggest(suggestRequest);
-    }
-
-    @Override
-    public void suggest(SuggestRequest suggestRequest, ActionListener<SuggestResponse> actionListener) {
-        client.suggest(suggestRequest, actionListener);
-    }
-
-    @Override
-    public SuggestRequestBuilder prepareSuggest(String... strings) {
-        return client.prepareSuggest(strings);
     }
 
     @Override
@@ -472,36 +343,6 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public ActionFuture<PercolateResponse> percolate(PercolateRequest percolateRequest) {
-        return client.percolate(percolateRequest);
-    }
-
-    @Override
-    public void percolate(PercolateRequest percolateRequest, ActionListener<PercolateResponse> actionListener) {
-        client.percolate(percolateRequest, actionListener);
-    }
-
-    @Override
-    public PercolateRequestBuilder preparePercolate() {
-        return client.preparePercolate();
-    }
-
-    @Override
-    public ActionFuture<MultiPercolateResponse> multiPercolate(MultiPercolateRequest multiPercolateRequest) {
-        return client.multiPercolate(multiPercolateRequest);
-    }
-
-    @Override
-    public void multiPercolate(MultiPercolateRequest multiPercolateRequest, ActionListener<MultiPercolateResponse> actionListener) {
-        client.multiPercolate(multiPercolateRequest, actionListener);
-    }
-
-    @Override
-    public MultiPercolateRequestBuilder prepareMultiPercolate() {
-        return client.prepareMultiPercolate();
-    }
-
-    @Override
     public ExplainRequestBuilder prepareExplain(String s, String s1, String s2) {
         return client.prepareExplain(s, s1, s2);
     }
@@ -532,18 +373,18 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public FieldStatsRequestBuilder prepareFieldStats() {
-        return client.prepareFieldStats();
+    public FieldCapabilitiesRequestBuilder prepareFieldCaps() {
+        return client.prepareFieldCaps();
     }
 
     @Override
-    public ActionFuture<FieldStatsResponse> fieldStats(FieldStatsRequest fieldStatsRequest) {
-        return client.fieldStats(fieldStatsRequest);
+    public ActionFuture<FieldCapabilitiesResponse> fieldCaps(FieldCapabilitiesRequest fieldCapabilitiesRequest) {
+        return client.fieldCaps(fieldCapabilitiesRequest);
     }
 
     @Override
-    public void fieldStats(FieldStatsRequest fieldStatsRequest, ActionListener<FieldStatsResponse> actionListener) {
-        client.fieldStats(fieldStatsRequest, actionListener);
+    public void fieldCaps(FieldCapabilitiesRequest fieldCapabilitiesRequest, ActionListener<FieldCapabilitiesResponse> actionListener) {
+        client.fieldCaps(fieldCapabilitiesRequest, actionListener);
     }
 
     @Override
@@ -552,8 +393,8 @@ public class LoggingClient implements Client {
     }
 
     @Override
-    public Headers headers() {
-        return client.headers();
+    public Client filterWithHeader(Map<String, String> map) {
+        return client.filterWithHeader(map);
     }
 
     @Override
@@ -583,8 +424,8 @@ public class LoggingClient implements Client {
     //endregion
 
     //region Fields
-    private Client client;
     private Logger logger;
+    private Client client;
 
     private int operationId;
     //endregion

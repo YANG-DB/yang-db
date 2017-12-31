@@ -90,8 +90,6 @@ public class PromiseVertexController extends VertexControllerBase {
 
     //region Private Methods
     private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) throws Exception {
-        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(), "queryPromiseEdges")).time();
-        Timer timeEs = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges:elastic"));
         SearchBuilder searchBuilder = new SearchBuilder();
 
         CompositeControllerContext context = new CompositeControllerContext.Impl(
@@ -119,7 +117,7 @@ public class PromiseVertexController extends VertexControllerBase {
         }
 
         //search
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSearchType(SearchType.COUNT);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
 
         SearchResponse response = searchRequest.execute().actionGet();
 
@@ -129,9 +127,6 @@ public class PromiseVertexController extends VertexControllerBase {
                 new HashEdgeIdProvider(constraint),
                 new PrefixedLabelProvider("_"));
 
-        //timeEs es search took in ms
-        timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
-        time.stop();
         return Stream.ofAll(converter.convert(response.getAggregations().asMap())).flatMap(edgeIterator -> () -> edgeIterator).iterator();
 
     }

@@ -10,6 +10,8 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -18,6 +20,8 @@ import org.junit.*;
 
 import java.io.IOException;
 import java.util.*;
+
+import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -32,10 +36,14 @@ public class SingleEntityTest {
 
         TransportClient client = RedundantTestSuite.elasticEmbeddedNode.getClient();
 
+        new MappingElasticConfigurer(Arrays.asList("person1", "person2"), new Mappings().addMapping("pge",
+                new Mappings.Mapping().addProperty("type", new Mappings.Mapping.Property(keyword))
+                        .addProperty("name", new Mappings.Mapping.Property(keyword)))).configure(client);
+
         new ElasticDataPopulator(
                 client,
                 "person1",
-                "Person",
+                "pge",
                 idField,
                 true,
                 null,
@@ -45,7 +53,7 @@ public class SingleEntityTest {
         new ElasticDataPopulator(
                 client,
                 "person2",
-                "Person",
+                "pge",
                 idField,
                 true,
                 null,
@@ -135,6 +143,7 @@ public class SingleEntityTest {
         for(int i = startId ; i < endId ; i++) {
             Map<String, Object> person = new HashMap<>();
             person.put("id", "p" + String.format("%03d", i));
+            person.put("type", "Person");
             person.put("name", "person" + i);
             people.add(person);
         }
@@ -143,7 +152,6 @@ public class SingleEntityTest {
     //endregion
 
     //region Fields
-    private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static FuseClient fuseClient;
     //endregion
 }

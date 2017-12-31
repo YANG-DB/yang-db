@@ -70,15 +70,15 @@ public abstract class EntityRelationEntityTest {
 
         String idField = "id";
 
-        new MappingElasticConfigurer(PERSON.name.toLowerCase(), new Mappings().addMapping(PERSON.name, getPersonMapping()))
+        new MappingElasticConfigurer(PERSON.name.toLowerCase(), new Mappings().addMapping("pge", getPersonMapping()))
                 .configure(client);
-        new MappingElasticConfigurer(DRAGON.name.toLowerCase(), new Mappings().addMapping(DRAGON.name, getDragonMapping()))
+        new MappingElasticConfigurer(DRAGON.name.toLowerCase(), new Mappings().addMapping("pge", getDragonMapping()))
                 .configure(client);
         new MappingElasticConfigurer(Arrays.asList(
                 FIRE.getName().toLowerCase() + "20170511",
                 FIRE.getName().toLowerCase() + "20170512",
                 FIRE.getName().toLowerCase() + "20170513"),
-                new Mappings().addMapping(FIRE.getName(), getFireMapping()))
+                new Mappings().addMapping("pge", getFireMapping()))
                 .configure(client);
 
         birthDateValueFunctionFactory = startingDate -> interval -> i -> startingDate + (interval * i);
@@ -91,14 +91,14 @@ public abstract class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 client,
                 PERSON.name.toLowerCase(),
-                PERSON.name,
+                "pge",
                 idField,
                 () -> createPeople(10)).populate();
 
         new ElasticDataPopulator(
                 client,
                 DRAGON.name.toLowerCase(),
-                DRAGON.name,
+                "pge",
                 idField,
                 () -> createDragons(10, birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L)))
                 .populate(); // date interval is ~ 1 month
@@ -106,7 +106,7 @@ public abstract class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 client,
                 FIRE.getName().toLowerCase() + "20170511",
-                FIRE.getName(),
+                "pge",
                 idField,
                 () -> createDragonFireDragonEdges(
                         10,
@@ -117,7 +117,7 @@ public abstract class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 client,
                 FIRE.getName().toLowerCase() + "20170512",
-                FIRE.getName(),
+                "pge",
                 idField,
                 () -> createDragonFireDragonEdges(
                         10,
@@ -128,7 +128,7 @@ public abstract class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 client,
                 FIRE.getName().toLowerCase() + "20170513",
-                FIRE.getName(),
+                "pge",
                 idField,
                 () -> createDragonFireDragonEdges(
                         10,
@@ -842,6 +842,7 @@ public abstract class EntityRelationEntityTest {
         for(int i = 0 ; i < numPeople ; i++) {
             Map<String, Object> person = new HashMap<>();
             person.put("id", "Person_" + i);
+            person.put("type", "Person");
             person.put(NAME.name, "person" + i);
             people.add(person);
         }
@@ -849,7 +850,9 @@ public abstract class EntityRelationEntityTest {
     }
 
     private static Mapping getPersonMapping() {
-        return new Mapping().addProperty(NAME.name, new Property(Type.string, Index.not_analyzed));
+        return new Mapping()
+                .addProperty("type", new Property(Type.keyword))
+                .addProperty(NAME.name, new Property(Type.keyword));
     }
 
     private static Iterable<Map<String, Object>> createDragons(
@@ -860,6 +863,7 @@ public abstract class EntityRelationEntityTest {
         for(int i = 0 ; i < numDragons ; i++) {
             Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", "Dragon_" + i);
+            dragon.put("type", DRAGON.name);
             dragon.put(NAME.name, DRAGON.name + i);
             dragon.put(BIRTH_DATE.name, sdf.format(new Date(birthDateValueFunction.apply(i))));
             dragons.add(dragon);
@@ -869,8 +873,9 @@ public abstract class EntityRelationEntityTest {
 
     private static Mapping getDragonMapping() {
         return new Mapping()
-                .addProperty(NAME.name, new Property(Type.string, Index.not_analyzed))
-                .addProperty(BIRTH_DATE.name, new Property(Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time"));
+                .addProperty("type", new Property(Type.keyword))
+                .addProperty(NAME.name, new Property(Type.keyword))
+                .addProperty(BIRTH_DATE.name, new Property(Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time||epoch_millis"));
     }
 
 
@@ -886,12 +891,14 @@ public abstract class EntityRelationEntityTest {
             for(int j = 0 ; j < i ; j++) {
                 Map<String, Object> fireEdge = new HashMap<>();
                 fireEdge.put("id", FIRE.getName() + counter);
+                fireEdge.put("type", FIRE.getName());
                 fireEdge.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
                 fireEdge.put("direction", Direction.OUT);
                 fireEdge.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", FIRE.getName() + counter + 1);
+                fireEdgeDual.put("type", FIRE.getName());
                 fireEdgeDual.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
                 fireEdgeDual.put("direction", Direction.IN);
 
@@ -924,15 +931,16 @@ public abstract class EntityRelationEntityTest {
 
     private static Mapping getFireMapping() {
         return new Mapping()
-                .addProperty(TIMESTAMP.name, new Property(Type.date))
-                .addProperty("direction", new Property(Type.string, Index.not_analyzed))
+                .addProperty("type", new Property(Type.keyword))
+                .addProperty(TIMESTAMP.name, new Property(Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time||epoch_millis"))
+                .addProperty("direction", new Property(Type.keyword))
                 .addProperty(TEMPERATURE.name, new Property(Type.integer))
                 .addProperty("entityA", new Property()
-                    .addProperty("id", new Property(Type.string, Index.not_analyzed))
-                    .addProperty("type", new Property(Type.string, Index.not_analyzed)))
+                    .addProperty("id", new Property(Type.keyword))
+                    .addProperty("type", new Property(Type.keyword)))
                 .addProperty("entityB", new Property()
-                        .addProperty("id", new Property(Type.string, Index.not_analyzed))
-                        .addProperty("type", new Property(Type.string, Index.not_analyzed)));
+                        .addProperty("id", new Property(Type.keyword))
+                        .addProperty("type", new Property(Type.keyword)));
     }
     //endregion
 

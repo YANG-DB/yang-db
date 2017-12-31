@@ -41,9 +41,9 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
     public Iterable<E> convert(SearchHit searchHit) {
         return Arrays.asList((E)new DiscreteVertex(
                 searchHit.getId(),
-                this.typeToLabelVertexSchemas.get(searchHit.getType()).getLabel(),
+                this.typeToLabelVertexSchemas.get((String)searchHit.getSourceAsMap().get("type")).getLabel(),
                 context.getGraph(),
-                searchHit.sourceAsMap()));
+                searchHit.getSourceAsMap()));
     }
     //endregion
 

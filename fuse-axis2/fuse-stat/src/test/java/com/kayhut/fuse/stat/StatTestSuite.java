@@ -34,16 +34,10 @@ import java.util.List;
 public class StatTestSuite {
     private static final String CONFIGURATION_FILE_PATH = "statistics.test.properties";
 
-    private static final String MAPPING_DATA_FILE_DRAGON_PATH = Paths.get("src", "test", "resources", "elastic.test.data.dragon.mapping.json").toString();
-    private static final String MAPPING_DATA_FILE_FIRE_PATH = Paths.get("src", "test", "resources", "elastic.test.data.fire.mapping.json").toString();
-    private static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
-
-    private static final String DATA_INDEX_NAME_1 = "index1";
-    private static final String DATA_INDEX_NAME_2 = "index2";
-    private static final String DATA_INDEX_NAME_3 = "index3";
-    private static final String DATA_INDEX_NAME_4 = "index4";
-
-    private static final String STAT_INDEX_NAME = "stat";
+    public static final String MAPPING_DATA_FILE_DRAGON_PATH = Paths.get("src", "test", "resources", "elastic.test.data.dragon.mapping.json").toString();
+    public static final String MAPPING_DATA_FILE_FIRE_PATH = Paths.get("src", "test", "resources", "elastic.test.data.fire.mapping.json").toString();
+    public static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
+    public static final String STAT_INDEX_NAME = "stat";
 
     public static TransportClient dataClient;
     public static TransportClient statClient;
@@ -57,20 +51,7 @@ public class StatTestSuite {
         dataClient = ClientProvider.getDataClient(configuration);
         statClient = ClientProvider.getDataClient(configuration);
 
-        MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_1, MAPPING_DATA_FILE_DRAGON_PATH);
-        MappingFileElasticConfigurer configurerIndex2 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_2, MAPPING_DATA_FILE_DRAGON_PATH);
-        MappingFileElasticConfigurer configurerIndex3 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_3, MAPPING_DATA_FILE_FIRE_PATH);
-        MappingFileElasticConfigurer configurerIndex4 = new MappingFileElasticConfigurer(DATA_INDEX_NAME_4, MAPPING_DATA_FILE_FIRE_PATH);
-
-
-        MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(STAT_INDEX_NAME, MAPPING_STAT_FILE_PATH);
-
-        elasticEmbeddedNode = new ElasticEmbeddedNode(
-                configurerIndex1,
-                configurerIndex2,
-                configurerIndex3,
-                configurerIndex4,
-                configurerStat);
+        elasticEmbeddedNode = new ElasticEmbeddedNode();
     }
 
     @AfterClass

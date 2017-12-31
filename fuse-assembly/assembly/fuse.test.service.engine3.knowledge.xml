@@ -48,10 +48,6 @@
             <outputDirectory>/lib</outputDirectory>
             <scope>runtime</scope>
             <useProjectArtifact>true</useProjectArtifact>
-            <excludes>
-                <exclude>org.neo4j:*</exclude>
-                <exclude>org.scala-lang:*</exclude>
-            </excludes>
         </dependencySet>
     </dependencySets>
 </assembly>

@@ -89,6 +89,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                         wrap(new FilterSourceSearchAppender()),
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new ElementRoutingSearchAppender()),
+                        wrap(new MustFetchSourceSearchAppender("type")),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
 

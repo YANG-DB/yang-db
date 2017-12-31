@@ -163,7 +163,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -220,7 +220,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -303,7 +303,7 @@
         }
 		,
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -370,7 +370,7 @@
           }
         },		
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -437,7 +437,7 @@
           }
         },		
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -570,7 +570,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -663,7 +663,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -751,7 +751,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -842,7 +842,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -930,7 +930,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -1029,7 +1029,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -1114,7 +1114,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -1220,7 +1220,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",

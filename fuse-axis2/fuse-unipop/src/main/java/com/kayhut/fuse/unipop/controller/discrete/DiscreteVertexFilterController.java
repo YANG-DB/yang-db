@@ -111,12 +111,13 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new FilterRoutingSearchAppender()),
                         wrap(new FilterIndexSearchAppender()),
+                        wrap(new MustFetchSourceSearchAppender("type")),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
 
         appender.append(searchBuilder, context);
 
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSearchType(SearchType.SCAN);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, true);
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 metricRegistry, client,

@@ -29,6 +29,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
@@ -56,27 +58,24 @@ public class PromisePromiseElementVertexControllerTest {
         //mock response with 2 layers of aggregations
         SearchResponse responseMock = mock(SearchResponse.class);
 
-        Aggregations aggregations = mock(Aggregations.class);
-
         Terms.Bucket destBucket = mock(Terms.Bucket.class);
         when(destBucket.getKeyAsString()).thenReturn("destination1");
         when(destBucket.getDocCount()).thenReturn(1000L);
 
+        Terms destLayer = mock(Terms.class);
+        when(destLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.DEST);
+        when(destLayer.getBuckets()).then((Answer<Object>)invocationOnMock -> Collections.singletonList(destBucket));
+
         Terms.Bucket sourceBucket = mock(Terms.Bucket.class);
         when(sourceBucket.getKeyAsString()).thenReturn("source1");
         when(sourceBucket.getDocCount()).thenReturn(1L);
-        when(sourceBucket.getAggregations()).thenReturn(aggregations);
+        when(sourceBucket.getAggregations()).thenReturn(new Aggregations(Collections.singletonList(destLayer)));
 
         Terms sourceLayer = mock(Terms.class);
-        when(sourceLayer.getBuckets()).thenReturn(Arrays.asList(sourceBucket));
+        when(sourceLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.SOURCE);
+        when(sourceLayer.getBuckets()).then((Answer<Object>) invocationOnMock -> Collections.singletonList(sourceBucket));
 
-        Terms destLayer = mock(Terms.class);
-        when(destLayer.getBuckets()).thenReturn(Arrays.asList(destBucket));
-
-        Map map = new HashMap();
-        map.put(GlobalConstants.EdgeSchema.SOURCE, sourceLayer);
-        map.put(GlobalConstants.EdgeSchema.DEST, destLayer);
-        when(aggregations.asMap()).thenReturn(map);
+        Aggregations aggregations = new Aggregations(Arrays.asList(sourceLayer, destLayer));
 
         when(responseMock.getAggregations()).thenReturn(aggregations);
 
@@ -89,7 +88,7 @@ public class PromisePromiseElementVertexControllerTest {
             // validation logic
            return searchRequestBuilderMock;
         });
-        when(searchRequestBuilderMock.setSearchType(SearchType.COUNT)).thenReturn(searchRequestBuilderMock);
+
         when(searchRequestBuilderMock.setScroll(any(TimeValue.class))).thenReturn(searchRequestBuilderMock);
         when(searchRequestBuilderMock.setSize(anyInt())).thenReturn(searchRequestBuilderMock);
         when(searchRequestBuilderMock.execute()).thenReturn(futureMock);

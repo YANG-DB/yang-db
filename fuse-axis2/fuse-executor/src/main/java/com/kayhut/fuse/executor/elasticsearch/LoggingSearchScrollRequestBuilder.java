@@ -1,6 +1,7 @@
 package com.kayhut.fuse.executor.elasticsearch;
 
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchResponse;
@@ -31,11 +32,11 @@ public class LoggingSearchScrollRequestBuilder extends SearchScrollRequestBuilde
 
     //region Override Methods
     @Override
-    public ListenableActionFuture<SearchResponse> execute() {
+    public ActionFuture<SearchResponse> execute() {
         try {
             this.startMessage.log();
-            ListenableActionFuture<SearchResponse> future = super.execute();
-            future.addListener(new LoggingActionListener<>(this.successMessage, this.failureMessage));
+            ActionFuture<SearchResponse> future = super.execute();
+            //future.addListener(new LoggingActionListener<>(this.successMessage, this.failureMessage));
             return future;
         } catch (Exception ex) {
             this.failureMessage.with(ex).log();

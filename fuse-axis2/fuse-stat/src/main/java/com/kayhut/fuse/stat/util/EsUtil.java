@@ -35,13 +35,14 @@ import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.filters.Filters;
-import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.Filters;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
 import org.elasticsearch.search.aggregations.bucket.range.Range;
-import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
-import org.elasticsearch.search.aggregations.metrics.MetricsAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.range.RangeAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.cardinality.InternalCardinality;
 import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStats;
+import org.elasticsearch.search.aggregations.metrics.stats.extended.ExtendedStatsAggregationBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,19 +114,19 @@ public class EsUtil {
 
         String aggName = buildAggName(index, type, field + "_direction_" + direction);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
-                .setTypes(type);
+                .setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("type", type)));
 
-        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
-        buckets.forEach(bucket -> {
+        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName,
+        Stream.ofAll(buckets).map(bucket -> {
             String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
-            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.boolQuery()
+            return new FiltersAggregator.KeyedFilter(bucketKey, QueryBuilders.boolQuery()
                     .must(QueryBuilders.rangeQuery(field)
                     .from(bucket.getStart())
                     .to(bucket.getEnd())
                     .includeLower(true)
                     .includeUpper(true))// in this case - inclusive
                     .must(QueryBuilders.termQuery("direction", direction)));
-        });
+        }).toJavaArray(FiltersAggregator.KeyedFilter.class));
 
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(field)))
@@ -165,17 +166,17 @@ public class EsUtil {
 
         String aggName = buildAggName(index, type, field);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
-                .setTypes(type);
+                .setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("type", type)));
 
 
-        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
-        buckets.forEach(bucket -> {
+        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName,
+        Stream.ofAll(buckets).map(bucket -> {
             String bucketKey = bucket.getStart() + "_" + bucket.getEnd();
-            filtersAggregationBuilder.filter(bucketKey, QueryBuilders.rangeQuery(field).
+            return new FiltersAggregator.KeyedFilter(bucketKey, QueryBuilders.rangeQuery(field).
                     from(bucket.getStart()).to(bucket.getEnd())
                     .includeLower(true)
                     .includeUpper(false));
-        });
+        }).toJavaArray(FiltersAggregator.KeyedFilter.class));
 
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(field)))
@@ -212,10 +213,12 @@ public class EsUtil {
 
         String aggName = buildAggName(index, type, field);
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
-                .setTypes(type);
+                .setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("type", type)));
 
-        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName);
-        buckets.forEach(bucket -> filtersAggregationBuilder.filter((String) bucket.getTerm(), QueryBuilders.termQuery(field, bucket.getTerm())));
+        FiltersAggregationBuilder filtersAggregationBuilder = AggregationBuilders.filters(aggName,
+            Stream.ofAll(buckets)
+                .map(bucket -> new FiltersAggregator.KeyedFilter((String) bucket.getTerm(), QueryBuilders.termQuery(field, bucket.getTerm())))
+                .toJavaArray(FiltersAggregator.KeyedFilter.class));
 
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(field)))
@@ -255,9 +258,9 @@ public class EsUtil {
                                                                    int numOfBins) {
 
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
-                .setTypes(type);
+                .setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("type", type)));
 
-        MetricsAggregationBuilder metricAgg = AggregationBuilders
+        ExtendedStatsAggregationBuilder metricAgg = AggregationBuilders
                 .extendedStats(AGG_EXTENDED_STATS)
                 .field(field);
 
@@ -285,61 +288,6 @@ public class EsUtil {
         return statResults;
     }
 
-    public static void bulkIndexingFromFile(TransportClient client,
-                                            String filePath,
-                                            String index,
-                                            String type) throws IOException {
-        BulkProcessor bulkProcessor = BulkProcessor.builder(
-                client,
-                new BulkProcessor.Listener() {
-                    @Override
-                    public void beforeBulk(long executionId,
-                                           BulkRequest request) {
-                        // Do nothing
-                    }
-
-                    @Override
-                    public void afterBulk(long executionId,
-                                          BulkRequest request,
-                                          BulkResponse response) {
-                        // Do nothing
-                    }
-
-                    @Override
-                    public void afterBulk(long executionId,
-                                          BulkRequest request,
-                                          Throwable failure) {
-                        // Do nothing
-                    }
-                })
-                .setBulkActions(100)
-                .setBulkSize(new ByteSizeValue(1, ByteSizeUnit.MB))
-                .setFlushInterval(TimeValue.timeValueSeconds(5))
-                .setConcurrentRequests(1)
-                .setBackoffPolicy(
-                        BackoffPolicy.exponentialBackoff(TimeValue.timeValueMillis(100), 3))
-                .build();
-
-        File file = FileUtils.getFile(filePath);
-
-        LineIterator it = FileUtils.lineIterator(file, "UTF-8");
-        try {
-            int i = 1;
-            while (it.hasNext()) {
-                String line = it.nextLine();
-                bulkProcessor.add(new IndexRequest(index, type, String.valueOf(i))
-                        .source(line));
-                i++;
-            }
-        } finally {
-            it.close();
-        }
-
-        bulkProcessor.close();
-
-
-    }
-
     /**
      * @param client Elastic Client
      * @param index  Index Name
@@ -365,16 +313,17 @@ public class EsUtil {
      * @return true if type exists in the index
      */
     public static boolean isTypeExists(Client client, String index, String type) {
-        ClusterStateResponse resp =
-                client.admin().cluster().prepareState().execute().actionGet();
-        ImmutableOpenMap<String, MappingMetaData> mappings = resp.getState().metaData().index(index).getMappings();
-        return mappings.containsKey(type);
+        SearchResponse response = client.prepareSearch().setIndices(index)
+                .setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("type", type)))
+                .setSize(1)
+                .execute().actionGet();
+
+        return response.getHits().getTotalHits() > 0;
     }
 
     public static boolean isDocExists(Client client, String index, String type, String docId) {
-        // Check if a document exists
-        GetResponse response = client.prepareGet(index, type, docId).setRefresh(true).execute().actionGet();
-        return response.isExists();
+        Optional<String> actualType = getDocumentTypeByDocId(client, index, docId);
+        return actualType.map(s -> s.equals(type)).orElse(false);
     }
 
     /**
@@ -388,7 +337,7 @@ public class EsUtil {
                                                                       String index,
                                                                       String type,
                                                                       String id) {
-        GetResponse r = getGetResponse(client, index, type, id);
+        GetResponse r = getGetResponse(client, index, id);
         if (r != null && r.isExists()) {
             return Optional.ofNullable(r.getSourceAsMap());
         }
@@ -398,17 +347,18 @@ public class EsUtil {
     /**
      * @param client Elastic Client
      * @param index  Index Name
-     * @param type   Type Name
      * @param id     Document Id
      * @return Elastic Type
      */
-    public static Optional<String> getDocumentTypeByDocId(Client client,
-                                                          String index,
-                                                          String type,
-                                                          String id) {
-        GetResponse r = getGetResponse(client, index, type, id);
+    public static Optional<String> getDocumentTypeByDocId(Client client, String index, String id) {
+        GetResponse r = getGetResponse(client, index, id);
         if (r != null && r.isExists()) {
-            return Optional.ofNullable(r.getType());
+            try {
+                String actualType = (String) r.getSource().get("type");
+                return Optional.of(actualType);
+            } catch (Exception ex) {
+                return Optional.empty();
+            }
         }
         return Optional.empty();
     }
@@ -426,7 +376,10 @@ public class EsUtil {
                                                           String index,
                                                           String type,
                                                           int n) {
-        return client.prepareSearch(index).setTypes(type).setSize(n).execute()
+        return client.prepareSearch(index)
+                .setQuery(QueryBuilders.boolQuery().filter(QueryBuilders.termQuery("type", type)))
+                .setSize(n)
+                .execute()
                 .actionGet();
     }
 
@@ -465,11 +418,6 @@ public class EsUtil {
                 .prepareState().execute().actionGet();
         return clusterStateResponse.getState().getMetaData().index(index)
                 .getMappings();
-    }
-
-
-    public static boolean isMappingExistsInIndex(Client client, String index, String mappingName) {
-        return getMappingsOfIndex(client, index).get(mappingName) != null;
     }
 
     /**
@@ -517,9 +465,14 @@ public class EsUtil {
 
     private static GetResponse getGetResponse(Client client,
                                               String index,
-                                              String type,
                                               String id) {
-        return client.get(new GetRequest(index, type, id)).actionGet();
+        return client.prepareGet()
+                .setIndex(index)
+                .setId(id)
+                .setFetchSource(true)
+                .setRefresh(true)
+                .execute()
+                .actionGet();
     }
 
     private static String buildAggName(String index,
@@ -546,9 +499,9 @@ public class EsUtil {
         String aggName = buildAggName(index, type, field);
 
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index)
-                .setTypes(type);
+                .setQuery(QueryBuilders.constantScoreQuery(QueryBuilders.termQuery("type", type)));
 
-        RangeBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(field);
+        RangeAggregationBuilder rangesAggregationBuilder = AggregationBuilders.range(aggName).field(field);
         buckets.forEach(bucket -> rangesAggregationBuilder.addRange(bucket.getStart().doubleValue(), bucket.getEnd().doubleValue()));
 
         SearchResponse sr = searchRequestBuilder.addAggregation(rangesAggregationBuilder

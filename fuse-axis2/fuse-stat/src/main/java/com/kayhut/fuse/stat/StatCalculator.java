@@ -1,6 +1,5 @@
 package com.kayhut.fuse.stat;
 
-import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
@@ -80,7 +79,8 @@ public class StatCalculator {
                 for (String type : mapping.getTypes()) {
                     Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, type);
                     if (typeConfiguration.isPresent()) {
-                        Stopwatch stopwatch = Stopwatch.createStarted();
+                        long start = System.currentTimeMillis();
+
                         logger.info("Starting to calculate statistics for Index: {}, Type: {}", index, type);
                         buildHistogramForNumericFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForManualFields(dataClient, statClient, statContainer, index, type);
@@ -88,11 +88,12 @@ public class StatCalculator {
                         buildHistogramForCompositeFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForTermFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForDynamicFields(dataClient, statClient, statContainer, index, type);
-                        stopwatch.stop();
+
+                        long elapsed = System.currentTimeMillis() - start;
                         logger.info("Finished to calculate statistics for Index: {}, Type: {}, took {} Seconds",
                                 index,
                                 type,
-                                stopwatch.elapsed(TimeUnit.SECONDS));
+                                elapsed / 1000.0);
 
                     }
                 }
@@ -390,9 +391,9 @@ public class StatCalculator {
         new ElasticDataPopulator(
                 statClient,
                 statIndex,
-                statType,
+                "statBucket",
                 "id",
-                () -> StatUtil.prepareStatDocs(buckets)
+                () -> StatUtil.prepareStatDocs(statType, buckets)
         ).populate();
     }
 

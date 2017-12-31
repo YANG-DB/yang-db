@@ -42,13 +42,13 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
     }
 
     @Override
-    public void onFailure(Throwable throwable) {
+    public void onFailure(Exception e) {
         try {
-            innerActionListener.ifPresent(tResponseActionListener -> tResponseActionListener.onFailure(throwable));
+            innerActionListener.ifPresent(tResponseActionListener -> tResponseActionListener.onFailure(e));
         } catch (Exception ex) {
             innerFailureMessage.ifPresent(logMessage -> logMessage.with(ex).log());
         } finally {
-            this.failureMessage.with(throwable).log();
+            this.failureMessage.with(e).log();
         }
     }
     //endregion

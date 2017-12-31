@@ -30,7 +30,7 @@ public class HiddenQueryTranslator extends CompositeQueryTranslator {
                 break;
 
             case "label":
-                newKey = "_type";
+                newKey = "type";
                 break;
 
             default:

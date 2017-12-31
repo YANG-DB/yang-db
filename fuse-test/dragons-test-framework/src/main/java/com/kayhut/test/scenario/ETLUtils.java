@@ -20,10 +20,11 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -122,14 +123,11 @@ public abstract class ETLUtils {
     }
 
     public static TransportClient getClient() throws UnknownHostException {
-        Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "fuse-test")
-                .build();
-
-        return TransportClient.builder().settings(settings).build()
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
+        Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
+        return new PreBuiltTransportClient(settings)
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
     }
 
     public static Map<String, String> redundant(String edgeType, Direction direction, String side) {
