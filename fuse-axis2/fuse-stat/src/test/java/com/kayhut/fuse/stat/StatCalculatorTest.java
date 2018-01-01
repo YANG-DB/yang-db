@@ -1,6 +1,7 @@
 package com.kayhut.fuse.stat;
 
 import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
+import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.model.bucket.BucketRange;
 import com.kayhut.fuse.stat.model.configuration.Field;
 import com.kayhut.fuse.stat.model.configuration.Mapping;
@@ -79,7 +80,8 @@ public class StatCalculatorTest {
     //Full - blown test using Statistics configuration File
     @Test
     public void statCalculatorTest() throws Exception {
-        StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
+        StatCalculator.run(dataClient, statClient, new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance());
+        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
 
         //Check if Stat index created
         assertTrue(EsUtil.isIndexExists(statClient, STAT_INDEX_NAME));
@@ -87,8 +89,6 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME));
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_TERM_NAME));
         assertTrue(EsUtil.isTypeExists(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME));
-
-        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
 
 
         //Check if age stat numeric bucket exists (bucket #1: 10.0-19.0)
@@ -133,15 +133,10 @@ public class StatCalculatorTest {
     @Test
     public void globalCardinalityTest() throws Exception {
         //Check to see if the mapping for Stat results for global was created
-        StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
-        for (String type : EsUtil.getAllTypesFromIndex(statClient, STAT_INDEX_NAME)) {
-            System.out.println(type);
-        }
-        for (ObjectObjectCursor<String, MappingMetaData> mapping : EsUtil.getMappingsOfIndex(statClient, STAT_INDEX_NAME)) {
-            System.out.println(mapping.key + ": \n" + mapping.value.getSourceAsMap() + "\n");
-        }
+        StatCalculator.run(dataClient, statClient, new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance());
+        statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
+
         StatTestUtil.printAllDocs(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME);
-        SearchResponse firstNDocumentsInType = EsUtil.getFirstNDocumentsInType(statClient, STAT_INDEX_NAME, STAT_TYPE_GLOBAL_NAME, 1);
     }
 
     @Test
@@ -152,14 +147,6 @@ public class StatCalculatorTest {
         } catch (Exception expected) {
             // we should have reach here
         }
-    }
-
-    @Test
-    public void statAlphabetBucketsTest() throws Exception{
-        List<BucketRange<String>> bucketRanges = StatUtil.calculateAlphabeticBuckets(65, 56, 2, 10);
-//        bucketRanges.forEach(bucket -> {
-//            System.out.println(bucket.getStart() + "," + bucket.getEnd());
-//        });
     }
 
     @Test
@@ -275,73 +262,4 @@ public class StatCalculatorTest {
             )).actionGet();
         }
     }
-
-    private StatContainer buildStatContainer() {
-        HistogramNumeric histogramDragonAge = HistogramNumeric.Builder.get()
-                .withMin(10)
-                .withMax(100)
-                .withNumOfBins(10)
-                .build();
-
-        HistogramString histogramDragonName = HistogramString.Builder.get()
-                .withPrefixSize(3)
-                .withInterval(10)
-                .withNumOfChars(26)
-                .withFirstCharCode("97")
-                .build();
-
-        HistogramManual histogramDragonAddress = HistogramManual.Builder.get()
-                .withBuckets(Arrays.asList(
-                        new BucketRange("abc", "dzz"),
-                        new BucketRange("efg", "hij"),
-                        new BucketRange("klm", "xyz")
-                )).withDataType(DataType.string)
-                .build();
-
-        HistogramComposite histogramDragonColor = HistogramComposite.Builder.get()
-                .withBucket(new BucketRange("00", "11"))
-                .withBucket(new BucketRange("22", "33"))
-                .withBucket(new BucketRange("44", "55"))
-                .withDataType(DataType.string)
-                .withAutoBuckets(HistogramString.Builder.get()
-                        .withFirstCharCode("97")
-                        .withInterval(10)
-                        .withNumOfChars(26)
-                        .withPrefixSize(3).build())
-                .build();
-
-        HistogramTerm histogramTerm = HistogramTerm.Builder.get()
-                .withDataType(DataType.string)
-                .withTerm("male")
-                .withTerm("female")
-                .build();
-
-        HistogramTerm histogramDocType = HistogramTerm.Builder.get()
-                .withDataType(DataType.string)
-                .withTerm(DATA_TYPE_DRAGON)
-                .build();
-
-
-        Type typeDragon = Type.Builder.instance()
-                .withType(DATA_TYPE_DRAGON)
-                .withField(new Field("age", histogramDragonAge))
-                .withField(new Field("name", histogramDragonName))
-                .withField(new Field("address", histogramDragonAddress))
-                .withField(new Field("color", histogramDragonColor))
-                .withField(new Field("gender", histogramTerm))
-                .withField(new Field("_type", histogramDocType))
-                .build();
-
-        Mapping mapping = Mapping.Builder.get()
-                .withIndex(DATA_INDEX_NAME_1)
-                .withIndex(DATA_INDEX_NAME_2)
-                .withType(DATA_TYPE_DRAGON).build();
-
-        return StatContainer.Builder.get()
-                .withMapping(mapping)
-                .withType(typeDragon)
-                .build();
-    }
-
-
 }

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.stat;
 
+import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.model.histogram.Histogram;
 import com.kayhut.fuse.stat.model.histogram.HistogramDynamic;
 import com.kayhut.fuse.stat.util.StatTestUtil;
@@ -61,7 +62,7 @@ public class StatCalculatorDynamicFieldTest {
         assertTrue(histogram.isPresent());
         int numOfBins = ((HistogramDynamic) histogram.get()).getNumOfBins();
 
-        StatCalculator.main(new String[]{CONFIGURATION_FILE_PATH});
+        StatCalculator.run(dataClient, statClient, new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance());
         statClient.admin().indices().refresh(new RefreshRequest(STAT_INDEX_NAME)).actionGet();
 
         Set<Map<String, Object>> docs = StatTestUtil.searchByTerm(

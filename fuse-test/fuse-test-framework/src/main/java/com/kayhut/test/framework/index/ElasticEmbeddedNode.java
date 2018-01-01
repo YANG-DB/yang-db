@@ -127,7 +127,6 @@ public class ElasticEmbeddedNode implements AutoCloseable {
 
         this.node = new PluginConfigurableNode(settings, Collections.singletonList(Netty4Plugin.class));
         this.node = this.node.start();
-        int x = 5;
     }
     //endregion
 }

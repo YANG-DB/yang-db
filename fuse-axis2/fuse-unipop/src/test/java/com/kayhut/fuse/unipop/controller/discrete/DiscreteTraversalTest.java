@@ -10,6 +10,7 @@ import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -48,7 +49,7 @@ public class DiscreteTraversalTest {
     //region Setup
     @BeforeClass
     public static void setup() throws Exception {
-        elasticEmbeddedNode = new ElasticEmbeddedNode("fuse.test_elastic", 3);
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         elasticGraphConfiguration = new ElasticGraphConfiguration();
         elasticGraphConfiguration.setClusterName("fuse.test_elastic");
@@ -131,13 +132,7 @@ public class DiscreteTraversalTest {
 
     @AfterClass
     public static void cleanup() throws Exception {
-        if (elasticEmbeddedNode != null) {
-            if (elasticEmbeddedNode.getClient() != null) {
-                elasticEmbeddedNode.getClient().close();
-            }
-
-            elasticEmbeddedNode.close();
-        }
+        elasticEmbeddedNode.getClient().admin().indices().prepareDelete("dragons1", "dragons2", "coins1", "coins2", "fire1", "fire2").execute().actionGet();
     }
 
     @Before

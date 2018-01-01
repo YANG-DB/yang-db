@@ -43,22 +43,21 @@ public class StatCalculator {
 
         TransportClient dataClient = null;
         TransportClient statClient = null;
+        Configuration configuration = null;
 
         try {
-            Configuration configuration = new StatConfiguration(args[0]).getInstance();
+            configuration = new StatConfiguration(args[0]).getInstance();
             logger.info("Loading configuration file at : '{}'", ((PropertiesConfiguration) configuration).getPath());
             dataClient = ClientProvider.getDataClient(configuration);
             statClient = ClientProvider.getStatClient(configuration);
-            loadDefaultStatParameters(configuration);
-
-            Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
-            if (statConfiguration.isPresent()) {
-                buildStatisticsBasedOnConfiguration(dataClient, statClient, statConfiguration.get());
-            } else {
-                throw new IllegalArgumentException("Statistics Configuration is Invalid / Empty");
-            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }
+
+        try {
+            run(dataClient, statClient, configuration);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
         } finally {
             if (dataClient != null) {
                 dataClient.close();
@@ -66,6 +65,17 @@ public class StatCalculator {
             if (statClient != null) {
                 statClient.close();
             }
+        }
+    }
+
+    public static void run(TransportClient dataClient, TransportClient statClient, Configuration configuration) {
+        loadDefaultStatParameters(configuration);
+
+        Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
+        if (statConfiguration.isPresent()) {
+            buildStatisticsBasedOnConfiguration(dataClient, statClient, statConfiguration.get());
+        } else {
+            throw new IllegalArgumentException("Statistics Configuration is Invalid / Empty");
         }
     }
 

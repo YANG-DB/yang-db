@@ -2,11 +2,13 @@ package com.kayhut.test.framework.populator;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.kayhut.test.framework.providers.GenericDataProvider;
+import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.support.WriteRequest;
 import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.IOException;
@@ -27,7 +29,7 @@ public class ElasticDataPopulator implements DataPopulator {
     private String routingField;
     private boolean removeRoutingField;
     private GenericDataProvider provider;
-    private static int BULK_SIZE = 500;
+    private static int BULK_SIZE = 10000;
 
     public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
         this(client, indexName, docType, idField, true, null, true, provider);
@@ -85,9 +87,11 @@ public class ElasticDataPopulator implements DataPopulator {
 
     @Override
     public void populate() throws Exception {
+        long start = System.currentTimeMillis();
+
         int currentBulkSize = 0;
 
-        BulkRequestBuilder bulkRequestBuilder = client.prepareBulk();
+        BulkRequestBuilder bulkRequestBuilder = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.NONE);
         for(Iterator<Map<String, Object>> iterator = this.provider.getDocuments().iterator(); iterator.hasNext();){
             Map<String, Object> document = iterator.next();
             currentBulkSize++;
@@ -98,7 +102,7 @@ public class ElasticDataPopulator implements DataPopulator {
                 if(bulkItemResponses.hasFailures()){
                     throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
                 }
-                bulkRequestBuilder = client.prepareBulk();
+                bulkRequestBuilder = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.NONE);
                 currentBulkSize = 0;
             }
         }
@@ -109,5 +113,8 @@ public class ElasticDataPopulator implements DataPopulator {
                 throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
             }
         }
+
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("populate elasped: " + elapsed);
     }
 }

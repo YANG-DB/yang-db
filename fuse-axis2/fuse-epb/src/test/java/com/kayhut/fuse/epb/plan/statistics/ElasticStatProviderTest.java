@@ -16,6 +16,7 @@ import com.kayhut.fuse.stat.model.configuration.Type;
 import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.histogram.*;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -142,11 +143,12 @@ public class ElasticStatProviderTest {
         MappingFileElasticConfigurer configurerIndex1 = new MappingFileElasticConfigurer(DATA_INDEX_NAME, MAPPING_DATA_FILE_PATH);
         MappingFileElasticConfigurer configurerStat = new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH);
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode(configurerIndex1, configurerStat);
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        configurerIndex1.configure(elasticEmbeddedNode.getClient());
+        configurerStat.configure(elasticEmbeddedNode.getClient());
 
-
-        dataClient = ClientProvider.getTransportClient(DATA_CLUSTER_NAME, DATA_TRANSPORT_PORT, DATA_HOSTS);
-        statClient = ClientProvider.getTransportClient(STAT_CLUSTER_NAME, STAT_TRANSPORT_PORT, STAT_HOSTS);
+        dataClient = elasticEmbeddedNode.getClient();
+        statClient = elasticEmbeddedNode.getClient();
 
         dragonsList = StatTestUtil.createDragons(NUM_OF_DRAGONS_IN_INDEX,
                 DRAGON_MIN_AGE,
@@ -178,17 +180,8 @@ public class ElasticStatProviderTest {
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        if (statClient != null) {
-            statClient.close();
-            statClient = null;
-        }
-
-        if (dataClient != null) {
-            dataClient.close();
-            dataClient = null;
-        }
-
-        elasticEmbeddedNode.close();
+        dataClient.admin().indices().prepareDelete(DATA_INDEX_NAME).execute().actionGet();
+        statClient.admin().indices().prepareDelete(statConfig.getStatIndexName()).execute().actionGet();
     }
 
     //Per test

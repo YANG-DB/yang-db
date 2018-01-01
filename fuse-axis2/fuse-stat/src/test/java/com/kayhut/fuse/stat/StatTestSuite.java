@@ -6,6 +6,7 @@ import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.util.StatTestUtil;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.ElasticIndexConfigurer;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.apache.commons.configuration.Configuration;
@@ -46,26 +47,13 @@ public class StatTestSuite {
 
     @BeforeClass
     public static void setup() throws Exception {
-        Configuration configuration = new StatConfiguration(CONFIGURATION_FILE_PATH).getInstance();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
-        dataClient = ClientProvider.getDataClient(configuration);
-        statClient = ClientProvider.getDataClient(configuration);
-
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
+        dataClient = elasticEmbeddedNode.getClient();
+        statClient = elasticEmbeddedNode.getClient();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
-        if (statClient != null) {
-            statClient.close();
-            statClient = null;
-        }
-
-        if (dataClient != null) {
-            dataClient.close();
-            dataClient = null;
-        }
-
-        elasticEmbeddedNode.close();
     }
 }

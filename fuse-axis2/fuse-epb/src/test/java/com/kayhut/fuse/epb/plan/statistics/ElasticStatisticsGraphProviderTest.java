@@ -27,6 +27,7 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -129,20 +130,15 @@ public class ElasticStatisticsGraphProviderTest {
     public static void setup() throws Exception {
         statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
         new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH).configure(elasticEmbeddedNode.getClient());
 
-        statClient = new ElasticClientProvider(statConfig).getStatClient();
+        statClient = elasticEmbeddedNode.getClient();
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        if (statClient != null) {
-            statClient.close();
-            statClient = null;
-        }
-
-        elasticEmbeddedNode.close();
+        statClient.admin().indices().prepareDelete(statConfig.getStatIndexName()).execute().actionGet();
     }
 
     /**
