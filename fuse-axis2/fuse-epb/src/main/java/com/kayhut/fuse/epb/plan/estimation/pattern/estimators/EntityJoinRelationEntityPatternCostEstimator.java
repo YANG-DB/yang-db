@@ -11,9 +11,9 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 /**
  * Created by moti on 29/05/2017.
  */
-public class EntityJoinEntityPatternCostEstimator implements PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
+public class EntityJoinRelationEntityPatternCostEstimator implements PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
     //region Constructors
-    public EntityJoinEntityPatternCostEstimator(
+    public EntityJoinRelationEntityPatternCostEstimator(
             EntityRelationEntityPatternCostEstimator entityRelationEntityPatternCostEstimator) {
         this.entityRelationEntityPatternCostEstimator = entityRelationEntityPatternCostEstimator;
     }
