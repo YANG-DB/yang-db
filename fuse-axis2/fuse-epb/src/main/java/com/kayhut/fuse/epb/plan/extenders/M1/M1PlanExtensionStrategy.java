@@ -22,10 +22,10 @@ public class M1PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
                                 new InitialPlanGeneratorExtensionStrategy(),
-                                new StepAncestorAdjacentStrategy(),
-                                new StepDescendantsAdjacentStrategy(),
+                                //new StepAncestorAdjacentStrategy(),
+                                //new StepDescendantsAdjacentStrategy(),
                                 new ChainPlanExtensionStrategy<>(
-                                        new GotoExtensionStrategy(),
+                                        new GotoExtensionStrategy(true),
                                         new CompositePlanExtensionStrategy<>(
                                                 new StepAncestorAdjacentStrategy(),
                                                 new StepDescendantsAdjacentStrategy()
