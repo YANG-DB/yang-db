@@ -4,6 +4,7 @@ import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,14 +30,8 @@ public class JoinSeedExtensionStrategy implements PlanExtensionStrategy<Plan, As
             return Collections.emptyList();
         }
 
-        Iterable<Plan> plans = seedStrategy.extendPlan(Optional.empty(), query);
-
-        List<Plan> newPlans = new ArrayList<>();
-        for (Plan innerPlan : plans) {
-            Plan leftBranch = Plan.clone(plan.get());
-            EntityJoinOp join = new EntityJoinOp(leftBranch, innerPlan);
-            newPlans.add(new Plan(join));
-        }
-        return newPlans;
+        return Stream.ofAll(seedStrategy.extendPlan(Optional.empty(), query))
+                .map(seedRightBranch -> new Plan(new EntityJoinOp(plan.get(), seedRightBranch)))
+                .toJavaList();
     }
 }
