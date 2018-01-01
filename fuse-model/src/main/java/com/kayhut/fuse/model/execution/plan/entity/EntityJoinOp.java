@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.execution.plan.entity;
 
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import javaslang.collection.Stream;
 
 import java.util.Optional;
 
@@ -29,11 +30,8 @@ public class EntityJoinOp extends EntityOp {
     }
 
     public boolean isComplete(){
-        Optional<PlanOp> entityOp = rightBranch.getOps().stream().filter(op -> EntityOp.class.isAssignableFrom(op.getClass())).reduce((a, b) -> b);
-        if(entityOp.isPresent()){
-            return ((EntityOp)entityOp.get()).getAsgEbase().geteNum() == this.getAsgEbase().geteNum();
-        }
-        return false;
+        EntityOp entityOp = Stream.ofAll(rightBranch.getOps()).filter(op -> EntityOp.class.isAssignableFrom(op.getClass())).map(op -> (EntityOp)op).last();
+        return entityOp.getAsgEbase().geteNum() == this.getAsgEbase().geteNum();
     }
 
     private Plan leftBranch;
