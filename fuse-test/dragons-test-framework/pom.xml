@@ -59,7 +59,7 @@
             <groupId>io.javaslang</groupId>
             <artifactId>javaslang</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
         </dependency>
@@ -79,7 +79,7 @@
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-shell</artifactId>
             <version>${neo4j.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- runtime -->
 
         <!-- test -->

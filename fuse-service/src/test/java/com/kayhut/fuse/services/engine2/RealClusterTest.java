@@ -30,9 +30,10 @@ import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateReque
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -1164,10 +1165,9 @@ public class RealClusterTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "knowledge").build();
-        Client client = TransportClient.builder().settings(settings).build()
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+        Settings settings = Settings.builder().put("cluster.name", "knowledge").build();
+        Client client = new PreBuiltTransportClient(settings)
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), 9300));
 
         String workingDir = System.getProperty("user.dir");
         String templatesPath = Paths.get(workingDir, "../", "fuse-assembly", "resources", "indexTemplates").toString();
@@ -1180,7 +1180,7 @@ public class RealClusterTest {
                 if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
                     client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();
                 }
-                client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template)).actionGet();
+                client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet();
             }
         }
 
@@ -1345,9 +1345,10 @@ public class RealClusterTest {
             String index = Stream.ofAll(refPartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                     .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
-            bulk.add(client.prepareIndex().setIndex(index).setType("reference").setId(referenceId)
+            bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(referenceId)
                     .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(new MapBuilder<String, Object>()
+                            .put("type", "reference")
                             .put("title", "Title of - " + referenceId)
                             .put("url", "http://" + UUID.randomUUID().toString() + "." + domains.get(random.nextInt(domains.size())))
                             .put("value", contents.get(random.nextInt(contents.size())))
@@ -1377,9 +1378,10 @@ public class RealClusterTest {
                         nicknames.get(random.nextInt(nicknames.size()))))
                         .distinct().take(random.nextInt(2) + 1).toJavaList();
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "entity")
                                 .put("logicalId", logicalId)
                                 .put("context", context)
                                 .put("category", category)
@@ -1394,9 +1396,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1414,9 +1417,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1435,9 +1439,10 @@ public class RealClusterTest {
                                     .get()));
 
                     for (String personNickname : personNicknames) {
-                        bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                                 .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                                 .setSource(new MapBuilder<String, Object>()
+                                        .put("type", "e.value")
                                         .put("logicalId", logicalId)
                                         .put("entityId", logicalId + "." + context)
                                         .put("context", context)
@@ -1458,9 +1463,10 @@ public class RealClusterTest {
                 } else if (context.equals("context3")) {
 
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1481,9 +1487,10 @@ public class RealClusterTest {
                     int age = random.nextInt(120);
                     int anotherAge = age + (random.nextInt(8) - 4);
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1501,9 +1508,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1521,9 +1529,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1561,9 +1570,10 @@ public class RealClusterTest {
                 String title = color + " " + category;
                 String description = title;
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "entity")
                                 .put("logicalId", logicalId)
                                 .put("context", context)
                                 .put("category", category)
@@ -1578,9 +1588,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1598,9 +1609,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1618,9 +1630,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1638,9 +1651,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1688,9 +1702,10 @@ public class RealClusterTest {
                 String relationLastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
                 String relationCreateTime = sdf.format(new Date(System.currentTimeMillis()));
 
-                bulk.add(client.prepareIndex().setIndex(personIndex).setType("e.relation").setId(relationIdString + ".out")
+                bulk.add(client.prepareIndex().setIndex(personIndex).setType("pge").setId(relationIdString + ".out")
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(personLogicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "e.relation")
                                 .put("entityAId", personEntityId)
                                 .put("entityACategory", "person")
                                 .put("entityBId", propertyEntityId)
@@ -1706,9 +1721,10 @@ public class RealClusterTest {
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("e.relation").setId(relationIdString + ".in")
+                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("pge").setId(relationIdString + ".in")
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(propertyLogicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "e.relation")
                                 .put("entityBId", personEntityId)
                                 .put("entityBCategory", "person")
                                 .put("entityAId", propertyEntityId)
@@ -1724,9 +1740,10 @@ public class RealClusterTest {
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("relation").setId(relationIdString)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(relationIdString)
                         .setOpType(IndexRequest.OpType.INDEX)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "relation")
                                 .put("entityAId", personEntityId)
                                 .put("entityACategory", "person")
                                 .put("entityBId", propertyEntityId)
@@ -1743,9 +1760,10 @@ public class RealClusterTest {
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "r.value")
                                 .put("relationId", relationIdString)
                                 .put("context", context)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -1762,9 +1780,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "r.value")
                                 .put("relationId", relationIdString)
                                 .put("context", context)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -1781,9 +1800,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "r.value")
                                 .put("relationId", relationIdString)
                                 .put("context", context)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -1817,9 +1837,10 @@ public class RealClusterTest {
                         .filter(partition -> partition.isWithin(insightId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("insight").setId(insightId)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(insightId)
                         .setOpType(IndexRequest.OpType.INDEX)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "insight")
                                 .put("content", contents.get(random.nextInt(contents.size())))
                                 .put("context", context)
                                 .put("entityIds", Stream.ofAll(logicalIds).map(logicalId -> logicalId + "." + context).toJavaList())
@@ -1838,9 +1859,10 @@ public class RealClusterTest {
                             Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                                     .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
-                    bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType("e.insight").setId(logicalId + "." + insightId)
+                    bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType("pge").setId(logicalId + "." + insightId)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.insight")
                                     .put("entityId", logicalId + "." + context)
                                     .put("insightId", insightId).get()));
                 }

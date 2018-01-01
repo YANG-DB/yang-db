@@ -154,6 +154,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
                 wrap(new IndexSearchAppender()),
                 wrap(new SizeSearchAppender(this.configuration)),
                 wrap(new PromiseConstraintSearchAppender()),
+                wrap(new MustFetchSourceSearchAppender("type")),
                 wrap(new FilterSourceSearchAppender()));
 
         searchAppender.append(searchBuilder, context);

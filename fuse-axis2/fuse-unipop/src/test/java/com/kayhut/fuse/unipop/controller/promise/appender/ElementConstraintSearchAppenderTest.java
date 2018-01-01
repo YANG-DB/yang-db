@@ -62,7 +62,7 @@ public class ElementConstraintSearchAppenderTest {
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"term\":{\"_type\":\"dragon\"}}}}}}",
+                "{\"bool\":{\"must\":[{\"match_all\":{\"boost\":1}}],\"filter\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"dragon\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
     }
@@ -83,7 +83,7 @@ public class ElementConstraintSearchAppenderTest {
 
         Assert.assertTrue(appendResult);
         JSONAssert.assertEquals(
-                "{\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"bool\":{\"must\":{\"bool\":{\"must\":[{\"term\":{\"_type\":\"dragon\"}},{\"term\":{\"name\":\"Drogar\"}}]}}}}}}",
+                "{\"bool\":{\"must\":[{\"match_all\":{\"boost\":1}}],\"filter\":[{\"bool\":{\"must\":[{\"bool\":{\"must\":[{\"term\":{\"type\":{\"value\":\"dragon\",\"boost\":1}}},{\"term\":{\"name\":{\"value\":\"Drogar\",\"boost\":1}}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}],\"adjust_pure_negative\":true,\"boost\":1}}",
                 searchBuilder.getQueryBuilder().getQuery().toString(),
                 JSONCompareMode.LENIENT);
     }

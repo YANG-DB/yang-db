@@ -6,7 +6,7 @@
         "index2"
       ],
       "types": [
-        "dragon"
+        "Dragon"
       ]
     },
     {
@@ -21,7 +21,7 @@
   ],
   "types": [
     {
-      "type": "dragon",
+      "type": "Dragon",
       "fields": [
         {
           "field": "age",
@@ -108,13 +108,13 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
             "buckets": [
               {
-                "term": "dragon"
+                "term": "Dragon"
               }
             ]
           }

@@ -37,210 +37,99 @@
     }
   },
   "mappings": {
-    "e.insight": {
+    "pge": {
+      "_all": {
+        "enabled": false
+      },
       "properties": {
-        "entityId": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "insightId": {
-          "index": "not_analyzed",
-          "type": "string"
-        }
-      }
-    },
-    "entity": {
-      "properties": {
-        "creationUser": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "creationTime": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
+        "type": {
+          "type": "keyword"
         },
         "logicalId": {
-          "index": "not_analyzed",
-          "type": "string"
+          "type": "keyword"
         },
         "context": {
-          "index": "not_analyzed",
-          "type": "string"
+          "type": "keyword"
+        },
+        "category": {
+          "type": "keyword"
         },
         "refs": {
-          "index": "not_analyzed",
-          "type": "string"
+          "type": "keyword"
         },
-        "lastUpdateUser": {
-          "index": "not_analyzed",
-          "type": "string"
+        "entityId": {
+          "type": "keyword"
         },
-        "category": {
-          "index": "not_analyzed",
-          "type": "string"
+        "bdt": {
+          "type": "keyword"
         },
-        "authorization": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "authorizationCount": {
-          "type": "integer"
-        },
-        "lastUpdateTime": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
-        },
-        "deleteUser": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "deleteTime": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
-        }
-      }
-    },
-    "e.relation": {
-      "properties": {
-        "entityBId": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "entityAId": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "creationUser": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "creationTime": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
-        },
-        "relationId": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "authorization": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "authorizationCount": {
-          "type": "integer"
-        },
-        "entityBCategory": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "entityACategory": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "context": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "lastUpdateUser": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "category": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "direction": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "lastUpdateTime": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
-        },
-        "deleteUser": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "deleteTime": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
-        }
-      }
-    },
-    "e.value": {
-      "properties": {
-        "dateValue": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
-        },
-        "creationUser": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "creationTime": {
-          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
-          "type": "date"
+        "propertyId": {
+          "type": "keyword"
         },
         "integerValue": {
           "type": "long"
         },
-        "entityId": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "authorization": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "authorizationCount": {
-          "type": "integer"
+        "dateValue": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
         },
         "stringValue": {
-          "type": "string",
+          "type": "text",
           "analyzer": "knowledge_ngram_analyzer",
           "search_analyzer": "knowledge_standard_analyzer",
           "fields": {
             "keyword": {
-              "type": "string",
-              "index": "not_analyzed"
+              "type": "keyword"
             }
           }
         },
-        "bdt": {
-          "index": "not_analyzed",
-          "type": "string"
+        "relationId": {
+          "type": "keyword"
         },
-        "logicalId": {
-          "index": "not_analyzed",
-          "type": "string"
+        "entityAId": {
+          "type": "keyword"
         },
-        "refs": {
-          "index": "not_analyzed",
-          "type": "string"
+        "entityBId": {
+          "type": "keyword"
         },
-        "context": {
-          "index": "not_analyzed",
-          "type": "string"
+        "entityACategory": {
+          "type": "keyword"
+        },
+        "entityBCategory": {
+          "type": "keyword"
+        },
+        "direction": {
+          "type": "keyword"
+        },
+        "insightId": {
+          "type": "keyword"
+        },
+        "creationUser": {
+          "type": "keyword"
+        },
+        "creationTime": {
+          "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
+          "type": "date"
         },
         "lastUpdateUser": {
-          "index": "not_analyzed",
-          "type": "string"
-        },
-        "propertyId": {
-          "index": "not_analyzed",
-          "type": "string"
+          "type": "keyword"
         },
         "lastUpdateTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
         },
         "deleteUser": {
-          "index": "not_analyzed",
-          "type": "string"
+          "type": "keyword"
         },
         "deleteTime": {
           "format": "epoch_millis||strict_date_optional_time||yyyy-MM-dd HH:mm:ss.SSS",
           "type": "date"
+        },
+        "authorization": {
+          "type": "keyword"
+        },
+        "authorizationCount": {
+          "type": "integer"
         }
       }
     }

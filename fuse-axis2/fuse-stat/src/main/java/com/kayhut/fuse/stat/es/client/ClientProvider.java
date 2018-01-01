@@ -3,7 +3,8 @@ package com.kayhut.fuse.stat.es.client;
 import org.apache.commons.configuration.Configuration;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -17,6 +18,7 @@ public class ClientProvider {
         throw new IllegalAccessError("Utility class");
     }
 
+    //region Static Methods
     public static TransportClient getDataClient(Configuration configuration) throws UnknownHostException {
         String clusterName = configuration.getString("es.cluster.name");
         int transportPort = configuration.getInt("es.client.transport.port");
@@ -34,11 +36,12 @@ public class ClientProvider {
     }
 
     public static TransportClient getTransportClient(String clusterName, int transportPort, String[] hosts) throws UnknownHostException {
-        Settings settings = Settings.builder().put("client.transport.sniff", false).put("cluster.name", clusterName).build();
-        TransportClient esClient = TransportClient.builder().settings(settings).build();
-        for(String node: hosts){
-            esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), transportPort));
+        Settings settings = Settings.builder().put("cluster.name", clusterName).build();
+        TransportClient esClient = new PreBuiltTransportClient(settings);
+        for(String node: hosts) {
+            esClient.addTransportAddress(new TransportAddress(InetAddress.getByName(node), transportPort));
         }
         return esClient;
     }
+    //endregion
 }

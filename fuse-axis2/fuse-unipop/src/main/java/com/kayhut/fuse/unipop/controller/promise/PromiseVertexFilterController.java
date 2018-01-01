@@ -7,6 +7,7 @@ import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.MustFetchSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
@@ -110,12 +111,13 @@ public class PromiseVertexFilterController extends VertexControllerBase {
                     wrap(new FilterVerticesSearchAppender()),
                     wrap(new SizeSearchAppender(configuration)),
                     wrap(new PromiseConstraintSearchAppender()),
+                    wrap(new MustFetchSourceSearchAppender("type")),
                     wrap(new FilterSourceSearchAppender()),
                     wrap(new FilterIndexSearchAppender()));
 
         appender.append(searchBuilder, context);
 
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSearchType(SearchType.SCAN);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
                 metricRegistry, client,

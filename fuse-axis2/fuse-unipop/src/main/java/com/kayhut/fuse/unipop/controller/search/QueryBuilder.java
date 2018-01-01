@@ -1,10 +1,14 @@
 package com.kayhut.fuse.unipop.controller.search;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vividsolutions.jts.geom.Coordinate;
+import javaslang.collection.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.geo.ShapeRelation;
 import org.elasticsearch.common.geo.builders.ShapeBuilder;
+import org.elasticsearch.common.geo.builders.ShapeBuilders;
 import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.XContentParser;
 import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -13,12 +17,10 @@ import org.geojson.Circle;
 import org.geojson.Envelope;
 import org.geojson.GeoJsonObject;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Created by User on 20/03/2017.
@@ -850,15 +852,15 @@ public class QueryBuilder {
                             QueryBuilder.TermsComposite termsComposite = (QueryBuilder.TermsComposite)composite;
                             if (termsComposite.getFieldName().equals(fieldName)) {
                                 if (Iterable.class.isAssignableFrom(termsComposite.getValue().getClass())) {
-                                    set.addAll((List) StreamSupport.stream(((Iterable)termsComposite.getValue()).spliterator(), false).collect(Collectors.toList()));
+                                    set.addAll(Stream.ofAll((Iterable)termsComposite.getValue()).toJavaList());
                                 } else if (String[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((String[])termsComposite.getValue()).collect(Collectors.toList()));
+                                    set.addAll(Stream.of((String[])termsComposite.getValue()).toJavaList());
                                 } else if (Date[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((Date[])termsComposite.getValue()).collect(Collectors.toList()));
+                                    set.addAll(Stream.of((Date[])termsComposite.getValue()).toJavaList());
                                 } else if (Integer[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((Integer[])termsComposite.getValue()).collect(Collectors.toList()));
+                                    set.addAll(Stream.of((Integer[])termsComposite.getValue()).toJavaList());
                                 } else if (Long[].class.isAssignableFrom(termsComposite.getClass())) {
-                                    set.addAll(Stream.of((Long[])termsComposite.getValue()).collect(Collectors.toList()));
+                                    set.addAll(Stream.of((Long[])termsComposite.getValue()).toJavaList());
                                 } else {
                                     set.add(termsComposite.getValue());
                                 }
@@ -1126,7 +1128,7 @@ public class QueryBuilder {
                 }
             }
 
-            return QueryBuilders.filteredQuery(queryBuilder, filterBuilder);
+            return QueryBuilders.boolQuery().must(queryBuilder).filter(filterBuilder);
         }
         //endregion
     }
@@ -1289,7 +1291,11 @@ public class QueryBuilder {
         //region Composite Implementation
         @Override
         protected Object build() {
-            return QueryBuilders.termQuery(this.getFieldName(), this.value);
+            if (this.value != null && this.value.getClass().equals(Date.class)) {
+                return QueryBuilders.termQuery(this.getFieldName(), ((Date)this.value).getTime());
+            }
+
+            return QueryBuilders.termQuery(this.getFieldName(), this.value.toString());
         }
         //endregion
 
@@ -1316,6 +1322,12 @@ public class QueryBuilder {
         @Override
         protected Object build() {
             if (this.value != null && Iterable.class.isAssignableFrom(this.value.getClass())) {
+                List valueList = javaslang.collection.Stream.ofAll((Iterable)value).toJavaList();
+                if (!valueList.isEmpty() && valueList.get(0).getClass().equals(Date.class)) {
+                    return QueryBuilders.termsQuery(this.getFieldName(),
+                            Stream.ofAll(valueList).map(listVal -> ((Date)listVal).getTime()).toJavaList());
+                }
+
                 return QueryBuilders.termsQuery(
                         this.getFieldName(),
                         javaslang.collection.Stream.ofAll((Iterable)value).toJavaList());
@@ -1367,6 +1379,16 @@ public class QueryBuilder {
             boolean includeLower = CompositeHelper.getParamValue(this, "include_lower", true);
             boolean includeUpper = CompositeHelper.getParamValue(this, "include_upper", false);
             boolean cache = CompositeHelper.getParamValue(this, "cache", true);
+
+            // TEMPORARY PATCH: should add transformation logic to GTA
+            if (from != null && from.getClass().equals(Date.class)) {
+                from = ((Date)from).getTime();
+            }
+
+            if (to != null && to.getClass().equals(Date.class)) {
+                to = ((Date)to).getTime();
+            }
+            // TEMPORARY PATCH: should add transformation logic to GTA
 
             if (from != null || to != null) {
                 return QueryBuilders.rangeQuery(this.getFieldName())
@@ -1517,10 +1539,10 @@ public class QueryBuilder {
                     ids.add(obj.toString());
                 }
 
-                return QueryBuilders.idsQuery(this.types).ids(ids);
+                return QueryBuilders.idsQuery(this.types).addIds(Stream.ofAll(ids).toJavaArray(String.class));
             }
 
-            return QueryBuilders.idsQuery(this.types).ids(this.value.toString());
+            return QueryBuilders.idsQuery(this.types).addIds(this.value.toString());
         }
 
         @Override
@@ -1613,8 +1635,12 @@ public class QueryBuilder {
             ShapeRelation relation = CompositeHelper.getParamValue(this, "relation", ShapeRelation.INTERSECTS);
             boolean cache = CompositeHelper.getParamValue(this, "cache", true);
 
-            return QueryBuilders.geoShapeQuery(this.getFieldName(), GetShapeBuilder(geoJson), relation);
-
+            try {
+                return QueryBuilders.geoShapeQuery(this.getFieldName(), GetShapeBuilder(geoJson)).relation(relation);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
         //endregion
 
@@ -1623,23 +1649,23 @@ public class QueryBuilder {
             try {
                 if (geoJson instanceof Circle) {
                     Circle cirlce = (Circle)geoJson;
-                    return ShapeBuilder.newCircleBuilder()
+                    return ShapeBuilders.newCircleBuilder()
                             .center(
                                     cirlce.getCoordinates().getLongitude(),
                                     cirlce.getCoordinates().getLatitude())
                             .radius(new DistanceUnit.Distance(cirlce.getRadius(), DistanceUnit.METERS));
                 } else if (geoJson instanceof Envelope) {
                     Envelope envelope = (Envelope)geoJson;
-                    return ShapeBuilder.newEnvelope()
-                            .topLeft(
+                    return ShapeBuilders.newEnvelope(
+                            new Coordinate(
                                     envelope.getCoordinates().get(0).getLongitude(),
-                                    envelope.getCoordinates().get(1).getLatitude())
-                            .bottomRight(
+                                    envelope.getCoordinates().get(1).getLatitude()),
+                            new Coordinate(
                                     envelope.getCoordinates().get(1).getLongitude(),
-                                    envelope.getCoordinates().get(0).getLatitude());
+                                    envelope.getCoordinates().get(0).getLatitude()));
                 } else {
                     String geoJsonString = mapper.writeValueAsString(geoJson);
-                    XContentParser parser = JsonXContent.jsonXContent.createParser(geoJsonString);
+                    XContentParser parser = JsonXContent.jsonXContent.createParser(NamedXContentRegistry.EMPTY, geoJsonString);
                     parser.nextToken();
 
                     return ShapeBuilder.parse(parser);

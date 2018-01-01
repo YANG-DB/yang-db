@@ -25,10 +25,10 @@
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-dispatcher</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-neo4j</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-epb</artifactId>
@@ -68,6 +68,10 @@
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>geojson-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
         </dependency>
     </dependencies>
 

@@ -6,6 +6,8 @@ import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -127,41 +129,25 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
                 return;
             }
 
-            Timer.Context time = metricRegistry.timer(name(SearchHitScrollIterable.class.getSimpleName(), "Scroll")).time();
-            Timer timeEs = metricRegistry.timer(name(SearchHitScrollIterable.class.getSimpleName(), "Scroll:elastic"));
-            if (this.scrollId == null) {
-                SearchResponse response = this.iterable.getSearchRequestBuilder()
-                        .setSearchType(SearchType.SCAN)
+            SearchResponse response = this.scrollId == null ?
+                this.iterable.getSearchRequestBuilder()
+                        .addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
                         .setScroll(new TimeValue(iterable.getScrollTime()))
                         .setSize(Math.min(iterable.getScrollSize(),
                                 (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
                         .execute()
-                        .actionGet();
-
-                this.scrollId = response.getScrollId();
-                //update es execution time
-                timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
-                time.stop();
-                Scroll();
-            } else {
-                SearchResponse response =
-                        this.iterable.getClient().prepareSearchScroll(this.scrollId)
+                        .actionGet() :
+                this.iterable.getClient().prepareSearchScroll(this.scrollId)
                                 .setScroll(new TimeValue(this.iterable.getScrollTime()))
                                 .execute()
                                 .actionGet();
 
-                //update es execution time
-                time.stop();
-                timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
-
-                for (SearchHit hit : response.getHits().getHits()) {
-                    if (counter < this.iterable.getLimit()) {
-                        this.searchHits.add(hit);
-                        counter++;
-                    }
+            this.scrollId = response.getScrollId();
+            for (SearchHit hit : response.getHits().getHits()) {
+                if (counter < this.iterable.getLimit()) {
+                    this.searchHits.add(hit);
+                    counter++;
                 }
-
-                this.scrollId = response.getScrollId();
             }
         }
         //endregion

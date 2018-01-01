@@ -1,7 +1,6 @@
 package com.kayhut.fuse.executor;
 
 import com.google.inject.Binder;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
@@ -19,7 +18,8 @@ import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 import org.unipop.configuration.UniGraphConfiguration;
@@ -63,11 +63,11 @@ public class ExecutorModule extends ModuleBase {
             }
         }
 
-        Settings settings = Settings.settingsBuilder().put("cluster.name", configuration.getClusterName()).build();
-        TransportClient client = TransportClient.builder().settings(settings).build();
+        Settings settings = Settings.builder().put("cluster.name", configuration.getClusterName()).build();
+        TransportClient client = new PreBuiltTransportClient(settings);
         Stream.of(configuration.getClusterHosts()).forEach(host -> {
             try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), configuration.getClusterPort()));
+                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), configuration.getClusterPort()));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

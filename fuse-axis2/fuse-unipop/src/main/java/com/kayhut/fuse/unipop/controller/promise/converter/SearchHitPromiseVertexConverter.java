@@ -8,6 +8,7 @@ import org.elasticsearch.search.SearchHit;
 import org.unipop.structure.UniGraph;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -22,7 +23,9 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
 
     @Override
     public Iterable<Element> convert(SearchHit element) {
-        return Arrays.asList(new PromiseVertex(Promise.as(element.id(), element.getType()), Optional.empty(), graph, element.sourceAsMap()));
+        return Collections.singletonList(new PromiseVertex(
+                Promise.as(element.getId(), (String) element.getSourceAsMap().get("type")),
+                Optional.empty(), graph, element.getSourceAsMap()));
     }
     //endregion
 

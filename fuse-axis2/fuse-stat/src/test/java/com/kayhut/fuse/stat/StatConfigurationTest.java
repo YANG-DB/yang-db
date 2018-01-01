@@ -71,7 +71,7 @@ public class StatConfigurationTest {
 
         HistogramTerm histogramDocType = HistogramTerm.Builder.get()
                 .withDataType(DataType.string).withBuckets(Collections.singletonList(
-                        new BucketTerm("dragon")
+                        new BucketTerm("Dragon")
                 )).build();
 
 
@@ -93,7 +93,7 @@ public class StatConfigurationTest {
         Field addressField = new Field("address", histogramDragonAddress);
         Field colorField = new Field("color", histogramDragonColor);
         Field genderField = new Field("gender", histogramTerm);
-        Field dragonTypeField = new Field("_type", histogramDocType);
+        Field dragonTypeField = new Field("type", histogramDocType);
 
         Field fireEntityAOutField = new Field("entityA.id",
                 histogramFireEntity,
@@ -106,11 +106,11 @@ public class StatConfigurationTest {
 
         Field fireTimestampField = new Field("timestamp", histogramFireTimestampEntity);
 
-        Type typeDragon = new Type("dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
+        Type typeDragon = new Type("Dragon", Arrays.asList(ageField, nameField, addressField, colorField, genderField, dragonTypeField));
         Type typeFire = new Type("fire", Arrays.asList(fireEntityAInField, fireEntityAOutField, fireTimestampField));
 
         Mapping mappingDragon = Mapping.Builder.get().withIndices(Arrays.asList("index1", "index2"))
-                .withTypes(Collections.singletonList("dragon")).build();
+                .withTypes(Collections.singletonList("Dragon")).build();
 
         Mapping mappingFire = Mapping.Builder.get().withIndices(Arrays.asList("index3", "index4"))
                 .withTypes(Collections.singletonList("fire")).build();
