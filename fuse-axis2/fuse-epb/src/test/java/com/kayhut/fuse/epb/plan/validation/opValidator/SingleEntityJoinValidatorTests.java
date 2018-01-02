@@ -1,4 +1,4 @@
-package com.kayhut.fuse.epb.plan.pruners;
+package com.kayhut.fuse.epb.plan.validation.opValidator;
 
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.OntologyTestUtils;
@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
+import com.kayhut.fuse.model.validation.ValidationResult;
 import javaslang.collection.Stream;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +21,7 @@ import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.rel;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
-public class SingleEntityJoinPrunerTests{
+public class SingleEntityJoinValidatorTests {
 
     public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
@@ -46,9 +47,9 @@ public class SingleEntityJoinPrunerTests{
                 new Plan(new EntityOp(AsgQueryUtil.element$(query, 3)),new RelationOp(AsgQueryUtil.element$(query, 2)),new EntityOp(AsgQueryUtil.element$(query, 1)))
         ));
 
-        SingleEntityJoinPruner pruner = new SingleEntityJoinPruner();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = pruner.prunePlans(Collections.singleton(new PlanWithCost<Plan, PlanDetailedCost>(plan, new PlanDetailedCost())));
-        Assert.assertEquals(0, Stream.ofAll(plans).length());
+        SingleEntityJoinValidator validator = new SingleEntityJoinValidator();
+        ValidationResult planOpValid = validator.isPlanOpValid(query, plan, 0);
+        Assert.assertFalse(planOpValid.valid());
     }
 
     @Test
@@ -59,9 +60,8 @@ public class SingleEntityJoinPrunerTests{
                 new Plan(new EntityOp(AsgQueryUtil.element$(query, 5)),new RelationOp(AsgQueryUtil.element$(query, 4)),new EntityOp(AsgQueryUtil.element$(query, 3)))
         ));
 
-        SingleEntityJoinPruner pruner = new SingleEntityJoinPruner();
-        Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans = pruner.prunePlans(Collections.singleton(new PlanWithCost<Plan, PlanDetailedCost>(plan, new PlanDetailedCost())));
-        Assert.assertEquals(1, Stream.ofAll(plans).length());
-        Assert.assertEquals(plan, plans.iterator().next().getPlan());
+        SingleEntityJoinValidator validator = new SingleEntityJoinValidator();
+
+        Assert.assertTrue(validator.isPlanOpValid(query, plan, 0).valid());
     }
 }
