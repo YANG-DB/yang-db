@@ -39,28 +39,9 @@ public class JoinCompletePlanOpValidator implements ChainedPlanValidator.PlanOpV
          * We should check that we have this EOP (or EOP + EFO) at the right branch of the JoinOp.
          * i.e., The enums should be the same.
          */
+    //TODO: use EntityJoinOp.isComplete instead
     private boolean isJoinOpComplete(EntityJoinOp joinOp) {
-        Optional<EntityOp> leftEntityOp = PlanUtil.last(joinOp.getLeftBranch(), EntityOp.class);
-        if (!leftEntityOp.isPresent()) {
-            return false;
-        }
-
-        Optional<EntityOp> rightEntityOp = PlanUtil.<EntityOp>first(joinOp.getRightBranch(),
-                op -> ((op instanceof EntityOp) && (((EntityOp)op).getAsgEbase().geteNum() == leftEntityOp.get().getAsgEbase().geteNum())));
-
-        if (!rightEntityOp.isPresent()) {
-            return false;
-        }
-
-        Optional<EntityFilterOp> leftEntityFilterOp = PlanUtil.next(joinOp.getLeftBranch(), leftEntityOp.get(), EntityFilterOp.class);
-        if (leftEntityFilterOp.isPresent()) {
-            Optional<EntityFilterOp> rightEntityFilterOp = PlanUtil.next(joinOp.getRightBranch(), rightEntityOp.get(), EntityFilterOp.class);
-            if (!rightEntityFilterOp.isPresent() ||
-                    rightEntityFilterOp.get().getAsgEbase().geteNum() != leftEntityFilterOp.get().getAsgEbase().geteNum()) {
-                return false;
-            }
-        }
-        return true;
+        return joinOp.isComplete();
     }
 
     @Override
