@@ -8,35 +8,26 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import javaslang.collection.Stream;
 
 import java.util.*;
 
+/**
+ * Removes symmetrical join plans. This pruner assumes that all plans which have a join as their
+ */
 public class SymmetricalJoinPruner implements PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> {
     @Override
     public Iterable<PlanWithCost<Plan, PlanDetailedCost>> prunePlans(Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {
-        SortedMap<String, Plan> plansMap = new TreeMap<>();
-        for (PlanWithCost<Plan, PlanDetailedCost> plan : plans) {
-            plansMap.put(IterablePlanOpDescriptor.getFull().describe(plan.getPlan().getOps()), plan.getPlan());
-        }
-
-        Set<String> planKeys = new HashSet<>();
-        List<PlanWithCost<Plan, PlanDetailedCost>> keptPlans = new ArrayList<>();
-        for (PlanWithCost<Plan, PlanDetailedCost> plan : plans) {
-            if(plan.getPlan().getOps().size() == 1){
+     return Stream.ofAll(plans).filter(plan -> {
+            if(plan.getPlan().getOps().size() == 1) {
                 Optional<EntityJoinOp> joinOp = PlanUtil.first(plan.getPlan(), EntityJoinOp.class);
-                if(joinOp.isPresent()){
-                    EntityJoinOp newJoin = new EntityJoinOp(joinOp.get().getRightBranch(), joinOp.get().getLeftBranch());
-                    String desc = IterablePlanOpDescriptor.getFull().describe(Collections.singleton(newJoin));
-                    if(planKeys.contains(desc)){
-                       continue;
-                    }
+                if(joinOp.isPresent() && joinOp.get().isComplete()){
+                    String leftDescription = IterablePlanOpDescriptor.getFull().describe(Collections.singleton(joinOp.get().getLeftBranch()));
+                    String rightDescription = IterablePlanOpDescriptor.getFull().describe(Collections.singleton(joinOp.get().getRightBranch()));
+                    return leftDescription.compareTo(rightDescription) < 0;
                 }
             }
-            String desc = IterablePlanOpDescriptor.getFull().describe(plan.getPlan().getOps());
-            planKeys.add(desc);
-            keptPlans.add(plan);
-        }
-
-        return keptPlans;
+            return true;
+        });
     }
 }
