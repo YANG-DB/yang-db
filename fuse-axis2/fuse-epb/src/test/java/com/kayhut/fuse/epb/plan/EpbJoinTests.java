@@ -9,7 +9,6 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.EntityJoinPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M2PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M2.M2PlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.pruners.M2LocalPruner;
 import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
 import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
 import com.kayhut.fuse.epb.plan.selectors.CheapestPlanSelector;
@@ -157,7 +156,7 @@ public class EpbJoinTests {
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPruner = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M2PlanValidator();
 
-        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPruner = new M2LocalPruner();
+        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPruner = new NoPruningPruneStrategy<>();
 
 
         globalPlanSelector = new KeepAllPlansSelectorDecorator<>(new CheapestPlanSelector());
