@@ -8,8 +8,9 @@ import com.kayhut.fuse.model.validation.ValidationResult;
 import java.util.Arrays;
 
 /**
- * Created by Roman on 04/05/2017.
+ *
  */
+// TODO: Fix this to support join op depth validation
 public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
 
     //region Constructors
@@ -17,7 +18,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
         super(Mode.all);
 
         //this.validators = Collections.singletonList(new ChainedPlanValidator(buildNestedPlanOpValidator(10)));
-        this.validators = Arrays.asList(new ChainedPlanValidator(buildNestedPlanOpValidator(10)));
+        this.validators = Arrays.asList(new ChainedPlanValidator(buildNestedPlanOpValidator(10,3 )));
     }
     //endregion
 
@@ -29,7 +30,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
     //endregion
 
     //region Private Methods
-    private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels) {
+    private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels, int joinDepth) {
         if (numNestingLevels == 0) {
                     return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
                             new AdjacentPlanOpValidator(),
@@ -39,6 +40,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                             new OptionalCompletePlanOpValidator(),
                             new JoinCompletePlanOpValidator(),
                             new JoinIntersectionPlanOpValidator(),
+                            new JoinOpDepthValidator(joinDepth),
                             new StraightPathJoinOpValidator(),
                             new JoinOpCompositeValidator(
                                 new ChainedPlanValidator(new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all, new AdjacentPlanOpValidator(),
@@ -55,10 +57,11 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                                         new ReverseRelationOpValidator(),
                                         new OptionalCompletePlanOpValidator(),
                                         new JoinCompletePlanOpValidator(),
+                                        new JoinOpDepthValidator(joinDepth-1),
                                         new JoinIntersectionPlanOpValidator(),
                                         new StraightPathJoinOpValidator()))));
         }
-        ChainedPlanValidator.PlanOpValidator planOpValidator = buildNestedPlanOpValidator(numNestingLevels - 1);
+        ChainedPlanValidator.PlanOpValidator planOpValidator = buildNestedPlanOpValidator(numNestingLevels - 1, joinDepth-1);
         return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
                 new AdjacentPlanOpValidator(),
                 new NoRedundantRelationOpValidator(),
@@ -67,6 +70,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                 new OptionalCompletePlanOpValidator(),
                 new JoinCompletePlanOpValidator(),
                 new JoinIntersectionPlanOpValidator(),
+                new JoinOpDepthValidator(joinDepth),
                 new StraightPathJoinOpValidator(),
                 new JoinOpCompositeValidator(new ChainedPlanValidator(new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all, new AdjacentPlanOpValidator(),
                         new NoRedundantRelationOpValidator(),
@@ -75,6 +79,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                         new OptionalCompletePlanOpValidator(),
                         new JoinCompletePlanOpValidator(true),
                         new JoinIntersectionPlanOpValidator(),
+                        new JoinOpDepthValidator(joinDepth-1),
                         new StraightPathJoinOpValidator())),
                         new ChainedPlanValidator(planOpValidator)),
                 new ChainedPlanOpValidator(planOpValidator)
