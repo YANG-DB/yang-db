@@ -22,25 +22,18 @@ public class M2PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
                                 new InitialPlanGeneratorExtensionStrategy(),
+                                new ChainPlanExtensionStrategy<>(
+                                        new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
+                                                new GotoJoinExtensionStrategy()),
+                                        new JoinSeedExtensionStrategy(new InitialPlanGeneratorExtensionStrategy())),
                                 new JoinSeedExtensionStrategy(new InitialPlanGeneratorExtensionStrategy()),
                                 new JoinOngoingExtensionStrategy(
-                                        new ChainPlanExtensionStrategy<>(
-                                                new CompositePlanExtensionStrategy<>(
-                                                        new InitialPlanGeneratorExtensionStrategy(),
-                                                        new StepAncestorAdjacentStrategy(),
-                                                        new StepDescendantsAdjacentStrategy(),
-                                                        new ChainPlanExtensionStrategy<>(
-                                                                new GotoExtensionStrategy(),
-                                                                new CompositePlanExtensionStrategy<>(
-                                                                        new StepAncestorAdjacentStrategy(),
-                                                                        new StepDescendantsAdjacentStrategy()
-                                                                )
-                                                        )
-                                        ))),
+                                        getJoinInnerExpander(2)),
                                 new StepAncestorAdjacentStrategy(),
                                 new StepDescendantsAdjacentStrategy(),
                                 new ChainPlanExtensionStrategy<>(
-                                        new GotoExtensionStrategy(),
+                                        new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
+                                                new GotoJoinExtensionStrategy()),
                                         new CompositePlanExtensionStrategy<>(
                                                 new StepAncestorAdjacentStrategy(),
                                                 new StepDescendantsAdjacentStrategy()
@@ -52,6 +45,42 @@ public class M2PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                                 schemaProviderFactory)
                 )
         );
+    }
+
+    private static ChainPlanExtensionStrategy<Plan, AsgQuery> getJoinInnerExpander(int depth) {
+        if(depth == 0) {
+            return new ChainPlanExtensionStrategy<>(
+                    new CompositePlanExtensionStrategy<>(
+                            new InitialPlanGeneratorExtensionStrategy(),
+                            new StepAncestorAdjacentStrategy(),
+                            new StepDescendantsAdjacentStrategy(),
+                            new ChainPlanExtensionStrategy<>(
+                                    new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
+                                            new GotoJoinExtensionStrategy()),
+                                    new CompositePlanExtensionStrategy<>(
+                                            new StepAncestorAdjacentStrategy(),
+                                            new StepDescendantsAdjacentStrategy()
+                                    )
+                            )
+                    ));
+        }
+
+        return new ChainPlanExtensionStrategy<>(
+                new CompositePlanExtensionStrategy<>(
+                        new InitialPlanGeneratorExtensionStrategy(),
+                        new StepAncestorAdjacentStrategy(),
+                        new StepDescendantsAdjacentStrategy(),
+                        new ChainPlanExtensionStrategy<>(
+                                new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
+                                        new GotoJoinExtensionStrategy()),
+                                new CompositePlanExtensionStrategy<>(
+                                        new StepAncestorAdjacentStrategy(),
+                                        new StepDescendantsAdjacentStrategy()
+                                )
+                        ),
+                        new JoinOngoingExtensionStrategy(
+                                getJoinInnerExpander(depth-1))
+                ));
     }
     //endregion
 

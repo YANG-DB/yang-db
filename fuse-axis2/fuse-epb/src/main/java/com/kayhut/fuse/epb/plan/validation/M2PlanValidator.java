@@ -10,7 +10,6 @@ import java.util.Arrays;
 /**
  *
  */
-// TODO: Fix this to support join op depth validation
 public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
 
     //region Constructors
@@ -18,7 +17,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
         super(Mode.all);
 
         //this.validators = Collections.singletonList(new ChainedPlanValidator(buildNestedPlanOpValidator(10)));
-        this.validators = Arrays.asList(new ChainedPlanValidator(buildNestedPlanOpValidator(10,3 )));
+        this.validators = Arrays.asList(new ChainedPlanValidator(buildNestedPlanOpValidator(10,3 , false)));
     }
     //endregion
 
@@ -30,7 +29,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
     //endregion
 
     //region Private Methods
-    private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels, int joinDepth) {
+    private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels, int joinDepth, boolean validateJoinOnly) {
         if (numNestingLevels == 0) {
                     return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
                             new AdjacentPlanOpValidator(),
@@ -41,48 +40,24 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                             new JoinCompletePlanOpValidator(),
                             new JoinIntersectionPlanOpValidator(),
                             new JoinOpDepthValidator(joinDepth),
-                            new StraightPathJoinOpValidator(),
-                            new JoinOpCompositeValidator(
-                                new ChainedPlanValidator(new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all, new AdjacentPlanOpValidator(),
-                                    new NoRedundantRelationOpValidator(),
-                                    new RedundantGoToEntityOpValidator(),
-                                    new ReverseRelationOpValidator(),
-                                    new OptionalCompletePlanOpValidator(),
-                                    new JoinCompletePlanOpValidator(true),
-                                    new JoinIntersectionPlanOpValidator(),
-                                    new StraightPathJoinOpValidator())),
-                                new ChainedPlanValidator(new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all, new AdjacentPlanOpValidator(),
-                                        new NoRedundantRelationOpValidator(),
-                                        new RedundantGoToEntityOpValidator(),
-                                        new ReverseRelationOpValidator(),
-                                        new OptionalCompletePlanOpValidator(),
-                                        new JoinCompletePlanOpValidator(),
-                                        new JoinOpDepthValidator(joinDepth-1),
-                                        new JoinIntersectionPlanOpValidator(),
-                                        new StraightPathJoinOpValidator()))));
+                            new StraightPathJoinOpValidator());
         }
-        ChainedPlanValidator.PlanOpValidator planOpValidator = buildNestedPlanOpValidator(numNestingLevels - 1, joinDepth-1);
+        ChainedPlanValidator.PlanOpValidator leftJoinBranchValidator = buildNestedPlanOpValidator(numNestingLevels - 1, joinDepth-1, true);
+        ChainedPlanValidator.PlanOpValidator rightJoinBranchValidator = buildNestedPlanOpValidator(numNestingLevels - 1, joinDepth-1, validateJoinOnly);
         return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
                 new AdjacentPlanOpValidator(),
                 new NoRedundantRelationOpValidator(),
                 new RedundantGoToEntityOpValidator(),
                 new ReverseRelationOpValidator(),
                 new OptionalCompletePlanOpValidator(),
-                new JoinCompletePlanOpValidator(),
+                new JoinCompletePlanOpValidator(validateJoinOnly),
                 new JoinIntersectionPlanOpValidator(),
                 new JoinOpDepthValidator(joinDepth),
                 new StraightPathJoinOpValidator(),
-                new JoinOpCompositeValidator(new ChainedPlanValidator(new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all, new AdjacentPlanOpValidator(),
-                        new NoRedundantRelationOpValidator(),
-                        new RedundantGoToEntityOpValidator(),
-                        new ReverseRelationOpValidator(),
-                        new OptionalCompletePlanOpValidator(),
-                        new JoinCompletePlanOpValidator(true),
-                        new JoinIntersectionPlanOpValidator(),
-                        new JoinOpDepthValidator(joinDepth-1),
-                        new StraightPathJoinOpValidator())),
-                        new ChainedPlanValidator(planOpValidator)),
-                new ChainedPlanOpValidator(planOpValidator)
+                new JoinOpCompositeValidator(
+                        new ChainedPlanValidator(leftJoinBranchValidator),
+                        new ChainedPlanValidator(rightJoinBranchValidator)),
+                new ChainedPlanOpValidator(leftJoinBranchValidator)
                 );
     }
     //endregion
