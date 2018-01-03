@@ -20,6 +20,7 @@ public class EdgeSourceSearchAppender implements SearchAppender<VertexController
 
         //currently assuming only one relevant schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
+
         searchBuilder.getIncludeSourceFields().add(edgeSchema.getSource().get().getIdField());
         searchBuilder.getIncludeSourceFields().add(edgeSchema.getDestination().get().getIdField());
         return true;

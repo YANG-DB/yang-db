@@ -45,7 +45,7 @@ public class LogMessage {
     }
 
     public LogMessage with(Object arg) {
-        this.args.append(arg);
+        this.args = this.args.append(arg);
         return this;
     }
     //endregion

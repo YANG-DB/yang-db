@@ -29,7 +29,7 @@ public class LoggingSearchVertexController implements SearchVertexQuery.SearchVe
             return searchVertexController.search(searchVertexQuery);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed search: {}", ex);
+            this.logger.error("failed search", ex);
             return Collections.emptyIterator();
         } finally {
             if (!thrownException) {

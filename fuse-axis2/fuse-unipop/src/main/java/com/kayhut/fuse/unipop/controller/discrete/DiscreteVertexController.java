@@ -103,6 +103,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                         wrap(new EdgeBulkSearchAppender()),
                         wrap(new EdgeSourceSearchAppender()),
                         wrap(new EdgeRoutingSearchAppender()),
+                        wrap(new EdgeSourceRoutingSearchAppender()),
                         wrap(new EdgeIndexSearchAppender()),
                         wrap(new MustFetchSourceSearchAppender("type")),
                         wrap(new NormalizeRoutingSearchAppender(50)),

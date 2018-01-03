@@ -8,6 +8,7 @@ import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
@@ -118,21 +119,25 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     }
 
     private Map<String, Object> createVertexProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties) {
-        Optional<String> partitionField = endSchema.getIndexPartitions().isPresent() ?
-                endSchema.getIndexPartitions().get().getPartitionField() :
+        Optional<GraphRedundantPropertySchema> partitionField = endSchema.getIndexPartitions().isPresent() ?
+                Optional.of(new GraphRedundantPropertySchema.Impl(
+                        endSchema.getIndexPartitions().get().getPartitionField().get(),
+                        endSchema.getIndexPartitions().get().getPartitionField().get(),
+                        "string")) :
                 Optional.empty();
 
-        Optional<String> routingField = endSchema.getRouting().isPresent() ?
-                Optional.of(endSchema.getRouting().get().getRoutingProperty().getName()) :
+        Optional<GraphRedundantPropertySchema> routingField = endSchema.getRouting().isPresent() ?
+                Optional.of(new GraphRedundantPropertySchema.Impl(
+                        endSchema.getRouting().get().getRoutingProperty().getName(),
+                        endSchema.getRouting().get().getRoutingProperty().getName(),
+                        "string")) :
                 Optional.empty();
 
         return Stream.ofAll(endSchema.getRedundantProperties())
-                .map(GraphRedundantPropertySchema::getPropertyRedundantName)
                 .appendAll(partitionField.map(Collections::singletonList).orElseGet(Collections::emptyList))
                 .appendAll(routingField.map(Collections::singletonList).orElseGet(Collections::emptyList))
-                .distinct()
-                .filter(properties::containsKey)
-                .toJavaMap(fieldName -> new Tuple2<>(fieldName, properties.get(fieldName)));
+                .filter(property -> properties.containsKey(property.getPropertyRedundantName()))
+                .toJavaMap(property -> new Tuple2<>(property.getName(), properties.get(property.getPropertyRedundantName())));
     }
 
     private Map<String, Object> createEdgeProperties(GraphEdgeSchema.End endSchema, Map<String, Object> hitProperties, Map<String, Object> vertexProperties) {

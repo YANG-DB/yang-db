@@ -35,7 +35,7 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
             return controller.getInfo();
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
             return null;
         } finally {
             if (!thrownException) {

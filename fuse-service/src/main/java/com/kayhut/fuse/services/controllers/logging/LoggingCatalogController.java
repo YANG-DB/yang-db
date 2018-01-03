@@ -36,7 +36,7 @@ public class LoggingCatalogController implements CatalogController {
             return controller.getOntology(id);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getOntology: {}", ex);
+            this.logger.error("failed getOntology", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -55,7 +55,7 @@ public class LoggingCatalogController implements CatalogController {
             return controller.getSchema(id);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getSchema: {}", ex);
+            this.logger.error("failed getSchema", ex);
             return null;
         } finally {
             if (!thrownException) {

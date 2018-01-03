@@ -36,11 +36,10 @@ public class LoggingSearchScrollRequestBuilder extends SearchScrollRequestBuilde
         try {
             this.startMessage.log();
             ActionFuture<SearchResponse> future = super.execute();
-            //future.addListener(new LoggingActionListener<>(this.successMessage, this.failureMessage));
-            return future;
+            return new LoggingActionFuture<>(future, this.successMessage, this.failureMessage);
         } catch (Exception ex) {
             this.failureMessage.with(ex).log();
-            return null;
+            throw ex;
         }
     }
     //endregion

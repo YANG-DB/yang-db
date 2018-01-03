@@ -173,15 +173,11 @@ public class LoggingClient implements Client {
         try {
             new LogMessage(this.logger, LogMessage.Level.trace, "#{} start search", operationId).log();
             ActionFuture<SearchResponse> future = client.search(searchRequest);
-            if (ListenableActionFuture.class.isAssignableFrom(future.getClass())) {
-                ListenableActionFuture<SearchResponse> listenableActionFuture = (ListenableActionFuture<SearchResponse>)future;
-                listenableActionFuture.addListener(new LoggingActionListener<>(
-                        new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish search", operationId),
-                        new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search: {}", operationId)));
-            }
-            return future;
+            return new LoggingActionFuture<>(future,
+                    new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish search", operationId),
+                    new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId));
         } catch (Exception ex) {
-            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search: {}", operationId, ex).log();
+            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId, ex).log();
             return null;
         }
     }
@@ -196,11 +192,11 @@ public class LoggingClient implements Client {
                     searchRequest,
                     new LoggingActionListener<>(
                             new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish search", operationId),
-                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search: {}", operationId),
+                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId),
                             actionListener,
-                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search actionListener: {}", operationId)));
+                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search actionListener", operationId)));
         } catch (Exception ex) {
-            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search: {}", operationId, ex).log();
+            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId, ex).log();
         }
     }
 
@@ -213,7 +209,7 @@ public class LoggingClient implements Client {
                 SearchAction.INSTANCE,
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} start search", operationId),
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish search", operationId),
-                new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search: {}", operationId))
+                new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId))
                 .setIndices(strings);
     }
 
@@ -224,15 +220,11 @@ public class LoggingClient implements Client {
         try {
             new LogMessage(this.logger, LogMessage.Level.trace, "#{} start searchScroll", operationId).log();
             ActionFuture<SearchResponse> future = client.searchScroll(searchScrollRequest);
-            if (ListenableActionFuture.class.isAssignableFrom(future.getClass())) {
-                ListenableActionFuture<SearchResponse> listenableActionFuture = (ListenableActionFuture<SearchResponse>)future;
-                listenableActionFuture.addListener(new LoggingActionListener<>(
-                        new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish searchScroll", operationId),
-                        new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll: {}", operationId)));
-            }
-            return future;
+            return new LoggingActionFuture<>(future,
+                    new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish searchScroll", operationId),
+                    new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId));
         } catch (Exception ex) {
-            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll: {}", operationId, ex).log();
+            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId, ex).log();
             return null;
         }
     }
@@ -247,11 +239,11 @@ public class LoggingClient implements Client {
                     searchScrollRequest,
                     new LoggingActionListener<>(
                             new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish searchScroll", operationId),
-                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll: {}", operationId),
+                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId),
                             actionListener,
-                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll actionListener: {}", operationId)));
+                            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll actionListener", operationId)));
         } catch (Exception ex) {
-            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll: {}", operationId, ex).log();
+            new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId, ex).log();
         }
     }
 
@@ -265,7 +257,7 @@ public class LoggingClient implements Client {
                 scrollId,
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} start searchScroll", operationId),
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish searchScroll", operationId),
-                new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll: {}", operationId));
+                new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId));
     }
 
     @Override

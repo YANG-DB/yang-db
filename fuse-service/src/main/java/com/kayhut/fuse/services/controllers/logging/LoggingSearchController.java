@@ -35,7 +35,7 @@ public class LoggingSearchController implements SearchController{
             return controller.search(request);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed search: {}", ex);
+            this.logger.error("failed search", ex);
             return null;
         } finally {
             if (!thrownException) {

@@ -7,7 +7,7 @@
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
     <withJansi>true</withJansi>
     <encoder>
-      <pattern>%white(%-26d{ISO8601}) %yellow(%-6elapsed) %highlight(%-7level) %cyan(%-46logger{5}) %white(%msg%n)</pattern>
+      <pattern>%white(%-26d{ISO8601}) %yellow(%-6elapsed) %highlight(%-7level) %cyan(%-46logger{5}) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
     </encoder>
   </appender>
   <!-- appenders -->

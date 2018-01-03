@@ -10,6 +10,8 @@ import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier.*;
@@ -35,19 +37,34 @@ public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexC
                 edgeSchema.getDestination().get();
 
         if (endSchema.getRouting().isPresent()) {
-            Set<String> routingValues =
+            boolean isRoutingFieldFullyAvailable =
                     Stream.ofAll(context.getBulkVertices())
                             .map(vertex -> ElementUtil.<String>value(vertex,
-                                    endSchema.getRouting().get().getRoutingProperty().getName().equals("_id") ?
-                                            T.id.getAccessor() :
-                                            endSchema.getRouting().get().getRoutingProperty().getName()))
-                            .toJavaSet();
+                                    translateRoutingPropertyName(endSchema.getRouting().get().getRoutingProperty().getName())))
+                            .filter(value -> !value.isPresent())
+                            .size() == 0;
+
+            Set<String> routingValues = Collections.emptySet();
+            if (isRoutingFieldFullyAvailable) {
+                routingValues =
+                        Stream.ofAll(context.getBulkVertices())
+                                .map(vertex -> ElementUtil.<String>value(vertex, translateRoutingPropertyName(endSchema.getRouting().get().getRoutingProperty().getName())))
+                                .filter(Optional::isPresent)
+                                .map(Optional::get)
+                                .toJavaSet();
+            }
 
             searchBuilder.getRouting().addAll(routingValues);
             return routingValues.size() > 0;
         }
 
         return false;
+    }
+    //endregion
+
+    //region Private Methods
+    private String translateRoutingPropertyName(String name) {
+        return name.equals("_id") ? T.id.getAccessor() : name;
     }
     //endregion
 }

@@ -42,7 +42,7 @@ public class LoggingQueryController implements QueryController {
             return controller.create(request);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed create: {}", ex);
+            this.logger.error("failed create", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -61,7 +61,7 @@ public class LoggingQueryController implements QueryController {
             return controller.createAndFetch(request);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed createAndFetch: {}", ex);
+            this.logger.error("failed createAndFetch", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -80,7 +80,7 @@ public class LoggingQueryController implements QueryController {
             return controller.getInfo();
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -99,7 +99,7 @@ public class LoggingQueryController implements QueryController {
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -118,7 +118,7 @@ public class LoggingQueryController implements QueryController {
             return controller.explain(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed explain: {}", ex);
+            this.logger.error("failed explain", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -137,7 +137,7 @@ public class LoggingQueryController implements QueryController {
             return controller.planVerbose(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed planVerbose: {}", ex);
+            this.logger.error("failed planVerbose", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -156,7 +156,7 @@ public class LoggingQueryController implements QueryController {
             return controller.delete(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed delete: {}", ex);
+            this.logger.error("failed delete", ex);
             return null;
         } finally {
             if (!thrownException) {

@@ -37,7 +37,7 @@ public class LoggingPageController implements PageController {
             return controller.create(queryId, cursorId, createPageRequest);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed create: {}", ex);
+            this.logger.error("failed create", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -56,7 +56,7 @@ public class LoggingPageController implements PageController {
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -75,7 +75,7 @@ public class LoggingPageController implements PageController {
             return controller.getInfo(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -94,7 +94,7 @@ public class LoggingPageController implements PageController {
             return controller.getData(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getData: {}", ex);
+            this.logger.error("failed getData", ex);
             return null;
         } finally {
             if (!thrownException) {

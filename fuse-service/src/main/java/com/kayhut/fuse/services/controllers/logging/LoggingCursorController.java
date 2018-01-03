@@ -37,7 +37,7 @@ public class LoggingCursorController implements CursorController {
             return controller.create(queryId, createCursorRequest);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed create: {}", ex);
+            this.logger.error("failed create", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -56,7 +56,7 @@ public class LoggingCursorController implements CursorController {
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -75,7 +75,7 @@ public class LoggingCursorController implements CursorController {
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -94,7 +94,7 @@ public class LoggingCursorController implements CursorController {
             return controller.delete(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed delete: {}", ex);
+            this.logger.error("failed delete", ex);
             return null;
         } finally {
             if (!thrownException) {

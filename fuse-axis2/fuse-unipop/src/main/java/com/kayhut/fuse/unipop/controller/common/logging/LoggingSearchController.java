@@ -29,7 +29,7 @@ public class LoggingSearchController implements SearchQuery.SearchController {
             return searchController.search(searchQuery);
         } catch (Exception ex) {
             thrownExcpetion = true;
-            this.logger.error("failed search: {}", ex);
+            this.logger.error("failed search", ex);
             return Collections.emptyIterator();
         } finally {
             if (!thrownExcpetion) {

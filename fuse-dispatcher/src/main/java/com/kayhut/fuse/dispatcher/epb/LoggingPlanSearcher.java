@@ -33,7 +33,7 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
             this.logger.debug("execution plan: {}", this.descriptor.describe(planWithCost));
             return planWithCost;
         } catch (Exception ex) {
-            this.logger.error("failed search: {}", ex);
+            this.logger.error("failed search", ex);
             return null;
         } finally {
             if (!thrownException) {

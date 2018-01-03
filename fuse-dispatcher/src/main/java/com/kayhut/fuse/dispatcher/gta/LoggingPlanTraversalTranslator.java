@@ -36,7 +36,7 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
             this.logger.debug("traversal: {}", this.descriptor.describe(traversal));
             return traversal;
         } catch (Exception ex) {
-            this.logger.error("failed translate: {}", ex);
+            this.logger.error("failed translate", ex);
             return null;
         } finally {
             if (!thrownException) {
