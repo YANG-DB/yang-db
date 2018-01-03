@@ -6,6 +6,7 @@ import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import javaslang.collection.Stream;
 
@@ -30,7 +31,8 @@ public class AsgDefaultSelectionStrategy implements AsgStrategy {
 
                     asgEBase.geteBase().setReportProps(
                             Stream.ofAll(ont.$entity$(asgEBase.geteBase().geteType()).getProperties())
-                                .map(pType -> pType)
+                                .filter(pType -> !pType.equals(OntologyFinalizer.ID_FIELD_PTYPE) &&
+                                                !pType.equals(OntologyFinalizer.TYPE_FIELD_PTYPE))
                                     .toJavaList());
                 }
             }

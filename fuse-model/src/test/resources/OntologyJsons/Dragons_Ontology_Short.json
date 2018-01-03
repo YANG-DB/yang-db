@@ -48,8 +48,7 @@
     {
       "pType": "height",
       "name": "height",
-      "type": "int",
-      "units": "cm"
+      "type": "int"
     },
     {
       "pType": "name",

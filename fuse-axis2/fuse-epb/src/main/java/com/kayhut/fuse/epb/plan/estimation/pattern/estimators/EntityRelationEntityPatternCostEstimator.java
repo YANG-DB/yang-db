@@ -92,8 +92,8 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         EPropGroup clone = endFilter.getAsgEbase().geteBase().clone();
         List<RelProp> pushdownProps = new LinkedList<>();
         List<RelProp> collect = relationFilter.getAsgEbase().geteBase().getProps().stream().filter(f -> (f instanceof RedundantRelProp) &&
-                (!f.getpType().equals(OntologyFinalizer.ID_FIELD_P_TYPE) &&
-                        (!f.getpType().equals(OntologyFinalizer.TYPE_FIELD_P_TYPE))))
+                (!f.getpType().equals(OntologyFinalizer.ID_FIELD_PTYPE) &&
+                        (!f.getpType().equals(OntologyFinalizer.TYPE_FIELD_PTYPE))))
                 .collect(Collectors.toList());
         collect.forEach(p -> {
             pushdownProps.add(p);
