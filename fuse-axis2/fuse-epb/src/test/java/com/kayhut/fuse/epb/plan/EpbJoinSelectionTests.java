@@ -296,7 +296,6 @@ public class EpbJoinSelectionTests {
     }
 
     @Test
-    @Ignore
     public void testJoinPlanSelection(){
             AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                     next(typed(1, PERSON.type)).

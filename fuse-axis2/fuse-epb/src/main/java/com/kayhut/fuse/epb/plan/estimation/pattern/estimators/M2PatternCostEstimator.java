@@ -34,6 +34,7 @@ public class M2PatternCostEstimator extends CompositePatternCostEstimator<Plan, 
                         (EntityRelationEntityPatternCostEstimator)estimators.get(EntityRelationEntityPattern.class)));
         estimators.put(EntityJoinPattern.class, new EntityJoinPatternCostEstimator());
         estimators.put(EntityJoinEntityPattern.class, new EntityJoinRelationEntityPatternCostEstimator((EntityRelationEntityPatternCostEstimator)estimators.get(EntityRelationEntityPattern.class)));
+        estimators.put(GotoPattern.class, new GotoPatternCostEstimator());
 
         return estimators;
     }

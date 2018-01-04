@@ -22,17 +22,13 @@ public class M2PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                 new ChainPlanExtensionStrategy<>(
                         new CompositePlanExtensionStrategy<>(
                                 new InitialPlanGeneratorExtensionStrategy(),
-                                new ChainPlanExtensionStrategy<>(
-                                        new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
-                                                new GotoJoinExtensionStrategy()),
-                                        new JoinSeedExtensionStrategy(new InitialPlanGeneratorExtensionStrategy())),
                                 new JoinSeedExtensionStrategy(new InitialPlanGeneratorExtensionStrategy()),
                                 new JoinOngoingExtensionStrategy(
                                         getJoinInnerExpander(2)),
                                 new StepAncestorAdjacentStrategy(),
                                 new StepDescendantsAdjacentStrategy(),
                                 new ChainPlanExtensionStrategy<>(
-                                        new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
+                                        new CompositePlanExtensionStrategy<>(//new GotoExtensionStrategy(),
                                                 new GotoJoinExtensionStrategy()),
                                         new CompositePlanExtensionStrategy<>(
                                                 new StepAncestorAdjacentStrategy(),
@@ -55,7 +51,7 @@ public class M2PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                             new StepAncestorAdjacentStrategy(),
                             new StepDescendantsAdjacentStrategy(),
                             new ChainPlanExtensionStrategy<>(
-                                    new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
+                                    new CompositePlanExtensionStrategy<>(//new GotoExtensionStrategy(),
                                             new GotoJoinExtensionStrategy()),
                                     new CompositePlanExtensionStrategy<>(
                                             new StepAncestorAdjacentStrategy(),
@@ -71,7 +67,7 @@ public class M2PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                         new StepAncestorAdjacentStrategy(),
                         new StepDescendantsAdjacentStrategy(),
                         new ChainPlanExtensionStrategy<>(
-                                new CompositePlanExtensionStrategy<>(new GotoExtensionStrategy(),
+                                new CompositePlanExtensionStrategy<>(//new GotoExtensionStrategy(),
                                         new GotoJoinExtensionStrategy()),
                                 new CompositePlanExtensionStrategy<>(
                                         new StepAncestorAdjacentStrategy(),

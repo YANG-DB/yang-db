@@ -83,13 +83,16 @@ public abstract class Pattern {
         }
     }
 
-    public static GoToEntityRelationEntityPattern buildGoToPattern(Plan plan, Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts) {
+    public static GoToEntityRelationEntityPattern buildGoToRelationEntityPattern(Plan plan, Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts) {
         GoToEntityOp startGoTo = (GoToEntityOp) patternParts.get(GOTO_ENTITY);
 
-        EntityOp start = (EntityOp) plan.getOps().stream().
+        /*EntityOp start = (EntityOp) plan.getOps().stream().
                 filter(op -> (op instanceof EntityOp) && ((EntityOp) op).getAsgEbase().geteBase().equals(startGoTo.getAsgEbase().geteBase())).
-                findFirst().get();
-        EntityFilterOp startFilter = (EntityFilterOp) PlanUtil.adjacentNext(plan, start).get();
+                findFirst().get();*/
+        EntityOp start = PlanUtil.findGotoEntity(plan, startGoTo).get();
+
+        //EntityFilterOp startFilter = (EntityFilterOp) PlanUtil.adjacentNext(plan, start).get();
+        EntityFilterOp startFilter = (EntityFilterOp) PlanUtil.adjacentNext(PlanUtil.flat(plan), start).get();
 
         //relation
         RelationOp rel = (RelationOp) patternParts.get(RELATION);
@@ -184,11 +187,20 @@ public abstract class Pattern {
         return new EntityJoinEntityPattern(entityJoinOp, rel, relFilter, end, endFilter);
     }
 
+    public static GotoPattern buildGotoPattern(Plan plan, Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts){
+        GoToEntityOp goToEntityOp = (GoToEntityOp) patternParts.get(GOTO_ENTITY);
+
+        EntityOp entityOp = PlanUtil.findGotoEntity(plan, goToEntityOp).get();
+
+        return new GotoPattern(goToEntityOp, entityOp);
+    }
+
     public static Pattern buildPattern(RegexPatternCostEstimator.Pattern regexPattern, Map<RegexPatternCostEstimator.PatternPart, PlanOp> patternParts , Plan plan ){
         return regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY) ?  buildEntityPattern(patternParts) :
             regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY_RELATION_ENTITY) ? buildEntityRelationEntityPattern(patternParts) :
-            regexPattern.equals(RegexPatternCostEstimator.Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToPattern(plan, patternParts) :
+            regexPattern.equals(RegexPatternCostEstimator.Pattern.GOTO_ENTITY_RELATION_ENTITY) ? buildGoToRelationEntityPattern(plan, patternParts) :
             regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY_JOIN) ? buildEntityJoinPattern(patternParts):
-            regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY_JOIN_RELATION_ENTITY) ? buildEntityJoinEntityPattern(patternParts ) : null;
+            regexPattern.equals(RegexPatternCostEstimator.Pattern.ENTITY_JOIN_RELATION_ENTITY) ? buildEntityJoinEntityPattern(patternParts ) :
+            regexPattern.equals(RegexPatternCostEstimator.Pattern.GOTO)? buildGotoPattern(plan, patternParts): null;
     }
 }

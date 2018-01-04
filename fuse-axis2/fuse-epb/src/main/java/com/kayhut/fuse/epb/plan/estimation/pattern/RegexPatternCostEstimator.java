@@ -81,7 +81,8 @@ public class RegexPatternCostEstimator implements CostEstimator<Plan, PlanDetail
         ENTITY_JOIN("^(?<" + JOIN.value + ">" + EntityJoinOp.class.getSimpleName() + ")$" ),
         ENTITY_JOIN_RELATION_ENTITY("^(?<" + JOIN.value+">" + EntityJoinOp.class.getSimpleName() + ")" + ":" +
                 "(?<" + RELATION.value + ">" + RelationOp.class.getSimpleName() + ")" + ":" + "(?<" + OPTIONAL_REL_FILTER.value + ">" + RelationFilterOp.class.getSimpleName() + ":)?" +
-                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$");
+                "(?<" + ENTITY_TWO.value + ">" + EntityOp.class.getSimpleName() + ")" + "(:" + "(?<" + OPTIONAL_ENTITY_TWO_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?$"),
+        GOTO("^(((?<" + ENTITY_ONE.value + ">" +EntityOp.class.getSimpleName() + ")" + "(:" + "(?<"+ OPTIONAL_ENTITY_ONE_FILTER.value + ">" + EntityFilterOp.class.getSimpleName() + "))?)|(?<" + JOIN.value + ">"+ EntityJoinOp.class.getSimpleName()+"))"+":(?<" + GOTO_ENTITY.value+">" + GoToEntityOp.class.getSimpleName() + ")$" );
 
         //region Enum Constructors
         Pattern(String pattern) {

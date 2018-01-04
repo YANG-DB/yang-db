@@ -40,6 +40,8 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                             new JoinCompletePlanOpValidator(),
                             new JoinIntersectionPlanOpValidator(),
                             new JoinOpDepthValidator(joinDepth),
+                            new SingleEntityJoinValidator(),
+                            new JoinBranchSameStartAndEndValidator(),
                             new StraightPathJoinOpValidator());
         }
         ChainedPlanValidator.PlanOpValidator leftJoinBranchValidator = buildNestedPlanOpValidator(numNestingLevels - 1, joinDepth-1, true);
@@ -54,6 +56,8 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
                 new JoinIntersectionPlanOpValidator(),
                 new JoinOpDepthValidator(joinDepth),
                 new StraightPathJoinOpValidator(),
+                new SingleEntityJoinValidator(),
+                new JoinBranchSameStartAndEndValidator(),
                 new JoinOpCompositeValidator(
                         new ChainedPlanValidator(leftJoinBranchValidator),
                         new ChainedPlanValidator(rightJoinBranchValidator)),

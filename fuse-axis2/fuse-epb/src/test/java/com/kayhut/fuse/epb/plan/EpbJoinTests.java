@@ -34,6 +34,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -314,8 +315,6 @@ public class EpbJoinTests {
         Assert.assertEquals(2, joinPlans.size());
         Assert.assertTrue(joinPlans.get(0).getCost().getGlobalCost().getCost() == joinPlans.get(1).getCost().getGlobalCost().getCost());
     }
-
-
 
 
     private void assertNoJoinPlans(Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {

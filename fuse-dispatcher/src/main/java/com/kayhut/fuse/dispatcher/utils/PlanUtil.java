@@ -1,9 +1,17 @@
 package com.kayhut.fuse.dispatcher.utils;
 
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
+import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.results.Entity;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
@@ -122,6 +130,25 @@ public class PlanUtil {
 
         return (T)newPlan;
     }
+
+    public static Optional<EntityOp> findGotoEntity(Plan plan, GoToEntityOp goToEntityOp){
+        Optional<EntityOp> entityOp = first(plan, (Predicate<PlanOp>) planOp -> planOp instanceof EntityOp && ((EntityOp) planOp).getAsgEbase().geteBase().equals(goToEntityOp.getAsgEbase().geteBase()) && planOp != goToEntityOp).map(op -> (EntityOp)op);
+        if(entityOp.isPresent()) {
+            return entityOp;
+        }
+        for (EntityJoinOp entityJoinOp : Stream.ofAll(plan.getOps()).filter(op -> op instanceof EntityJoinOp).map(op -> (EntityJoinOp) op)) {
+            entityOp = findGotoEntity(entityJoinOp.getLeftBranch(), goToEntityOp);
+            if(entityOp.isPresent()) {
+                return entityOp;
+            }
+            entityOp = findGotoEntity(entityJoinOp.getRightBranch(), goToEntityOp);
+            if(entityOp.isPresent()) {
+                return entityOp;
+            }
+        }
+        return Optional.empty();
+
+    }
     //endregion
 
     //region Private Methods
@@ -171,6 +198,30 @@ public class PlanUtil {
         }
 
         return new Plan(Stream.ofAll(flattenedPlanOps).filter(opPredicate::test));
+    }
+
+    public static RelationFilterOp relFilterOp(AsgQuery query, int num) {
+        return new RelationFilterOp(AsgQueryUtil.element$(query, num));
+    }
+
+    public static RelationOp relOp(AsgQuery query, int num) {
+        return new RelationOp(AsgQueryUtil.element$(query, num));
+    }
+
+    public static RelationOp relOp(AsgQuery query, int num, Rel.Direction direction) {
+        return new RelationOp(AsgQueryUtil.element$(query, num), direction);
+    }
+
+    public static EntityFilterOp filterOp(AsgQuery query, int num) {
+        return new EntityFilterOp(AsgQueryUtil.element$(query, num));
+    }
+
+    public static EntityOp entityOp(AsgQuery query, int num) {
+        return new EntityOp(AsgQueryUtil.element$(query, num));
+    }
+
+    public static GoToEntityOp gotoOp(AsgQuery query, int num) {
+        return new GoToEntityOp(AsgQueryUtil.element$(query, num));
     }
     //endregion
 
