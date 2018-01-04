@@ -10,6 +10,73 @@
       <pattern>%white(%-26d{ISO8601}) %yellow(%-6elapsed) %highlight(%-7level) %cyan(%-46logger{5}) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
     </encoder>
   </appender>
+
+  <appender name="filetrace" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>log/trace.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>trace.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxFileSize>100MB</maxFileSize>
+      <maxHistory>5</maxHistory>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%-26d{ISO8601} %-6elapsed %-7level %-46logger{5} %msg%n %ex{15} %nopex</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="es-error-filetrace" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>log/es-error-trace.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>es-error-trace.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxFileSize>100MB</maxFileSize>
+      <maxHistory>5</maxHistory>
+      <totalSizeCap>1GB</totalSizeCap>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%-26d{ISO8601} %-7level %-46logger{5} %msg%n %ex{15} %nopex</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="elasticsearch" class="com.internetitem.logback.elasticsearch.ElasticsearchAppender">
+    <url>http://localhost:9200/_bulk</url>
+    <index>fuse-engine-logs-%date{yyyy-MM}</index>
+    <type>log</type>
+    <errorLoggerName>es-error-logger</errorLoggerName>
+    <properties>
+      <property>
+        <name>host</name>
+        <value>${HOSTNAME}</value>
+        <allowEmpty>false</allowEmpty>
+      </property>
+      <property>
+        <name>level</name>
+        <value>%level</value>
+      </property>
+      <property>
+        <name>thread</name>
+        <value>%thread</value>
+      </property>
+      <property>
+        <name>exception</name>
+        <value>%ex</value>
+      </property>
+      <property>
+        <name>logger</name>
+        <value>%logger{5}</value>
+      </property>
+      <property>
+        <name>elapsed</name>
+        <value>%elapsed</value>
+        <type>int</type>
+      </property>
+    </properties>
+    <headers>
+      <header>
+        <name>Content-Type</name>
+        <value>application/json</value>
+      </header>
+    </headers>
+  </appender>
   <!-- appenders -->
 
   <!-- Ignore loggers -->
@@ -20,9 +87,17 @@
   <logger name="com.kayhut.fuse.dispatcher.resource" additivity="false"/>
   <!-- Ignore loggers -->
 
+  <!-- es error logger -->
+  <logger name="es-error-logger" level="INFO" additivity="false">
+    <appender-ref ref="es-error-filetrace"/>
+  </logger>
+  <!-- es error logger -->
+
   <!-- root -->
   <root level="trace">
     <appender-ref ref="stdout" />
+    <appender-ref ref="filetrace" />
+    <appender-ref ref="elasticsearch"/>
   </root>
   <!-- root -->
 </configuration>

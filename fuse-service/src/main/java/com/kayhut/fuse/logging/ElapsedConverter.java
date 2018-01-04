@@ -13,9 +13,9 @@ public class ElapsedConverter extends ClassicConverter {
     //region ClassicConverter Implementation
     @Override
     public String convert(ILoggingEvent iLoggingEvent) {
-        String start = MDC.get(key);
+        String start = iLoggingEvent.getMDCPropertyMap().get(key);
         if (start == null) {
-            return "";
+            return "0";
         }
 
         long elapsed = System.currentTimeMillis() - Long.parseLong(start);
