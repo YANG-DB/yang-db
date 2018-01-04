@@ -1,5 +1,6 @@
 package com.kayhut.fuse.executor;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Binder;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
@@ -9,7 +10,8 @@ import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.driver.StandardCursorDriver;
 import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
-import com.kayhut.fuse.executor.elasticsearch.LoggingClient;
+import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
@@ -34,6 +36,7 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+
         binder.bind(CursorFactory.class).to(getCursorFactoryClass(conf)).asEagerSingleton();
 
         ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
@@ -42,7 +45,8 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
         binder.bind(UniGraphConfiguration.class).toInstance(uniGraphConfiguration);
 
-        binder.bind(Client.class).toInstance(createClient(conf, elasticGraphConfiguration));
+        //binder.bind(Client.class).toInstance(createClient(conf, elasticGraphConfiguration));
+        binder.bind(Client.class).toProvider(ClientProvider.class).asEagerSingleton();
 
         binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
         binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
@@ -73,7 +77,7 @@ public class ExecutorModule extends ModuleBase {
             }
         });
 
-        return new LoggingClient(client);
+        return new LoggingClient(client, new MetricRegistry());
     }
 
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {

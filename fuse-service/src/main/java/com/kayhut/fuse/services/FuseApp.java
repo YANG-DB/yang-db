@@ -1,6 +1,7 @@
 package com.kayhut.fuse.services;
 
 import com.cedarsoftware.util.io.JsonWriter;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
@@ -57,7 +58,9 @@ public class FuseApp extends Jooby {
         //log all requests
         use("*", new RequestLogger().extended());
         //metrics statistics
-        use(new Metrics()
+        MetricRegistry metricRegistry = new MetricRegistry();
+        bind(metricRegistry);
+        use(new Metrics(metricRegistry)
                 .request()
                 .threadDump()
                 .ping()
@@ -71,6 +74,7 @@ public class FuseApp extends Jooby {
         use(use(new CaffeineCache<Tuple2<String, List<String>>, List<Statistics.BucketInfo>>() {
         }));
         get("/", () -> HOME);
+
 
         registerCors(localUrlSupplier);
         registerFuseApiDescription(localUrlSupplier);

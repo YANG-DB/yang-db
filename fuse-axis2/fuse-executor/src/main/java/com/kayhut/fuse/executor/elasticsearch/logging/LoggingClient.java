@@ -1,5 +1,9 @@
-package com.kayhut.fuse.executor.elasticsearch;
+package com.kayhut.fuse.executor.elasticsearch.logging;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import org.elasticsearch.action.*;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -37,11 +41,20 @@ import java.util.Map;
  */
 public class LoggingClient implements Client {
     //region Constructors
-    public LoggingClient(Client client) {
+    @Inject
+    public LoggingClient(Client client, MetricRegistry metricRegistry) {
         this.logger = LoggerFactory.getLogger(this.getClass());
         this.client = client;
 
         this.operationId = 0;
+
+        this.metricRegistry = metricRegistry;
+        this.searchTimer = this.metricRegistry.timer(MetricRegistry.name(this.logger.getName(), "search"));
+        this.scrollTimer = this.metricRegistry.timer(MetricRegistry.name(this.logger.getName(), "scroll"));
+        this.searchSuccessMeter = this.metricRegistry.meter(MetricRegistry.name(this.logger.getName(), "search success"));
+        this.searchFailureMeter = this.metricRegistry.meter(MetricRegistry.name(this.logger.getName(), "search failure"));
+        this.scrollSuccessMeter = this.metricRegistry.meter(MetricRegistry.name(this.logger.getName(), "scroll success"));
+        this.scrollFailureMeter = this.metricRegistry.meter(MetricRegistry.name(this.logger.getName(), "scroll failure"));
     }
     //endregion
 
@@ -174,9 +187,13 @@ public class LoggingClient implements Client {
             new LogMessage(this.logger, LogMessage.Level.trace, "#{} start search", operationId).log();
             ActionFuture<SearchResponse> future = client.search(searchRequest);
             return new LoggingActionFuture<>(future,
+                    this.searchTimer.time(),
+                    this.searchSuccessMeter,
+                    this.searchFailureMeter,
                     new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish search", operationId),
                     new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId));
         } catch (Exception ex) {
+            this.searchFailureMeter.mark();
             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId, ex).log();
             return null;
         }
@@ -188,14 +205,18 @@ public class LoggingClient implements Client {
 
         try {
             new LogMessage(this.logger, LogMessage.Level.trace, "#{} start search", operationId).log();
-            client.search(
+            this.client.search(
                     searchRequest,
                     new LoggingActionListener<>(
+                            this.searchTimer.time(),
+                            this.searchSuccessMeter,
+                            this.searchFailureMeter,
                             new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish search", operationId),
                             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId),
                             actionListener,
                             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search actionListener", operationId)));
         } catch (Exception ex) {
+            this.searchFailureMeter.mark();
             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId, ex).log();
         }
     }
@@ -207,6 +228,9 @@ public class LoggingClient implements Client {
         return new LoggingSearchRequestBuilder(
                 this,
                 SearchAction.INSTANCE,
+                this.searchTimer,
+                this.searchSuccessMeter,
+                this.searchFailureMeter,
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} start search", operationId),
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish search", operationId),
                 new LogMessage(this.logger, LogMessage.Level.error, "#{} failed search", operationId))
@@ -221,9 +245,13 @@ public class LoggingClient implements Client {
             new LogMessage(this.logger, LogMessage.Level.trace, "#{} start searchScroll", operationId).log();
             ActionFuture<SearchResponse> future = client.searchScroll(searchScrollRequest);
             return new LoggingActionFuture<>(future,
+                    this.scrollTimer.time(),
+                    this.scrollSuccessMeter,
+                    this.scrollFailureMeter,
                     new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish searchScroll", operationId),
                     new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId));
         } catch (Exception ex) {
+            this.scrollFailureMeter.mark();
             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId, ex).log();
             return null;
         }
@@ -238,11 +266,15 @@ public class LoggingClient implements Client {
             client.searchScroll(
                     searchScrollRequest,
                     new LoggingActionListener<>(
+                            this.scrollTimer.time(),
+                            this.scrollSuccessMeter,
+                            this.scrollFailureMeter,
                             new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish searchScroll", operationId),
                             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId),
                             actionListener,
                             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll actionListener", operationId)));
         } catch (Exception ex) {
+            this.scrollFailureMeter.mark();
             new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId, ex).log();
         }
     }
@@ -255,6 +287,9 @@ public class LoggingClient implements Client {
                 this,
                 SearchScrollAction.INSTANCE,
                 scrollId,
+                this.scrollTimer,
+                this.scrollSuccessMeter,
+                this.scrollFailureMeter,
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} start searchScroll", operationId),
                 new LogMessage(this.logger, LogMessage.Level.trace, "#{} finish searchScroll", operationId),
                 new LogMessage(this.logger, LogMessage.Level.error, "#{} failed searchScroll", operationId));
@@ -420,5 +455,13 @@ public class LoggingClient implements Client {
     private Client client;
 
     private int operationId;
+
+    private MetricRegistry metricRegistry;
+    private Timer searchTimer;
+    private Timer scrollTimer;
+    private Meter searchSuccessMeter;
+    private Meter searchFailureMeter;
+    private Meter scrollSuccessMeter;
+    private Meter scrollFailureMeter;
     //endregion
 }
