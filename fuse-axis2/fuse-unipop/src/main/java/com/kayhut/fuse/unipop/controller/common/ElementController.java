@@ -22,9 +22,7 @@ public class ElementController implements SearchQuery.SearchController {
     //region Constructors
     public ElementController(
             SearchQuery.SearchController vertexController,
-            SearchQuery.SearchController edgeController,
-            MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
+            SearchQuery.SearchController edgeController) {
         this.innerControllers = new HashMap<>();
         this.innerControllers.put(Vertex.class, vertexController);
         this.innerControllers.put(Edge.class, edgeController);
@@ -34,15 +32,12 @@ public class ElementController implements SearchQuery.SearchController {
     //region SearchQuery.SearchController Implementation
     @Override
     public <E extends Element> Iterator<E> search(SearchQuery<E> searchQuery) {
-        Timer.Context time = metricRegistry.timer(name(ElementController.class.getSimpleName(),"search")).time();
         Iterator<E> result = this.innerControllers.get(searchQuery.getReturnType()).search(searchQuery);
-        time.stop();
         return result;
     }
     //endregion
 
     //region Fields
     private Map<Class, SearchQuery.SearchController> innerControllers;
-    private final MetricRegistry metricRegistry;
     //endregion
 }

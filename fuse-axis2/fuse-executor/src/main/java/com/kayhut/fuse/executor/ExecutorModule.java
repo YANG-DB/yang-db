@@ -1,7 +1,7 @@
 package com.kayhut.fuse.executor;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Binder;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
@@ -10,7 +10,8 @@ import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.driver.StandardCursorDriver;
 import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
-import com.kayhut.fuse.executor.elasticsearch.LoggingClient;
+import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
@@ -19,7 +20,8 @@ import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
 import org.unipop.configuration.UniGraphConfiguration;
@@ -34,6 +36,7 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
+
         binder.bind(CursorFactory.class).to(getCursorFactoryClass(conf)).asEagerSingleton();
 
         ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
@@ -42,7 +45,7 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
         binder.bind(UniGraphConfiguration.class).toInstance(uniGraphConfiguration);
 
-        binder.bind(Client.class).toInstance(createClient(conf, elasticGraphConfiguration));
+        binder.bind(Client.class).toProvider(ClientProvider.class).asEagerSingleton();
 
         binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
         binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
@@ -54,28 +57,6 @@ public class ExecutorModule extends ModuleBase {
     //endregion
 
     //region Private Methods
-    private Client createClient(Config conf, ElasticGraphConfiguration configuration) {
-        if (conf.hasPath("fuse.elasticsearch.mock")) {
-            boolean clientMock = conf.getBoolean("fuse.elasticsearch.mock");
-            if (clientMock) {
-                System.out.println("Using mock elasticsearch client!");
-                return new MockClient();
-            }
-        }
-
-        Settings settings = Settings.settingsBuilder().put("cluster.name", configuration.getClusterName()).build();
-        TransportClient client = TransportClient.builder().settings(settings).build();
-        Stream.of(configuration.getClusterHosts()).forEach(host -> {
-            try {
-                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), configuration.getClusterPort()));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        });
-
-        return new LoggingClient(client);
-    }
-
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
         configuration.setClusterHosts(Stream.ofAll(conf.getStringList("elasticsearch.hosts")).toJavaArray(String.class));

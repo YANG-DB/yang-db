@@ -41,14 +41,12 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
             Client client,
             ElasticGraphConfiguration configuration,
             UniGraph graph,
-            GraphElementSchemaProvider schemaProvider,
-            MetricRegistry metricRegistry) {
+            GraphElementSchemaProvider schemaProvider) {
 
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -89,6 +87,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                         wrap(new FilterSourceSearchAppender()),
                         wrap(new FilterSourceRoutingSearchAppender()),
                         wrap(new ElementRoutingSearchAppender()),
+                        wrap(new MustFetchSourceSearchAppender("type")),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));
 
@@ -97,7 +96,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
-                metricRegistry, client,
+                client,
                 searchRequest,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),

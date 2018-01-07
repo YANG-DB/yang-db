@@ -94,7 +94,7 @@ public class ElasticStatProvider {
 
         for (Map<String, Object> statDocument : statDocuments) {
             String statIndex = statDocument.get("index").toString();
-            String statType = statDocument.get("_type").toString();
+            String statType = statDocument.get("type").toString();
             long cardinality = ((Number)statDocument.get(CARDINALITY_FIELD_NAME)).longValue();
             long count = ((Number)statDocument.get(COUNT_FIELD_NAME)).longValue();
 
@@ -159,7 +159,7 @@ public class ElasticStatProvider {
 
     //region Private Methods
     private Object getFieldValueFromHit(final SearchHit hit, final String field) {
-        Map<String, Object> result = hit.sourceAsMap();
+        Map<String, Object> result = hit.getSourceAsMap();
         if (result == null) {
             throw new IllegalArgumentException(String.format("%s is not found.", field));
         }

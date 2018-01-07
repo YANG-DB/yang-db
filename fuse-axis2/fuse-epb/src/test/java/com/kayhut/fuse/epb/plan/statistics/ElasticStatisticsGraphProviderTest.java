@@ -27,6 +27,8 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
+import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
@@ -41,6 +43,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -72,6 +75,7 @@ public class ElasticStatisticsGraphProviderTest {
         //Populating the Elastic Stat Engine index: 'stat' type: 'termBucket', buckets of statistics
         populateTermStatDocs(VERTEX_INDICES, DATA_TYPE_DRAGON, DATA_FIELD_NAME_TYPE, termStatistics);
         //Checking that the ELASTIC STAT TERM TYPE created
+
         assertTrue(EsUtil.isTypeExists(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName()));
 
         //Sanity Checks
@@ -80,13 +84,7 @@ public class ElasticStatisticsGraphProviderTest {
         assertEquals(1, allIndices.length);
         assertEquals(allIndices[0], statConfig.getStatIndexName());
 
-        //We have only 1 type in the Elastic Index 'stat' = 'termBucket'
-        String[] allTypesFromIndex = EsUtil.getAllTypesFromIndex(statClient, statConfig.getStatIndexName());
-        Arrays.asList(allTypesFromIndex).forEach(type -> System.out.println(type));
-        assertEquals(1, allTypesFromIndex.length);
-        assertEquals(statConfig.getStatTermTypeName(), allTypesFromIndex[0]);
-
-        //Check that the bucket term exists (the bucket is calculated on the field _type which is value is 'Dragon')
+        //Check that the bucket term exists (the bucket is calculated on the field type which is value is 'Dragon')
         String docId = StatUtil.hashString(VERTEX_INDICES.get(0) + DATA_TYPE_DRAGON + DATA_FIELD_NAME_TYPE + DATA_TYPE_DRAGON);
         Optional<Map<String, Object>> doc6Result = EsUtil.getDocumentSourceById(statClient, statConfig.getStatIndexName(), statConfig.getStatTermTypeName(), docId);
         assertTrue(doc6Result.isPresent());
@@ -132,20 +130,15 @@ public class ElasticStatisticsGraphProviderTest {
     public static void setup() throws Exception {
         statConfig = StatConfigTestUtil.getStatConfig(buildStatContainer());
 
-        elasticEmbeddedNode = new ElasticEmbeddedNode();
-        elasticEmbeddedNode.getClient().admin().indices().create(new CreateIndexRequest(statConfig.getStatIndexName())).actionGet();
+        elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
+        new MappingFileElasticConfigurer(statConfig.getStatIndexName(), MAPPING_STAT_FILE_PATH).configure(elasticEmbeddedNode.getClient());
 
-        statClient = new ElasticClientProvider(statConfig).getStatClient();
+        statClient = elasticEmbeddedNode.getClient();
     }
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        if (statClient != null) {
-            statClient.close();
-            statClient = null;
-        }
-
-        elasticEmbeddedNode.close();
+        statClient.admin().indices().prepareDelete(statConfig.getStatIndexName()).execute().actionGet();
     }
 
     /**
@@ -164,7 +157,7 @@ public class ElasticStatisticsGraphProviderTest {
         new ElasticDataPopulator(
                 statClient,
                 statConfig.getStatIndexName(),
-                statConfig.getStatTermTypeName(),
+                "statBucket",
                 "id",
                 () -> prepareTermStatisticsDocs(
                         indices,
@@ -172,6 +165,7 @@ public class ElasticStatisticsGraphProviderTest {
                         field,
                         termStatistics
                 )).populate();
+        statClient.admin().indices().prepareRefresh(statConfig.getStatIndexName()).execute().actionGet();
     }
 
     //region Private Methods
@@ -324,7 +318,7 @@ public class ElasticStatisticsGraphProviderTest {
             }
             j++;
         }
-        return StatUtil.prepareStatDocs(statRangeResults);
+        return StatUtil.prepareStatDocs(statConfig.getStatNumericTypeName(), statRangeResults);
     }
 
     /**
@@ -349,7 +343,7 @@ public class ElasticStatisticsGraphProviderTest {
                 statRangeResults.add(statTermResult);
             }
         }
-        return StatUtil.prepareStatDocs(statRangeResults);
+        return StatUtil.prepareStatDocs(statConfig.getStatTermTypeName(), statRangeResults);
     }
     //endregion
 
@@ -358,9 +352,11 @@ public class ElasticStatisticsGraphProviderTest {
     private static ElasticEmbeddedNode elasticEmbeddedNode;
     private static StatConfig statConfig;
 
+    private static final String MAPPING_STAT_FILE_PATH = Paths.get("src", "test", "resources", "elastic.test.stat.mapping.json").toString();
+
     private static final long NUM_OF_DRAGONS_IN_INDEX_1 = 1000L;
 
-    private static final String DATA_TYPE_DRAGON = "dragon";
+    private static final String DATA_TYPE_DRAGON = "Dragon";
     private static final String DATA_TYPE_FIRE = "fire";
 
     private static final String DATA_INDEX_NAME_1 = "index1";
@@ -373,7 +369,7 @@ public class ElasticStatisticsGraphProviderTest {
     private static final String DATA_FIELD_NAME_ADDRESS = "address";
     private static final String DATA_FIELD_NAME_COLOR = "color";
     private static final String DATA_FIELD_NAME_GENDER = "gender";
-    private static final String DATA_FIELD_NAME_TYPE = "_type";
+    private static final String DATA_FIELD_NAME_TYPE = "type";
 
     private static final List<String> DRAGON_GENDERS =
             Arrays.asList("male", "female");

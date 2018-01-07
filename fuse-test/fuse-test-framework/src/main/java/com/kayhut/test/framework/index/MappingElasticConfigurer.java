@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -50,11 +51,13 @@ public class MappingElasticConfigurer implements ElasticIndexConfigurer {
     protected void addMappings(TransportClient client) throws java.io.IOException {
         for(String indexName : this.indices) {
             CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate(indexName);
-            ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> allMappings = (Map<String, Object>) mappings.get("mappings");
             for (Map.Entry<String, Object> mapping : allMappings.entrySet()) {
                 createIndexRequestBuilder.addMapping(mapping.getKey(), (Map<String, Object>) mapping.getValue());
             }
+
+            createIndexRequestBuilder.setSettings(Settings.builder().put("index.store.type", "fs").build());
+
             createIndexRequestBuilder.execute().actionGet();
         }
     }

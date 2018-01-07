@@ -1,20 +1,22 @@
 package com.kayhut.fuse.unipop.controller.search;
 
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregator;
-import org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder;
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
-import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
-import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityBuilder;
-import org.elasticsearch.search.aggregations.metrics.max.MaxBuilder;
-import org.elasticsearch.search.aggregations.metrics.min.MinBuilder;
-import org.elasticsearch.search.aggregations.metrics.scripted.ScriptedMetricBuilder;
-import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
-import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder;
-import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.filter.FiltersAggregator;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.avg.AvgAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.cardinality.CardinalityAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.max.MaxAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.min.MinAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.scripted.ScriptedMetricAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -623,10 +625,10 @@ public class AggregationBuilder implements Cloneable {
                 filterMap.put(filter.getName(), filterBuilder);
             }
 
-            FiltersAggregationBuilder filtersAggsBuilder = AggregationBuilders.filters(this.getName());
-            for(Map.Entry<String, org.elasticsearch.index.query.QueryBuilder> entry : filterMap.entrySet()) {
-                filtersAggsBuilder.filter(entry.getKey(), entry.getValue());
-            }
+            FiltersAggregationBuilder filtersAggsBuilder = AggregationBuilders.filters(this.getName(),
+            Stream.ofAll(filterMap.entrySet())
+                    .map(entry -> new FiltersAggregator.KeyedFilter(entry.getKey(), entry.getValue()))
+                    .toJavaArray(FiltersAggregator.KeyedFilter.class));
 
             for (Composite childComposite : this.getChildren().stream()
                     .filter(child -> !FilterComposite.class.isAssignableFrom(child.getClass()) &&
@@ -652,8 +654,8 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            return AggregationBuilders.filter(this.getName()).
-                    filter((org.elasticsearch.index.query.QueryBuilder)this.queryBuilder.seekRoot().query().filtered().filter().getCurrent().build());
+            return AggregationBuilders.filter(this.getName(),
+                    (org.elasticsearch.index.query.QueryBuilder)this.queryBuilder.seekRoot().query().filtered().filter().getCurrent().build());
         }
 
         @Override
@@ -680,7 +682,7 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            TermsBuilder terms = AggregationBuilders.terms(this.getName());
+            TermsAggregationBuilder terms = AggregationBuilders.terms(this.getName());
 
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
@@ -742,7 +744,7 @@ public class AggregationBuilder implements Cloneable {
             }
 
             if (countField != null) {
-                ValueCountBuilder count = AggregationBuilders.count(this.getName());
+                ValueCountAggregationBuilder count = AggregationBuilders.count(this.getName());
                 count.field(countField);
                 return count;
             }
@@ -762,7 +764,7 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            MinBuilder min = AggregationBuilders.min(this.getName());
+            MinAggregationBuilder min = AggregationBuilders.min(this.getName());
 
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
@@ -788,7 +790,7 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            MaxBuilder max = AggregationBuilders.max(this.getName());
+            MaxAggregationBuilder max = AggregationBuilders.max(this.getName());
 
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
@@ -814,7 +816,7 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            AvgBuilder avg = AggregationBuilders.avg(this.getName());
+            AvgAggregationBuilder avg = AggregationBuilders.avg(this.getName());
 
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
@@ -842,7 +844,7 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            StatsBuilder stats = AggregationBuilders.stats(this.getName());
+            StatsAggregationBuilder stats = AggregationBuilders.stats(this.getName());
 
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
@@ -868,7 +870,7 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            CardinalityBuilder cardinality = AggregationBuilders.cardinality(this.getName());
+            CardinalityAggregationBuilder cardinality = AggregationBuilders.cardinality(this.getName());
 
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
@@ -998,7 +1000,7 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            ScriptedMetricBuilder scriptedMetric = AggregationBuilders.scriptedMetric(this.getName());
+            ScriptedMetricAggregationBuilder scriptedMetric = AggregationBuilders.scriptedMetric(this.getName());
             Map<String, Object> params = new HashMap<>();
 
             for (ParamComposite param : this.getChildren().stream()
@@ -1046,18 +1048,18 @@ public class AggregationBuilder implements Cloneable {
         //region Composite Implementation
         @Override
         public Object build() {
-            TopHitsBuilder topHitsBuilder = AggregationBuilders.topHits(this.getName());
+            TopHitsAggregationBuilder topHitsBuilder = AggregationBuilders.topHits(this.getName());
 
             for (ParamComposite param : this.getChildren().stream()
                     .filter(child -> ParamComposite.class.isAssignableFrom(child.getClass()))
                     .map(child -> (ParamComposite) child).collect(Collectors.toList())) {
                 switch (param.getName().toLowerCase()) {
                     case "size":
-                        topHitsBuilder.setSize((int)param.getValue());
+                        topHitsBuilder.size((int)param.getValue());
                         break;
 
                     case "fetch_source":
-                        topHitsBuilder.setFetchSource((boolean)param.getValue());
+                        topHitsBuilder.fetchSource((boolean)param.getValue());
                         break;
                 }
             }

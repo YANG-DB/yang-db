@@ -33,10 +33,10 @@
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-dispatcher</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-neo4j</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.kayhut</groupId>
             <artifactId>fuse-epb</artifactId>
@@ -86,6 +86,14 @@
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+        </dependency>
         <!-- runtime -->
 
         <!-- tests -->
@@ -120,6 +128,11 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
@@ -136,6 +149,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <threadCount>1</threadCount>
+                    <perCoreThreadCount>false</perCoreThreadCount>
+                    <includes>
+                        <include>**/*Suite.java</include>
+                    </includes>
+                    <parallel>methods</parallel>
+                    <argLine>-Xmx1536m -XX:MaxPermSize=256m -Duser.timezone=${user.timezone}</argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -8,6 +8,7 @@ import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
@@ -57,11 +58,11 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDestination().get();
 
-            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.sourceAsMap());
-            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.sourceAsMap(), inVertexProperties);
+            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.getSourceAsMap());
+            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.getSourceAsMap(), inVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), inEndSchema.getIdField());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {
@@ -82,11 +83,11 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getDestination().get() : edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getSource().get() : edgeSchema.getDestination().get();
 
-            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
-            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);
+            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.getSourceAsMap());
+            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.getSourceAsMap(), outVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), inEndSchema.getIdField());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {
@@ -111,28 +112,32 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //region Private Methods
     private Iterable<Object> getIdFieldValues(SearchHit searchHit, Map<String, Object> properties, String idField) {
         if (idField.equals("_id")) {
-            return Collections.singletonList(searchHit.id());
+            return Collections.singletonList(searchHit.getId());
         } else {
             return MapHelper.values(properties, idField);
         }
     }
 
     private Map<String, Object> createVertexProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties) {
-        Optional<String> partitionField = endSchema.getIndexPartitions().isPresent() ?
-                endSchema.getIndexPartitions().get().getPartitionField() :
+        Optional<GraphRedundantPropertySchema> partitionField = endSchema.getIndexPartitions().isPresent() ?
+                Optional.of(new GraphRedundantPropertySchema.Impl(
+                        endSchema.getIndexPartitions().get().getPartitionField().get(),
+                        endSchema.getIndexPartitions().get().getPartitionField().get(),
+                        "string")) :
                 Optional.empty();
 
-        Optional<String> routingField = endSchema.getRouting().isPresent() ?
-                Optional.of(endSchema.getRouting().get().getRoutingProperty().getName()) :
+        Optional<GraphRedundantPropertySchema> routingField = endSchema.getRouting().isPresent() ?
+                Optional.of(new GraphRedundantPropertySchema.Impl(
+                        endSchema.getRouting().get().getRoutingProperty().getName(),
+                        endSchema.getRouting().get().getRoutingProperty().getName(),
+                        "string")) :
                 Optional.empty();
 
         return Stream.ofAll(endSchema.getRedundantProperties())
-                .map(GraphRedundantPropertySchema::getPropertyRedundantName)
                 .appendAll(partitionField.map(Collections::singletonList).orElseGet(Collections::emptyList))
                 .appendAll(routingField.map(Collections::singletonList).orElseGet(Collections::emptyList))
-                .distinct()
-                .filter(properties::containsKey)
-                .toJavaMap(fieldName -> new Tuple2<>(fieldName, properties.get(fieldName)));
+                .filter(property -> properties.containsKey(property.getPropertyRedundantName()))
+                .toJavaMap(property -> new Tuple2<>(property.getName(), properties.get(property.getPropertyRedundantName())));
     }
 
     private Map<String, Object> createEdgeProperties(GraphEdgeSchema.End endSchema, Map<String, Object> hitProperties, Map<String, Object> vertexProperties) {

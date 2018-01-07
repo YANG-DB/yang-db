@@ -258,7 +258,7 @@ public class OntologyTestUtils {
                 get().build(GENDER.type,GENDER.name,TYPE_GENDER),
                 get().build(BIRTH_DATE.type,BIRTH_DATE.name,DATE),
                 get().build(DEATH_DATE.type,DEATH_DATE.name,DATE),
-                get().build(HEIGHT.type,HEIGHT.name,INT,CM),
+                get().build(HEIGHT.type,HEIGHT.name,INT),
                 get().build(NAME.type,NAME.name,STRING),
                 get().build(START_DATE.type,START_DATE.name,DATE),
                 get().build(END_DATE.type,END_DATE.name,DATE),

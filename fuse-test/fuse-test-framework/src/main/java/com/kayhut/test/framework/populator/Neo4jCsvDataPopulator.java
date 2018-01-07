@@ -1,14 +1,16 @@
 package com.kayhut.test.framework.populator;
 
+/*
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Result;
+*/
 
 import java.io.IOException;
 
 /**
  * Created by moti on 3/20/2017.
  */
-public class Neo4jCsvDataPopulator implements DataPopulator{
+/*public class Neo4jCsvDataPopulator implements DataPopulator{
 
     private GraphDatabaseService graphDatabaseService;
     private String csvLoadCypher;
@@ -25,4 +27,4 @@ public class Neo4jCsvDataPopulator implements DataPopulator{
             throw new RuntimeException("Insertion failed");
 
     }
-}
+}*/

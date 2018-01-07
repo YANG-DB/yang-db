@@ -41,12 +41,11 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 public class PromiseElementVertexController implements SearchQuery.SearchController {
 
     //region Constructors
-    public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
         this.client = client;
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -154,6 +153,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
                 wrap(new IndexSearchAppender()),
                 wrap(new SizeSearchAppender(this.configuration)),
                 wrap(new PromiseConstraintSearchAppender()),
+                wrap(new MustFetchSourceSearchAppender("type")),
                 wrap(new FilterSourceSearchAppender()));
 
         searchAppender.append(searchBuilder, context);
@@ -161,7 +161,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
         //build
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
-                metricRegistry, client,
+                client,
                 searchRequest,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),
@@ -178,11 +178,10 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
 
     //endregion
 
+    //region Fields
     private Client client;
     private ElasticGraphConfiguration configuration;
-    //region Fields
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
-    private MetricRegistry metricRegistry;
     //endregion
 }

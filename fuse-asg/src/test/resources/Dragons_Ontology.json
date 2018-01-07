@@ -34,8 +34,7 @@
     {
       "pType": "height",
       "name": "height",
-      "type": "int",
-      "units": "cm"
+      "type": "int"
     },
     {
       "pType": "color",
@@ -45,8 +44,7 @@
     {
       "pType": "weight",
       "name": "weight",
-      "type": "int",
-      "units": "kg"
+      "type": "int"
     },
     {
       "pType": "startDate",
@@ -66,14 +64,12 @@
     {
       "pType": "duration",
       "name": "duration",
-      "type": "int",
-      "units": "min"
+      "type": "int"
     },
     {
       "pType": "mass",
       "name": "mass",
-      "type": "int",
-      "units": "mass"
+      "type": "int"
     },
     {
       "pType": "dateSinceTheBigBang",

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.services;
+package com.kayhut.fuse.services.modules;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Binder;

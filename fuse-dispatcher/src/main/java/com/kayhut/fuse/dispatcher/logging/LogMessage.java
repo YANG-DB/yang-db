@@ -30,7 +30,7 @@ public class LogMessage {
 
     //region Public Methods
     public void log() {
-        switch (level) {
+        switch (this.level) {
             case trace: this.logger.trace(this.message, this.args.toJavaArray());
                 break;
             case debug: this.logger.debug(this.message, this.args.toJavaArray());
@@ -45,7 +45,7 @@ public class LogMessage {
     }
 
     public LogMessage with(Object arg) {
-        this.args.append(arg);
+        this.args = this.args.append(arg);
         return this;
     }
     //endregion

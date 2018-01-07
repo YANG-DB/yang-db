@@ -1,5 +1,7 @@
 package com.kayhut.fuse.services.controllers.logging;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.logging.ElapsedConverter;
@@ -12,23 +14,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 /**
  * Created by roman.margolis on 14/12/2017.
  */
 public class LoggingCursorController implements CursorController {
-    public static final String injectionName = "LoggingCursorController.inner";
+    public static final String controllerParameter = "LoggingCursorController.@controller";
+    public static final String loggerParameter = "LoggingCursorController.@logger";
 
     //region Constructors
     @Inject
-    public LoggingCursorController(@Named(injectionName)CursorController controller) {
-        this.logger = LoggerFactory.getLogger(controller.getClass());
+    public LoggingCursorController(
+            @Named(controllerParameter) CursorController controller,
+            @Named(loggerParameter) Logger logger,
+            MetricRegistry metricRegistry) {
         this.controller = controller;
+        this.logger = logger;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
     //region CursorController Implementation
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "create")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -37,17 +48,22 @@ public class LoggingCursorController implements CursorController {
             return controller.create(queryId, createCursorRequest);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed create: {}", ex);
+            this.logger.error("failed create", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "create", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish create");
+                this.metricRegistry.meter(name(this.logger.getName(), "create", "success")).mark();
             }
+            timerContext.stop();
         }
     }
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryId")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -56,17 +72,22 @@ public class LoggingCursorController implements CursorController {
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish getInfo");
+                this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "success")).mark();
             }
+            timerContext.stop();
         }
     }
 
     @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryIdAndCursorId")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -75,17 +96,22 @@ public class LoggingCursorController implements CursorController {
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorId", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish getInfo");
+                this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorId", "success")).mark();
             }
+            timerContext.stop();
         }
     }
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "delete")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -94,18 +120,22 @@ public class LoggingCursorController implements CursorController {
             return controller.delete(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed delete: {}", ex);
+            this.logger.error("failed delete", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "delete", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish delete");
+                this.metricRegistry.meter(name(this.logger.getName(), "delete", "success")).mark();
             }
+            timerContext.stop();
         }
     }
     //endregion
 
     //region Fields
     private Logger logger;
+    private MetricRegistry metricRegistry;
     private CursorController controller;
     //endregion
 }

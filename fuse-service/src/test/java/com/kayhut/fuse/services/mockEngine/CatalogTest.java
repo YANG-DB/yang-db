@@ -8,6 +8,7 @@ import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.FuseApp;
@@ -37,7 +38,7 @@ public class CatalogTest {
      * execute query with expected plan result
      */
     public void catalog() throws IOException {
-        Ontology ontology = TestUtils.loadOntology("Dragons.json");
+        Ontology ontology = OntologyFinalizer.finalize(TestUtils.loadOntology("Dragons.json"));
         given()
                 .contentType("application/json")
                 .with().port(8888)

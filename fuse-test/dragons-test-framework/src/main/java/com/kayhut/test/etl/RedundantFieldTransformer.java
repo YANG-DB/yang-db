@@ -83,7 +83,7 @@ public class RedundantFieldTransformer implements Transformer{
         SearchRequestBuilder searchRequestBuilder = client.prepareSearch(arr).setTypes(entityType).
                                                                             setQuery(QueryBuilders.idsQuery(entityType).addIds(ids)).
                                                                             setSize(ids.length);
-        entityDupFields.keySet().forEach(k -> searchRequestBuilder.addField(k));
+        searchRequestBuilder.setFetchSource(true);
         SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
         Map<String, Map<String, String>> dupsMap = new HashMap<>();
 

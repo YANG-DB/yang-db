@@ -29,7 +29,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
     private static final String FLOAT = "float";
     private static final String STRING = "string";
 
-    private static final String FIELD_NAME_TYPE = "_type";
+    private static final String FIELD_NAME_TYPE = "type";
     private static final String FIELD_NAME_EDGE = "entityA.id";
     //endregion
 

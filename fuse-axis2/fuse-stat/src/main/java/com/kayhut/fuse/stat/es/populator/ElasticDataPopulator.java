@@ -20,7 +20,7 @@ public class ElasticDataPopulator implements DataPopulator {
     private String docType;
     private String idField;
     private GenericDataProvider provider;
-    private static final int BULK_SIZE = 500;
+    private static final int BULK_SIZE = 10000;
 
     public ElasticDataPopulator(TransportClient client, String indexName, String docType, String idField, GenericDataProvider provider) {
         this.client = client;

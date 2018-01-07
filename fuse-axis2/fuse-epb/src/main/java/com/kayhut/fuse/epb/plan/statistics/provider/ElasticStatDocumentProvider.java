@@ -36,7 +36,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
         searchBuilder.getIncludeSourceFields().add("*");
         searchBuilder.getQueryBuilder().query().filtered().filter().bool().push()
                 .must().terms("index", indices).pop().push()
-                .must().terms("type", types).pop().push()
+                .must().terms("sourceType", types).pop().push()
                 .must().terms("field", fields).pop().push();
 
         constraints.forEach((key, value) -> searchBuilder.getQueryBuilder().must().term(key, value).pop().push());
@@ -46,7 +46,6 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
         searchBuilder.setScrollTime(60000);
 
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
-                metricRegistry,
                 this.client,
                 searchBuilder.build(this.client, false),
                 searchBuilder.getLimit(),
@@ -54,7 +53,7 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
                 searchBuilder.getScrollTime());
 
         return Stream.ofAll(hits)
-                .map(hit -> new MapBuilder<>(hit.sourceAsMap()).put("_type", hit.getType()).get())
+                .map(hit -> hit.getSourceAsMap())
                 .toJavaList();
     }
     //endregion

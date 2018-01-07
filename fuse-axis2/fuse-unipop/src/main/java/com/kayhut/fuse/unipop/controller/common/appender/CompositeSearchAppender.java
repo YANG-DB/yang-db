@@ -30,11 +30,7 @@ public class CompositeSearchAppender<TContext> implements SearchAppender<TContex
         boolean innerAppenderResult = false;
 
         for(SearchAppender<TContext> searchAppender : this.searchAppenders) {
-            try {
-                innerAppenderResult = searchAppender.append(searchBuilder, context);
-            } catch (Exception ex) {
-                int x = 5;
-            }
+            innerAppenderResult = searchAppender.append(searchBuilder, context);
 
             if (innerAppenderResult && this.mode == Mode.first) {
                 return true;

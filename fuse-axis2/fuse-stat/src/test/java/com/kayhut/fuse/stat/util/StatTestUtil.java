@@ -79,6 +79,7 @@ public class StatTestUtil {
         for (int i = 0; i < numDragons; i++) {
             Map<String, Object> dragon = new HashedMap();
             dragon.put("id", Integer.toString(i));
+            dragon.put("type", "Dragon");
             dragon.put("name", generateRandomString(dragonNamePrefixLength) + "_dragon" + i);
             dragon.put("age", randomInt(dragonMinAge, dragonMaxAge));
             dragon.put("color", dragonColors.get(rand.nextInt(dragonColors.size())));
@@ -102,12 +103,14 @@ public class StatTestUtil {
             for (int j = 0; j < i; j++) {
                 Map<String, Object> fireEdge = new HashMap<>();
                 fireEdge.put("id", "fire_" + counter);
+                fireEdge.put("type", "fire");
                 fireEdge.put("timestamp", randomLong(startDate, endDate));
                 fireEdge.put("direction", "OUT");
                 fireEdge.put("temperature", randomInt(minTemp, maxTemp));
 
                 Map<String, Object> fireEdgeDual = new HashMap<>();
                 fireEdgeDual.put("id", "fire_" + +counter + 1);
+                fireEdgeDual.put("type", "fire");
                 fireEdgeDual.put("time", randomLong(startDate, endDate));
                 fireEdgeDual.put("direction", "IN");
 
@@ -144,7 +147,7 @@ public class StatTestUtil {
         List<Map<String, Object>> esData = new ArrayList<>();
         SearchResponse response = null;
         int i = 0;
-        while (response == null || response.getHits().hits().length != 0) {
+        while (response == null || response.getHits().getHits().length != 0) {
             response = client.prepareSearch(index)
                     .setTypes(type)
                     .setQuery(QueryBuilders.matchAllQuery())
@@ -153,7 +156,7 @@ public class StatTestUtil {
                     .execute()
                     .actionGet();
             for (SearchHit hit : response.getHits()) {
-                esData.add(hit.getSource());
+                esData.add(hit.getSourceAsMap());
             }
             i++;
         }
@@ -196,15 +199,16 @@ public class StatTestUtil {
         try {
             response = client.prepareSearch()
                     .setIndices(indices)
-                    .setTypes(types)
-                    .setQuery(QueryBuilders.termQuery(field, term))
+                    .setQuery(QueryBuilders.boolQuery().filter(QueryBuilders.boolQuery()
+                            .must(QueryBuilders.termQuery(field, term))
+                            .must(QueryBuilders.termsQuery("type", types))))
                     .execute().actionGet();
         } catch (Throwable e) {
             return new HashSet<>();
         }
         Set<Map<String, Object>> results = new HashSet<>();
         for (SearchHit hit : response.getHits()) {
-            Map<String, Object> doc = hit.getSource();
+            Map<String, Object> doc = hit.getSourceAsMap();
             results.add(doc);
         }
         return results;

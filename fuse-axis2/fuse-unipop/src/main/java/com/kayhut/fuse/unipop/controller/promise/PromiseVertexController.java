@@ -41,7 +41,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE));
 
@@ -49,15 +49,12 @@ public class PromiseVertexController extends VertexControllerBase {
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.metricRegistry = metricRegistry;
     }
     //endregion
 
     //region VertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
-        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"search")).time();
-
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");
         }
@@ -82,16 +79,12 @@ public class PromiseVertexController extends VertexControllerBase {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyIterator();
-        } finally {
-            time.stop();
         }
     }
     //endregion
 
     //region Private Methods
     private Iterator<Edge> queryPromiseEdges(List<Vertex> startVertices, Optional<TraversalConstraint> constraint) throws Exception {
-        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(), "queryPromiseEdges")).time();
-        Timer timeEs = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"queryPromiseEdges:elastic"));
         SearchBuilder searchBuilder = new SearchBuilder();
 
         CompositeControllerContext context = new CompositeControllerContext.Impl(
@@ -119,7 +112,7 @@ public class PromiseVertexController extends VertexControllerBase {
         }
 
         //search
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSearchType(SearchType.COUNT);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
 
         SearchResponse response = searchRequest.execute().actionGet();
 
@@ -129,9 +122,6 @@ public class PromiseVertexController extends VertexControllerBase {
                 new HashEdgeIdProvider(constraint),
                 new PrefixedLabelProvider("_"));
 
-        //timeEs es search took in ms
-        timeEs.update(response.getTookInMillis(), TimeUnit.MILLISECONDS);
-        time.stop();
         return Stream.ofAll(converter.convert(response.getAggregations().asMap())).flatMap(edgeIterator -> () -> edgeIterator).iterator();
 
     }
@@ -142,6 +132,5 @@ public class PromiseVertexController extends VertexControllerBase {
     private GraphElementSchemaProvider schemaProvider;
     private Client client;
     private ElasticGraphConfiguration configuration;
-    private MetricRegistry metricRegistry;
     //endregion
 }

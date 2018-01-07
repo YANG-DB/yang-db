@@ -1,6 +1,5 @@
 package com.kayhut.fuse.stat;
 
-import com.google.common.base.Stopwatch;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.fuse.stat.es.client.ClientProvider;
 import com.kayhut.fuse.stat.es.populator.ElasticDataPopulator;
@@ -44,22 +43,21 @@ public class StatCalculator {
 
         TransportClient dataClient = null;
         TransportClient statClient = null;
+        Configuration configuration = null;
 
         try {
-            Configuration configuration = new StatConfiguration(args[0]).getInstance();
+            configuration = new StatConfiguration(args[0]).getInstance();
             logger.info("Loading configuration file at : '{}'", ((PropertiesConfiguration) configuration).getPath());
             dataClient = ClientProvider.getDataClient(configuration);
             statClient = ClientProvider.getStatClient(configuration);
-            loadDefaultStatParameters(configuration);
-
-            Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
-            if (statConfiguration.isPresent()) {
-                buildStatisticsBasedOnConfiguration(dataClient, statClient, statConfiguration.get());
-            } else {
-                throw new IllegalArgumentException("Statistics Configuration is Invalid / Empty");
-            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }
+
+        try {
+            run(dataClient, statClient, configuration);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
         } finally {
             if (dataClient != null) {
                 dataClient.close();
@@ -67,6 +65,17 @@ public class StatCalculator {
             if (statClient != null) {
                 statClient.close();
             }
+        }
+    }
+
+    public static void run(TransportClient dataClient, TransportClient statClient, Configuration configuration) {
+        loadDefaultStatParameters(configuration);
+
+        Optional<StatContainer> statConfiguration = StatUtil.getStatConfigurationObject(configuration);
+        if (statConfiguration.isPresent()) {
+            buildStatisticsBasedOnConfiguration(dataClient, statClient, statConfiguration.get());
+        } else {
+            throw new IllegalArgumentException("Statistics Configuration is Invalid / Empty");
         }
     }
 
@@ -80,7 +89,8 @@ public class StatCalculator {
                 for (String type : mapping.getTypes()) {
                     Optional<Type> typeConfiguration = StatUtil.getTypeConfiguration(statContainer, type);
                     if (typeConfiguration.isPresent()) {
-                        Stopwatch stopwatch = Stopwatch.createStarted();
+                        long start = System.currentTimeMillis();
+
                         logger.info("Starting to calculate statistics for Index: {}, Type: {}", index, type);
                         buildHistogramForNumericFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForManualFields(dataClient, statClient, statContainer, index, type);
@@ -88,11 +98,12 @@ public class StatCalculator {
                         buildHistogramForCompositeFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForTermFields(dataClient, statClient, statContainer, index, type);
                         buildHistogramForDynamicFields(dataClient, statClient, statContainer, index, type);
-                        stopwatch.stop();
+
+                        long elapsed = System.currentTimeMillis() - start;
                         logger.info("Finished to calculate statistics for Index: {}, Type: {}, took {} Seconds",
                                 index,
                                 type,
-                                stopwatch.elapsed(TimeUnit.SECONDS));
+                                elapsed / 1000.0);
 
                     }
                 }
@@ -390,9 +401,9 @@ public class StatCalculator {
         new ElasticDataPopulator(
                 statClient,
                 statIndex,
-                statType,
+                "statBucket",
                 "id",
-                () -> StatUtil.prepareStatDocs(buckets)
+                () -> StatUtil.prepareStatDocs(statType, buckets)
         ).populate();
     }
 

@@ -64,7 +64,14 @@
         <caffeine.version>2.3.3</caffeine.version>
 
         <!-- elasticsearch -->
-        <elasticsearch.version>2.4.5</elasticsearch.version>
+        <elasticsearch.version>6.1.0</elasticsearch.version>
+        <elasticsearch.client.version>6.1.0</elasticsearch.client.version>
+
+        <!-- lucene -->
+        <lucene.version>7.1.0</lucene.version>
+
+        <!-- vividsolutions -->
+        <vividsolutions.version>1.13</vividsolutions.version>
 
         <!-- neo4j -->
         <neo4j.version>3.1.0</neo4j.version>
@@ -75,6 +82,9 @@
 
         <!-- unipop -->
         <unipop.version>0.2</unipop.version>
+
+        <!-- com.eaio.uuid -->
+        <com.eaio.uuid.version>3.2</com.eaio.uuid.version>
 
         <!-- opencsv -->
         <opencsv.version>3.8</opencsv.version>
@@ -89,6 +99,8 @@
         <slf4j.version>1.7.13</slf4j.version>
         <slf4j-api.version>1.7.21</slf4j-api.version>
         <logback.version>1.1.7</logback.version>
+        <log4j.version>2.9.1</log4j.version>
+        <logback-elasticsearch-appender.version>1.6</logback-elasticsearch-appender.version>
 
         <!-- metrics -->
         <metrics-core.version>3.1.2</metrics-core.version>
@@ -295,7 +307,29 @@
                 <artifactId>elasticsearch</artifactId>
                 <version>${elasticsearch.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>transport</artifactId>
+                <version>${elasticsearch.client.version}</version>
+            </dependency>
             <!-- elasticsearch -->
+
+            <!-- lucene -->
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-core</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+            <!-- lucene -->
+
+            <!-- needed for elasticsearch geo coordinates -->
+            <!-- vividsolutions -->
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts</artifactId>
+                <version>${vividsolutions.version}</version>
+            </dependency>
+            <!-- vividsolutions -->
 
             <!-- neo4j -->
             <dependency>
@@ -342,6 +376,14 @@
             </dependency>
             <!-- unipop -->
 
+            <!-- com.eaio.uuid -->
+            <dependency>
+                <groupId>com.eaio.uuid</groupId>
+                <artifactId>uuid</artifactId>
+                <version>${com.eaio.uuid.version}</version>
+            </dependency>
+            <!-- com.eaio.uuid -->
+
             <!-- opencsv -->
             <dependency>
                 <groupId>com.opencsv</groupId>
@@ -378,6 +420,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.internetitem</groupId>
+                <artifactId>logback-elasticsearch-appender</artifactId>
+                <version>${logback-elasticsearch-appender.version}</version>
             </dependency>
             <!-- logging -->
 
@@ -484,6 +531,12 @@
                 <groupId>uk.co.datumedge</groupId>
                 <artifactId>hamcrest-json</artifactId>
                 <version>${hamcres-json.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
                 <scope>test</scope>
             </dependency>
             <!-- test -->

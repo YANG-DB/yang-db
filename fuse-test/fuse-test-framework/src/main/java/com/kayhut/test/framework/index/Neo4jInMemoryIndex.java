@@ -1,16 +1,16 @@
 package com.kayhut.test.framework.index;
 
-import com.kayhut.test.framework.TestUtil;
+/*import com.kayhut.test.framework.TestUtil;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.test.TestGraphDatabaseFactory;
 
-import java.io.File;
+import java.io.File;*/
 
 /**
  * Created by moti on 3/20/2017.
  */
-public class Neo4jInMemoryIndex implements AutoCloseable {
+/*public class Neo4jInMemoryIndex implements AutoCloseable {
     private GraphDatabaseService graphDatabaseService;
     private boolean isTest;
     private String folder;
@@ -43,4 +43,4 @@ public class Neo4jInMemoryIndex implements AutoCloseable {
             TestUtil.deleteFolder(this.folder);
         }
     }
-}
+}*/

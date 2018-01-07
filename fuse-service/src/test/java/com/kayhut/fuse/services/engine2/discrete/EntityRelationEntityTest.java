@@ -15,6 +15,9 @@ import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
+import com.kayhut.test.framework.index.MappingElasticConfigurer;
+import com.kayhut.test.framework.index.Mappings;
+import com.kayhut.test.framework.index.Mappings.Mapping;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
@@ -30,6 +33,7 @@ import java.util.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.FIRE;
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
+import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 import static java.util.Collections.singletonList;
 
 /**
@@ -48,10 +52,14 @@ public class EntityRelationEntityTest {
 
         TransportClient client = RedundantTestSuite.elasticEmbeddedNode.getClient();
 
+        new MappingElasticConfigurer(Arrays.asList("person1", "person2"), new Mappings().addMapping("pge",
+                new Mapping().addProperty("type", new Mapping.Property(keyword))
+                        .addProperty("name", new Mapping.Property(keyword)))).configure(client);
+
         new ElasticDataPopulator(
                 client,
                 "person1",
-                "Person",
+                "pge",
                 idField,
                 true,
                 null,
@@ -61,17 +69,22 @@ public class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 client,
                 "person2",
-                "Person",
+                "pge",
                 idField,
                 true,
                 null,
                 false,
                 () -> createPeople(5, 10)).populate();
 
+        new MappingElasticConfigurer(Arrays.asList("dragon1", "dragon2"), new Mappings().addMapping("pge",
+                new Mapping().addProperty("type", new Mapping.Property(keyword))
+                        .addProperty("name", new Mapping.Property(keyword))
+                        .addProperty("personId", new Mapping.Property(keyword)))).configure(client);
+
         new ElasticDataPopulator(
                 client,
                 "dragon1",
-                "Dragon",
+                "pge",
                 idField,
                 true,
                 "personId",
@@ -81,7 +94,7 @@ public class EntityRelationEntityTest {
         new ElasticDataPopulator(
                 client,
                 "dragon2",
-                "Dragon",
+                "pge",
                 idField,
                 true,
                 "personId",
@@ -185,6 +198,7 @@ public class EntityRelationEntityTest {
         for(int i = startId ; i < endId ; i++) {
             Map<String, Object> person = new HashMap<>();
             person.put("id", "p" + String.format("%03d", i));
+            person.put("type", "Person");
             person.put("name", "person" + i);
             people.add(person);
         }
@@ -199,6 +213,7 @@ public class EntityRelationEntityTest {
             for (int j = 0; j < numDragonsPerPerson; j++) {
                 Map<String, Object> dragon = new HashMap<>();
                 dragon.put("id", "d" + String.format("%03d", dragonId));
+                dragon.put("type", "Dragon");
                 dragon.put("personId", "p" + String.format("%03d", i));
                 dragon.put("name", "dragon" + dragonId);
                 dragons.add(dragon);

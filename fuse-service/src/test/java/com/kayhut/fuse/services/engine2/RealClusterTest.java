@@ -30,9 +30,10 @@ import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateReque
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -42,6 +43,9 @@ import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.kayhut.fuse.model.query.Rel.Direction.L;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -61,7 +65,7 @@ public class RealClusterTest {
                 new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e015")),
                 new EProp(4, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
                 new EProp(5, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
-                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasEvalue"), R, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
                 new EProp(9, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
@@ -101,7 +105,7 @@ public class RealClusterTest {
                 new EProp(4, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
                 new EProp(5, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
                 new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(7, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 8, 0),
+                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12), 0),
                 new EProp(10, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
@@ -142,7 +146,7 @@ public class RealClusterTest {
                 new EProp(4, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
                 new EProp(5, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
                 new EProp(6, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(7, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 8, 0),
+                new Rel(7, $ont.rType$("hasEvalue"), R, null, 8, 0),
                 new ETyped(8, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 9, 0),
                 new Quant1(9, QuantType.all, Arrays.asList(10, 11, 12, 13), 0),
                 new EProp(10, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
@@ -182,11 +186,11 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 6), 0),
                 new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasEvalue"), R, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
                 new EProp(9, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
-                new Rel(10, $ont.rType$("hasReference"), Rel.Direction.R, null, 11, 0),
+                new Rel(10, $ont.rType$("hasReference"), R, null, 11, 0),
                 new ETyped(11, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 0, 0)
         )).build();
 
@@ -220,11 +224,11 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 6), 0),
                 new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e015")),
-                new Rel(6, $ont.rType$("hasInsight"), Rel.Direction.R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasInsight"), R, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
                 new EProp(9, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
-                new Rel(10, $ont.rType$("hasReference"), Rel.Direction.R, null, 11, 0),
+                new Rel(10, $ont.rType$("hasReference"), R, null, 11, 0),
                 new ETyped(11, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 0, 0)
         )).build();
 
@@ -258,7 +262,7 @@ public class RealClusterTest {
                 new ETyped(1, "1", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(15, 18), 0),
                 new EProp(18, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new Rel(15, $ont.rType$("hasInsight"), Rel.Direction.R, null, 16, 0),
+                new Rel(15, $ont.rType$("hasInsight"), R, null, 16, 0),
                 new ETyped(16, "16", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 17, 0),
                 new Quant1(17, QuantType.all, Arrays.asList(), 0)
         )).build();
@@ -319,7 +323,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
-                new Rel(2, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 3, 0),
+                new Rel(2, $ont.rType$("hasEvalue"), R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 0, 0)
         )).build();
 
@@ -352,7 +356,7 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "car")),
-                new Rel(4, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 5, 0),
+                new Rel(4, $ont.rType$("hasEvalue"), R, null, 5, 0),
                 new ETyped(5, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 0, 0)
         )).build();
 
@@ -384,7 +388,7 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "building")),
-                new Rel(4, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 5, 0),
+                new Rel(4, $ont.rType$("hasEvalue"), R, null, 5, 0),
                 new ETyped(5, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 0, 0)
         )).build();
 
@@ -417,7 +421,7 @@ public class RealClusterTest {
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "car")),
                 new EProp(4, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(5, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 6, 0),
+                new Rel(5, $ont.rType$("hasEvalue"), R, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 0, 0)
         )).build();
 
@@ -447,7 +451,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
-                new Rel(2, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 3, 0),
+                new Rel(2, $ont.rType$("hasEvalue"), R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 4, 0),
                 new Quant1(4, QuantType.all, Collections.singletonList(5), 0),
                 new EProp(5, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1"))
@@ -479,7 +483,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
-                new Rel(2, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 3, 0),
+                new Rel(2, $ont.rType$("hasEvalue"), R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 4, 0),
                 new Quant1(4, QuantType.all, Collections.singletonList(5), 0),
                 new EProp(5, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context2"))
@@ -511,7 +515,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
-                new Rel(2, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 3, 0),
+                new Rel(2, $ont.rType$("hasEvalue"), R, null, 3, 0),
                 new ETyped(3, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 4, 0),
                 new Quant1(4, QuantType.all, Arrays.asList(5, 6), 0),
                 new EProp(5, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
@@ -543,12 +547,48 @@ public class RealClusterTest {
 
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
+                new ETyped(1, "SE", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
-                new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new Rel(5, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
-                new ETyped(6, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 0, 0)
+                new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e00000007")),
+                new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
+                new ETyped(6, "R", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
+                new Quant1(7, QuantType.all, Arrays.asList(8, 9, 10, 11), 0),
+
+                new OptionalComp(8, 80),
+                new Rel(80, "hasOutRelation", L, null, 81, 0),
+                new ETyped(81, "EOut", "Entity", $ont.$entity$("Entity").getProperties(), 82, 0),
+                new Rel(82, "hasEntity", L, null, 83, 0),
+                new ETyped(83, "LEOut", "LogicalEntity", 84, 0),
+                new Rel(84, "hasEntity", R, null, 85, 0),
+                new ETyped(85, "GEOut", "Entity", $ont.$entity$("Entity").getProperties(), 86, 0),
+                new Quant1(86, QuantType.all, Arrays.asList(87, 88), 0),
+                new EProp(87, "context", Constraint.of(ConstraintOp.eq, "global")),
+                new Rel(88, "hasEvalue", R, null, 89, 0),
+                new ETyped(89, "GEOutV", "Evalue", $ont.$entity$("Evalue").getProperties(), 0, 0),
+
+                new OptionalComp(9, 90),
+                new Rel(90, "hasInRelation", L, null, 91, 0),
+                new ETyped(91, "EIn", "Entity", $ont.$entity$("Entity").getProperties(), 92, 0),
+                new Rel(92, "hasEntity", L, null, 93, 0),
+                new ETyped(93, "LEIn", "LogicalEntity", 94, 0),
+                new Rel(94, "hasEntity", R, null, 95, 0),
+                new ETyped(95, "GEIn", "Entity", $ont.$entity$("Entity").getProperties(), 96, 0),
+                new Quant1(96, QuantType.all, Arrays.asList(97, 98), 0),
+                new EProp(97, "context", Constraint.of(ConstraintOp.eq, "global")),
+                new Rel(98, "hasEvalue", R, null, 99, 0),
+                new ETyped(99, "GEInV", "Evalue", $ont.$entity$("Evalue").getProperties(), 0, 0),
+
+                new OptionalComp(10, 100),
+                new Rel(100, "hasRvalue", R, null, 101, 0),
+                new ETyped(101, "RV", "Rvalue", $ont.$entity$("Rvalue").getProperties(), 102, 0),
+                new Quant1(102, QuantType.all, Arrays.asList(103), 0),
+                new Rel(103, "hasReference", R, null, 104, 0),
+                new ETyped(104, "RVRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0),
+
+                new OptionalComp(11, 110),
+                new Rel(110, "hasReference", R, null, 111, 0),
+                new ETyped(111, "RRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0)
         )).build();
 
 
@@ -580,7 +620,7 @@ public class RealClusterTest {
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
                 new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new Rel(5, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
+                new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9), 0),
                 new EProp(8, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "own")),
@@ -616,7 +656,7 @@ public class RealClusterTest {
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
                 new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new Rel(5, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
+                new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9), 0),
                 new EProp(8, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "has")),
@@ -652,12 +692,12 @@ public class RealClusterTest {
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
                 new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new Rel(5, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
+                new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9, 10), 0),
                 new EProp(8, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "own")),
                 new EProp(9, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(10, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 11, 0),
+                new Rel(10, $ont.rType$("hasRvalue"), R, null, 11, 0),
                 new ETyped(11, "C", $ont.eType$("Rvalue"), $ont.$entity$("Rvalue").getProperties(), 0, 0)
         )).build();
 
@@ -690,13 +730,13 @@ public class RealClusterTest {
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 7), 0),
                 new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
                 new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new Rel(5, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
-                new Rel(6, $ont.rType$("hasRelation"), Rel.Direction.R, null, 6, 0),
+                new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
+                new Rel(6, $ont.rType$("hasRelation"), R, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9, 10), 0),
                 new EProp(8, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "own")),
                 new EProp(9, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new Rel(10, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 11, 0),
+                new Rel(10, $ont.rType$("hasRvalue"), R, null, 11, 0),
                 new ETyped(11, "C", $ont.eType$("Rvalue"), $ont.$entity$("Rvalue").getProperties(), 0, 0)
         )).build();
 
@@ -731,13 +771,13 @@ public class RealClusterTest {
                 new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
                 new EProp(5, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
                 new EProp(55, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
-                new Rel(6, $ont.rType$("hasRelation"), Rel.Direction.R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasRelation"), R, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10, 11, 12), 0),
                 new EProp(9, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new EProp(10, $ont.pType$("security1"), Constraint.of(ConstraintOp.eq, "securityValue1")),
                 new EProp(11, $ont.pType$("security2"), Constraint.of(ConstraintOp.eq, "securityValue2")),
-                new Rel(12, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 13, 0),
+                new Rel(12, $ont.rType$("hasRvalue"), R, null, 13, 0),
                 new ETyped(13, "C", $ont.eType$("Rvalue"), $ont.$entity$("Rvalue").getProperties(), 14, 0),
                 new Quant1(14, QuantType.all, Arrays.asList(15, 16, 17), 0),
                 new EProp(15, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
@@ -774,7 +814,7 @@ public class RealClusterTest {
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                 new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
                 new OptionalComp(4, 5),
-                new Rel(5, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 6, 0),
+                new Rel(5, $ont.rType$("hasEvalue"), R, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 0, 0)
         )).build();
 
@@ -808,22 +848,22 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 9, 15, 21), 0),
-                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new Rel(3, $ont.rType$("hasEvalue"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
-                new Rel(6, $ont.rType$("hasReference"), Rel.Direction.R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasReference"), R, null, 7, 0),
                 new ETyped(7, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Collections.emptyList(), 0),
-                new Rel(9, $ont.rType$("hasRelation"), Rel.Direction.R, null, 10, 0),
+                new Rel(9, $ont.rType$("hasRelation"), R, null, 10, 0),
                 new ETyped(10, "D", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 11, 0),
                 new Quant1(11, QuantType.all, Collections.singleton(12), 0),
-                new Rel(12, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 13, 0),
+                new Rel(12, $ont.rType$("hasRvalue"), R, null, 13, 0),
                 new ETyped(13, "E", $ont.eType$("Rvalue"), $ont.$entity$("Rvalue").getProperties(), 14, 0),
                 new Quant1(14, QuantType.all, Collections.emptyList(), 0),
-                new Rel(15, $ont.rType$("hasInsight"), Rel.Direction.R, null, 16, 0),
+                new Rel(15, $ont.rType$("hasInsight"), R, null, 16, 0),
                 new ETyped(16, "F", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 17, 0),
                 new Quant1(17, QuantType.all, Collections.singletonList(18), 0),
-                new Rel(18, $ont.rType$("hasReference"), Rel.Direction.R, null, 19, 0),
+                new Rel(18, $ont.rType$("hasReference"), R, null, 19, 0),
                 new ETyped(19, "G", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 20, 0),
                 new Quant1(20, QuantType.all, Collections.emptyList(), 0),
                 new EProp(21, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000"))
@@ -860,10 +900,10 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 21), 0),
                 new OptionalComp(3, 300),
-                new Rel(300, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new Rel(300, $ont.rType$("hasEvalue"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
-                new Rel(6, $ont.rType$("hasReference"), Rel.Direction.R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasReference"), R, null, 7, 0),
                 new ETyped(7, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Collections.emptyList(), 0),
                 new EProp(21, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000"))
@@ -898,7 +938,7 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", $ont.eType$("Relation"), "r0000", "A", $ont.$entity$("Relation").getProperties(), 2, 0),
-                new Rel(2, $ont.rType$("hasRvalue"), Rel.Direction.R, null, 3, 0),
+                new Rel(2, $ont.rType$("hasRvalue"), R, null, 3, 0),
                 new EConcrete(1, "A", $ont.eType$("Relation"), "r0000", "A", $ont.$entity$("Relation").getProperties(), 2, 0)
         )).build();
 
@@ -933,7 +973,7 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(111, 112), 0),
                 new OptionalComp(111, 3),
-                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new Rel(3, $ont.rType$("hasEvalue"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.emptyList(), 0),
                 new EProp(112, "category", Constraint.of(ConstraintOp.eq, "car")))).build();
@@ -970,14 +1010,14 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(111, 112), 0),
                 new OptionalComp(111, 3),
-                new Rel(3, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 4, 0),
+                new Rel(3, $ont.rType$("hasEvalue"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
                 new OptionalComp(6, 7),
-                new Rel(7, $ont.rType$("hasReference"), Rel.Direction.R, null, 8, 0),
+                new Rel(7, $ont.rType$("hasReference"), R, null, 8, 0),
                 new ETyped(8, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 9, 0),
                 new Quant1(9, QuantType.all, Collections.emptyList(), 0),
-                new EProp(112, "category", Constraint.of(ConstraintOp.eq, "car")))).build();
+                new EProp(112, "logicalId", Constraint.of(ConstraintOp.eq, "e00000000")))).build();
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
@@ -1009,7 +1049,7 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 112), 0),
-                new Rel(3, $ont.rType$("hasReference"), Rel.Direction.R, null, 4, 0),
+                new Rel(3, $ont.rType$("hasReference"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.emptyList(), 0),
                 new EProp(112, "logicalId", Constraint.of(ConstraintOp.eq, "e00000000")))).build();
@@ -1044,10 +1084,10 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 112), 0),
-                new Rel(3, $ont.rType$("hasEntity"), Rel.Direction.L, null, 4, 0),
+                new Rel(3, $ont.rType$("hasEntity"), L, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("LogicalEntity"), $ont.$entity$("LogicalEntity").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
-                new Rel(6, $ont.rType$("hasEntity"), Rel.Direction.R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasEntity"), R, null, 7, 0),
                 new ETyped(7, "C", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Collections.singletonList(9), 0),
                 new EProp(9, "context", Constraint.of(ConstraintOp.eq, "context1")),
@@ -1086,9 +1126,9 @@ public class RealClusterTest {
                 new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
                 new EProp(4, "stringValue", Constraint.of(ConstraintOp.match, Arrays.asList("Sherley Windsor"))),
                 new EProp(5, "context", Constraint.of(ConstraintOp.eq, "global")),
-                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.L, null, 7, 0),
+                new Rel(6, $ont.rType$("hasEvalue"), L, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 8, 0),
-                new Rel(8, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 9, 0),
+                new Rel(8, $ont.rType$("hasEvalue"), R, null, 9, 0),
                 new ETyped(9, "C", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 10, 0),
                 new EProp(10, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames", "description")))))
                 .build();
@@ -1125,15 +1165,15 @@ public class RealClusterTest {
                 new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
                 new EProp(4, "stringValue", Constraint.of(ConstraintOp.inSet, Arrays.asList("toon", "tena"))),
                 new EProp(5, "context", Constraint.of(ConstraintOp.eq, "global")),
-                new Rel(6, $ont.rType$("hasEvalue"), Rel.Direction.L, null, 7, 0),
+                new Rel(6, $ont.rType$("hasEvalue"), L, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 12), 0),
-                new Rel(9, $ont.rType$("hasEvalue"), Rel.Direction.R, null, 10, 0),
+                new Rel(9, $ont.rType$("hasEvalue"), R, null, 10, 0),
                 new ETyped(10, "C", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 11, 0),
                 new EProp(11, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames", "description"))),
-                new Rel(12, $ont.rType$("hasEntity"), Rel.Direction.L, null, 13, 0),
+                new Rel(12, $ont.rType$("hasEntity"), L, null, 13, 0),
                 new ETyped(13, "D", $ont.eType$("LogicalEntity"), $ont.$entity$("LogicalEntity").getProperties(), 14, 0),
-                new Rel(14, $ont.rType$("hasEntity"), Rel.Direction.R, null, 15, 0),
+                new Rel(14, $ont.rType$("hasEntity"), R, null, 15, 0),
                 new ETyped(15, "E", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 16, 0),
                 new Quant1(16, QuantType.all, Arrays.asList(17, 18), 0),
                 new EProp(17, "context", Constraint.of(ConstraintOp.eq, "context1")),
@@ -1164,10 +1204,9 @@ public class RealClusterTest {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        Settings settings = Settings.settingsBuilder()
-                .put("cluster.name", "knowledge").build();
-        Client client = TransportClient.builder().settings(settings).build()
-                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+        Settings settings = Settings.builder().put("cluster.name", "knowledge").build();
+        Client client = new PreBuiltTransportClient(settings)
+                .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), 9300));
 
         String workingDir = System.getProperty("user.dir");
         String templatesPath = Paths.get(workingDir, "../", "fuse-assembly", "resources", "indexTemplates").toString();
@@ -1180,7 +1219,7 @@ public class RealClusterTest {
                 if (!client.admin().indices().getTemplates(new GetIndexTemplatesRequest(templateName)).actionGet().getIndexTemplates().isEmpty()) {
                     client.admin().indices().deleteTemplate(new DeleteIndexTemplateRequest(templateName)).actionGet();
                 }
-                client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template)).actionGet();
+                client.admin().indices().putTemplate(new PutIndexTemplateRequest(templateName).source(template, XContentType.JSON)).actionGet();
             }
         }
 
@@ -1345,9 +1384,10 @@ public class RealClusterTest {
             String index = Stream.ofAll(refPartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                     .filter(partition -> partition.isWithin(referenceId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
-            bulk.add(client.prepareIndex().setIndex(index).setType("reference").setId(referenceId)
+            bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(referenceId)
                     .setOpType(IndexRequest.OpType.INDEX)
                     .setSource(new MapBuilder<String, Object>()
+                            .put("type", "reference")
                             .put("title", "Title of - " + referenceId)
                             .put("url", "http://" + UUID.randomUUID().toString() + "." + domains.get(random.nextInt(domains.size())))
                             .put("value", contents.get(random.nextInt(contents.size())))
@@ -1377,9 +1417,10 @@ public class RealClusterTest {
                         nicknames.get(random.nextInt(nicknames.size()))))
                         .distinct().take(random.nextInt(2) + 1).toJavaList();
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "entity")
                                 .put("logicalId", logicalId)
                                 .put("context", context)
                                 .put("category", category)
@@ -1394,9 +1435,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1414,9 +1456,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1435,9 +1478,10 @@ public class RealClusterTest {
                                     .get()));
 
                     for (String personNickname : personNicknames) {
-                        bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                        bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                                 .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                                 .setSource(new MapBuilder<String, Object>()
+                                        .put("type", "e.value")
                                         .put("logicalId", logicalId)
                                         .put("entityId", logicalId + "." + context)
                                         .put("context", context)
@@ -1458,9 +1502,10 @@ public class RealClusterTest {
                 } else if (context.equals("context3")) {
 
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1481,9 +1526,10 @@ public class RealClusterTest {
                     int age = random.nextInt(120);
                     int anotherAge = age + (random.nextInt(8) - 4);
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1501,9 +1547,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1521,9 +1568,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1561,9 +1609,10 @@ public class RealClusterTest {
                 String title = color + " " + category;
                 String description = title;
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("entity").setId(logicalId + "." + context)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(logicalId + "." + context)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "entity")
                                 .put("logicalId", logicalId)
                                 .put("context", context)
                                 .put("category", category)
@@ -1578,9 +1627,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis()))).get()));
 
                 if (context.equals("global")) {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1598,9 +1648,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1618,9 +1669,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
                 } else {
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1638,9 +1690,10 @@ public class RealClusterTest {
                                     .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                     .get()));
 
-                    bulk.add(client.prepareIndex().setIndex(index).setType("e.value").setId("ev" + evalueId++)
+                    bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("ev" + evalueId++)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.value")
                                     .put("logicalId", logicalId)
                                     .put("entityId", logicalId + "." + context)
                                     .put("context", context)
@@ -1666,7 +1719,7 @@ public class RealClusterTest {
         int relationId = 0;
         int rvalueId = 0;
         for (int i = 0; i < 20; i++) {
-            for (String context : Arrays.asList("context1", "context2")) {
+            for (String context : Stream.ofAll(contexts).filter(context -> !context.equals("global"))) {
                 String relationIdString = "r" + String.format(relationIdFormat, relationId++);
                 String index = Stream.ofAll(relPartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(relationIdString)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
@@ -1677,7 +1730,7 @@ public class RealClusterTest {
                 String personIndex = Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
                         .filter(partition -> partition.isWithin(personLogicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
-                String propertyLogicalId = "e" + String.format(entityIdFormat, 200 + i);
+                String propertyLogicalId = "e" + String.format(entityIdFormat, 100 + i);
                 String propertyEntityId = propertyLogicalId + "." + context;
                 String propertyCategory = ((i / 5) % 2) == 0 ? "car" : "boat";
                 String propertyIndex = Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range) partition)
@@ -1688,9 +1741,10 @@ public class RealClusterTest {
                 String relationLastUpdateTime = sdf.format(new Date(System.currentTimeMillis()));
                 String relationCreateTime = sdf.format(new Date(System.currentTimeMillis()));
 
-                bulk.add(client.prepareIndex().setIndex(personIndex).setType("e.relation").setId(relationIdString + ".out")
+                bulk.add(client.prepareIndex().setIndex(personIndex).setType("pge").setId(relationIdString + ".out")
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(personLogicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "e.relation")
                                 .put("entityAId", personEntityId)
                                 .put("entityACategory", "person")
                                 .put("entityBId", propertyEntityId)
@@ -1706,9 +1760,10 @@ public class RealClusterTest {
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("e.relation").setId(relationIdString + ".in")
+                bulk.add(client.prepareIndex().setIndex(propertyIndex).setType("pge").setId(relationIdString + ".in")
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(propertyLogicalId)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "e.relation")
                                 .put("entityBId", personEntityId)
                                 .put("entityBCategory", "person")
                                 .put("entityAId", propertyEntityId)
@@ -1724,13 +1779,16 @@ public class RealClusterTest {
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("relation").setId(relationIdString)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(relationIdString)
                         .setOpType(IndexRequest.OpType.INDEX)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "relation")
                                 .put("entityAId", personEntityId)
                                 .put("entityACategory", "person")
+                                .put("entityALogicalId", personLogicalId)
                                 .put("entityBId", propertyEntityId)
                                 .put("entityBCategory", propertyCategory)
+                                .put("entityBLogicalId", propertyLogicalId)
                                 .put("context", context)
                                 .put("category", category)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -1743,9 +1801,10 @@ public class RealClusterTest {
                                 .put("creationUser", relationCreationUser)
                                 .put("creationTime", relationCreateTime).get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "r.value")
                                 .put("relationId", relationIdString)
                                 .put("context", context)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -1762,9 +1821,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "r.value")
                                 .put("relationId", relationIdString)
                                 .put("context", context)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -1781,9 +1841,10 @@ public class RealClusterTest {
                                 .put("creationTime", sdf.format(new Date(System.currentTimeMillis())))
                                 .get()));
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("r.value").setId("rv" + rvalueId++)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId("rv" + rvalueId++)
                         .setOpType(IndexRequest.OpType.INDEX).setRouting(relationIdString)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "r.value")
                                 .put("relationId", relationIdString)
                                 .put("context", context)
                                 .put("authorization", Arrays.asList("source1.procedure1", "source2.procedure2"))
@@ -1817,9 +1878,10 @@ public class RealClusterTest {
                         .filter(partition -> partition.isWithin(insightId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
 
-                bulk.add(client.prepareIndex().setIndex(index).setType("insight").setId(insightId)
+                bulk.add(client.prepareIndex().setIndex(index).setType("pge").setId(insightId)
                         .setOpType(IndexRequest.OpType.INDEX)
                         .setSource(new MapBuilder<String, Object>()
+                                .put("type", "insight")
                                 .put("content", contents.get(random.nextInt(contents.size())))
                                 .put("context", context)
                                 .put("entityIds", Stream.ofAll(logicalIds).map(logicalId -> logicalId + "." + context).toJavaList())
@@ -1838,9 +1900,10 @@ public class RealClusterTest {
                             Stream.ofAll(ePartitions).map(partition -> (IndexPartitions.Partition.Range<String>) partition)
                                     .filter(partition -> partition.isWithin(logicalId)).map(partition -> Stream.ofAll(partition.getIndices()).get(0)).get(0);
 
-                    bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType("e.insight").setId(logicalId + "." + insightId)
+                    bulk.add(client.prepareIndex().setIndex(logicalEntityIndex).setType("pge").setId(logicalId + "." + insightId)
                             .setOpType(IndexRequest.OpType.INDEX).setRouting(logicalId)
                             .setSource(new MapBuilder<String, Object>()
+                                    .put("type", "e.insight")
                                     .put("entityId", logicalId + "." + context)
                                     .put("insightId", insightId).get()));
                 }

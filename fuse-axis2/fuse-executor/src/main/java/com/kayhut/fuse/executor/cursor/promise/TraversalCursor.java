@@ -9,13 +9,14 @@ import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.results.*;
+import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.structure.promise.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
@@ -37,6 +38,8 @@ public class TraversalCursor implements Cursor {
     public TraversalCursor(TraversalCursorContext context) {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
+
+        this.typeProperty = ont.property$("type");
     }
     //endregion
 
@@ -99,21 +102,31 @@ public class TraversalCursor implements Cursor {
         IdPromise idPromise = (IdPromise)vertex.getPromise();
 
         String eType = idPromise.getLabel().isPresent() ? ont.eType$(idPromise.getLabel().get()) : "";
-        List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+
+        List<Property> properties = Stream.ofAll(vertex::properties)
+                .map(this::toProperty)
+                .filter(property -> !property.getpType().equals(this.typeProperty.getpType()))
+                .toJavaList();
 
         return toEntity(vertex.id().toString(),eType,element.geteTag(), properties);
     }
 
     private Entity toEntity(Path path, EConcrete element) {
         PromiseVertex vertex = path.get(element.geteTag());
-        List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+        List<Property> properties = Stream.ofAll(vertex::properties)
+                .map(this::toProperty)
+                .filter(property -> !property.getpType().equals(this.typeProperty.getpType()))
+                .toJavaList();
 
         return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
     }
 
     private Entity toEntity(Path path, ETyped element) {
         PromiseVertex vertex = path.get(element.geteTag());
-        List<Property> properties = Stream.ofAll(vertex::properties).map(this::toProperty).toJavaList();
+        List<Property> properties = Stream.ofAll(vertex::properties)
+                .map(this::toProperty)
+                .filter(property -> !property.getpType().equals(this.typeProperty.getpType()))
+                .toJavaList();
 
         return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
     }
@@ -159,5 +172,7 @@ public class TraversalCursor implements Cursor {
     //region Fields
     private TraversalCursorContext context;
     private Ontology.Accessor ont;
+
+    private com.kayhut.fuse.model.ontology.Property typeProperty;
     //endregion
 }

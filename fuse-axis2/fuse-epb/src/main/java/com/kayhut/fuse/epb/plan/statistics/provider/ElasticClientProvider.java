@@ -3,7 +3,8 @@ package com.kayhut.fuse.epb.plan.statistics.provider;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -21,11 +22,11 @@ public class ElasticClientProvider {
 
     //region Public Methods
     public TransportClient getStatClient() {
-        Settings settings = Settings.builder().put("client.transport.sniff", false).put("cluster.name", config.getStatClusterName()).build();
-        TransportClient esClient = TransportClient.builder().settings(settings).build();
+        Settings settings = Settings.builder().put("cluster.name", config.getStatClusterName()).build();
+        TransportClient esClient = new PreBuiltTransportClient(settings);
         for (String node : config.getStatNodesHosts()) {
             try {
-                esClient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(node), config.getStatTransportPort()));
+                esClient.addTransportAddress(new TransportAddress(InetAddress.getByName(node), config.getStatTransportPort()));
             } catch (UnknownHostException e) {
                 throw new RuntimeException("Fatal Error: Unable getTo get host information");
             }

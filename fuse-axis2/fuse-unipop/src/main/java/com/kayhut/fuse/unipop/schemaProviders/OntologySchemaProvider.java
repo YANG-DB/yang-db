@@ -69,15 +69,11 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
                 String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
 
-                Optional<GraphEdgeSchema> relevantEdgeSchema =
-                        Stream.ofAll(edgeSchemas)
-                                .filter(schema -> isEdgeSchemaProperlyDirected(eTypeA, eTypeB, schema))
-                                .toJavaOptional();
-
-                if (relevantEdgeSchema.isPresent()) {
-                    Optional<GraphEdgeSchema> relationTypeSchema = getRelationSchema(label, eTypeA, eTypeB, relevantEdgeSchema.get());
-                    relationTypeSchema.ifPresent(graphEdgeSchemas::add);
-                }
+                Stream.ofAll(edgeSchemas)
+                        .filter(schema -> isEdgeSchemaProperlyDirected(eTypeA, eTypeB, schema))
+                        .map(schema -> getRelationSchema(label, eTypeA, eTypeB, schema))
+                        .filter(Optional::isPresent)
+                        .forEach(schema -> graphEdgeSchemas.add(schema.get()));
             }
 
             return graphEdgeSchemas;

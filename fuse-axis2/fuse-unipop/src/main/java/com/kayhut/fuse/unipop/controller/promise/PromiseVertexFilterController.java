@@ -7,6 +7,7 @@ import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.MustFetchSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
@@ -42,7 +43,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 public class PromiseVertexFilterController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public PromiseVertexFilterController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE_FILTER));
 
@@ -50,7 +51,6 @@ public class PromiseVertexFilterController extends VertexControllerBase {
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.metricRegistry = metricRegistry;
     }
 
     //endregion
@@ -58,8 +58,6 @@ public class PromiseVertexFilterController extends VertexControllerBase {
     //region VertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
-        Timer.Context time = metricRegistry.timer(name(PromiseVertexFilterController.class.getSimpleName(),"search")).time();
-
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");
         }
@@ -81,7 +79,6 @@ public class PromiseVertexFilterController extends VertexControllerBase {
                 .filter(hasContainer -> hasContainer.getPredicate().getBiPredicate() instanceof SelectP)
                 .toJavaList();
 
-        time.stop();
         return filterPromiseVertices(searchVertexQuery, constraint, selectPHasContainers);
     }
     //endregion
@@ -91,8 +88,6 @@ public class PromiseVertexFilterController extends VertexControllerBase {
             SearchVertexQuery searchVertexQuery,
             Optional<TraversalConstraint> constraint,
             List<HasContainer> selectPHasContainers) {
-        Timer.Context time = metricRegistry.timer(name(PromiseVertexFilterController.class.getSimpleName(),"filterPromiseVertices")).time();
-
         SearchBuilder searchBuilder = new SearchBuilder();
 
         CompositeControllerContext context = new CompositeControllerContext.Impl(
@@ -110,22 +105,22 @@ public class PromiseVertexFilterController extends VertexControllerBase {
                     wrap(new FilterVerticesSearchAppender()),
                     wrap(new SizeSearchAppender(configuration)),
                     wrap(new PromiseConstraintSearchAppender()),
+                    wrap(new MustFetchSourceSearchAppender("type")),
                     wrap(new FilterSourceSearchAppender()),
                     wrap(new FilterIndexSearchAppender()));
 
         appender.append(searchBuilder, context);
 
-        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSearchType(SearchType.SCAN);
+        SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
 
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
-                metricRegistry, client,
+                client,
                 searchRequest,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, Edge> converter = new SearchHitPromiseFilterEdgeConverter(graph);
-        time.stop();
         return Stream.ofAll(searchHits)
                 .flatMap(converter::convert)
                 .filter(Objects::nonNull).iterator();
@@ -135,7 +130,6 @@ public class PromiseVertexFilterController extends VertexControllerBase {
     //region Fields
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
-    private MetricRegistry metricRegistry;
     private Client client;
     private ElasticGraphConfiguration configuration;
     //endregion

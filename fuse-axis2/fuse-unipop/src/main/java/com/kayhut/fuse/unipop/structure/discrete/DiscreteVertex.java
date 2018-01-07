@@ -1,14 +1,7 @@
 package com.kayhut.fuse.unipop.structure.discrete;
 
-import com.eaio.uuid.UUID;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
-import com.kayhut.fuse.unipop.promise.Constraint;
-import com.kayhut.fuse.unipop.promise.Promise;
-import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.tinkerpop.gremlin.structure.T;
 import org.unipop.structure.UniGraph;
 import org.unipop.structure.UniVertex;
 import org.unipop.structure.UniVertexProperty;

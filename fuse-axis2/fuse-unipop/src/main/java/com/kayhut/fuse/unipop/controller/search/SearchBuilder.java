@@ -110,7 +110,7 @@ public class SearchBuilder {
         }
 
         if (includeAggregations) {
-            for (org.elasticsearch.search.aggregations.AbstractAggregationBuilder aggregationBuilder : aggregationBuilder.getAggregations()) {
+            for (org.elasticsearch.search.aggregations.AggregationBuilder aggregationBuilder : this.aggregationBuilder.getAggregations()) {
                 searchRequestBuilder.addAggregation(aggregationBuilder);
             }
         }

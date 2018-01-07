@@ -37,7 +37,6 @@ import static org.mockito.Mockito.when;
 public class ElementControllerTest {
     Client client;
     ElasticGraphConfiguration configuration;
-    MetricRegistry registry = new MetricRegistry();
 
     @Before
     public void setUp() throws Exception {
@@ -56,9 +55,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 1);
@@ -85,9 +84,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
@@ -118,9 +117,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
@@ -157,9 +156,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
@@ -196,9 +195,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
@@ -229,9 +228,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
@@ -267,9 +266,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 
@@ -309,9 +308,9 @@ public class ElementControllerTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(), registry);
+        SearchQuery.SearchController vertexController = new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
         SearchQuery.SearchController edgeController = new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider());
-        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController ,registry);
+        SearchQuery.SearchController elementController = new ElementController(vertexController, edgeController);
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 

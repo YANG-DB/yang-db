@@ -105,11 +105,11 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
                     Stream.ofAll(vTypes).map(eType -> $ont.$entity$(eType).getName()).toJavaList());
 
             Optional<GraphRedundantPropertySchema> redundantTypeProperty = endSchema
-                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.TYPE_FIELD_P_TYPE).getName()).get());
+                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.TYPE_FIELD_PTYPE).getName()).get());
 
             if(redundantTypeProperty.isPresent()) {
                 RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantTypeProperty.get().getPropertyRedundantName(),
-                        OntologyFinalizer.TYPE_FIELD_P_TYPE, constraint);
+                        OntologyFinalizer.TYPE_FIELD_PTYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
         }
@@ -119,11 +119,11 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
             Constraint constraint = Constraint.of(ConstraintOp.eq, eConcrete.geteID());
 
             Optional<GraphRedundantPropertySchema> redundantIdProperty = endSchema
-                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.ID_FIELD_P_TYPE).getName()).get());
+                    .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(OntologyFinalizer.ID_FIELD_PTYPE).getName()).get());
 
             if(redundantIdProperty.isPresent()) {
                 RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantIdProperty.get().getPropertyRedundantName(),
-                        OntologyFinalizer.ID_FIELD_P_TYPE, constraint);
+                        OntologyFinalizer.ID_FIELD_PTYPE, constraint);
                 relPropGroup.getProps().add(relProp);
             }
         }

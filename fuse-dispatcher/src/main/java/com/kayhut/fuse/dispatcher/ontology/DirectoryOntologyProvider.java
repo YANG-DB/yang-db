@@ -2,6 +2,7 @@ package com.kayhut.fuse.dispatcher.ontology;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +33,7 @@ public class DirectoryOntologyProvider implements OntologyProvider {
                     .toJavaMap(file -> {
                         try {
                             return new Tuple2<>(FilenameUtils.getBaseName(file.getName()),
-                                    mapper.readValue(file, Ontology.class));
+                                    OntologyFinalizer.finalize(mapper.readValue(file, Ontology.class)));
                         } catch (IOException e) {
                             return new Tuple2<>(FilenameUtils.getBaseName(file.getName()), new Ontology());
                         }

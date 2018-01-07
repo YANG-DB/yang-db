@@ -1,5 +1,8 @@
 package com.kayhut.fuse.services.controllers.logging;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.logging.ElapsedConverter;
@@ -17,23 +20,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 /**
  * Created by roman.margolis on 14/12/2017.
  */
 public class LoggingQueryController implements QueryController {
-    public static final String injectionName = "LoggingQueryController.inner";
+    public static final String controllerParameter = "LoggingQueryController.@controller";
+    public static final String loggerParameter = "LoggingQueryController.@logger";
 
     //region Constructors
     @Inject
-    public LoggingQueryController(@Named(injectionName)QueryController controller) {
-        this.logger = LoggerFactory.getLogger(controller.getClass());
+    public LoggingQueryController(
+            @Named(controllerParameter) QueryController controller,
+            @Named(loggerParameter) Logger logger,
+            MetricRegistry metricRegistry) {
         this.controller = controller;
+        this.logger = logger;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
     //region QueryController Implementation
     @Override
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "create")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -42,12 +54,15 @@ public class LoggingQueryController implements QueryController {
             return controller.create(request);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed create: {}", ex);
+            this.logger.error("failed create", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "create", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish create");
+                this.metricRegistry.meter(name(this.logger.getName(), "create", "success")).mark();
             }
+            timerContext.stop();
         }
     }
 
@@ -61,7 +76,7 @@ public class LoggingQueryController implements QueryController {
             return controller.createAndFetch(request);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed createAndFetch: {}", ex);
+            this.logger.error("failed createAndFetch", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -72,6 +87,8 @@ public class LoggingQueryController implements QueryController {
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo() {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfo")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -80,17 +97,22 @@ public class LoggingQueryController implements QueryController {
             return controller.getInfo();
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish getInfo");
+                this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "success")).mark();
             }
+            timerContext.stop();
         }
     }
 
     @Override
     public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryId")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -99,12 +121,15 @@ public class LoggingQueryController implements QueryController {
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo: {}", ex);
+            this.logger.error("failed getInfo", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish getInfo");
+                this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "success")).mark();
             }
+            timerContext.stop();
         }
     }
 
@@ -118,7 +143,7 @@ public class LoggingQueryController implements QueryController {
             return controller.explain(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed explain: {}", ex);
+            this.logger.error("failed explain", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -137,7 +162,7 @@ public class LoggingQueryController implements QueryController {
             return controller.planVerbose(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed planVerbose: {}", ex);
+            this.logger.error("failed planVerbose", ex);
             return null;
         } finally {
             if (!thrownException) {
@@ -148,6 +173,8 @@ public class LoggingQueryController implements QueryController {
 
     @Override
     public ContentResponse<Boolean> delete(String queryId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "delete")).time();
+
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -156,18 +183,23 @@ public class LoggingQueryController implements QueryController {
             return controller.delete(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed delete: {}", ex);
+            this.logger.error("failed delete", ex);
+            this.metricRegistry.meter(name(this.logger.getName(), "delete", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
                 this.logger.trace("finish delete");
+                this.metricRegistry.meter(name(this.logger.getName(), "delete", "success")).mark();
             }
+            timerContext.stop();
         }
     }
     //endregion
 
     //region Fields
-    private Logger logger;
     private QueryController controller;
+
+    private Logger logger;
+    private MetricRegistry metricRegistry;
     //endregion
 }

@@ -11,6 +11,7 @@ import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatResultBase;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
 import javaslang.collection.Stream;
+import org.apache.commons.codec.binary.*;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.Base64;
 
 /**
  * Created by benishue on 30-Apr-17.
@@ -111,13 +113,14 @@ public class StatUtil {
         return getFieldsWithHistogram(statContainer, typeName, HistogramType.dynamic);
     }
 
-    public static Iterable<Map<String, Object>> prepareStatDocs(List<? extends StatResultBase> bucketStatResults) {
+    public static Iterable<Map<String, Object>> prepareStatDocs(String statType, List<? extends StatResultBase> bucketStatResults) {
         List<Map<String, Object>> buckets = new ArrayList<>();
         for (StatResultBase bucketStatResult : bucketStatResults) {
             Map<String, Object> bucket = new HashMap();
             //Deafualt fields for all statistics documents
             bucket.put("index", bucketStatResult.getIndex());
-            bucket.put("type", bucketStatResult.getType());
+            bucket.put("type", statType);
+            bucket.put("sourceType", bucketStatResult.getType());
             bucket.put("field", bucketStatResult.getField());
 
             //Statics Document for range - we are intrested in knowing if its a string range or a numeric range
@@ -220,7 +223,7 @@ public class StatUtil {
             byte[] bucketDescriptionBytes = message.getBytes("UTF8");
             byte[] bucketHash = digest.digest(bucketDescriptionBytes);
 
-            return org.elasticsearch.common.Base64.encodeBytes(bucketHash, org.elasticsearch.common.Base64.URL_SAFE).replaceAll("\\s", "");
+            return org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString(bucketHash).replaceAll("\\s", "");
 
         } catch (NoSuchAlgorithmException e) {
 

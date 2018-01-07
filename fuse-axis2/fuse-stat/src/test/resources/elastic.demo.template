@@ -7,98 +7,48 @@
     }
   },
   "mappings": {
-    "bucketTerm": {
-      "_all": {
-        "enabled": false
-      },
-      "properties": {
-        "field": {
-          "type": "string",
-          "index": "not_analyzed"
+      "statBucket": {
+        "_all": {
+          "enabled": false
         },
-        "count": {
-          "type": "long"
-        },
-        "index": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "term": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "type": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "cardinality": {
-          "type": "long"
-        }
-      }
-    },
-    "bucketNumeric": {
-      "_all": {
-        "enabled": false
-      },
-      "properties": {
-        "field": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "lower_bound_numeric": {
-          "type": "double"
-        },
-        "count": {
-          "type": "long"
-        },
-        "index": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "upper_bound_numeric": {
-          "type": "double"
-        },
-        "type": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "cardinality": {
-          "type": "long"
-        }
-      }
-    },
-    "bucketString": {
-      "_all": {
-        "enabled": false
-      },
-      "properties": {
-        "lower_bound_string": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "field": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "count": {
-          "type": "long"
-        },
-        "index": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "type": {
-          "type": "string",
-          "index": "not_analyzed"
-        },
-        "cardinality": {
-          "type": "long"
-        },
-        "upper_bound_string": {
-          "type": "string",
-          "index": "not_analyzed"
+        "properties": {
+          "type": {
+            "type": "keyword"
+          },
+          "index": {
+            "type": "keyword"
+          },
+          "sourceType": {
+            "type": "keyword"
+          },
+          "field": {
+            "type": "keyword"
+          },
+          "term": {
+            "type": "keyword"
+          },
+          "lower_bound_string": {
+            "type": "keyword"
+          },
+          "upper_bound_string": {
+            "type": "keyword"
+          },
+          "lower_bound_numeric": {
+            "type": "double"
+          },
+          "upper_bound_numeric": {
+            "type": "double"
+          },
+          "direction": {
+            "type": "keyword"
+          },
+          "count": {
+            "type": "long"
+          },
+          "cardinality": {
+            "type": "long"
+          }
         }
       }
     }
-  }
 }

@@ -10,7 +10,7 @@
     <artifactId>fuse-axis1</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>fuse-neo4j</module>
+        <!--<module>fuse-neo4j</module>-->
     </modules>
 
     <properties>
