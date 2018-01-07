@@ -14,29 +14,29 @@ import java.util.Optional;
 public class LoggingActionListener<TResponse> implements ActionListener<TResponse> {
     //region Constructors
     public LoggingActionListener(
+            LogMessage successMessage,
+            LogMessage failureMessage,
             Timer.Context timerContext,
             Meter successMeter,
-            Meter failureMeter,
-            LogMessage successMessage,
-            LogMessage failureMessage) {
-        this.timerContext = timerContext;
-        this.successMeter = successMeter;
-        this.failureMeter = failureMeter;
+            Meter failureMeter) {
         this.successMessage = successMessage;
         this.failureMessage = failureMessage;
         this.innerActionListener = Optional.empty();
         this.innerFailureMessage = Optional.empty();
+        this.timerContext = timerContext;
+        this.successMeter = successMeter;
+        this.failureMeter = failureMeter;
     }
 
     public LoggingActionListener(
-            Timer.Context timerContext,
-            Meter successMeter,
-            Meter failureMeter,
+            ActionListener<TResponse> innerActionListener,
             LogMessage successMessage,
             LogMessage failureMessage,
-            ActionListener<TResponse> innerActionListener,
-            LogMessage innerFailureMessage) {
-        this(timerContext, successMeter, failureMeter, successMessage, failureMessage);
+            LogMessage innerFailureMessage,
+            Timer.Context timerContext,
+            Meter successMeter,
+            Meter failureMeter) {
+        this(successMessage, failureMessage, timerContext, successMeter, failureMeter);
         this.innerActionListener = Optional.ofNullable(innerActionListener);
         this.innerFailureMessage = Optional.ofNullable(innerFailureMessage);
     }
@@ -52,8 +52,8 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
         } catch (Exception ex) {
             innerFailureMessage.ifPresent(logMessage -> logMessage.with(ex).log());
         } finally {
-            this.successMeter.mark();
             this.successMessage.log();
+            this.successMeter.mark();
         }
     }
 
@@ -66,18 +66,18 @@ public class LoggingActionListener<TResponse> implements ActionListener<TRespons
         } catch (Exception ex) {
             innerFailureMessage.ifPresent(logMessage -> logMessage.with(ex).log());
         } finally {
-            this.failureMeter.mark();
             this.failureMessage.with(e).log();
+            this.failureMeter.mark();
         }
     }
     //endregion
 
     //region Fields
+    private LogMessage successMessage;
+    private LogMessage failureMessage;
     private Timer.Context timerContext;
     private Meter successMeter;
     private Meter failureMeter;
-    private LogMessage successMessage;
-    private LogMessage failureMessage;
     private Optional<ActionListener<TResponse>> innerActionListener;
     private Optional<LogMessage> innerFailureMessage;
     //endregion

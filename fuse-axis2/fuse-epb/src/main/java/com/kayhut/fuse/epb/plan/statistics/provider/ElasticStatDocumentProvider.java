@@ -46,7 +46,6 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
         searchBuilder.setScrollTime(60000);
 
         SearchHitScrollIterable hits = new SearchHitScrollIterable(
-                metricRegistry,
                 this.client,
                 searchBuilder.build(this.client, false),
                 searchBuilder.getLimit(),

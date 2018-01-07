@@ -8,6 +8,7 @@ import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 public class GlobalElasticEmbeddedNode {
     public static ElasticEmbeddedNode getInstance() throws Exception {
         if (instance == null) {
+            //instance = new ElasticEmbeddedNode("target/es", 10200, 10300, "fuse.test_elastic");
             instance = new ElasticEmbeddedNode();
         }
 

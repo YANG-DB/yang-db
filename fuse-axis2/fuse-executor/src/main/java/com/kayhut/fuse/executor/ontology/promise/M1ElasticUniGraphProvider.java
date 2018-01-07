@@ -65,11 +65,10 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
                         new ElementController(
-                                new PromiseElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider, metricRegistry),
-                                new PromiseElementEdgeController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
-                                metricRegistry),
-                        new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider,metricRegistry),
-                        new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider ,metricRegistry)
+                                new PromiseElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                                new PromiseElementEdgeController(client, elasticGraphConfiguration, uniGraph, schemaProvider)),
+                        new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                        new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider)
                 );
             }
 

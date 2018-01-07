@@ -13,6 +13,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -52,7 +53,9 @@ public class ClientProvider implements Provider<Client> {
             }
         });
 
-        return new LoggingClient(client, this.metricRegistry);
+        return new LoggingClient(client,
+                LoggerFactory.getLogger(LoggingClient.class),
+                this.metricRegistry);
     }
     //endregion
 

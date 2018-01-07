@@ -131,7 +131,7 @@ public class PromisePromiseElementVertexControllerTest {
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
-        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider,registry);
+        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 

@@ -22,13 +22,11 @@ import static com.codahale.metrics.MetricRegistry.name;
 public class SearchHitScrollIterable implements Iterable<SearchHit> {
     //region Constructor
     public SearchHitScrollIterable(
-            MetricRegistry metricRegistry,
             Client client,
             SearchRequestBuilder searchRequestBuilder,
             long limit,
             int scrollSize,
             int scrollTime) {
-        this.metricRegistry = metricRegistry;
         this.searchRequestBuilder = searchRequestBuilder;
         this.limit = limit;
         this.scrollSize = scrollSize;
@@ -66,8 +64,6 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
     }
     //endregion
 
-
-    private MetricRegistry metricRegistry;
     //region Fields
     private SearchRequestBuilder searchRequestBuilder;
     private long limit;

@@ -41,7 +41,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 public class PromiseVertexController extends VertexControllerBase {
 
     //region Constructors
-    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public PromiseVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
         super(labels -> Stream.ofAll(labels).size() == 1 &&
                 Stream.ofAll(labels).get(0).equals(GlobalConstants.Labels.PROMISE));
 
@@ -49,15 +49,12 @@ public class PromiseVertexController extends VertexControllerBase {
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.metricRegistry = metricRegistry;
     }
     //endregion
 
     //region VertexControllerBase Implementation
     @Override
     protected Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels) {
-        Context time = metricRegistry.timer(name(PromiseVertexController.class.getSimpleName(),"search")).time();
-
         if (searchVertexQuery.getVertices().size() == 0){
             throw new UnsupportedOperationException("SearchVertexQuery must receive a non-empty list of vertices getTo start with");
         }
@@ -82,8 +79,6 @@ public class PromiseVertexController extends VertexControllerBase {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyIterator();
-        } finally {
-            time.stop();
         }
     }
     //endregion
@@ -137,6 +132,5 @@ public class PromiseVertexController extends VertexControllerBase {
     private GraphElementSchemaProvider schemaProvider;
     private Client client;
     private ElasticGraphConfiguration configuration;
-    private MetricRegistry metricRegistry;
     //endregion
 }

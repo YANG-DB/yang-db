@@ -39,7 +39,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
  */
 public class DiscreteVertexController extends VertexControllerBase {
     //region Constructors
-    public DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
+    public DiscreteVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
         super(labels -> Stream.ofAll(labels).isEmpty() ||
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet().containsAll(Stream.ofAll(labels).toJavaSet()),
                 Stream.ofAll(schemaProvider.getEdgeLabels()).toJavaSet());
@@ -48,7 +48,6 @@ public class DiscreteVertexController extends VertexControllerBase {
         this.configuration = configuration;
         this.graph = graph;
         this.schemaProvider = schemaProvider;
-        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -114,7 +113,7 @@ public class DiscreteVertexController extends VertexControllerBase {
 
         SearchRequestBuilder searchRequest = searchBuilder.build(client, false);
         SearchHitScrollIterable searchHits = new SearchHitScrollIterable(
-                metricRegistry, client,
+                client,
                 searchRequest,
                 searchBuilder.getLimit(),
                 searchBuilder.getScrollSize(),
@@ -134,6 +133,5 @@ public class DiscreteVertexController extends VertexControllerBase {
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
-    private MetricRegistry metricRegistry;
     //endregion
 }

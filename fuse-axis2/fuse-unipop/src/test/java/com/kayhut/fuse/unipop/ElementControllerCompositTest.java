@@ -90,7 +90,6 @@ public class ElementControllerCompositTest {
     @Test
     @Ignore
     public void testSingleIdPromiseVertexWithLimit() {
-        MetricRegistry registry = new MetricRegistry();
         UniGraph graph = mock(UniGraph.class);
         PredicatesHolder predicatesHolder = mock(PredicatesHolder.class);
         when(predicatesHolder.getPredicates()).thenReturn(Collections.emptyList());
@@ -101,9 +100,8 @@ public class ElementControllerCompositTest {
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
         SearchQuery.SearchController elementController = new ElementController(
-                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider(),registry),
-                new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider()),
-                registry);
+                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider()),
+                new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider()));
 
         List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
 

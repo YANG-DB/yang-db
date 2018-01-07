@@ -33,20 +33,18 @@ import java.util.Set;
  */
 public class M1ElasticUniGraphProvider implements UniGraphProvider {
     //region Constructors
-
-    @Inject
-    private MetricRegistry metricRegistry;
-
     @Inject
     public M1ElasticUniGraphProvider(
             Client client,
             ElasticGraphConfiguration elasticGraphConfiguration,
             UniGraphConfiguration uniGraphConfiguration,
-            GraphElementSchemaProviderFactory schemaProviderFactory) {
+            GraphElementSchemaProviderFactory schemaProviderFactory,
+            MetricRegistry metricRegistry) {
         this.client = client;
         this.elasticGraphConfiguration = elasticGraphConfiguration;
         this.uniGraphConfiguration = uniGraphConfiguration;
         this.schemaProviderFactory = schemaProviderFactory;
+        this.metricRegistry = metricRegistry;
     }
     //endregion
 
@@ -54,7 +52,7 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
     public UniGraph getGraph(Ontology ontology) throws Exception {
         return new UniGraph(
                 this.uniGraphConfiguration,
-                controllerManagerFactory(schemaProviderFactory.get(ontology)),
+                controllerManagerFactory(this.schemaProviderFactory.get(ontology), this.metricRegistry),
                 new StandardStrategyProvider());
     }
 
@@ -63,7 +61,7 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
      * default controller Manager
      * @return
      */
-    private ControllerManagerFactory controllerManagerFactory(GraphElementSchemaProvider schemaProvider) {
+    private ControllerManagerFactory controllerManagerFactory(GraphElementSchemaProvider schemaProvider, MetricRegistry metricRegistry) {
         return uniGraph -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
@@ -74,25 +72,24 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
                                         client,
                                         elasticGraphConfiguration,
                                         uniGraph,
-                                        schemaProvider,
-                                        new MetricRegistry())),
-                                null,
-                                new MetricRegistry()
+                                        schemaProvider),
+                                        metricRegistry),
+                                null
                         ),
                         new LoggingSearchVertexController(
                             new DiscreteVertexController(
                                 client,
                                 elasticGraphConfiguration,
                                 uniGraph,
-                                schemaProvider,
-                                new MetricRegistry())),
+                                schemaProvider),
+                                metricRegistry),
                         new LoggingSearchVertexController(
                             new DiscreteVertexFilterController(
                                 client,
                                 elasticGraphConfiguration,
                                 uniGraph,
-                                schemaProvider,
-                                new MetricRegistry()))
+                                schemaProvider),
+                                metricRegistry)
                 );
             }
 
@@ -109,5 +106,6 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
     private final ElasticGraphConfiguration elasticGraphConfiguration;
     private final UniGraphConfiguration uniGraphConfiguration;
     private final GraphElementSchemaProviderFactory schemaProviderFactory;
+    private MetricRegistry metricRegistry;
     //endregion
 }

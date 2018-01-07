@@ -21,17 +21,17 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
     //region Constructors
     public LoggingActionFuture(
             ActionFuture<T> actionFuture,
+            LogMessage successMessage,
+            LogMessage failureMessage,
             Timer.Context timerContext,
             Meter successMeter,
-            Meter failureMeter,
-            LogMessage successMessage,
-            LogMessage failureMessage) {
+            Meter failureMeter) {
         this.actionFuture = actionFuture;
+        this.successMessage = successMessage;
+        this.failureMessage = failureMessage;
         this.timerContext = timerContext;
         this.successMeter = successMeter;
         this.failureMeter = failureMeter;
-        this.successMessage = successMessage;
-        this.failureMessage = failureMessage;
     }
     //endregion
 
@@ -44,15 +44,15 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             return actionFuture.actionGet();
         } catch (Exception ex) {
             thrownExcepion = true;
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
             throw ex;
         } finally {
-            this.timerContext.stop();
             if (!thrownExcepion) {
-                this.successMeter.mark();
                 this.successMessage.log();
+                this.successMeter.mark();
             }
+            this.timerContext.stop();
         }
     }
 
@@ -64,15 +64,15 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             return actionFuture.actionGet(s);
         } catch (Exception ex) {
             thrownExcepion = true;
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
             throw ex;
         } finally {
-            this.timerContext.stop();
             if (!thrownExcepion) {
-                this.successMeter.mark();
                 this.successMessage.log();
+                this.successMeter.mark();
             }
+            this.timerContext.stop();
         }
     }
 
@@ -84,15 +84,15 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             return actionFuture.actionGet(l);
         } catch (Exception ex) {
             thrownExcepion = true;
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
             throw ex;
         } finally {
-            this.timerContext.stop();
             if (!thrownExcepion) {
-                this.successMeter.mark();
                 this.successMessage.log();
+                this.successMeter.mark();
             }
+            this.timerContext.stop();
         }
     }
 
@@ -104,15 +104,15 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             return actionFuture.actionGet(l, timeUnit);
         } catch (Exception ex) {
             thrownExcepion = true;
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
             throw ex;
         } finally {
-            this.timerContext.stop();
             if (!thrownExcepion) {
-                this.successMeter.mark();
                 this.successMessage.log();
+                this.successMeter.mark();
             }
+            this.timerContext.stop();
         }
     }
 
@@ -124,15 +124,15 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             return actionFuture.actionGet(timeValue);
         } catch (Exception ex) {
             thrownExcepion = true;
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
             throw ex;
         } finally {
-            this.timerContext.stop();
             if (!thrownExcepion) {
-                this.successMeter.mark();
                 this.successMessage.log();
+                this.successMeter.mark();
             }
+            this.timerContext.stop();
         }
     }
 
@@ -159,15 +159,15 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             return actionFuture.get();
         } catch (Exception ex) {
             thrownExcepion = true;
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
             throw ex;
         } finally {
-            this.timerContext.stop();
             if (!thrownExcepion) {
-                this.successMeter.mark();
                 this.successMessage.log();
+                this.successMeter.mark();
             }
+            this.timerContext.stop();
         }
     }
 
@@ -179,25 +179,25 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             return actionFuture.get(timeout, unit);
         } catch (Exception ex) {
             thrownExcepion = true;
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
             throw ex;
         } finally {
-            this.timerContext.stop();
             if (!thrownExcepion) {
-                this.successMeter.mark();
                 this.successMessage.log();
+                this.successMeter.mark();
             }
+            this.timerContext.stop();
         }
     }
     //endregion
 
     //region Fields
     private ActionFuture<T> actionFuture;
+    private LogMessage successMessage;
+    private LogMessage failureMessage;
     private Timer.Context timerContext;
     private Meter successMeter;
     private Meter failureMeter;
-    private LogMessage successMessage;
-    private LogMessage failureMessage;
     //endregion
 }

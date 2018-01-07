@@ -20,6 +20,8 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.google.inject.name.Names.named;
 
@@ -47,8 +49,11 @@ public class EpbDfsNonRedundantModule extends ModuleBase {
             @Override
             protected void configure() {
                 this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                        .annotatedWith(named(LoggingPlanSearcher.injectionName))
+                        .annotatedWith(named(LoggingPlanSearcher.planSearcherParameter))
                         .to(new TypeLiteral<BottomUpPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){});
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingPlanSearcher.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(BottomUpPlanSearcher.class));
                 this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
                         .annotatedWith(named(PlanTracer.Searcher.Provider.planSearcherParameter))
                         .to(new TypeLiteral<LoggingPlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){});

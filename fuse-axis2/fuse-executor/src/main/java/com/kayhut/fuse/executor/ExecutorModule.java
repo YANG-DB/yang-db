@@ -45,7 +45,6 @@ public class ExecutorModule extends ModuleBase {
         binder.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
         binder.bind(UniGraphConfiguration.class).toInstance(uniGraphConfiguration);
 
-        //binder.bind(Client.class).toInstance(createClient(conf, elasticGraphConfiguration));
         binder.bind(Client.class).toProvider(ClientProvider.class).asEagerSingleton();
 
         binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
@@ -58,28 +57,6 @@ public class ExecutorModule extends ModuleBase {
     //endregion
 
     //region Private Methods
-    private Client createClient(Config conf, ElasticGraphConfiguration configuration) {
-        if (conf.hasPath("fuse.elasticsearch.mock")) {
-            boolean clientMock = conf.getBoolean("fuse.elasticsearch.mock");
-            if (clientMock) {
-                System.out.println("Using mock elasticsearch client!");
-                return new MockClient();
-            }
-        }
-
-        Settings settings = Settings.builder().put("cluster.name", configuration.getClusterName()).build();
-        TransportClient client = new PreBuiltTransportClient(settings);
-        Stream.of(configuration.getClusterHosts()).forEach(host -> {
-            try {
-                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), configuration.getClusterPort()));
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        });
-
-        return new LoggingClient(client, new MetricRegistry());
-    }
-
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
         configuration.setClusterHosts(Stream.ofAll(conf.getStringList("elasticsearch.hosts")).toJavaArray(String.class));

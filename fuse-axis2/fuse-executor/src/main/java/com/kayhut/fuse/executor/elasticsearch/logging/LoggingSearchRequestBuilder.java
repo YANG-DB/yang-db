@@ -17,20 +17,20 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
     public LoggingSearchRequestBuilder(
             ElasticsearchClient client,
             SearchAction action,
-            Timer timer,
-            Meter successMeter,
-            Meter failureMeter,
             LogMessage startMessage,
             LogMessage successMessage,
-            LogMessage failureMessage) {
+            LogMessage failureMessage,
+            Timer timer,
+            Meter successMeter,
+            Meter failureMeter) {
         super(client, action);
 
-        this.timer = timer;
-        this.successMeter = successMeter;
-        this.failureMeter = failureMeter;
         this.startMessage = startMessage;
         this.successMessage = successMessage;
         this.failureMessage = failureMessage;
+        this.timer = timer;
+        this.successMeter = successMeter;
+        this.failureMeter = failureMeter;
     }
     //endregion
 
@@ -44,14 +44,15 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
             ActionFuture<SearchResponse> future = super.execute();
             return new LoggingActionFuture<>(
                     future,
+                    this.successMessage,
+                    this.failureMessage,
                     timerContext,
                     this.successMeter,
-                    this.failureMeter,
-                    this.successMessage,
-                    this.failureMessage);
+                    this.failureMeter);
         } catch (Exception ex) {
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
+            timerContext.stop();
             throw ex;
         }
     }
@@ -60,11 +61,11 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
     //endregion
 
     //region Fields
-    private Timer timer;
-    private Meter successMeter;
-    private Meter failureMeter;
     private LogMessage startMessage;
     private LogMessage successMessage;
     private LogMessage failureMessage;
+    private Timer timer;
+    private Meter successMeter;
+    private Meter failureMeter;
     //endregion
 }

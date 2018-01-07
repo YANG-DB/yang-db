@@ -54,10 +54,9 @@ public class TraversalTest {
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
                         new ElementController(
-                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
-                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
-                                registry),
-                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry));
+                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider())),
+                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()));
             }
 
             @Override
@@ -94,10 +93,9 @@ public class TraversalTest {
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
                         new ElementController(
-                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider(),registry),
-                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
-                                registry),
-                        new PromiseVertexController(client,configuration,graph1,new EmptyGraphElementSchemaProvider(),new MetricRegistry()));
+                                new PromiseElementVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()),
+                                new PromiseElementEdgeController(client, configuration, graph1, new EmptyGraphElementSchemaProvider())),
+                        new PromiseVertexController(client, configuration, graph1, new EmptyGraphElementSchemaProvider()));
             }
 
             @Override

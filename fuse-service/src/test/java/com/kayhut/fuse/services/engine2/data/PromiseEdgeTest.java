@@ -43,14 +43,11 @@ public class PromiseEdgeTest{
     static TransportClient client;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
-    static MetricRegistry registry;
 
     private static final String INDEX_NAME = "v1";
 
     @BeforeClass
     public static void setup() throws Exception {
-        registry = new MetricRegistry();
-
         String idField = "id";
 
         client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
@@ -127,7 +124,7 @@ public class PromiseEdgeTest{
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
-        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider,registry);
+        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
@@ -186,7 +183,7 @@ public class PromiseEdgeTest{
         when(configuration.getElasticGraphScrollTime()).thenReturn(100);
         when(configuration.getElasticGraphDefaultSearchSize()).thenReturn(100L);
 
-        PromiseVertexFilterController controller = new PromiseVertexFilterController(client, configuration, graph, schemaProvider, registry);
+        PromiseVertexFilterController controller = new PromiseVertexFilterController(client, configuration, graph, schemaProvider);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 

@@ -18,20 +18,20 @@ public class LoggingSearchScrollRequestBuilder extends SearchScrollRequestBuilde
             ElasticsearchClient client,
             SearchScrollAction action,
             String scrollId,
-            Timer timer,
-            Meter successMeter,
-            Meter failureMeter,
             LogMessage startMessage,
             LogMessage successMessage,
-            LogMessage failureMessage) {
+            LogMessage failureMessage,
+            Timer timer,
+            Meter successMeter,
+            Meter failureMeter) {
         super(client, action, scrollId);
 
-        this.timer = timer;
-        this.successMeter = successMeter;
-        this.failureMeter = failureMeter;
         this.startMessage = startMessage;
         this.successMessage = successMessage;
         this.failureMessage = failureMessage;
+        this.timer = timer;
+        this.successMeter = successMeter;
+        this.failureMeter = failureMeter;
     }
     //endregion
 
@@ -45,25 +45,26 @@ public class LoggingSearchScrollRequestBuilder extends SearchScrollRequestBuilde
             ActionFuture<SearchResponse> future = super.execute();
             return new LoggingActionFuture<>(
                     future,
+                    this.successMessage,
+                    this.failureMessage,
                     timerContext,
                     this.successMeter,
-                    this.failureMeter,
-                    this.successMessage,
-                    this.failureMessage);
+                    this.failureMeter);
         } catch (Exception ex) {
-            this.failureMeter.mark();
             this.failureMessage.with(ex).log();
+            this.failureMeter.mark();
+            timerContext.stop();
             throw ex;
         }
     }
     //endregion
 
     //region Fields
-    private Timer timer;
-    private Meter successMeter;
-    private Meter failureMeter;
     private LogMessage startMessage;
     private LogMessage successMessage;
     private LogMessage failureMessage;
+    private Timer timer;
+    private Meter successMeter;
+    private Meter failureMeter;
     //endregion
 }

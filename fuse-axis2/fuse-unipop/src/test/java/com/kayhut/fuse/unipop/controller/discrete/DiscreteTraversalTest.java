@@ -74,17 +74,14 @@ public class DiscreteTraversalTest {
                                                 elasticEmbeddedNode.getClient(),
                                                 elasticGraphConfiguration,
                                                 uniGraph,
-                                                schemaProvider,
-                                                new MetricRegistry()),
-                                        null,
-                                        new MetricRegistry()
+                                                schemaProvider),
+                                        null
                                 ),
                                 new DiscreteVertexController(
                                         elasticEmbeddedNode.getClient(),
                                         elasticGraphConfiguration,
                                         uniGraph,
-                                        schemaProvider,
-                                        new MetricRegistry())
+                                        schemaProvider)
                         );
                     }
 
