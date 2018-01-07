@@ -24,19 +24,7 @@ import static com.google.inject.name.Names.named;
  *
  * This module is called by the fuse-service scanner class loader
  */
-public class ServicesModule extends ModuleBase {
-
-    //region Module
-    @Override
-    public void configure(Env env, Config conf, Binder binder) throws Throwable {
-        //service controllers
-        binder.bind(CatalogController.class)
-                .annotatedWith(named(LoggingCatalogController.controllerParameter))
-                .to(StandardCatalogController.class);
-        binder.bind(CatalogController.class)
-                .to(LoggingCatalogController.class);
-    }
-
+public class ServiceModule extends ModuleBase {
     //region ModuleBase Implementation
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
