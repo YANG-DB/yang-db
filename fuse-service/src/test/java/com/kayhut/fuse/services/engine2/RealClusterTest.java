@@ -545,7 +545,7 @@ public class RealClusterTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
-        String logicalId = "e00000002";
+        String logicalId = "e00000000";
 
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),

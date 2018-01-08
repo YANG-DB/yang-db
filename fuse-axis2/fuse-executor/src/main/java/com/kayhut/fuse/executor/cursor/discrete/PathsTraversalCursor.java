@@ -150,18 +150,16 @@ public class PathsTraversalCursor implements Cursor {
         DiscreteEdge edge = path.get(prevEntity.geteTag() + ConversionUtil.convertDirectionGraphic(rel.getDir()) + nextEntity.geteTag());
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
+        builder.withEID1(edge.outVertex().id().toString());
+        builder.withEID2(edge.inVertex().id().toString());
 
         switch (rel.getDir()) {
             case R:
-                builder.withEID1(edge.outVertex().id().toString());
-                builder.withEID2(edge.inVertex().id().toString());
                 builder.withETag1(prevEntity.geteTag());
                 builder.withETag2(nextEntity.geteTag());
                 break;
 
             case L:
-                builder.withEID1(edge.inVertex().id().toString());
-                builder.withEID2(edge.outVertex().id().toString());
                 builder.withETag1(nextEntity.geteTag());
                 builder.withETag2(prevEntity.geteTag());
         }
