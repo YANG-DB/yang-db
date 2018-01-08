@@ -5,13 +5,14 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.logging.ElapsedConverter;
+import com.kayhut.fuse.logging.RequestIdConverter;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.services.controllers.CursorController;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -28,9 +29,11 @@ public class LoggingCursorController implements CursorController {
     public LoggingCursorController(
             @Named(controllerParameter) CursorController controller,
             @Named(loggerParameter) Logger logger,
+            RequestIdSupplier requestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
+        this.requestIdSupplier = requestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -40,6 +43,7 @@ public class LoggingCursorController implements CursorController {
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "create")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -64,6 +68,7 @@ public class LoggingCursorController implements CursorController {
     public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryId")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -88,6 +93,7 @@ public class LoggingCursorController implements CursorController {
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryIdAndCursorId")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -112,6 +118,7 @@ public class LoggingCursorController implements CursorController {
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "delete")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -135,6 +142,7 @@ public class LoggingCursorController implements CursorController {
 
     //region Fields
     private Logger logger;
+    private RequestIdSupplier requestIdSupplier;
     private MetricRegistry metricRegistry;
     private CursorController controller;
     //endregion

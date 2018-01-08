@@ -2,6 +2,10 @@ package com.kayhut.fuse.executor;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Binder;
+import com.google.inject.PrivateModule;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
+import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
@@ -11,23 +15,20 @@ import com.kayhut.fuse.executor.driver.StandardCursorDriver;
 import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
-import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
-import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
+import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
 import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.jooby.Env;
 import org.jooby.scope.RequestScoped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unipop.configuration.UniGraphConfiguration;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import static com.google.inject.name.Names.named;
 
 /**
  * Created by lior on 22/02/2017.
@@ -37,7 +38,7 @@ public class ExecutorModule extends ModuleBase {
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
 
-        binder.bind(CursorFactory.class).to(getCursorFactoryClass(conf)).asEagerSingleton();
+        bindCursorFactory(env, conf, binder);
 
         ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
         UniGraphConfiguration uniGraphConfiguration = createUniGraphConfiguration(conf);
@@ -57,6 +58,33 @@ public class ExecutorModule extends ModuleBase {
     //endregion
 
     //region Private Methods
+    private void bindCursorFactory(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                try {
+                    this.bind(CursorFactory.class)
+                            .annotatedWith(named(LoggingCursorFactory.cursorFactoryParameter))
+                            .to(getCursorFactoryClass(conf))
+                            .asEagerSingleton();
+                    this.bind(Logger.class)
+                            .annotatedWith(named(LoggingCursorFactory.cursorLoggerParameter))
+                            .toInstance(LoggerFactory.getLogger(Cursor.class));
+                    this.bind(Logger.class)
+                            .annotatedWith(named(LoggingCursorFactory.traversalLoggerParameter))
+                            .toInstance(LoggerFactory.getLogger(Traversal.class));
+                    this.bind(CursorFactory.class)
+                            .to(LoggingCursorFactory.class)
+                            .asEagerSingleton();
+
+                    this.expose(CursorFactory.class);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
         configuration.setClusterHosts(Stream.ofAll(conf.getStringList("elasticsearch.hosts")).toJavaArray(String.class));

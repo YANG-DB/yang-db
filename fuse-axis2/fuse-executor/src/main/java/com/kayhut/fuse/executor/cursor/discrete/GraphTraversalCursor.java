@@ -8,10 +8,7 @@ import com.kayhut.fuse.model.results.Relationship;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -60,6 +57,11 @@ public class GraphTraversalCursor implements Cursor {
 
         this.fullGraph.getAssignments().get(0).getEntities().addAll(newEntities.values());
         this.fullGraph.getAssignments().get(0).getRelationships().addAll(newRelationships.values());
+
+        this.fullGraph.getAssignments().get(0).setEntities(
+                Stream.ofAll(this.fullGraph.getAssignments().get(0).getEntities())
+                        .sortBy(Entity::geteType)
+                        .toJavaList());
 
         this.entityIds.addAll(newEntities.keySet());
         this.relationshipIds.addAll(newRelationships.keySet());

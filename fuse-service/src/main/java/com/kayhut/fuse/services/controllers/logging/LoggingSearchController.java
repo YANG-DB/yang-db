@@ -5,11 +5,12 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.logging.ElapsedConverter;
+import com.kayhut.fuse.logging.RequestIdConverter;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.SearchController;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -26,9 +27,11 @@ public class LoggingSearchController implements SearchController{
     public LoggingSearchController(
             @Named(controllerParameter) SearchController controller,
             @Named(loggerParameter) Logger logger,
+            RequestIdSupplier requestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
+        this.requestIdSupplier = requestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -38,6 +41,7 @@ public class LoggingSearchController implements SearchController{
     public ContentResponse search(CreateQueryRequest request) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "search")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -61,6 +65,7 @@ public class LoggingSearchController implements SearchController{
 
     //region Fields
     private Logger logger;
+    private RequestIdSupplier requestIdSupplier;
     private MetricRegistry metricRegistry;
     private SearchController controller;
     //endregion

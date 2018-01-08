@@ -22,6 +22,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -139,7 +140,7 @@ public class PathsTraversalCursor implements Cursor {
         Entity.Builder builder = Entity.Builder.instance();
         builder.withEID(eId);
         builder.withEType(eType);
-        builder.withETag(Collections.singletonList(eTag));
+        builder.withETag(new HashSet<>(Collections.singletonList(eTag)));
         builder.withProperties(properties);
         return builder.build();
     }

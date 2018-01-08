@@ -1,11 +1,12 @@
 package com.kayhut.fuse.services.controllers.logging;
 
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.logging.ElapsedConverter;
+import com.kayhut.fuse.logging.RequestIdConverter;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -17,7 +18,6 @@ import com.kayhut.fuse.model.transport.CreateQueryAndFetchRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.controllers.QueryController;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -34,9 +34,11 @@ public class LoggingQueryController implements QueryController {
     public LoggingQueryController(
             @Named(controllerParameter) QueryController controller,
             @Named(loggerParameter) Logger logger,
+            RequestIdSupplier requestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
+        this.requestIdSupplier = requestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -46,6 +48,7 @@ public class LoggingQueryController implements QueryController {
     public ContentResponse<QueryResourceInfo> create(CreateQueryRequest request) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "create")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -68,6 +71,7 @@ public class LoggingQueryController implements QueryController {
 
     @Override
     public ContentResponse<QueryResourceInfo> createAndFetch(CreateQueryAndFetchRequest request) {
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -89,6 +93,7 @@ public class LoggingQueryController implements QueryController {
     public ContentResponse<StoreResourceInfo> getInfo() {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfo")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -113,6 +118,7 @@ public class LoggingQueryController implements QueryController {
     public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryId")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -135,6 +141,7 @@ public class LoggingQueryController implements QueryController {
 
     @Override
     public ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId) {
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -154,6 +161,7 @@ public class LoggingQueryController implements QueryController {
 
     @Override
     public ContentResponse<PlanNode<Plan>> planVerbose(String queryId) {
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -175,6 +183,7 @@ public class LoggingQueryController implements QueryController {
     public ContentResponse<Boolean> delete(String queryId) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "delete")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -198,7 +207,7 @@ public class LoggingQueryController implements QueryController {
 
     //region Fields
     private QueryController controller;
-
+    private RequestIdSupplier requestIdSupplier;
     private Logger logger;
     private MetricRegistry metricRegistry;
     //endregion

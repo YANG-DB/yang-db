@@ -545,19 +545,23 @@ public class RealClusterTest {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
 
+        String logicalId = "e00000002";
+
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "SE", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
-                new EProp(3, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
-                new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e00000007")),
+                new EProp(3, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, logicalId)),
                 new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
                 new ETyped(6, "R", $ont.eType$("Relation"), $ont.$entity$("Relation").getProperties(), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9, 10, 11), 0),
 
                 new OptionalComp(8, 80),
                 new Rel(80, "hasOutRelation", L, null, 81, 0),
-                new ETyped(81, "EOut", "Entity", $ont.$entity$("Entity").getProperties(), 82, 0),
+                new ETyped(81, "EOut", "Entity", $ont.$entity$("Entity").getProperties(), 822, 0),
+                new Quant1(822, QuantType.all, Arrays.asList(82, 823), 0),
+                new EProp(823, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.ne, logicalId)),
                 new Rel(82, "hasEntity", L, null, 83, 0),
                 new ETyped(83, "LEOut", "LogicalEntity", 84, 0),
                 new Rel(84, "hasEntity", R, null, 85, 0),
@@ -569,7 +573,9 @@ public class RealClusterTest {
 
                 new OptionalComp(9, 90),
                 new Rel(90, "hasInRelation", L, null, 91, 0),
-                new ETyped(91, "EIn", "Entity", $ont.$entity$("Entity").getProperties(), 92, 0),
+                new ETyped(91, "EIn", "Entity", $ont.$entity$("Entity").getProperties(), 922, 0),
+                new Quant1(922, QuantType.all, Arrays.asList(92, 923), 0),
+                new EProp(923, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.ne, logicalId)),
                 new Rel(92, "hasEntity", L, null, 93, 0),
                 new ETyped(93, "LEIn", "LogicalEntity", 94, 0),
                 new Rel(94, "hasEntity", R, null, 95, 0),
@@ -581,10 +587,10 @@ public class RealClusterTest {
 
                 new OptionalComp(10, 100),
                 new Rel(100, "hasRvalue", R, null, 101, 0),
-                new ETyped(101, "RV", "Rvalue", $ont.$entity$("Rvalue").getProperties(), 102, 0),
-                new Quant1(102, QuantType.all, Arrays.asList(103), 0),
+                new ETyped(101, "RV", "Rvalue", $ont.$entity$("Rvalue").getProperties(), 0, 0),
+                /*new Quant1(102, QuantType.all, Arrays.asList(103), 0),
                 new Rel(103, "hasReference", R, null, 104, 0),
-                new ETyped(104, "RVRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0),
+                new ETyped(104, "RVRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0),*/
 
                 new OptionalComp(11, 110),
                 new Rel(110, "hasReference", R, null, 111, 0),

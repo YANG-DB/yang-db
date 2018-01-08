@@ -5,12 +5,13 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.logging.ElapsedConverter;
+import com.kayhut.fuse.logging.RequestIdConverter;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.controllers.CatalogController;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import static com.codahale.metrics.MetricRegistry.name;
@@ -27,9 +28,11 @@ public class LoggingCatalogController implements CatalogController {
     public LoggingCatalogController(
             @Named(controllerParameter) CatalogController controller,
             @Named(loggerParameter) Logger logger,
+            RequestIdSupplier requestIdSupplier,
             MetricRegistry metricRegistry) {
         this.controller = controller;
         this.logger = logger;
+        this.requestIdSupplier = requestIdSupplier;
         this.metricRegistry = metricRegistry;
     }
     //endregion
@@ -39,6 +42,7 @@ public class LoggingCatalogController implements CatalogController {
     public ContentResponse<Ontology> getOntology(String id) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getOntology")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -63,6 +67,7 @@ public class LoggingCatalogController implements CatalogController {
     public ContentResponse<GraphElementSchemaProvider> getSchema(String id) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getSchema")).time();
 
+        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
         MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
@@ -86,6 +91,7 @@ public class LoggingCatalogController implements CatalogController {
 
     //region Fields
     private Logger logger;
+    private RequestIdSupplier requestIdSupplier;
     private MetricRegistry metricRegistry;
     private CatalogController controller;
     //endregion

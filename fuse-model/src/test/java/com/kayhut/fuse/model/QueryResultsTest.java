@@ -15,6 +15,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
@@ -57,7 +58,7 @@ public class QueryResultsTest {
         List<Entity> entities = new ArrayList<Entity>();
 
         Entity entity = new Entity();
-        entity.seteTag(Arrays.asList("A", "C"));
+        entity.seteTag(new HashSet<>(Arrays.asList("A", "C")));
         entity.seteID("12345678");
         entity.seteType("Person");
 

@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="15 seconds" debug="false">
-  <conversionRule conversionWord="elapsed"
-                  converterClass="com.kayhut.fuse.logging.ElapsedConverter" />
+  <conversionRule conversionWord="requestId" converterClass="com.kayhut.fuse.logging.RequestIdConverter" />
+  <conversionRule conversionWord="elapsed" converterClass="com.kayhut.fuse.logging.ElapsedConverter" />
 
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
     <withJansi>true</withJansi>
     <encoder>
-      <pattern>%white(%-26d{ISO8601}) %yellow(%-6elapsed) %highlight(%-7level) %cyan(%-46logger{5}) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
+      <pattern>%green(%-23requestId) %white(%-26d{ISO8601}) %yellow(%-6elapsed) %highlight(%-8level) %magenta(%-17thread) %cyan(%-46logger{5}) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
     </encoder>
   </appender>
 
   <appender name="filetrace" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>log/trace.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>trace.%d{yyyy-MM-dd}.log</fileNamePattern>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>trace.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <maxFileSize>100MB</maxFileSize>
       <maxHistory>5</maxHistory>
       <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
     <encoder>
-      <pattern>%-26d{ISO8601} %-6elapsed %-7level %-46logger{5} %msg%n %ex{15} %nopex</pattern>
+      <pattern>%-23requestId %-26d{ISO8601} %-6elapsed %-8level %-17thread %-46logger{5} %msg%n %ex{15} %nopex</pattern>
     </encoder>
   </appender>
 
   <appender name="es-error-filetrace" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>log/es-error-trace.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>es-error-trace.%d{yyyy-MM-dd}.log</fileNamePattern>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>es-error-trace.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <maxFileSize>100MB</maxFileSize>
       <maxHistory>5</maxHistory>
       <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
     <encoder>
-      <pattern>%-26d{ISO8601} %-7level %-46logger{5} %msg%n %ex{15} %nopex</pattern>
+      <pattern>%-26d{ISO8601} %-8level %-46logger{5} %msg%n %ex{15} %nopex</pattern>
     </encoder>
   </appender>
 
@@ -61,13 +61,20 @@
         <value>%ex</value>
       </property>
       <property>
+        <name>thread</name>
+        <value>%thread</value>
+      </property>
+      <property>
         <name>logger</name>
         <value>%logger{5}</value>
       </property>
       <property>
         <name>elapsed</name>
         <value>%elapsed</value>
-        <type>int</type>
+      </property>
+      <property>
+        <name>requestId</name>
+        <value>%requestId</value>
       </property>
     </properties>
     <headers>
