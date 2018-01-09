@@ -4,12 +4,19 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.codahale.metrics.MetricRegistry.name;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.debug;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.log;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
 
 /**
  * Created by roman.margolis on 28/11/2017.
@@ -40,18 +47,18 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
         boolean thrownException = false;
 
         try {
-            this.logger.trace("start search");
+            new LogMessage(this.logger, trace, start, "search", "start search").log();
             PlanWithCost<P, C> planWithCost = this.planSearcher.search(query);
-            this.logger.debug("execution plan: {}", this.descriptor.describe(planWithCost));
+            new LogMessage(this.logger, debug, log, "search", "execution plan: {}", this.descriptor.describe(planWithCost)).log();
             return planWithCost;
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed search", ex);
+            new LogMessage(this.logger, error, finish, "search", "failed search", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "search", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.trace("finish search");
+                new LogMessage(this.logger, trace, finish, "search", "finish search").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "search", "success")).mark();
             }
             timerContext.stop();

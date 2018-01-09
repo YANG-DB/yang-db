@@ -2,6 +2,7 @@ package com.kayhut.fuse.unipop.controller.common.logging;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,10 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import static com.codahale.metrics.MetricRegistry.name;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
 
 /**
  * Created by Roman on 12/14/2017.
@@ -34,16 +39,16 @@ public class LoggingSearchController implements SearchQuery.SearchController {
         boolean thrownExcpetion = false;
 
         try {
-            this.logger.trace("start search");
+            new LogMessage(this.logger, trace, start, "search", "start search").log();
             return searchController.search(searchQuery);
         } catch (Exception ex) {
             thrownExcpetion = true;
-            this.logger.error("failed search", ex);
+            new LogMessage(this.logger, error, finish, "search", "failed search", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "search", "failure")).mark();
             return Collections.emptyIterator();
         } finally {
             if (!thrownExcpetion) {
-                this.logger.trace("finish search");
+                new LogMessage(this.logger, trace, finish, "search", "finish search").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "search", "success")).mark();
             }
             timerContext.stop();

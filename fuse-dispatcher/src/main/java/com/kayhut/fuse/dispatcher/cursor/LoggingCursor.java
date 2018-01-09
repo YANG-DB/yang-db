@@ -1,9 +1,15 @@
 package com.kayhut.fuse.dispatcher.cursor;
 
 import com.kayhut.fuse.dispatcher.gta.LoggingPlanTraversalTranslator;
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.model.results.QueryResult;
 import org.slf4j.Logger;
+
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
 
 /**
  * Created by roman.margolis on 07/01/2018.
@@ -22,15 +28,15 @@ public class LoggingCursor implements Cursor {
         boolean thrownException = false;
 
         try {
-            this.logger.trace("start getNextResults");
+            new LogMessage(this.logger, trace, start, "getNextResults", "start getNextResults").log();
             return this.cursor.getNextResults(numResults);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getNextResults");
+            new LogMessage(this.logger, error, finish, "getNextResults", "failed getNextResults", ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                this.logger.trace("finish getNextResults");
+                new LogMessage(this.logger, trace, finish, "getNextResults", "finish getNextResults").log();
             }
         }
     }

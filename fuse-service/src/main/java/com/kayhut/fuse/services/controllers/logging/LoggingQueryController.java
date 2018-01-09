@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.logging.ElapsedConverter;
 import com.kayhut.fuse.logging.RequestIdConverter;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
@@ -21,6 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import static com.codahale.metrics.MetricRegistry.name;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.info;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -53,16 +59,17 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         try {
-            this.logger.trace("start create");
+            new LogMessage(this.logger, trace, start, "create", "start create").log();
             return controller.create(request);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed create", ex);
+            new LogMessage(this.logger, error, finish, "create", "failed create", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "create", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.trace("finish create");
+                new LogMessage(this.logger, info, finish, "create", "finish create").log();
+                new LogMessage(this.logger, trace, finish, "create", "finish create").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "create", "success")).mark();
             }
             timerContext.stop();
@@ -98,16 +105,18 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         try {
+            new LogMessage(this.logger, trace, start, "getInfo", "start getInfo").log();
             this.logger.trace("start getInfo");
             return controller.getInfo();
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo", ex);
+            new LogMessage(this.logger, error, finish, "getInfo", "failed getInfo", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.trace("finish getInfo");
+                new LogMessage(this.logger, info, finish, "getInfo", "finish getInfo").log();
+                new LogMessage(this.logger, trace, finish, "getInfo", "finish getInfo").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "success")).mark();
             }
             timerContext.stop();
@@ -123,16 +132,17 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         try {
-            this.logger.trace("start getInfo");
+            new LogMessage(this.logger, trace, start, "getInfoByQueryId", "start getInfoByQueryId").log();
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed getInfo", ex);
+            new LogMessage(this.logger, error, finish, "getInfoByQueryId", "failed getInfoByQueryId", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.trace("finish getInfo");
+                new LogMessage(this.logger, info, finish, "getInfoByQueryId", "finish getInfoByQueryId").log();
+                new LogMessage(this.logger, trace, finish, "getInfoByQueryId", "finish getInfoByQueryId").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "success")).mark();
             }
             timerContext.stop();
@@ -188,16 +198,17 @@ public class LoggingQueryController implements QueryController {
         boolean thrownException = false;
 
         try {
-            this.logger.trace("start delete");
+            new LogMessage(this.logger, trace, start, "delete", "start delete").log();
             return controller.delete(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed delete", ex);
+            new LogMessage(this.logger, error, finish, "delete", "failed delete", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "delete", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.trace("finish delete");
+                new LogMessage(this.logger, info, finish, "delete", "finish delete").log();
+                new LogMessage(this.logger, trace, finish, "delete", "finish delete").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "delete", "success")).mark();
             }
             timerContext.stop();

@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -13,6 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.codahale.metrics.MetricRegistry.name;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.debug;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.*;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
 
 /**
  * Created by roman.margolis on 29/11/2017.
@@ -43,18 +49,18 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
         boolean thrownException = false;
 
         try {
-            this.logger.trace("start translate");
+            new LogMessage(this.logger, trace, start, "translate", "start translate").log();
             GraphTraversal<?, ?> traversal = this.innerTranslator.translate(planWithCost, context);
-            this.logger.debug("traversal: {}", this.descriptor.describe(traversal));
+            new LogMessage(this.logger, debug, log, "translate", "traversal: {}", this.descriptor.describe(traversal)).log();
             return traversal;
         } catch (Exception ex) {
             thrownException = true;
-            this.logger.error("failed translate", ex);
+            new LogMessage(this.logger, error, finish, "translate", "failed translate", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "translate", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                this.logger.trace("finish translate");
+                new LogMessage(this.logger, trace, finish, "translate", "finish translate").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "translate", "success")).mark();
             }
             timerContext.stop();
