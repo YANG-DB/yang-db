@@ -55,10 +55,6 @@
         <value>%level</value>
       </property>
       <property>
-        <name>thread</name>
-        <value>%thread</value>
-      </property>
-      <property>
         <name>exception</name>
         <value>%ex</value>
       </property>
