@@ -41,11 +41,18 @@ public class GraphTraversalCursor implements Cursor {
 
     //region Protected Methods
     private void consolidateFullGraph(QueryResult result) {
-        Map<String, Entity> newEntities =
+        Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())
                 .flatMap(Assignment::getEntities)
                 .filter(entity -> !this.entityIds.contains(entity.geteID()))
-                .distinctBy(Entity::geteID)
+                .groupBy(Entity::geteID).toJavaMap();
+
+        Map<String, Entity> newEntities = Stream.ofAll(newEntityStreams.values())
+                .map(entityStream -> {
+                    Entity.Builder entityBuilder = Entity.Builder.instance();
+                    Stream.ofAll(entityStream).forEach(entityBuilder::withEntity);
+                    return entityBuilder.build();
+                })
                 .toJavaMap(entity -> new Tuple2<>(entity.geteID(), entity));
 
         Map<String, Relationship> newRelationships =
