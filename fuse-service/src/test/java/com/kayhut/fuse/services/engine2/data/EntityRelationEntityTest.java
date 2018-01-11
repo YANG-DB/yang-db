@@ -902,6 +902,7 @@ public abstract class EntityRelationEntityTest {
                 fireEdgeDual.put("type", FIRE.getName());
                 fireEdgeDual.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
                 fireEdgeDual.put("direction", Direction.IN);
+                fireEdgeDual.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
 
                 Map<String, Object> entityAI = new HashMap<>();
                 entityAI.put("id", "Dragon_" + i);

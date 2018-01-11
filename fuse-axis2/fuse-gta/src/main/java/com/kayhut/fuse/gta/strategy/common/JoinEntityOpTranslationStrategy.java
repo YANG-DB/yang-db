@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta.strategy.discrete;
+package com.kayhut.fuse.gta.strategy.common;
 
 import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;

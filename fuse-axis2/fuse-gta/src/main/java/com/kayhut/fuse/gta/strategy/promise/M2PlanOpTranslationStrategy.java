@@ -1,4 +1,4 @@
-package com.kayhut.fuse.gta.strategy.discrete;
+package com.kayhut.fuse.gta.strategy.promise;
 
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.gta.strategy.common.CompositePlanOpTranslationStrategy;
@@ -13,8 +13,6 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
@@ -22,32 +20,32 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
  * Created by Roman on 11/05/2017.
  */
 public class M2PlanOpTranslationStrategy extends CompositePlanOpTranslationStrategy {
+    private static class EntityOpStrategies extends CompositePlanOpTranslationStrategy {
+        public EntityOpStrategies() {
+            super(
+                    new EntityOpTranslationStrategy(EntityTranslationOptions.none),
+                    new SelectionTranslationStrategy(EntityOp.class)
+            );
+        }
+    }
+
+    private static class EntityFilterOpStrategies extends CompositePlanOpTranslationStrategy {
+        public EntityFilterOpStrategies() {
+            super(
+                    new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none),
+                    new SelectionTranslationStrategy(EntityFilterOp.class)
+            );
+        }
+    }
+
     //region Constructors
     public M2PlanOpTranslationStrategy() {
-        super();
-
-        this.strategies = Stream.of(
-                new CompositePlanOpTranslationStrategy(
-                        new EntityOpTranslationStrategy(EntityTranslationOptions.none),
-                        new EntitySelectionTranslationStrategy(planOp -> planOp.getClass().equals(EntityOp.class))),
-
-                new CompositePlanOpTranslationStrategy(
-                        new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none),
-                        new EntitySelectionTranslationStrategy(planOp -> planOp.getClass().equals(EntityFilterOp.class))),
-
+        super(new EntityOpStrategies(),
                 new GoToEntityOpTranslationStrategy(),
-
-                new CompositePlanOpTranslationStrategy(
-                        new RelationOpTranslationStrategy(),
-                        new RelationSelectionTranslationStrategy(planOp -> planOp.getClass().equals(RelationOp.class))),
-
-                new CompositePlanOpTranslationStrategy(
-                        new RelationFilterOpTranslationStrategy(),
-                        new RelationSelectionTranslationStrategy(planOp -> planOp.getClass().equals(RelationFilterOp.class))),
-
-                new OptionalOpTranslationStrategy(this),
-                new JoinEntityOpTranslationStrategy(new ChainedPlanOpTraversalTranslator(this), EntityJoinOp.class)
-        ).toJavaList();
+                new RelationOpTranslationStrategy(),
+                new EntityFilterOpStrategies(),
+                new RelationFilterOpTranslationStrategy());
+        this.strategies = Stream.ofAll(this.strategies).append(new JoinEntityOpTranslationStrategy(new ChainedPlanOpTraversalTranslator(this), EntityJoinOp.class));
     }
     //endregion
 
