@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services;
 
+import com.kayhut.fuse.services.engine2.data.ComplexQueriesTest;
 import com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest;
 import com.kayhut.fuse.services.engine2.data.EntityRelationEntityTest;
 
@@ -45,6 +46,8 @@ public class TestsConfiguration {
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SmartEpbRedundantEntityRelationEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SmartEpbM2RedundantEntityRelationEntityTest.class);
+
+        this.testClassesToRun.add(ComplexQueriesTest.class);
     }
     //endregion
 

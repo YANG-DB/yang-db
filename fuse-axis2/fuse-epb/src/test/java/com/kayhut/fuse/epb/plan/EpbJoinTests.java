@@ -147,11 +147,16 @@ public class EpbJoinTests {
         graphElementSchemaProvider = buildSchemaProvider(ont);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
-        RegexPatternCostEstimator regexPatternCostEstimator = new RegexPatternCostEstimator(new M2PatternCostEstimator(
+        M2PatternCostEstimator m2PatternCostEstimator = new M2PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
-                (id) -> Optional.of(ont.get())));
-        ((EntityJoinPatternCostEstimator)((M2PatternCostEstimator)regexPatternCostEstimator.getEstimator()).getEstimators().get(EntityJoinPattern.class)).setCostEstimator(regexPatternCostEstimator);
+                (id) -> Optional.of(ont.get()),
+                null);
+        EntityJoinPatternCostEstimator entityJoinPatternCostEstimator = (EntityJoinPatternCostEstimator)m2PatternCostEstimator.getEstimators().get(EntityJoinPattern.class);
+
+        RegexPatternCostEstimator regexPatternCostEstimator = new RegexPatternCostEstimator(m2PatternCostEstimator);
+        entityJoinPatternCostEstimator.setCostEstimator(regexPatternCostEstimator);
+
         estimator = regexPatternCostEstimator;
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPruner = new NoPruningPruneStrategy<>();

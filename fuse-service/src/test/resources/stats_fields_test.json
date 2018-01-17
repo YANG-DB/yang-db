@@ -48,7 +48,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -76,7 +76,7 @@
         }
       ,
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
@@ -149,6 +149,44 @@
           }
         },
         {
+          "field": "entityB.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "OUT"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
+          "field": "entityB.id",
+          "filter": [
+            {
+              "name": "direction",
+              "value": "IN"
+            }
+          ],
+          "histogram": {
+            "histogramType": "manual",
+            "dataType": "string",
+            "buckets": [
+              {
+                "start": "0",
+                "end": "~"
+              }
+            ]
+          }
+        },
+        {
           "field": "entityB.type",
           "histogram": {
             "histogramType": "term",
@@ -161,7 +199,7 @@
           }
         },
         {
-          "field": "_type",
+          "field": "type",
           "histogram": {
             "histogramType": "term",
             "dataType": "string",
