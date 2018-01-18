@@ -7,6 +7,7 @@ package com.kayhut.fuse.executor.cursor.promise;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
 import com.kayhut.fuse.executor.cursor.TraversalCursorContext;
+import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.*;
@@ -34,11 +35,12 @@ import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
  * Created by liorp on 3/20/2017.
  */
 public class TraversalCursor implements Cursor {
+
     //region Constructors
     public TraversalCursor(TraversalCursorContext context) {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
-
+        this.flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
         this.typeProperty = ont.property$("type");
     }
     //endregion
@@ -69,7 +71,7 @@ public class TraversalCursor implements Cursor {
 
     private Assignment toAssignment(Path path) {
         Assignment.Builder builder = Assignment.Builder.instance();
-        context.getQueryResource().getExecutionPlan().getPlan().getOps().forEach(planOp -> {
+        this.flatPlan.getOps().forEach(planOp -> {
             if (planOp instanceof EntityOp) {
                 EEntityBase entity = ((EntityOp)planOp).getAsgEbase().geteBase();
 
@@ -83,9 +85,9 @@ public class TraversalCursor implements Cursor {
             } else if (planOp instanceof RelationOp) {
                 RelationOp relationOp = (RelationOp)planOp;
                 Optional<EntityOp> prevEntityOp =
-                        PlanUtil.prev(this.context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                        PlanUtil.prev(this.flatPlan, planOp, EntityOp.class);
                 Optional<EntityOp> nextEntityOp =
-                        PlanUtil.next(this.context.getQueryResource().getExecutionPlan().getPlan(), planOp, EntityOp.class);
+                        PlanUtil.next(this.flatPlan, planOp, EntityOp.class);
 
                 builder.withRelationship(toRelationship(path,
                         prevEntityOp.get().getAsgEbase().geteBase(),
@@ -172,6 +174,7 @@ public class TraversalCursor implements Cursor {
     //region Fields
     private TraversalCursorContext context;
     private Ontology.Accessor ont;
+    private final CompositePlanOp flatPlan;
 
     private com.kayhut.fuse.model.ontology.Property typeProperty;
     //endregion

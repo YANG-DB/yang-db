@@ -56,14 +56,25 @@ public class QueryResultAssert {
         assertIfBothNotNull(expected.getRelationships(), actual.getRelationships());
 
         Assert.assertEquals(expected.getRelationships().size(), actual.getRelationships().size());
+        if(ignoreRelId){
+            List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
+                    .sortBy(Relationship::toString).toJavaList();
+            List<Relationship> actualRelationships = Stream.ofAll(actual.getRelationships())
+                    .sortBy(Relationship::toString).toJavaList();
 
-        List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
-                .sortBy(Relationship::getrID).toJavaList();
-        List<Relationship> actualRelationships = Stream.ofAll(actual.getRelationships())
-                .sortBy(Relationship::getrID).toJavaList();
+            for (int i = 0; i < expectedRelationships.size(); i++) {
+                assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId);
+            }
+        }
+        else {
+            List<Relationship> expectedRelationships = Stream.ofAll(expected.getRelationships())
+                    .sortBy(Relationship::getrID).toJavaList();
+            List<Relationship> actualRelationships = Stream.ofAll(actual.getRelationships())
+                    .sortBy(Relationship::getrID).toJavaList();
 
-        for(int i = 0 ; i < expectedRelationships.size() ; i++) {
-            assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId);
+            for (int i = 0; i < expectedRelationships.size(); i++) {
+                assertEquals(expectedRelationships.get(i), actualRelationships.get(i), ignoreRelId);
+            }
         }
     }
 

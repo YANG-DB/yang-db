@@ -2,8 +2,7 @@ package com.kayhut.fuse.services.engine2;
 
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.kayhut.fuse.services.FuseApp;
-import com.kayhut.fuse.services.engine2.data.ComplexQueriesTest;
-import com.kayhut.fuse.services.engine2.data.SmartEpbM2RedundantEntityRelationEntityTest;
+import com.kayhut.fuse.services.engine2.data.JoinE2EEpbMockTests;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import org.jooby.Jooby;
@@ -20,9 +19,10 @@ import java.nio.file.Paths;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        ComplexQueriesTest.class
+        JoinE2EEpbMockTests.class
 })
-public class SmartEpbM2ComplexQueriesTestSuite {
+public class JoinE2EEpbMockTestSuite {
+
     @BeforeClass
     public static void setup() throws Exception {
         System.out.println("SmartEpbRedundantTestSuite start");
@@ -31,7 +31,7 @@ public class SmartEpbM2ComplexQueriesTestSuite {
         elasticEmbeddedNode = GlobalElasticEmbeddedNode.getInstance();
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.M2.conf").toString()), "m2.smartEpb");
+                .conf(new File(Paths.get("src", "test", "conf", "application.engine2.dev.M2.conf").toString()), "m2.mockEpb");
 
         app.start("server.join=false");
     }
@@ -43,7 +43,7 @@ public class SmartEpbM2ComplexQueriesTestSuite {
         }
 
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println("SmartEpbM2ComplexQueriesTestSuite elapsed: " + elapsed);
+        System.out.println("JoinE2EEpbMockTestSuite elapsed: " + elapsed);
     }
 
     //region Fields
