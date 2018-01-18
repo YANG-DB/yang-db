@@ -309,7 +309,7 @@ public class JoinE2EEpbMockTests {
 
     @Test
     public void testDragonFireDragonPathMiddleJoin() throws IOException, InterruptedException {
-        Query query = getQuery();
+        Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
         redundantRelProp.setpType("type");
@@ -337,12 +337,12 @@ public class JoinE2EEpbMockTests {
                 Collections.singleton(new PlanWithCost<>(injectedPlan, new JoinCost(1,1,new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(left, new CountEstimatesCost(1,1)))),
                         new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(right, new CountEstimatesCost(1,1))))))))));
 
-        runQueryAndValidate(query,dragonFireDragonResults());
+        runQueryAndValidate(query, dragonFireDragonX2Results());
     }
 
     @Test
     public void testDragonFireDragonPathMiddleJoinSwitchBranches() throws IOException, InterruptedException {
-        Query query = getQuery();
+        Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
         redundantRelProp.setpType("type");
@@ -370,12 +370,12 @@ public class JoinE2EEpbMockTests {
                 Collections.singleton(new PlanWithCost<>(injectedPlan, new JoinCost(1,1,new PlanDetailedCost(new DoubleCost(5),Collections.singleton(new PlanWithCost<>(left, new CountEstimatesCost(1,1)))),
                         new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(right, new CountEstimatesCost(1,1))))))))));
 
-        runQueryAndValidate(query,dragonFireDragonResults());
+        runQueryAndValidate(query, dragonFireDragonX2Results());
     }
 
     @Test
     public void testDragonFireDragonPathStartJoin() throws IOException, InterruptedException {
-        Query query = getQuery();
+        Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
         redundantRelProp.setpType("type");
@@ -410,7 +410,7 @@ public class JoinE2EEpbMockTests {
                 Collections.singleton(new PlanWithCost<>(injectedPlan, new JoinCost(1,1,new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(left, new CountEstimatesCost(1,1)))),
                         new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(right, new CountEstimatesCost(1,1))))))))));
 
-        runQueryAndValidate(query,dragonFireDragonResults());
+        runQueryAndValidate(query, dragonFireDragonX2Results());
     }
 
     private void runQueryAndValidate(Query query, QueryResult expectedQueryResult) throws IOException, InterruptedException {
@@ -430,7 +430,7 @@ public class JoinE2EEpbMockTests {
         QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
     }
 
-    private Query getQuery() {
+    private Query getDragonFireDragonX2Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_4", "D0", singletonList(NAME.type), 2, 0),
@@ -441,7 +441,7 @@ public class JoinE2EEpbMockTests {
         )).build();
     }
 
-    private QueryResult dragonFireDragonResults() {
+    private QueryResult dragonFireDragonX2Results() {
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_4" )
