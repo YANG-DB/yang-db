@@ -337,7 +337,7 @@ public class JoinE2EEpbMockTests {
                 Collections.singleton(new PlanWithCost<>(injectedPlan, new JoinCost(1,1,new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(left, new CountEstimatesCost(1,1)))),
                         new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(right, new CountEstimatesCost(1,1))))))))));
 
-        runQueryAndValidate(query);
+        runQueryAndValidate(query,dragonFireDragonResults());
     }
 
     @Test
@@ -370,7 +370,7 @@ public class JoinE2EEpbMockTests {
                 Collections.singleton(new PlanWithCost<>(injectedPlan, new JoinCost(1,1,new PlanDetailedCost(new DoubleCost(5),Collections.singleton(new PlanWithCost<>(left, new CountEstimatesCost(1,1)))),
                         new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(right, new CountEstimatesCost(1,1))))))))));
 
-        runQueryAndValidate(query);
+        runQueryAndValidate(query,dragonFireDragonResults());
     }
 
     @Test
@@ -410,10 +410,10 @@ public class JoinE2EEpbMockTests {
                 Collections.singleton(new PlanWithCost<>(injectedPlan, new JoinCost(1,1,new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(left, new CountEstimatesCost(1,1)))),
                         new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(right, new CountEstimatesCost(1,1))))))))));
 
-        runQueryAndValidate(query);
+        runQueryAndValidate(query,dragonFireDragonResults());
     }
 
-    private void runQueryAndValidate(Query query) throws IOException, InterruptedException {
+    private void runQueryAndValidate(Query query, QueryResult expectedQueryResult) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
@@ -427,7 +427,6 @@ public class JoinE2EEpbMockTests {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        QueryResult expectedQueryResult = dragonFireDragonResults();
         QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
     }
 
