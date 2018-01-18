@@ -21,6 +21,8 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.quant.Quant1;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
@@ -308,7 +310,7 @@ public class JoinE2EEpbMockTests {
     //endregion
 
     @Test
-    public void testDragonFireDragonPathMiddleJoin() throws IOException, InterruptedException {
+    public void testDragonFireDragonX2PathMiddleJoin() throws IOException, InterruptedException {
         Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -341,7 +343,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    public void testDragonFireDragonPathMiddleJoinSwitchBranches() throws IOException, InterruptedException {
+    public void testDragonFireDragonX2PathMiddleJoinSwitchBranches() throws IOException, InterruptedException {
         Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -374,7 +376,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    public void testDragonFireDragonPathStartJoin() throws IOException, InterruptedException {
+    public void testDragonFireDragonX2PathStartJoin() throws IOException, InterruptedException {
         Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -413,6 +415,57 @@ public class JoinE2EEpbMockTests {
         runQueryAndValidate(query, dragonFireDragonX2Results());
     }
 
+    @Test
+    @Ignore
+    public void testDragonFireDragonX3Path() throws IOException, InterruptedException {
+        Query query = getDragonFireDragonX3Query();
+
+        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        redundantRelProp.setpType("type");
+        redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
+
+        Rel rel3 = (Rel) query.getElements().get(3);
+        rel3.setDir(Rel.Direction.R);
+        Plan e4 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>(rel3)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+
+        Rel rel5 = (Rel) query.getElements().get(5);
+        rel5.setDir(Rel.Direction.R);
+        Plan e6 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>(rel5)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+
+        Rel rel7 = (Rel) query.getElements().get(7);
+        rel7.setDir(Rel.Direction.R);
+        Plan e8 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(8))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>(rel7)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+
+        Plan innerJoin = new Plan(new EntityJoinOp(e4,e6));
+        Plan topJoin = new Plan(new EntityJoinOp(innerJoin,e8));
+
+        setCurrentPlan(new PlanWithCost<>(topJoin, new PlanDetailedCost(new DoubleCost(0),
+                Collections.singleton(new PlanWithCost<>(topJoin, new JoinCost(1,1,
+                        new PlanDetailedCost(new DoubleCost(10), Collections.singleton(new PlanWithCost<>(innerJoin, new JoinCost(1,1,
+                                new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(e4, new CountEstimatesCost(1,1)))),
+                                new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(e6, new CountEstimatesCost(1,1)))))))),
+                        new PlanDetailedCost(new DoubleCost(10),Collections.singleton(new PlanWithCost<>(e8, new CountEstimatesCost(1,1))))))))));
+
+        runQueryAndValidate(query, dragonFireDragonX3Results());
+    }
+
+
+
     private void runQueryAndValidate(Query query, QueryResult expectedQueryResult) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
@@ -441,6 +494,23 @@ public class JoinE2EEpbMockTests {
         )).build();
     }
 
+    private Query getDragonFireDragonX3Query() {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new Quant1(2, QuantType.all,Arrays.asList(3,5,7),0),
+                new Rel(3, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 4, 0),
+                new EConcrete(4, "B", $ont.eType$(DRAGON.name),"Dragon_7", "D0", 0, 0),
+                new Rel(5, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 6, 0),
+                new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1",singletonList(NAME.type), 0, 0),
+                new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 8, 0),
+                new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D2",singletonList(NAME.type), 0, 0)
+        )).build();
+    }
+
+    private QueryResult dragonFireDragonX3Results() {
+        return null;
+    }
     private QueryResult dragonFireDragonX2Results() {
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
