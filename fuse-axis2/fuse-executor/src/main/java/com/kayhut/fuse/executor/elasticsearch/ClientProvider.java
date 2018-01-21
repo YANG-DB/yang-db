@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  * Created by roman.margolis on 04/01/2018.
@@ -62,7 +63,7 @@ public class ClientProvider implements Provider<Client> {
     //region Private Methods
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
-        configuration.setClusterHosts(Stream.ofAll(conf.getStringList("elasticsearch.hosts")).toJavaArray(String.class));
+        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "elasticsearch.hosts")).toJavaArray(String.class));
         configuration.setClusterPort(conf.getInt("elasticsearch.port"));
         configuration.setClusterName(conf.getString("elasticsearch.cluster_name"));
         configuration.setElasticGraphDefaultSearchSize(conf.getLong("elasticsearch.default_search_size"));
@@ -70,6 +71,15 @@ public class ClientProvider implements Provider<Client> {
         configuration.setElasticGraphScrollSize(conf.getInt("elasticsearch.scroll_size"));
         configuration.setElasticGraphScrollTime(conf.getInt("elasticsearch.scroll_time"));
         return configuration;
+    }
+
+    private List<String> getStringList(Config conf, String key) {
+        try {
+            return conf.getStringList(key);
+        } catch (Exception ex) {
+            String strList = conf.getString(key);
+            return Stream.of(strList.split(",")).toJavaList();
+        }
     }
     //endregion
 

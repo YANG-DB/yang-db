@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unipop.configuration.UniGraphConfiguration;
 
+import java.util.List;
+
 import static com.google.inject.name.Names.named;
 
 /**
@@ -87,7 +89,7 @@ public class ExecutorModule extends ModuleBase {
 
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
-        configuration.setClusterHosts(Stream.ofAll(conf.getStringList("elasticsearch.hosts")).toJavaArray(String.class));
+        configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "elasticsearch.hosts")).toJavaArray(String.class));
         configuration.setClusterPort(conf.getInt("elasticsearch.port"));
         configuration.setClusterName(conf.getString("elasticsearch.cluster_name"));
         configuration.setElasticGraphDefaultSearchSize(conf.getLong("elasticsearch.default_search_size"));
@@ -119,6 +121,15 @@ public class ExecutorModule extends ModuleBase {
 
     private Class<? extends CursorFactory> getCursorFactoryClass(Config conf) throws ClassNotFoundException {
         return (Class<? extends  CursorFactory>)Class.forName(conf.getString("fuse.cursor_factory"));
+    }
+
+    private List<String> getStringList(Config conf, String key) {
+         try {
+             return conf.getStringList(key);
+         } catch (Exception ex) {
+             String strList = conf.getString(key);
+             return Stream.of(strList.split(",")).toJavaList();
+         }
     }
     //endregion
 }

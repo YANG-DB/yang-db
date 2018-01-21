@@ -13,6 +13,9 @@ import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
 import com.typesafe.config.Config;
 import org.jooby.Env;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * Created by lior on 15/02/2017.
  *
@@ -22,7 +25,7 @@ public class NewDispatcherModule extends ModuleBase {
 
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-        binder.bind(AppUrlSupplier.class).toInstance(new DefaultAppUrlSupplier(conf.getString("appUrlSupplier.public.baseUri")));
+        binder.bind(AppUrlSupplier.class).toInstance(getAppUrlSupplier(conf));
 
         // resource store and persist processor
         binder.bind(ResourceStore.class)
@@ -34,18 +37,19 @@ public class NewDispatcherModule extends ModuleBase {
                 .asEagerSingleton();
 
         binder.bind(OntologyProvider.class).toInstance(getOntologyProvider(conf));
-        //binder.bind(ResourcePersistProcessor.class).asEagerSingleton();
-
-        // page processor
-        //binder.bind(PageCreationOperationContext.Processor.class).to(PageProcessor.class).asEagerSingleton();
-
-        // service controllers
-        /*binder.bind(QueryDriver.class).to(SimpleQueryDispatcherDriver.class).asEagerSingleton();
-        binder.bind(CursorDriver.class).to(SimpleCursorDispatcherDriver.class).asEagerSingleton();
-        binder.bind(PageDriver.class).to(SimplePageDispatcherDriver.class).asEagerSingleton();*/
     }
 
     //region Private Methods
+    private AppUrlSupplier getAppUrlSupplier(Config conf) throws UnknownHostException {
+        int applicationPort = conf.getInt("application.port");
+        String baseUrl = String.format("http://%s:%d/fuse", InetAddress.getLocalHost().getHostAddress(), applicationPort);
+        if (conf.hasPath("appUrlSupplier.public.baseUri")) {
+            baseUrl = conf.getString("appUrlSupplier.public.baseUri");
+        }
+
+        return new DefaultAppUrlSupplier(baseUrl);
+    }
+
     private OntologyProvider getOntologyProvider(Config conf) throws ClassNotFoundException {
         return new DirectoryOntologyProvider(conf.getString("fuse.ontology_provider_dir"));
     }
