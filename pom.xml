@@ -46,6 +46,9 @@
         <!-- jackson -->
         <jackson.version>2.8.1</jackson.version>
 
+        <!-- com.github.cnsvili.snowflake.version -->
+        <com.github.cnsvili.snowflake.version>1.0.1</com.github.cnsvili.snowflake.version>
+
         <!-- jansi -->
         <jansi.version>1.16</jansi.version>
 
@@ -210,6 +213,14 @@
                 <version>${jackson.version}</version>
             </dependency>
             <!-- jackson -->
+
+            <!-- snowflake ids -->
+            <dependency>
+                <groupId>com.github.cnsvili</groupId>
+                <artifactId>snowflake</artifactId>
+                <version>${com.github.cnsvili.snowflake.version}</version>
+            </dependency>
+            <!-- snowflake ids -->
 
             <!-- jansi -->
             <dependency>

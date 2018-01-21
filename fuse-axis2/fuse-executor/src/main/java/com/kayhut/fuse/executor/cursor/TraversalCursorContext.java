@@ -18,7 +18,7 @@ public class TraversalCursorContext implements CursorFactory.Context {
             Ontology ontology,
             QueryResource queryResource,
             CreateCursorRequest.CursorType cursorType,
-            GraphTraversal<?, Path> traversal) {
+            Traversal<?, Path> traversal) {
         this.ontology = ontology;
         this.queryResource = queryResource;
         this.cursorType = cursorType;
@@ -39,7 +39,7 @@ public class TraversalCursorContext implements CursorFactory.Context {
     //endregion
 
     //region Properties
-    public GraphTraversal<?, Path> getTraversal() {
+    public Traversal<?, Path> getTraversal() {
         return this.traversal;
     }
 
@@ -52,6 +52,6 @@ public class TraversalCursorContext implements CursorFactory.Context {
     private Ontology ontology;
     private QueryResource queryResource;
     private CreateCursorRequest.CursorType cursorType;
-    private GraphTraversal<?, Path> traversal;
+    private Traversal<?, Path> traversal;
     //endregion
 }

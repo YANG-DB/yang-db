@@ -19,6 +19,7 @@ import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.index.Mappings.Mapping;
 import com.kayhut.test.framework.index.Mappings.Mapping.Property;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
@@ -185,7 +186,7 @@ public class SingleEntityTest {
             ids.add(assignment.getEntities().get(0).geteID());
 
             Assert.assertTrue(assignment.getEntities().get(0).geteTag().size() == 1);
-            Assert.assertTrue(assignment.getEntities().get(0).geteTag().get(0).equals("A"));
+            Assert.assertTrue(Stream.ofAll(assignment.getEntities().get(0).geteTag()).get(0).equals("A"));
             Assert.assertTrue(assignment.getEntities().get(0).geteType().equals(eType));
         });
 
@@ -227,7 +228,7 @@ public class SingleEntityTest {
                 ids.add(assignment.getEntities().get(0).geteID());
 
                 Assert.assertTrue(assignment.getEntities().get(0).geteTag().size() == 1);
-                Assert.assertTrue(assignment.getEntities().get(0).geteTag().get(0).equals("A"));
+                Assert.assertTrue(Stream.ofAll(assignment.getEntities().get(0).geteTag()).get(0).equals("A"));
                 Assert.assertTrue(assignment.getEntities().get(0).geteType().equals(eType));
             });
         }

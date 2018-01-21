@@ -2,13 +2,11 @@ package com.kayhut.fuse.model.ontology;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -121,6 +119,11 @@ public class Ontology {
         private List<CompositeType> compositeTypes;
 
         private OntologyBuilder() {
+            this.entityTypes = Collections.emptyList();
+            this.relationshipTypes = Collections.emptyList();
+            this.properties = Collections.emptyList();
+            this.enumeratedTypes = Collections.emptyList();
+            this.compositeTypes = Collections.emptyList();
         }
 
         public static OntologyBuilder anOntology() {
@@ -176,6 +179,21 @@ public class Ontology {
         //region Constructors
         public Accessor(Ontology ontology) {
             this.ontology = ontology;
+
+            this.entitiesByEtype = Stream.ofAll(ontology.getEntityTypes())
+                    .toJavaMap(entityType -> new Tuple2<>(entityType.geteType(), entityType));
+            this.entitiesByName = Stream.ofAll(ontology.getEntityTypes())
+                    .toJavaMap(entityType -> new Tuple2<>(entityType.getName(), entityType));
+
+            this.relationsByRtype = Stream.ofAll(ontology.getRelationshipTypes())
+                    .toJavaMap(relationshipType -> new Tuple2<>(relationshipType.getrType(), relationshipType));
+            this.relationsByName = Stream.ofAll(ontology.getRelationshipTypes())
+                    .toJavaMap(relationshipType -> new Tuple2<>(relationshipType.getName(), relationshipType));
+
+            this.propertiesByPtype = Stream.ofAll(ontology.getProperties())
+                    .toJavaMap(property -> new Tuple2<>(property.getpType(), property));
+            this.propertiesByName = Stream.ofAll(ontology.getProperties())
+                    .toJavaMap(property -> new Tuple2<>(property.getName(), property));
         }
         //endregion
 
@@ -190,9 +208,7 @@ public class Ontology {
         }
 
         public Optional<EntityType> $entity(String eType) {
-            return Stream.ofAll(ontology.getEntityTypes())
-                    .filter(entityType -> entityType.geteType().equals(eType))
-                    .toJavaOptional();
+            return Optional.ofNullable(this.entitiesByEtype.get(eType));
         }
 
         public EntityType $entity$(String eType) {
@@ -200,9 +216,7 @@ public class Ontology {
         }
 
         public Optional<EntityType> entity(String entityName) {
-            return Stream.ofAll(ontology.getEntityTypes())
-                    .filter(entityType -> entityType.getName().equals(entityName))
-                    .toJavaOptional();
+            return Optional.ofNullable(this.entitiesByName.get(entityName));
         }
 
         public EntityType entity$(String entityName) {
@@ -210,10 +224,8 @@ public class Ontology {
         }
 
         public Optional<String> eType(String entityName) {
-            return Stream.ofAll(ontology.getEntityTypes())
-                    .filter(entityType -> entityType.getName().equals(entityName))
-                    .map(EntityType::geteType)
-                    .toJavaOptional();
+            EntityType entityType = this.entitiesByName.get(entityName);
+            return entityType == null ? Optional.empty() : Optional.of(entityType.geteType());
         }
 
         public String eType$(String entityName) {
@@ -221,9 +233,7 @@ public class Ontology {
         }
 
         public Optional<RelationshipType> $relation(String rType) {
-            return Stream.ofAll(ontology.getRelationshipTypes())
-                    .filter(relationshipType -> relationshipType.getrType().equals(rType))
-                    .toJavaOptional();
+            return Optional.ofNullable(this.relationsByRtype.get(rType));
         }
 
         public RelationshipType $relation$(String rType) {
@@ -231,9 +241,7 @@ public class Ontology {
         }
 
         public Optional<RelationshipType> relation(String relationName) {
-            return Stream.ofAll(ontology.getRelationshipTypes())
-                    .filter(relationshipType -> relationshipType.getName().equals(relationName))
-                    .toJavaOptional();
+            return Optional.ofNullable(this.relationsByName.get(relationName));
         }
 
         public RelationshipType relation$(String relationName) {
@@ -241,10 +249,8 @@ public class Ontology {
         }
 
         public Optional<String> rType(String relationName) {
-            return Stream.ofAll(ontology.getRelationshipTypes())
-                    .filter(relationshipType -> relationshipType.getName().equals(relationName))
-                    .map(RelationshipType::getrType)
-                    .toJavaOptional();
+            RelationshipType relationshipType = this.relationsByName.get(relationName);
+            return relationshipType == null ? Optional.empty() : Optional.of(relationshipType.getrType());
         }
 
         public String rType$(String relationName) {
@@ -252,9 +258,7 @@ public class Ontology {
         }
 
         public Optional<Property> $property(String pType) {
-            return Stream.ofAll(ontology.getProperties())
-                    .filter(property -> property.getpType().equals(pType))
-                    .toJavaOptional();
+            return Optional.ofNullable(this.propertiesByPtype.get(pType));
         }
 
         public Property $property$(String pType) {
@@ -262,9 +266,7 @@ public class Ontology {
         }
 
         public Optional<Property> property(String propertyName) {
-            return Stream.ofAll(ontology.getProperties())
-                    .filter(property -> property.getName().equals(propertyName))
-                    .toJavaOptional();
+            return Optional.ofNullable(this.propertiesByName.get(propertyName));
         }
 
         public Property property$(String propertyName) {
@@ -272,10 +274,8 @@ public class Ontology {
         }
 
         public Optional<String> pType(String propertyName) {
-            return Stream.ofAll(ontology.getProperties())
-                    .filter(property -> property.getName().equals(propertyName))
-                    .map(Property::getpType)
-                    .toJavaOptional();
+            Property property = this.propertiesByName.get(propertyName);
+            return property == null ? Optional.empty() : Optional.of(property.getpType());
         }
 
         public String pType$(String propertyName) {
@@ -329,6 +329,15 @@ public class Ontology {
 
         //region Fields
         private Ontology ontology;
+
+        private Map<String, EntityType> entitiesByEtype;
+        private Map<String, EntityType> entitiesByName;
+
+        private Map<String, RelationshipType> relationsByRtype;
+        private Map<String, RelationshipType> relationsByName;
+
+        private Map<String, Property> propertiesByName;
+        private Map<String, Property> propertiesByPtype;
         //endregion
     }
     //endregion

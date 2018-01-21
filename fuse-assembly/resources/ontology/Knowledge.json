@@ -87,7 +87,7 @@
       "name": "Reference",
       "properties": [
         "title",
-        "content",
+        "value",
         "url",
         "system",
         "authorization",
@@ -311,6 +311,11 @@
     {
       "pType": "bdt",
       "name": "bdt",
+      "type": "string"
+    },
+    {
+      "pType": "value",
+      "name": "value",
       "type": "string"
     },
     {

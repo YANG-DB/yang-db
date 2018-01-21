@@ -74,12 +74,6 @@ public class Assignment {
             return this;
         }
 
-        public Builder withEntities(List<Entity> entities) {
-            //entities.forEach(entity -> this.entities.put(entity.hashCode(), entity));
-            entities.forEach(entity -> this.entities.put(entity.geteTag().get(0), entity));
-            return this;
-        }
-
         public Builder withRelationship(Relationship relationship) {
             this.relationships.add(relationship);
             return this;
@@ -93,7 +87,7 @@ public class Assignment {
         public Assignment build() {
             Assignment assignment = new Assignment();
             //assignment.setEntities(Stream.ofAll(entities.values()).toJavaList());
-            assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(entity -> entity.geteTag().get(0)).toJavaList());
+            assignment.setEntities(Stream.ofAll(this.entities.values()).sortBy(Entity::geteType).toJavaList());
             assignment.setRelationships(this.relationships);
             return assignment;
         }

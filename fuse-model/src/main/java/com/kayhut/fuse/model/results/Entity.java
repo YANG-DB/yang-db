@@ -2,12 +2,10 @@ package com.kayhut.fuse.model.results;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by benishue on 21-Feb-17.
@@ -16,17 +14,17 @@ import java.util.Set;
 public class Entity {
     //region Constructors
     public Entity() {
-        this.properties = Collections.emptyList();
+        this.properties = new HashMap<>();
         this.attachedProperties = Collections.emptyList();
     }
     //endregion
 
     //region Properties
-    public List<String> geteTag() {
+    public Set<String> geteTag() {
         return eTag;
     }
 
-    public void seteTag(List<String> eTag) {
+    public void seteTag(Set<String> eTag) {
         this.eTag = eTag;
     }
 
@@ -46,12 +44,13 @@ public class Entity {
         this.eType = eType;
     }
 
-    public List<Property> getProperties() {
-        return properties;
+    public Collection<Property> getProperties() {
+        return properties.values();
     }
 
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
+    public void setProperties(Collection<Property> properties) {
+        this.properties = Stream.ofAll(properties)
+                .toJavaMap(property -> new Tuple2<>(property.getpType(), property));
     }
 
     public List<AttachedProperty> getAttachedProperties() {
@@ -80,10 +79,10 @@ public class Entity {
     //endregion
 
     //region Fields
-    private List<String> eTag;
+    private Set<String> eTag;
     private String eID;
     private String eType;
-    private List<Property> properties;
+    private Map<String, Property> properties;
     private List<AttachedProperty> attachedProperties;
     //endregion
 
@@ -91,7 +90,7 @@ public class Entity {
     public static final class Builder {
         //region Constructors
         private Builder() {
-            this.eTag = Collections.emptyList();
+            this.eTag = new HashSet<>();
             this.properties = Collections.emptyList();
             this.attachedProperties = Collections.emptyList();
             this.entities = Collections.emptyList();
@@ -105,7 +104,7 @@ public class Entity {
         //endregion
 
         //region Public Methods
-        public Builder withETag(List<String> eTag) {
+        public Builder withETag(Set<String> eTag) {
             this.eTag = eTag;
             return this;
         }
@@ -160,28 +159,20 @@ public class Entity {
         private Entity merge(Entity e1, Entity e2) {
             e1.seteID(e1.geteID() == null ? e2.geteID() : e1.geteID());
             e1.seteType(e1.geteType() == null ? e2.geteType() : e1.geteType());
+            e1.eTag.addAll(e2.eTag);
+            e1.properties.putAll(e2.properties);
 
-            e1.seteTag(Stream.ofAll(e1.geteTag())
-                    .appendAll(e2.geteTag())
-                    .distinct()
-                    .toJavaList());
-
-            e1.setProperties(Stream.ofAll(e1.getProperties())
-                    .appendAll(e2.getProperties())
-                    .distinctBy(Property::getpType)
-                    .toJavaList());
-
-            e1.setAttachedProperties(Stream.ofAll(e1.getAttachedProperties())
+            /*e1.setAttachedProperties(Stream.ofAll(e1.getAttachedProperties())
                 .appendAll(e2.getAttachedProperties())
                 .distinctBy(AttachedProperty::getpName)
-                .toJavaList());
+                .toJavaList());*/
 
             return e1;
         }
         //endregion
 
         //region Fields
-        private List<String> eTag;
+        private Set<String> eTag;
         private String eID;
         private String eType;
         private List<Property> properties;

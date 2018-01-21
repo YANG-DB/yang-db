@@ -8,10 +8,7 @@ import com.kayhut.fuse.model.results.Relationship;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -44,11 +41,18 @@ public class GraphTraversalCursor implements Cursor {
 
     //region Protected Methods
     private void consolidateFullGraph(QueryResult result) {
-        Map<String, Entity> newEntities =
+        Map<String, Stream<Entity>> newEntityStreams =
                 Stream.ofAll(result.getAssignments())
                 .flatMap(Assignment::getEntities)
                 .filter(entity -> !this.entityIds.contains(entity.geteID()))
-                .distinctBy(Entity::geteID)
+                .groupBy(Entity::geteID).toJavaMap();
+
+        Map<String, Entity> newEntities = Stream.ofAll(newEntityStreams.values())
+                .map(entityStream -> {
+                    Entity.Builder entityBuilder = Entity.Builder.instance();
+                    Stream.ofAll(entityStream).forEach(entityBuilder::withEntity);
+                    return entityBuilder.build();
+                })
                 .toJavaMap(entity -> new Tuple2<>(entity.geteID(), entity));
 
         Map<String, Relationship> newRelationships =
@@ -60,6 +64,11 @@ public class GraphTraversalCursor implements Cursor {
 
         this.fullGraph.getAssignments().get(0).getEntities().addAll(newEntities.values());
         this.fullGraph.getAssignments().get(0).getRelationships().addAll(newRelationships.values());
+
+        this.fullGraph.getAssignments().get(0).setEntities(
+                Stream.ofAll(this.fullGraph.getAssignments().get(0).getEntities())
+                        .sortBy(Entity::geteType)
+                        .toJavaList());
 
         this.entityIds.addAll(newEntities.keySet());
         this.relationshipIds.addAll(newRelationships.keySet());

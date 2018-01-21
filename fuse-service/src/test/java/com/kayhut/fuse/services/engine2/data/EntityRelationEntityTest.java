@@ -963,7 +963,7 @@ public abstract class EntityRelationEntityTest {
             for (int j = 0; j < i; j++) {
                 Entity entityA = Entity.Builder.instance()
                         .withEID("Dragon_" + i)
-                        .withETag(singletonList(eTag1))
+                        .withETag(new HashSet<>(singletonList(eTag1)))
                         .withEType($ont.eType$(DRAGON.name))
                         .withProperties(singletonList(
                                 new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
@@ -971,7 +971,7 @@ public abstract class EntityRelationEntityTest {
 
                 Entity entityB = Entity.Builder.instance()
                         .withEID("Dragon_" + j)
-                        .withETag(singletonList(eTag2))
+                        .withETag(new HashSet<>(singletonList(eTag2)))
                         .withEType($ont.eType$(DRAGON.name))
                         .withProperties(singletonList(
                                 new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + j)))
@@ -995,8 +995,8 @@ public abstract class EntityRelationEntityTest {
                         .withDirectional(true)
                         .withEID1(entityA.geteID())
                         .withEID2(entityB.geteID())
-                        .withETag1(entityA.geteTag().get(0))
-                        .withETag2(entityB.geteTag().get(0))
+                        .withETag1(Stream.ofAll(entityA.geteTag()).get(0))
+                        .withETag2(Stream.ofAll(entityB.geteTag()).get(0))
                         .withRType($ont.rType$(FIRE.getName()))
                         .build();
 

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.neo4j.executor;
+//package com.kayhut.fuse.neo4j.executor;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
@@ -11,18 +11,18 @@ import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.neo4j.GraphProvider;
-import org.neo4j.driver.internal.InternalNode;
+/*import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalRelationship;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.StatementResult;*/
 
 import java.util.*;
 
 /**
  * Created by Roman on 02/04/2017.
  */
-public class Neo4jCursorFactory implements CursorFactory {
+/*public class Neo4jCursorFactory implements CursorFactory {
     //region Constructors
     @Inject
     public Neo4jCursorFactory(GraphProvider graphProvider) {
@@ -40,12 +40,12 @@ public class Neo4jCursorFactory implements CursorFactory {
 
     //region Fields
     private GraphProvider graphProvider;
-    //endregion
+    //endregion*/
 
     /**
      * Created by Roman on 02/04/2017.
      */
-    public static class Neo4jCursorContext implements Context {
+    /*public static class Neo4jCursorContext implements Context {
         //region Constructors
         public Neo4jCursorContext(QueryResource queryResource, String cypher, Ontology ont) {
             this.queryResource = queryResource;
@@ -80,12 +80,12 @@ public class Neo4jCursorFactory implements CursorFactory {
         private String cypher;
         private Ontology ont;
         //endregion
-    }
+    }*/
 
     /**
      * Created by User on 06/03/2017.
      */
-    public static class Neo4jCursor implements Cursor {
+    /*public static class Neo4jCursor implements Cursor {
         //region Constructors
         public Neo4jCursor(Neo4jCursorContext context, GraphProvider graphProvider) {
             this.context = context;
@@ -158,4 +158,4 @@ public class Neo4jCursorFactory implements CursorFactory {
         private Session session;
         //endregion+
     }
-}
+}*/

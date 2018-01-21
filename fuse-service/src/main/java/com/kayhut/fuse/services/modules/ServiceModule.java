@@ -2,8 +2,8 @@ package com.kayhut.fuse.services.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
-import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
@@ -12,7 +12,6 @@ import com.kayhut.fuse.services.controllers.*;
 import com.kayhut.fuse.services.controllers.logging.*;
 import com.typesafe.config.Config;
 import org.jooby.Env;
-import org.jooby.Jooby;
 import org.jooby.scope.RequestScoped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +27,9 @@ public class ServiceModule extends ModuleBase {
     //region ModuleBase Implementation
     @Override
     protected void configureInner(Env env, Config config, Binder binder) throws Throwable {
+        // bind common components
+        binder.bind(RequestIdSupplier.class).to(RequestIdSupplier.Impl.class).asEagerSingleton();
+
         // bind service controller
         bindApiDescriptionController(env, config, binder);
         bindQueryController(env, config, binder);

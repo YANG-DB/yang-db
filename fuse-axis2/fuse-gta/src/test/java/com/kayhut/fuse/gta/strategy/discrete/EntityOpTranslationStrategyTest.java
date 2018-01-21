@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.Constraint.of;
@@ -117,15 +118,9 @@ public class EntityOpTranslationStrategyTest {
 
         EntityOpTranslationStrategy strategy = new EntityOpTranslationStrategy(EntityTranslationOptions.none);
 
-        Ontology ontology = Mockito.mock(Ontology.class);
-        when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
-                {
-                    return Arrays.asList(
-                            EntityType.Builder.get()
-                                    .withEType("1").withName("Person").build()
-                    );
-                }
-        );
+        Ontology ontology = Ontology.OntologyBuilder.anOntology().withEntityTypes(Collections.singletonList(
+                EntityType.Builder.get().withEType("1").withName("Person").build()
+        )).build();
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
@@ -166,15 +161,9 @@ public class EntityOpTranslationStrategyTest {
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(query, 3).get())
         );
 
-        Ontology ontology = Mockito.mock(Ontology.class);
-        when(ontology.getEntityTypes()).thenAnswer(invocationOnMock ->
-                {
-                    return Arrays.asList(
-                            EntityType.Builder.get()
-                                    .withEType("2").withName("Person").build()
-                    );
-                }
-        );
+        Ontology ontology = Ontology.OntologyBuilder.anOntology().withEntityTypes(Collections.singletonList(
+                EntityType.Builder.get().withEType("2").withName("Person").build()
+        )).build();
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenReturn(new Ontology.Accessor(ontology));
