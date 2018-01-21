@@ -60,7 +60,7 @@ import static java.util.Collections.singletonList;
 public class JoinE2EEpbMockTests {
     @BeforeClass
     public static void setup() throws Exception {
-        setup(JoinE2EEpbMockTestSuite.elasticEmbeddedNode.getClient(), true);
+        setup(JoinE2EEpbMockTestSuite.elasticEmbeddedNode.getClient(), false);
     }
 
     @AfterClass
