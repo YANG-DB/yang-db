@@ -54,6 +54,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
 public class JoinE2EEpbMockTests {
@@ -511,7 +512,7 @@ public class JoinE2EEpbMockTests {
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityB = Entity.Builder.instance()
                 .withEID("Dragon_7" )
-                .withETag(singletonList("B"))
+                .withETag(singleton("B"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(singletonList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 7)))
@@ -519,7 +520,7 @@ public class JoinE2EEpbMockTests {
 
         Entity entityC = Entity.Builder.instance()
                 .withEID("Dragon_8" )
-                .withETag(singletonList("C"))
+                .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(singletonList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 8)))
@@ -527,7 +528,7 @@ public class JoinE2EEpbMockTests {
 
         Entity entityD = Entity.Builder.instance()
                 .withEID("Dragon_6" )
-                .withETag(singletonList("D"))
+                .withETag(singleton("D"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(singletonList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 6)))
@@ -536,7 +537,7 @@ public class JoinE2EEpbMockTests {
         for(int i = 0;i<6;i++){
             Entity entityA = Entity.Builder.instance()
                     .withEID("Dragon_"+i )
-                    .withETag(singletonList("A"))
+                    .withETag(singleton("A"))
                     .withEType($ont.eType$(DRAGON.name))
                     .withProperties(singletonList(
                             new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
@@ -582,7 +583,7 @@ public class JoinE2EEpbMockTests {
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_4" )
-                .withETag(singletonList("A"))
+                .withETag(singleton("A"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(singletonList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 4)))
@@ -590,7 +591,7 @@ public class JoinE2EEpbMockTests {
 
         Entity entityC = Entity.Builder.instance()
                 .withEID("Dragon_9" )
-                .withETag(singletonList("C"))
+                .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
                 .withProperties(singletonList(
                         new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 9)))
@@ -599,7 +600,7 @@ public class JoinE2EEpbMockTests {
         for(int i = 0;i<4;i++){
             Entity entityB = Entity.Builder.instance()
                     .withEID("Dragon_"+i )
-                    .withETag(singletonList("B"))
+                    .withETag(singleton("B"))
                     .withEType($ont.eType$(DRAGON.name))
                     .withProperties(singletonList(
                             new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
