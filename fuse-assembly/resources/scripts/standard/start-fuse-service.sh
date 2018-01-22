@@ -1,21 +1,43 @@
-fuseHeapSize=$1
-debug=$2
-
-debugParams=""
-activeProfile="activeProfile"
-logbackConfigurationFilename="config/logback.xml"
-
 mainClass=com.kayhut.fuse.services.FuseRunner
 configFile=config/application.conf
-classPath=".:lib/*"
+classPath=".;lib/*"
+activeProfile=activeProfile
+logbackConfigurationFilename=config/logback.xml
+heapSize=1g
 
-if [ "${fuseHeapSize}" = "" ]; then
-    fuseHeapSize="2g"
+argName=
+for var in "$@"
+do
+    if [ "${argName}" = "" ]; then
+        if [ "${var}" = "--heapSize" ]; then
+            argName=heapSize
+        elif [ "${var}" = "--elasticsearch.hosts" ]; then
+            argName=elasticsearchHosts
+        elif [ "${var}" = "--elasticsearch.cluster_name" ]; then
+            argName=elasticsearchClusterName
+        elif [ "${var}" = "--config" ]; then
+            argName=configFile
+        elif [ "${var}" = "--logConfig" ]; then
+            argName=logbackConfigurationFilename
+        elif [ "${var}" = "--activeProfile" ]; then
+            argName=activeProfile
+        elif [ "${var}" = "--debug" ]; then
+            debugParams=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
+        fi
+    elif [ "${argName}" != "" ]; then
+        declare "${argName}=${var}"
+        argName=
+    fi
+done
+
+systemProperties=
+if [ "${elasticsearchHosts}" != "" ]; then
+	systemProperties="${systemProperties} -Delasticsearch.hosts=${elasticsearchHosts}"
 fi
 
-if [ "${debug}" = "-debug" ]; then
-    debugParams="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+if [ "${elasticsearchClusterName}" != "" ]; then
+	systemProperties="${systemProperties} -Delasticsearch.cluster_name=${elasticsearchClusterName}"
 fi
 
-echo java -Xmx${fuseHeapSize} -Xms${fuseHeapSize} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}
-java -Xmx${fuseHeapSize} -Xms${fuseHeapSize} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}
+echo java -Xmx${heapSize} -Xms${heapSize} ${systemProperties} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}
+java -Xmx${heapSize} -Xms${heapSize} ${systemProperties} ${debugParams} -cp ${classPath} ${mainClass} ${configFile} ${activeProfile} ${logbackConfigurationFilename}

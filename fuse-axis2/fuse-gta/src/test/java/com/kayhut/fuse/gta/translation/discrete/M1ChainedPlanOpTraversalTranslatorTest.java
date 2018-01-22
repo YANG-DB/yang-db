@@ -64,7 +64,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 __.start().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
+                                __.has(T.id, "12345678"),
+                                __.has(T.label, "Person"))))
                         .outE().as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
                         .otherV().as("B");
@@ -80,7 +82,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
+                                __.has(T.id, "12345678"),
+                                __.has(T.label, "Person"))))
                         .outE().as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
                         .otherV().as("B");
@@ -128,7 +132,9 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
         Traversal expectedTraversal =
                 new PromiseGraph().traversal().V().as("A")
-                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.id, "12345678")))
+                        .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.and(
+                                __.has(T.id, "12345678"),
+                                __.has(T.label, "Person"))))
                         .outE().as("A-->B")
                         .has(GlobalConstants.HasKeys.CONSTRAINT, Constraint.by(__.has(T.label, "Fire")))
                         .otherV().as("B")

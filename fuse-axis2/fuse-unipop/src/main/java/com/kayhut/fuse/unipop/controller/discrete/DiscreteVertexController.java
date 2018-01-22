@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
+import com.kayhut.fuse.unipop.controller.discrete.appender.DualEdgeDirectionSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
@@ -104,6 +105,7 @@ public class DiscreteVertexController extends VertexControllerBase {
                         wrap(new EdgeRoutingSearchAppender()),
                         wrap(new EdgeSourceRoutingSearchAppender()),
                         wrap(new EdgeIndexSearchAppender()),
+                        wrap(new DualEdgeDirectionSearchAppender()),
                         wrap(new MustFetchSourceSearchAppender("type")),
                         wrap(new NormalizeRoutingSearchAppender(50)),
                         wrap(new NormalizeIndexSearchAppender(100)));

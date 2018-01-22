@@ -100,9 +100,10 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             Ontology.Accessor ont) {
 
         if (entity instanceof EConcrete) {
-            //traversal.has(GlobalConstants.HasKeys.PROMISE, P.eq(Promise.as(((EConcrete) entity).geteID())));
             traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                    P.eq(Constraint.by(__.has(T.id, P.eq(((EConcrete)entity).geteID())))));
+                    P.eq(Constraint.by(__.and(
+                            __.has(T.id, P.eq(((EConcrete)entity).geteID())),
+                            __.has(T.label, P.eq(EntityTranslationUtil.getValidEntityNames(ont, entity).get(0)))))));
         }
         else if (entity instanceof ETyped || entity instanceof EUntyped) {
             List<String> eTypeNames = EntityTranslationUtil.getValidEntityNames(ont, entity);

@@ -5,7 +5,6 @@ import com.codahale.metrics.Timer;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
-import com.kayhut.fuse.unipop.controller.common.appender.ConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.appender.MustFetchSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;

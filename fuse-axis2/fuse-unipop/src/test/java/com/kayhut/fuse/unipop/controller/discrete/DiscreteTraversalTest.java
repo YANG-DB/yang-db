@@ -610,7 +610,7 @@ public class DiscreteTraversalTest {
     }
 
     @Test
-    public void g_V_hasXxonstraintXhasXandXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasFireXXX_inV_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
+    public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_hasFireXXX_inV_inE_hasXconstraint_byXhasXlabel_hasOutFireXXX_outV() throws InterruptedException {
         List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
                 __.has(T.label, "Dragon"),
                 __.has(T.id, "d000"))))
@@ -621,6 +621,62 @@ public class DiscreteTraversalTest {
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000", "d008", "d009").contains(vertex.id().toString())));
+    }
+
+    @Test
+    public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXhasXlabel_fireXXX_inV() {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.label, "Dragon"),
+                __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "fire"))).inV().toList();
+
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000", "d001", "d002").contains(vertex.id().toString())));
+    }
+
+    @Test
+    public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXid_d000XXXX_outE_hasXconstraint_byXandXhasXlabel_fireX_hasXduration_0XXXX_inV() {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.label, "Dragon"),
+                __.has(T.id, "d000"))))
+                .outE().has(CONSTRAINT, Constraint.by(__.and(
+                        __.has(T.label, "fire"),
+                        __.has("duration", 0))))
+                .inV().toList();
+
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000").contains(vertex.id().toString())));
+    }
+
+    @Test
+    public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXid_d000XXXX_inE_hasXconstraint_byXhasXlabel_fireXXX_inV() {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.label, "Dragon"),
+                __.has(T.id, "d000"))))
+                .inE().has(CONSTRAINT, Constraint.by(__.has(T.label, "fire"))).outV().toList();
+
+        Assert.assertEquals(3, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertEquals(3, Stream.ofAll(vertices).distinctBy(Element::id).size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000", "d008", "d009").contains(vertex.id().toString())));
+    }
+
+    @Test
+    public void g_V_hasXconstraintXhasXandXlabel_DragonX_hasXid_d000XXXX_inE_hasXconstraint_byXandXhasXlabel_fireX_hasXduration_0XXXX_inV() {
+        List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.and(
+                __.has(T.label, "Dragon"),
+                __.has(T.id, "d000"))))
+                .inE().has(CONSTRAINT, Constraint.by(__.and(
+                        __.has(T.label, "fire"),
+                        __.has("duration", 0))))
+                .outV().toList();
+
+        Assert.assertEquals(1, vertices.size());
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
+        Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> Arrays.asList("d000").contains(vertex.id().toString())));
     }
     //endregion
 
@@ -700,7 +756,7 @@ public class DiscreteTraversalTest {
                                         "fireId",
                                         Optional.of("Fire"),
                                         Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
@@ -734,7 +790,7 @@ public class DiscreteTraversalTest {
                                         "fireId",
                                         Optional.of("Fire"),
                                         Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
@@ -768,6 +824,22 @@ public class DiscreteTraversalTest {
                                         "fireId",
                                         Optional.of("Fire"),
                                         Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "fire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        "entityAId",
+                                        Optional.of("Dragon"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
+                                Optional.of(new GraphEdgeSchema.End.Impl("entityBId", Optional.of("Dragon"), Collections.emptyList())),
                                 Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.empty(),

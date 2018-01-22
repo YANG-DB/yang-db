@@ -26,7 +26,7 @@ for %%x in (%*) do (
         ) else if "%%~x"=="--debug" (
 			set debugParams=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005
 		)
-	) else (
+	) else if not "!argName!"=="" (
 		set !argName!=%%~x
 		set argName=
 	)
