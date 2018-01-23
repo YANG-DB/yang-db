@@ -8,13 +8,6 @@
     <baseDirectory>fuse-test-service-engine2-knowledge</baseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/resources/config</directory>
-            <outputDirectory>config</outputDirectory>
-            <includes>
-                <include>*engine3*.conf</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>${project.basedir}/resources/ontology</directory>
             <outputDirectory>ontology</outputDirectory>
             <includes>
@@ -25,8 +18,17 @@
 
     <files>
         <file>
+            <source>${project.basedir}/resources/config/application.test.engine3.m1.dfs.knowledge.public.conf</source>
+            <outputDirectory>./config</outputDirectory>
+            <destName>application.conf</destName>
+        </file>
+        <file>
             <source>${project.basedir}/resources/logConfig/logback.xml</source>
             <outputDirectory>./config</outputDirectory>
+        </file>
+        <file>
+            <source>${project.basedir}/resources/ontology/Knowledge.json</source>
+            <outputDirectory>./ontology</outputDirectory>
         </file>
         <file>
             <source>${project.basedir}/resources/readme/fuse.service.readme.txt</source>
@@ -34,11 +36,11 @@
             <destName>readme.txt</destName>
         </file>
         <file>
-            <source>${project.basedir}/resources/scripts/test/start-fuse-service.bat</source>
+            <source>${project.basedir}/resources/scripts/standard/start-fuse-service.bat</source>
             <outputDirectory>./</outputDirectory>
         </file>
         <file>
-            <source>${project.basedir}/resources/scripts/test/start-fuse-service.sh</source>
+            <source>${project.basedir}/resources/scripts/standard/start-fuse-service.sh</source>
             <outputDirectory>./</outputDirectory>
         </file>
     </files>

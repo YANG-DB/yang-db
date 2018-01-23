@@ -52,7 +52,7 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
                         .map(Optional::get)
                         .map(GraphElementSchema::getConstraint)
                         .toJavaList() :
-                Stream.ofAll(new EdgeSchemaSupplier((VertexControllerContext)context).labels().applicable().get())
+                Stream.ofAll(new EdgeSchemaSupplier(context).labels().applicable().get())
                     .map(GraphElementSchema::getConstraint)
                     .toJavaList();
 
