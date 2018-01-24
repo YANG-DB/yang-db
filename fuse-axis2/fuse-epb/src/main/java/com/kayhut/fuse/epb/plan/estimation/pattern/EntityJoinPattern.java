@@ -9,6 +9,7 @@ import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ public class EntityJoinPattern extends Pattern {
             Plan joinPlan = result.getPlanStepCosts().get(0).getPlan();
             JoinCost joinCost = (JoinCost) result.getPlanStepCosts().get(0).getCost();
             PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(joinCost.getCost() + joinCost.getLeftBranchCost().getGlobalCost().cost + joinCost.getRightBranchCost().getGlobalCost().cost),
-                    Collections.singleton(new PlanWithCost<>(joinPlan, joinCost)));
+                    Arrays.asList(new PlanWithCost<>(joinPlan, joinCost)));
             return new PlanWithCost<>( joinPlan, planDetailedCost);
         }else{
             return super.buildNewPlan(result, previousCost);

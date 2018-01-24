@@ -18,12 +18,17 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.unipop.process.JoinStep;
+import com.kayhut.fuse.unipop.promise.PromiseGraph;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.unipop.structure.UniGraph;
 
 import java.util.Collections;
 
@@ -75,6 +80,7 @@ public class JoinEntityOpTranslationStrategyTest {
         EntityJoinOp joinOp = new EntityJoinOp();
         TranslationContext context = Mockito.mock(TranslationContext.class);
 
+        when(context.getGraphTraversalSource()).thenReturn(new GraphTraversalSource(Mockito.mock(Graph.class)));
         GraphTraversal graphTraversal = strategy.translate(__.start(),
                 new PlanWithCost<>(new Plan(joinOp),
                         new PlanDetailedCost(new DoubleCost(0), Collections.singleton(new PlanWithCost<>(new Plan(joinOp),
@@ -105,7 +111,7 @@ public class JoinEntityOpTranslationStrategyTest {
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
-
+        when(context.getGraphTraversalSource()).thenReturn(new GraphTraversalSource(Mockito.mock(Graph.class)));
         GraphTraversal graphTraversal = strategy.translate(__.start(),
                 new PlanWithCost<>(new Plan(joinOp),
                         new PlanDetailedCost(new DoubleCost(0), Collections.singleton(new PlanWithCost<>(new Plan(joinOp),
@@ -136,7 +142,7 @@ public class JoinEntityOpTranslationStrategyTest {
         });
 
         TranslationContext context = Mockito.mock(TranslationContext.class);
-
+        when(context.getGraphTraversalSource()).thenReturn(new GraphTraversalSource(Mockito.mock(Graph.class)));
         GraphTraversal graphTraversal = strategy.translate(__.start(),
                 new PlanWithCost<>(new Plan(joinOp),
                         new PlanDetailedCost(new DoubleCost(0), Collections.singleton(new PlanWithCost<>(new Plan(joinOp),

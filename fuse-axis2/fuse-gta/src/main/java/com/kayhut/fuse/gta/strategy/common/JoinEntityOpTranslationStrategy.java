@@ -12,7 +12,9 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.unipop.process.JoinStep;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.DefaultGraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 
 import java.util.function.Predicate;
 
@@ -36,6 +38,7 @@ public class JoinEntityOpTranslationStrategy extends PlanOpTranslationStrategyBa
             CountEstimatesCost leftCost = Stream.ofAll(joinCost.getLeftBranchCost().getPlanStepCosts()).last().getCost();
             CountEstimatesCost rightCost = Stream.ofAll(joinCost.getRightBranchCost().getPlanStepCosts()).last().getCost();
 
+            traversal = new DefaultGraphTraversal(context.getGraphTraversalSource());
             traversal.asAdmin().addStep(new JoinStep(traversal.asAdmin()));
 
             if(leftCost.peek() < rightCost.peek()){
