@@ -27,9 +27,9 @@ public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvid
         switch (label) {
             case "Person":
             case "Dragon":
+            case "Kingdom":
                 return Optional.of(new GraphVertexSchema.Impl(label, new StaticIndexPartitions(label.toLowerCase())));
 
-            case "Kingdom":
             case "Horse":
             case "Guild":
                 return Optional.of(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
@@ -43,28 +43,50 @@ public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvid
         if (!Stream.ofAll(getEdgeLabels()).contains(label)) {
             return Optional.empty();
         }
-
-        return Optional.of(new GraphEdgeSchema.Impl(
-                label,
-                Optional.of(new GraphEdgeSchema.End.Impl(
-                        "entityA.id",
-                        Optional.of("Dragon"),
-                        Arrays.asList(
-                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-                        ))),
-                Optional.of(new GraphEdgeSchema.End.Impl(
-                        "entityB.id",
-                        Optional.of("Dragon"),
-                        Arrays.asList(
-                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-                        ))),
-                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
-                new StaticIndexPartitions(Arrays.asList(
-                        FIRE.getName().toLowerCase() + "20170511",
-                        FIRE.getName().toLowerCase() + "20170512",
-                        FIRE.getName().toLowerCase() + "20170513"))));
+        switch(label) {
+            case "fire":
+                return Optional.of(new GraphEdgeSchema.Impl(
+                        label,
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                "entityA.id",
+                                Optional.of("Dragon"),
+                                Arrays.asList(
+                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                ))),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                "entityB.id",
+                                Optional.of("Dragon"),
+                                Arrays.asList(
+                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                ))),
+                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                        new StaticIndexPartitions(Arrays.asList(
+                                FIRE.getName().toLowerCase() + "20170511",
+                                FIRE.getName().toLowerCase() + "20170512",
+                                FIRE.getName().toLowerCase() + "20170513"))));
+            case "originatedIn":
+                return Optional.of(new GraphEdgeSchema.Impl(
+                        label,
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                "entityA.id",
+                                Optional.of("Dragon"),
+                                Arrays.asList(
+                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                ))),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                "entityB.id",
+                                Optional.of("Kingdom"),
+                                Arrays.asList(
+                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                ))),
+                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "OUT", "IN")),
+                        new StaticIndexPartitions(Arrays.asList("originated_in"))));
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -94,7 +116,7 @@ public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvid
 
     @Override
     public Iterable<String> getEdgeLabels() {
-        return Collections.singletonList(FIRE.getName());
+        return Arrays.asList(FIRE.getName(), ORIGINATED_IN.getName());
     }
 
 }
