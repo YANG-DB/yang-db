@@ -254,7 +254,7 @@ public class SmartEpbShortPathTests {
                 next(eProp(6)).
                 build();
 
-        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, Rel.Direction.L).relFilter(4).entity(1).entityFilter(2).plan();
+        Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(1).entityFilter(2).rel(3).relFilter(4).entity(5).entityFilter(6).plan();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
 
         Assert.assertNotNull(plan);
@@ -262,9 +262,9 @@ public class SmartEpbShortPathTests {
         Assert.assertEquals(2403, plan.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = plan.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(2000, op.getCost().getCost(), 0.1);
+        Assert.assertEquals(400, op.getCost().getCost(), 0.1);
         Assert.assertEquals(3, iterator.next().getCost().getCost(), 0.1);
-        Assert.assertEquals(400, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(2000, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test

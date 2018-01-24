@@ -20,8 +20,8 @@ public class CheapestPlanSelector implements PlanSelector<PlanWithCost<Plan, Pla
     @Override
     public Iterable<PlanWithCost<Plan, PlanDetailedCost>> select(AsgQuery query, Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {
         return Stream.ofAll(plans).filter(plan -> SimpleExtenderUtils.checkIfPlanIsComplete(plan.getPlan(), query)).minBy((o1, o2) -> {
-            if (o1.getCost().getGlobalCost().cost == o2.getCost().getGlobalCost().cost) {
-                return Integer.compare(o1.getPlan().hashCode(), o2.getPlan().hashCode());
+            if (Double.compare(o1.getCost().getGlobalCost().cost, o2.getCost().getGlobalCost().cost) == 0) {
+                return Integer.compare(o1.getPlan().toString().hashCode(), o2.getPlan().toString().hashCode());
             }
             return Double.compare(o1.getCost().getGlobalCost().cost, o2.getCost().getGlobalCost().cost);
 

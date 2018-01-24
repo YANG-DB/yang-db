@@ -1,15 +1,8 @@
 package com.kayhut.fuse.services.engine2.data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
-import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
-import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
-import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
-import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
@@ -22,7 +15,6 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -33,17 +25,14 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.services.TestsConfiguration;
-import com.kayhut.fuse.services.engine2.JoinE2EEpbMockTestSuite;
 import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
-import com.kayhut.fuse.services.engine2.mocks.EpbMockModule;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
-import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -415,7 +404,140 @@ public class JoinE2ETests {
     public void testDragonOriginKingdomX2Path() throws IOException, InterruptedException {
         Query query = getDragonOriginKingdomX2Query();
 
-        runQueryAndValidate(query, dragonFireOriginKingdomX2Results(), dragonOriginKingdomX2Plan(query));
+        runQueryAndValidate(query, dragonOriginKingdomX2Results(), dragonOriginKingdomX2Plan(query));
+    }
+
+    @Test
+    public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException {
+        Query query = getDragonOriginKingdomX3Query();
+
+        runQueryAndValidate(query, dragonOriginKingdomX3Results(), dragonOriginKingdomX3Plan(query));
+    }
+
+    private Plan dragonOriginKingdomX3Plan(Query query) {
+
+
+        Plan leftBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2) )),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+        );
+        Rel rel = (Rel) query.getElements().get(5).clone();
+        rel.setDir(Rel.Direction.R);
+        Plan rightBranch = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>( rel)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+        );
+
+        Plan innerJoin = new Plan(new EntityJoinOp(leftBranch, rightBranch));
+        Rel rel2 = (Rel) query.getElements().get(8).clone();
+        rel2.setDir(Rel.Direction.R);
+        Plan rightBranch2 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(9))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>( rel2)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup())),
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+        );
+        return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
+    }
+
+    private QueryResult dragonOriginKingdomX3Results() {
+        QueryResult.Builder builder = QueryResult.Builder.instance();
+        Entity entityA = Entity.Builder.instance()
+                .withEID("Dragon_1" )
+                .withETag(singleton("A"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B")))
+                .build();
+        Entity entityB = Entity.Builder.instance()
+                .withEID("Kingdom_1" )
+                .withETag(singleton("B"))
+                .withEType($ont.eType$(KINGDOM.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "kingdom1")))
+                .build();
+
+        List<Entity> entitiesC = new ArrayList<>();
+        entitiesC.add(Entity.Builder.instance()
+                .withEID("Dragon_3" )
+                .withETag(singleton("C"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D")))
+                .build());
+
+        entitiesC.add(Entity.Builder.instance()
+                .withEID("Dragon_61" )
+                .withETag(singleton("C"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D")))
+                .build());
+
+        List<Entity> entitiesD = new ArrayList<>();
+        entitiesD.add(Entity.Builder.instance()
+                .withEID("Dragon_5" )
+                .withETag(singleton("D"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F")))
+                .build());
+        entitiesD.add(Entity.Builder.instance()
+                .withEID("Dragon_63" )
+                .withETag(singleton("D"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F")))
+                .build());
+
+        for(Entity entityC : entitiesC) {
+            for (Entity entityD : entitiesD) {
+                Relationship relationship1 = Relationship.Builder.instance()
+                        .withRID("123")
+                        .withDirectional(false)
+                        .withEID1(entityA.geteID())
+                        .withEID2(entityB.geteID())
+                        .withETag1("A")
+                        .withETag2("B")
+                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .build();
+
+
+                Relationship relationship2 = Relationship.Builder.instance()
+                        .withRID("123")
+                        .withDirectional(false)
+                        .withEID1(entityC.geteID())
+                        .withEID2(entityB.geteID())
+                        .withETag1("C")
+                        .withETag2("B")
+                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .build();
+
+                Relationship relationship3 = Relationship.Builder.instance()
+                        .withRID("123")
+                        .withDirectional(false)
+                        .withEID1(entityD.geteID())
+                        .withEID2(entityB.geteID())
+                        .withETag1("D")
+                        .withETag2("B")
+                        .withRType($ont.rType$(ORIGINATED_IN.getName()))
+                        .build();
+
+                Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC).withEntity(entityD)
+                        .withRelationship(relationship1).withRelationship(relationship2).withRelationship(relationship3).build();
+                builder.withAssignment(assignment);
+            }
+        }
+
+        return builder.build();
+
     }
 
     private Plan dragonOriginKingdomX2Plan(Query query) {
@@ -439,7 +561,7 @@ public class JoinE2ETests {
         return new Plan(new EntityJoinOp(leftBranch, rightBranch));
     }
 
-    private QueryResult dragonFireOriginKingdomX2Results() {
+    private QueryResult dragonOriginKingdomX2Results() {
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_1" )
@@ -504,20 +626,11 @@ public class JoinE2ETests {
 
     }
 
-    @Test
-    @Ignore
-    public void testDragonFireDragonX3Path() throws IOException, InterruptedException {
-        Query query = getDragonFireDragonX3Query();
-
-        //runQueryAndValidate(query, dragonFireDragonX3Results());
-    }
-
-
 
     private void runQueryAndValidate(Query query, QueryResult expectedQueryResult, Plan expectedPlan) throws IOException, InterruptedException {
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        Plan acctualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
+        Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
@@ -529,30 +642,10 @@ public class JoinE2ETests {
         }
 
         QueryResult actualQueryResult = fuseClient.getPageData(pageResourceInfo.getDataUrl());
-        PlanAssert.assertEquals(expectedPlan, acctualPlan);
+        PlanAssert.assertEquals(expectedPlan, actualPlan);
 
 
         QueryResultAssert.assertEquals(expectedQueryResult, actualQueryResult, shouldIgnoreRelId());
-    }
-
-    private Query getDragonFireDragonQuery() {
-        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", singletonList(NAME.type), 2, 0),
-                new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
-        )).build();
-    }
-
-    private Query getDragonFireDragonX2Query() {
-        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
-                new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", singletonList(NAME.type), 2, 0),
-                new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 4, 0),
-                new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 5, 0),
-                new EConcrete(5, "C", $ont.eType$(DRAGON.name), "Dragon_2", "D1", singletonList(NAME.type), 0, 0)
-        )).build();
     }
 
     private Query getDragonOriginKingdomX2Query() {
@@ -567,143 +660,20 @@ public class JoinE2ETests {
         )).build();
     }
 
-    private Query getDragonFireDragonX3Query() {
+    private Query getDragonOriginKingdomX3Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
-                new Quant1(2, QuantType.all,Arrays.asList(3,5,7),0),
-                new Rel(3, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 4, 0),
-                new EConcrete(4, "B", $ont.eType$(DRAGON.name),"Dragon_7", "D0",singletonList(NAME.type), 0, 0),
-                new Rel(5, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 6, 0),
-                new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1",singletonList(NAME.type), 0, 0),
-                new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 8, 0),
-                new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D2",singletonList(NAME.type), 0, 0)
+                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", singletonList(NAME.type), 2, 0),
+                new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
+                new ETyped(3, "B", $ont.eType$(KINGDOM.name), singletonList(NAME.type), 4, 0),
+                new Quant1(4, QuantType.all, Arrays.asList(5,8),0),
+                new Rel(5, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 6, 0),
+                new ETyped(6, "C", $ont.eType$(DRAGON.name), singletonList(NAME.type), 7, 0),
+                new EProp(7, NAME.type, Constraint.of(ConstraintOp.eq, "D")),
+                new Rel(8, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 9, 0),
+                new ETyped(9, "D", $ont.eType$(DRAGON.name), singletonList(NAME.type), 10, 0),
+                new EProp(10, NAME.type, Constraint.of(ConstraintOp.eq, "F"))
         )).build();
-    }
-
-    private QueryResult dragonFireDragonX3Results() {
-        QueryResult.Builder builder = QueryResult.Builder.instance();
-        Entity entityB = Entity.Builder.instance()
-                .withEID("Dragon_7" )
-                .withETag(singleton("B"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 7)))
-                .build();
-
-        Entity entityC = Entity.Builder.instance()
-                .withEID("Dragon_8" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 8)))
-                .build();
-
-        Entity entityD = Entity.Builder.instance()
-                .withEID("Dragon_6" )
-                .withETag(singleton("D"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 6)))
-                .build();
-
-        for(int i = 0;i<6;i++){
-            Entity entityA = Entity.Builder.instance()
-                    .withEID("Dragon_"+i )
-                    .withETag(singleton("A"))
-                    .withEType($ont.eType$(DRAGON.name))
-                    .withProperties(singletonList(
-                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
-                    .build();
-
-            Relationship relationship1 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityB.geteID())
-                    .withEID2("Dragon_" + i)
-                    .withETag1("B")
-                    .withETag2("A")
-                    .withRType($ont.rType$(FIRE.getName()))
-                    .build();
-
-            Relationship relationship2 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityC.geteID())
-                    .withEID2("Dragon_" + i)
-                    .withETag1("C")
-                    .withETag2("A")
-                    .withRType($ont.rType$(FIRE.getName()))
-                    .build();
-            Relationship relationship3 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityD.geteID())
-                    .withEID2("Dragon_" + i)
-                    .withETag1("D")
-                    .withETag2("A")
-                    .withRType($ont.rType$(FIRE.getName()))
-                    .build();
-
-            Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC).withEntity(entityD).withRelationship(relationship3)
-                    .withRelationship(relationship1).withRelationship(relationship2).build();
-            builder.withAssignment(assignment);
-        }
-
-        return builder.build();
-    }
-    private QueryResult dragonFireDragonX2Results() {
-        QueryResult.Builder builder = QueryResult.Builder.instance();
-        Entity entityA = Entity.Builder.instance()
-                .withEID("Dragon_4" )
-                .withETag(singleton("A"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 4)))
-                .build();
-
-        Entity entityC = Entity.Builder.instance()
-                .withEID("Dragon_9" )
-                .withETag(singleton("C"))
-                .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 9)))
-                .build();
-
-        for(int i = 0;i<4;i++){
-            Entity entityB = Entity.Builder.instance()
-                    .withEID("Dragon_"+i )
-                    .withETag(singleton("B"))
-                    .withEType($ont.eType$(DRAGON.name))
-                    .withProperties(singletonList(
-                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
-                    .build();
-            Relationship relationship1 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityA.geteID())
-                    .withEID2("Dragon_" + i)
-                    .withETag1("A")
-                    .withETag2("B")
-                    .withRType($ont.rType$(FIRE.getName()))
-                    .build();
-
-            Relationship relationship2 = Relationship.Builder.instance()
-                    .withRID("123")
-                    .withDirectional(false)
-                    .withEID1(entityC.geteID())
-                    .withEID2("Dragon_" + i)
-                    .withETag1("C")
-                    .withETag2("B")
-                    .withRType($ont.rType$(FIRE.getName()))
-                    .build();
-            Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC)
-                    .withRelationship(relationship1).withRelationship(relationship2).build();
-            builder.withAssignment(assignment);
-        }
-
-        return builder.build();
-
     }
 
 

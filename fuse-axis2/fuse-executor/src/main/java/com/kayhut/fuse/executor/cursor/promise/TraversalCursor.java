@@ -101,7 +101,7 @@ public class TraversalCursor implements Cursor {
     }
 
     private Entity toEntity(Path path, EUntyped element) {
-        PromiseVertex vertex = path.get(element.geteTag());
+        PromiseVertex vertex = getPromiseVertex(path, element);
         IdPromise idPromise = (IdPromise)vertex.getPromise();
 
         String eType = idPromise.getLabel().isPresent() ? ont.eType$(idPromise.getLabel().get()) : "";
@@ -115,7 +115,7 @@ public class TraversalCursor implements Cursor {
     }
 
     private Entity toEntity(Path path, EConcrete element) {
-        PromiseVertex vertex = path.get(element.geteTag());
+        PromiseVertex vertex = getPromiseVertex(path, element);
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
                 .filter(property -> !property.getpType().equals(this.typeProperty.getpType()))
@@ -125,13 +125,25 @@ public class TraversalCursor implements Cursor {
     }
 
     private Entity toEntity(Path path, ETyped element) {
-        PromiseVertex vertex = path.get(element.geteTag());
+        PromiseVertex vertex = getPromiseVertex(path, element);
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
                 .filter(property -> !property.getpType().equals(this.typeProperty.getpType()))
                 .toJavaList();
 
         return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
+    }
+
+    private PromiseVertex getPromiseVertex(Path path, EEntityBase element) {
+        Object pathObject = path.get(element.geteTag());
+        PromiseVertex vertex ;
+        if(List.class.isAssignableFrom(pathObject.getClass()) ) {
+            List vertexList = (List)pathObject;
+            vertex = (PromiseVertex) Stream.ofAll(vertexList).last();
+        }else{
+            vertex = (PromiseVertex) pathObject;
+        }
+        return vertex;
     }
 
     private Entity toEntity(String eId, String eType, String eTag, List<Property> properties) {
