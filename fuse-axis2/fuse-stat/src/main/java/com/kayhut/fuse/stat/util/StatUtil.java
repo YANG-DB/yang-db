@@ -200,10 +200,10 @@ public class StatUtil {
 
         //Fix last bucket:
         //  if the number of combinations is not perfectly divided by the interval, the end of the last bucket will loop back to earlier values.
-        if (numOfBuckets > Math.pow(numChars, prefixLen) / interval) {
+        if (numOfBuckets >= Math.pow(numChars, prefixLen) / interval) {
             char[] end = new char[prefixLen];
             for (int i = 0; i < prefixLen; i++) {
-                end[i] = Character.toChars(startCode + numChars - 1)[0];
+                end[i] = Character.toChars(startCode + numChars)[0];
             }
             buckets.get(buckets.size() - 1).setEnd(String.valueOf(end));
         }
@@ -297,7 +297,7 @@ public class StatUtil {
     private static String calcBucketStart(int numChars, int startCode, int prefixLen, int bucketIdx) {
         char[] chars = new char[prefixLen];
         for (int i = 0; i < prefixLen; i++) {
-            int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            int code = startCode + (Math.floorDiv(bucketIdx, (int) Math.pow(numChars, prefixLen - (i + 1)))) % (numChars+1);
             chars[i] = Character.toChars(code)[0];
         }
         return String.valueOf(chars);
@@ -306,7 +306,7 @@ public class StatUtil {
     private static String calcBucketEnd(int numChars, int startCode, int prefixLen, int bucketIdx, int interval) {
         char[] chars = new char[prefixLen];
         for (int i = 0; i < prefixLen; i++) {
-            int code = startCode + (Math.floorDiv(bucketIdx + interval - 1, (int) Math.pow(numChars, prefixLen - (i + 1)))) % numChars;
+            int code = startCode + (Math.floorDiv(bucketIdx + interval, (int) Math.pow(numChars, prefixLen - (i + 1)))) % (numChars+1);
             chars[i] = Character.toChars(code)[0];
         }
         return String.valueOf(chars);
