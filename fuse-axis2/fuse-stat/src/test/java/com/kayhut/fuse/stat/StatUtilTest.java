@@ -65,4 +65,18 @@ public class StatUtilTest {
         Assert.assertEquals("AA", bucketRanges.get(0).getStart());
         Assert.assertEquals("{{",Stream.ofAll(bucketRanges).last().getEnd());
     }
+
+    @Test
+    public void testStringBucketsPrefix3(){
+        int interval = 10;
+        int prefix = 3;
+        List<BucketRange<String>> bucketRanges = StatUtil.calculateAlphabeticBuckets(97, 26, prefix, interval);
+
+        for (int i = 0; i < bucketRanges.size()-1; i++) {
+            Assert.assertEquals(bucketRanges.get(i).getEnd(), bucketRanges.get(i+1).getStart());
+        }
+        Assert.assertEquals(bucketRanges.get(0).getStart(), "aaa");
+        Assert.assertEquals(Stream.ofAll(bucketRanges).last().getEnd(), "{{{");
+    }
+
 }

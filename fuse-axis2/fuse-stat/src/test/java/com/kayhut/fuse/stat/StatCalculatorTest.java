@@ -100,7 +100,7 @@ public class StatCalculatorTest {
         assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId2));
 
         //Check if color bucket exists (bucket with lower_bound: "grc", upper_bound: "grl")
-        String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "grc" + "grl");
+        String docId3 = StatUtil.hashString(DATA_INDEX_NAME_1 + DATA_TYPE_DRAGON + DATA_FIELD_NAME_COLOR + "gqg" + "grq");
         assertTrue(EsUtil.isDocExists(statClient, STAT_INDEX_NAME, STAT_TYPE_STRING_NAME, docId3));
 
         //Check that the bucket ["grc", "grl") have the cardinality of 1 (i.e. Green Color)
