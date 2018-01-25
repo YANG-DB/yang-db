@@ -48,9 +48,9 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
     public Iterable<Edge> convert(SearchHit hit) {
         DiscreteVertex v = new DiscreteVertex(
                 hit.getId(),
-                this.typeToLabelVertexSchemas.get((String)hit.getSourceAsMap().get("type")).getLabel(),
+                this.typeToLabelVertexSchemas.get((String)hit.sourceAsMap().get("type")).getLabel(),
                 context.getGraph(),
-                hit.getSourceAsMap());
+                hit.sourceAsMap());
 
         return Collections.singletonList(new DiscreteEdge(
                 v.id(),

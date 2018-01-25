@@ -94,7 +94,7 @@ public class DiscreteTraversalTest {
 
         TransportClient client = elasticEmbeddedNode.getClient();
         client.admin().indices().preparePutTemplate("all")
-                .setPatterns(Collections.singletonList("*"))
+                .setTemplate("*")
                 .setSettings(Settings.builder()
                         .put("number_of_shards", 1)
                         .put("number_of_replicas", 0).build())
