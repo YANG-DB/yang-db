@@ -4,6 +4,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -36,14 +37,13 @@ public class LoggingSearchRequestBuilder extends SearchRequestBuilder{
 
     //region Override Methods
     @Override
-    public ActionFuture<SearchResponse> execute() {
+    public ListenableActionFuture<SearchResponse> execute() {
         Timer.Context timerContext = this.timer.time();
 
         try {
             this.startMessage.log();
-            ActionFuture<SearchResponse> future = super.execute();
             return new LoggingActionFuture<>(
-                    future,
+                    super.execute(),
                     this.successMessage,
                     this.failureMessage,
                     timerContext,

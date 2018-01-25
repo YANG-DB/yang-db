@@ -2,7 +2,7 @@ package com.kayhut.test.framework.index;
 
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.plugins.Plugin;
@@ -81,7 +81,7 @@ public class ElasticEmbeddedNode implements AutoCloseable {
             try {
                 Settings settings = Settings.builder().put("cluster.name", nodeName).build();
                 this.client = new PreBuiltTransportClient(settings)
-                        .addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
+                        .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("localhost"), httpTransportPort));
             } catch (UnknownHostException e) {
                 throw new UnknownError(e.getMessage());
             }

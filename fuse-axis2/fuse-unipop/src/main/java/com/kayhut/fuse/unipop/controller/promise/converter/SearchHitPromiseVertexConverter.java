@@ -23,9 +23,12 @@ public class SearchHitPromiseVertexConverter implements ElementConverter<SearchH
 
     @Override
     public Iterable<Element> convert(SearchHit element) {
-        return Collections.singletonList(new PromiseVertex(
-                Promise.as(element.getId(), (String) element.getSourceAsMap().get("type")),
-                Optional.empty(), graph, element.getSourceAsMap()));
+        return Collections.singletonList(
+                new PromiseVertex(
+                    Promise.as(element.getId(), (String) element.sourceAsMap().get("type")),
+                    Optional.empty(),
+                    graph,
+                    element.sourceAsMap()));
     }
     //endregion
 

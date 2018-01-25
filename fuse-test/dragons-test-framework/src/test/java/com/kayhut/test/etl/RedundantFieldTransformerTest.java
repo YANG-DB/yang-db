@@ -2,6 +2,7 @@ package com.kayhut.test.etl;
 
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.junit.Ignore;
@@ -26,9 +27,9 @@ public class RedundantFieldTransformerTest {
 
         Settings settings = Settings.builder().put("cluster.name", "fuse-test").build();
         TransportClient transportClient = new PreBuiltTransportClient(settings)
-                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
-                .addTransportAddress(new TransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
-                .addTransportAddress(new TransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
+                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.81.12.209"), 9300))
+                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("13.73.165.97"), 9300))
+                .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
 
         Map<String, String> fields = new HashMap<>();
         fields.put("name", "entityB.name");

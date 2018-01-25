@@ -6,7 +6,6 @@ import com.kayhut.fuse.stat.model.configuration.StatContainer;
 import com.kayhut.fuse.stat.model.configuration.Type;
 import com.kayhut.fuse.stat.model.histogram.Histogram;
 import javaslang.collection.Stream;
-import org.apache.commons.collections.map.HashedMap;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -77,7 +76,7 @@ public class StatTestUtil {
     ) {
         List<Map<String, Object>> dragons = new ArrayList<>();
         for (int i = 0; i < numDragons; i++) {
-            Map<String, Object> dragon = new HashedMap();
+            Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", Integer.toString(i));
             dragon.put("type", "Dragon");
             dragon.put("name", generateRandomString(dragonNamePrefixLength) + "_dragon" + i);
@@ -156,7 +155,7 @@ public class StatTestUtil {
                     .execute()
                     .actionGet();
             for (SearchHit hit : response.getHits()) {
-                esData.add(hit.getSourceAsMap());
+                esData.add(hit.sourceAsMap());
             }
             i++;
         }
@@ -208,7 +207,7 @@ public class StatTestUtil {
         }
         Set<Map<String, Object>> results = new HashSet<>();
         for (SearchHit hit : response.getHits()) {
-            Map<String, Object> doc = hit.getSourceAsMap();
+            Map<String, Object> doc = hit.sourceAsMap();
             results.add(doc);
         }
         return results;

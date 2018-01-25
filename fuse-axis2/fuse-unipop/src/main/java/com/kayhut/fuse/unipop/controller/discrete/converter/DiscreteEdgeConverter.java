@@ -58,11 +58,11 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDestination().get();
 
-            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.getSourceAsMap());
-            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.getSourceAsMap(), inVertexProperties);
+            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.sourceAsMap());
+            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.sourceAsMap(), inVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), outEndSchema.getIdField());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), inEndSchema.getIdField());
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {
@@ -83,11 +83,11 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getDestination().get() : edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getSource().get() : edgeSchema.getDestination().get();
 
-            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.getSourceAsMap());
-            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.getSourceAsMap(), outVertexProperties);
+            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
+            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), outEndSchema.getIdField());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.getSourceAsMap(), inEndSchema.getIdField());
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {

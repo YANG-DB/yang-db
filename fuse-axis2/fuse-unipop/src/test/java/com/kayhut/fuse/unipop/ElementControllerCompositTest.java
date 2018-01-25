@@ -13,11 +13,14 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.document.DocumentField;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.internal.InternalSearchHit;
+import org.elasticsearch.search.internal.InternalSearchHitField;
+import org.elasticsearch.search.internal.InternalSearchHits;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -78,12 +81,12 @@ public class ElementControllerCompositTest {
         when(searchResponse.getScrollId()).thenReturn("a");
 
         //search hits
-        Map<String, DocumentField> fields = new HashMap<>();
-        fields.put("name", new DocumentField("name", Collections.singletonList("myName")));
-        fields.put("type", new DocumentField("type", Collections.singletonList("myType")));
-        SearchHit[] tests = new SearchHit[] { new SearchHit(1, "1", new Text("test"), fields)};
+        Map<String, SearchHitField> fields = new HashMap<>();
+        fields.put("name", new InternalSearchHitField("name", Collections.singletonList("myName")));
+        fields.put("type", new InternalSearchHitField("type", Collections.singletonList("myType")));
+        InternalSearchHit[] tests = new InternalSearchHit[] { new InternalSearchHit(1, "1", new Text("test"), fields)};
 
-        SearchHits searchHits = new SearchHits(tests, 10, 1.0f);
+        SearchHits searchHits = new InternalSearchHits(tests, 10, 1.0f);
         when(searchResponse.getHits()).thenReturn(searchHits);
     }
 
