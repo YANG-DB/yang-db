@@ -11,6 +11,7 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -464,6 +465,100 @@ public class JoinE2EEpbMockTests {
         runQueryAndValidate(query, dragonFireDragonX3Results());
     }
 
+    @Test
+    public void testJoinRelEntityPlan() throws IOException, InterruptedException {
+        Query query = getDragonFireDragonX3Query();
+
+        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        redundantRelProp.setpType("type");
+        redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
+
+        RedundantRelProp redundantRelProp2 = new RedundantRelProp("entityB.id");
+        redundantRelProp2.setpType("id");
+        redundantRelProp2.setCon(Constraint.of(ConstraintOp.eq, "Dragon_6", "[]"));
+
+        Rel rel3 = (Rel) query.getElements().get(3);
+        rel3.setDir(Rel.Direction.R);
+        Plan e4 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>(rel3)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+
+        Rel rel5 = (Rel) query.getElements().get(5);
+        rel5.setDir(Rel.Direction.R);
+        Plan e6 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>(rel5)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+
+        Plan innerJoin = new Plan(new EntityJoinOp(e4,e6));
+        Plan plan = new Plan(innerJoin.getOps().get(0),
+                            new RelationOp(new AsgEBase<>((Rel)query.getElements().get(7))),
+                            new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Arrays.asList(redundantRelProp, redundantRelProp2)))),
+                            new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(8))),
+                            new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                    );
+
+        JoinCost joinCost = new JoinCost(1, 1,
+                new PlanDetailedCost(new DoubleCost(10), Collections.singleton(new PlanWithCost<>(e4, new CountEstimatesCost(1, 1)))),
+                new PlanDetailedCost(new DoubleCost(10), Collections.singleton(new PlanWithCost<>(e6, new CountEstimatesCost(1, 1)))));
+
+        setCurrentPlan(new PlanWithCost<>(plan, new PlanDetailedCost(new DoubleCost(1), Arrays.asList(new PlanWithCost<>(innerJoin, joinCost)))));
+
+        runQueryAndValidate(query, dragonFireDragonX3Results());
+    }
+
+    @Test
+    public void testJoinGotoPlan() throws IOException, InterruptedException {
+        Query query = getDragonFireDragonGotoQuery();
+
+        RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
+        redundantRelProp.setpType("type");
+        redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
+
+        RedundantRelProp redundantRelProp2 = new RedundantRelProp("entityB.id");
+        redundantRelProp2.setpType("id");
+        redundantRelProp2.setCon(Constraint.of(ConstraintOp.eq, "Dragon_6", "[]"));
+
+        Rel rel3 = (Rel) query.getElements().get(3);
+        rel3.setDir(Rel.Direction.R);
+        Plan e4 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>(rel3)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+
+        Rel rel5 = (Rel) query.getElements().get(5);
+        rel5.setDir(Rel.Direction.R);
+        Plan e6 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new RelationOp(new AsgEBase<>(rel5)),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+
+        Plan innerJoin = new Plan(new EntityJoinOp(e4,e6));
+        Plan plan = new Plan(innerJoin.getOps().get(0),
+                new GoToEntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new RelationOp(new AsgEBase<>((Rel)query.getElements().get(7))),
+                new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Arrays.asList(redundantRelProp, redundantRelProp2)))),
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(8))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+        );
+
+        JoinCost joinCost = new JoinCost(1, 1,
+                new PlanDetailedCost(new DoubleCost(10), Collections.singleton(new PlanWithCost<>(e4, new CountEstimatesCost(1, 1)))),
+                new PlanDetailedCost(new DoubleCost(10), Collections.singleton(new PlanWithCost<>(e6, new CountEstimatesCost(1, 1)))));
+
+        setCurrentPlan(new PlanWithCost<>(plan, new PlanDetailedCost(new DoubleCost(1), Arrays.asList(new PlanWithCost<>(innerJoin, joinCost)))));
+
+        runQueryAndValidate(query, dragonFireDragonGotoResults());
+    }
 
 
     private void runQueryAndValidate(Query query, QueryResult expectedQueryResult) throws IOException, InterruptedException {
@@ -505,6 +600,20 @@ public class JoinE2EEpbMockTests {
                 new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1",singletonList(NAME.type), 0, 0),
                 new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 8, 0),
                 new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D2",singletonList(NAME.type), 0, 0)
+        )).build();
+    }
+
+    private Query getDragonFireDragonGotoQuery() {
+        return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new Quant1(2, QuantType.all,Arrays.asList(3,5),0),
+                new Rel(3, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 4, 0),
+                new EConcrete(4, "B", $ont.eType$(DRAGON.name),"Dragon_7", "D0",singletonList(NAME.type), 0, 0),
+                new Rel(5, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 6, 0),
+                new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1",singletonList(NAME.type), 7, 0),
+                new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 8, 0),
+                new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D1",singletonList(NAME.type), 0, 0)
         )).build();
     }
 
@@ -579,6 +688,79 @@ public class JoinE2EEpbMockTests {
 
         return builder.build();
     }
+
+    private QueryResult dragonFireDragonGotoResults() {
+        QueryResult.Builder builder = QueryResult.Builder.instance();
+        Entity entityB = Entity.Builder.instance()
+                .withEID("Dragon_7" )
+                .withETag(singleton("B"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 7)))
+                .build();
+
+        Entity entityC = Entity.Builder.instance()
+                .withEID("Dragon_8" )
+                .withETag(singleton("C"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 8)))
+                .build();
+
+        Entity entityD = Entity.Builder.instance()
+                .withEID("Dragon_6" )
+                .withETag(singleton("D"))
+                .withEType($ont.eType$(DRAGON.name))
+                .withProperties(singletonList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 6)))
+                .build();
+
+        for(int i = 0;i<7;i++){
+            Entity entityA = Entity.Builder.instance()
+                    .withEID("Dragon_"+i )
+                    .withETag(singleton("A"))
+                    .withEType($ont.eType$(DRAGON.name))
+                    .withProperties(singletonList(
+                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
+                    .build();
+
+            Relationship relationship1 = Relationship.Builder.instance()
+                    .withRID("123")
+                    .withDirectional(false)
+                    .withEID1(entityB.geteID())
+                    .withEID2("Dragon_" + i)
+                    .withETag1("B")
+                    .withETag2("A")
+                    .withRType($ont.rType$(FIRE.getName()))
+                    .build();
+
+            Relationship relationship2 = Relationship.Builder.instance()
+                    .withRID("123")
+                    .withDirectional(false)
+                    .withEID1(entityC.geteID())
+                    .withEID2("Dragon_" + i)
+                    .withETag1("C")
+                    .withETag2("A")
+                    .withRType($ont.rType$(FIRE.getName()))
+                    .build();
+            Relationship relationship3 = Relationship.Builder.instance()
+                    .withRID("123")
+                    .withDirectional(false)
+                    .withEID1(entityC.geteID())
+                    .withEID2(entityD.geteID())
+                    .withETag1("C")
+                    .withETag2("D")
+                    .withRType($ont.rType$(FIRE.getName()))
+                    .build();
+
+            Assignment assignment = Assignment.Builder.instance().withEntity(entityA).withEntity(entityB).withEntity(entityC).withEntity(entityD).withRelationship(relationship3)
+                    .withRelationship(relationship1).withRelationship(relationship2).build();
+            builder.withAssignment(assignment);
+        }
+
+        return builder.build();
+    }
+
     private QueryResult dragonFireDragonX2Results() {
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
