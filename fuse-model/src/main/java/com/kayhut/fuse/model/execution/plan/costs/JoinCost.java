@@ -28,15 +28,23 @@ public class JoinCost extends CountEstimatesCost {
     @Override
     public void applyCountsUpdateFactor(double countUpdateFactor){
         super.applyCountsUpdateFactor(countUpdateFactor);
-        this.leftBranchCost.getPlanStepCosts().forEach(op -> {
-            if(op.getPlan().getOps().get(0) instanceof EntityOp)
-               op.getCost().applyCountsUpdateFactor(countUpdateFactor);
+        applyBranchCUF(countUpdateFactor, this.leftBranchCost);
+        applyBranchCUF(countUpdateFactor, this.rightBranchCost);
+    }
 
-        });
+    public void applyCountsUpdateFactorOnLeftBranch(double countUpdateFactor){
+        applyBranchCUF(countUpdateFactor, this.leftBranchCost);
+    }
 
-        this.rightBranchCost.getPlanStepCosts().forEach(op -> {
-            if (op.getPlan().getOps().get(0) instanceof EntityOp)
+    public void applyCountsUpdateFactorOnRightBranch(double countUpdateFactor){
+        applyBranchCUF(countUpdateFactor, this.rightBranchCost);
+    }
+
+    private void applyBranchCUF(double countUpdateFactor, PlanDetailedCost branch){
+        branch.getPlanStepCosts().forEach(op -> {
+            if(op.getPlan().getOps().get(0) instanceof EntityOp){
                 op.getCost().applyCountsUpdateFactor(countUpdateFactor);
+            }
         });
     }
 

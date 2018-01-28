@@ -48,7 +48,7 @@ public class EntityPatternCostEstimator implements PatternCostEstimator<Plan, Co
         }
 
         double min = Math.min(entityTotal, filterTotal);
-        return PatternCostEstimator.Result.of(1.0, new PlanWithCost<>(new Plan(start, startFilter), new CountEstimatesCost(min, min)));
+        return PatternCostEstimator.Result.of(new double[]{1.0}, new PlanWithCost<>(new Plan(start, startFilter), new CountEstimatesCost(min, min)));
     }
     //endregion
 

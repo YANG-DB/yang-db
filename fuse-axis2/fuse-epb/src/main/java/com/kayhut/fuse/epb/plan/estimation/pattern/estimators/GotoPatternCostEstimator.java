@@ -17,6 +17,6 @@ public class GotoPatternCostEstimator implements PatternCostEstimator<Plan, Coun
         PlanWithCost<Plan, CountEstimatesCost> entityOpCost = context.getPreviousCost().get().getCost().getPlanStepCost(gotoPattern.getEntityOp()).get();
         CountEstimatesCost gotoCost = new CountEstimatesCost(0, entityOpCost.getCost().peek());
 
-        return Result.of(1, new PlanWithCost<>(new Plan(gotoPattern.getGoToEntityOp()), gotoCost));
+        return Result.of(new double[]{1}, new PlanWithCost<>(new Plan(gotoPattern.getGoToEntityOp()), gotoCost));
     }
 }

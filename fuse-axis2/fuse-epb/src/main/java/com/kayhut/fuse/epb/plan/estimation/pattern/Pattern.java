@@ -47,7 +47,7 @@ public abstract class Pattern {
     }
 
     private void updatePreviousCosts(PatternCostEstimator.Result<Plan, CountEstimatesCost> result, List<PlanWithCost<Plan, CountEstimatesCost>> previousPlanStepCosts) {
-        double countsUpdateFactor = result.countsUpdateFactor();
+        double countsUpdateFactor = result.countsUpdateFactors()[0];
         previousPlanStepCosts.forEach(planStepCost -> {
             if(planStepCost.getPlan().getOps().get(0) instanceof EntityOp) {
                 planStepCost.getCost().applyCountsUpdateFactor(countsUpdateFactor);

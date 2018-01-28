@@ -95,6 +95,7 @@ public class EntityJoinPatternCostEstimatorTests {
         Assert.assertEquals(1,estimate.getPlanStepCosts().size());
         Assert.assertEquals(0,estimate.getPlanStepCosts().get(0).getCost().getCost(),0.001);
         Assert.assertEquals(0,estimate.getPlanStepCosts().get(0).getCost().peek(),0.001);
+        Assert.assertEquals(null, estimate.countsUpdateFactors());
     }
 
     @Test
@@ -138,6 +139,9 @@ public class EntityJoinPatternCostEstimatorTests {
 
         Assert.assertEquals(14, estimate.getPlanStepCosts().get(0).getCost().peek(), 0.0001);
         Assert.assertEquals(118, estimate.getPlanStepCosts().get(0).getCost().getCost(), 0.0001);
+        Assert.assertEquals(2, estimate.countsUpdateFactors().length);
+        Assert.assertEquals(14.0/104.0, estimate.countsUpdateFactors()[0],0.001);
+        Assert.assertEquals(1, estimate.countsUpdateFactors()[1],0.001);
     }
 
     @Test

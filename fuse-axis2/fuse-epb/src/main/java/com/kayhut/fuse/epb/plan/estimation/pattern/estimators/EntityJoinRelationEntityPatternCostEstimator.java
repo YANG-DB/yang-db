@@ -34,7 +34,7 @@ public class EntityJoinRelationEntityPatternCostEstimator implements PatternCost
                 this.entityRelationEntityPatternCostEstimator.estimate(entityJoinEntityPattern, context);
 
         return Result.of(
-                result.countsUpdateFactor(),
+                result.countsUpdateFactors(),
                 context.getPreviousCost().get().getCost().getPlanStepCost(entityJoinEntityPattern.getEntityJoinOp()).get(),
                 result.getPlanStepCosts().get(1),
                 result.getPlanStepCosts().get(2));

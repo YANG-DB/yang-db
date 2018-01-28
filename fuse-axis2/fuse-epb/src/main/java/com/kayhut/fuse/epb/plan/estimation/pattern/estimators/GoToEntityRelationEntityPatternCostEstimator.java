@@ -41,7 +41,7 @@ public class GoToEntityRelationEntityPatternCostEstimator implements PatternCost
         CountEstimatesCost gotoCost = new CountEstimatesCost(0, counts.peek());
 
         return PatternCostEstimator.Result.of(
-                result.countsUpdateFactor(),
+                result.countsUpdateFactors(),
                 new PlanWithCost<>(new Plan(goToEntityRelationEntityPattern.getStartGoTo()), gotoCost),
                 result.getPlanStepCosts().get(1),
                 result.getPlanStepCosts().get(2));

@@ -56,16 +56,38 @@ public class EntityJoinPatternCostEstimator implements PatternCostEstimator<Plan
             rightBranchCost = costEstimator.estimate(entityJoinPattern.getEntityJoinOp().getRightBranch(), new IncrementalEstimationContext<>(Optional.empty(), context.getQuery())).getCost();
         }
 
-        return PatternCostEstimator.Result.of(1.0,
+
+
+        double countEstimate = calcJoinCounts(leftBranchCost, rightBranchCost, entityJoinPattern.getEntityJoinOp());
+        double[] countsFactors = calcCountsFactors(countEstimate, leftBranchCost, rightBranchCost, entityJoinPattern.getEntityJoinOp());
+
+        return PatternCostEstimator.Result.of(countsFactors,
                 new PlanWithCost<>(new Plan(entityJoinPattern.getEntityJoinOp()),
                         new JoinCost(calcJoinCost(leftBranchCost,rightBranchCost, entityJoinPattern.getEntityJoinOp()),
-                                calcJoinCounts(leftBranchCost,rightBranchCost, entityJoinPattern.getEntityJoinOp()), leftBranchCost, rightBranchCost)));
+                                countEstimate, leftBranchCost, rightBranchCost)));
+    }
+
+    private double[] calcCountsFactors(double joinCountEstimates, PlanDetailedCost leftBranchCost, PlanDetailedCost rightBranchCost, EntityJoinOp joinOp) {
+        if(!joinOp.isComplete())
+            return null;
+        else if(joinCountEstimates == 0) {
+            return new double[]{0.0,0.0};
+        }
+        else {
+            PlanWithCost<Plan, CountEstimatesCost> leftOpCost = leftBranchCost.getPlanStepCost(PlanUtil.last(joinOp.getLeftBranch(), EntityOp.class).get()).get();
+            EntityOp rightBranchLastEntityOp = PlanUtil.last(joinOp.getRightBranch(), EntityOp.class).get();
+            PlanWithCost<Plan, CountEstimatesCost> rightOpCost = rightBranchCost.getPlanStepCost(rightBranchLastEntityOp).get();
+            return new double[]{
+                    joinCountEstimates / leftOpCost.getCost().peek() ,
+                    joinCountEstimates / rightOpCost.getCost().peek()
+            };
+        }
     }
 
     private double calcJoinCost(PlanDetailedCost leftCost, PlanDetailedCost rightCost, EntityJoinOp joinOp){
         PlanWithCost<Plan, CountEstimatesCost> leftOpCost = leftCost.getPlanStepCost(PlanUtil.last(joinOp.getLeftBranch(), EntityOp.class).get()).get();
         EntityOp rightBranchLastEntityOp = PlanUtil.last(joinOp.getRightBranch(), EntityOp.class).get();
-        if(rightBranchLastEntityOp.getAsgEbase().equals(joinOp.getAsgEbase()))
+        if(joinOp.isComplete())
             return leftOpCost.getCost().peek() + rightCost.getPlanStepCost(rightBranchLastEntityOp).get().getCost().peek();
         else
             return 0;
@@ -74,7 +96,7 @@ public class EntityJoinPatternCostEstimator implements PatternCostEstimator<Plan
     private double calcJoinCounts(PlanDetailedCost leftCost, PlanDetailedCost rightCost, EntityJoinOp joinOp){
         PlanWithCost<Plan, CountEstimatesCost> leftOpCost = leftCost.getPlanStepCost(PlanUtil.last(joinOp.getLeftBranch(), EntityOp.class).get()).get();
         EntityOp rightBranchLastEntityOp = PlanUtil.last(joinOp.getRightBranch(), EntityOp.class).get();
-        if(rightBranchLastEntityOp.getAsgEbase().equals(joinOp.getAsgEbase()))
+        if(joinOp.isComplete())
             return Math.min(leftOpCost.getCost().peek() , rightCost.getPlanStepCost(rightBranchLastEntityOp).get().getCost().peek());
         else
             return 0;

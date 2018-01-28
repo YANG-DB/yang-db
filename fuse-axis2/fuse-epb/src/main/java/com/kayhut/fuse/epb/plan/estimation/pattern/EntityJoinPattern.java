@@ -8,9 +8,11 @@ import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,6 +30,10 @@ public class EntityJoinPattern extends Pattern {
         if(previousCost.isPresent()){
             Plan joinPlan = result.getPlanStepCosts().get(0).getPlan();
             JoinCost joinCost = (JoinCost) result.getPlanStepCosts().get(0).getCost();
+            if( result.countsUpdateFactors()!= null){
+                joinCost.applyCountsUpdateFactorOnLeftBranch(result.countsUpdateFactors()[0]);
+                joinCost.applyCountsUpdateFactorOnRightBranch(result.countsUpdateFactors()[1]);
+            }
             PlanDetailedCost planDetailedCost = new PlanDetailedCost(new DoubleCost(joinCost.getCost() + joinCost.getLeftBranchCost().getGlobalCost().cost + joinCost.getRightBranchCost().getGlobalCost().cost),
                     Arrays.asList(new PlanWithCost<>(joinPlan, joinCost)));
             return new PlanWithCost<>( joinPlan, planDetailedCost);
@@ -35,7 +41,6 @@ public class EntityJoinPattern extends Pattern {
             return super.buildNewPlan(result, previousCost);
         }
     }
-
 
     //region Properties
 
