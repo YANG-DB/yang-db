@@ -9,8 +9,7 @@ import java.util.List;
 
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.*;
 
 /**
  * Created by roman.margolis on 07/01/2018.
@@ -45,11 +44,11 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
             return this.traversal.next(amount);
         } catch (Exception ex) {
             thrownExcpetion = true;
-            new LogMessage(this.logger, error, finish, "next", "failed next", ex).log();
+            new LogMessage(this.logger, error, failure, "next", "failed next", ex).log();
             throw ex;
         } finally {
             if (!thrownExcpetion) {
-                new LogMessage(this.logger, trace, finish, "next", "finish next").log();
+                new LogMessage(this.logger, trace, success, "next", "finish next").log();
             }
         }
     }
@@ -63,11 +62,11 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
             return this.traversal.toList();
         } catch (Exception ex) {
             thrownExcpetion = true;
-            new LogMessage(this.logger, error, finish, "toList", "failed toList", ex).log();
+            new LogMessage(this.logger, error, failure, "toList", "failed toList", ex).log();
             throw ex;
         } finally {
             if (!thrownExcpetion) {
-                new LogMessage(this.logger, trace, finish, "toList", "finish toList").log();
+                new LogMessage(this.logger, trace, success, "toList", "finish toList").log();
             }
         }
     }

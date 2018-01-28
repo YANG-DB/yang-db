@@ -5,9 +5,15 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
+import javaslang.collection.Stream;
 import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.common.unit.TimeValue;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -17,7 +23,7 @@ import static com.codahale.metrics.MetricRegistry.name;
 /**
  * Created by roman.margolis on 02/01/2018.
  */
-public class LoggingActionFuture<T> implements ActionFuture<T> {
+public class LoggingActionFuture<T> implements ListenableActionFuture<T> {
     //region Constructors
     public LoggingActionFuture(
             ActionFuture<T> actionFuture,
@@ -32,6 +38,8 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         this.timerContext = timerContext;
         this.successMeter = successMeter;
         this.failureMeter = failureMeter;
+
+        this.listeners = Collections.emptyList();
     }
     //endregion
 
@@ -41,9 +49,12 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         boolean thrownExcepion = false;
 
         try {
-            return actionFuture.actionGet();
+            T response = actionFuture.actionGet();
+            callListenersOnResponse(response);
+            return response;
         } catch (Exception ex) {
             thrownExcepion = true;
+            callListenersOnFailure(ex);
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
             throw ex;
@@ -61,9 +72,12 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         boolean thrownExcepion = false;
 
         try {
-            return actionFuture.actionGet(s);
+            T response = actionFuture.actionGet(s);
+            callListenersOnResponse(response);
+            return response;
         } catch (Exception ex) {
             thrownExcepion = true;
+            callListenersOnFailure(ex);
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
             throw ex;
@@ -81,9 +95,12 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         boolean thrownExcepion = false;
 
         try {
-            return actionFuture.actionGet(l);
+            T response = actionFuture.actionGet(l);
+            callListenersOnResponse(response);
+            return response;
         } catch (Exception ex) {
             thrownExcepion = true;
+            callListenersOnFailure(ex);
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
             throw ex;
@@ -101,9 +118,12 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         boolean thrownExcepion = false;
 
         try {
-            return actionFuture.actionGet(l, timeUnit);
+            T response = actionFuture.actionGet(l, timeUnit);
+            callListenersOnResponse(response);
+            return response;
         } catch (Exception ex) {
             thrownExcepion = true;
+            callListenersOnFailure(ex);
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
             throw ex;
@@ -121,9 +141,12 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         boolean thrownExcepion = false;
 
         try {
-            return actionFuture.actionGet(timeValue);
+            T response = actionFuture.actionGet(timeValue);
+            callListenersOnResponse(response);
+            return response;
         } catch (Exception ex) {
             thrownExcepion = true;
+            callListenersOnFailure(ex);
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
             throw ex;
@@ -156,9 +179,12 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         boolean thrownExcepion = false;
 
         try {
-            return actionFuture.get();
+            T response = actionFuture.get();
+            callListenersOnResponse(response);
+            return response;
         } catch (Exception ex) {
             thrownExcepion = true;
+            callListenersOnFailure(ex);
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
             throw ex;
@@ -176,9 +202,12 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
         boolean thrownExcepion = false;
 
         try {
-            return actionFuture.get(timeout, unit);
+            T response = actionFuture.get(timeout, unit);
+            callListenersOnResponse(response);
+            return response;
         } catch (Exception ex) {
             thrownExcepion = true;
+            callListenersOnFailure(ex);
             this.failureMessage.with(ex).log();
             this.failureMeter.mark();
             throw ex;
@@ -190,6 +219,29 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
             this.timerContext.stop();
         }
     }
+
+    @Override
+    public void addListener(ActionListener<T> actionListener) {
+        if (this.listeners.isEmpty()) {
+            this.listeners = new ArrayList<>();
+        }
+
+        this.listeners.add(actionListener);
+    }
+    //endregion
+
+    //region Private Methods
+    private void callListenersOnResponse(T response) {
+        for(ActionListener<T> actionListener : this.listeners) {
+            actionListener.onResponse(response);
+        }
+    }
+
+    private void callListenersOnFailure(Exception ex) {
+        for(ActionListener<T> actionListener : this.listeners) {
+            actionListener.onFailure(ex);
+        }
+    }
     //endregion
 
     //region Fields
@@ -199,5 +251,7 @@ public class LoggingActionFuture<T> implements ActionFuture<T> {
     private Timer.Context timerContext;
     private Meter successMeter;
     private Meter failureMeter;
+
+    private List<ActionListener<T>> listeners;
     //endregion
 }

@@ -14,8 +14,9 @@ import java.util.Iterator;
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.failure;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.success;
 
 /**
  * Created by Roman on 12/14/2017.
@@ -43,12 +44,12 @@ public class LoggingSearchVertexController implements SearchVertexQuery.SearchVe
             return searchVertexController.search(searchVertexQuery);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "search", "failed search", ex).log();
+            new LogMessage(this.logger, error, failure, "search", "failed search", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "search", "failure")).mark();
             return Collections.emptyIterator();
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, trace, finish, "search", "finish search").log();
+                new LogMessage(this.logger, trace, success, "search", "finish search").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "search", "success")).mark();
             }
             timerContext.stop();

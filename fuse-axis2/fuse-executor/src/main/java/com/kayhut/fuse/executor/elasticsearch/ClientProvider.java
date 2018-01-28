@@ -11,6 +11,7 @@ import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class ClientProvider implements Provider<Client> {
         TransportClient client = new PreBuiltTransportClient(settings);
         Stream.of(configuration.getClusterHosts()).forEach(host -> {
             try {
-                client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), configuration.getClusterPort()));
+                client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), configuration.getClusterPort()));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

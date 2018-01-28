@@ -53,13 +53,13 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
             return controller.getInfo();
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getInfo", "failed getInfo", ex).log();
+            new LogMessage(this.logger, error, failure, "getInfo", "failed getInfo", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "getInfo", "finish getInfo").log();
-                new LogMessage(this.logger, trace, finish, "getInfo", "finish getInfo").log();
+                new LogMessage(this.logger, info, success, "getInfo", "finish getInfo").log();
+                new LogMessage(this.logger, trace, success, "getInfo", "finish getInfo").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "success")).mark();
             }
             timerContext.stop();

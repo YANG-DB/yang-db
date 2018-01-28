@@ -25,6 +25,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.InternalAggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.InternalTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,20 +64,20 @@ public class PromisePromiseElementVertexControllerTest {
         when(destBucket.getKeyAsString()).thenReturn("destination1");
         when(destBucket.getDocCount()).thenReturn(1000L);
 
-        Terms destLayer = mock(Terms.class);
+        InternalTerms destLayer = mock(InternalTerms.class);
         when(destLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.DEST);
         when(destLayer.getBuckets()).then((Answer<Object>)invocationOnMock -> Collections.singletonList(destBucket));
 
         Terms.Bucket sourceBucket = mock(Terms.Bucket.class);
         when(sourceBucket.getKeyAsString()).thenReturn("source1");
         when(sourceBucket.getDocCount()).thenReturn(1L);
-        when(sourceBucket.getAggregations()).thenReturn(new Aggregations(Collections.singletonList(destLayer)));
+        when(sourceBucket.getAggregations()).thenReturn(new InternalAggregations(Collections.singletonList(destLayer)));
 
-        Terms sourceLayer = mock(Terms.class);
+        InternalTerms sourceLayer = mock(InternalTerms.class);
         when(sourceLayer.getName()).thenReturn(GlobalConstants.EdgeSchema.SOURCE);
         when(sourceLayer.getBuckets()).then((Answer<Object>) invocationOnMock -> Collections.singletonList(sourceBucket));
 
-        Aggregations aggregations = new Aggregations(Arrays.asList(sourceLayer, destLayer));
+        Aggregations aggregations = new InternalAggregations(Arrays.asList(sourceLayer, destLayer));
 
         when(responseMock.getAggregations()).thenReturn(aggregations);
 

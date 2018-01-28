@@ -25,7 +25,8 @@ public class LogMessage {
         start,
         log,
         metric,
-        finish
+        success,
+        failure
     }
 
     //region Constructors

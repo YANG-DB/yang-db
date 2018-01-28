@@ -20,8 +20,9 @@ import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.info;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.failure;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.success;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -58,13 +59,13 @@ public class LoggingPageController implements PageController {
             return controller.create(queryId, cursorId, createPageRequest);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "create", "failed create", ex).log();
+            new LogMessage(this.logger, error, failure, "create", "failed create", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "create", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "create", "finish create").log();
-                new LogMessage(this.logger, trace, finish, "create", "finish create").log();
+                new LogMessage(this.logger, info, success, "create", "finish create").log();
+                new LogMessage(this.logger, trace, success, "create", "finish create").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "create", "success")).mark();
             }
             timerContext.stop();
@@ -84,13 +85,13 @@ public class LoggingPageController implements PageController {
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getInfoByQueryIdAndCursorId", "failed getInfoByQueryIdAndCursorId", ex).log();
+            new LogMessage(this.logger, error, failure, "getInfoByQueryIdAndCursorId", "failed getInfoByQueryIdAndCursorId", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorId", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "getInfoByQueryIdAndCursorId", "finish getInfoByQueryIdAndCursorId").log();
-                new LogMessage(this.logger, trace, finish, "getInfoByQueryIdAndCursorId", "finish getInfoByQueryIdAndCursorId").log();
+                new LogMessage(this.logger, info, success, "getInfoByQueryIdAndCursorId", "finish getInfoByQueryIdAndCursorId").log();
+                new LogMessage(this.logger, trace, success, "getInfoByQueryIdAndCursorId", "finish getInfoByQueryIdAndCursorId").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorId", "success")).mark();
             }
             timerContext.stop();
@@ -110,13 +111,13 @@ public class LoggingPageController implements PageController {
             return controller.getInfo(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getInfoByQueryIdAndCursorIdAndPageId", "failed getInfoByQueryIdAndCursorIdAndPageId", ex).log();
+            new LogMessage(this.logger, error, failure, "getInfoByQueryIdAndCursorIdAndPageId", "failed getInfoByQueryIdAndCursorIdAndPageId", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorIdAndPageId", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "getInfoByQueryIdAndCursorIdAndPageId", "finish getInfoByQueryIdAndCursorIdAndPageId").log();
-                new LogMessage(this.logger, trace, finish, "getInfoByQueryIdAndCursorIdAndPageId", "finish getInfoByQueryIdAndCursorIdAndPageId").log();
+                new LogMessage(this.logger, info, success, "getInfoByQueryIdAndCursorIdAndPageId", "finish getInfoByQueryIdAndCursorIdAndPageId").log();
+                new LogMessage(this.logger, trace, success, "getInfoByQueryIdAndCursorIdAndPageId", "finish getInfoByQueryIdAndCursorIdAndPageId").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorIdAndPageId", "success")).mark();
             }
             timerContext.stop();
@@ -136,13 +137,13 @@ public class LoggingPageController implements PageController {
             return controller.getData(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getData", "failed getData", ex).log();
+            new LogMessage(this.logger, error, failure, "getData", "failed getData", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getData", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "getData", "finish getData").log();
-                new LogMessage(this.logger, trace, finish, "getData", "finish getData").log();
+                new LogMessage(this.logger, info, success, "getData", "finish getData").log();
+                new LogMessage(this.logger, trace, success, "getData", "finish getData").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getData", "success")).mark();
             }
             timerContext.stop();
