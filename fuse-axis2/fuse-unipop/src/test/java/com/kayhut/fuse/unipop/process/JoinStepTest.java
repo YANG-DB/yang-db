@@ -2,6 +2,8 @@ package com.kayhut.fuse.unipop.process;
 
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.process.traversal.strategy.decoration.ForceRequirementsStrategy;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.*;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
@@ -21,7 +23,9 @@ import org.junit.Test;
 import org.unipop.structure.UniVertex;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Roman on 04/07/2017.
