@@ -1,9 +1,5 @@
 package com.kayhut.fuse.unipop.process.traversal.traverser;
 
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.bytes.ByteArraySet;
-import it.unimi.dsi.fastutil.objects.*;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.javatuples.Pair;
@@ -16,20 +12,12 @@ import java.util.stream.Stream;
  * Created by Roman on 1/26/2018.
  */
 public class ThinPath implements Path {
-    private static ObjectArraySet emptySet = new ObjectArraySet(0);
-
     //region Constructors
     public ThinPath(StringOrdinalDictionary stringOrdinalDictionary) {
         this.objects = Collections.emptyList();
         this.ordinals = Collections.emptyList();
-        this.ordinalToObject = null;
 
         this.stringOrdinalDictionary = stringOrdinalDictionary;
-    }
-
-    public ThinPath(StringOrdinalDictionary stringOrdinalDictionary, byte maxCapacity) {
-        this(stringOrdinalDictionary);
-        this.maxCapacity = maxCapacity;
     }
     //endregion
 
@@ -56,8 +44,8 @@ public class ThinPath implements Path {
     @Override
     public Path extend(Object o, Set<String> set) {
         if (this.objects.isEmpty()) {
-            this.objects = new ArrayList<>(this.maxCapacity);
-            this.ordinals = new ArrayList<>(this.maxCapacity);
+            this.objects = new ArrayList<>();
+            this.ordinals = new ArrayList<>();
         }
 
         this.objects.add(o);
@@ -75,27 +63,16 @@ public class ThinPath implements Path {
             return this;
         }
 
-        if (this.ordinalToObject == null) {
-            this.ordinalToObject = new Byte2ObjectOpenHashMap<>(this.maxCapacity, 1f);
-        }
-
         if (this.ordinals.size() == this.objects.size() - 1) {
-            this.ordinals.add(new ByteArraySet());
+            this.ordinals.add((byte)0);
         }
 
-        Object head = this.objects.get(this.objects.size() - 1);
-        ByteArraySet labelOrdinals = this.ordinals.get(this.ordinals.size() - 1);
         for(String label : set) {
             byte labelOrdinal = this.stringOrdinalDictionary.getOrCreateOrdinal(label);
-            labelOrdinals.add(labelOrdinal);
-
-            ObjectArraySet<Object> ordinalObjects = this.ordinalToObject.get(labelOrdinal);
-            if (ordinalObjects == null) {
-                ordinalObjects = new ObjectArraySet<>();
-                this.ordinalToObject.put(labelOrdinal, ordinalObjects);
-            }
-            ordinalObjects.add(head);
+            this.ordinals.set(this.ordinals.size() - 1, labelOrdinal);
+            break;
         }
+
         return this;
     }
 
@@ -105,52 +82,59 @@ public class ThinPath implements Path {
             return this;
         }
 
-        Object head = this.objects.get(this.objects.size() - 1);
-        ByteArraySet labelOrdinals = this.ordinals.get(this.ordinals.size() - 1);
+        if (this.ordinals.size() == this.objects.size() - 1) {
+            return this;
+        }
+
+        byte currentLabelOrdinal = this.ordinals.get(this.ordinals.size() - 1);
         for(String label : set) {
             byte ordinal = this.stringOrdinalDictionary.getOrdinal(label);
-            if (ordinal == 0) {
+            if (ordinal == 0 || ordinal != currentLabelOrdinal) {
                 continue;
             }
 
-            labelOrdinals.remove(ordinal);
-            Set<Object> ordinalObjects = this.ordinalToObject.get(ordinal);
-            if (ordinalObjects != null) {
-                ordinalObjects.remove(head);
-            }
+            this.ordinals.set(this.ordinals.size() - 1, (byte)0);
+            break;
         }
+
         return this;
     }
 
     @Override
     public <A> A get(String label) throws IllegalArgumentException {
-        if (this.ordinalToObject.isEmpty()) {
-            return (A)emptySet;
-        }
-
         byte labelOrdinal = this.stringOrdinalDictionary.getOrdinal(label);
         if (labelOrdinal == 0) {
-            return (A)emptySet;
+            return (A)Collections.emptyList();
         }
 
-        return (A)this.ordinalToObject.get(labelOrdinal);
+        List<Object> items = Collections.emptyList();
+        for(int index = 0 ; index < this.objects.size() ; index++) {
+            if (this.ordinals.get(index) == labelOrdinal) {
+                if (items.isEmpty()) {
+                    items = Collections.singletonList(this.objects.get(index));
+                } else if (items.size() == 1) {
+                    items = new ArrayList<>(items);
+                    items.add(this.objects.get(index));
+                } else {
+                    items.add(this.objects.get(index));
+                }
+            }
+        }
+
+        return (A)items;
     }
 
     @Override
     public <A> A get(Pop pop, String label) throws IllegalArgumentException {
-        ObjectArraySet<Object> objects = this.get(label);
+        List<Object> objects = this.get(label);
 
         if (objects.isEmpty() || pop.equals(Pop.all)) {
             return (A)objects;
         }
 
-        ObjectIterator<Object> iterator = objects.iterator();
-        if (pop.equals(Pop.first)) {
-            return (A)iterator.next();
-        }
-
-        iterator.skip(objects.size() - 1);
-        return (A)iterator.next();
+        return pop.equals(Pop.first) ?
+                (A)objects.get(0) :
+                (A)objects.get(objects.size() - 1);
     }
 
     @Override
@@ -160,16 +144,18 @@ public class ThinPath implements Path {
 
     @Override
     public boolean hasLabel(String label) {
-        if (this.ordinalToObject.isEmpty()) {
-            return false;
-        }
-
         byte labelOrdinal = this.stringOrdinalDictionary.getOrdinal(label);
         if (labelOrdinal == 0) {
             return false;
         }
 
-        return this.ordinalToObject.containsKey(labelOrdinal);
+        for(Byte ordinal : this.ordinals) {
+            if (ordinal == labelOrdinal) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -179,13 +165,12 @@ public class ThinPath implements Path {
 
     @Override
     public List<Set<String>> labels() {
-        List<Set<String>> labels = new ArrayList<>();
-        for(ByteArraySet objectOrdinals : this.ordinals) {
-            ObjectArraySet<String> objectLabels = new ObjectArraySet<>();
-            for(byte objectOrdinal : objectOrdinals) {
-                objectLabels.add(this.stringOrdinalDictionary.getString(objectOrdinal));
-            }
-            labels.add(Collections.unmodifiableSet(objectLabels));
+        List<Set<String>> labels = new ArrayList<>(this.ordinals.size());
+        for(Byte ordinal : this.ordinals) {
+            String label = this.stringOrdinalDictionary.getString(ordinal);
+            labels.add(label == null ?
+                    Collections.emptySet() :
+                    Collections.singleton(this.stringOrdinalDictionary.getString(ordinal)));
         }
 
         return Collections.unmodifiableList(labels);
@@ -202,9 +187,6 @@ public class ThinPath implements Path {
 
         clone.objects = this.objects.isEmpty() ? Collections.emptyList() : new ArrayList<>(this.objects);
         clone.ordinals = this.ordinals.isEmpty() ? Collections.emptyList() : new ArrayList<>(this.ordinals);
-        clone.ordinalToObject = this.ordinalToObject == null ? null : new Byte2ObjectOpenHashMap<>(this.ordinalToObject);
-        clone.maxCapacity = this.maxCapacity;
-
         clone.stringOrdinalDictionary = this.stringOrdinalDictionary;
 
         return clone;
@@ -242,11 +224,9 @@ public class ThinPath implements Path {
     //endregion
 
     //region Fields
-    private Byte2ObjectMap<ObjectArraySet<Object>> ordinalToObject;
     private List<Object> objects;
-    private List<ByteArraySet> ordinals;
+    private List<Byte> ordinals;
 
     private StringOrdinalDictionary stringOrdinalDictionary;
-    private byte maxCapacity;
     //endregion
 }

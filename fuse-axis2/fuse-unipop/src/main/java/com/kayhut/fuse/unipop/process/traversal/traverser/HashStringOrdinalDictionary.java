@@ -1,7 +1,7 @@
 package com.kayhut.fuse.unipop.process.traversal.traverser;
 
-import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Roman on 1/27/2018.
@@ -10,9 +10,8 @@ public class HashStringOrdinalDictionary implements StringOrdinalDictionary {
     //region Constructors
     public HashStringOrdinalDictionary() {
         this.maxOrdinal = 0;
-        this.stringToOrdinal = new Object2ByteOpenHashMap<>();
-        this.stringToOrdinal.defaultReturnValue((byte)0);
-        this.ordinalToString = new Byte2ObjectOpenHashMap<>();
+        this.stringToOrdinal = new HashMap<>();
+        this.ordinalToString = new HashMap<>();
     }
     //endregion
 
@@ -24,13 +23,14 @@ public class HashStringOrdinalDictionary implements StringOrdinalDictionary {
 
     @Override
     public byte getOrdinal(String string) {
-        return this.stringToOrdinal.getByte(string);
+        Byte ordinal = this.stringToOrdinal.get(string);
+        return ordinal == null ? (byte)0 : ordinal;
     }
 
     @Override
     public byte getOrCreateOrdinal(String string) {
-        byte ordinal = this.stringToOrdinal.getByte(string);
-        if (ordinal > 0) {
+        Byte ordinal = this.stringToOrdinal.get(string);
+        if (ordinal != null && ordinal > 0) {
             return ordinal;
         }
 
@@ -43,8 +43,8 @@ public class HashStringOrdinalDictionary implements StringOrdinalDictionary {
     //endregion
 
     //region Fields
-    private Object2ByteOpenHashMap<String> stringToOrdinal;
-    private Byte2ObjectOpenHashMap<String> ordinalToString;
+    private Map<String, Byte> stringToOrdinal;
+    private Map<Byte, String> ordinalToString;
 
     private byte maxOrdinal;
     //endregion
