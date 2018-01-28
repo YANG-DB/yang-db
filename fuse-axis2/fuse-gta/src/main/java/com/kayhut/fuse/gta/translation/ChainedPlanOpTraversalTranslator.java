@@ -7,8 +7,8 @@ import com.kayhut.fuse.gta.strategy.*;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.unipop.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 
 /**
  * Created by moti on 3/7/2017.
