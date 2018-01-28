@@ -57,13 +57,13 @@ public class LoggingCatalogController implements CatalogController {
             return controller.getOntology(id);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getOntology", "failed getOntology", ex).log();
+            new LogMessage(this.logger, error, failure, "getOntology", "failed getOntology", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getOntology", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "getOntology", "finish getOntology").log();
-                new LogMessage(this.logger, trace, finish, "getOntology", "finish getOntology").log();
+                new LogMessage(this.logger, info, success, "getOntology", "finish getOntology").log();
+                new LogMessage(this.logger, trace, success, "getOntology", "finish getOntology").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getOntology", "success")).mark();
             }
             timerContext.stop();
@@ -83,13 +83,13 @@ public class LoggingCatalogController implements CatalogController {
             return controller.getSchema(id);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getSchema", "failed getSchema", ex).log();
+            new LogMessage(this.logger, error, failure, "getSchema", "failed getSchema", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getSchema", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "getSchema", "finish getSchema").log();
-                new LogMessage(this.logger, trace, finish, "getSchema", "finish getSchema").log();
+                new LogMessage(this.logger, info, success, "getSchema", "finish getSchema").log();
+                new LogMessage(this.logger, trace, success, "getSchema", "finish getSchema").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getSchema", "success")).mark();
             }
             timerContext.stop();

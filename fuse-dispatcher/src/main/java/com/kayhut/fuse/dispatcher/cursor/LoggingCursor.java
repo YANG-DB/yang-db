@@ -8,8 +8,9 @@ import org.slf4j.Logger;
 
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.failure;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.success;
 
 /**
  * Created by roman.margolis on 07/01/2018.
@@ -32,11 +33,11 @@ public class LoggingCursor implements Cursor {
             return this.cursor.getNextResults(numResults);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getNextResults", "failed getNextResults", ex).log();
+            new LogMessage(this.logger, error, failure, "getNextResults", "failed getNextResults", ex).log();
             throw ex;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, trace, finish, "getNextResults", "finish getNextResults").log();
+                new LogMessage(this.logger, trace, success, "getNextResults", "finish getNextResults").log();
             }
         }
     }

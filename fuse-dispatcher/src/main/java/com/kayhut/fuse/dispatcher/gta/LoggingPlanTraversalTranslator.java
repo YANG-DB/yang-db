@@ -55,12 +55,12 @@ public class LoggingPlanTraversalTranslator implements PlanTraversalTranslator {
             return traversal;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "translate", "failed translate", ex).log();
+            new LogMessage(this.logger, error, failure, "translate", "failed translate", ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "translate", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, trace, finish, "translate", "finish translate").log();
+                new LogMessage(this.logger, trace, success, "translate", "finish translate").log();
                 this.metricRegistry.meter(name(this.logger.getName(), "translate", "success")).mark();
             }
             timerContext.stop();
