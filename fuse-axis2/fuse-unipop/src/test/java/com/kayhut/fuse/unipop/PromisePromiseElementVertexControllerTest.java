@@ -131,7 +131,9 @@ public class PromisePromiseElementVertexControllerTest {
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
         when(edgeSchema.getIndexPartitions()).thenReturn(Optional.of(new StaticIndexPartitions(Collections.singletonList("v1"))));
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
+        when(schemaProvider.getEdgeLabels()).thenReturn(Collections.singletonList("label"));
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
+        when(schemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(edgeSchema));
 
         PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
 
