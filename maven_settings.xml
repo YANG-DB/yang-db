@@ -6,7 +6,7 @@
         <mirror>
             <id>public-proxy</id>
             <name>Local proxy of public repo</name>
-            <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-public/</url>
+            <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/maven-public/</url>
             <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>
@@ -17,7 +17,7 @@
                 <repository>
                     <id>public-proxy</id>
                     <name>mxsnapshots-proxy</name>
-                    <url>https://ec2-52-210-2-167.eu-west-1.compute.amazonaws.com:8443/repository/maven-public/</url>
+                    <url>http://ec2-52-210-247-209.eu-west-1.compute.amazonaws.com:8081/repository/maven-public/</url>
                 </repository>
             </repositories>
             <id>public</id>
