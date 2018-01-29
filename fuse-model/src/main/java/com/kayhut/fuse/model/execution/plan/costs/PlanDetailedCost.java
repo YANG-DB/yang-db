@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * Created by Roman on 20/04/2017.
  */
-public class PlanDetailedCost implements Cost {
+public class PlanDetailedCost implements Cost, Cloneable {
     public PlanDetailedCost() {
     }
 
@@ -61,6 +61,18 @@ public class PlanDetailedCost implements Cost {
         }
         return opCost;
     }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new PlanDetailedCost(new DoubleCost(this.globalCost.cost), Stream.ofAll(this.planStepCosts).map(p -> {
+            try {
+                return new PlanWithCost<>(p.getPlan(), (CountEstimatesCost)p.getCost().clone());
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
+        }).toJavaList());
+    }
+
     //endregion
 
     //region Fields

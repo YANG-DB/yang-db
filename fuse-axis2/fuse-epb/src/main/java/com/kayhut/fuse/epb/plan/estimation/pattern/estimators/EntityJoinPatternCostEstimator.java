@@ -40,7 +40,11 @@ public class EntityJoinPatternCostEstimator implements PatternCostEstimator<Plan
             if(previousJoinOp.getLeftBranch().equals(entityJoinPattern.getEntityJoinOp().getLeftBranch())){
                 newJoin = false;
                 JoinCost previousJoinCost = (JoinCost) context.getPreviousCost().get().getCost().getPlanStepCost(previousJoinOp).get().getCost();
-                leftBranchCost = previousJoinCost.getLeftBranchCost();
+                try {
+                    leftBranchCost = (PlanDetailedCost) previousJoinCost.getLeftBranchCost().clone();
+                } catch (CloneNotSupportedException e) {
+                    leftBranchCost = previousJoinCost.getLeftBranchCost();
+                }
                 PlanWithCost<Plan, PlanDetailedCost> rightPlanWithCostOld = new PlanWithCost<>(previousJoinOp.getRightBranch(), previousJoinCost.getRightBranchCost());
                 rightBranchCost = costEstimator.estimate(entityJoinPattern.getEntityJoinOp().getRightBranch(),
                                                 new IncrementalEstimationContext<>(Optional.of(rightPlanWithCostOld), context.getQuery())).getCost();
@@ -49,7 +53,11 @@ public class EntityJoinPatternCostEstimator implements PatternCostEstimator<Plan
 
         if(newJoin) {
             if(context.getPreviousCost().get().getPlan().equals(entityJoinPattern.getEntityJoinOp().getLeftBranch())) {
-                leftBranchCost = context.getPreviousCost().get().getCost();
+                try {
+                    leftBranchCost = (PlanDetailedCost) context.getPreviousCost().get().getCost().clone();
+                } catch (CloneNotSupportedException e) {
+                    leftBranchCost =  context.getPreviousCost().get().getCost();
+                }
             }else{
                 leftBranchCost = costEstimator.estimate(entityJoinPattern.getEntityJoinOp().getLeftBranch(), context).getCost();
             }

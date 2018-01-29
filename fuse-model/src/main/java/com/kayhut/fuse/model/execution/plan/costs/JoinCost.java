@@ -22,7 +22,7 @@ public class JoinCost extends CountEstimatesCost {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new JoinCost(this.getCost(), this.getCountEstimates(), this.getLeftBranchCost(), this.getRightBranchCost());
+        return new JoinCost(this.getCost(), (Stack<Double>) this.getCountEstimates().clone(), this.getLeftBranchCost(), this.getRightBranchCost());
     }
 
     @Override
