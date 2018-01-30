@@ -7,10 +7,7 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import javaslang.collection.Stream;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by moti on 7/3/2017.
@@ -42,6 +39,14 @@ public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan,
             // extend right branch and create new plans
             return Stream.ofAll(innerExpander.extendPlan(Optional.of(joinOp.getRightBranch()), query))
                     .map(extendedRightBranch -> new Plan(new EntityJoinOp(joinOp.getLeftBranch(), extendedRightBranch)))
+                    .flatMap(extendPlan -> {
+                        if(EntityJoinOp.isComplete((EntityJoinOp) extendPlan.getOps().get(0))){
+                            return Arrays.asList(extendPlan,
+                                    new Plan(new EntityJoinOp(((EntityJoinOp) extendPlan.getOps().get(0)).getLeftBranch(), ((EntityJoinOp) extendPlan.getOps().get(0)).getRightBranch(),true)));
+                        }else{
+                            return Arrays.asList(extendPlan);
+                        }
+                    })
                     .toJavaList();
         }
 

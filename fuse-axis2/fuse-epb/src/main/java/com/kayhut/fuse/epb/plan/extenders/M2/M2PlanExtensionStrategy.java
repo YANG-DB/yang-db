@@ -75,7 +75,8 @@ public class M2PlanExtensionStrategy extends CompositePlanExtensionStrategy<Plan
                                 )
                         ),
                         new JoinOngoingExtensionStrategy(
-                                getJoinInnerExpander(depth-1))
+                                getJoinInnerExpander(depth-1)),
+                        new JoinSeedExtensionStrategy(new InitialPlanGeneratorExtensionStrategy())
                 ));
     }
     //endregion

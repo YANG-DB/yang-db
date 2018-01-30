@@ -48,7 +48,7 @@ public class EntityJoinOpTests {
                 new RelationFilterOp(AsgQueryUtil.element$(query, 8)),
                 new EntityOp(AsgQueryUtil.element$(query, 5)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 6))));
-        Assert.assertTrue(joinOp.isComplete());
+        Assert.assertTrue(EntityJoinOp.isComplete(joinOp));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class EntityJoinOpTests {
                         new EntityFilterOp(AsgQueryUtil.element$(query, 6)))
                 , new Plan(new EntityOp(AsgQueryUtil.element$(query, 10)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 9))));
-        Assert.assertFalse(joinOp.isComplete());
+        Assert.assertFalse(EntityJoinOp.isComplete(joinOp));
     }
 
     @Test
@@ -83,6 +83,6 @@ public class EntityJoinOpTests {
                 new RelationFilterOp(AsgQueryUtil.element$(query, 8)),
                 new EntityOp(AsgQueryUtil.element$(query, 5)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 6))));
-        Assert.assertTrue(joinOp.isComplete());
+        Assert.assertTrue(EntityJoinOp.isComplete(joinOp));
     }
 }

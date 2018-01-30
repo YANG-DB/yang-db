@@ -107,14 +107,14 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
                 new EntityOp(AsgQueryUtil.element$(query, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 9)));
 
-        EntityJoinOp joinOp1 = new EntityJoinOp(left1, right1);
+        EntityJoinOp joinOp1 = new EntityJoinOp(left1, right1, true);
         Plan right2 = new Plan(
                 new EntityOp(AsgQueryUtil.element$(query, 8)),
                 new RelationOp(reverseRelation(AsgQueryUtil.element$(query, 7))),
                 new RelationFilterOp(AsgQueryUtil.element$(query, 11)),
                 new EntityOp(AsgQueryUtil.element$(query, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 9)));
-        EntityJoinOp joinOp2 = new EntityJoinOp(new Plan(joinOp1), right2);
+        EntityJoinOp joinOp2 = new EntityJoinOp(new Plan(joinOp1), right2,true);
 
 
         ValidationResult validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);

@@ -21,6 +21,11 @@ public class EntityJoinOp extends EntityOp {
         this.rightBranch = rightBranch;
     }
 
+    public EntityJoinOp(Plan leftBranch, Plan rightBranch, boolean isComplete) {
+        this(leftBranch, rightBranch);
+        this.isComplete = isComplete;
+    }
+
     public Plan getLeftBranch() {
         return leftBranch;
     }
@@ -30,10 +35,20 @@ public class EntityJoinOp extends EntityOp {
     }
 
     public boolean isComplete(){
-        EntityOp entityOp = Stream.ofAll(rightBranch.getOps()).filter(op -> EntityOp.class.isAssignableFrom(op.getClass())).map(op -> (EntityOp)op).last();
-        return entityOp.getAsgEbase().geteNum() == this.getAsgEbase().geteNum();
+        return this.isComplete;
+    }
+
+    public static boolean isComplete(EntityJoinOp entityJoinOp){
+        EntityOp entityOp = Stream.ofAll(entityJoinOp.getRightBranch().getOps()).filter(op -> EntityOp.class.isAssignableFrom(op.getClass())).map(op -> (EntityOp)op).last();
+        return entityOp.getAsgEbase().geteNum() == entityJoinOp.getAsgEbase().geteNum();
+    }
+
+    public void setComplete(boolean complete) {
+        isComplete = complete;
     }
 
     private Plan leftBranch;
     private Plan rightBranch;
+
+    private boolean isComplete = false;
 }

@@ -115,7 +115,8 @@ public class EntityJoinPatternCostEstimatorTests {
                         new RelationOp(AsgQueryUtil.element$(query, 7)),
                         new RelationFilterOp(AsgQueryUtil.element$(query,8)),
                         new EntityOp(AsgQueryUtil.element$(query, 5)),
-                        new EntityFilterOp(AsgQueryUtil.element$(query,6)))
+                        new EntityFilterOp(AsgQueryUtil.element$(query,6))),
+                        true
                 ));
 
         CostEstimator< Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery >> estimatorMock = mock(CostEstimator.class);
@@ -161,7 +162,8 @@ public class EntityJoinPatternCostEstimatorTests {
                         new RelationOp(AsgQueryUtil.element$(query, 7)),
                         new RelationFilterOp(AsgQueryUtil.element$(query,8)),
                         new EntityOp(AsgQueryUtil.element$(query, 5)),
-                        new EntityFilterOp(AsgQueryUtil.element$(query,6)))
+                        new EntityFilterOp(AsgQueryUtil.element$(query,6))),
+                        true
                 ));
 
         EntityJoinOp prevJoin = new EntityJoinOp(

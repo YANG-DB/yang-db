@@ -18,12 +18,16 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M2PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -45,9 +49,16 @@ import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.FREEZE;
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
+import static com.kayhut.fuse.model.query.ConstraintOp.ge;
+import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.ConstraintOp.le;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.properties.RelProp.of;
+import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -319,6 +330,60 @@ public class EpbJoinTests {
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
         Assert.assertEquals(2, joinPlans.size());
         Assert.assertTrue(joinPlans.get(0).getCost().getGlobalCost().getCost() == joinPlans.get(1).getCost().getGlobalCost().getCost());
+    }
+
+    @Test
+    public void testStarJoinCreation(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(quant1(2, all))
+                .in(eProp(3)
+                        , rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
+                                next(typed(6, DRAGON.type).
+                                next(eProp(7)))
+                        , rel(8, OWN.getrType(), Rel.Direction.R).below(relProp(9)).
+                            next(typed(10, DRAGON.type).
+                            next(eProp(11)))
+                        , rel(12, OWN.getrType(), Rel.Direction.R).below(relProp(13)).
+                                next(typed(14, DRAGON.type).
+                                next(eProp(15)))
+                ).
+                build();
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
+        for (PlanWithCost<Plan, PlanDetailedCost> joinPlan : joinPlans) {
+            Iterable<Plan> permutations = permute(joinPlan.getPlan());
+            for (Plan newPlan : permutations) {
+                Assert.assertTrue(joinPlans.stream().anyMatch(p -> p.getPlan().toString().equals(newPlan.toString())));
+                Assert.assertEquals(joinPlan.getCost().getGlobalCost().cost, Stream.ofAll(joinPlans).find(p -> p.getPlan().toString().equals(newPlan.toString())).get().getCost().getGlobalCost().cost,0.0001);
+            }
+        }
+    }
+
+    private Iterable<Plan> permute(Plan plan){
+        List<Plan> plans = new ArrayList<>();
+
+        if(plan.getOps().get(0) instanceof EntityJoinOp){
+            EntityJoinOp entityJoinOp = (EntityJoinOp) plan.getOps().get(0);
+
+            Iterable<Plan> leftPlans = permute(entityJoinOp.getLeftBranch());
+            Iterable<Plan> rightPlans = permute(entityJoinOp.getRightBranch());
+            for(Plan leftPlan : leftPlans){
+                for(Plan rightPlan : rightPlans){
+                    EntityJoinOp newJoinOp = new EntityJoinOp(leftPlan, rightPlan,true);
+                    Plan newPlan = new Plan(Stream.of((PlanOp)newJoinOp).appendAll(plan.getOps().stream().skip(1).collect(Collectors.toList())));
+                    plans.add(newPlan);
+
+                    newJoinOp = new EntityJoinOp(rightPlan, leftPlan,true);
+                    newPlan = new Plan(Stream.of((PlanOp)newJoinOp).appendAll(plan.getOps().stream().skip(1).collect(Collectors.toList())));
+                    plans.add(newPlan);
+                }
+            }
+        }else{
+            plans.add(plan);
+        }
+
+        return plans;
     }
 
 
