@@ -333,6 +333,34 @@ public class EpbJoinTests {
     }
 
     @Test
+    public void test4HopsJoinCreation(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2)).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6)).
+                next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
+                next(typed(9, DRAGON.type)).
+                next(eProp(10)).
+                next(rel(11, OWN.getrType(), Rel.Direction.R).below(relProp(12))).
+                next(typed(13, DRAGON.type)).
+                next(eProp(14)).
+                build();
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
+        Assert.assertEquals(joinPlans.stream().map(p -> p.getPlan().toString()).collect(Collectors.toSet()).size(), joinPlans.size());
+        Assert.assertEquals(12, joinPlans.size());
+        for (PlanWithCost<Plan, PlanDetailedCost> joinPlan : joinPlans) {
+            Iterable<Plan> permutations = permute(joinPlan.getPlan());
+            for (Plan newPlan : permutations) {
+                Assert.assertTrue(joinPlans.stream().anyMatch(p -> p.getPlan().toString().equals(newPlan.toString())));
+                Assert.assertEquals(joinPlan.getCost().getGlobalCost().cost, Stream.ofAll(joinPlans).find(p -> p.getPlan().toString().equals(newPlan.toString())).get().getCost().getGlobalCost().cost,0.0001);
+            }
+        }
+    }
+
+    @Test
     public void testStarJoinCreation(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
