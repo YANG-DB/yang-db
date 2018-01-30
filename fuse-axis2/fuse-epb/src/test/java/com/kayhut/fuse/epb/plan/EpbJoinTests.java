@@ -351,6 +351,8 @@ public class EpbJoinTests {
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
+        Assert.assertEquals(joinPlans.stream().map(p -> p.getPlan().toString()).collect(Collectors.toSet()).size(), joinPlans.size());
+        Assert.assertEquals(18, joinPlans.size());
         for (PlanWithCost<Plan, PlanDetailedCost> joinPlan : joinPlans) {
             Iterable<Plan> permutations = permute(joinPlan.getPlan());
             for (Plan newPlan : permutations) {
