@@ -21,6 +21,8 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -307,7 +309,7 @@ public class EpbJoinTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
-        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        planSearcher.search(query);
         Assert.assertEquals(2,Stream.ofAll(globalPlanSelector.getPlans()).length());
 
         assertNoJoinPlans(globalPlanSelector.getPlans());
@@ -326,10 +328,34 @@ public class EpbJoinTests {
                 next(typed(9, DRAGON.type)).
                 next(eProp(10)).
                 build();
-        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        planSearcher.search(query);
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
         Assert.assertEquals(2, joinPlans.size());
         Assert.assertTrue(joinPlans.get(0).getCost().getGlobalCost().getCost() == joinPlans.get(1).getCost().getGlobalCost().getCost());
+    }
+
+    @Test
+    public void test3HopsJoinCreationEConcrete(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(concrete(1,"Per", PERSON.type,PERSON.name,"P")).
+                next(eProp(2)).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6)).
+                next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
+                next(typed(9, DRAGON.type)).
+                next(eProp(10)).
+                build();
+        planSearcher.search(query);
+        List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).sorted(Comparator.comparing(p -> p.getPlan().toString())).toJavaList();
+        Assert.assertEquals(2, joinPlans.size());
+        Assert.assertTrue(joinPlans.get(0).getCost().getGlobalCost().getCost() == joinPlans.get(1).getCost().getGlobalCost().getCost());
+
+        PlanWithCost<Plan, CountEstimatesCost> joinCost = joinPlans.get(0).getCost().getPlanStepCosts().iterator().next();
+        PlanDetailedCost rightBranchCost = ((JoinCost) joinCost.getCost()).getRightBranchCost();
+        Assert.assertEquals(Stream.ofAll(rightBranchCost.getPlanStepCosts()).last().getCost().peek(), 10,0.01);
+        Assert.assertEquals(Stream.ofAll(rightBranchCost.getPlanStepCosts()).last().getCost().getCountEstimates().pop(), 10,0.01);
+        Assert.assertEquals(Stream.ofAll(rightBranchCost.getPlanStepCosts()).last().getCost().getCountEstimates().pop(), 2000,0.01);
     }
 
     @Test
