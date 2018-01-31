@@ -1,6 +1,9 @@
 package com.kayhut.fuse.executor.logging;
 
+import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.kayhut.fuse.dispatcher.logging.LogType;
+import com.kayhut.fuse.dispatcher.logging.MethodName;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.slf4j.Logger;
@@ -9,7 +12,7 @@ import java.util.List;
 
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.*;
+import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**
  * Created by roman.margolis on 07/01/2018.
@@ -40,15 +43,16 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
         boolean thrownExcpetion = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "next", "start next").log();
+            new LogMessage.Impl(this.logger, trace, "start next", LogType.of(start), next, ElapsedFrom.now()).log();
             return this.traversal.next(amount);
         } catch (Exception ex) {
             thrownExcpetion = true;
-            new LogMessage(this.logger, error, failure, "next", "failed next", ex).log();
+            new LogMessage.Impl(this.logger, error, "failed next", LogType.of(failure), next, ElapsedFrom.now())
+                    .with(ex).log();
             throw ex;
         } finally {
             if (!thrownExcpetion) {
-                new LogMessage(this.logger, trace, success, "next", "finish next").log();
+                new LogMessage.Impl(this.logger, trace, "finish next", LogType.of(success), next, ElapsedFrom.now()).log();
             }
         }
     }
@@ -58,15 +62,16 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
         boolean thrownExcpetion = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "toList", "start toList").log();
+            new LogMessage.Impl(this.logger, trace, "start toList", LogType.of(start), toList, ElapsedFrom.now()).log();
             return this.traversal.toList();
         } catch (Exception ex) {
             thrownExcpetion = true;
-            new LogMessage(this.logger, error, failure, "toList", "failed toList", ex).log();
+            new LogMessage.Impl(this.logger, error, "failed toList", LogType.of(failure), toList, ElapsedFrom.now())
+                    .with(ex).log();
             throw ex;
         } finally {
             if (!thrownExcpetion) {
-                new LogMessage(this.logger, trace, success, "toList", "finish toList").log();
+                new LogMessage.Impl(this.logger, trace, "finish toList", LogType.of(success), toList, ElapsedFrom.now()).log();
             }
         }
     }
@@ -75,5 +80,8 @@ public class LoggingTraversal<S, E> implements Traversal<S, E> {
     //region Fields
     private Traversal<S, E> traversal;
     private Logger logger;
+
+    private static LogMessage.MDCWriter next = MethodName.of("next");
+    private static LogMessage.MDCWriter toList = MethodName.of("toList");
     //endregion
 }

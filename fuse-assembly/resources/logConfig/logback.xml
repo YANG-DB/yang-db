@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="15 seconds" debug="false">
-  <conversionRule conversionWord="requestId" converterClass="com.kayhut.fuse.logging.RequestIdConverter" />
-  <conversionRule conversionWord="elapsed" converterClass="com.kayhut.fuse.logging.ElapsedConverter" />
-  <conversionRule conversionWord="logType" converterClass="com.kayhut.fuse.dispatcher.logging.LogTypeConverter" />
-  <conversionRule conversionWord="methodName" converterClass="com.kayhut.fuse.dispatcher.logging.MethodNameConverter" />
+  <conversionRule conversionWord="requestId" converterClass="com.kayhut.fuse.logging.RequestId$Converter" />
+  <conversionRule conversionWord="elapsed" converterClass="com.kayhut.fuse.dispatcher.logging.Elapsed$Converter" />
+  <conversionRule conversionWord="elapsedFrom" converterClass="com.kayhut.fuse.dispatcher.logging.ElapsedFrom$Converter" />
+  <conversionRule conversionWord="logType" converterClass="com.kayhut.fuse.dispatcher.logging.LogType$Converter" />
+  <conversionRule conversionWord="methodName" converterClass="com.kayhut.fuse.dispatcher.logging.MethodName$Converter" />
 
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
     <withJansi>true</withJansi>
     <encoder>
-      <pattern>%green(%-23requestId) %white(%-26d{ISO8601}) %yellow(%-6elapsed) %white(%-8level) %magenta(%-17thread) %cyan(%-46logger{5}) %cyan(%-8logType) %cyan(%-20methodName) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
+      <pattern>%green(%-23requestId) %white(%-26d{ISO8601}) %yellow(%-6elapsed) %yellow(%-6elapsedFrom) %white(%-8level) %magenta(%-17thread) %cyan(%-46logger{5}) %cyan(%-8logType) %cyan(%-20methodName) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
     </encoder>
   </appender>
 
@@ -22,7 +23,7 @@
       <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
     <encoder>
-      <pattern>%-23requestId %-26d{ISO8601} %-6elapsed %-8level %-17thread %-46logger{5} %-8logType %-20methodName %msg%n %ex{15} %nopex</pattern>
+      <pattern>%-23requestId %-26d{ISO8601} %-6elapsed %-6elapsedFrom %-8level %-17thread %-46logger{5} %-8logType %-20methodName %msg%n %ex{15} %nopex</pattern>
     </encoder>
   </appender>
 
@@ -77,6 +78,10 @@
       <property>
         <name>elapsed</name>
         <value>%elapsed</value>
+      </property>
+      <property>
+        <name>elapsedFrom</name>
+        <value>%elapsedFrom</value>
       </property>
       <property>
         <name>requestId</name>
