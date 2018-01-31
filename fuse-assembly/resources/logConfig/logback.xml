@@ -17,7 +17,7 @@
   <appender name="filetrace" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>log/trace.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>trace.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>log/trace.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <maxFileSize>100MB</maxFileSize>
       <maxHistory>5</maxHistory>
       <totalSizeCap>1GB</totalSizeCap>
@@ -30,7 +30,7 @@
   <appender name="es-error-filetrace" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>log/es-error-trace.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>es-error-trace.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+      <fileNamePattern>log/es-error-trace.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
       <maxFileSize>100MB</maxFileSize>
       <maxHistory>5</maxHistory>
       <totalSizeCap>1GB</totalSizeCap>

@@ -26,7 +26,7 @@ public class Elapsed {
                 return "0";
             }
 
-            long elapsed = System.currentTimeMillis() - Long.parseLong(start);
+            long elapsed = iLoggingEvent.getTimeStamp() - Long.parseLong(start);
             return Long.toString(elapsed);
         }
         //endregion

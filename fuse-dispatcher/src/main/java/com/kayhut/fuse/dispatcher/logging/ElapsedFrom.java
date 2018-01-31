@@ -16,7 +16,7 @@ public class ElapsedFrom {
         return new MDCWriter(System.currentTimeMillis());
     }
 
-    public static LogMessage.MDCWriter defferedNow() {
+    public static LogMessage.MDCWriter deferredNow() {
         return new MDCWriter(-1);
     }
 
@@ -59,7 +59,7 @@ public class ElapsedFrom {
                 return "0";
             }
 
-            long elapsed = System.currentTimeMillis() - Long.parseLong(start);
+            long elapsed = iLoggingEvent.getTimeStamp() - Long.parseLong(start);
             return Long.toString(elapsed);
         }
         //endregion
