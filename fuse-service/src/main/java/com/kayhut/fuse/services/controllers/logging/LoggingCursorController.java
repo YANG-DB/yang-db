@@ -4,9 +4,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.logging.ElapsedConverter;
-import com.kayhut.fuse.logging.RequestIdConverter;
+import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -20,9 +19,7 @@ import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.info;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.failure;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.success;
+import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -48,25 +45,24 @@ public class LoggingCursorController implements CursorController {
     //region CursorController Implementation
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
-        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "create")).time();
-
-        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
-        MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), create.toString())).time();
         boolean thrownException = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "create", "start create").log();
+            new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start),
+                    create, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.create(queryId, createCursorRequest);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, failure, "create", "failed create", ex).log();
-            this.metricRegistry.meter(name(this.logger.getName(), "create", "failure")).mark();
+            new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, success, "create", "finish create").log();
-                new LogMessage(this.logger, trace, success, "create", "finish create").log();
-                this.metricRegistry.meter(name(this.logger.getName(), "create", "success")).mark();
+                new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
             }
             timerContext.stop();
         }
@@ -74,25 +70,24 @@ public class LoggingCursorController implements CursorController {
 
     @Override
     public ContentResponse<StoreResourceInfo> getInfo(String queryId) {
-        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryId")).time();
-
-        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
-        MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryId.toString())).time();
         boolean thrownException = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "getInfoByQueryId", "start getInfoByQueryId").log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId",
+                    LogType.of(start), getInfoByQueryId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, failure, "getInfoByQueryId", "failed getInfoByQueryId", ex).log();
-            this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "failure")).mark();
+            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryId", LogType.of(failure), getInfoByQueryId, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryId.toString(), "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, success, "getInfoByQueryId", "finish getInfoByQueryId").log();
-                new LogMessage(this.logger, trace, success, "getInfoByQueryId", "finish getInfoByQueryId").log();
-                this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryId", "success")).mark();
+                new LogMessage.Impl(this.logger, info, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryId", LogType.of(success), getInfoByQueryId, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryId.toString(), "success")).mark();
             }
             timerContext.stop();
         }
@@ -100,25 +95,24 @@ public class LoggingCursorController implements CursorController {
 
     @Override
     public ContentResponse<CursorResourceInfo> getInfo(String queryId, String cursorId) {
-        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfoByQueryIdAndCursorId")).time();
-
-        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
-        MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString())).time();
         boolean thrownException = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "getInfoByQueryIdAndCursorId", "start getInfoByQueryIdAndCursorId").log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId",
+                    LogType.of(start), getInfoByQueryIdAndCursorId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, failure, "getInfoByQueryIdAndCursorId", "failed getInfoByQueryIdAndCursorId", ex).log();
-            this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorId", "failure")).mark();
+            new LogMessage.Impl(this.logger, error, "failed getInfoByQueryIdAndCursorId", LogType.of(failure), getInfoByQueryIdAndCursorId, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString(), "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, success, "getInfoByQueryIdAndCursorId", "finish getInfoByQueryIdAndCursorId").log();
-                new LogMessage(this.logger, trace, success, "getInfoByQueryIdAndCursorId", "finish getInfoByQueryIdAndCursorId").log();
-                this.metricRegistry.meter(name(this.logger.getName(), "getInfoByQueryIdAndCursorId", "success")).mark();
+                new LogMessage.Impl(this.logger, info, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getInfoByQueryIdAndCursorId", LogType.of(success), getInfoByQueryIdAndCursorId, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString(), "success")).mark();
             }
             timerContext.stop();
         }
@@ -126,25 +120,24 @@ public class LoggingCursorController implements CursorController {
 
     @Override
     public ContentResponse<Boolean> delete(String queryId, String cursorId) {
-        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "delete")).time();
-
-        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
-        MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), delete.toString())).time();
         boolean thrownException = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "delete", "start delete").log();
+            new LogMessage.Impl(this.logger, trace, "start delete",
+                    LogType.of(start), delete, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.delete(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, failure, "delete", "failed delete", ex).log();
-            this.metricRegistry.meter(name(this.logger.getName(), "delete", "failure")).mark();
+            new LogMessage.Impl(this.logger, error, "failed delete", LogType.of(failure), delete, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, success, "delete", "finish delete").log();
-                new LogMessage(this.logger, trace, success, "delete", "finish delete").log();
-                this.metricRegistry.meter(name(this.logger.getName(), "delete", "success")).mark();
+                new LogMessage.Impl(this.logger, info, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish delete", LogType.of(success), delete, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), delete.toString(), "success")).mark();
             }
             timerContext.stop();
         }
@@ -156,5 +149,10 @@ public class LoggingCursorController implements CursorController {
     private RequestIdSupplier requestIdSupplier;
     private MetricRegistry metricRegistry;
     private CursorController controller;
+
+    private static MethodName.MDCWriter create = MethodName.of("create");
+    private static MethodName.MDCWriter getInfoByQueryId = MethodName.of("getInfoByQueryId");
+    private static MethodName.MDCWriter getInfoByQueryIdAndCursorId = MethodName.of("getInfoByQueryIdAndCursorId");
+    private static MethodName.MDCWriter delete = MethodName.of("delete");
     //endregion
 }
