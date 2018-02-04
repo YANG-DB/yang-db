@@ -5,12 +5,13 @@
   <conversionRule conversionWord="elapsedFrom" converterClass="com.kayhut.fuse.dispatcher.logging.ElapsedFrom$Converter" />
   <conversionRule conversionWord="logType" converterClass="com.kayhut.fuse.dispatcher.logging.LogType$Converter" />
   <conversionRule conversionWord="methodName" converterClass="com.kayhut.fuse.dispatcher.logging.MethodName$Converter" />
+  <conversionRule conversionWord="hostName" converterClass="com.kayhut.fuse.dispatcher.logging.HostName$Converter" />
 
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
     <withJansi>true</withJansi>
     <encoder>
-      <pattern>%green(%-23requestId) %white(%-26d{ISO8601}) %yellow(%-6elapsed) %yellow(%-6elapsedFrom) %white(%-8level) %magenta(%-17thread) %cyan(%-46logger{5}) %cyan(%-8logType) %cyan(%-20methodName) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
+      <pattern>%white(%-15hostName) %green(%-23requestId) %white(%-26d{ISO8601}) %yellow(%-6elapsed) %yellow(%-6elapsedFrom) %white(%-8level) %magenta(%-17thread) %cyan(%-46logger{5}) %cyan(%-8logType) %cyan(%-20methodName) %white(%msg%n) %boldRed(%ex{15}) %nopex</pattern>
     </encoder>
   </appender>
 
@@ -23,7 +24,7 @@
       <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
     <encoder>
-      <pattern>%-23requestId %-26d{ISO8601} %-6elapsed %-6elapsedFrom %-8level %-17thread %-46logger{5} %-8logType %-20methodName %msg%n %ex{15} %nopex</pattern>
+      <pattern>%-15hostName %-23requestId %-26d{ISO8601} %-6elapsed %-6elapsedFrom %-8level %-17thread %-46logger{5} %-8logType %-20methodName %msg%n %ex{15} %nopex</pattern>
     </encoder>
   </appender>
 
@@ -48,7 +49,7 @@
     <properties>
       <property>
         <name>host</name>
-        <value>${HOSTNAME}</value>
+        <value>%hostName</value>
         <allowEmpty>false</allowEmpty>
       </property>
       <property>
