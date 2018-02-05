@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Created by benishue on 09-May-17.
  */
-public abstract class AsgConstraintTransformationBase implements AsgStrategy {
+public abstract class ConstraintTransformationAsgStrategyBase implements AsgStrategy {
 
     //region Protected Methods
     protected List<EProp> getEprops(AsgQuery query) {

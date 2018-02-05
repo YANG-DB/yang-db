@@ -1,6 +1,5 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
-import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -16,7 +15,7 @@ import java.util.*;
 /**
  * Created by benishue on 09-May-17.
  */
-public class AsgConstraintTypeTransformationStrategy extends AsgConstraintTransformationBase{
+public class ConstraintTypeTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
