@@ -19,7 +19,7 @@ import java.util.Optional;
 /**
  * Created by benishue on 19-Apr-17.
  */
-public class AsgEntityPropertiesGroupingStrategy implements AsgStrategy {
+public class EntityPropertiesGroupingAsgStrategy implements AsgStrategy {
     /*
     region AsgStrategy Implementation
     The simple case - no Quantifier involved - e.g., Q142 on V1

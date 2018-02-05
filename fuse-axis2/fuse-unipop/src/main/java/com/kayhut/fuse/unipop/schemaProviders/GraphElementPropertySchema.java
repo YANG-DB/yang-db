@@ -16,8 +16,9 @@ public interface GraphElementPropertySchema {
         enum Type {
             none,
             exact,
-            fullText,
-            ngrams
+            words,
+            ngrams,
+            edgeNgrams
         }
 
         Type getType();
@@ -46,6 +47,30 @@ public interface GraphElementPropertySchema {
             //region Fields
             private Type type;
             private String name;
+            //endregion
+        }
+    }
+
+    interface NgramsIndexingSchema {
+        int getMaxSize();
+
+        class Impl extends IndexingSchema.Impl implements NgramsIndexingSchema {
+            //region Constructors
+            public Impl(String name, int maxSize) {
+                super(Type.ngrams, name);
+                this.maxSize = maxSize;
+            }
+            //endregion
+
+            //region NgramsIndexingSchema Implementation
+            @Override
+            public int getMaxSize() {
+                return this.maxSize;
+            }
+            //endregion
+
+            //region Fields
+            private int maxSize;
             //endregion
         }
     }
