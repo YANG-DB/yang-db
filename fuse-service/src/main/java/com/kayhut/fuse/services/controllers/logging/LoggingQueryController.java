@@ -6,6 +6,8 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.logging.RequestId;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -143,6 +145,55 @@ public class LoggingQueryController implements QueryController {
     }
 
     @Override
+    public ContentResponse<Query> getV1(String queryId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getV1ByQueryId.toString())).time();
+        boolean thrownException = false;
+
+        try {
+            new LogMessage.Impl(this.logger, trace, "start getV1ByQueryId",
+                    LogType.of(start), getV1ByQueryId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            return controller.getV1(queryId);
+        } catch (Exception ex) {
+            thrownException = true;
+            new LogMessage.Impl(this.logger, error, "failed getV1ByQueryId", LogType.of(failure), getV1ByQueryId, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getV1ByQueryId.toString(), "failure")).mark();
+            return null;
+        } finally {
+            if (!thrownException) {
+                new LogMessage.Impl(this.logger, info, "finish getV1ByQueryId", LogType.of(success), getV1ByQueryId, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getV1ByQueryId", LogType.of(success), getV1ByQueryId, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), getV1ByQueryId.toString(), "success")).mark();
+            }
+            timerContext.stop();
+        }
+    }
+    @Override
+    public ContentResponse<AsgQuery> getAsg(String queryId) {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getAsgByQueryId.toString())).time();
+        boolean thrownException = false;
+
+        try {
+            new LogMessage.Impl(this.logger, trace, "start getAsgByQueryId",
+                    LogType.of(start), getAsgByQueryId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            return controller.getAsg(queryId);
+        } catch (Exception ex) {
+            thrownException = true;
+            new LogMessage.Impl(this.logger, error, "failed getAsgByQueryId", LogType.of(failure), getAsgByQueryId, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getAsgByQueryId.toString(), "failure")).mark();
+            return null;
+        } finally {
+            if (!thrownException) {
+                new LogMessage.Impl(this.logger, info, "finish getAsgByQueryId", LogType.of(success), getAsgByQueryId, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getAsgByQueryId", LogType.of(success), getAsgByQueryId, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), getAsgByQueryId.toString(), "success")).mark();
+            }
+            timerContext.stop();
+        }
+    }
+
+    @Override
     public ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId) {
         boolean thrownException = false;
 
@@ -212,6 +263,8 @@ public class LoggingQueryController implements QueryController {
 
     private static MethodName.MDCWriter create = MethodName.of("create");
     private static MethodName.MDCWriter getInfo = MethodName.of("getInfo");
+    private static MethodName.MDCWriter getV1ByQueryId = MethodName.of("getV1ByQueryId");
+    private static MethodName.MDCWriter getAsgByQueryId = MethodName.of("getAsgByQueryId");
     private static MethodName.MDCWriter getInfoByQueryId = MethodName.of("getInfoByQueryId");
     private static MethodName.MDCWriter delete = MethodName.of("delete");
     //endregion

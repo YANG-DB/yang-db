@@ -202,7 +202,7 @@ public class FuseApp extends Jooby {
                     return Results.with(response, response.status());
                 });
 
-        /** get the query execution plan */
+        /** get the query verbose plan */
         use(localUrlSupplier.resourceUrl(":queryId") + "/planVerbose")
                 .get(req -> {
                     ContentResponse response = queryCtrl().planVerbose(req.param("queryId").value());
@@ -211,7 +211,21 @@ public class FuseApp extends Jooby {
                             .type("application/json");
                 });
 
-        /** get the query plan verbose */
+        /** get the query v1*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/v1")
+                .get(req -> {
+                    ContentResponse response = queryCtrl().getV1(req.param("queryId").value());
+                    return Results.with(JsonWriter.objectToJson(response), response.status());
+                });
+
+        /** get the asg query */
+        use(localUrlSupplier.resourceUrl(":queryId") + "/asg")
+                .get(req -> {
+                    ContentResponse response = queryCtrl().getAsg(req.param("queryId").value());
+                    return Results.with(JsonWriter.objectToJson(response), response.status());
+                });
+
+        /** get the query plan execution */
         use(localUrlSupplier.resourceUrl(":queryId") + "/plan")
                 .get(req -> {
                     ContentResponse response = queryCtrl().explain(req.param("queryId").value());

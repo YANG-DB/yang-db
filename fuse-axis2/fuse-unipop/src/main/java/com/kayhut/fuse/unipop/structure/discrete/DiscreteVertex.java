@@ -6,8 +6,8 @@ import org.unipop.structure.UniGraph;
 import org.unipop.structure.UniVertex;
 import org.unipop.structure.UniVertexProperty;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Created by roman.margolis on 12/09/2017.

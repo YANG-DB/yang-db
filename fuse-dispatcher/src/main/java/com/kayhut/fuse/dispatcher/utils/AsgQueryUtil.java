@@ -356,8 +356,12 @@ public class AsgQueryUtil {
         return newValues;
     }
 
+    public static List<AsgEBase> elements(AsgQuery query) {
+        return elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, truePredicate, truePredicate, Collections.EMPTY_LIST);
+    }
+
     public static String pattern(AsgQuery query) {
-        List<AsgEBase> elements = elements(query.getStart(), AsgEBase::getB, AsgEBase::getNext, truePredicate, truePredicate, Collections.EMPTY_LIST);
+        List<AsgEBase> elements = elements(query) ;
         StringJoiner joiner = new StringJoiner(":","","");
         elements.forEach(e-> {
             if(e.geteBase() instanceof EEntityBase)
