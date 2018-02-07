@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.execution.plan.Direction.reverse;
 import static com.kayhut.fuse.model.query.Constraint.of;
 import static com.kayhut.fuse.model.query.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.ConstraintOp.gt;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.Rel.Direction.reverse;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 /**

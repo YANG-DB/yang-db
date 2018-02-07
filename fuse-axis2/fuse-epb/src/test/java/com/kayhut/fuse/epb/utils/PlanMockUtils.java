@@ -156,9 +156,9 @@ public interface PlanMockUtils {
             return this;
         }
 
-        public PlanMockBuilder rel(Direction direction, String relType, long total) throws Exception {
+        public PlanMockBuilder rel(Rel.Direction direction, String relType, long total) throws Exception {
             Rel rel = new Rel();
-            rel.setDir(Direction.valueOf(direction.name()).to());
+            rel.setDir(Rel.Direction.valueOf(direction.name()));
             rel.setrType(relType);
             RelationOp relationOp = new RelationOp(new AsgEBase<>(rel));
             //no type => max nodes return

@@ -1,6 +1,6 @@
 package com.kayhut.test.etl.ontology;
 
-import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
 import javaslang.collection.Stream;
@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.kayhut.fuse.model.execution.plan.Direction.both;
 import static com.kayhut.test.scenario.ETLUtils.*;
 
 /**
@@ -27,13 +26,13 @@ public interface FireEdge {
         Map<String, String> constFields=  new HashMap<>();
         constFields.put(ENTITY_A_TYPE, DRAGON);
         constFields.put(ENTITY_B_TYPE, DRAGON);
-        AddConstantFieldsTransformer constantFieldsTransformer = new AddConstantFieldsTransformer(constFields, both);
+        AddConstantFieldsTransformer constantFieldsTransformer = new AddConstantFieldsTransformer(constFields, Rel.Direction.RL);
         RedundantFieldTransformer redundantFieldTransformer = new RedundantFieldTransformer(getClient(),
-                redundant(FIRE, Direction.out,"A"),
+                redundant(FIRE, Rel.Direction.R,"A"),
                 ENTITY_A_ID,
                 Stream.ofAll(indexPartition(DRAGON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 DRAGON,
-                redundant(FIRE, Direction.out,"B"),
+                redundant(FIRE, Rel.Direction.R,"B"),
                 ENTITY_B_ID,
                 Stream.ofAll(indexPartition(DRAGON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 DRAGON);

@@ -1,7 +1,7 @@
 package com.kayhut.test.etl;
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.model.query.Rel;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -58,16 +58,16 @@ public class RedundantFieldTransformer implements Transformer{
                                      String entityBDupIdField,
                                      List<String> entityBIndices,
                                      String entityBType) {
-        this(client, entityADupFields, entityADupIdField, entityAIndices, entityAType,entityBDupFields,entityBDupIdField,entityBIndices,entityBType, Direction.both.name());
+        this(client, entityADupFields, entityADupIdField, entityAIndices, entityAType,entityBDupFields,entityBDupIdField,entityBIndices,entityBType, Rel.Direction.RL.translatedName());
     }
     @Override
     public List<Map<String, String>> transform(List<Map<String, String>> documents) {
         List<Map<String, String>> documentsOld = documents;
-        if(!direction.equals(Direction.both.name()))
+        if(!direction.equals(Rel.Direction.RL.translatedName()))
             documents = documents.stream().filter(doc -> doc.get(DIRECTION_FIELD).equals(direction)).collect(Collectors.toList());
         List<Map<String, String>> newDocuments = addRedundantFields(documents, entityAType, entityADupIdField, entityAIndices, entityADupFields);
         newDocuments = addRedundantFields(newDocuments, entityBType, entityBDupIdField, entityBIndices, entityBDupFields);
-        if(!direction.equals(Direction.both.name()))
+        if(!direction.equals(Rel.Direction.RL.translatedName()))
             newDocuments.addAll(documentsOld.stream().filter(doc -> !doc.get(DIRECTION_FIELD).equals(direction)).collect(Collectors.toList()));
         return newDocuments;
     }

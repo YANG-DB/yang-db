@@ -43,7 +43,6 @@ import static com.kayhut.fuse.epb.utils.StatisticsMockUtils.build;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.execution.plan.Direction.out;
 import static com.kayhut.fuse.model.query.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
@@ -182,7 +181,7 @@ public class StatisticalCostEstimatorTests {
 
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock(asgQuery).entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
-                .rel(out, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
+                .rel(R, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
 
         StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
         RegexPatternCostEstimator estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(

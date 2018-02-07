@@ -24,6 +24,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
@@ -42,7 +43,6 @@ import java.util.Optional;
 import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.execution.plan.Direction.out;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -110,7 +110,7 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
     public void calculateFullStepNotNull() throws Exception {
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, PERSON.type)
                 .entityFilter(0.2,7,FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
-                .rel(out, OWN.getrType(), 100)
+                .rel(Rel.Direction.R, OWN.getrType(), 100)
                 .relFilter(0.6,11,START_DATE.type,Constraint.of(ConstraintOp.ge, "gt"))
                 .entity(CONCRETE, 1, DRAGON.type)
                 .entityFilter(1,12, NAME.type, Constraint.of(ConstraintOp.inSet, "inSet"));

@@ -1,6 +1,6 @@
 package com.kayhut.test.etl.ontology;
 
-import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.test.etl.*;
 import javaslang.collection.Stream;
@@ -10,7 +10,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.kayhut.fuse.model.execution.plan.Direction.out;
+import static com.kayhut.fuse.model.query.Rel.Direction.L;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.test.scenario.ETLUtils.*;
 
 /**
@@ -21,31 +22,31 @@ public interface OwnDragonEdge {
         Map<String, String> outConstFields=  new HashMap<>();
         outConstFields.put(ENTITY_A_TYPE, PERSON);
         outConstFields.put(ENTITY_B_TYPE, DRAGON);
-        AddConstantFieldsTransformer outFieldsTransformer = new AddConstantFieldsTransformer(outConstFields, out);
+        AddConstantFieldsTransformer outFieldsTransformer = new AddConstantFieldsTransformer(outConstFields, R);
         Map<String, String> inConstFields=  new HashMap<>();
         inConstFields.put(ENTITY_A_TYPE, DRAGON);
         inConstFields.put(ENTITY_B_TYPE, PERSON);
-        AddConstantFieldsTransformer inFieldsTransformer = new AddConstantFieldsTransformer(inConstFields, Direction.in);
+        AddConstantFieldsTransformer inFieldsTransformer = new AddConstantFieldsTransformer(inConstFields, Rel.Direction.L);
 
         RedundantFieldTransformer redundantOutTransformer = new RedundantFieldTransformer(getClient(),
-                redundant(OWN, out, "A"),
+                redundant(OWN, R, "A"),
                 ENTITY_A_ID,
                 Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 PERSON,
-                redundant(OWN, out,"B"),
+                redundant(OWN, R,"B"),
                 ENTITY_B_ID,
                 Stream.ofAll(indexPartition(DRAGON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 DRAGON,
-                out.name());
+                R.translatedName());
         RedundantFieldTransformer redundantInTransformer = new RedundantFieldTransformer(getClient(),
-                redundant(OWN,  Direction.in, "A"),
+                redundant(OWN,  Rel.Direction.L, "A"),
                 ENTITY_A_ID,
                 Stream.ofAll(indexPartition(DRAGON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
                 DRAGON,
-                redundant(OWN, Direction.in,"B"),
+                redundant(OWN, Rel.Direction.L,"B"),
                 ENTITY_B_ID,
                 Stream.ofAll(indexPartition(PERSON).getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList(),
-                PERSON, Direction.in.name());
+                PERSON, L.translatedName());
         DuplicateEdgeTransformer duplicateEdgeTransformer = new DuplicateEdgeTransformer(ENTITY_A_ID, ENTITY_B_ID);
 
         DateFieldTransformer dateFieldTransformer = new DateFieldTransformer(START_DATE, END_DATE);

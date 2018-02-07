@@ -19,6 +19,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.*;
 
 import java.util.LinkedList;
@@ -77,7 +78,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         CountEstimatesCost entityOneCost = previousCost.getPlanStepCost(start).get().getCost();
 
         //edge estimate =>
-        Direction direction = Direction.of(rel.getAsgEbase().geteBase().getDir());
+        Rel.Direction direction = rel.getAsgEbase().geteBase().getDir();
         //(relation estimate based on E1 count and global selectivity) = N1 * GS
         long selectivity = statisticsProvider.getGlobalSelectivity(rel.getAsgEbase().geteBase(),
                 relationFilter.getAsgEbase().geteBase(),

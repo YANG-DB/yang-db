@@ -18,6 +18,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -33,7 +34,6 @@ import java.util.Optional;
 
 import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.utils.StatisticsMockUtils.build;
-import static com.kayhut.fuse.model.execution.plan.Direction.out;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -93,7 +93,7 @@ public class BasicPatternCostEstimatorTest {
     public void calculateFullStep() throws Exception {
         PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock().entity(TYPED, 100, "4")
                 .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
-                .rel(out, "1", 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
+                .rel(Rel.Direction.R, "1", 1000).relFilter(0.4,11,"11",Constraint.of(ConstraintOp.ge, "gt"))
                 .entity(TYPED, 50, "5").entityFilter(0.1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
         PlanWithCost<Plan, PlanDetailedCost> oldPlan = builder.oldPlanWithCost(50, 250);
         Plan plan = builder.plan();

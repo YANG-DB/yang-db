@@ -18,6 +18,32 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
         R,
         L,
         RL;
+
+        public static Direction reverse(Direction dir) {
+            Direction reversed = Direction.RL;
+            switch (dir) {
+                case R:
+                    reversed = Direction.L;
+                    break;
+                case L:
+                    reversed = Direction.R;
+                    break;
+            }
+            return reversed;
+        }
+
+        public String translatedName(){
+            String name = "both";
+            switch(this){
+                case R:
+                    name = "out";
+                    break;
+                case L:
+                    name = "in";
+                    break;
+            }
+            return name;
+        }
     }
 
     //region Constructors

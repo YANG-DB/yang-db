@@ -1,7 +1,7 @@
 package com.kayhut.test.etl;
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.test.scenario.ETLUtils;
 
 import java.util.HashMap;
@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
  */
 public class AddConstantFieldsTransformer implements Transformer {
     private Map<String, String> fields;
-    private Direction direction;
+    private Rel.Direction direction;
 
-    public AddConstantFieldsTransformer(Map<String, String> fields, Direction direction) {
+    public AddConstantFieldsTransformer(Map<String, String> fields, Rel.Direction direction) {
         this.fields = fields;
         this.direction = direction;
     }
@@ -25,7 +25,7 @@ public class AddConstantFieldsTransformer implements Transformer {
     public List<Map<String, String>> transform(List<Map<String, String>> documents) {
         List<Map<String, String>> newList = documents.stream().map(doc -> new HashMap<>(doc)).collect(Collectors.toList());
         newList.forEach(newDoc -> {
-            if(direction == Direction.both || newDoc.get(ETLUtils.DIRECTION_FIELD).equals(direction.name())) {
+            if(direction == Rel.Direction.RL || newDoc.get(ETLUtils.DIRECTION_FIELD).equals(direction.name())) {
                 newDoc.putAll(fields);
             }
         });

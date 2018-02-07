@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.jayway.jsonpath.JsonPath;
 import com.kayhut.fuse.model.Utils;
-import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.test.etl.DateFieldPartitioner;
@@ -131,8 +131,8 @@ public abstract class ETLUtils {
                 .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("52.166.57.208"), 9300));
     }
 
-    public static Map<String, String> redundant(String edgeType, Direction direction, String side) {
-        JSONArray array = JsonPath.read(confGraphLayoutProviderFactory, "$['entities'][?(@.type == '" + edgeType + "')]['redundant']['" + direction.name() + "']['fields" + side + "']");
+    public static Map<String, String> redundant(String edgeType, Rel.Direction direction, String side) {
+        JSONArray array = JsonPath.read(confGraphLayoutProviderFactory, "$['entities'][?(@.type == '" + edgeType + "')]['redundant']['" + direction.translatedName() + "']['fields" + side + "']");
         Map<String, String> redundantFields = new HashMap<>();
         array.stream().flatMap(v -> ((JSONArray) v).stream()).forEach(m -> {
             Map<String, String> map = (Map<String, String>) m;

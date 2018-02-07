@@ -1,7 +1,6 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
 import com.google.common.collect.Iterables;
-import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.*;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
@@ -130,7 +129,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     @Override
-    public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
+    public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Rel.Direction direction) {
 
         GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
         List<String> relevantIndices = getRelevantIndicesForEdge(filter, graphEdgeSchema);

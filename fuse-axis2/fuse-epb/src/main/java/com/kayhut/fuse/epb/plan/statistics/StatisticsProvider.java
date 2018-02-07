@@ -1,6 +1,5 @@
 package com.kayhut.fuse.epb.plan.statistics;
 
-import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -51,6 +50,6 @@ public interface StatisticsProvider {
      * get average number of edges per node (by label context)
      * @return
      */
-    long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) ;
+    long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Rel.Direction direction) ;
 
 }

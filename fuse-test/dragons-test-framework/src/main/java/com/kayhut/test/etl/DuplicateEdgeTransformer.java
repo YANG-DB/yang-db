@@ -1,7 +1,7 @@
 package com.kayhut.test.etl;
 
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import com.kayhut.fuse.model.execution.plan.Direction;
+import com.kayhut.fuse.model.query.Rel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,13 +28,13 @@ public class DuplicateEdgeTransformer implements Transformer {
         List<Map<String, String>> docs = new ArrayList<>();
         for (Map<String, String> document : documents) {
             Map<String, String> newDoc = new HashMap<>(document);
-            newDoc.put(DIRECTION_FIELD, Direction.out.toString());
+            newDoc.put(DIRECTION_FIELD, Rel.Direction.R.translatedName());
             docs.add(newDoc);
 
             newDoc = new HashMap<>(document);
             newDoc.put(id1Field, document.get(id2Field));
             newDoc.put(id2Field, document.get(id1Field));
-            newDoc.put(DIRECTION_FIELD, Direction.in.toString());
+            newDoc.put(DIRECTION_FIELD, Rel.Direction.L.translatedName());
             docs.add(newDoc);
         }
 
