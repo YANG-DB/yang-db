@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
+import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
@@ -167,7 +168,9 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        return convert(searchHits, new SearchHitPromiseVertexConverter(graph));
+        Iterator<Element> iterator = convert(searchHits, new SearchHitPromiseVertexConverter(graph));
+        ElasticQueryLog log = searchHits.getQueryLog();
+        return iterator;
     }
 
     private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable, ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {

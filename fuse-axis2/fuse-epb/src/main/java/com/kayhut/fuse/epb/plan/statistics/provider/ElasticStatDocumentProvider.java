@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan.statistics.provider;
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
+import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
@@ -10,6 +11,7 @@ import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,9 +55,11 @@ public class ElasticStatDocumentProvider implements StatDataProvider {
                 searchBuilder.getScrollSize(),
                 searchBuilder.getScrollTime());
 
-        return Stream.ofAll(hits)
+        List<Map<String, Object>> list = Stream.ofAll(hits)
                 .map(SearchHit::sourceAsMap)
                 .toJavaList();
+        ElasticQueryLog log = hits.getQueryLog();
+        return list;
     }
     //endregion
 

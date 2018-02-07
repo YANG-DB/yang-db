@@ -8,6 +8,7 @@ import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexFilterConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
@@ -18,7 +19,7 @@ import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import javaslang.collection.Stream;
+import javaslang.collection.*;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -29,6 +30,8 @@ import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
 import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
@@ -120,9 +123,11 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
                 searchBuilder.getScrollTime());
 
         ElementConverter<SearchHit, Edge> converter = new DiscreteVertexFilterConverter(context);
-        return Stream.ofAll(searchHits)
+        javaslang.collection.Iterator<Edge> iterator = Stream.ofAll(searchHits)
                 .flatMap(converter::convert)
                 .filter(Objects::nonNull).iterator();
+        ElasticQueryLog log = searchHits.getQueryLog();
+        return iterator;
     }
     //endregion
 
