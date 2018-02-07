@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * Created by roman.margolis on 05/02/2018.
  */
-public class WildcardConstraintTransofrmationAsgStrategyTest {
+public class LikeConstraintTransofrmationAsgStrategyTest {
     @Test
     public void test1() {
         String[] parts1 = "*blah*".split("\\*");   // eq ngram

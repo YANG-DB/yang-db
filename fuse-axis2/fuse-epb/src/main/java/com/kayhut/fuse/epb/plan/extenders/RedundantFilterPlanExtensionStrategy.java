@@ -137,8 +137,14 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
                 if(redundantVertexProperty.isPresent()){
-                    RelProp relProp = RedundantRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
-                            p.getpType(), p.getCon());
+                    RelProp relProp = RedundantRelProp.of(
+                            maxEnum.addAndGet(1),
+                            redundantVertexProperty.get().getPropertyRedundantName(),
+                            SchematicEProp.class.isAssignableFrom(p.getClass()) ?
+                                    ((SchematicEProp)p).getSchematicName() :
+                                    redundantVertexProperty.get().getPropertyRedundantName(),
+                            p.getpType(),
+                            p.getCon());
                     relPropGroup.getProps().add(relProp);
                     ePropGroup.geteBase().getProps().remove(p);
                 }

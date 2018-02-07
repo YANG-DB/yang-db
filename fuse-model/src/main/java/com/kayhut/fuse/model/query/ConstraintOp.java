@@ -72,6 +72,6 @@ public enum ConstraintOp {
     @JsonProperty("fuzzy ne")
     fuzzyNe,
 
-    @JsonProperty("wildcard")
-    wildcard
+    @JsonProperty("like")
+    like
 }

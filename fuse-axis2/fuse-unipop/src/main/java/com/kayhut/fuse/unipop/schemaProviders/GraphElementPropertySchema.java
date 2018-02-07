@@ -1,8 +1,11 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by moti on 4/27/2017.
@@ -10,13 +13,13 @@ import java.util.Collections;
 public interface GraphElementPropertySchema {
     String getName();
     String getType();
+
     Iterable<IndexingSchema> getIndexingSchemes();
+    <T extends IndexingSchema> Optional<T> getIndexingSchema(IndexingSchema.Type type);
 
     interface IndexingSchema {
         enum Type {
-            none,
             exact,
-            words,
             ngrams,
             edgeNgrams
         }
@@ -24,7 +27,7 @@ public interface GraphElementPropertySchema {
         Type getType();
         String getName();
 
-        class Impl implements IndexingSchema {
+        abstract class Impl implements IndexingSchema {
             //region Constructors
             public Impl(Type type, String name) {
                 this.type = type;
@@ -51,7 +54,17 @@ public interface GraphElementPropertySchema {
         }
     }
 
-    interface NgramsIndexingSchema {
+    interface ExactIndexingSchema extends IndexingSchema {
+        class Impl extends IndexingSchema.Impl implements ExactIndexingSchema {
+            //region Constructors
+            public Impl(String name) {
+                super(Type.exact, name);
+            }
+            //endregion
+        }
+    }
+
+    interface NgramsIndexingSchema extends IndexingSchema {
         int getMaxSize();
 
         class Impl extends IndexingSchema.Impl implements NgramsIndexingSchema {
@@ -84,14 +97,15 @@ public interface GraphElementPropertySchema {
         public Impl(String name, String type) {
             this(name, type,
                     Collections.singletonList(
-                            new IndexingSchema.Impl(IndexingSchema.Type.exact, name)));
+                            new ExactIndexingSchema.Impl(name)));
 
         }
 
         public Impl(String name, String type, Iterable<IndexingSchema> indexingSchemes) {
             this.name = name;
             this.type = type;
-            this.indexingSchemes = Stream.ofAll(indexingSchemes).toJavaList();
+            this.indexingSchemes = Stream.ofAll(indexingSchemes)
+                    .toJavaMap(indexingSchema -> new Tuple2<>(indexingSchema.getType(), indexingSchema));
         }
         //endregion
 
@@ -108,14 +122,20 @@ public interface GraphElementPropertySchema {
 
         @Override
         public Iterable<IndexingSchema> getIndexingSchemes() {
-            return this.indexingSchemes;
+            return this.indexingSchemes.values();
+        }
+
+        @Override
+        public <T extends IndexingSchema> Optional<T> getIndexingSchema(IndexingSchema.Type type) {
+            return Optional.ofNullable((T)this.indexingSchemes.get(type));
         }
         //endregion
 
         //region Fields
         private String name;
         private String type;
-        private Iterable<IndexingSchema> indexingSchemes;
+
+        private Map<IndexingSchema.Type, IndexingSchema> indexingSchemes;
         //endregion
     }
 }

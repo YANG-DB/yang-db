@@ -33,7 +33,8 @@ public class ConversionUtil {
             case notInSet: return P.without(CollectionUtil.listFromObjectValue(constraint.getExpr()));
             case empty: return P.not(new ExistsP<V>());
             case notEmpty: return new ExistsP<>();
-            case match: return Text.like((V)constraint.getExpr());
+            //case match: return Text.like((V)constraint.getExpr());
+            case like: return Text.like((V)constraint.getExpr());
             default: throw new RuntimeException("not supported");
         }
     }
