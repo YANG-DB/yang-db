@@ -13,9 +13,9 @@ import javaslang.collection.Stream;
 /**
  * Created by Roman on 13/06/2017.
  */
-public class AsgDefaultSelectionStrategy implements AsgStrategy {
+public class DefaultSelectionAsgStrategy implements AsgStrategy {
     //region Constructors
-    public AsgDefaultSelectionStrategy(OntologyProvider ontologyProvider) {
+    public DefaultSelectionAsgStrategy(OntologyProvider ontologyProvider) {
         this.ontologyProvider = ontologyProvider;
     }
     //endregion

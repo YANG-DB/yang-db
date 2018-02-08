@@ -24,7 +24,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 /**
  * Created by benishue on 24-Apr-17.
  */
-public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
+public class UntypedInferTypeLeftSideRelationAsgStrategyTest {
     //This Eprop is not under an AND quantifier and should be replaced by the EPropGroup Element -  e.g. Q3 on V1
 
 
@@ -41,7 +41,7 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
         AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
         Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
-        AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
+        UntypedInferTypeLeftSideRelationAsgStrategy strategy = new UntypedInferTypeLeftSideRelationAsgStrategy();
         strategy.apply(query,new AsgStrategyContext(ont));
 
         AsgEBase<EUntyped> after = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
@@ -64,7 +64,7 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
         AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
         Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
-        AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
+        UntypedInferTypeLeftSideRelationAsgStrategy strategy = new UntypedInferTypeLeftSideRelationAsgStrategy();
         strategy.apply(query,new AsgStrategyContext(ont));
 
         AsgEBase<EUntyped> after = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator().next();
@@ -87,7 +87,7 @@ public class AsgUntypedInferTypeLeftSideRelationStrategyTest {
         AsgEBase<EUntyped> next = AsgQueryUtil.element$(query, EUntyped.class);
         Assert.assertTrue(next.geteBase().getvTypes().isEmpty());
 
-        AsgUntypedInferTypeLeftSideRelationStrategy strategy = new AsgUntypedInferTypeLeftSideRelationStrategy();
+        UntypedInferTypeLeftSideRelationAsgStrategy strategy = new UntypedInferTypeLeftSideRelationAsgStrategy();
         strategy.apply(query,new AsgStrategyContext(ont));
 
         Iterator<AsgEBase<EUntyped>> iterator = AsgQueryUtil.<EUntyped>elements(query, EUntyped.class).iterator();
