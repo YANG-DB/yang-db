@@ -8,12 +8,13 @@ import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import org.elasticsearch.client.Client;
 import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.process.strategyregistrar.StandardStrategyProvider;
@@ -55,8 +56,10 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
     }
 
     //region Private Methods
+
     /**
      * default controller Manager
+     *
      * @return
      */
     private ControllerManagerFactory controllerManagerFactory(GraphElementSchemaProvider schemaProvider) {
@@ -65,10 +68,14 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
                         new ElementController(
-                                new PromiseElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
-                                new PromiseElementEdgeController(client, elasticGraphConfiguration, uniGraph, schemaProvider)),
-                        new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
-                        new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider)
+                                new LoggingSearchController(
+                                        new PromiseElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider), metricRegistry),
+                                new LoggingSearchController(
+                                        new PromiseElementEdgeController(client, elasticGraphConfiguration, uniGraph, schemaProvider), metricRegistry)),
+                        new LoggingSearchVertexController(
+                                new PromiseVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider), metricRegistry),
+                        new LoggingSearchVertexController(
+                                new PromiseVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider), metricRegistry)
                 );
             }
 

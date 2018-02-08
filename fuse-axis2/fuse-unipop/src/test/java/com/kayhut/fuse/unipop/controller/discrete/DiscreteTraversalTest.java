@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
@@ -44,6 +46,7 @@ public class DiscreteTraversalTest {
     public static UniGraphConfiguration uniGraphConfiguration;
     public static UniGraph graph;
     public static GraphElementSchemaProvider schemaProvider;
+    public static MetricRegistry registry = new MetricRegistry();
     //endregion
 
     //region Setup
@@ -68,21 +71,21 @@ public class DiscreteTraversalTest {
                 uniGraph -> new ControllerManager() {
                     @Override
                     public Set<UniQueryController> getControllers() {
-                        return ImmutableSet.of(
-                                new ElementController(
+                        ElementController element = new ElementController(
+                                new LoggingSearchController(
                                         new DiscreteElementVertexController(
                                                 elasticEmbeddedNode.getClient(),
                                                 elasticGraphConfiguration,
                                                 uniGraph,
-                                                schemaProvider),
-                                        null
-                                ),
-                                new DiscreteVertexController(
-                                        elasticEmbeddedNode.getClient(),
-                                        elasticGraphConfiguration,
-                                        uniGraph,
-                                        schemaProvider)
-                        );
+                                                schemaProvider), registry),
+                                null);
+                        return ImmutableSet.of(element,
+                                new LoggingSearchVertexController(
+                                        new DiscreteVertexController(
+                                                elasticEmbeddedNode.getClient(),
+                                                elasticGraphConfiguration,
+                                                uniGraph,
+                                                schemaProvider), registry));
                     }
 
                     @Override
@@ -223,7 +226,7 @@ public class DiscreteTraversalTest {
 
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("Dragon", vertices.get(0).label());
-        Assert.assertEquals((Integer)103, vertices.get(0).value("age"));
+        Assert.assertEquals((Integer) 103, vertices.get(0).value("age"));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
     }
 
@@ -589,7 +592,7 @@ public class DiscreteTraversalTest {
     public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_outE_hasXconstraint_byXhasXlabel_hasOutFireXXX_hasXduration_selectP_directionX_inV() throws InterruptedException {
         List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon")))
                 .outE().has(CONSTRAINT, Constraint.by(__.has(T.label, "hasOutFire")))
-                       .has("duration", SelectP.raw("duration"))
+                .has("duration", SelectP.raw("duration"))
                 .inV().toList();
 
         Assert.assertEquals(30, vertices.size());
@@ -845,7 +848,7 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Collections.emptyList(),
                                 Stream.of(GraphEdgeSchema.Application.source).toJavaSet())
-                        ));
+                ));
     }
     //endregion
 
@@ -854,7 +857,7 @@ public class DiscreteTraversalTest {
         List<String> colors = Arrays.asList("red", "green", "yellow", "blue");
         List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5");
         List<Map<String, Object>> dragons = new ArrayList<>();
-        for(int i = startId ; i < endId ; i++) {
+        for (int i = startId; i < endId; i++) {
             Map<String, Object> dragon = new HashMap();
             dragon.put("id", "d" + String.format("%03d", i));
             dragon.put("type", "Dragon");
@@ -874,8 +877,8 @@ public class DiscreteTraversalTest {
         List<String> factions = Arrays.asList("faction1", "faction2", "faction3", "faction4", "faction5");
 
         List<Map<String, Object>> coins = new ArrayList<>();
-        for(int i = dragonStartId ; i < dragonEndId ; i++) {
-            for(int j = 0; j < numCoinsPerDragon ; j++) {
+        for (int i = dragonStartId; i < dragonEndId; i++) {
+            for (int j = 0; j < numCoinsPerDragon; j++) {
                 Map<String, Object> coin = new HashMap();
                 coin.put("id", "c" + Integer.toString(coinId));
                 coin.put("type", "Coin");
@@ -897,8 +900,8 @@ public class DiscreteTraversalTest {
         int fireDocEventId = fireEventId * 2;
 
         List<Map<String, Object>> fireEvents = new ArrayList<>();
-        for(int i = dragonStartId ; i < dragonEndId ; i++) {
-            for(int j = 0 ; j < numFireEventsPerDragon ; j++) {
+        for (int i = dragonStartId; i < dragonEndId; i++) {
+            for (int j = 0; j < numFireEventsPerDragon; j++) {
                 Map<String, Object> fireEvent1 = new HashMap<>();
                 Map<String, Object> fireEvent2 = new HashMap<>();
 
@@ -936,8 +939,8 @@ public class DiscreteTraversalTest {
         int fireEventId = dragonStartId * numFireEventsPerDragon;
 
         List<Map<String, Object>> fireEvents = new ArrayList<>();
-        for(int i = dragonStartId ; i < dragonEndId ; i++) {
-            for(int j = 0 ; j < numFireEventsPerDragon ; j++) {
+        for (int i = dragonStartId; i < dragonEndId; i++) {
+            for (int j = 0; j < numFireEventsPerDragon; j++) {
                 Map<String, Object> fireEvent = new HashMap<>();
 
                 String sourceDragonId = "d" + String.format("%03d", i);

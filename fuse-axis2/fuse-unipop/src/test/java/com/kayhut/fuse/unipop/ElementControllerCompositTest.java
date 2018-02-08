@@ -1,8 +1,10 @@
 package com.kayhut.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementEdgeController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseElementVertexController;
 import com.kayhut.fuse.unipop.promise.IdPromise;
@@ -32,6 +34,7 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
+import static com.kayhut.fuse.unipop.controller.discrete.DiscreteTraversalTest.registry;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -84,7 +87,7 @@ public class ElementControllerCompositTest {
         Map<String, SearchHitField> fields = new HashMap<>();
         fields.put("name", new InternalSearchHitField("name", Collections.singletonList("myName")));
         fields.put("type", new InternalSearchHitField("type", Collections.singletonList("myType")));
-        InternalSearchHit[] tests = new InternalSearchHit[] { new InternalSearchHit(1, "1", new Text("test"), fields)};
+        InternalSearchHit[] tests = new InternalSearchHit[]{new InternalSearchHit(1, "1", new Text("test"), fields)};
 
         SearchHits searchHits = new InternalSearchHits(tests, 10, 1.0f);
         when(searchResponse.getHits()).thenReturn(searchHits);
@@ -102,18 +105,22 @@ public class ElementControllerCompositTest {
         when(searchQuery.getReturnType()).thenReturn(Vertex.class);
         when(searchQuery.getPredicates()).thenReturn(predicatesHolder);
 
-        SearchQuery.SearchController elementController = new ElementController(
-                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider()),
-                new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider()));
-
-        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>)elementController.search(searchQuery)).toJavaList();
+        SearchQuery.SearchController elementController =
+                new ElementController(
+                        new LoggingSearchController(
+                                new PromiseElementVertexController(client, configuration, graph, new EmptyGraphElementSchemaProvider())
+                                , registry),
+                        new LoggingSearchController(
+                                new PromiseElementEdgeController(client, configuration, graph, new EmptyGraphElementSchemaProvider()),
+                                registry));
+        List<Vertex> vertices = Stream.ofAll(() -> (Iterator<Vertex>) elementController.search(searchQuery)).toJavaList();
 
         Assert.assertTrue(vertices.size() == 10);
         Assert.assertTrue(vertices.get(0).id().equals("1"));
         Assert.assertTrue(vertices.get(0).label().equals("promise"));
         Assert.assertTrue(vertices.get(0).getClass().equals(PromiseVertex.class));
 
-        PromiseVertex promiseVertex = (PromiseVertex)vertices.get(0);
+        PromiseVertex promiseVertex = (PromiseVertex) vertices.get(0);
         Assert.assertTrue(promiseVertex.getPromise().getId().equals("1"));
         Assert.assertTrue(promiseVertex.getPromise().getClass().equals(IdPromise.class));
     }

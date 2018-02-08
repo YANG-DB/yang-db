@@ -1,26 +1,23 @@
 package com.kayhut.fuse.unipop.controller.discrete;
 
-import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
+import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggableSearch;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteElementControllerContext;
+import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
-import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteVertexConverter;
 import com.kayhut.fuse.unipop.predicates.SelectP;
-import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
-import javaslang.collection.*;
+import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Compare;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -29,16 +26,17 @@ import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.*;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
+import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
  * Created by roman.margolis on 12/09/2017.
  */
-public class DiscreteElementVertexController implements SearchQuery.SearchController {
+public class DiscreteElementVertexController implements SearchQuery.SearchController, LoggableSearch {
     //region Constructors
     public DiscreteElementVertexController(
             Client client,
@@ -110,9 +108,15 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
 
-        ElasticQueryLog log = searchHits.getQueryLog();
+        this.log = searchHits.getQueryLog();
         return iterator;
     }
+
+    @Override
+    public ElasticQueryLog getLog() {
+        return log;
+    }
+
     //endregion
 
     //region Fields
@@ -120,6 +124,7 @@ public class DiscreteElementVertexController implements SearchQuery.SearchContro
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
-    private MetricRegistry metricRegistry;
+    private ElasticQueryLog log;
+
     //endregion
 }

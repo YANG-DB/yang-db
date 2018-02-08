@@ -1,5 +1,7 @@
 package com.kayhut.fuse.unipop.controller.common;
 
+import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggableSearch;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
@@ -13,7 +15,7 @@ import java.util.function.Predicate;
 /**
  * Created by Roman on 15/05/2017.
  */
-public abstract class VertexControllerBase implements SearchVertexQuery.SearchVertexController {
+public abstract class VertexControllerBase implements SearchVertexQuery.SearchVertexController, LoggableSearch {
     //region Constructors
     public VertexControllerBase(Predicate<Iterable<String>> applicablePredicate) {
         this(applicablePredicate, Collections.emptySet());
@@ -63,10 +65,17 @@ public abstract class VertexControllerBase implements SearchVertexQuery.SearchVe
     }
 
     protected abstract Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels);
+
+    @Override
+    public ElasticQueryLog getLog() {
+        return log;
+    }
+
     //endregion
 
     //region Fields
     private Predicate<Iterable<String>> applicablePredicate;
     private Set<String> supportedEdgeLabels;
+    protected ElasticQueryLog log;
     //endregion
 }

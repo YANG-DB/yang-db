@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggableSearch;
 import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.promise.appender.*;
@@ -39,7 +40,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 /**
  * Created by liorp on 4/2/2017.
  */
-public class PromiseElementVertexController implements SearchQuery.SearchController {
+public class PromiseElementVertexController implements SearchQuery.SearchController,LoggableSearch {
 
     //region Constructors
     public PromiseElementVertexController(Client client, ElasticGraphConfiguration configuration, UniGraph graph, GraphElementSchemaProvider schemaProvider) {
@@ -169,8 +170,13 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
                 searchBuilder.getScrollTime());
 
         Iterator<Element> iterator = convert(searchHits, new SearchHitPromiseVertexConverter(graph));
-        ElasticQueryLog log = searchHits.getQueryLog();
+        this.log = searchHits.getQueryLog();
         return iterator;
+    }
+
+    @Override
+    public ElasticQueryLog getLog() {
+        return log;
     }
 
     private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable, ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {
@@ -186,5 +192,6 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
     private ElasticGraphConfiguration configuration;
     private UniGraph graph;
     private GraphElementSchemaProvider schemaProvider;
+    private ElasticQueryLog log;
     //endregion
 }

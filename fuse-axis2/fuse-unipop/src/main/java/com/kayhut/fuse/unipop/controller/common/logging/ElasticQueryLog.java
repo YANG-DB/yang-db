@@ -1,17 +1,14 @@
 package com.kayhut.fuse.unipop.controller.common.logging;
 
-import java.util.concurrent.ConcurrentHashMap;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by lior.perry on 2/7/2018.
  */
 public class ElasticQueryLog {
     public static final ElasticQueryLog EMPTY = new ElasticQueryLog();
-    /**
-     * map containing the elastic execution query
-     * query.cursor.page => query log
-     */
-    public static ConcurrentHashMap<String,ElasticQueryLog> logs = new ConcurrentHashMap<>();
+    public static ObjectMapper mapper = new ObjectMapper();
 
     private String query;
     private int scrollCount;
@@ -19,6 +16,58 @@ public class ElasticQueryLog {
     private int scrollTime;
     private long limit;
     private int scrollSize;
+
+    public static String toJson(ElasticQueryLog log) throws JsonProcessingException {
+        return mapper.writeValueAsString(log);
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public int getScrollCount() {
+        return scrollCount;
+    }
+
+    public void setScrollCount(int scrollCount) {
+        this.scrollCount = scrollCount;
+    }
+
+    public long getHits() {
+        return hits;
+    }
+
+    public void setHits(long hits) {
+        this.hits = hits;
+    }
+
+    public int getScrollTime() {
+        return scrollTime;
+    }
+
+    public void setScrollTime(int scrollTime) {
+        this.scrollTime = scrollTime;
+    }
+
+    public long getLimit() {
+        return limit;
+    }
+
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
+
+    public int getScrollSize() {
+        return scrollSize;
+    }
+
+    public void setScrollSize(int scrollSize) {
+        this.scrollSize = scrollSize;
+    }
 
     public static class ElasticQueryLogBuilder {
         private ElasticQueryLog log;

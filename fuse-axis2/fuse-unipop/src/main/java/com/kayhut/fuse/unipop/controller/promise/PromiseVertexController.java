@@ -113,7 +113,7 @@ public class PromiseVertexController extends VertexControllerBase {
         SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
         SearchResponse response = searchRequest.execute().actionGet();
 
-        ElasticQueryLog log = ElasticQueryLog.ElasticQueryLogBuilder.build(-1, -1, -1)
+        super.log = ElasticQueryLog.ElasticQueryLogBuilder.build(-1, -1, -1)
                 .query(searchRequest.toString())
                 .hits(response.getHits().getTotalHits())
                 .complete();

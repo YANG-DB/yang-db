@@ -126,7 +126,7 @@ public class DiscreteVertexFilterController extends VertexControllerBase {
         javaslang.collection.Iterator<Edge> iterator = Stream.ofAll(searchHits)
                 .flatMap(converter::convert)
                 .filter(Objects::nonNull).iterator();
-        ElasticQueryLog log = searchHits.getQueryLog();
+        super.log = searchHits.getQueryLog();
         return iterator;
     }
     //endregion

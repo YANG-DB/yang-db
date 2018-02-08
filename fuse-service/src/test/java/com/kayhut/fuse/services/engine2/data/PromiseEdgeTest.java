@@ -4,6 +4,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.NonRedundantTestSuite;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -43,12 +44,14 @@ public class PromiseEdgeTest{
     static TransportClient client;
     static ElasticGraphConfiguration configuration;
     static UniGraph graph;
+    static MetricRegistry registry;
 
     private static final String INDEX_NAME = "v1";
 
     @BeforeClass
     public static void setup() throws Exception {
         String idField = "id";
+        registry = new MetricRegistry();
 
         client = NonRedundantTestSuite.elasticEmbeddedNode.getClient();
 
@@ -124,7 +127,7 @@ public class PromiseEdgeTest{
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
         when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
 
-        PromiseVertexController controller = new PromiseVertexController(client, configuration, graph, schemaProvider);
+        LoggingSearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexController(client, configuration, graph, schemaProvider), registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
@@ -183,7 +186,7 @@ public class PromiseEdgeTest{
         when(configuration.getElasticGraphScrollTime()).thenReturn(100);
         when(configuration.getElasticGraphDefaultSearchSize()).thenReturn(100L);
 
-        PromiseVertexFilterController controller = new PromiseVertexFilterController(client, configuration, graph, schemaProvider);
+        SearchVertexQuery.SearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexFilterController(client, configuration, graph, schemaProvider),registry);
 
         List<Edge> edges = Stream.ofAll(() -> controller.search(searchQuery)).toJavaList();
 
