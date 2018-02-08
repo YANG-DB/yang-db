@@ -16,6 +16,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.SchematicRelProp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
@@ -85,8 +86,8 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
     private Traversal convertRelPropToTraversal(RelProp relProp, Ontology.Accessor ont) {
         Optional<Property> property = ont.$property(relProp.getpType());
         return property.<Traversal>map(property1 ->
-                __.has(relProp instanceof RedundantRelProp ?
-                        ((RedundantRelProp)relProp).getRedundantPropName() :
+                __.has(SchematicRelProp.class.isAssignableFrom(relProp.getClass()) ?
+                        ((SchematicRelProp)relProp).getSchematicName() :
                         property1.getName()
                 , ConversionUtil.convertConstraint(relProp.getCon())))
                 .orElseGet(__::start);

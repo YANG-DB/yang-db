@@ -7,6 +7,7 @@ import com.kayhut.fuse.asg.strategy.propertyGrouping.EntityPropertiesGroupingAsg
 import com.kayhut.fuse.asg.strategy.propertyGrouping.HQuantifierPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1PropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropertiesGroupingAsgStrategy;
+import com.kayhut.fuse.asg.strategy.schema.ExactConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.schema.LikeConstraintTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.selection.DefaultSelectionAsgStrategy;
 import com.kayhut.fuse.asg.strategy.type.UntypedInferTypeLeftSideRelationAsgStrategy;
@@ -40,6 +41,7 @@ public class M2AsgStrategyRegistrar  implements AsgStrategyRegistrar {
                 new RelPropertiesGroupingAsgStrategy(),
                 new ConstraintTypeTransformationAsgStrategy(),
                 new ConstraintIterableTransformationAsgStrategy(),
+                new ExactConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new LikeConstraintTransformationAsgStrategy(this.ontologyProvider, this.schemaProviderFactory),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider)
         );
