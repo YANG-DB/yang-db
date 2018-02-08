@@ -7,7 +7,6 @@ import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
@@ -20,10 +19,10 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.InternalAggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.InternalTerms;
@@ -31,13 +30,15 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.unipop.query.predicates.PredicatesHolder;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Matchers.any;
@@ -59,6 +60,9 @@ public class PromisePromiseElementVertexControllerTest {
 
         //mock response with 2 layers of aggregations
         SearchResponse responseMock = mock(SearchResponse.class);
+        SearchHits hitsMock = mock(SearchHits.class);
+        when(responseMock.getHits()).thenReturn(hitsMock );
+        when(hitsMock.getTotalHits()).thenReturn(10l);
 
         Terms.Bucket destBucket = mock(Terms.Bucket.class);
         when(destBucket.getKeyAsString()).thenReturn("destination1");
