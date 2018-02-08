@@ -3,7 +3,8 @@ package com.kayhut.fuse.unipop.controller.common.appender;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.appender.SearchQueryAppenderBase;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.schemaProviders.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.schemaProviders.EdgeSchemaSupplierContextUniImpl;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -15,7 +16,7 @@ public class EdgeBulkSearchAppender extends SearchQueryAppenderBase<VertexContro
     //region VertexControllerContext Implementation
     @Override
     protected boolean append(QueryBuilder queryBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(new EdgeSchemaSupplierContextUniImpl(context)).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return false;
         }

@@ -2,11 +2,7 @@ package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import com.kayhut.fuse.unipop.schemaProviders.*;
 import javaslang.collection.Stream;
 
 import java.util.Optional;
@@ -18,7 +14,7 @@ public class EdgeSourceRoutingSearchAppender  implements SearchAppender<VertexCo
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(new EdgeSchemaSupplierContextUniImpl(context)).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return false;
         }

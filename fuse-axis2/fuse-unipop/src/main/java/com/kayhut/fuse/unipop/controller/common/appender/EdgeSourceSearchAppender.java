@@ -2,7 +2,8 @@ package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.schemaProviders.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.schemaProviders.EdgeSchemaSupplierContextUniImpl;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import javaslang.collection.Stream;
 
@@ -13,7 +14,7 @@ public class EdgeSourceSearchAppender implements SearchAppender<VertexController
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(new EdgeSchemaSupplierContextUniImpl(context)).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return false;
         }

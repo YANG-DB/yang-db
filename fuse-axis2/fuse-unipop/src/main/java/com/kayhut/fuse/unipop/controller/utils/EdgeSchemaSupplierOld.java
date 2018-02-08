@@ -17,10 +17,10 @@ import java.util.function.Supplier;
 /**
  * Created by roman.margolis on 14/09/2017.
  */
-public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
+public class EdgeSchemaSupplierOld implements Supplier<Iterable<GraphEdgeSchema>> {
 
     //region Constructors
-    public EdgeSchemaSupplier(VertexControllerContext context) {
+    public EdgeSchemaSupplierOld(VertexControllerContext context) {
         this.context = context;
         this.stream = Stream.ofAll(context.getSchemaProvider().getEdgeLabels())
                 .flatMap(label -> context.getSchemaProvider().getEdgeSchemas(label));
@@ -39,7 +39,7 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
     //endregion
 
     //region Public Methods
-    public EdgeSchemaSupplier labels() {
+    public EdgeSchemaSupplierOld labels() {
         Set<String> labels = this.context.getConstraint().isPresent() ?
                 new TraversalValuesByKeyProvider().getValueByKey(this.context.getConstraint().get().getTraversal(), T.label.getAccessor()) :
                 Stream.ofAll(context.getSchemaProvider().getEdgeLabels()).toJavaSet();
@@ -48,7 +48,7 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
         return this;
     }
 
-    public EdgeSchemaSupplier singular() {
+    public EdgeSchemaSupplierOld singular() {
         //currently assuming all bulk vertices of same type
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
@@ -61,7 +61,7 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
         return this;
     }
 
-    public EdgeSchemaSupplier dual() {
+    public EdgeSchemaSupplierOld dual() {
         //currently assuming all bulk vertices of same type
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
@@ -72,7 +72,7 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
         return this;
     }
 
-    public EdgeSchemaSupplier applicable() {
+    public EdgeSchemaSupplierOld applicable() {
         //currently assuming all bulk vertices of same type
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 

@@ -3,8 +3,9 @@ package com.kayhut.fuse.unipop.controller.discrete.appender;
 import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.ElementUtil;
+import com.kayhut.fuse.unipop.schemaProviders.EdgeSchemaSupplier;
+import com.kayhut.fuse.unipop.schemaProviders.EdgeSchemaSupplierContextUniImpl;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -14,7 +15,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier.*;
 
 /**
  * Created by roman.margolis on 18/09/2017.
@@ -24,7 +24,7 @@ public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexC
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().singular().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(new EdgeSchemaSupplierContextUniImpl(context)).labels().singular().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return false;
         }

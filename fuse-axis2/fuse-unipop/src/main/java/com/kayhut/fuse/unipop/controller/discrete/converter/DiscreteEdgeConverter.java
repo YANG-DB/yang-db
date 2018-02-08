@@ -2,15 +2,11 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
+import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.Tuple2;
@@ -41,7 +37,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //region ElementConverter Implementation
     @Override
     public Iterable<E> convert(SearchHit searchHit) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(new EdgeSchemaSupplierContextUniImpl(context)).labels().applicable().get();
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return null;
         }
@@ -82,6 +78,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         } else {
             GraphEdgeSchema.End outEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getDestination().get() : edgeSchema.getSource().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getSource().get() : edgeSchema.getDestination().get();
+            //GraphEdgeSchema.End outEndSchema = edgeSchema.getSource().get();
+            //GraphEdgeSchema.End inEndSchema = edgeSchema.getDestination().get();
 
             Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
             Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);

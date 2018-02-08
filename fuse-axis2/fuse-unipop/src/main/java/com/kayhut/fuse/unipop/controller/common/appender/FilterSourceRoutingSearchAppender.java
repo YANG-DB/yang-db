@@ -4,7 +4,6 @@ import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerConte
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
