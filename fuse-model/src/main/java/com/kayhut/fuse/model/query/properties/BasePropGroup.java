@@ -11,12 +11,17 @@ import java.util.List;
  */
 public class BasePropGroup<T extends BaseProp> extends EBase {
     //region Constructors
-    public BasePropGroup(List<T> props) {
-        this.props = Stream.ofAll(props).toJavaList();
-    }
-
     public BasePropGroup() {
         this.props = new ArrayList<>();
+    }
+
+    public BasePropGroup(List<T> props) {
+        this(0, props);
+    }
+
+    public BasePropGroup(int eNum, List<T> props) {
+        super(eNum);
+        this.props = Stream.ofAll(props).toJavaList();
     }
     //endregion
 

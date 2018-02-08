@@ -24,6 +24,49 @@ public class Constraint {
     }
     //endregion
 
+    //region Override Methods
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        Constraint other = (Constraint)o;
+
+        if (this.op == null) {
+            if (other.op != null) {
+                return false;
+            }
+        } else {
+            if (!this.op.equals(other.op)) {
+                return false;
+            }
+        }
+
+        if (this.expr == null) {
+            if (other.expr != null) {
+                return false;
+            }
+        } else {
+            if (!this.expr.equals(other.expr)) {
+                return false;
+            }
+        }
+
+        if (this.iType == null) {
+            if (other.iType != null) {
+                return false;
+            }
+        } else {
+            if (!this.iType.equals(other.iType)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    //endregion
+
     //region Properties
     public ConstraintOp getOp() {
         return op;

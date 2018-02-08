@@ -17,6 +17,26 @@ public class SchematicEProp extends EProp {
     }
     //endregion
 
+    //region Override Methods
+    @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        if (!(o instanceof SchematicEProp)) {
+            return false;
+        }
+
+        SchematicEProp other = (SchematicEProp)o;
+        if (!this.schematicName.equals(other.schematicName)) {
+            return false;
+        }
+
+        return true;
+    }
+    //endregion
+
     //region Properties
     public String getSchematicName() {
         return schematicName;
