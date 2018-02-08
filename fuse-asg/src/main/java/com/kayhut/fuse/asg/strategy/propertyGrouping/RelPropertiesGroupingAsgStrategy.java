@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by benishue on 19-Apr-17.
  */
-public class AsgRelPropertiesGroupingStrategy implements AsgStrategy {
+public class RelPropertiesGroupingAsgStrategy implements AsgStrategy {
     // Rel with RelProps e.g., Q190, Q10 on V1
     // AsgStrategy Implementation
     @Override

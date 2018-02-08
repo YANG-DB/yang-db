@@ -7,7 +7,7 @@ import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.AsgRelPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 /**
  * Created by benishue on 11-May-17.
  */
-public class AsgConstraintIterableTransformationStrategyTest {
+public class ConstraintIterableTransformationAsgStrategyTest {
     //region Setup
     @Before
     public void setUp() throws Exception {
@@ -157,10 +157,10 @@ public class AsgConstraintIterableTransformationStrategyTest {
         assertTrue(eProp.getCon().getExpr().getClass().isArray());
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
-        AsgConstraintIterableTransformationStrategy asgConstraintIterableTransformationStrategy = new AsgConstraintIterableTransformationStrategy();
+        ConstraintIterableTransformationAsgStrategy constraintIterableTransformationAsgStrategy = new ConstraintIterableTransformationAsgStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
-        asgConstraintIterableTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
+        constraintIterableTransformationAsgStrategy.apply(asgQueryWithEProps, asgStrategyContext);
         Object expr = ((EProp) AsgQueryUtil.element(asgQueryWithEProps, 4).get().geteBase()).getCon().getExpr();
         assertThat(expr, instanceOf(List.class));
     }
@@ -200,10 +200,10 @@ public class AsgConstraintIterableTransformationStrategyTest {
         //endregion
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
-        AsgConstraintIterableTransformationStrategy asgConstraintIterableTransformationStrategy = new AsgConstraintIterableTransformationStrategy();
+        ConstraintIterableTransformationAsgStrategy constraintIterableTransformationAsgStrategy = new ConstraintIterableTransformationAsgStrategy();
 
         //Applying the Strategy on the RelProp #1 with the Epoch time
-        asgConstraintIterableTransformationStrategy.apply(asgQueryWithRelProps, asgStrategyContext);
+        constraintIterableTransformationAsgStrategy.apply(asgQueryWithRelProps, asgStrategyContext);
         Object expr1 = ((RelProp) AsgQueryUtil.element(asgQueryWithRelProps, 4).get().geteBase()).getCon().getExpr();
         Object expr2 = ((RelProp) AsgQueryUtil.element(asgQueryWithRelProps, 5).get().geteBase()).getCon().getExpr();
         assertThat(expr1, instanceOf(List.class));
@@ -213,8 +213,8 @@ public class AsgConstraintIterableTransformationStrategyTest {
 
         //Appling First the Properties Grouping Startegy and then applying the constraint transformation strategy
         //We want to be sure that the order of strategies is not affecting the final result
-        AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
-        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(null));
+        RelPropertiesGroupingAsgStrategy relPropertiesGroupingAsgStrategy = new RelPropertiesGroupingAsgStrategy();
+        relPropertiesGroupingAsgStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(null));
         expr1 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();
         assertTrue(expr1.getClass().isArray());
@@ -225,7 +225,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
         assertNotNull(newRelPropGroupAsgEbase);
 
         //Applying again the Constraint Transformation Strategy
-        asgConstraintIterableTransformationStrategy.apply(asgQueryWithRelPropsOriginal, asgStrategyContext);
+        constraintIterableTransformationAsgStrategy.apply(asgQueryWithRelPropsOriginal, asgStrategyContext);
         expr1 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();
         assertThat(expr1, instanceOf(List.class));
@@ -248,7 +248,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
         rProp6.getCon().setOp(ConstraintOp.inRange);
         assertTrue(rProp6.getCon().getExpr().getClass().isArray());
 
-        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
+        ConstraintTypeTransformationAsgStrategy asgConstraintTypeTransformationStrategy = new ConstraintTypeTransformationAsgStrategy();
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelProps2, asgStrategyContext);
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelProps2, asgStrategyContext); //dsecond call to the same strategy
 
@@ -257,8 +257,8 @@ public class AsgConstraintIterableTransformationStrategyTest {
 
 
         //Lets call now to the Constraint Array Transformation
-        AsgConstraintIterableTransformationStrategy asgConstraintIterableTransformationStrategy1 = new AsgConstraintIterableTransformationStrategy();
-        asgConstraintIterableTransformationStrategy1.apply(asgQueryWithRelProps2, asgStrategyContext);
+        ConstraintIterableTransformationAsgStrategy constraintIterableTransformationAsgStrategy1 = new ConstraintIterableTransformationAsgStrategy();
+        constraintIterableTransformationAsgStrategy1.apply(asgQueryWithRelProps2, asgStrategyContext);
 
         Object expr3 = ((RelProp) AsgQueryUtil.element(asgQueryWithRelProps2, 4).get().geteBase()).getCon().getExpr();
         Object expr4 = ((RelProp) AsgQueryUtil.element(asgQueryWithRelProps2, 5).get().geteBase()).getCon().getExpr();
@@ -271,7 +271,7 @@ public class AsgConstraintIterableTransformationStrategyTest {
         rProp6.getCon().setExpr(new long[]{212121, 555557, 987654321});
         rProp6.getCon().setOp(ConstraintOp.inRange);
         assertTrue(rProp6.getCon().getExpr().getClass().isArray());
-        asgConstraintIterableTransformationStrategy1.apply(asgQueryWithRelProps2, asgStrategyContext);
+        constraintIterableTransformationAsgStrategy1.apply(asgQueryWithRelProps2, asgStrategyContext);
 
         Object expr8 = ((RelProp) AsgQueryUtil.element(asgQueryWithRelProps2, 5).get().geteBase()).getCon().getExpr();
         assertThat(expr8, instanceOf(List.class));

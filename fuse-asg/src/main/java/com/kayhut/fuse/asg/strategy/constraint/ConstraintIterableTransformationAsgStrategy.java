@@ -1,6 +1,5 @@
 package com.kayhut.fuse.asg.strategy.constraint;
 
-import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -20,14 +19,14 @@ import java.util.Optional;
 /**
  * Created by benishue on 11-May-17.
  */
-public class AsgConstraintIterableTransformationStrategy extends AsgConstraintTransformationBase {
+public class ConstraintIterableTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
     //region Constructors
-    public AsgConstraintIterableTransformationStrategy() {
+    public ConstraintIterableTransformationAsgStrategy() {
         this.propertyTypeFactory = new OntologyPropertyTypeFactory();
     }
     //endregion
 
-    //region AsgConstraintTransformationBase implementation
+    //region ConstraintTransformationAsgStrategyBase implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
         getEprops(query).forEach(eProp -> {

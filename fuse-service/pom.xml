@@ -31,6 +31,10 @@
         </dependency>
         <dependency>
             <groupId>org.kayhut</groupId>
+            <artifactId>fuse-unipop-asg</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kayhut</groupId>
             <artifactId>fuse-dispatcher</artifactId>
         </dependency>
         <!--<dependency>

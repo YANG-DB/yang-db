@@ -67,9 +67,36 @@ public class BaseProp extends EBase{
 
         BaseProp eProp = (BaseProp) o;
 
-        if (!pType.equals(eProp.pType)) return false;
-        if (!pTag.equals(eProp.pTag)) return false;
-        if (!con.equals(eProp.con)) return false;
+        if (pType == null) {
+            if (eProp.pType != null) {
+                return false;
+            }
+        } else {
+            if (!pType.equals(eProp.pType)) {
+                return false;
+            }
+        }
+
+        if (pTag == null) {
+            if (eProp.pTag != null) {
+                return false;
+            }
+        } else {
+            if (!pTag.equals(eProp.pTag)) {
+                return false;
+            }
+        }
+
+        if (con == null) {
+            if (eProp.con != null) {
+                return false;
+            }
+        } else {
+            if (!con.equals(eProp.con)) {
+                return false;
+            }
+        }
+
         return f != null ? f.equals(eProp.f) : eProp.f == null;
     }
 

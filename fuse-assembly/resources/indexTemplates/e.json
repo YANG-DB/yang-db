@@ -11,12 +11,12 @@
           "knowledge_ngram_analyzer": {
             "type": "custom",
             "tokenizer": "knowledge_ngram_tokenizer",
-            "filter": [ "standard", "lowercase", "knowledge_stopwords" ]
+            "filter": [ "standard", "knowledge_stopwords" ]
           },
           "knowledge_standard_analyzer": {
             "type": "custom",
             "tokenizer": "standard",
-            "filter": [ "standard", "lowercase", "knowledge_stopwords" ]
+            "filter": [ "standard", "knowledge_stopwords" ]
           }
         },
         "tokenizer": {
@@ -24,7 +24,7 @@
             "type": "nGram",
             "min_gram": "1",
             "max_gram": "10",
-            "token_chars": [ "letter", "digit" ]
+            "token_chars": [ "letter", "digit", "punctuation" ]
           }
         },
         "filter": {

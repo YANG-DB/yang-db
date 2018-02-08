@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by benishue on 19-Apr-17.
  */
-public class AsgQuant1PropertiesGroupingStrategy implements AsgStrategy {
+public class Quant1PropertiesGroupingAsgStrategy implements AsgStrategy {
     // Vertical AND Quantifier with EProps e.g., Q3-2, Q27-2 on V1
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {

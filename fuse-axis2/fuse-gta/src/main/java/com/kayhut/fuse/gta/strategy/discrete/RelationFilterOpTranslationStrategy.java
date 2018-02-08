@@ -16,6 +16,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.SchematicRelProp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
@@ -87,8 +88,8 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
         if (property.isPresent()) {
             if (relProp.getClass().equals(RelProp.class)) {
                 return Optional.of(__.has(property.get().getName(), ConversionUtil.convertConstraint(relProp.getCon())));
-            } else if (relProp.getClass().equals(RedundantRelProp.class)) {
-                return Optional.of(__.has(((RedundantRelProp)relProp).getRedundantPropName(),
+            } else if (SchematicRelProp.class.isAssignableFrom(relProp.getClass())) {
+                return Optional.of(__.has(((SchematicRelProp)relProp).getSchematicName(),
                         ConversionUtil.convertConstraint(relProp.getCon())));
             }
         }

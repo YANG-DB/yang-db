@@ -95,8 +95,8 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 property.get().getName(),
                 property.get().getType(),
                 propertySchema.map(GraphElementPropertySchema::getIndexingSchemes)
-                        .orElseGet(() -> Collections.singletonList(new GraphElementPropertySchema.IndexingSchema.Impl(
-                                            GraphElementPropertySchema.IndexingSchema.Type.exact, property.get().getName())))));
+                        .orElseGet(() -> Collections.singletonList(
+                                new GraphElementPropertySchema.ExactIndexingSchema.Impl(property.get().getName())))));
     }
 
     @Override

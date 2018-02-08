@@ -18,5 +18,6 @@
         <module>fuse-epb</module>
         <module>fuse-unipop</module>
         <module>fuse-stat</module>
+        <module>fuse-unipop-asg</module>
     </modules>
 </project>

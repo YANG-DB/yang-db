@@ -6,7 +6,7 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 /**
  * Created by User on 05/03/2017.
  */
-public class AsgDummyStrategy implements AsgStrategy {
+public class DummyAsgStrategy implements AsgStrategy {
     //region AsgStrategy Implementation
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
