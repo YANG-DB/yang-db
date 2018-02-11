@@ -8,9 +8,7 @@ import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.Tuple2;
@@ -61,12 +59,19 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.sourceAsMap());
             Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.sourceAsMap(), inVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdFields());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdFields());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {
                     outV = context.getVertex(outId);
+
+                    // could happen in multi value relation fields where the document contains additional values
+                    // than those available in the query context
+                    if (outV == null) {
+                        continue;
+                    }
+
                     inV = new DiscreteVertex(inId, inEndSchema.getLabel().get(), context.getGraph(), inVertexProperties);
 
                     edges.add((E)new DiscreteEdge(
@@ -86,12 +91,19 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
             Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdField());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdField());
+            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdFields());
+            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdFields());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {
                     inV = context.getVertex(inId);
+
+                    // could happen in multi value relation fields where the document contains additional values
+                    // than those available in the query context
+                    if (inV == null) {
+                        continue;
+                    }
+
                     outV = new DiscreteVertex(outId, outEndSchema.getLabel().get(), context.getGraph(), outVertexProperties);
 
                     edges.add((E)new DiscreteEdge(
@@ -110,12 +122,15 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //endregion
 
     //region Private Methods
-    private Iterable<Object> getIdFieldValues(SearchHit searchHit, Map<String, Object> properties, String idField) {
-        if (idField.equals("_id")) {
-            return Collections.singletonList(searchHit.getId());
-        } else {
-            return MapHelper.values(properties, idField);
-        }
+    private Iterable<Object> getIdFieldValues(SearchHit searchHit, Map<String, Object> properties, Iterable<String> idFields) {
+        return Stream.ofAll(idFields)
+                .<Object>flatMap(idField -> {
+                    if (idField.equals("_id")) {
+                        return Collections.singletonList(searchHit.getId());
+                    } else {
+                        return MapHelper.values(properties, idField);
+                    }
+                }).toJavaList();
     }
 
     private Map<String, Object> createVertexProperties(GraphEdgeSchema.End endSchema, Map<String, Object> properties) {

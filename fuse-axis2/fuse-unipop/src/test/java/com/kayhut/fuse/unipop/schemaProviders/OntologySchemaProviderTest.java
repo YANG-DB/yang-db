@@ -80,8 +80,12 @@ public class OntologySchemaProviderTest {
                 Collections.emptyList(),
                 Optional.of(new GraphEdgeSchema.Impl(
                         "",
-                        Optional.of(new GraphEdgeSchema.End.Impl("entityA.id", Optional.of("Dragon"))),
-                        Optional.of(new GraphEdgeSchema.End.Impl("entityB.id", Optional.of("Dragon"))),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList("entityA.id"),
+                                Optional.of("Dragon"))),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList("entityB.id"),
+                                Optional.of("Dragon"))),
                         Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
                         new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
         ));

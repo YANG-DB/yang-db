@@ -188,8 +188,14 @@ public class SingularEdgeBulkSearchAppenderTest {
                     case "edgeType1":
                         return Optional.of(new GraphEdgeSchema.Impl(
                                 "edgeType1",
-                                Optional.of(new GraphEdgeSchema.End.Impl("vertexType1Id", Optional.of("vertexType1"), Collections.emptyList())),
-                                Optional.of(new GraphEdgeSchema.End.Impl("vertexType2Id", Optional.of("vertexType2"), Collections.emptyList())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("vertexType1Id"),
+                                        Optional.of("vertexType1"),
+                                        Collections.emptyList())),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("vertexType2Id"),
+                                        Optional.of("vertexType2"),
+                                        Collections.emptyList())),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty()));

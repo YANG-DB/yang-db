@@ -1,6 +1,5 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -73,7 +72,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
 
 
     interface End {
-        String getIdField();
+        Iterable<String> getIdFields();
         Optional<String> getLabel();
         Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property);
         Iterable<GraphRedundantPropertySchema> getRedundantProperties();
@@ -82,30 +81,30 @@ public interface GraphEdgeSchema extends GraphElementSchema {
 
         class Impl implements End {
             //region Constructors
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label) {
-                this(idField, label, Collections.emptyList(), Optional.empty());
+                this(idFields, label, Collections.emptyList(), Optional.empty());
             }
 
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label,
                         Iterable<GraphRedundantPropertySchema> redundantPropertySchemas) {
-                this(idField, label, redundantPropertySchemas, Optional.empty());
+                this(idFields, label, redundantPropertySchemas, Optional.empty());
             }
 
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label,
                         Iterable<GraphRedundantPropertySchema> redundantPropertySchemas,
                         Optional<GraphElementRouting> routing) {
-                this(idField, label, redundantPropertySchemas, routing, Optional.empty());
+                this(idFields, label, redundantPropertySchemas, routing, Optional.empty());
             }
 
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label,
                         Iterable<GraphRedundantPropertySchema> redundantPropertySchemas,
                         Optional<GraphElementRouting> routing,
                         Optional<IndexPartitions> indexPartitions) {
-                this.idField = idField;
+                this.idFields = idFields;
                 this.label = label;
                 this.redundantPropertySchemas = Stream.ofAll(redundantPropertySchemas)
                         .toJavaMap(property -> new Tuple2<>(property.getName(), property));
@@ -116,8 +115,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
 
             //region End Implementation
             @Override
-            public String getIdField() {
-                return this.idField;
+            public Iterable<String> getIdFields() {
+                return this.idFields;
             }
 
             @Override
@@ -148,7 +147,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             //endregion
 
             //region Fields
-            private String idField;
+            private Iterable<String> idFields;
             private Optional<String> label;
             private Map<String, GraphRedundantPropertySchema> redundantPropertySchemas;
             private Optional<GraphElementRouting> routing;

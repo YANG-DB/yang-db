@@ -274,14 +274,14 @@ public class SmartEpbRedundancyTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityA.id",
+                                        Collections.singletonList("entityA.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()),
                                         relation.getrType().equals(FREEZE.getName()) ?
                                                 Collections.singletonList(
                                                         new GraphRedundantPropertySchema.Impl(NAME.name, "entityA.name", NAME.type)
                                                 ) : Collections.emptyList())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityB.id",
+                                        Collections.singletonList("entityB.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         relation.getrType().equals(FREEZE.getName()) ?
                                                 Collections.singletonList(
