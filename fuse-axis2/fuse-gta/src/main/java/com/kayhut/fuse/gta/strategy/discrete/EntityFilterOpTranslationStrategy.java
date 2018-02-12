@@ -20,6 +20,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
+import com.kayhut.fuse.model.query.properties.SchematicEProp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import javaslang.collection.Stream;
@@ -186,7 +187,10 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
             return __.start();
         }
 
-        return __.has(property.get().getName(), ConversionUtil.convertConstraint(eProp.getCon()));
+        String actualPropertyName = SchematicEProp.class.isAssignableFrom(eProp.getClass()) ?
+                ((SchematicEProp)eProp).getSchematicName() : property.get().getName();
+
+        return __.has(actualPropertyName, ConversionUtil.convertConstraint(eProp.getCon()));
     }
 
     private boolean isFilterVertexStep(VertexStep vertexStep) {

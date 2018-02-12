@@ -23,18 +23,21 @@ public class SingularEdgeBulkSearchAppender extends SearchQueryAppenderBase<Vert
         //currently assuming only one relevant schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
+
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
-        if (edgeSchema.getSource().get().getLabel().get().equals(vertexLabel)) {
-            queryBuilder.seekRoot().query().filtered().filter().bool().must()
-                    .terms(edgeSchema.getSource().get().getIdField(),
-                            edgeSchema.getSource().get().getIdField(),
-                            Stream.ofAll(context.getBulkVertices()).map(vertex -> vertex.id().toString()).toJavaList());
-        } else {
-            queryBuilder.seekRoot().query().filtered().filter().bool().must()
-                    .terms(edgeSchema.getDestination().get().getIdField(),
-                            edgeSchema.getDestination().get().getIdField(),
-                            Stream.ofAll(context.getBulkVertices()).map(vertex -> vertex.id().toString()).toJavaList());
-        }
+
+        GraphEdgeSchema.End endSchema = edgeSchema.getSource().get().getLabel().get().equals(vertexLabel) ?
+                edgeSchema.getSource().get() :
+                edgeSchema.getDestination().get();
+
+        String idField = Stream.ofAll(endSchema.getIdFields()).get(0);
+
+        // currently, taking the first id field for query
+        // TODO: add support for querying multiple id fields
+        queryBuilder.seekRoot().query().filtered().filter().bool().must()
+                .terms(idField,
+                        idField,
+                        Stream.ofAll(context.getBulkVertices()).map(vertex -> vertex.id().toString()).toJavaList());
 
         return true;
     }

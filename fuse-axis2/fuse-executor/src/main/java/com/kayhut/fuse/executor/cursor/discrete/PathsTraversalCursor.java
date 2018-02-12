@@ -18,6 +18,7 @@ import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
@@ -102,7 +103,7 @@ public class PathsTraversalCursor implements Cursor {
     }
 
     private Entity toEntity(Path path, EUntyped element) {
-        DiscreteVertex vertex = path.get(element.geteTag());
+        DiscreteVertex vertex = getDiscreteVertex(path, element);
 
         String eType = vertex.label();
         List<Property> properties = Stream.ofAll(vertex::properties)
@@ -114,8 +115,20 @@ public class PathsTraversalCursor implements Cursor {
         return toEntity(vertex.id().toString(),eType,element.geteTag(), properties);
     }
 
+    private DiscreteVertex getDiscreteVertex(Path path, EEntityBase element) {
+        Object pathObject = path.get(element.geteTag());
+        DiscreteVertex vertex ;
+        if(List.class.isAssignableFrom(pathObject.getClass()) ) {
+            List vertexList = (List)pathObject;
+            vertex = (DiscreteVertex) Stream.ofAll(vertexList).last();
+        }else{
+            vertex = (DiscreteVertex) pathObject;
+        }
+        return vertex;
+    }
+
     private Entity toEntity(Path path, EConcrete element) {
-        DiscreteVertex vertex = path.get(element.geteTag());
+        DiscreteVertex vertex = getDiscreteVertex(path, element);
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
                 .filter(Optional::isPresent)
@@ -126,7 +139,7 @@ public class PathsTraversalCursor implements Cursor {
     }
 
     private Entity toEntity(Path path, ETyped element) {
-        DiscreteVertex vertex = path.get(element.geteTag());
+        DiscreteVertex vertex = getDiscreteVertex(path, element);
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
                 .filter(Optional::isPresent)

@@ -4,9 +4,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.kayhut.fuse.dispatcher.logging.LogMessage;
-import com.kayhut.fuse.logging.ElapsedConverter;
-import com.kayhut.fuse.logging.RequestIdConverter;
+import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -16,7 +15,7 @@ import org.slf4j.MDC;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.*;
+import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -43,23 +42,22 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
     @Override
     public ContentResponse<FuseResourceInfo> getInfo() {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfo")).time();
-
-        MDC.put(RequestIdConverter.key, this.requestIdSupplier.get());
-        MDC.put(ElapsedConverter.key, Long.toString(System.currentTimeMillis()));
         boolean thrownException = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "getInfo", "start getInfo").log();
+            new LogMessage.Impl(this.logger, trace, "start getInfo",
+                    LogType.of(start), getInfo, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getInfo();
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "getInfo", "failed getInfo", ex).log();
+            new LogMessage.Impl(this.logger, error, "failed getInfo", LogType.of(failure), getInfo, ElapsedFrom.now())
+                    .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, info, finish, "getInfo", "finish getInfo").log();
-                new LogMessage(this.logger, trace, finish, "getInfo", "finish getInfo").log();
+                new LogMessage.Impl(this.logger, info, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();
                 this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "success")).mark();
             }
             timerContext.stop();
@@ -72,5 +70,7 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
     private RequestIdSupplier requestIdSupplier;
     private MetricRegistry metricRegistry;
     private ApiDescriptionController controller;
+
+    private static LogMessage.MDCWriter getInfo = MethodName.of("getInfo");
     //endregion
 }

@@ -8,8 +8,7 @@ import com.kayhut.fuse.epb.plan.estimation.pattern.EntityJoinPattern;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.EntityJoinPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M2PatternCostEstimator;
-import com.kayhut.fuse.epb.plan.extenders.M2PlanExtensionStrategy;
-import com.kayhut.fuse.epb.plan.pruners.M2LocalPruner;
+import com.kayhut.fuse.epb.plan.extenders.M2.M2PlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.pruners.NoPruningPruneStrategy;
 import com.kayhut.fuse.epb.plan.selectors.AllCompletePlanSelector;
 import com.kayhut.fuse.epb.plan.selectors.CheapestPlanSelector;
@@ -19,12 +18,18 @@ import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.validation.M2PlanValidator;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
+import com.kayhut.fuse.model.execution.plan.costs.JoinCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -35,6 +40,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -45,9 +51,16 @@ import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.FREEZE;
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;
+import static com.kayhut.fuse.model.query.ConstraintOp.ge;
+import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.ConstraintOp.le;
+import static com.kayhut.fuse.model.query.Rel.Direction.R;
+import static com.kayhut.fuse.model.query.properties.RelProp.of;
+import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -147,24 +160,29 @@ public class EpbJoinTests {
         graphElementSchemaProvider = buildSchemaProvider(ont);
 
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
-        RegexPatternCostEstimator regexPatternCostEstimator = new RegexPatternCostEstimator(new M2PatternCostEstimator(
+        M2PatternCostEstimator m2PatternCostEstimator = new M2PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
-                (id) -> Optional.of(ont.get())));
-        ((EntityJoinPatternCostEstimator)((M2PatternCostEstimator)regexPatternCostEstimator.getEstimator()).getEstimators().get(EntityJoinPattern.class)).setCostEstimator(regexPatternCostEstimator);
+                (id) -> Optional.of(ont.get()),
+                null);
+        EntityJoinPatternCostEstimator entityJoinPatternCostEstimator = (EntityJoinPatternCostEstimator)m2PatternCostEstimator.getEstimators().get(EntityJoinPattern.class);
+
+        RegexPatternCostEstimator regexPatternCostEstimator = new RegexPatternCostEstimator(m2PatternCostEstimator);
+        entityJoinPatternCostEstimator.setCostEstimator(regexPatternCostEstimator);
+
         estimator = regexPatternCostEstimator;
 
-        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
+        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPruner = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M2PlanValidator();
 
-        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPruner = new M2LocalPruner();
+        PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> localPruner = new NoPruningPruneStrategy<>();
 
 
         globalPlanSelector = new KeepAllPlansSelectorDecorator<>(new CheapestPlanSelector());
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
                 new M2PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
-                pruneStrategy,
+                globalPruner,
                 localPruner,
                 globalPlanSelector,
                 localPlanSelector,
@@ -230,10 +248,10 @@ public class EpbJoinTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
                                 Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
                                 Optional.empty(),
@@ -291,7 +309,7 @@ public class EpbJoinTests {
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
-        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        planSearcher.search(query);
         Assert.assertEquals(2,Stream.ofAll(globalPlanSelector.getPlans()).length());
 
         assertNoJoinPlans(globalPlanSelector.getPlans());
@@ -310,13 +328,119 @@ public class EpbJoinTests {
                 next(typed(9, DRAGON.type)).
                 next(eProp(10)).
                 build();
-        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        planSearcher.search(query);
         List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
         Assert.assertEquals(2, joinPlans.size());
         Assert.assertTrue(joinPlans.get(0).getCost().getGlobalCost().getCost() == joinPlans.get(1).getCost().getGlobalCost().getCost());
     }
 
+    @Test
+    public void test3HopsJoinCreationEConcrete(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(concrete(1,"Per", PERSON.type,PERSON.name,"P")).
+                next(eProp(2)).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6)).
+                next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
+                next(typed(9, DRAGON.type)).
+                next(eProp(10)).
+                build();
+        planSearcher.search(query);
+        List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).sorted(Comparator.comparing(p -> p.getPlan().toString())).toJavaList();
+        Assert.assertEquals(2, joinPlans.size());
+        Assert.assertTrue(joinPlans.get(0).getCost().getGlobalCost().getCost() == joinPlans.get(1).getCost().getGlobalCost().getCost());
 
+        PlanWithCost<Plan, CountEstimatesCost> joinCost = joinPlans.get(0).getCost().getPlanStepCosts().iterator().next();
+        PlanDetailedCost rightBranchCost = ((JoinCost) joinCost.getCost()).getRightBranchCost();
+        Assert.assertEquals(Stream.ofAll(rightBranchCost.getPlanStepCosts()).last().getCost().peek(), 10,0.01);
+        Assert.assertEquals(Stream.ofAll(rightBranchCost.getPlanStepCosts()).last().getCost().getCountEstimates().pop(), 10,0.01);
+        Assert.assertEquals(Stream.ofAll(rightBranchCost.getPlanStepCosts()).last().getCost().getCountEstimates().pop(), 2000,0.01);
+    }
+
+    @Test
+    public void test4HopsJoinCreation(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(eProp(2)).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
+                next(typed(5, DRAGON.type)).
+                next(eProp(6)).
+                next(rel(7, OWN.getrType(), Rel.Direction.R).below(relProp(8))).
+                next(typed(9, DRAGON.type)).
+                next(eProp(10)).
+                next(rel(11, OWN.getrType(), Rel.Direction.R).below(relProp(12))).
+                next(typed(13, DRAGON.type)).
+                next(eProp(14)).
+                build();
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
+        Assert.assertEquals(joinPlans.stream().map(p -> p.getPlan().toString()).collect(Collectors.toSet()).size(), joinPlans.size());
+        Assert.assertEquals(12, joinPlans.size());
+        for (PlanWithCost<Plan, PlanDetailedCost> joinPlan : joinPlans) {
+            Iterable<Plan> permutations = permute(joinPlan.getPlan());
+            for (Plan newPlan : permutations) {
+                Assert.assertTrue(joinPlans.stream().anyMatch(p -> p.getPlan().toString().equals(newPlan.toString())));
+                Assert.assertEquals(joinPlan.getCost().getGlobalCost().cost, Stream.ofAll(joinPlans).find(p -> p.getPlan().toString().equals(newPlan.toString())).get().getCost().getGlobalCost().cost,0.0001);
+            }
+        }
+    }
+
+    @Test
+    public void testStarJoinCreation(){
+        AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
+                next(typed(1, PERSON.type)).
+                next(quant1(2, all))
+                .in(eProp(3)
+                        , rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
+                                next(typed(6, DRAGON.type).
+                                next(eProp(7)))
+                        , rel(8, OWN.getrType(), Rel.Direction.R).below(relProp(9)).
+                            next(typed(10, DRAGON.type).
+                            next(eProp(11)))
+                        , rel(12, OWN.getrType(), Rel.Direction.R).below(relProp(13)).
+                                next(typed(14, DRAGON.type).
+                                next(eProp(15)))
+                ).
+                build();
+        PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
+        List<PlanWithCost<Plan, PlanDetailedCost>> joinPlans = Stream.ofAll(this.globalPlanSelector.getPlans()).filter(p -> p.getPlan().getOps().stream().anyMatch(op -> op instanceof EntityJoinOp)).toJavaList();
+        Assert.assertEquals(joinPlans.stream().map(p -> p.getPlan().toString()).collect(Collectors.toSet()).size(), joinPlans.size());
+        Assert.assertEquals(18, joinPlans.size());
+        for (PlanWithCost<Plan, PlanDetailedCost> joinPlan : joinPlans) {
+            Iterable<Plan> permutations = permute(joinPlan.getPlan());
+            for (Plan newPlan : permutations) {
+                Assert.assertTrue(joinPlans.stream().anyMatch(p -> p.getPlan().toString().equals(newPlan.toString())));
+                Assert.assertEquals(joinPlan.getCost().getGlobalCost().cost, Stream.ofAll(joinPlans).find(p -> p.getPlan().toString().equals(newPlan.toString())).get().getCost().getGlobalCost().cost,0.0001);
+            }
+        }
+    }
+
+    private Iterable<Plan> permute(Plan plan){
+        List<Plan> plans = new ArrayList<>();
+
+        if(plan.getOps().get(0) instanceof EntityJoinOp){
+            EntityJoinOp entityJoinOp = (EntityJoinOp) plan.getOps().get(0);
+
+            Iterable<Plan> leftPlans = permute(entityJoinOp.getLeftBranch());
+            Iterable<Plan> rightPlans = permute(entityJoinOp.getRightBranch());
+            for(Plan leftPlan : leftPlans){
+                for(Plan rightPlan : rightPlans){
+                    EntityJoinOp newJoinOp = new EntityJoinOp(leftPlan, rightPlan,true);
+                    Plan newPlan = new Plan(Stream.of((PlanOp)newJoinOp).appendAll(plan.getOps().stream().skip(1).collect(Collectors.toList())));
+                    plans.add(newPlan);
+
+                    newJoinOp = new EntityJoinOp(rightPlan, leftPlan,true);
+                    newPlan = new Plan(Stream.of((PlanOp)newJoinOp).appendAll(plan.getOps().stream().skip(1).collect(Collectors.toList())));
+                    plans.add(newPlan);
+                }
+            }
+        }else{
+            plans.add(plan);
+        }
+
+        return plans;
+    }
 
 
     private void assertNoJoinPlans(Iterable<PlanWithCost<Plan, PlanDetailedCost>> plans) {

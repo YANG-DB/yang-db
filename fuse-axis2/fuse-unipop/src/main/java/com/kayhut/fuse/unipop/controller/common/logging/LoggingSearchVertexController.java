@@ -2,7 +2,10 @@ package com.kayhut.fuse.unipop.controller.common.logging;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.kayhut.fuse.dispatcher.logging.LogType;
+import com.kayhut.fuse.dispatcher.logging.MethodName;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +17,7 @@ import java.util.Iterator;
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
+import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**
  * Created by Roman on 12/14/2017.
@@ -34,22 +36,22 @@ public class LoggingSearchVertexController implements SearchVertexQuery.SearchVe
     //region SearchVertexQuery.SearchVertexController Implementation
     @Override
     public Iterator<Edge> search(SearchVertexQuery searchVertexQuery) {
-        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "search")).time();
-
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
         boolean thrownException = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "search", "start search").log();
+            new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search, ElapsedFrom.now()).log();
             return searchVertexController.search(searchVertexQuery);
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "search", "failed search", ex).log();
-            this.metricRegistry.meter(name(this.logger.getName(), "search", "failure")).mark();
+            new LogMessage.Impl(this.logger, error, "failed search", search, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")).mark();
             return Collections.emptyIterator();
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, trace, finish, "search", "finish search").log();
-                this.metricRegistry.meter(name(this.logger.getName(), "search", "success")).mark();
+                new LogMessage.Impl(this.logger, trace, "finish search", search, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
             }
             timerContext.stop();
         }
@@ -60,5 +62,7 @@ public class LoggingSearchVertexController implements SearchVertexQuery.SearchVe
     private Logger logger;
     private MetricRegistry metricRegistry;
     private SearchVertexQuery.SearchVertexController searchVertexController;
+
+    private static MethodName.MDCWriter search = MethodName.of("search");
     //endregion
 }

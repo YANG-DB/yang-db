@@ -34,6 +34,7 @@ public class ElasticStatProvider {
     private final String STAT_TYPE_NUMERIC_NAME;
     private final String STAT_TYPE_STRING_NAME;
     private final String STAT_TYPE_TERM_NAME;
+    private final String STAT_TYPE_GLOBAL_NAME;
     //endregion
 
     //region Constructors
@@ -56,7 +57,7 @@ public class ElasticStatProvider {
 
         STAT_FIELD_STRING_LOWER_NAME = conf.getStatFieldStringLowerName();
         STAT_FIELD_STRING_UPPER_NAME = conf.getStatFieldStringUpperName();
-
+        STAT_TYPE_GLOBAL_NAME = conf.getStatGlobalTypeName();
         this.statDataProvider = statDataProvider;
     }
     //endregion
@@ -128,6 +129,12 @@ public class ElasticStatProvider {
                         cardinality,
                         statDocument.get(STAT_FIELD_STRING_LOWER_NAME).toString(),
                         statDocument.get(STAT_FIELD_STRING_UPPER_NAME).toString());
+            }
+            if(statType.equals(STAT_TYPE_GLOBAL_NAME)){
+                bucket = new Statistics.BucketInfo<>(
+                        ((Number)statDocument.get(COUNT_FIELD_NAME)).longValue(),
+                        ((Number)statDocument.get(CARDINALITY_FIELD_NAME)).longValue(),
+                        "0", "~");
             }
 
             bucketsPerIndex.computeIfAbsent(statIndex, k -> new ArrayList<>()).add(bucket);

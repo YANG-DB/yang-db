@@ -6,7 +6,7 @@ import com.kayhut.fuse.asg.AsgQueryStore;
 import com.kayhut.fuse.dispatcher.asg.builder.BNextFactory;
 import com.kayhut.fuse.dispatcher.asg.builder.NextEbaseFactory;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
-import com.kayhut.fuse.asg.strategy.propertyGrouping.AsgRelPropertiesGroupingStrategy;
+import com.kayhut.fuse.asg.strategy.propertyGrouping.RelPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.dispatcher.asg.AsgQuerySupplier;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -157,7 +157,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(eProp.getCon().getExpr(), instanceOf(Long.class));
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
-        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
+        ConstraintTypeTransformationAsgStrategy asgConstraintTypeTransformationStrategy = new ConstraintTypeTransformationAsgStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
@@ -177,7 +177,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         assertThat(eProp.getCon().getExpr(), instanceOf(int.class));
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
-        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
+        ConstraintTypeTransformationAsgStrategy asgConstraintTypeTransformationStrategy = new ConstraintTypeTransformationAsgStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
@@ -198,7 +198,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
-        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
+        ConstraintTypeTransformationAsgStrategy asgConstraintTypeTransformationStrategy = new ConstraintTypeTransformationAsgStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);
@@ -238,7 +238,7 @@ public class AsgConstraintTypeTransformationStrategyTest {
         //endregion
 
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
-        AsgConstraintTypeTransformationStrategy asgConstraintTypeTransformationStrategy = new AsgConstraintTypeTransformationStrategy();
+        ConstraintTypeTransformationAsgStrategy asgConstraintTypeTransformationStrategy = new ConstraintTypeTransformationAsgStrategy();
 
         //Applying the Strategy on the RelProp #1 with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithRelProps, asgStrategyContext);
@@ -249,8 +249,8 @@ public class AsgConstraintTypeTransformationStrategyTest {
 
         //Appling First the Properties Grouping Startegy and then applying the constraint transformation strategy
         //We want to be sure that the order of strategies is not affecting the final result
-        AsgRelPropertiesGroupingStrategy asgRelPropertiesGroupingStrategy = new AsgRelPropertiesGroupingStrategy();
-        asgRelPropertiesGroupingStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(ont));
+        RelPropertiesGroupingAsgStrategy relPropertiesGroupingAsgStrategy = new RelPropertiesGroupingAsgStrategy();
+        relPropertiesGroupingAsgStrategy.apply(asgQueryWithRelPropsOriginal, new AsgStrategyContext(ont));
 
         expr1 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(0).getCon().getExpr();
         expr2 = ((RelPropGroup) AsgQueryUtil.element(asgQueryWithRelPropsOriginal, 4).get().geteBase()).getProps().get(1).getCon().getExpr();

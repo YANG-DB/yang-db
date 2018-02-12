@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.execution.plan.costs;
 
+import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+
 import java.util.Stack;
 
 /**
@@ -20,7 +22,30 @@ public class JoinCost extends CountEstimatesCost {
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new JoinCost(this.getCost(), this.getCountEstimates(), this.getLeftBranchCost(), this.getRightBranchCost());
+        return new JoinCost(this.getCost(), (Stack<Double>) this.getCountEstimates().clone(), this.getLeftBranchCost(), this.getRightBranchCost());
+    }
+
+    @Override
+    public void applyCountsUpdateFactor(double countUpdateFactor){
+        super.applyCountsUpdateFactor(countUpdateFactor);
+        applyBranchCUF(countUpdateFactor, this.leftBranchCost);
+        applyBranchCUF(countUpdateFactor, this.rightBranchCost);
+    }
+
+    public void applyCountsUpdateFactorOnLeftBranch(double countUpdateFactor){
+        applyBranchCUF(countUpdateFactor, this.leftBranchCost);
+    }
+
+    public void applyCountsUpdateFactorOnRightBranch(double countUpdateFactor){
+        applyBranchCUF(countUpdateFactor, this.rightBranchCost);
+    }
+
+    private void applyBranchCUF(double countUpdateFactor, PlanDetailedCost branch){
+        branch.getPlanStepCosts().forEach(op -> {
+            if(op.getPlan().getOps().get(0) instanceof EntityOp){
+                op.getCost().applyCountsUpdateFactor(countUpdateFactor);
+            }
+        });
     }
 
     public PlanDetailedCost getLeftBranchCost() {

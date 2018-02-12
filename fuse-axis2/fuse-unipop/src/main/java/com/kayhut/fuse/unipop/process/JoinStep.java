@@ -106,9 +106,10 @@ public class JoinStep<S, E extends Element> extends AbstractStep<S, E> implement
                 Traverser<E> elementTraverser = this.rightTraversal.nextTraverser();
                 List<Traverser<E>> idTraversers = rightSet.computeIfAbsent(elementTraverser.get().id(), (id) -> new ArrayList<>());
                 idTraversers.add(elementTraverser);
-            } catch (FastNoSuchElementException ex) {
+            } catch(NoSuchElementException ex){
                 break;
             }
+
         }
 
         Traversal.Admin<S, E> integratedWithIdsLeftTraversal = integrateIdsToTraversal(this.leftTraversal, rightSet.keySet());

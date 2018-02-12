@@ -227,7 +227,7 @@ public class ScenarioMockUtil {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()),
                                         Stream.ofAll(this.redundantProps.getOrDefault(relation.getrType(), Collections.emptyMap()).entrySet())
                                                 .map(redundantEntry -> (GraphRedundantPropertySchema) new GraphRedundantPropertySchema.Impl(
@@ -236,7 +236,7 @@ public class ScenarioMockUtil {
                                                         this.ont.property$(redundantEntry.getKey()).getType()))
                                                 .toJavaList())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         Stream.ofAll(this.redundantProps.getOrDefault(relation.getrType(), Collections.emptyMap()).entrySet())
                                                 .map(redundantEntry -> (GraphRedundantPropertySchema) new GraphRedundantPropertySchema.Impl(

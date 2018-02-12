@@ -66,7 +66,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                         "own",
                         new GraphElementConstraint.Impl(__.has(T.label, "Dragon")),
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                "personId",
+                                Collections.singletonList("personId"),
                                 Optional.of("Person"),
                                 Collections.emptyList(),
                                 Optional.of(new GraphElementRouting.Impl(
@@ -77,7 +77,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                                         new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "dragon2")))
                         )),
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                "_id",
+                                Collections.singletonList("_id"),
                                 Optional.of("Dragon"),
                                 Arrays.asList(
                                         new GraphRedundantPropertySchema.Impl(NAME.name, NAME.name, NAME.type),

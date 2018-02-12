@@ -33,5 +33,10 @@
             <username>fuse</username>
             <password>Xw4cMS15Hw4k3y3B09BM</password>
         </server>
+        <server>
+            <id>nexus-releases</id>
+            <username>fuse</username>
+            <password>Xw4cMS15Hw4k3y3B09BM</password>
+        </server>
     </servers>
 </settings>

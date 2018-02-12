@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.END_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.query.ConstraintOp.*;
@@ -74,6 +73,7 @@ public class GotoGeneratorExtenderStrategyTest {
                 .build();
     }
 
+
     @Test
     public void test_simpleQuery2_secondPlan() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
@@ -87,7 +87,7 @@ public class GotoGeneratorExtenderStrategyTest {
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 1);
-        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
+        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size() - 1) instanceof GoToEntityOp);
     }
 
     @Test
@@ -109,9 +109,9 @@ public class GotoGeneratorExtenderStrategyTest {
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 3);
-        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
-        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(1).getOps().size()-1) instanceof GoToEntityOp);
-        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(2).getOps().size()-1) instanceof GoToEntityOp);
+        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size() - 1) instanceof GoToEntityOp);
+        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(1).getOps().size() - 1) instanceof GoToEntityOp);
+        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(2).getOps().size() - 1) instanceof GoToEntityOp);
     }
 
     @Test
@@ -130,10 +130,10 @@ public class GotoGeneratorExtenderStrategyTest {
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 2);
-        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
-        Assert.assertEquals(extendedPlans.get(0).getOps().size(),8);
-        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(1).getOps().size()-1) instanceof GoToEntityOp);
-        Assert.assertEquals(extendedPlans.get(1).getOps().size(),8);
+        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size() - 1) instanceof GoToEntityOp);
+        Assert.assertEquals(extendedPlans.get(0).getOps().size(), 8);
+        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(1).getOps().size() - 1) instanceof GoToEntityOp);
+        Assert.assertEquals(extendedPlans.get(1).getOps().size(), 8);
     }
 
     @Test
@@ -152,11 +152,11 @@ public class GotoGeneratorExtenderStrategyTest {
 
         List<Plan> extendedPlans = Stream.ofAll(new GotoExtensionStrategy().extendPlan(Optional.of(plan), asgQuery)).toJavaList();
         Assert.assertTrue(extendedPlans.size() == 3);
-        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size()-1) instanceof GoToEntityOp);
-        Assert.assertEquals(extendedPlans.get(0).getOps().size(),10);
-        Assert.assertTrue(extendedPlans.get(1).getOps().get(extendedPlans.get(1).getOps().size()-1) instanceof GoToEntityOp);
-        Assert.assertEquals(extendedPlans.get(1).getOps().size(),10);
-        Assert.assertTrue(extendedPlans.get(2).getOps().get(extendedPlans.get(2).getOps().size()-1) instanceof GoToEntityOp);
-        Assert.assertEquals(extendedPlans.get(2).getOps().size(),10);
+        Assert.assertTrue(extendedPlans.get(0).getOps().get(extendedPlans.get(0).getOps().size() - 1) instanceof GoToEntityOp);
+        Assert.assertEquals(extendedPlans.get(0).getOps().size(), 10);
+        Assert.assertTrue(extendedPlans.get(1).getOps().get(extendedPlans.get(1).getOps().size() - 1) instanceof GoToEntityOp);
+        Assert.assertEquals(extendedPlans.get(1).getOps().size(), 10);
+        Assert.assertTrue(extendedPlans.get(2).getOps().get(extendedPlans.get(2).getOps().size() - 1) instanceof GoToEntityOp);
+        Assert.assertEquals(extendedPlans.get(2).getOps().size(), 10);
     }
 }

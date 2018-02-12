@@ -1,7 +1,8 @@
 package com.kayhut.fuse.services;
 
-import com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest;
-import com.kayhut.fuse.services.engine2.data.EntityRelationEntityTest;
+import com.kayhut.fuse.services.engine2.JoinE2ETestSuite;
+import com.kayhut.fuse.services.engine2.data.JoinE2EEpbMockTests;
+import com.kayhut.fuse.services.engine2.data.JoinE2ETests;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +45,10 @@ public class TestsConfiguration {
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsRedundantEntityRelationEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.DfsNonRedundantEntityRelationEntityTest.class);
         this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SmartEpbRedundantEntityRelationEntityTest.class);
+        this.testClassesToRun.add(com.kayhut.fuse.services.engine2.data.SmartEpbM2RedundantEntityRelationEntityTest.class);
+
+        this.testClassesToRun.add(JoinE2EEpbMockTests.class);
+        this.testClassesToRun.add(JoinE2ETests.class);
     }
     //endregion
 

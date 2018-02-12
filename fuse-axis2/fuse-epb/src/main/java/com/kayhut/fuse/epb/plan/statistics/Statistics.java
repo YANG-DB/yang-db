@@ -80,12 +80,31 @@ public interface Statistics {
         public Optional<BucketInfo<T>> findBucketContaining(T value){
             BucketInfo<T> dummyInfo = new BucketInfo<>(0L, 0L, value, value);
             int searchResult = Collections.binarySearch(buckets, dummyInfo, (o1, o2) -> {
-                if(o1.getLowerBound().equals(o2.getLowerBound()) && o1.getHigherBound().equals(o2.getHigherBound()))
-                    return 0;
-                if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
-                    return -1;
-                if (o1.getLowerBound().compareTo(o2.getHigherBound()) >= 0)
-                    return 1;
+                if(o1.isSingleValue()){
+                    if(o2.isValueInRange(o1.lowerBound)){
+                        return 0;
+                    }else{
+                        if(o1.lowerBound.compareTo(o2.higherBound)>=0)
+                            return 1;
+                        return -1;
+                    }
+                }else{
+                    if(o2.isSingleValue()){
+                        if(o1.isValueInRange(o2.lowerBound)){
+                            return 0;
+                        }
+                        if(o1.lowerBound.compareTo(o2.higherBound)>=0)
+                            return 1;
+                        return -1;
+
+                    }
+                    else{
+                        if (o1.getHigherBound().compareTo(o2.getLowerBound()) < 0)
+                            return -1;
+                        if (o1.getLowerBound().compareTo(o2.getHigherBound()) >= 0)
+                            return 1;
+                    }
+                }
                 return 0;
             });
             if(searchResult >= 0){

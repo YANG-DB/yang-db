@@ -14,6 +14,15 @@ import java.util.List;
 import java.util.Optional;
 
 public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
+    private boolean addInitialPlan;
+
+    public GotoExtensionStrategy(boolean addInitialPlan) {
+        this.addInitialPlan = addInitialPlan;
+    }
+
+    public GotoExtensionStrategy() {
+        this(false);
+    }
 
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
@@ -35,6 +44,11 @@ public class GotoExtensionStrategy implements PlanExtensionStrategy<Plan, AsgQue
 
             plans.add(newPlan);
         }
+
+        if(this.addInitialPlan){
+            plans.add(plan.get());
+        }
+
         return plans;
     }
 }

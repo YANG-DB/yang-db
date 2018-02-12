@@ -9,6 +9,8 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 
+import java.util.Stack;
+
 /**
  * Created by moti on 29/05/2017.
  */
@@ -34,10 +36,12 @@ public class GoToEntityRelationEntityPatternCostEstimator implements PatternCost
         PatternCostEstimator.Result<Plan, CountEstimatesCost> result =
                 this.entityRelationEntityPatternCostEstimator.estimate(goToEntityRelationEntityPattern, context);
 
-        CountEstimatesCost gotoCost = new CountEstimatesCost(0, 0);
+        Stack<Double> counts = (Stack<Double>) result.getPlanStepCosts().get(0).getCost().getCountEstimates().clone();
+        counts.pop();
+        CountEstimatesCost gotoCost = new CountEstimatesCost(0, counts.peek());
 
         return PatternCostEstimator.Result.of(
-                result.lambda(),
+                result.countsUpdateFactors(),
                 new PlanWithCost<>(new Plan(goToEntityRelationEntityPattern.getStartGoTo()), gotoCost),
                 result.getPlanStepCosts().get(1),
                 result.getPlanStepCosts().get(2));

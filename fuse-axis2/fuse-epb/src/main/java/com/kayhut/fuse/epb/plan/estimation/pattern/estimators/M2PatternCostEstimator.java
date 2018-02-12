@@ -23,7 +23,8 @@ public class M2PatternCostEstimator extends CompositePatternCostEstimator<Plan, 
             PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>> estimators(
                     CostEstimationConfig config,
                     StatisticsProviderFactory statisticsProviderFactory,
-                    OntologyProvider ontologyProvider) {
+                    OntologyProvider ontologyProvider,
+                    RegexPatternCostEstimator regexPatternCostEstimator) {
         Map<Class<? extends Pattern>, PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>> estimators =
                 new HashMap<>();
 
@@ -32,8 +33,11 @@ public class M2PatternCostEstimator extends CompositePatternCostEstimator<Plan, 
         estimators.put(GoToEntityRelationEntityPattern.class,
                 new GoToEntityRelationEntityPatternCostEstimator(
                         (EntityRelationEntityPatternCostEstimator)estimators.get(EntityRelationEntityPattern.class)));
-        estimators.put(EntityJoinPattern.class, new EntityJoinPatternCostEstimator());
-        estimators.put(EntityJoinEntityPattern.class, new EntityJoinEntityPatternCostEstimator((EntityRelationEntityPatternCostEstimator)estimators.get(EntityRelationEntityPattern.class)));
+        EntityJoinPatternCostEstimator entityJoinPatternCostEstimator = new EntityJoinPatternCostEstimator();
+        entityJoinPatternCostEstimator.setCostEstimator(regexPatternCostEstimator);
+        estimators.put(EntityJoinPattern.class, entityJoinPatternCostEstimator);
+        estimators.put(EntityJoinEntityPattern.class, new EntityJoinRelationEntityPatternCostEstimator((EntityRelationEntityPatternCostEstimator)estimators.get(EntityRelationEntityPattern.class)));
+        estimators.put(GotoPattern.class, new GotoPatternCostEstimator());
 
         return estimators;
     }
@@ -44,8 +48,9 @@ public class M2PatternCostEstimator extends CompositePatternCostEstimator<Plan, 
     public M2PatternCostEstimator(
             CostEstimationConfig config,
             StatisticsProviderFactory statisticsProviderFactory,
-            OntologyProvider ontologyProvider) {
-        super(estimators(config, statisticsProviderFactory, ontologyProvider));
+            OntologyProvider ontologyProvider,
+            RegexPatternCostEstimator regexPatternCostEstimator) {
+        super(estimators(config, statisticsProviderFactory, ontologyProvider, regexPatternCostEstimator));
     }
     //endregion
 }

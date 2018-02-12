@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
@@ -117,6 +118,11 @@ public interface PlanMockUtils {
 
         public PlanMockBuilder entity(int num) {
             plan = plan.withOp(new EntityOp(AsgQueryUtil.element$(asgQuery, num)));
+            return this;
+        }
+
+        public PlanMockBuilder join(Plan left, Plan right) {
+            plan = plan.withOp(new EntityJoinOp(left, right));
             return this;
         }
 

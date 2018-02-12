@@ -5,12 +5,14 @@ import com.kayhut.fuse.epb.plan.extenders.M1.M1NonRedundantPlanExtensionStrategy
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import javaslang.collection.Stream;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -75,13 +77,17 @@ public class OngoingJoinStrategyTest {
 
         JoinOngoingExtensionStrategy joinOngoing = new JoinOngoingExtensionStrategy(m1ExtensionStrategy);
         Iterator<Plan> iterator = plans.iterator();
-        Iterable<Plan> joinExtensionPlans = joinOngoing.extendPlan(Optional.of(iterator.next()), asgQuery);
+        Plan firstPlan = iterator.next();
+        ((EntityJoinOp)firstPlan.getOps().get(0)).setComplete(true);
+        Iterable<Plan> joinExtensionPlans = joinOngoing.extendPlan(Optional.of(firstPlan), asgQuery);
 
         Assert.assertEquals(0, Stream.ofAll(joinExtensionPlans).length());
 
         joinExtensionPlans = joinOngoing.extendPlan(Optional.of(iterator.next()), asgQuery);
 
-        Assert.assertEquals(1, Stream.ofAll(joinExtensionPlans).length());
+        Assert.assertEquals(2, Stream.ofAll(joinExtensionPlans).length());
+        Iterator<Plan> planIterator = joinExtensionPlans.iterator();
+        Assert.assertEquals(planIterator.next().toString(), planIterator.next().toString());
     }
 
     @Test

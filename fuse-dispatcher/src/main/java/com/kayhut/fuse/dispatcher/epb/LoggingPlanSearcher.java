@@ -4,19 +4,19 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
+import com.kayhut.fuse.dispatcher.logging.LogType;
+import com.kayhut.fuse.dispatcher.logging.MethodName;
 import com.kayhut.fuse.model.descriptors.Descriptor;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.debug;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.finish;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.log;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.LogType.start;
+import static com.kayhut.fuse.dispatcher.logging.LogType.*;
 
 /**
  * Created by roman.margolis on 28/11/2017.
@@ -42,24 +42,26 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
     //region PlanSearcher Implementation
     @Override
     public PlanWithCost<P, C> search(Q query) {
-        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "search")).time();
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
 
         boolean thrownException = false;
 
         try {
-            new LogMessage(this.logger, trace, start, "search", "start search").log();
+            new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search, ElapsedFrom.now()).log();
             PlanWithCost<P, C> planWithCost = this.planSearcher.search(query);
-            new LogMessage(this.logger, debug, log, "search", "execution plan: {}", this.descriptor.describe(planWithCost)).log();
+            new LogMessage.Impl(this.logger, debug, "execution plan: {}", LogType.of(log), search, ElapsedFrom.now())
+                    .with(this.descriptor.describe(planWithCost)).log();
             return planWithCost;
         } catch (Exception ex) {
             thrownException = true;
-            new LogMessage(this.logger, error, finish, "search", "failed search", ex).log();
-            this.metricRegistry.meter(name(this.logger.getName(), "search", "failure")).mark();
+            new LogMessage.Impl(this.logger, error, "failed search", LogType.of(failure), search, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
-                new LogMessage(this.logger, trace, finish, "search", "finish search").log();
-                this.metricRegistry.meter(name(this.logger.getName(), "search", "success")).mark();
+                new LogMessage.Impl(this.logger, trace, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
             }
             timerContext.stop();
         }
@@ -71,5 +73,7 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
     private MetricRegistry metricRegistry;
     private PlanSearcher<P, C, Q> planSearcher;
     private Descriptor<PlanWithCost<P, C>> descriptor;
+
+    private static MethodName.MDCWriter search = MethodName.of("search");
     //endregion
 }

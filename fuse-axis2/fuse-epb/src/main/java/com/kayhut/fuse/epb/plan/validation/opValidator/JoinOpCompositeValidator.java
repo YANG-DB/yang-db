@@ -8,7 +8,11 @@ import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.validation.ValidationResult;
+import javaslang.collection.Stream;
 
+/**
+ * Validates join op branches with internal validators
+ */
 public class JoinOpCompositeValidator implements ChainedPlanValidator.PlanOpValidator{
     private PlanValidator<Plan, AsgQuery> leftValidator;
     private PlanValidator<Plan, AsgQuery> rightValidator;
@@ -29,13 +33,10 @@ public class JoinOpCompositeValidator implements ChainedPlanValidator.PlanOpVali
         if(planOp instanceof EntityJoinOp){
             EntityJoinOp joinOp = (EntityJoinOp) planOp;
             ValidationResult leftValidationContext = this.leftValidator.isPlanValid(joinOp.getLeftBranch(), query);
-            if(leftValidationContext.valid()){
-                ValidationResult rightValidationContext = this.rightValidator.isPlanValid(joinOp.getRightBranch(), query);
-                if(!rightValidationContext.valid()){
-                    return rightValidationContext;
-                }
-            }else
-                return leftValidationContext;
+            ValidationResult rightValidationContext = this.rightValidator.isPlanValid(joinOp.getRightBranch(), query);
+            return new ValidationResult(leftValidationContext.valid() && rightValidationContext.valid(),
+                    Stream.ofAll(leftValidationContext.errors()).appendAll(rightValidationContext.errors()));
+
         }
         return ValidationResult.OK;
     }

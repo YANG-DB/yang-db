@@ -3,6 +3,7 @@ package com.kayhut.fuse.model.execution.plan.costs;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import javaslang.collection.Stream;
 
 import java.util.Collections;
@@ -12,7 +13,7 @@ import java.util.Optional;
 /**
  * Created by Roman on 20/04/2017.
  */
-public class PlanDetailedCost implements Cost {
+public class PlanDetailedCost implements Cost, Cloneable {
     public PlanDetailedCost() {
     }
 
@@ -44,8 +45,34 @@ public class PlanDetailedCost implements Cost {
     }
 
     public Optional<PlanWithCost<Plan, CountEstimatesCost>> getPlanStepCost(PlanOp planOp) {
-        return Stream.ofAll(planStepCosts).filter(pc -> pc.getPlan().getOps().contains(planOp)).toJavaOptional();
+        Optional<PlanWithCost<Plan, CountEstimatesCost>> opCost = Stream.ofAll(planStepCosts).filter(pc -> pc.getPlan().getOps().contains(planOp)).toJavaOptional();
+        if(!opCost.isPresent()){
+            for (EntityJoinOp entityJoinOp : Stream.ofAll(planStepCosts).flatMap(plan -> plan.getPlan().getOps()).filter(op -> op instanceof EntityJoinOp).map(op -> (EntityJoinOp) op)) {
+                PlanWithCost<Plan, CountEstimatesCost> joinCost = getPlanStepCost(entityJoinOp).get();
+                opCost = ((JoinCost)joinCost.getCost()).getLeftBranchCost().getPlanStepCost(planOp);
+                if(opCost.isPresent()){
+                    break;
+                }
+                opCost = ((JoinCost)joinCost.getCost()).getRightBranchCost().getPlanStepCost(planOp);
+                if(opCost.isPresent()){
+                    break;
+                }
+            }
+        }
+        return opCost;
     }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new PlanDetailedCost(new DoubleCost(this.globalCost.cost), Stream.ofAll(this.planStepCosts).map(p -> {
+            try {
+                return new PlanWithCost<>(p.getPlan(), (CountEstimatesCost)p.getCost().clone());
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
+        }).toJavaList());
+    }
+
     //endregion
 
     //region Fields

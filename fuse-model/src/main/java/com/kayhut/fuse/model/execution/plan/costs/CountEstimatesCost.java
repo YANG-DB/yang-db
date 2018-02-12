@@ -27,6 +27,10 @@ public class CountEstimatesCost implements Cost, Cloneable {
     public double peek() {
         return countEstimates.peek();
     }
+
+    public void applyCountsUpdateFactor(double countUpdateFactor){
+        push(countUpdateFactor * peek());
+    }
     //endregion
 
     //region Override Methods

@@ -59,18 +59,18 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
     }
 
     @Test
-    public void testJoinValidPlanSimpleQueryPartialPlan(){
+    public void testJoinInValidLeftPlanSimpleQueryPartialPlan(){
         AsgQuery query = simpleQuery1("q", "ont");
         Plan plan = new Plan(
                 new EntityJoinOp(new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)))
                         , new Plan(new EntityOp(AsgQueryUtil.element$(query,3)))));
         ValidationResult planValid = this.validator.isPlanValid(plan, query);
-        Assert.assertTrue(planValid.valid());
+        Assert.assertFalse(planValid.valid());
 
     }
 
     @Test
-    public void testJoinValidPlanSimpleQuery(){
+    public void testJoinInValidPlanSimpleQuery(){
         AsgQuery query = simpleQuery1("q", "ont");
         Plan plan = new Plan(
                 new EntityJoinOp(new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)))
@@ -78,7 +78,7 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
                         new RelationOp(reverseRelation(AsgQueryUtil.element$(query,2))),
                         new EntityOp(AsgQueryUtil.element$(query,1)))));
         ValidationResult planValid = this.validator.isPlanValid(plan, query);
-        Assert.assertTrue(planValid.valid());
+        Assert.assertFalse(planValid.valid());
 
     }
     @Test
@@ -107,14 +107,14 @@ public class M2PlanValidatorTests extends M1PlanValidatorTests{
                 new EntityOp(AsgQueryUtil.element$(query, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 9)));
 
-        EntityJoinOp joinOp1 = new EntityJoinOp(left1, right1);
+        EntityJoinOp joinOp1 = new EntityJoinOp(left1, right1, true);
         Plan right2 = new Plan(
                 new EntityOp(AsgQueryUtil.element$(query, 8)),
                 new RelationOp(reverseRelation(AsgQueryUtil.element$(query, 7))),
                 new RelationFilterOp(AsgQueryUtil.element$(query, 11)),
                 new EntityOp(AsgQueryUtil.element$(query, 3)),
                 new EntityFilterOp(AsgQueryUtil.element$(query, 9)));
-        EntityJoinOp joinOp2 = new EntityJoinOp(new Plan(joinOp1), right2);
+        EntityJoinOp joinOp2 = new EntityJoinOp(new Plan(joinOp1), right2,true);
 
 
         ValidationResult validationContext = this.validator.isPlanValid(new Plan(joinOp2), query);

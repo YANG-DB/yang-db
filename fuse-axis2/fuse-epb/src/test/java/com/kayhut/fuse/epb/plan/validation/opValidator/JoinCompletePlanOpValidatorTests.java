@@ -66,7 +66,7 @@ public class JoinCompletePlanOpValidatorTests {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan left = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
         Plan right = new Plan(new EntityOp(AsgQueryUtil.element$(asgQuery, 1)), new RelationOp(AsgQueryUtil.element$(asgQuery,2)), new EntityOp(AsgQueryUtil.element$(asgQuery, 3)));
-        EntityJoinOp join = new EntityJoinOp(left, right);
+        EntityJoinOp join = new EntityJoinOp(left, right, true);
 
         JoinCompletePlanOpValidator validator = new JoinCompletePlanOpValidator();
         Assert.assertTrue(validator.isPlanOpValid(asgQuery, new Plan(join, new RelationOp(AsgQueryUtil.element$(asgQuery, 4)), new EntityOp(AsgQueryUtil.element$(asgQuery, 5))), 0).valid());

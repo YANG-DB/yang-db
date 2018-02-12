@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.execution.plan;
 
 import com.kayhut.fuse.model.execution.plan.composite.CompositeAsgEBasePlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.QueryAssert;
@@ -84,6 +85,11 @@ public class PlanAssert {
             QueryAssert.assertEquals((ETyped)expectedEntityOp.getAsgEbase().geteBase(), (ETyped)actualEntityOp.getAsgEbase().geteBase());
         } else if (expectedEntityOp.getAsgEbase().geteBase() instanceof EUntyped) {
             QueryAssert.assertEquals((EUntyped)expectedEntityOp.getAsgEbase().geteBase(), (EUntyped)actualEntityOp.getAsgEbase().geteBase());
+        }
+
+        if(expectedEntityOp instanceof EntityJoinOp){
+            assertEquals(((EntityJoinOp) expectedEntityOp).getLeftBranch(), ((EntityJoinOp)actualEntityOp).getLeftBranch());
+            assertEquals(((EntityJoinOp) expectedEntityOp).getRightBranch(), ((EntityJoinOp)actualEntityOp).getRightBranch());
         }
     }
 

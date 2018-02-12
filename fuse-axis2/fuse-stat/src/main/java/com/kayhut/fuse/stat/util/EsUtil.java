@@ -9,6 +9,7 @@ import com.kayhut.fuse.stat.model.enums.DataType;
 import com.kayhut.fuse.stat.model.result.StatGlobalCardinalityResult;
 import com.kayhut.fuse.stat.model.result.StatRangeResult;
 import com.kayhut.fuse.stat.model.result.StatTermResult;
+import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
@@ -178,6 +179,8 @@ public class EsUtil {
                     .includeUpper(false));
         }).toJavaArray(FiltersAggregator.KeyedFilter.class));
 
+        Map<String, BucketRange<String>> bucketsByKey = Stream.ofAll(buckets).toJavaMap(bucket -> new Tuple2<>(bucket.getStart() + "_" + bucket.getEnd(), bucket));
+
         SearchResponse sr = searchRequestBuilder.addAggregation(filtersAggregationBuilder
                 .subAggregation(AggregationBuilders.cardinality(AGG_CARDINALITY).field(field)))
                 .setSize(0).execute().actionGet();
@@ -185,8 +188,9 @@ public class EsUtil {
         Filters aggregation = sr.getAggregations().get(aggName);
 
         for (Filters.Bucket entry : aggregation.getBuckets()) {
-            String start = entry.getKeyAsString().split("_")[0];          // Bucket start
-            String end = entry.getKeyAsString().split("_")[1];              // Bucket end
+            BucketRange<String> stringBucketRange = bucketsByKey.get(entry.getKeyAsString());
+            String start = stringBucketRange.getStart();          // Bucket start
+            String end = stringBucketRange.getEnd();              // Bucket end
             InternalCardinality cardinality = entry.getAggregations().get(AGG_CARDINALITY);
 
             StatRangeResult bucketStatResult = new StatRangeResult(index, type, field,

@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.execution.plan.entity;
 
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import javaslang.collection.Stream;
 
 import java.util.Optional;
 
@@ -20,6 +21,11 @@ public class EntityJoinOp extends EntityOp {
         this.rightBranch = rightBranch;
     }
 
+    public EntityJoinOp(Plan leftBranch, Plan rightBranch, boolean isComplete) {
+        this(leftBranch, rightBranch);
+        this.isComplete = isComplete;
+    }
+
     public Plan getLeftBranch() {
         return leftBranch;
     }
@@ -29,13 +35,20 @@ public class EntityJoinOp extends EntityOp {
     }
 
     public boolean isComplete(){
-        Optional<PlanOp> entityOp = rightBranch.getOps().stream().filter(op -> EntityOp.class.isAssignableFrom(op.getClass())).reduce((a, b) -> b);
-        if(entityOp.isPresent()){
-            return ((EntityOp)entityOp.get()).getAsgEbase().geteNum() == this.getAsgEbase().geteNum();
-        }
-        return false;
+        return this.isComplete;
+    }
+
+    public static boolean isComplete(EntityJoinOp entityJoinOp){
+        EntityOp entityOp = Stream.ofAll(entityJoinOp.getRightBranch().getOps()).filter(op -> EntityOp.class.isAssignableFrom(op.getClass())).map(op -> (EntityOp)op).last();
+        return entityOp.getAsgEbase().geteNum() == entityJoinOp.getAsgEbase().geteNum();
+    }
+
+    public void setComplete(boolean complete) {
+        isComplete = complete;
     }
 
     private Plan leftBranch;
     private Plan rightBranch;
+
+    private boolean isComplete = false;
 }

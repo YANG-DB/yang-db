@@ -31,15 +31,19 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
             return false;
         }
 
-        String partitionField = vertexSchema.get().getIndexPartitions().get().getPartitionField().get().equals("_id") ?
-                T.id.getAccessor() :
-                vertexSchema.get().getIndexPartitions().get().getPartitionField().get();
 
-        boolean isPartitionFieldFullyAvailable =
+        Optional<String> partitionField = vertexSchema.get().getIndexPartitions().get().getPartitionField().isPresent() ?
+                    vertexSchema.get().getIndexPartitions().get().getPartitionField().get().equals("_id") ?
+                        Optional.of(T.id.getAccessor()) :
+                        Optional.of(vertexSchema.get().getIndexPartitions().get().getPartitionField().get()) :
+                Optional.empty();
+
+        boolean isPartitionFieldFullyAvailable = partitionField.isPresent() ?
                 Stream.ofAll(context.getBulkVertices())
-                        .map(vertex -> ElementUtil.value(vertex, partitionField))
+                        .map(vertex -> ElementUtil.value(vertex, partitionField.get()))
                         .filter(value -> !value.isPresent())
-                        .size() == 0;
+                        .size() == 0 :
+                false;
 
         List<IndexPartitions.Partition.Range> rangePartitions =
                 Stream.ofAll(vertexSchema.get().getIndexPartitions().get().getPartitions())
@@ -51,7 +55,7 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
         Iterable<IndexPartitions.Partition.Range> relevantRangePartitions = rangePartitions;
         if (isPartitionFieldFullyAvailable) {
             List<Comparable> partitionValues = Stream.ofAll(context.getBulkVertices())
-                    .map(vertex -> ElementUtil.value(vertex, partitionField))
+                    .map(vertex -> ElementUtil.value(vertex, partitionField.get()))
                     .filter(Optional::isPresent)
                     .map(value -> (Comparable) value.get())
                     .distinct().sorted().toJavaList();

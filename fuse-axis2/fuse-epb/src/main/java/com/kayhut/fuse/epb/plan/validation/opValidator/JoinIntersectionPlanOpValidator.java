@@ -25,7 +25,6 @@ public class JoinIntersectionPlanOpValidator implements ChainedPlanValidator.Pla
 
 
     //region Private Methods
-
     private boolean isIntersectionValid(EntityJoinOp joinOp) {
         Optional<EntityOp> leftLast = PlanUtil.last(joinOp.getLeftBranch(), EntityOp.class);
         Optional<EntityOp> rightLast = PlanUtil.last(joinOp.getRightBranch(), EntityOp.class);
@@ -40,8 +39,10 @@ public class JoinIntersectionPlanOpValidator implements ChainedPlanValidator.Pla
             return true;
         }
         if (intersection.size() == 1) {
-            return leftLast.isPresent() && rightLast.isPresent() && leftLast.get().getAsgEbase().geteNum() == rightLast.get().getAsgEbase().geteNum() && !joinOp.getLeftBranch().equals(joinOp.getRightBranch());
-            //return (joinOp.getAsgEbase().geteNum() == intersection.iterator().next());
+            return leftLast.isPresent() &&
+                    rightLast.isPresent() &&
+                    leftLast.get().getAsgEbase().geteNum() == rightLast.get().getAsgEbase().geteNum() &&
+                    !joinOp.getLeftBranch().equals(joinOp.getRightBranch());
         }
 
         return false;
