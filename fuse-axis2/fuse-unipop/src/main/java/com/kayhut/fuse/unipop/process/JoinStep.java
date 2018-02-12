@@ -151,9 +151,8 @@ public class JoinStep<S, E extends Element> extends AbstractStep<S, E> implement
             Set<String> objectLabels = pathLabels.get(i);
             if (objectLabels != null && !objectLabels.isEmpty()) {
                 childTraverser = childTraverser == null ?
-                        leftTraverser.split(pathObjects.get(i), dummyStep1) :
-                        childTraverser.split(pathObjects.get(i), dummyStep2);
-                childTraverser.addLabels(objectLabels);
+                        leftTraverser.split(pathObjects.get(i), LabelsStep.of(objectLabels)) :
+                        childTraverser.split(pathObjects.get(i), LabelsStep.of(objectLabels));
             }
         }
 
@@ -161,7 +160,7 @@ public class JoinStep<S, E extends Element> extends AbstractStep<S, E> implement
             return leftTraverser;
         }
 
-        return childTraverser.split(leftTraverser.get(), dummyStep3);
+        return childTraverser.split(leftTraverser.get(), LabelsStep.of());
     }
     //endregion
 
@@ -173,13 +172,35 @@ public class JoinStep<S, E extends Element> extends AbstractStep<S, E> implement
     private Supplier<Iterator<Traverser.Admin<E>>> iteratorSupplier;
 
     private BiFunction<Traversal.Admin<S, E>, Set<Object>, Traversal.Admin<S, E>> integrateIdsTraversalFunction;
+    //endregion
 
-    // the dummy steps are necessary for setting the proper labels for the objects in the new path generated from the split
-    // passing 'this' to the split method is not recommended as the join step might have its own labels that we would like to use for the final traverser.
-    // it is a hack neccessary due to the tinkerpop step api not providing an alternative beside passing a Step for the split method.
-    // another approach would be using our own type of Traverser with our own type of path, but at this time that would be an overkill
-    private MapStep<E, Object> dummyStep1 = new SackStep<>(__.start().asAdmin());
-    private MapStep<Object, Object> dummyStep2 = new SackStep<>(__.start().asAdmin());
-    private MapStep<Object, E> dummyStep3 = new SackStep<>(__.start().asAdmin());
+    //region LabelsStep
+    private static class LabelsStep<S, E> extends AbstractStep<S, E> {
+        //region Static
+        public static <S, E> LabelsStep<S, E> of(String...labels) {
+            return new LabelsStep<>(labels);
+        }
+
+        public static <S, E> LabelsStep<S, E> of(Iterable<String> labels) {
+            return new LabelsStep<>(labels);
+        }
+        //endregion
+
+        //region Constructors
+        public LabelsStep(String...labels) {
+            this(Stream.of(labels));
+        }
+
+        public LabelsStep(Iterable<String> labels) {
+            super(null);
+            this.labels.addAll(Stream.ofAll(labels).toJavaList());
+        }
+        //endregion
+
+        @Override
+        protected Traverser.Admin<E> processNextStart() throws NoSuchElementException {
+            return null;
+        }
+    }
     //endregion
 }

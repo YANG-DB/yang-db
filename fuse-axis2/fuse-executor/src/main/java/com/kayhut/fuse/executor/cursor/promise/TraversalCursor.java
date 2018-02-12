@@ -23,6 +23,7 @@ import com.kayhut.fuse.unipop.structure.promise.PromiseEdge;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.Collections;
@@ -135,15 +136,7 @@ public class TraversalCursor implements Cursor {
     }
 
     private PromiseVertex getPromiseVertex(Path path, EEntityBase element) {
-        Object pathObject = path.get(element.geteTag());
-        PromiseVertex vertex ;
-        if(List.class.isAssignableFrom(pathObject.getClass()) ) {
-            List vertexList = (List)pathObject;
-            vertex = (PromiseVertex) Stream.ofAll(vertexList).last();
-        }else{
-            vertex = (PromiseVertex) pathObject;
-        }
-        return vertex;
+        return path.get(Pop.last, element.geteTag());
     }
 
     private Entity toEntity(String eId, String eType, String eTag, List<Property> properties) {
@@ -157,7 +150,7 @@ public class TraversalCursor implements Cursor {
 
     private Relationship toRelationship(Path path, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
         Relationship.Builder builder = Relationship.Builder.instance();
-        PromiseEdge edge = path.get(prevEntity.geteTag() + "-->" + nextEntity.geteTag());
+        PromiseEdge edge = path.get(Pop.last, prevEntity.geteTag() + "-->" + nextEntity.geteTag());
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
 

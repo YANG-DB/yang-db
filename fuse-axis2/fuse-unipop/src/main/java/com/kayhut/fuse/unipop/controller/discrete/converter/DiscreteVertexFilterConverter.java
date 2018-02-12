@@ -57,6 +57,7 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
                 GlobalConstants.Labels.PROMISE_FILTER,
                 v,
                 v,
+                v,
                 context.getGraph(),
                 Collections.emptyMap()));
     }
