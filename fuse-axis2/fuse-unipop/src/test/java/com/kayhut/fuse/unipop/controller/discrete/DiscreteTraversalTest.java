@@ -9,6 +9,7 @@ import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.Mappings;
@@ -63,7 +64,7 @@ public class DiscreteTraversalTest {
         uniGraphConfiguration = new UniGraphConfiguration();
         uniGraphConfiguration.setBulkMax(1000);
         uniGraphConfiguration.setBulkStart(1000);
-        graph = new UniGraph(
+        graph = new FuseUniGraph(
                 uniGraphConfiguration,
                 uniGraph -> new ControllerManager() {
                     @Override

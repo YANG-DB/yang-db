@@ -56,7 +56,7 @@ public class ThinPath implements Path {
     @Override
     public Path extend(Set<String> set) {
         if (this.objects.isEmpty()) {
-            throw new UnsupportedOperationException("path has not objects");
+            throw new UnsupportedOperationException("path has no objects");
         }
 
         if (set.isEmpty()) {
@@ -104,7 +104,7 @@ public class ThinPath implements Path {
     public <A> A get(String label) throws IllegalArgumentException {
         byte labelOrdinal = this.stringOrdinalDictionary.getOrdinal(label);
         if (labelOrdinal == 0) {
-            return (A)Collections.emptyList();
+            return null;
         }
 
         List<Object> items = Collections.emptyList();
@@ -121,20 +121,25 @@ public class ThinPath implements Path {
             }
         }
 
-        return (A)items;
+        return items.size() == 1 ? (A)items.get(0) : (A)items;
     }
 
     @Override
     public <A> A get(Pop pop, String label) throws IllegalArgumentException {
-        List<Object> objects = this.get(label);
+        Object object = this.get(label);
 
-        if (objects.isEmpty() || pop.equals(Pop.all)) {
-            return (A)objects;
-        }
-
-        return pop.equals(Pop.first) ?
-                (A)objects.get(0) :
-                (A)objects.get(objects.size() - 1);
+        if (List.class.isAssignableFrom(object.getClass())) {
+            List objects = (List)object;
+            if (objects.isEmpty()) {
+                return null;
+            } else if (pop.equals(Pop.first)) {
+                return (A)objects.get(0);
+            } else if (pop.equals(Pop.last)) {
+                return (A)objects.get(objects.size() - 1);
+            } else {
+                return (A)objects;
+            }
+        } else return (A)object;
     }
 
     @Override
@@ -219,7 +224,12 @@ public class ThinPath implements Path {
 
     @Override
     public Path subPath(String fromLabel, String toLabel) {
-        return null;
+        if (fromLabel == null && toLabel == null) {
+            return this;
+        }
+
+        //TODO: add implementation for subpath
+        throw new UnsupportedOperationException("subpath on ThinPath temporarily not supported");
     }
     //endregion
 

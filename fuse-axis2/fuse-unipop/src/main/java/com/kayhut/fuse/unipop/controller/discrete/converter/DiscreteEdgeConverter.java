@@ -79,6 +79,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                             edgeSchema.getLabel(),
                             outV,
                             inV,
+                            inV,
                             context.getGraph(),
                             edgeProperties));
                 }
@@ -111,6 +112,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
                             edgeSchema.getLabel(),
                             outV,
                             inV,
+                            outV,
                             context.getGraph(),
                             edgeProperties));
                 }

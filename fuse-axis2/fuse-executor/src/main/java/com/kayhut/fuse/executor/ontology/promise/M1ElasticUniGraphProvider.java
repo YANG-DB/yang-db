@@ -14,6 +14,7 @@ import com.kayhut.fuse.unipop.controller.promise.PromiseVertexController;
 import com.kayhut.fuse.unipop.controller.promise.PromiseVertexFilterController;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
+import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import org.elasticsearch.client.Client;
 import org.unipop.configuration.UniGraphConfiguration;
 import org.unipop.process.strategyregistrar.StandardStrategyProvider;
@@ -48,7 +49,7 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
 
     @Override
     public UniGraph getGraph(Ontology ontology) throws Exception {
-        return new UniGraph(
+        return new FuseUniGraph(
                 this.uniGraphConfiguration,
                 controllerManagerFactory(schemaProviderFactory.get(ontology)),
                 new StandardStrategyProvider());

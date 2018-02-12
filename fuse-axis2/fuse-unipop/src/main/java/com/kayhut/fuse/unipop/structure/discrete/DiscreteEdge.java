@@ -14,8 +14,8 @@ import java.util.Map;
  */
 public class DiscreteEdge extends UniEdge {
     //region Constructors
-    public DiscreteEdge(Object id, String label, Vertex outV, Vertex inV, UniGraph graph, Map<String, Object> properties) {
-        super(properties, outV, inV, graph);
+    public DiscreteEdge(Object id, String label, Vertex outV, Vertex inV, Vertex otherVertex, UniGraph graph, Map<String, Object> properties) {
+        super(properties, outV, inV, otherVertex, graph);
         this.id = id.toString();
         this.label = label;
     }
