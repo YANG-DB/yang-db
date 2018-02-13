@@ -18,7 +18,6 @@ import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
-import static com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog.toJson;
 
 /**
  * Created by Roman on 12/14/2017.
@@ -42,16 +41,7 @@ public class LoggingSearchController implements SearchQuery.SearchController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search, ElapsedFrom.now()).log();
-            Iterator<E> results = searchController.search(searchQuery);
-            //log elastic query
-            if (searchController instanceof LoggableSearch ) {
-                String logMessage = toJson(((LoggableSearch) searchController).getLog());
-                if(logMessage!=null) {
-                    new LogMessage.Impl(this.logger, trace, logMessage,
-                            LogType.of(start), search, ElapsedFrom.now()).log();
-                }
-            }
-            return results;
+            return searchController.search(searchQuery);
         } catch (Exception ex) {
             thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed search", LogType.of(failure), search, ElapsedFrom.now())

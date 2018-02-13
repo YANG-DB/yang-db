@@ -4,7 +4,6 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
-import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
 import com.kayhut.fuse.unipop.controller.promise.appender.PromiseConstraintSearchAppender;
 import com.kayhut.fuse.unipop.controller.promise.appender.PromiseEdgeAggregationAppender;
 import com.kayhut.fuse.unipop.controller.promise.appender.PromiseEdgeIndexAppender;
@@ -112,11 +111,6 @@ public class PromiseVertexController extends VertexControllerBase {
         //search
         SearchRequestBuilder searchRequest = searchBuilder.build(client, true).setSize(0);
         SearchResponse response = searchRequest.execute().actionGet();
-
-        super.log = ElasticQueryLog.ElasticQueryLogBuilder.build(-1, -1, -1)
-                .query(searchRequest.toString())
-                .hits(response.getHits().getTotalHits())
-                .complete();
 
         //convert result
         AggregationPromiseEdgeIterableConverter converter = new AggregationPromiseEdgeIterableConverter(

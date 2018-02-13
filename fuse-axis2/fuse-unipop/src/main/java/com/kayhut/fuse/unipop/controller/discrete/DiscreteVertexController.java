@@ -6,7 +6,6 @@ import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
-import com.kayhut.fuse.unipop.controller.common.logging.ElasticQueryLog;
 import com.kayhut.fuse.unipop.controller.discrete.appender.DualEdgeDirectionSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverter;
@@ -126,12 +125,9 @@ public class DiscreteVertexController extends VertexControllerBase {
         ElementConverter<SearchHit, Edge> elementConverter = new CompositeElementConverter<>(
                 new DiscreteEdgeConverter<>(context));
 
-        javaslang.collection.Iterator<Edge> iterator = Stream.ofAll(searchHits)
+        return Stream.ofAll(searchHits)
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
-
-        super.log = searchHits.getQueryLog();
-        return iterator;
     }
 
 
