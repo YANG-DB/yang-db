@@ -191,7 +191,7 @@ public class RealClusterTest {
                 new ETyped(7, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
                 new EProp(9, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
-                new Rel(10, $ont.rType$("hasReference"), R, null, 11, 0),
+                new Rel(10, $ont.rType$("hasEvalueReference"), R, null, 11, 0),
                 new ETyped(11, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 0, 0)
         )).build();
 
@@ -229,7 +229,7 @@ public class RealClusterTest {
                 new ETyped(7, "B", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Arrays.asList(9, 10), 0),
                 new EProp(9, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
-                new Rel(10, $ont.rType$("hasReference"), R, null, 11, 0),
+                new Rel(10, $ont.rType$("hasInsightReference"), R, null, 11, 0),
                 new ETyped(11, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 0, 0)
         )).build();
 
@@ -590,11 +590,11 @@ public class RealClusterTest {
                 new Rel(100, "hasRvalue", R, null, 101, 0),
                 new ETyped(101, "RV", "Rvalue", $ont.$entity$("Rvalue").getProperties(), 0, 0),
                 /*new Quant1(102, QuantType.all, Arrays.asList(103), 0),
-                new Rel(103, "hasReference", R, null, 104, 0),
+                new Rel(103, "hasRvalueReference", R, null, 104, 0),
                 new ETyped(104, "RVRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0),*/
 
                 new OptionalComp(11, 110),
-                new Rel(110, "hasReference", R, null, 111, 0),
+                new Rel(110, "hasRelationReference", R, null, 111, 0),
                 new ETyped(111, "RRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0)
         )).build();
 
@@ -858,7 +858,7 @@ public class RealClusterTest {
                 new Rel(3, $ont.rType$("hasEvalue"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
-                new Rel(6, $ont.rType$("hasReference"), R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasEvalueReference"), R, null, 7, 0),
                 new ETyped(7, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Collections.emptyList(), 0),
                 new Rel(9, $ont.rType$("hasRelation"), R, null, 10, 0),
@@ -870,7 +870,7 @@ public class RealClusterTest {
                 new Rel(15, $ont.rType$("hasInsight"), R, null, 16, 0),
                 new ETyped(16, "F", $ont.eType$("Insight"), $ont.$entity$("Insight").getProperties(), 17, 0),
                 new Quant1(17, QuantType.all, Collections.singletonList(18), 0),
-                new Rel(18, $ont.rType$("hasReference"), R, null, 19, 0),
+                new Rel(18, $ont.rType$("hasInsightReference"), R, null, 19, 0),
                 new ETyped(19, "G", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 20, 0),
                 new Quant1(20, QuantType.all, Collections.emptyList(), 0),
                 new EProp(21, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000"))
@@ -910,7 +910,7 @@ public class RealClusterTest {
                 new Rel(300, $ont.rType$("hasEvalue"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
-                new Rel(6, $ont.rType$("hasReference"), R, null, 7, 0),
+                new Rel(6, $ont.rType$("hasEvalueReference"), R, null, 7, 0),
                 new ETyped(7, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 8, 0),
                 new Quant1(8, QuantType.all, Collections.emptyList(), 0),
                 new EProp(21, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000"))
@@ -1021,7 +1021,7 @@ public class RealClusterTest {
                 new ETyped(4, "B", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.singletonList(6), 0),
                 new OptionalComp(6, 7),
-                new Rel(7, $ont.rType$("hasReference"), R, null, 8, 0),
+                new Rel(7, $ont.rType$("hasEvalueReference"), R, null, 8, 0),
                 new ETyped(8, "C", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 9, 0),
                 new Quant1(9, QuantType.all, Collections.emptyList(), 0),
                 new EProp(112, "logicalId", Constraint.of(ConstraintOp.eq, "e00000000")))).build();
@@ -1056,7 +1056,7 @@ public class RealClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 112), 0),
-                new Rel(3, $ont.rType$("hasReference"), R, null, 4, 0),
+                new Rel(3, $ont.rType$("hasEntityReference"), R, null, 4, 0),
                 new ETyped(4, "B", $ont.eType$("Reference"), $ont.$entity$("Reference").getProperties(), 5, 0),
                 new Quant1(5, QuantType.all, Collections.emptyList(), 0),
                 new EProp(112, "logicalId", Constraint.of(ConstraintOp.eq, "e00000000")))).build();
@@ -1079,6 +1079,63 @@ public class RealClusterTest {
         long elapsed = System.currentTimeMillis() - start;
         int x = 5;
     }
+
+    @Test
+    @Ignore
+    public void test_ReferencesEntitiesQuery() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "A", "Reference", $ont.$entity$("Reference").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 10, 20, 30, 40), 0),
+                //new EProp(3, "url", Constraint.of(ConstraintOp.eq, "http://87c2d17b-1ab7-4fd2-bf6b-6ab5125920b9.net")),
+                new EProp(3, "url", Constraint.of(ConstraintOp.eq, "http://402d45d7-43fc-49f4-9817-9e8c82e2ec44.ac")),
+
+                new OptionalComp(10, 11),
+                new Rel(11, "hasEntityReference", L, null, 12, 0),
+                new ETyped(12, "B", "Entity", $ont.$entity$("Entity").getProperties(), 0, 0),
+
+                new OptionalComp(20, 21),
+                new Rel(21, "hasEvalueReference", L, null, 22, 0),
+                new ETyped(22, "C", "Evalue", $ont.$entity$("Evalue").getProperties(), 23, 0),
+                new Rel(23, "hasEvalue", L, null, 24, 0),
+                new ETyped(24, "D", "Entity", $ont.$entity$("Entity").getProperties(), 0, 0),
+
+                new OptionalComp(30, 31),
+                new Rel(31, "hasRelationReference", L, null, 32, 0),
+                new ETyped(32, "E", "Relation", $ont.$entity$("Relation").getProperties(), 33, 0),
+                new Rel(33, "hasRelation", L, null, 34, 0),
+                new ETyped(34, "F", "Entity", $ont.$entity$("Entity").getProperties(), 0, 0),
+
+                new OptionalComp(40, 41),
+                new Rel(41, "hasInsightReference", L, null, 42, 0),
+                new ETyped(42, "G", "Insight", $ont.$entity$("Insight").getProperties(), 43, 0),
+                new Rel(43, "hasInsight", L, null, 44, 0),
+                new ETyped(44, "H", "Entity", $ont.$entity$("Entity").getProperties(), 0, 0)))
+                .build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
 
     @Test
     @Ignore

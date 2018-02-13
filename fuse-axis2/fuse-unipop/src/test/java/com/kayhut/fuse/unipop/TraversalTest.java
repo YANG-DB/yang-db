@@ -13,6 +13,7 @@ import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.promise.TraversalPromise;
 import com.kayhut.fuse.unipop.schemaProviders.EmptyGraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -50,7 +51,7 @@ public class TraversalTest {
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX() throws Exception {
         MetricRegistry registry = new MetricRegistry();
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
+        UniGraph graph = new FuseUniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(
@@ -93,7 +94,7 @@ public class TraversalTest {
     public void g_V_hasXpromise_Promise_asXabcX_byX__hasXlabel_dragonXXX_hasXconstraint_Constraint_byX__hasXlabel_dragonXXX() throws Exception {
         MetricRegistry registry = new MetricRegistry();
         //region ControllerManagerFactory Implementation
-        UniGraph graph = new UniGraph(null, graph1 -> new ControllerManager() {
+        UniGraph graph = new FuseUniGraph(null, graph1 -> new ControllerManager() {
             @Override
             public Set<UniQueryController> getControllers() {
                 return ImmutableSet.of(

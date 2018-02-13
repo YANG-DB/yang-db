@@ -152,10 +152,10 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityA.id",
+                                        Collections.singletonList("entityA.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityB.id",
+                                        Collections.singletonList("entityB.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         Arrays.asList(
                                                 new GraphRedundantPropertySchema.Impl("firstName", "entityB.firstName", ont.property$("firstName").getType()),

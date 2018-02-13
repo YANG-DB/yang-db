@@ -1,8 +1,6 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
-import com.google.common.base.Strings;
 import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 
@@ -153,7 +151,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 edgeSchema.getConstraint(),
                 edgeSchema.getSource().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                edgeSchema.getSource().get().getIdField(),
+                                edgeSchema.getSource().get().getIdFields(),
                                 Optional.of(sourceVertexLabel),
                                 edgeSchema.getSource().get().getRedundantProperties(),
                                 edgeSchema.getSource().get().getRouting(),
@@ -161,7 +159,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                         Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(sourceVertexLabel))),
                 edgeSchema.getDestination().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                edgeSchema.getDestination().get().getIdField(),
+                                edgeSchema.getDestination().get().getIdFields(),
                                 Optional.of(destinationVertexLabel),
                                 edgeSchema.getDestination().get().getRedundantProperties(),
                                 edgeSchema.getDestination().get().getRouting(),

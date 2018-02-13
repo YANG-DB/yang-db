@@ -184,26 +184,54 @@
       ]
     },
     {
-      "rType": "hasReference",
-      "name": "hasReference",
+      "rType": "hasEntityReference",
+      "name": "hasEntityReference",
       "directional": true,
       "ePairs": [
         {
           "eTypeA": "Entity",
           "eTypeB": "Reference"
-        },
+        }
+      ]
+    },
+    {
+      "rType": "hasEvalueReference",
+      "name": "hasEvalueReference",
+      "directional": true,
+      "ePairs": [
         {
           "eTypeA": "Evalue",
           "eTypeB": "Reference"
-        },
+        }
+      ]
+    },
+    {
+      "rType": "hasRelationReference",
+      "name": "hasRelationReference",
+      "directional": true,
+      "ePairs": [
         {
           "eTypeA": "Relation",
           "eTypeB": "Reference"
-        },
+        }
+      ]
+    },
+    {
+      "rType": "hasRvalueReference",
+      "name": "hasRvalueReference",
+      "directional": true,
+      "ePairs": [
         {
           "eTypeA": "Rvalue",
           "eTypeB": "Reference"
-        },
+        }
+      ]
+    },
+    {
+      "rType": "hasInsightReference",
+      "name": "hasInsightReference",
+      "directional": true,
+      "ePairs": [
         {
           "eTypeA": "Insight",
           "eTypeB": "Reference"
