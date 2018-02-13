@@ -107,39 +107,18 @@ public class ThinPath implements Path {
             return null;
         }
 
-        List<Object> items = Collections.emptyList();
         for(int index = 0 ; index < this.objects.size() ; index++) {
             if (this.ordinals.get(index) == labelOrdinal) {
-                if (items.isEmpty()) {
-                    items = Collections.singletonList(this.objects.get(index));
-                } else if (items.size() == 1) {
-                    items = new ArrayList<>(items);
-                    items.add(this.objects.get(index));
-                } else {
-                    items.add(this.objects.get(index));
-                }
+                return (A)this.objects.get(index);
             }
         }
 
-        return items.size() == 1 ? (A)items.get(0) : (A)items;
+        return null;
     }
 
     @Override
     public <A> A get(Pop pop, String label) throws IllegalArgumentException {
-        Object object = this.get(label);
-
-        if (List.class.isAssignableFrom(object.getClass())) {
-            List objects = (List)object;
-            if (objects.isEmpty()) {
-                return null;
-            } else if (pop.equals(Pop.first)) {
-                return (A)objects.get(0);
-            } else if (pop.equals(Pop.last)) {
-                return (A)objects.get(objects.size() - 1);
-            } else {
-                return (A)objects;
-            }
-        } else return (A)object;
+        return this.get(label);
     }
 
     @Override
