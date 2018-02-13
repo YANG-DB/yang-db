@@ -1,9 +1,11 @@
-package com.kayhut.fuse.assembly;
+package com.kayhut.fuse.assembly.knowlegde;
 
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -11,49 +13,32 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 /**
  * Created by roman.margolis on 02/10/2017.
  */
 public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaProviderFactory {
+    private Config config;
+    private RawElasticSchema schema;
     //region GraphElementSchemaProviderFactory Implementation
+
+    public KnowledgeRoutedSchemaProviderFactory(Config config ,RawElasticSchema schema) {
+        this.config = config;
+        this.schema = schema;
+    }
+
     @Override
     public GraphElementSchemaProvider get(Ontology ontology) {
         if (!ontology.getOnt().equals("Knowledge")) {
             return null;
         }
-
-        List<IndexPartitions.Partition> ePartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("e00000000", "e10000000", "e0"),
-                new IndexPartitions.Partition.Range.Impl<>("e10000000", "e20000000", "e1"),
-                new IndexPartitions.Partition.Range.Impl<>("e20000000", "e30000000", "e2"));
-
-        List<IndexPartitions.Partition> relPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("r00000000", "r10000000", "rel0"),
-                new IndexPartitions.Partition.Range.Impl<>("r10000000", "r20000000", "rel1"),
-                new IndexPartitions.Partition.Range.Impl<>("r20000000", "r30000000", "rel2"));
-
-        List<IndexPartitions.Partition> refPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("ref00000000", "ref10000000", "ref0"),
-                new IndexPartitions.Partition.Range.Impl<>("ref10000000", "ref20000000", "ref1"),
-                new IndexPartitions.Partition.Range.Impl<>("ref20000000", "ref30000000", "ref2"));
-
-        List<IndexPartitions.Partition> iPartitions = Arrays.asList(
-                new IndexPartitions.Partition.Range.Impl<>("i00000000", "i10000000", "i0"),
-                new IndexPartitions.Partition.Range.Impl<>("i10000000", "i20000000", "i1"),
-                new IndexPartitions.Partition.Range.Impl<>("i20000000", "i30000000", "i2"));
-
-        IndexPartitions entityPartitions = new IndexPartitions.Impl("logicalId", ePartitions);
-        IndexPartitions entityValuePartitions = new IndexPartitions.Impl("logicalId", ePartitions);
-
-        IndexPartitions relationPartitions = new IndexPartitions.Impl("_id", relPartitions);
-        IndexPartitions relationValuePartitions = new IndexPartitions.Impl("relationId", relPartitions);
-
-        IndexPartitions referencePartitions = new IndexPartitions.Impl("_id", refPartitions);
-
-        IndexPartitions insightPartitions = new IndexPartitions.Impl("_id", iPartitions);
+        IndexPartitions entityPartitions = schema.getPartition("entity");
+        IndexPartitions entityValuePartitions = schema.getPartition("e.value");
+        IndexPartitions relationPartitions = schema.getPartition("relation");
+        IndexPartitions relationValuePartitions = schema.getPartition("r.value");;
+        IndexPartitions referencePartitions = schema.getPartition("reference");
+        IndexPartitions insightPartitions = schema.getPartition("insight");
 
         Iterable<GraphElementPropertySchema> metadataProperties = Arrays.asList(
                 new GraphElementPropertySchema.Impl("creationUser", "string"),

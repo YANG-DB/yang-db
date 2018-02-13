@@ -1,22 +1,23 @@
 package com.kayhut.fuse.executor;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
-import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
+import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.dispatcher.driver.PageDriver;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.executor.driver.StandardCursorDriver;
 import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
 import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
-import com.kayhut.fuse.executor.ontology.*;
+import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
+import com.kayhut.fuse.executor.ontology.UniGraphProvider;
+import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
+import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.unipop.configuration.UniGraphConfiguration;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static com.google.inject.name.Names.named;
@@ -52,6 +54,7 @@ public class ExecutorModule extends ModuleBase {
 
         binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
         binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
+        binder.bind(InitialGraphDataLoader.class).toInstance(createInitialDataLoader(conf));
 
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
@@ -107,29 +110,49 @@ public class ExecutorModule extends ModuleBase {
         return configuration;
     }
 
-    private GraphElementSchemaProviderFactory createSchemaProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    private GraphElementSchemaProviderFactory createSchemaProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        RawElasticSchema rawElasticSchema =
+                (RawElasticSchema) (Class.forName(
+                        conf.getString("fuse.physical_raw_schema")).newInstance());
+
         GraphElementSchemaProviderFactory physicalSchemaProviderFactory =
-                (GraphElementSchemaProviderFactory)(Class.forName(
-                        conf.getString("fuse.physical_schema_provider_factory_class")).newInstance());
+                (GraphElementSchemaProviderFactory) (Class.forName(
+                        conf.getString("fuse.physical_schema_provider_factory_class"))
+                        .getConstructor(Config.class, RawElasticSchema.class)
+                        .newInstance(conf,rawElasticSchema));
 
         return new OntologyGraphElementSchemaProviderFactory(physicalSchemaProviderFactory);
     }
 
+    private InitialGraphDataLoader createInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        RawElasticSchema rawElasticSchema =
+                (RawElasticSchema) (Class.forName(
+                        conf.getString("fuse.physical_raw_schema")).newInstance());
+
+        InitialGraphDataLoader initialGraphDataLoader =
+                (InitialGraphDataLoader) (Class.forName(
+                        conf.getString("fuse.physical_schema_data_loader"))
+                        .getConstructor(Config.class, RawElasticSchema.class)
+                        .newInstance(conf,rawElasticSchema));
+
+        return initialGraphDataLoader;
+    }
+
     private Class<? extends UniGraphProvider> getUniGraphProviderClass(Config conf) throws ClassNotFoundException {
-        return (Class<? extends  UniGraphProvider>)Class.forName(conf.getString("fuse.unigraph_provider"));
+        return (Class<? extends UniGraphProvider>) Class.forName(conf.getString("fuse.unigraph_provider"));
     }
 
     private Class<? extends CursorFactory> getCursorFactoryClass(Config conf) throws ClassNotFoundException {
-        return (Class<? extends  CursorFactory>)Class.forName(conf.getString("fuse.cursor_factory"));
+        return (Class<? extends CursorFactory>) Class.forName(conf.getString("fuse.cursor_factory"));
     }
 
     private List<String> getStringList(Config conf, String key) {
-         try {
-             return conf.getStringList(key);
-         } catch (Exception ex) {
-             String strList = conf.getString(key);
-             return Stream.of(strList.split(",")).toJavaList();
-         }
+        try {
+            return conf.getStringList(key);
+        } catch (Exception ex) {
+            String strList = conf.getString(key);
+            return Stream.of(strList.split(",")).toJavaList();
+        }
     }
     //endregion
 }

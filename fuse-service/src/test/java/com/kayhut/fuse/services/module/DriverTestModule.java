@@ -7,7 +7,11 @@ import com.kayhut.fuse.dispatcher.driver.QueryDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.executor.mock.elasticsearch.MockClient;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.services.dispatcher.driver.MockDriver;
+import com.kayhut.fuse.services.engine2.data.schema.discrete.M2DragonsPhysicalSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.kayhut.fuse.unipop.schemaProviders.OntologySchemaProvider;
 import com.typesafe.config.Config;
 import org.elasticsearch.client.Client;
 import org.jooby.Env;
@@ -22,7 +26,8 @@ public class DriverTestModule extends ModuleBase {
         binder.bind(CursorDriver.class).to(MockDriver.Cursor.class).asEagerSingleton();
         binder.bind(PageDriver.class).to(MockDriver.Page.class).asEagerSingleton();
 
-        binder.bind(GraphElementSchemaProviderFactory.class).toInstance(ontology -> null);
+        binder.bind(GraphElementSchemaProviderFactory.class)
+                .toInstance(ontology -> new OntologySchemaProvider(ontology,new M2DragonsPhysicalSchemaProvider()));
         binder.bind(Client.class).toInstance(new MockClient());
     }
 

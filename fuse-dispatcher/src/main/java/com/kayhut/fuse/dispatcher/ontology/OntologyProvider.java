@@ -2,6 +2,7 @@ package com.kayhut.fuse.dispatcher.ontology;
 
 import com.kayhut.fuse.model.ontology.Ontology;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -9,4 +10,6 @@ import java.util.Optional;
  */
 public interface OntologyProvider {
     Optional<Ontology> get(String id);
+
+    Collection<Ontology> getAll();
 }
