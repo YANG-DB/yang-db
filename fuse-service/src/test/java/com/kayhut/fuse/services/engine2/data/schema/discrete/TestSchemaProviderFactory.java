@@ -4,6 +4,7 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
+import com.typesafe.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
  */
 public class TestSchemaProviderFactory implements GraphElementSchemaProviderFactory{
     //region Constructors
-    public TestSchemaProviderFactory(RawElasticSchema schema) {
+    public TestSchemaProviderFactory(Config conf, RawElasticSchema schema) {
         this.schemaProviders = new HashMap<>();
         this.schemaProviders.put("Dragons", new DragonsPhysicalSchemaProvider());
     }
