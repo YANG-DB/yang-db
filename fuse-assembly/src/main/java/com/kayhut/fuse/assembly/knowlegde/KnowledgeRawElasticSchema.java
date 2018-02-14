@@ -4,9 +4,7 @@ import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by lior.perry on 2/11/2018.
@@ -31,6 +29,11 @@ public class KnowledgeRawElasticSchema implements RawElasticSchema {
         return allIndices;
     }
 
+    @Override
+    public Collection<String> types() {
+        return Arrays.asList(ENTITY,ENTITY_VALUE,RELATION,RELATION_VALUE,INSIGHT,REFERENCE);
+    }
+
 
     public String getIdFormat(String type) {
         switch (type) {
@@ -47,7 +50,7 @@ public class KnowledgeRawElasticSchema implements RawElasticSchema {
         return "%08d";
     }
 
-    public IndexPartitions.Impl getPartition(String type) {
+    public IndexPartitions getPartition(String type) {
         switch (type) {
             case ENTITY:
                 return new IndexPartitions.Impl("logicalId", getPartitions(ENTITY));

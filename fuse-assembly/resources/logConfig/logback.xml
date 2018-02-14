@@ -6,7 +6,7 @@
   <conversionRule conversionWord="logType" converterClass="com.kayhut.fuse.dispatcher.logging.LogType$Converter" />
   <conversionRule conversionWord="methodName" converterClass="com.kayhut.fuse.dispatcher.logging.MethodName$Converter" />
   <conversionRule conversionWord="hostName" converterClass="com.kayhut.fuse.dispatcher.logging.HostName$Converter" />
-  <conversionRule conversionWord="requestScope" converterClass="com.kayhut.fuse.dispatcher.logging.RequestScope$Converter" />
+  <conversionRule conversionWord="requestScope" converterClass="com.kayhut.fuse.dispatcher.logging.RequestIdByScope$Converter" />
 
   <!-- appenders -->
   <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">

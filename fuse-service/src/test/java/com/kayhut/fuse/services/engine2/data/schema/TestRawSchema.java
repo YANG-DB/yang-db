@@ -3,6 +3,7 @@ package com.kayhut.fuse.services.engine2.data.schema;
 import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class TestRawSchema implements RawElasticSchema {
     @Override
-    public IndexPartitions.Impl getPartition(String type) {
+    public IndexPartitions getPartition(String type) {
         return new IndexPartitions.Impl(type);
     }
 
@@ -28,5 +29,10 @@ public class TestRawSchema implements RawElasticSchema {
     @Override
     public Iterable<String> indices() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Collection<String> types() {
+        return Collections.EMPTY_SET;
     }
 }
