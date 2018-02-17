@@ -1,7 +1,6 @@
 package com.kayhut.fuse.services.controllers;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -73,9 +72,10 @@ public class StandardCatalogController implements CatalogController {
                             edgeSchema.getLabel(),
                             new GraphElementConstraint.Impl(
                                     new TraversalToString(edgeSchema.getConstraint().getTraversalConstraint().toString())),
-                            edgeSchema.getSource(),
-                            edgeSchema.getDestination(),
+                            edgeSchema.getEndA(),
+                            edgeSchema.getEndB(),
                             edgeSchema.getDirection(),
+                            edgeSchema.getDirectionSchema(),
                             edgeSchema.getRouting(),
                             edgeSchema.getIndexPartitions(),
                             edgeSchema.getProperties(),

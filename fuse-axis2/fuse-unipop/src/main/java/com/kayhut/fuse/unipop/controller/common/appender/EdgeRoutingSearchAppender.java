@@ -28,11 +28,11 @@ public class EdgeRoutingSearchAppender implements SearchAppender<VertexControlle
         //currently assuming only one schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
-        GraphEdgeSchema.End endSchema = edgeSchema.getDirection().isPresent() ?
-                edgeSchema.getSource().get() :
+        GraphEdgeSchema.End endSchema = edgeSchema.getDirectionSchema().isPresent() ?
+                edgeSchema.getEndA().get() :
                 context.getDirection().equals(Direction.OUT) ?
-                    edgeSchema.getSource().get() :
-                    edgeSchema.getDestination().get();
+                    edgeSchema.getEndA().get() :
+                    edgeSchema.getEndB().get();
 
         if (endSchema.getRouting().isPresent()) {
             boolean isRoutingFieldFullyAvailable =

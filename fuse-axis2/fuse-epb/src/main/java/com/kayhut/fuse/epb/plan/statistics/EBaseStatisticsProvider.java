@@ -107,7 +107,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
             GraphElementPropertySchema graphElementPropertySchema;
             if (relProp instanceof RedundantRelProp){
-                graphElementPropertySchema = graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
+                graphElementPropertySchema = graphEdgeSchema.getEndB().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
             }else {
                 graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             }

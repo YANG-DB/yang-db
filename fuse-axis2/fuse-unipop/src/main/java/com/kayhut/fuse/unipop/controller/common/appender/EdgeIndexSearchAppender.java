@@ -34,11 +34,11 @@ public class EdgeIndexSearchAppender implements SearchAppender<VertexControllerC
             return false;
         }
 
-        GraphEdgeSchema.End endSchema = edgeSchema.getDirection().isPresent() ?
-                edgeSchema.getSource().get() :
+        GraphEdgeSchema.End endSchema = edgeSchema.getDirectionSchema().isPresent() ?
+                edgeSchema.getEndA().get() :
                 context.getDirection().equals(Direction.OUT) ?
-                    edgeSchema.getSource().get() :
-                    edgeSchema.getDestination().get();
+                    edgeSchema.getEndA().get() :
+                    edgeSchema.getEndB().get();
 
         if (!endSchema.getIndexPartitions().isPresent()) {
             return false;

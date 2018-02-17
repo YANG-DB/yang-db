@@ -32,10 +32,10 @@ public class DualEdgeDirectionSearchAppender extends SearchQueryAppenderBase<Ver
         Traversal directionConstraint = __.start();
         switch (context.getDirection()) {
             case OUT:
-                    directionConstraint = __.has(edgeSchema.getDirection().get().getField(), edgeSchema.getDirection().get().getOutValue());
+                    directionConstraint = __.has(edgeSchema.getDirectionSchema().get().getField(), edgeSchema.getDirectionSchema().get().getOutValue());
                 break;
             case IN:
-                    directionConstraint = __.has(edgeSchema.getDirection().get().getField(), edgeSchema.getDirection().get().getInValue());
+                    directionConstraint = __.has(edgeSchema.getDirectionSchema().get().getField(), edgeSchema.getDirectionSchema().get().getInValue());
                 break;
         }
 

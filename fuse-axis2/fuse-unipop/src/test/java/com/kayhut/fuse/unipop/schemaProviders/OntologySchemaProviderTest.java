@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,7 +42,7 @@ public class OntologySchemaProviderTest {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
         GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
-        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Dragon");
+        assertEquals(edgeDragonFiresPersonSchema.getEndB().get().getLabel().get(), "Dragon");
 
         List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
         assertEquals(2, indices.size());
@@ -86,7 +87,8 @@ public class OntologySchemaProviderTest {
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 Collections.singletonList("entityB.id"),
                                 Optional.of("Dragon"))),
-                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                        Direction.OUT,
+                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                         new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
         ));
     }

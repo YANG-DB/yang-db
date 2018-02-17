@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Arrays;
@@ -93,6 +94,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                                         new IndexPartitions.Partition.Range.Impl<>("p001", "p005", "dragon1"),
                                         new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "dragon2")))
                         )),
+                        Direction.OUT,
                         Optional.empty(),
                         Optional.empty(),
                         Optional.empty(),

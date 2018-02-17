@@ -149,23 +149,28 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
         return Optional.of(new GraphEdgeSchema.Impl(
                 label,
                 edgeSchema.getConstraint(),
-                edgeSchema.getSource().isPresent() ?
+                edgeSchema.getEndA().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                edgeSchema.getSource().get().getIdFields(),
-                                Optional.of(sourceVertexLabel),
-                                edgeSchema.getSource().get().getRedundantProperties(),
-                                edgeSchema.getSource().get().getRouting(),
-                                edgeSchema.getSource().get().getIndexPartitions())) :
+                                edgeSchema.getEndA().get().getIdFields(),
+                                edgeSchema.getEndA().get().getLabel().isPresent() ?
+                                        edgeSchema.getEndA().get().getLabel() :
+                                        Optional.of(sourceVertexLabel),
+                                edgeSchema.getEndA().get().getRedundantProperties(),
+                                edgeSchema.getEndA().get().getRouting(),
+                                edgeSchema.getEndA().get().getIndexPartitions())) :
                         Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(sourceVertexLabel))),
-                edgeSchema.getDestination().isPresent() ?
+                edgeSchema.getEndB().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                edgeSchema.getDestination().get().getIdFields(),
-                                Optional.of(destinationVertexLabel),
-                                edgeSchema.getDestination().get().getRedundantProperties(),
-                                edgeSchema.getDestination().get().getRouting(),
-                                edgeSchema.getDestination().get().getIndexPartitions())) :
+                                edgeSchema.getEndB().get().getIdFields(),
+                                edgeSchema.getEndB().get().getLabel().isPresent() ?
+                                        edgeSchema.getEndB().get().getLabel() :
+                                        Optional.of(destinationVertexLabel),
+                                edgeSchema.getEndB().get().getRedundantProperties(),
+                                edgeSchema.getEndB().get().getRouting(),
+                                edgeSchema.getEndB().get().getIndexPartitions())) :
                         Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(destinationVertexLabel))),
                 edgeSchema.getDirection(),
+                edgeSchema.getDirectionSchema(),
                 edgeSchema.getRouting(),
                 edgeSchema.getIndexPartitions(),
                 Stream.ofAll(relationshipType.get().getProperties() == null ? Collections.emptyList() : relationshipType.get().getProperties())
@@ -185,12 +190,12 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region Private Methods
     private boolean isEdgeSchemaProperlyDirected(String sourceLabel, String destinationLabel, GraphEdgeSchema schema) {
-        if (schema.getDirection().isPresent()) {
-            List<String> labels = Arrays.asList(schema.getSource().get().getLabel().get(), schema.getDestination().get().getLabel().get());
+        if (schema.getDirectionSchema().isPresent()) {
+            List<String> labels = Arrays.asList(schema.getEndA().get().getLabel().get(), schema.getEndB().get().getLabel().get());
             return labels.contains(sourceLabel) && labels.contains(destinationLabel);
         } else {
-            return schema.getSource().get().getLabel().get().equals(sourceLabel) &&
-                    schema.getDestination().get().getLabel().get().equals(destinationLabel);
+            return schema.getEndA().get().getLabel().get().equals(sourceLabel) &&
+                    schema.getEndB().get().getLabel().get().equals(destinationLabel);
         }
     }
     //endregion

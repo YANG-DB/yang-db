@@ -28,8 +28,8 @@ public class EdgeSourceRoutingSearchAppender  implements SearchAppender<VertexCo
 
         //currently assuming same vertex labels
         String bulkVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
-        GraphEdgeSchema.End otherEndSchema = edgeSchema.getSource().get().getLabel().get().equals(bulkVertexLabel) ?
-                edgeSchema.getDestination().get() : edgeSchema.getSource().get();
+        GraphEdgeSchema.End otherEndSchema = edgeSchema.getEndA().get().getLabel().get().equals(bulkVertexLabel) ?
+                edgeSchema.getEndB().get() : edgeSchema.getEndA().get();
         Optional<GraphVertexSchema> otherVertexScema = context.getSchemaProvider().getVertexSchema(otherEndSchema.getLabel().get());
 
         if (!otherVertexScema.isPresent() || !otherVertexScema.get().getRouting().isPresent()) {

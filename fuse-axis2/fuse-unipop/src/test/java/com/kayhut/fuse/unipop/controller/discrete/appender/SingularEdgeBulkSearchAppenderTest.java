@@ -196,6 +196,7 @@ public class SingularEdgeBulkSearchAppenderTest {
                                         Collections.singletonList("vertexType2Id"),
                                         Optional.of("vertexType2"),
                                         Collections.emptyList())),
+                                Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty()));

@@ -10,7 +10,6 @@ import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -43,7 +42,7 @@ public class EBaseStatisticsProviderRedundantTests {
         when(graphElementSchemaProvider.getVertexLabels()).thenReturn(Arrays.asList("Guild"));
         GraphEdgeSchema ownSchema = mock(GraphEdgeSchema.class);
         when(ownSchema.getIndexPartitions()).thenReturn(Optional.of(new StaticIndexPartitions(Collections.emptyList())));
-        when(ownSchema.getDestination()).thenReturn(Optional.of(
+        when(ownSchema.getEndB()).thenReturn(Optional.of(
                 new GraphEdgeSchema.End.Impl(
                         null,
                         null,

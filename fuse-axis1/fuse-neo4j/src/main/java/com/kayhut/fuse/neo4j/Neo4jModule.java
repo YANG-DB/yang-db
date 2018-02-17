@@ -10,7 +10,7 @@ import org.jooby.Jooby;
 /**
  * Created by User on 23/02/2017.
  */
-public class Neo4jModule implements Jooby.Module {
+/*public class Neo4jModule implements Jooby.Module {
 
     @Override
     public void configure(Env env, Config conf, Binder binder) throws Throwable {
@@ -27,4 +27,4 @@ public class Neo4jModule implements Jooby.Module {
         binder.bind(GraphConfig.class).toInstance(neo4JGraphConfig);
     }
 
-}
+}*/

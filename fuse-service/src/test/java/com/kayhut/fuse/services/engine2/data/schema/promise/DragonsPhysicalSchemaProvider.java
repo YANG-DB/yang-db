@@ -1,10 +1,9 @@
 package com.kayhut.fuse.services.engine2.data.schema.promise;
 
-import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -59,7 +58,8 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
                         ))),
-                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                Direction.OUT,
+                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                 new StaticIndexPartitions(Arrays.asList(
                         FIRE.getName().toLowerCase() + "20170511",
                         FIRE.getName().toLowerCase() + "20170512",

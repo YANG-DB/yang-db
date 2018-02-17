@@ -53,8 +53,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
         List<E> edges = new ArrayList<>();
 
         if (context.getDirection().equals(Direction.OUT)) {
-            GraphEdgeSchema.End outEndSchema = edgeSchema.getSource().get();
-            GraphEdgeSchema.End inEndSchema = edgeSchema.getDestination().get();
+            GraphEdgeSchema.End outEndSchema = edgeSchema.getEndA().get();
+            GraphEdgeSchema.End inEndSchema = edgeSchema.getEndB().get();
 
             Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.sourceAsMap());
             Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.sourceAsMap(), inVertexProperties);
@@ -86,8 +86,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             }
 
         } else {
-            GraphEdgeSchema.End outEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getDestination().get() : edgeSchema.getSource().get();
-            GraphEdgeSchema.End inEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getSource().get() : edgeSchema.getDestination().get();
+            GraphEdgeSchema.End outEndSchema = edgeSchema.getDirectionSchema().isPresent() ? edgeSchema.getEndB().get() : edgeSchema.getEndA().get();
+            GraphEdgeSchema.End inEndSchema = edgeSchema.getDirectionSchema().isPresent() ? edgeSchema.getEndA().get() : edgeSchema.getEndB().get();
 
             Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
             Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);

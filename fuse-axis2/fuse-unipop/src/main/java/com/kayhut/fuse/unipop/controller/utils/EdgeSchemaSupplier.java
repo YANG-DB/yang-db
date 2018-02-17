@@ -3,13 +3,10 @@ package com.kayhut.fuse.unipop.controller.utils;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
-import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -53,10 +50,10 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
         this.stream = this.stream
-                .filter(edgeSchema -> !edgeSchema.getDirection().isPresent())
-                .filter(edgeSchema -> (edgeSchema.getSource().get().getLabel().get().equals(vertexLabel) &&
+                .filter(edgeSchema -> !edgeSchema.getDirectionSchema().isPresent())
+                .filter(edgeSchema -> (edgeSchema.getEndA().get().getLabel().get().equals(vertexLabel) &&
                         (context.getDirection().equals(Direction.OUT) || context.getDirection().equals(Direction.BOTH))) ||
-                        (edgeSchema.getDestination().get().getLabel().get().equals(vertexLabel) &&
+                        (edgeSchema.getEndB().get().getLabel().get().equals(vertexLabel) &&
                                 (context.getDirection().equals(Direction.IN) || context.getDirection().equals(Direction.BOTH))));
         return this;
     }
@@ -66,8 +63,8 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
         this.stream = this.stream
-                .filter(edgeSchema -> edgeSchema.getDirection().isPresent())
-                .filter(edgeSchema -> edgeSchema.getSource().get().getLabel().get().equals(vertexLabel));
+                .filter(edgeSchema -> edgeSchema.getDirectionSchema().isPresent())
+                .filter(edgeSchema -> edgeSchema.getEndA().get().getLabel().get().equals(vertexLabel));
 
         return this;
     }
@@ -77,10 +74,10 @@ public class EdgeSchemaSupplier implements Supplier<Iterable<GraphEdgeSchema>> {
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
         this.stream = this.stream
-                .filter(edgeSchema -> (edgeSchema.getApplications().contains(GraphEdgeSchema.Application.source) &&
-                edgeSchema.getSource().get().getLabel().get().equals(vertexLabel)) ||
-                (edgeSchema.getApplications().contains(GraphEdgeSchema.Application.destination) &&
-                        edgeSchema.getDestination().get().getLabel().get().equals(vertexLabel)));
+                .filter(edgeSchema -> (edgeSchema.getApplications().contains(GraphEdgeSchema.Application.endA) &&
+                edgeSchema.getEndA().get().getLabel().get().equals(vertexLabel)) ||
+                (edgeSchema.getApplications().contains(GraphEdgeSchema.Application.endB) &&
+                        edgeSchema.getEndB().get().getLabel().get().equals(vertexLabel)));
 
         return this;
     }

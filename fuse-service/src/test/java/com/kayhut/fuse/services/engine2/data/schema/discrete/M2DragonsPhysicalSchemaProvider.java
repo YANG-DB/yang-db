@@ -1,18 +1,15 @@
 package com.kayhut.fuse.services.engine2.data.schema.discrete;
 
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.test.data.DragonsOntology.POWER;
 
 /**
  * Created by roman.margolis on 28/09/2017.
@@ -61,7 +58,8 @@ public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvid
                                         new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
                                         new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
                                 ))),
-                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                        Direction.OUT,
+                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                         new StaticIndexPartitions(Arrays.asList(
                                 FIRE.getName().toLowerCase() + "20170511",
                                 FIRE.getName().toLowerCase() + "20170512",
@@ -83,7 +81,8 @@ public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvid
                                         new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
                                         new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
                                 ))),
-                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "OUT", "IN")),
+                        Direction.OUT,
+                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "OUT", "IN")),
                         new StaticIndexPartitions(Arrays.asList("originated_in"))));
         }
         return Optional.empty();

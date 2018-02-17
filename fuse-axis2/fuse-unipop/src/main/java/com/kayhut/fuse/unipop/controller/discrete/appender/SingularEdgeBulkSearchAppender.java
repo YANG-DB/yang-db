@@ -26,9 +26,9 @@ public class SingularEdgeBulkSearchAppender extends SearchQueryAppenderBase<Vert
 
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
-        GraphEdgeSchema.End endSchema = edgeSchema.getSource().get().getLabel().get().equals(vertexLabel) ?
-                edgeSchema.getSource().get() :
-                edgeSchema.getDestination().get();
+        GraphEdgeSchema.End endSchema = edgeSchema.getEndA().get().getLabel().get().equals(vertexLabel) ?
+                edgeSchema.getEndA().get() :
+                edgeSchema.getEndB().get();
 
         String idField = Stream.ofAll(endSchema.getIdFields()).get(0);
 

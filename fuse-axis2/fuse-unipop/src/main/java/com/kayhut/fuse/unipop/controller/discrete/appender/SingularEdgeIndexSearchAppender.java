@@ -37,8 +37,8 @@ public class SingularEdgeIndexSearchAppender implements SearchAppender<VertexCon
         }
 
         GraphEdgeSchema.End endSchema = context.getDirection().equals(Direction.OUT) ?
-                edgeSchema.getSource().get() :
-                edgeSchema.getDestination().get();
+                edgeSchema.getEndA().get() :
+                edgeSchema.getEndB().get();
 
         if (!endSchema.getIndexPartitions().isPresent()) {
             return false;

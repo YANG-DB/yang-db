@@ -46,7 +46,7 @@ public class ConversionUtil {
             case L:
                 return Direction.IN;
             default:
-                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+                throw new IllegalArgumentException("Not Supported Relation DirectionSchema: " + dir);
         }
     }
 

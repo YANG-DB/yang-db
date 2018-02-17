@@ -4,7 +4,6 @@ import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerConte
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
@@ -38,7 +37,7 @@ public class FilterSourceRoutingSearchAppender implements SearchAppender<Composi
                     Stream.ofAll(context.getSchemaProvider().getEdgeLabels())
                     .map(label -> context.getSchemaProvider().getEdgeSchema(label))
                     .filter(Optional::isPresent)
-                    .flatMap(edgeSchema -> Arrays.asList(edgeSchema.get().getSource(), edgeSchema.get().getDestination()))
+                    .flatMap(edgeSchema -> Arrays.asList(edgeSchema.get().getEndA(), edgeSchema.get().getEndB()))
                     .filter(Optional::isPresent)
                     .filter(endSchema -> labels.contains(endSchema.get().getLabel().get()))
                     .filter(endSchema -> endSchema.get().getRouting().isPresent())

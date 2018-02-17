@@ -4,7 +4,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
@@ -25,19 +24,16 @@ import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -246,7 +242,8 @@ public class ElasticStatisticsGraphProviderTest {
                                 Optional.of(new GraphEdgeSchema.End.Impl(
                                         Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(new StaticIndexPartitions(EDGE_INDICES)),
                                 Collections.emptyList()))

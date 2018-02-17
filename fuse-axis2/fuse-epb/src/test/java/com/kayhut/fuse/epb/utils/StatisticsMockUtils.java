@@ -107,7 +107,7 @@ public class StatisticsMockUtils {
             //todo - implement smart
             //Typed etype = (Typed) invocationOnMock.getArguments()[1];
             //EProp eprop = (EProp) invocationOnMock.getArguments()[2];
-            //Direction dir = (Direction) invocationOnMock.getArguments()[3];
+            //DirectionSchema dir = (DirectionSchema) invocationOnMock.getArguments()[3];
 
 
             long cost = statistics.get(PlanMockUtils.NODE_STATISTICS).get(etype.geteType()).longValue();
@@ -120,7 +120,7 @@ public class StatisticsMockUtils {
             //todo - implement smart
             //Typed etype = (Typed) invocationOnMock.getArguments()[2];
             //EPropGroup ePropGroup = (EPropGroup) invocationOnMock.getArguments()[3];
-            Direction dir = (Direction) invocationOnMock.getArguments()[2];
+            DirectionSchema dir = (DirectionSchema) invocationOnMock.getArguments()[2];
 
 
             long estimation = statistics.get(PlanMockUtils.EDGE_STATISTICS).get(rel.getrType()).longValue();

@@ -14,8 +14,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier.*;
-
 /**
  * Created by roman.margolis on 18/09/2017.
  */
@@ -33,8 +31,8 @@ public class SingularEdgeRoutingSearchAppender implements SearchAppender<VertexC
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
         GraphEdgeSchema.End endSchema = context.getDirection().equals(Direction.OUT) ?
-                edgeSchema.getSource().get() :
-                edgeSchema.getDestination().get();
+                edgeSchema.getEndA().get() :
+                edgeSchema.getEndB().get();
 
         if (endSchema.getRouting().isPresent()) {
             boolean isRoutingFieldFullyAvailable =

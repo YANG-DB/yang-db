@@ -23,7 +23,7 @@ public class DragonElasticFileConverter {
 
     public static void main(String args[]) throws IOException {
         if(args.length < 2){
-            System.out.println("Please provide source files folder and destination folder");
+            System.out.println("Please provide endA files folder and endB folder");
             return;
         }
 

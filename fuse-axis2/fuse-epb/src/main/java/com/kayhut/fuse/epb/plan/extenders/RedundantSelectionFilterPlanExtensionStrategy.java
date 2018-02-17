@@ -91,10 +91,10 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
 
         //currently supports only ETyped
         GraphEdgeSchema.End endSchema = lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped ?
-                edgeSchema.get().getSource().get().getLabel().get().equals(vTypes.get(0)) ?
-                        edgeSchema.get().getSource().get() :
-                        edgeSchema.get().getDestination().get() :
-                edgeSchema.get().getDestination().get();
+                edgeSchema.get().getEndA().get().getLabel().get().equals(vTypes.get(0)) ?
+                        edgeSchema.get().getEndA().get() :
+                        edgeSchema.get().getEndB().get() :
+                edgeSchema.get().getEndB().get();
 
         RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEbase().geteBase().clone();
 

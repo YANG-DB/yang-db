@@ -21,7 +21,6 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import javaslang.collection.Stream;
 
@@ -96,10 +95,10 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         //currently supports only ETyped
         GraphEdgeSchema.End endSchema = lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped ?
-                                            edgeSchema.get().getSource().get().getLabel().get().equals(vTypes.get(0)) ?
-                                                edgeSchema.get().getSource().get() :
-                                                edgeSchema.get().getDestination().get() :
-                                            edgeSchema.get().getDestination().get();
+                                            edgeSchema.get().getEndA().get().getLabel().get().equals(vTypes.get(0)) ?
+                                                edgeSchema.get().getEndA().get() :
+                                                edgeSchema.get().getEndB().get() :
+                                            edgeSchema.get().getEndB().get();
 
         if(vTypes.size() > 0){
             Constraint constraint = Constraint.of(ConstraintOp.inSet,
