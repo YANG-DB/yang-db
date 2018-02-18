@@ -212,6 +212,21 @@ public class SingularEdgeBulkSearchAppenderTest {
             }
 
             @Override
+            public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
+                return null;
+            }
+
+            @Override
+            public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+                return null;
+            }
+
+            @Override
+            public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
+                return null;
+            }
+
+            @Override
             public Optional<GraphElementPropertySchema> getPropertySchema(String name) {
                 return null;
             }

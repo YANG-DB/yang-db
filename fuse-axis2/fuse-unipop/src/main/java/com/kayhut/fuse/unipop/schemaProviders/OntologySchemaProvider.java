@@ -3,6 +3,7 @@ package com.kayhut.fuse.unipop.schemaProviders;
 import com.kayhut.fuse.model.ontology.*;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.*;
 
@@ -59,25 +60,22 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             }
         }
 
-        Optional<RelationshipType> relationshipType = $ont.relation(label);
-        if (relationshipType.isPresent()) {
-            List<GraphEdgeSchema> graphEdgeSchemas = new ArrayList<>();
-            List<EPair> verticesPair = relationshipType.get().getePairs();
-            for (EPair ePair : verticesPair) {
-                String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
-                String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
+        return mergeEdgeSchemasWithRelationship(label, edgeSchemas);
+    }
 
-                Stream.ofAll(edgeSchemas)
-                        .filter(schema -> isEdgeSchemaProperlyDirected(eTypeA, eTypeB, schema))
-                        .map(schema -> getRelationSchema(label, eTypeA, eTypeB, schema))
-                        .filter(Optional::isPresent)
-                        .forEach(schema -> graphEdgeSchemas.add(schema.get()));
-            }
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
+        return mergeEdgeSchemasWithRelationship(label, Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, label)));
+    }
 
-            return graphEdgeSchemas;
-        }
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+        return mergeEdgeSchemasWithRelationship(label, Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, label)));
+    }
 
-        return Collections.emptyList();
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
+        return mergeEdgeSchemasWithRelationship(label, Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, label, vertexLabelB)));
     }
 
     @Override
@@ -188,15 +186,38 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     }
     //endregion
 
-    //region Private Methods
-    private boolean isEdgeSchemaProperlyDirected(String sourceLabel, String destinationLabel, GraphEdgeSchema schema) {
-        if (schema.getDirectionSchema().isPresent()) {
-            List<String> labels = Arrays.asList(schema.getEndA().get().getLabel().get(), schema.getEndB().get().getLabel().get());
-            return labels.contains(sourceLabel) && labels.contains(destinationLabel);
-        } else {
-            return schema.getEndA().get().getLabel().get().equals(sourceLabel) &&
-                    schema.getEndB().get().getLabel().get().equals(destinationLabel);
+    private Iterable<GraphEdgeSchema> mergeEdgeSchemasWithRelationship(String label, Iterable<GraphEdgeSchema> edgeSchemas) {
+        Optional<RelationshipType> relationshipType = $ont.relation(label);
+        if (relationshipType.isPresent()) {
+            List<GraphEdgeSchema> graphEdgeSchemas = new ArrayList<>();
+            List<EPair> verticesPair = relationshipType.get().getePairs();
+            for (EPair ePair : verticesPair) {
+                String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
+                String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
+
+                Stream.ofAll(edgeSchemas)
+                        .filter(schema -> isEdgeSchemaProperlyDirected(eTypeA, eTypeB, schema))
+                        .map(schema -> getRelationSchema(label, eTypeA, eTypeB, schema))
+                        .filter(Optional::isPresent)
+                        .forEach(schema -> graphEdgeSchemas.add(schema.get()));
+            }
+
+            return graphEdgeSchemas;
         }
+
+        return Collections.emptyList();
+    }
+
+    private boolean isEdgeSchemaProperlyDirected(String sourceLabel, String destinationLabel, GraphEdgeSchema schema) {
+        String schemaSourceLabel = schema.getDirection().equals(Direction.OUT) ?
+                schema.getEndA().get().getLabel().get() :
+                schema.getEndB().get().getLabel().get();
+
+        String schemaDestinationLabel = schema.getDirection().equals(Direction.OUT) ?
+                schema.getEndB().get().getLabel().get() :
+                schema.getEndA().get().getLabel().get();
+
+        return sourceLabel.equals(schemaSourceLabel) && destinationLabel.equals(schemaDestinationLabel);
     }
     //endregion
 
@@ -270,6 +291,21 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
             }
 
             return schemas;
+        }
+
+        @Override
+        public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
+            return null;
+        }
+
+        @Override
+        public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+            return null;
+        }
+
+        @Override
+        public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
+            return null;
         }
 
         @Override

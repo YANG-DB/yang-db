@@ -1,5 +1,7 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
+import org.apache.tinkerpop.gremlin.structure.Direction;
+
 import java.util.Collections;
 import java.util.Optional;
 
@@ -22,6 +24,21 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
 
     @Override
     public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
         return Collections.emptyList();
     }
 

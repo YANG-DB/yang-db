@@ -6,6 +6,8 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.*;
 
+import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endB;
+
 /**
  * Created by r on 1/16/2015.
  */
@@ -13,8 +15,8 @@ public interface GraphElementSchemaProvider {
     Optional<GraphVertexSchema> getVertexSchema(String label);
 
     Optional<GraphEdgeSchema> getEdgeSchema(String label);
+
     Iterable<GraphEdgeSchema> getEdgeSchemas(String label);
-    
     Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label);
     Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label);
     Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB);
@@ -48,9 +50,9 @@ public interface GraphElementSchemaProvider {
                     Iterable<GraphElementPropertySchema> propertySchemas) {
             this.vertexSchemas = Stream.ofAll(vertexSchemas)
                     .toJavaMap(vertexSchema -> new Tuple2<>(vertexSchema.getLabel(), vertexSchema));
-            this.edgeSchemas = Stream.ofAll(edgeSchemas)
-                    .groupBy(GraphElementSchema::getLabel)
-                    .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
+
+            this.edgeSchemas = complementEdgeSchemas(edgeSchemas);
+
             this.propertySchemas = Stream.ofAll(propertySchemas)
                     .toJavaMap(propertySchema -> new Tuple2<>(propertySchema.getName(), propertySchema));
         }
@@ -74,12 +76,22 @@ public interface GraphElementSchemaProvider {
 
         @Override
         public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-            List<GraphEdgeSchema> edgeSchemas = this.edgeSchemas.get(label);
-            if (edgeSchemas == null) {
-                return Collections.emptyList();
-            }
+            return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(label))).orElseGet(Collections::emptyList);
+        }
 
-            return edgeSchemas;
+        @Override
+        public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
+            return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, label))).orElseGet(Collections::emptyList);
+        }
+
+        @Override
+        public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+            return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label))).orElseGet(Collections::emptyList);
+        }
+
+        @Override
+        public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
+            return Optional.ofNullable(this.edgeSchemas.get(edgeSchemaKey(vertexLabelA, direction.toString(), label, vertexLabelB))).orElseGet(Collections::emptyList);
         }
 
         @Override
@@ -89,12 +101,101 @@ public interface GraphElementSchemaProvider {
 
         @Override
         public Iterable<String> getVertexLabels() {
-            return this.vertexSchemas.keySet();
+            return Stream.ofAll(this.vertexSchemas.values())
+                    .map(GraphElementSchema::getLabel)
+                    .toJavaSet();
         }
 
         @Override
         public Iterable<String> getEdgeLabels() {
-            return this.edgeSchemas.keySet();
+            return Stream.ofAll(this.edgeSchemas.values())
+                    .flatMap(edgeSchemas -> edgeSchemas)
+                    .map(GraphElementSchema::getLabel)
+                    .toJavaSet();
+        }
+        //endregion
+
+        //region
+
+        //region Protected Methods
+        protected Map<String, List<GraphEdgeSchema>> complementEdgeSchemas(Iterable<GraphEdgeSchema> edgeSchemas) {
+            Iterable<GraphEdgeSchema> complementedSchemas =
+                    Stream.ofAll(edgeSchemas)
+                    .flatMap(edgeSchema -> complementEdgeSchema(edgeSchema))
+                    .toJavaList();
+
+            Map<String, List<GraphEdgeSchema>> labelSchemas =
+                    Stream.ofAll(edgeSchemas) // temporary - should be complementedSchemas
+                            .groupBy(edgeSchema -> edgeSchemaKey(edgeSchema.getLabel()))
+                            .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
+
+            Map<String, List<GraphEdgeSchema>> labelALabelSchemas =
+                    Stream.ofAll(complementedSchemas)
+                    .groupBy(edgeSchema -> edgeSchemaKey(edgeSchema.getEndA().get().getLabel().get(), edgeSchema.getLabel()))
+                    .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
+
+            Map<String, List<GraphEdgeSchema>> labelADirLabelSchemas =
+                    Stream.ofAll(complementedSchemas)
+                            .groupBy(edgeSchema -> edgeSchemaKey(
+                                    edgeSchema.getEndA().get().getLabel().get(),
+                                    edgeSchema.getDirection().toString(),
+                                    edgeSchema.getLabel()))
+                            .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
+
+            Map<String, List<GraphEdgeSchema>> labelADirLabelLabelBSchemas =
+                    Stream.ofAll(complementedSchemas)
+                            .groupBy(edgeSchema -> edgeSchemaKey(
+                                    edgeSchema.getEndA().get().getLabel().get(),
+                                    edgeSchema.getDirection().toString(),
+                                    edgeSchema.getLabel(),
+                                    edgeSchema.getEndB().get().getLabel().get()))
+                            .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
+
+            Map<String, List<GraphEdgeSchema>> complementedSchemaMap = new HashMap<>();
+            complementedSchemaMap.putAll(labelSchemas);
+            complementedSchemaMap.putAll(labelALabelSchemas);
+            complementedSchemaMap.putAll(labelADirLabelSchemas);
+            complementedSchemaMap.putAll(labelADirLabelLabelBSchemas);
+            return complementedSchemaMap;
+        }
+
+        protected Iterable<GraphEdgeSchema> complementEdgeSchema(GraphEdgeSchema edgeSchema) {
+            List<GraphEdgeSchema> edgeSchemas = new ArrayList<>();
+            if (edgeSchema.getApplications().contains(GraphEdgeSchema.Application.endA)) {
+                edgeSchemas.add(new GraphEdgeSchema.Impl(
+                        edgeSchema.getLabel(),
+                        edgeSchema.getConstraint(),
+                        edgeSchema.getEndA(),
+                        edgeSchema.getEndB(),
+                        edgeSchema.getDirection(),
+                        edgeSchema.getDirectionSchema(),
+                        edgeSchema.getRouting(),
+                        edgeSchema.getIndexPartitions(),
+                        edgeSchema.getProperties(),
+                        edgeSchema.getApplications()
+                ));
+            }
+
+            if (edgeSchema.getApplications().contains(endB)) {
+                edgeSchemas.add(new GraphEdgeSchema.Impl(
+                        edgeSchema.getLabel(),
+                        edgeSchema.getConstraint(),
+                        edgeSchema.getEndB(),
+                        edgeSchema.getEndA(),
+                        edgeSchema.getDirection().equals(Direction.OUT) ? Direction.IN : Direction.OUT,
+                        edgeSchema.getDirectionSchema(),
+                        edgeSchema.getRouting(),
+                        edgeSchema.getIndexPartitions(),
+                        edgeSchema.getProperties(),
+                        edgeSchema.getApplications()
+                ));
+            }
+
+            return edgeSchemas;
+        }
+
+        protected String edgeSchemaKey(String...parts) {
+            return String.join(".", Stream.of(parts));
         }
         //endregion
 
