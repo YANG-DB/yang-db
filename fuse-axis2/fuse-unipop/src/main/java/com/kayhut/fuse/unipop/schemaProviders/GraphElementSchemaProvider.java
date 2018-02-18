@@ -2,6 +2,7 @@ package com.kayhut.fuse.unipop.schemaProviders;
 
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.*;
 
@@ -13,6 +14,10 @@ public interface GraphElementSchemaProvider {
 
     Optional<GraphEdgeSchema> getEdgeSchema(String label);
     Iterable<GraphEdgeSchema> getEdgeSchemas(String label);
+    
+    Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label);
+    Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label);
+    Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB);
 
     Optional<GraphElementPropertySchema> getPropertySchema(String name);
 
