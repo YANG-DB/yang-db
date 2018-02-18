@@ -131,11 +131,15 @@ public interface GraphElementSchemaProvider {
 
             Map<String, List<GraphEdgeSchema>> labelALabelSchemas =
                     Stream.ofAll(complementedSchemas)
-                    .groupBy(edgeSchema -> edgeSchemaKey(edgeSchema.getEndA().get().getLabel().get(), edgeSchema.getLabel()))
-                    .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
+                            .filter(edgeSchema -> edgeSchema.getEndA().isPresent())
+                            .filter(edgeSchema -> edgeSchema.getEndA().get().getLabel().isPresent())
+                            .groupBy(edgeSchema -> edgeSchemaKey(edgeSchema.getEndA().get().getLabel().get(), edgeSchema.getLabel()))
+                            .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
 
             Map<String, List<GraphEdgeSchema>> labelADirLabelSchemas =
                     Stream.ofAll(complementedSchemas)
+                            .filter(edgeSchema -> edgeSchema.getEndA().isPresent())
+                            .filter(edgeSchema -> edgeSchema.getEndA().get().getLabel().isPresent())
                             .groupBy(edgeSchema -> edgeSchemaKey(
                                     edgeSchema.getEndA().get().getLabel().get(),
                                     edgeSchema.getDirection().toString(),
@@ -144,6 +148,10 @@ public interface GraphElementSchemaProvider {
 
             Map<String, List<GraphEdgeSchema>> labelADirLabelLabelBSchemas =
                     Stream.ofAll(complementedSchemas)
+                            .filter(edgeSchema -> edgeSchema.getEndA().isPresent())
+                            .filter(edgeSchema -> edgeSchema.getEndA().get().getLabel().isPresent())
+                            .filter(edgeSchema -> edgeSchema.getEndB().isPresent())
+                            .filter(edgeSchema -> edgeSchema.getEndB().get().getLabel().isPresent())
                             .groupBy(edgeSchema -> edgeSchemaKey(
                                     edgeSchema.getEndA().get().getLabel().get(),
                                     edgeSchema.getDirection().toString(),

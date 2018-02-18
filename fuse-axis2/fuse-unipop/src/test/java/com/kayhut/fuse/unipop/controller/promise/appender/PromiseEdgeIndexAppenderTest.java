@@ -492,7 +492,7 @@ public class PromiseEdgeIndexAppenderTest{
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
+        return new OntologySchemaProvider(ontology, new GraphElementSchemaProvider.Impl(
                 Collections.emptyList(),
                 Arrays.asList(
                         new GraphEdgeSchema.Impl(STATIC_INDEX_EDGE, new StaticIndexPartitions(STATIC_INDEX_NAMES)),

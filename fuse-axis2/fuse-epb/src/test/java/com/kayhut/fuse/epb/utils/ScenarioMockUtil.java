@@ -253,7 +253,7 @@ public class ScenarioMockUtil {
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(this.ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(this.ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 
