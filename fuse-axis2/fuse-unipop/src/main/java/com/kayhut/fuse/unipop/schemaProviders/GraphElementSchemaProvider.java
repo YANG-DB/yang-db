@@ -12,9 +12,9 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
  * Created by r on 1/16/2015.
  */
 public interface GraphElementSchemaProvider {
-    Optional<GraphVertexSchema> getVertexSchema(String label);
+    Iterable<GraphVertexSchema> getVertexSchemas(String label);
 
-    Optional<GraphEdgeSchema> getEdgeSchema(String label);
+    //Optional<GraphEdgeSchema> getEdgeSchema(String label);
 
     Iterable<GraphEdgeSchema> getEdgeSchemas(String label);
     Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label);
@@ -28,7 +28,7 @@ public interface GraphElementSchemaProvider {
 
     default Iterable<GraphVertexSchema> getVertexSchemas() {
         return Stream.ofAll(getVertexLabels())
-                .map(label -> getVertexSchema(label).get())
+                .flatMap(this::getVertexSchemas)
                 .toJavaList();
     }
 
@@ -49,7 +49,8 @@ public interface GraphElementSchemaProvider {
                     Iterable<GraphEdgeSchema> edgeSchemas,
                     Iterable<GraphElementPropertySchema> propertySchemas) {
             this.vertexSchemas = Stream.ofAll(vertexSchemas)
-                    .toJavaMap(vertexSchema -> new Tuple2<>(vertexSchema.getLabel(), vertexSchema));
+                    .groupBy(GraphElementSchema::getLabel)
+                    .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
 
             this.edgeSchemas = complementEdgeSchemas(edgeSchemas);
 
@@ -60,18 +61,8 @@ public interface GraphElementSchemaProvider {
 
         //region GraphElementSchemaProvider Implementation
         @Override
-        public Optional<GraphVertexSchema> getVertexSchema(String label) {
-            return Optional.ofNullable(this.vertexSchemas.get(label));
-        }
-
-        @Override
-        public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-            List<GraphEdgeSchema> edgeSchemas = this.edgeSchemas.get(label);
-            if (edgeSchemas == null || edgeSchemas.isEmpty()) {
-                return Optional.empty();
-            }
-
-            return Optional.of(edgeSchemas.get(0));
+        public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
+            return Optional.ofNullable(this.vertexSchemas.get(label)).orElseGet(Collections::emptyList);
         }
 
         @Override
@@ -102,6 +93,7 @@ public interface GraphElementSchemaProvider {
         @Override
         public Iterable<String> getVertexLabels() {
             return Stream.ofAll(this.vertexSchemas.values())
+                    .flatMap(vertexSchemas ->vertexSchemas)
                     .map(GraphElementSchema::getLabel)
                     .toJavaSet();
         }
@@ -208,7 +200,7 @@ public interface GraphElementSchemaProvider {
         //endregion
 
         //region Fields
-        private Map<String, GraphVertexSchema> vertexSchemas;
+        private Map<String, List<GraphVertexSchema>> vertexSchemas;
         private Map<String, List<GraphEdgeSchema>> edgeSchemas;
         private Map<String, GraphElementPropertySchema> propertySchemas;
         //endregion

@@ -16,33 +16,34 @@ import static com.kayhut.fuse.model.OntologyTestUtils.*;
  */
 public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider {
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String label) {
+    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
         if (!Stream.ofAll(getVertexLabels()).contains(label)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
         switch (label) {
             case "Person":
             case "Dragon":
             case "Kingdom":
-                return Optional.of(new GraphVertexSchema.Impl(label, new StaticIndexPartitions(label.toLowerCase())));
+                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions(label.toLowerCase())));
 
             case "Horse":
             case "Guild":
-                return Optional.of(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
+                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
         }
 
-        return Optional.empty();
+        return Collections.emptyList();
     }
 
     @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
         if (!Stream.ofAll(getEdgeLabels()).contains(label)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
+
         switch(label) {
             case "fire":
-                return Optional.of(new GraphEdgeSchema.Impl(
+                return Collections.singletonList(new GraphEdgeSchema.Impl(
                         label,
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 Collections.singletonList("entityA.id"),
@@ -65,7 +66,7 @@ public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvid
                                 FIRE.getName().toLowerCase() + "20170512",
                                 FIRE.getName().toLowerCase() + "20170513"))));
             case "originatedIn":
-                return Optional.of(new GraphEdgeSchema.Impl(
+                return Collections.singletonList(new GraphEdgeSchema.Impl(
                         label,
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 Collections.singletonList("entityA.id"),
@@ -85,16 +86,6 @@ public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvid
                         Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "OUT", "IN")),
                         new StaticIndexPartitions(Arrays.asList("originated_in"))));
         }
-        return Optional.empty();
-    }
-
-    @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-        Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
-        if (graphEdgeSchema.isPresent()) {
-            return Collections.singletonList(graphEdgeSchema.get());
-        }
-
         return Collections.emptyList();
     }
 

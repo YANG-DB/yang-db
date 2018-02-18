@@ -1,7 +1,6 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.kayhut.fuse.model.ontology.*;
-import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 
@@ -24,43 +23,17 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region GraphElementSchemaProvider implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String label) {
-        Optional<GraphVertexSchema> vertexSchema = this.schemaProvider.getVertexSchema(label);
-        return vertexSchema.flatMap(graphVertexSchema -> getEntitySchema(label, graphVertexSchema));
-
-    }
-
-    @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-        Optional<GraphEdgeSchema> edgeSchema = this.schemaProvider.getEdgeSchema(label);
-        if (!edgeSchema.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<RelationshipType> relationshipType = $ont.relation(label);
-        if (relationshipType.isPresent()) {
-            EPair ePair = relationshipType.get().getePairs().get(0);
-            String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
-            String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
-            return getRelationSchema(label, eTypeA, eTypeB, edgeSchema.get());
-        }
-
-        return Optional.empty();
+    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
+        return Stream.ofAll(this.schemaProvider.getVertexSchemas(label))
+                .map(vertexSchema -> getEntitySchema(label, vertexSchema))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
     }
 
     @Override
     public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-        Iterable<GraphEdgeSchema> edgeSchemas = this.schemaProvider.getEdgeSchemas(label);
-        if (Stream.ofAll(edgeSchemas).isEmpty()) {
-            Optional<GraphEdgeSchema> edgeSchema = this.schemaProvider.getEdgeSchema(label);
-            if (edgeSchema.isPresent()) {
-                edgeSchemas = Collections.singletonList(edgeSchema.get());
-            } else {
-                return Collections.emptyList();
-            }
-        }
-
-        return mergeEdgeSchemasWithRelationship(label, edgeSchemas);
+        return mergeEdgeSchemasWithRelationship(label, this.schemaProvider.getEdgeSchemas(label));
     }
 
     @Override

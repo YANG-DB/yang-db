@@ -178,37 +178,31 @@ public class SingularEdgeBulkSearchAppenderTest {
     private GraphElementSchemaProvider getSchemaProvider() {
         return new GraphElementSchemaProvider() {
             @Override
-            public Optional<GraphVertexSchema> getVertexSchema(String label) {
-                return null;
-            }
-
-            @Override
-            public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-                switch (label) {
-                    case "edgeType1":
-                        return Optional.of(new GraphEdgeSchema.Impl(
-                                "edgeType1",
-                                Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("vertexType1Id"),
-                                        Optional.of("vertexType1"),
-                                        Collections.emptyList())),
-                                Optional.of(new GraphEdgeSchema.End.Impl(
-                                        Collections.singletonList("vertexType2Id"),
-                                        Optional.of("vertexType2"),
-                                        Collections.emptyList())),
-                                Direction.OUT,
-                                Optional.empty(),
-                                Optional.empty(),
-                                Optional.empty()));
-                }
-
-                return Optional.empty();
+            public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
+                return Collections.emptyList();
             }
 
             @Override
             public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-                Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
-                return graphEdgeSchema.map(Collections::singletonList).orElseGet(Collections::emptyList);
+                if (label.equals("edgeType1")) {
+                    return Collections.singletonList(
+                            new GraphEdgeSchema.Impl(
+                                    "edgeType1",
+                                    Optional.of(new GraphEdgeSchema.End.Impl(
+                                            Collections.singletonList("vertexType1Id"),
+                                            Optional.of("vertexType1"),
+                                            Collections.emptyList())),
+                                    Optional.of(new GraphEdgeSchema.End.Impl(
+                                            Collections.singletonList("vertexType2Id"),
+                                            Optional.of("vertexType2"),
+                                            Collections.emptyList())),
+                                    Direction.OUT,
+                                    Optional.empty(),
+                                    Optional.empty(),
+                                    Optional.empty()));
+                } else {
+                    return Collections.emptyList();
+                }
             }
 
             @Override

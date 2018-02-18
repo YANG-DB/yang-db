@@ -55,7 +55,7 @@ public class ElasticStatisticsGraphProviderTest {
     public void getVertexCardinality() throws Exception {
         Ontology.Accessor ont = new Ontology.Accessor(getOntology());
         GraphElementSchemaProvider schemaProvider = buildSchemaProvider(ont);
-        GraphVertexSchema vertexDragonSchema = schemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
+        GraphVertexSchema vertexDragonSchema = Stream.ofAll(schemaProvider.getVertexSchemas(DATA_TYPE_DRAGON)).get(0);
 
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
                 new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig)),

@@ -92,7 +92,7 @@ public class StatisticalCostEstimatorTests {
 
         });
         when(graphEdgeSchema.getEndB()).thenReturn(Optional.of(edgeEnd));
-        when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(graphEdgeSchema));
+        when(graphElementSchemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(graphEdgeSchema));
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
     }
 

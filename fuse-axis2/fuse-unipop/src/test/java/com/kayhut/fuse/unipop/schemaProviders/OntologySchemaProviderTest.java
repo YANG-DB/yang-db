@@ -27,7 +27,7 @@ public class OntologySchemaProviderTest {
     public void getVertexSchema() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
+        GraphVertexSchema vertexPersonSchema = Stream.ofAll(ontologySchemaProvider.getVertexSchemas("Person")).get(0);
 
         assertEquals(vertexPersonSchema.getConstraint().getTraversalConstraint(), __.has(T.label, "Person"));
         List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
@@ -41,7 +41,7 @@ public class OntologySchemaProviderTest {
     public void getEdgeSchema() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
+        GraphEdgeSchema edgeDragonFiresPersonSchema = Stream.ofAll(ontologySchemaProvider.getEdgeSchemas("Fire")).get(0);
         assertEquals(edgeDragonFiresPersonSchema.getEndB().get().getLabel().get(), "Dragon");
 
         List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
@@ -63,7 +63,7 @@ public class OntologySchemaProviderTest {
     public void vertexPropertiesTest(){
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphVertexSchema person = ontologySchemaProvider.getVertexSchema("Person").get();
+        GraphVertexSchema person = Stream.ofAll(ontologySchemaProvider.getVertexSchemas("Person")).get(0);
         GraphElementPropertySchema name = person.getProperty("name").get();
         Assert.assertEquals(name.getName(), "name");
     }

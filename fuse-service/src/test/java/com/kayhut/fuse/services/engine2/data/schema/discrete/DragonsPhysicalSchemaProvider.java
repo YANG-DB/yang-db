@@ -21,14 +21,14 @@ import static com.kayhut.test.data.DragonsOntology.POWER;
 public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider {
     //region GraphElementSchemaProvider Implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String label) {
+    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
         if (!Stream.ofAll(getVertexLabels()).contains(label)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
         switch (label) {
             case "Person":
-                return Optional.of(new GraphVertexSchema.Impl(
+                return Collections.singletonList(new GraphVertexSchema.Impl(
                         label,
                         Optional.empty(),
                         Optional.of(new IndexPartitions.Impl("_id",
@@ -36,7 +36,7 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                                 new IndexPartitions.Partition.Range.Impl<>("p005", "p010", "person2")))
                 ));
             case "Dragon":
-                return Optional.of(new GraphVertexSchema.Impl(
+                return Collections.singletonList(new GraphVertexSchema.Impl(
                         label,
                         Optional.of(new GraphElementRouting.Impl(
                                 new GraphElementPropertySchema.Impl("personId", "string")
@@ -49,21 +49,21 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
             case "Kingdom":
             case "Horse":
             case "Guild":
-                return Optional.of(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
+                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
         }
 
-        return Optional.empty();
+        return Collections.emptyList();
     }
 
     @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
         if (!Stream.ofAll(getEdgeLabels()).contains(label)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
         switch (label) {
             case "own":
-                return Optional.of(new GraphEdgeSchema.Impl(
+                return Collections.singletonList(new GraphEdgeSchema.Impl(
                         "own",
                         new GraphElementConstraint.Impl(__.has(T.label, "Dragon")),
                         Optional.of(new GraphEdgeSchema.End.Impl(
@@ -101,21 +101,12 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                         Collections.emptyList()
                 ));
 
-            default: return Optional.of(new GraphEdgeSchema.Impl(
-                    label,
-                    new StaticIndexPartitions()
-            ));
+            default:
+                return Collections.singletonList(new GraphEdgeSchema.Impl(
+                        label,
+                        new StaticIndexPartitions()
+                ));
         }
-    }
-
-    @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-        Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
-        if (graphEdgeSchema.isPresent()) {
-            return Collections.singletonList(graphEdgeSchema.get());
-        }
-
-        return Collections.emptyList();
     }
 
     @Override

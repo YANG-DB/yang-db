@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -22,11 +23,10 @@ public class FilterSourceRoutingSearchAppender implements SearchAppender<Composi
         Set<String> labels = getContextRelevantLabels(context);
 
         Set<String> routingFields = Stream.ofAll(labels)
-                .map(label -> context.getElementType().equals(ElementType.vertex) ?
-                        context.getSchemaProvider().getVertexSchema(label) :
-                        context.getSchemaProvider().getEdgeSchema(label))
-                .filter(Optional::isPresent)
-                .map(schema -> schema.get().getRouting())
+                .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
+                        context.getSchemaProvider().getVertexSchemas(label) :
+                        context.getSchemaProvider().getEdgeSchemas(label))
+                .map(GraphElementSchema::getRouting)
                 .filter(Optional::isPresent)
                 .map(routing -> routing.get().getRoutingProperty().getName())
                 .toJavaSet();
@@ -35,9 +35,8 @@ public class FilterSourceRoutingSearchAppender implements SearchAppender<Composi
         if (context.getElementType().equals(ElementType.vertex)) {
             routingFields.addAll(
                     Stream.ofAll(context.getSchemaProvider().getEdgeLabels())
-                    .map(label -> context.getSchemaProvider().getEdgeSchema(label))
-                    .filter(Optional::isPresent)
-                    .flatMap(edgeSchema -> Arrays.asList(edgeSchema.get().getEndA(), edgeSchema.get().getEndB()))
+                    .flatMap(label -> context.getSchemaProvider().getEdgeSchemas(label))
+                    .flatMap(edgeSchema -> Arrays.asList(edgeSchema.getEndA(), edgeSchema.getEndB()))
                     .filter(Optional::isPresent)
                     .filter(endSchema -> labels.contains(endSchema.get().getLabel().get()))
                     .filter(endSchema -> endSchema.get().getRouting().isPresent())

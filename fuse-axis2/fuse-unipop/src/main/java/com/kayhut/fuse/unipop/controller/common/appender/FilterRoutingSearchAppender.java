@@ -2,12 +2,9 @@ package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.ElementUtil;
-import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
@@ -24,16 +21,19 @@ public class FilterRoutingSearchAppender implements SearchAppender<VertexControl
         // currently assuming homogeneous vertex bulk
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
-        Optional<GraphVertexSchema> vertexSchema = context.getSchemaProvider().getVertexSchema(vertexLabel);
-        if (!vertexSchema.isPresent()) {
+        Iterable<GraphVertexSchema> vertexSchemas = context.getSchemaProvider().getVertexSchemas(vertexLabel);
+        if (Stream.ofAll(vertexSchemas).isEmpty()) {
             return false;
         }
 
-        if (vertexSchema.get().getRouting().isPresent()) {
+        // currently supports a single vertex schema
+        GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+
+        if (vertexSchema.getRouting().isPresent()) {
             boolean isRoutingFieldFullyAvailable =
                     Stream.ofAll(context.getBulkVertices())
                             .map(vertex -> ElementUtil.<String>value(vertex,
-                                    translateRoutingPropertyName(vertexSchema.get().getRouting().get().getRoutingProperty().getName())))
+                                    translateRoutingPropertyName(vertexSchema.getRouting().get().getRoutingProperty().getName())))
                             .filter(value -> !value.isPresent())
                             .size() == 0;
 
@@ -42,7 +42,7 @@ public class FilterRoutingSearchAppender implements SearchAppender<VertexControl
                routingValues =
                         Stream.ofAll(context.getBulkVertices())
                                 .map(vertex -> ElementUtil.<String>value(vertex,
-                                        translateRoutingPropertyName(vertexSchema.get().getRouting().get().getRoutingProperty().getName())))
+                                        translateRoutingPropertyName(vertexSchema.getRouting().get().getRoutingProperty().getName())))
                                 .filter(Optional::isPresent)
                                 .map(Optional::get)
                                 .toJavaSet();

@@ -22,6 +22,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -34,6 +35,8 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Elad on 5/24/2017.
  */
+
+// These tests are no longer relevant and are candidates for removal
 public class PromiseEdgeIndexAppenderTest{
 
     private final String STATIC_INDEX_EDGE = "edge_no_ts";
@@ -42,6 +45,7 @@ public class PromiseEdgeIndexAppenderTest{
     private final List<String> TIME_SERIES_INDEX_NAMES = Lists.newArrayList("ts_2017-01","ts_2017-02","ts_2017-03","ts_2017-04","ts_2017-05","ts_2017-06");
 
     @Test
+    @Ignore
     public void appendTest_ConstraintLabelOnly_StaticIndex() {
 
         Ontology ontology = getOntology();
@@ -61,6 +65,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintLabelOnly_TSIndex() throws ParseException {
 
         Ontology ontology = getOntology();
@@ -80,6 +85,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintEqTime_TSIndex() throws ParseException {
 
         Date date = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/01/2017");
@@ -103,6 +109,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintNEqTime_TSIndex() throws ParseException {
 
         Date date = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/01/2017");
@@ -126,6 +133,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintGTTime_TSIndex() throws ParseException {
 
         Date date = (new SimpleDateFormat("MM/dd/yyyy")).parse("03/13/2017");
@@ -149,6 +157,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintGTETime_TSIndex() throws ParseException {
 
         Date date = (new SimpleDateFormat("MM/dd/yyyy")).parse("03/13/2017");
@@ -172,6 +181,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintLTTime_TSIndex() throws ParseException {
 
         Date date = (new SimpleDateFormat("MM/dd/yyyy")).parse("03/13/2017");
@@ -195,6 +205,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintLTETime_TSIndex() throws ParseException {
 
         Date date = (new SimpleDateFormat("MM/dd/yyyy")).parse("03/13/2017");
@@ -218,6 +229,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintWithinTime_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/13/2017");
@@ -243,6 +255,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintWithoutTime_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("01/13/2017");
@@ -268,6 +281,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintBetweenTime_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
@@ -292,6 +306,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintOutsideTime_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
@@ -316,6 +331,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintMultipleBetweenTime_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
@@ -349,6 +365,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintMultipleOutsideTime_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
@@ -383,6 +400,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintComplex1Time_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
@@ -416,6 +434,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintComplex2Time_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");
@@ -449,6 +468,7 @@ public class PromiseEdgeIndexAppenderTest{
     }
 
     @Test
+    @Ignore
     public void appendTest_ConstraintComplex3Time_TSIndex() throws ParseException {
 
         Date date1 = (new SimpleDateFormat("MM/dd/yyyy")).parse("02/13/2017");

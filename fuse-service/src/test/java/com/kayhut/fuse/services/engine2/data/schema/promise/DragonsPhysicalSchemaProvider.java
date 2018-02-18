@@ -17,32 +17,32 @@ import static com.kayhut.fuse.model.OntologyTestUtils.*;
 public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider {
     //region GraphElementSchemaProvider Implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String label) {
+    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
         if (!Stream.ofAll(getVertexLabels()).contains(label)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
         switch (label) {
             case "Person":
             case "Dragon":
-                return Optional.of(new GraphVertexSchema.Impl(label, new StaticIndexPartitions(label.toLowerCase())));
+                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions(label.toLowerCase())));
 
             case "Kingdom":
             case "Horse":
             case "Guild":
-                return Optional.of(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
+                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
         }
 
-        return Optional.empty();
+        return Collections.emptyList();
     }
 
     @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
         if (!Stream.ofAll(getEdgeLabels()).contains(label)) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
 
-        return Optional.of(new GraphEdgeSchema.Impl(
+        return Collections.singletonList(new GraphEdgeSchema.Impl(
                 label,
                 Optional.of(new GraphEdgeSchema.End.Impl(
                         Collections.singletonList("entityA.id"),
@@ -64,16 +64,6 @@ public class DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider
                         FIRE.getName().toLowerCase() + "20170511",
                         FIRE.getName().toLowerCase() + "20170512",
                         FIRE.getName().toLowerCase() + "20170513"))));
-    }
-
-    @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-        Optional<GraphEdgeSchema> graphEdgeSchema = getEdgeSchema(label);
-        if (graphEdgeSchema.isPresent()) {
-            return Collections.singletonList(graphEdgeSchema.get());
-        }
-
-        return Collections.emptyList();
     }
 
     @Override

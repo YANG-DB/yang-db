@@ -23,20 +23,29 @@ public class EdgeSourceRoutingSearchAppender  implements SearchAppender<VertexCo
             return false;
         }
 
+        //currently assuming same vertex labels
+        String bulkVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+
         //currently assuming only one relevant schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
-        //currently assuming same vertex labels
-        String bulkVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
         GraphEdgeSchema.End otherEndSchema = edgeSchema.getEndA().get().getLabel().get().equals(bulkVertexLabel) ?
-                edgeSchema.getEndB().get() : edgeSchema.getEndA().get();
-        Optional<GraphVertexSchema> otherVertexScema = context.getSchemaProvider().getVertexSchema(otherEndSchema.getLabel().get());
+                edgeSchema.getEndB().get() :
+                edgeSchema.getEndA().get();
 
-        if (!otherVertexScema.isPresent() || !otherVertexScema.get().getRouting().isPresent()) {
+        Iterable<GraphVertexSchema> otherVertexSchemas = context.getSchemaProvider().getVertexSchemas(otherEndSchema.getLabel().get());
+
+        if (!Stream.ofAll(otherVertexSchemas).isEmpty()) {
             return false;
         }
 
-        GraphElementPropertySchema routingProperty = otherVertexScema.get().getRouting().get().getRoutingProperty();
+        GraphVertexSchema otherVertexSchema = Stream.ofAll(otherVertexSchemas).get(0);
+        if (!otherVertexSchema.getRouting().isPresent()) {
+            return false;
+        }
+
+
+        GraphElementPropertySchema routingProperty = otherVertexSchema.getRouting().get().getRoutingProperty();
         Optional<GraphRedundantPropertySchema> redundnatRoutingProperty = otherEndSchema.getRedundantProperty(routingProperty);
         if (!redundnatRoutingProperty.isPresent()) {
             return false;

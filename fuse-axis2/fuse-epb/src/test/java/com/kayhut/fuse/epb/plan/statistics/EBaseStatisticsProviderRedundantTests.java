@@ -59,8 +59,8 @@ public class EBaseStatisticsProviderRedundantTests {
                         new GraphElementPropertySchema.Impl("firstName", "string"),
                         new GraphElementPropertySchema.Impl("lastName", "string")));
 
-        when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(ownSchema));
-        when(graphElementSchemaProvider.getVertexSchema(any())).thenReturn(Optional.of(graphVertexSchema));
+        when(graphElementSchemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(ownSchema));
+        when(graphElementSchemaProvider.getVertexSchemas(any())).thenReturn(Collections.singletonList(graphVertexSchema));
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(1000,1000));

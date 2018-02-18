@@ -13,13 +13,8 @@ public class EmptyGraphElementSchemaProvider implements GraphElementSchemaProvid
 
     //region GraphElementSchemaProvider Implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String label) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-        return Optional.empty();
+    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
+        return Collections.emptyList();
     }
 
     @Override

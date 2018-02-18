@@ -42,12 +42,10 @@ public class PromiseConstraintSearchAppender implements SearchAppender<Composite
 
         List<GraphElementConstraint> elementConstraints = context.getElementType().equals(ElementType.vertex) ?
                 Stream.ofAll(labels)
-                        .map(label -> context.getSchemaProvider().getVertexSchema(label))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
+                        .flatMap(label -> context.getSchemaProvider().getVertexSchemas(label))
                         .map(GraphElementSchema::getConstraint)
                         .toJavaList() :
-                Stream.ofAll(new EdgeSchemaSupplier((VertexControllerContext)context).labels().applicable().get())
+                Stream.ofAll(new EdgeSchemaSupplier(context).labels().applicable().get())
                     .map(GraphElementSchema::getConstraint)
                     .toJavaList();
 
