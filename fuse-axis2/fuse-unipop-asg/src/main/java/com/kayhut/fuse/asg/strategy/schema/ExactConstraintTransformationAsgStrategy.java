@@ -39,7 +39,7 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
 
         this.includedOps = Stream.of(ConstraintOp.eq, ConstraintOp.ne, ConstraintOp.gt,
                 ConstraintOp.ge, ConstraintOp.lt, ConstraintOp.le, ConstraintOp.empty, ConstraintOp.notEmpty,
-                ConstraintOp.inSet, ConstraintOp.notInSet, ConstraintOp.inRange, ConstraintOp.notInRange)
+                ConstraintOp.inSet, ConstraintOp.notInSet, ConstraintOp.inRange, ConstraintOp.notInRange, ConstraintOp.likeAny)
                 .toJavaSet();
     }
     //endregion

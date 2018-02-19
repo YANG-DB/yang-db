@@ -9,13 +9,22 @@ import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
+import javaslang.collection.Stream;
 
 import java.util.*;
+
+import static com.kayhut.fuse.model.query.ConstraintOp.*;
 
 /**
  * Created by benishue on 09-May-17.
  */
 public class ConstraintTypeTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
+    //region Constructors
+    public ConstraintTypeTransformationAsgStrategy() {
+        this.singleValueOps = Stream.of(eq, ne, gt, ge, lt, le, contains, startsWith, notContains, notStartsWith, notEndsWith,
+                fuzzyEq, fuzzyNe, match, notMatch, empty, notEmpty).toJavaSet();
+    }
+    //endregion
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
@@ -52,30 +61,13 @@ public class ConstraintTypeTransformationAsgStrategy extends ConstraintTransform
         }
     }
 
-    private boolean isSingleElementOp(ConstraintOp op)
-    {
-        if (op == ConstraintOp.eq ||
-            op == ConstraintOp.ne ||
-            op == ConstraintOp.gt ||
-            op == ConstraintOp.ge ||
-            op == ConstraintOp.lt ||
-            op == ConstraintOp.le ||
-            op == ConstraintOp.contains ||
-            op == ConstraintOp.startsWith ||
-            op == ConstraintOp.notContains ||
-            op == ConstraintOp.notStartsWith ||
-            op == ConstraintOp.notEndsWith ||
-            op == ConstraintOp.fuzzyEq ||
-            op == ConstraintOp.fuzzyNe ||
-            op == ConstraintOp.match ||
-            op == ConstraintOp.notMatch ||
-            op == ConstraintOp.empty ||
-            op == ConstraintOp.notEmpty
-            ) {
-            return true;
-        }
-        return false;
+    private boolean isSingleElementOp(ConstraintOp op) {
+        return singleValueOps.contains(op);
     }
+    //endregion
+
+    //region Fields
+    private Set<ConstraintOp> singleValueOps;
     //endregion
 
 }
