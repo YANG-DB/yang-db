@@ -152,7 +152,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 edgeSchema.getSource().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 edgeSchema.getSource().get().getIdFields(),
-                                Optional.of(sourceVertexLabel),
+                                Optional.of(edgeSchema.getSource().get().getLabel().get()),
                                 edgeSchema.getSource().get().getRedundantProperties(),
                                 edgeSchema.getSource().get().getRouting(),
                                 edgeSchema.getSource().get().getIndexPartitions())) :
@@ -160,7 +160,7 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
                 edgeSchema.getDestination().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
                                 edgeSchema.getDestination().get().getIdFields(),
-                                Optional.of(destinationVertexLabel),
+                                Optional.of(edgeSchema.getDestination().get().getLabel().get()),
                                 edgeSchema.getDestination().get().getRedundantProperties(),
                                 edgeSchema.getDestination().get().getRouting(),
                                 edgeSchema.getDestination().get().getIndexPartitions())) :

@@ -92,6 +92,15 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
             }
         }
 
+        // THIS IS A TEMPORARY PATCH!!!
+        /*Set<String> vTypeNames = Stream.ofAll(vTypes).map(vType -> $ont.$entity$(vType).getName()).toJavaSet();
+        Optional<GraphEdgeSchema> edgeSchema = Stream.ofAll(edgeSchemas)
+                .filter(edgeSchema1 -> edgeSchema1.getDirection().isPresent() ?
+                        vTypeNames.contains(edgeSchema1.getSource().get().getLabel().get()) :
+                        true)
+                .toJavaOptional();*/
+        // THIS IS A TEMPORARY PATCH!!!
+
         RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEbase().geteBase().clone();
 
         //currently supports only ETyped
