@@ -4,20 +4,15 @@ import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
-import com.kayhut.fuse.unipop.promise.Promise;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
-import com.kayhut.fuse.unipop.structure.promise.PromiseFilterEdge;
-import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.search.SearchHit;
-import org.unipop.structure.UniGraph;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -29,10 +24,7 @@ public class DiscreteVertexFilterConverter implements ElementConverter<SearchHit
     //region Constructor
     public DiscreteVertexFilterConverter(ElementControllerContext context) {
         this.context = context;
-        this.typeToLabelVertexSchemas = Stream.ofAll(context.getSchemaProvider().getVertexLabels())
-                .map(label -> context.getSchemaProvider().getVertexSchema(label))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        this.typeToLabelVertexSchemas = Stream.ofAll(context.getSchemaProvider().getVertexSchemas())
                 .toJavaMap(vertexSchema ->
                         new Tuple2<>(
                                 Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(

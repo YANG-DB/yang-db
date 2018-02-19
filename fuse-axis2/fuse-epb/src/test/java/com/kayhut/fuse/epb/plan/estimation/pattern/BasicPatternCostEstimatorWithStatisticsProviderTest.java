@@ -76,8 +76,8 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
 
 
         });
-        when(graphEdgeSchema.getDestination()).thenReturn(Optional.of(edgeEnd));
-        when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(graphEdgeSchema));
+        when(graphEdgeSchema.getEndB()).thenReturn(Optional.of(edgeEnd));
+        when(graphElementSchemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(graphEdgeSchema));
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
     }
 

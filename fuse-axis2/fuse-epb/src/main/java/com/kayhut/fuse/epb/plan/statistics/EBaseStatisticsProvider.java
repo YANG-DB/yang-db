@@ -93,13 +93,27 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.SummaryStatistics getEdgeStatistics(Rel rel) {
-        GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
+        Iterable<GraphEdgeSchema> edgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
+        if (Stream.ofAll(edgeSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single edge schema
+        GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
+
         return getEdgeStatistics(edgeSchema);
     }
 
     @Override
     public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
+        Iterable<GraphEdgeSchema> graphEdgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
+        if (Stream.ofAll(graphEdgeSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single edge schema
+        GraphEdgeSchema graphEdgeSchema = Stream.ofAll(graphEdgeSchemas).get(0);
+
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.SummaryStatistics minEdgeSummaryStatistics = getEdgeStatistics(graphEdgeSchema, relevantIndices);
         for(RelProp relProp : relFilter.getProps()){
@@ -107,7 +121,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
             GraphElementPropertySchema graphElementPropertySchema;
             if (relProp instanceof RedundantRelProp){
-                graphElementPropertySchema = graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
+                graphElementPropertySchema = graphEdgeSchema.getEndB().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
             }else {
                 graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             }
@@ -131,8 +145,14 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
+        Iterable<GraphEdgeSchema> graphEdgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
+        if (Stream.ofAll(graphEdgeSchemas).isEmpty()) {
+            // what to do what to do
+        }
 
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
+        //currently supports a single edge schema
+        GraphEdgeSchema graphEdgeSchema = Stream.ofAll(graphEdgeSchemas).get(0);
+
         List<String> relevantIndices = getRelevantIndicesForEdge(filter, graphEdgeSchema);
         return graphStatisticsProvider.getGlobalSelectivity(graphEdgeSchema, rel.getDir(), relevantIndices);
     }
@@ -155,7 +175,15 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private Statistics.SummaryStatistics getVertexStatistics(String vertexType) {
-        return graphStatisticsProvider.getVertexCardinality(graphElementSchemaProvider.getVertexSchema(vertexType).get());
+        Iterable<GraphVertexSchema> vertexSchemas = graphElementSchemaProvider.getVertexSchemas(vertexType);
+        if (Stream.of(vertexSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single vertex schema
+        GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+
+        return graphStatisticsProvider.getVertexCardinality(vertexSchema);
     }
 
     private Statistics.SummaryStatistics getVertexStatistics(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
@@ -163,7 +191,15 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private Statistics.SummaryStatistics estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
-        GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
+        Iterable<GraphVertexSchema> graphVertexSchemas = graphElementSchemaProvider.getVertexSchemas(vertexType);
+        if (Stream.of(graphVertexSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single vertex schema
+        GraphVertexSchema graphVertexSchema = Stream.ofAll(graphVertexSchemas).get(0);
+
+
         List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.

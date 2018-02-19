@@ -21,7 +21,6 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import javaslang.collection.Stream;
 
@@ -75,7 +74,13 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get($ont.get());
 
         String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEbase().geteBase().getrType()).getName();
-        Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
+        Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(relationTypeName);
+        if (Stream.ofAll(edgeSchemas).isEmpty()) {
+            return Collections.singleton(plan.get());
+        }
+
+        //currently supports a single edge schema
+        GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
         // label
         List<String> vTypes = new ArrayList<>();
@@ -96,10 +101,10 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         //currently supports only ETyped
         GraphEdgeSchema.End endSchema = lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped ?
-                                            edgeSchema.get().getSource().get().getLabel().get().equals(vTypes.get(0)) ?
-                                                edgeSchema.get().getSource().get() :
-                                                edgeSchema.get().getDestination().get() :
-                                            edgeSchema.get().getDestination().get();
+                                            edgeSchema.getEndA().get().getLabel().get().equals(vTypes.get(0)) ?
+                                                edgeSchema.getEndA().get() :
+                                                edgeSchema.getEndB().get() :
+                                            edgeSchema.getEndB().get();
 
         if(vTypes.size() > 0){
             Constraint constraint = Constraint.of(ConstraintOp.inSet,

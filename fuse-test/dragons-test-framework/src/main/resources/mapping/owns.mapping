@@ -3,7 +3,7 @@
         "enabled": false
       },
       "properties": {
-        "direction": {
+        "directionSchema": {
           "type": "string",
           "index": "not_analyzed"
         },

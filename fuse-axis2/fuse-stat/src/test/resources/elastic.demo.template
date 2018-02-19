@@ -39,7 +39,7 @@
           "upper_bound_numeric": {
             "type": "double"
           },
-          "direction": {
+          "directionSchema": {
             "type": "keyword"
           },
           "count": {

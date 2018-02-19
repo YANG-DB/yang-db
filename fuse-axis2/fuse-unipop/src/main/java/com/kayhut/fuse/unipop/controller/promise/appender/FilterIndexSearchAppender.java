@@ -1,9 +1,7 @@
 package com.kayhut.fuse.unipop.controller.promise.appender;
 
 import com.kayhut.fuse.unipop.controller.common.appender.SearchAppender;
-import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
@@ -25,9 +23,7 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
                 .map(PromiseVertex::getPromise)
                 .map(promise -> (IdPromise)promise)
                 .map(promise -> promise.getLabel().get())
-                .map(label -> context.getSchemaProvider().getVertexSchema(label))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(label -> context.getSchemaProvider().getVertexSchemas(label))
                 .map(schema -> schema.getIndexPartitions().get())
                 .flatMap(IndexPartitions::getPartitions)
                 .flatMap(IndexPartitions.Partition::getIndices)

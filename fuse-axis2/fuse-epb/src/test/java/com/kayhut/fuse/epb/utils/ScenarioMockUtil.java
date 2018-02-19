@@ -12,6 +12,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPar
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.common.collect.Tuple;
 
@@ -244,14 +245,15 @@ public class ScenarioMockUtil {
                                                         redundantEntry.getValue(),
                                                         this.ont.property$(redundantEntry.getKey()).getType()))
                                                 .toJavaList())),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(indexPartitionMap.getOrDefault(new Tuple<>(relation.getrType(), ElementType.edge),
                                         new StaticIndexPartitions(Collections.singletonList("idx1")))),
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(this.ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(this.ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 

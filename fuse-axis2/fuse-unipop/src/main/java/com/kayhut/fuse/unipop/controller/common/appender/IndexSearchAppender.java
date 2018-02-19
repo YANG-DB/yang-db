@@ -39,9 +39,10 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
                         Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(label);
                         searchBuilder.getIndices().addAll(getEdgeSchemasIndices(edgeSchemas));
                     } else if (context.getElementType() == ElementType.vertex) {
-                        Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(label);
-                        if (vertexSchema.isPresent()) {
-                            searchBuilder.getIndices().addAll(getVertexSchemasIndices(vertexSchema));
+                        Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(label);
+                        if (!Stream.ofAll(vertexSchemas).isEmpty()) {
+                            // currently only supports a single vertex schema
+                            searchBuilder.getIndices().addAll(getVertexSchemasIndices(Stream.ofAll(vertexSchemas).get(0)));
                         }
                     }
                 });
@@ -59,9 +60,10 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
         if (context.getElementType() == ElementType.vertex) {
             Iterable<String> vertexTypes = schemaProvider.getVertexLabels();
             vertexTypes.forEach(vertexType -> {
-                Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(vertexType);
-                if (vertexSchema.isPresent()) {
-                    searchBuilder.getIndices().addAll(getVertexSchemasIndices(vertexSchema));
+                Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(vertexType);
+                if (!Stream.ofAll(vertexSchemas).isEmpty()) {
+                    // currently only supports a single vertex schema
+                    searchBuilder.getIndices().addAll(getVertexSchemasIndices(Stream.ofAll(vertexSchemas).get(0)));
                 }
             });
         } else if (context.getElementType() == ElementType.edge) {
@@ -86,12 +88,12 @@ public class IndexSearchAppender implements SearchAppender<ElementControllerCont
                 .toJavaSet();
     }
 
-    private Collection<String> getVertexSchemasIndices(Optional<GraphVertexSchema> vertexSchema) {
-        if (!vertexSchema.get().getIndexPartitions().isPresent()) {
+    private Collection<String> getVertexSchemasIndices(GraphVertexSchema vertexSchema) {
+        if (!vertexSchema.getIndexPartitions().isPresent()) {
             return Collections.emptyList();
         }
 
-        return Stream.ofAll(vertexSchema.get().getIndexPartitions().get().getPartitions())
+        return Stream.ofAll(vertexSchema.getIndexPartitions().get().getPartitions())
                 .flatMap(IndexPartitions.Partition::getIndices)
                 .toJavaSet();
     }

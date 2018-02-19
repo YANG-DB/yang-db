@@ -34,7 +34,7 @@ import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
 
 /**
  * Created by Elad on 4/27/2017.
- * This controller handles constraints on the destination vertices of promise edges.
+ * This controller handles constraints on the endB vertices of promise edges.
  * These constraints are modeled as constraints on special virtual 'promise-filter' edges.
  * The controller starts with promise-vertices, filter these vertices
  * and build promise-edges containing the result vertices as end vertices.
