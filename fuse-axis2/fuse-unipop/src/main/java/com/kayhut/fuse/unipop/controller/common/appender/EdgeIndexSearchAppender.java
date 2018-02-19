@@ -2,8 +2,8 @@ package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.ElementUtil;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.collection.Stream;
@@ -22,12 +22,23 @@ public class EdgeIndexSearchAppender implements SearchAppender<VertexControllerC
     //region SearchAppender Implementation
     @Override
     public boolean append(SearchBuilder searchBuilder, VertexControllerContext context) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
+        Set<String> labels = context.getConstraint().isPresent() ?
+                new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor()) :
+                Stream.ofAll(context.getSchemaProvider().getEdgeLabels()).toJavaSet();
+
+        //currently assuming a single edge label
+        String edgeLabel = Stream.ofAll(labels).get(0);
+
+        //currently assuming a single vertex label in bulk
+        String contextVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+
+
+        Iterable<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(contextVertexLabel, context.getDirection(), edgeLabel);
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return false;
         }
 
-        //currently assuming only one schema
+        //currently assuming only one relevant schema
         GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
         if (edgeSchema.getIndexPartitions().isPresent()) {

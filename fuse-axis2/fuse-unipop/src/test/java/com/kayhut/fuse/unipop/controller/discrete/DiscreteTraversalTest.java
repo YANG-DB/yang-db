@@ -32,6 +32,8 @@ import org.unipop.structure.UniGraph;
 import java.util.*;
 
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
+import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
+import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endB;
 import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
@@ -762,7 +764,7 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.endA).toJavaSet()),
+                                Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasOutFire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
@@ -798,7 +800,7 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.endA).toJavaSet()),
+                                Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasInFire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
@@ -834,7 +836,7 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.endA).toJavaSet()),
+                                Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "fire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
@@ -851,7 +853,24 @@ public class DiscreteTraversalTest {
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.endA).toJavaSet())
+                                Stream.of(endA).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "fire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityAId"),
+                                        Optional.of("Dragon"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(Collections.singletonList("entityBId"), Optional.of("Dragon"), Collections.emptyList())),
+                                Direction.IN,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet())
                         ));
     }
     //endregion

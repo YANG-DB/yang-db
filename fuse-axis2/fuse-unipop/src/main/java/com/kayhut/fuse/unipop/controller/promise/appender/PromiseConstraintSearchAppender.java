@@ -6,7 +6,6 @@ import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
@@ -24,7 +23,6 @@ import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -45,7 +43,9 @@ public class PromiseConstraintSearchAppender implements SearchAppender<Composite
                         .flatMap(label -> context.getSchemaProvider().getVertexSchemas(label))
                         .map(GraphElementSchema::getConstraint)
                         .toJavaList() :
-                Stream.ofAll(new EdgeSchemaSupplier(context).labels().applicable().get())
+                Stream.ofAll(context.getSchemaProvider().getEdgeSchemas(
+                        Stream.ofAll(context.getBulkVertices()).get(0).label(),
+                        Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor())).get(0)))
                     .map(GraphElementSchema::getConstraint)
                     .toJavaList();
 

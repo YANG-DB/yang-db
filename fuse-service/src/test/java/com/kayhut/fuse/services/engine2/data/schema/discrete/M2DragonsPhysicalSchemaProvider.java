@@ -3,125 +3,130 @@ package com.kayhut.fuse.services.engine2.data.schema.discrete;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
 
 /**
  * Created by roman.margolis on 28/09/2017.
  */
-public class M2DragonsPhysicalSchemaProvider implements GraphElementSchemaProvider {
-    @Override
-    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
-        if (!Stream.ofAll(getVertexLabels()).contains(label)) {
-            return Collections.emptyList();
-        }
-
-        switch (label) {
-            case "Person":
-            case "Dragon":
-            case "Kingdom":
-                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions(label.toLowerCase())));
-
-            case "Horse":
-            case "Guild":
-                return Collections.singletonList(new GraphVertexSchema.Impl(label, new StaticIndexPartitions()));
-        }
-
-        return Collections.emptyList();
+public class M2DragonsPhysicalSchemaProvider extends GraphElementSchemaProvider.Impl {
+    public M2DragonsPhysicalSchemaProvider() {
+        super(
+                Arrays.asList(
+                        new GraphVertexSchema.Impl("Person", new StaticIndexPartitions("person")),
+                        new GraphVertexSchema.Impl("Dragon", new StaticIndexPartitions("dragon")),
+                        new GraphVertexSchema.Impl("Kingdom", new StaticIndexPartitions("kingdom")),
+                        new GraphVertexSchema.Impl("Horse", new StaticIndexPartitions()),
+                        new GraphVertexSchema.Impl("Guild", new StaticIndexPartitions())
+                ),
+                Arrays.asList(
+                        new GraphEdgeSchema.Impl(
+                                "fire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "fire")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityA.id"),
+                                        Optional.of("Dragon"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityB.id"),
+                                        Optional.of("Dragon"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(Arrays.asList(
+                                        FIRE.getName().toLowerCase() + "20170511",
+                                        FIRE.getName().toLowerCase() + "20170512",
+                                        FIRE.getName().toLowerCase() + "20170513"))),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "fire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "fire")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityA.id"),
+                                        Optional.of("Dragon"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityB.id"),
+                                        Optional.of("Dragon"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Direction.IN,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(Arrays.asList(
+                                        FIRE.getName().toLowerCase() + "20170511",
+                                        FIRE.getName().toLowerCase() + "20170512",
+                                        FIRE.getName().toLowerCase() + "20170513"))),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "originatedIn",
+                                new GraphElementConstraint.Impl(__.has(T.label, "originatedIn")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityA.id"),
+                                        Optional.of("Dragon"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityB.id"),
+                                        Optional.of("Kingdom"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "OUT", "IN")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(Arrays.asList("originated_in"))),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "originatedIn",
+                                new GraphElementConstraint.Impl(__.has(T.label, "originatedIn")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityA.id"),
+                                        Optional.of("Kingdom"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityB.id"),
+                                        Optional.of("Dragon"),
+                                        Arrays.asList(
+                                                new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
+                                                new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
+                                        ))),
+                                Direction.IN,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "OUT", "IN")),
+                                Optional.empty(),
+                                Optional.of(new StaticIndexPartitions(Arrays.asList("originated_in"))),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet())
+                        )
+        );
     }
-
-    @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-        if (!Stream.ofAll(getEdgeLabels()).contains(label)) {
-            return Collections.emptyList();
-        }
-
-        switch(label) {
-            case "fire":
-                return Collections.singletonList(new GraphEdgeSchema.Impl(
-                        label,
-                        Optional.of(new GraphEdgeSchema.End.Impl(
-                                Collections.singletonList("entityA.id"),
-                                Optional.of("Dragon"),
-                                Arrays.asList(
-                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-                                ))),
-                        Optional.of(new GraphEdgeSchema.End.Impl(
-                                Collections.singletonList("entityB.id"),
-                                Optional.of("Dragon"),
-                                Arrays.asList(
-                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-                                ))),
-                        Direction.OUT,
-                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
-                        new StaticIndexPartitions(Arrays.asList(
-                                FIRE.getName().toLowerCase() + "20170511",
-                                FIRE.getName().toLowerCase() + "20170512",
-                                FIRE.getName().toLowerCase() + "20170513"))));
-            case "originatedIn":
-                return Collections.singletonList(new GraphEdgeSchema.Impl(
-                        label,
-                        Optional.of(new GraphEdgeSchema.End.Impl(
-                                Collections.singletonList("entityA.id"),
-                                Optional.of("Dragon"),
-                                Arrays.asList(
-                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-                                ))),
-                        Optional.of(new GraphEdgeSchema.End.Impl(
-                                Collections.singletonList("entityB.id"),
-                                Optional.of("Kingdom"),
-                                Arrays.asList(
-                                        new GraphRedundantPropertySchema.Impl("id", "entityB.id", "string"),
-                                        new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
-                                ))),
-                        Direction.OUT,
-                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "OUT", "IN")),
-                        new StaticIndexPartitions(Arrays.asList("originated_in"))));
-        }
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
-        return null;
-    }
-
-    @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
-        return null;
-    }
-
-    @Override
-    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
-        return null;
-    }
-
-    @Override
-    public Optional<GraphElementPropertySchema> getPropertySchema(String name) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Iterable<String> getVertexLabels() {
-        return Arrays.asList(
-                PERSON.name,
-                DRAGON.name,
-                KINGDOM.name,
-                HORSE.name,
-                GUILD.name);
-    }
-
-    @Override
-    public Iterable<String> getEdgeLabels() {
-        return Arrays.asList(FIRE.getName(), ORIGINATED_IN.getName());
-    }
-
 }
