@@ -45,12 +45,10 @@ public class M2DragonsPhysicalSchemaProvider extends GraphElementSchemaProvider.
                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
                                         ))),
                                 Direction.OUT,
-                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "OUT", "IN")),
                                 Optional.empty(),
                                 Optional.of(new StaticIndexPartitions(Arrays.asList(
-                                        FIRE.getName().toLowerCase() + "20170511",
-                                        FIRE.getName().toLowerCase() + "20170512",
-                                        FIRE.getName().toLowerCase() + "20170513"))),
+                                        FIRE.getName().toLowerCase()))),
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
@@ -71,12 +69,10 @@ public class M2DragonsPhysicalSchemaProvider extends GraphElementSchemaProvider.
                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", "string")
                                         ))),
                                 Direction.IN,
-                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "OUT", "IN")),
                                 Optional.empty(),
                                 Optional.of(new StaticIndexPartitions(Arrays.asList(
-                                        FIRE.getName().toLowerCase() + "20170511",
-                                        FIRE.getName().toLowerCase() + "20170512",
-                                        FIRE.getName().toLowerCase() + "20170513"))),
+                                        FIRE.getName().toLowerCase()))),
                                 Collections.emptyList(),
                                 Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(

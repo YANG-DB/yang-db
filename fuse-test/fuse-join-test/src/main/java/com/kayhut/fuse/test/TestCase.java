@@ -39,6 +39,7 @@ public abstract class TestCase {
         totalTime = end-start;
         planTime = queryEnd - queryStart;
         System.out.println("Assignments: " + actualQueryResult.getAssignments().size());
+        System.out.println(actualQueryResult);
     }
 
     public long getTotalTime() {
