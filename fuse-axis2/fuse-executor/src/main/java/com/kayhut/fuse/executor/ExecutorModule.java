@@ -1,5 +1,6 @@
 package com.kayhut.fuse.executor;
 
+import ch.qos.logback.classic.LoggerContext;
 import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
@@ -16,8 +17,10 @@ import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
 import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
+import com.kayhut.fuse.executor.logging.LoggingGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
@@ -112,7 +115,10 @@ public class ExecutorModule extends ModuleBase {
                 (GraphElementSchemaProviderFactory)(Class.forName(
                         conf.getString("fuse.physical_schema_provider_factory_class")).newInstance());
 
-        return new OntologyGraphElementSchemaProviderFactory(physicalSchemaProviderFactory);
+        return new LoggingGraphElementSchemaProviderFactory(
+                new OntologyGraphElementSchemaProviderFactory(physicalSchemaProviderFactory),
+                LoggerFactory.getLogger(GraphElementSchemaProvider.class),
+                LoggerFactory.getLogger(GraphElementSchemaProvider.class.getName() + ".Verbose"));
     }
 
     private Class<? extends UniGraphProvider> getUniGraphProviderClass(Config conf) throws ClassNotFoundException {

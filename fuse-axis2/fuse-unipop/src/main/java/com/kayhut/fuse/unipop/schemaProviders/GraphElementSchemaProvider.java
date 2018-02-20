@@ -14,8 +14,6 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
 public interface GraphElementSchemaProvider {
     Iterable<GraphVertexSchema> getVertexSchemas(String label);
 
-    //Optional<GraphEdgeSchema> getEdgeSchema(String label);
-
     Iterable<GraphEdgeSchema> getEdgeSchemas(String label);
     Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label);
     Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label);
