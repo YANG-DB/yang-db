@@ -73,5 +73,8 @@ public enum ConstraintOp {
     fuzzyNe,
 
     @JsonProperty("like")
-    like
+    like,
+
+    @JsonProperty("like any")
+    likeAny
 }
