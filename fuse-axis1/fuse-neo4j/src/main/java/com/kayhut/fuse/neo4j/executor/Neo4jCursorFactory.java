@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.results.Entity;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.results.Relationship;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.kayhut.fuse.neo4j.GraphProvider;
+//import com.kayhut.fuse.neo4j.GraphProvider;
 /*import org.neo4j.driver.internal.InternalNode;
 import org.neo4j.driver.internal.InternalRelationship;
 import org.neo4j.driver.v1.Record;

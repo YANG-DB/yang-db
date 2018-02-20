@@ -1,35 +1,27 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
-import com.kayhut.fuse.unipop.controller.common.context.ConstraintContext;
 import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.QueryBuilder;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalQueryTranslator;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
-import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.AndStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.HasStep;
-import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
-import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalHelper;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -47,12 +39,13 @@ public class ConstraintSearchAppender implements SearchAppender<CompositeControl
 
         List<GraphElementConstraint> elementConstraints = context.getElementType().equals(ElementType.vertex) ?
                 Stream.ofAll(labels)
-                        .map(label -> context.getSchemaProvider().getVertexSchema(label))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
+                        .flatMap(label -> context.getSchemaProvider().getVertexSchemas(label))
                         .map(GraphElementSchema::getConstraint)
                         .toJavaList() :
-                Stream.ofAll(new EdgeSchemaSupplier(context).labels().applicable().get())
+                Stream.ofAll(context.getSchemaProvider().getEdgeSchemas(
+                        Stream.ofAll(context.getBulkVertices()).get(0).label(),
+                        context.getDirection(),
+                        Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(context.getConstraint().get().getTraversal(), T.label.getAccessor())).get(0)))
                     .map(GraphElementSchema::getConstraint)
                     .toJavaList();
 

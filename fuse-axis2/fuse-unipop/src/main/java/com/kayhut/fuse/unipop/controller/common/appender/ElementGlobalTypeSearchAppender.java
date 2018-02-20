@@ -32,7 +32,7 @@ public class ElementGlobalTypeSearchAppender extends SearchQueryAppenderBase<Ele
         // If there is no Constraint
         if (context.getElementType() == ElementType.vertex) {
             Iterable<String> vertexLabels = Stream.ofAll(context.getSchemaProvider().getVertexLabels())
-                    .map(label -> context.getSchemaProvider().getVertexSchema(label).get().getType())
+                    .map(label -> context.getSchemaProvider().getVertexSchemas(label).get().getType())
                     .toJavaList();
             queryBuilder.seekRoot().query().filtered().filter().bool().must().terms(this.getClass().getSimpleName(),"_type", vertexLabels);
         }

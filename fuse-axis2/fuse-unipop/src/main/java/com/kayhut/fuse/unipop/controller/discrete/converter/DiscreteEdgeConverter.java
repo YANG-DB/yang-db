@@ -2,11 +2,11 @@ package com.kayhut.fuse.unipop.controller.discrete.converter;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.SimpleEdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.map.MapHelper;
+import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
@@ -15,6 +15,7 @@ import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.search.SearchHit;
 
@@ -33,13 +34,23 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             e.printStackTrace();
             this.edgeIdProvider = new SimpleEdgeIdProvider();
         }
+
+        //currently assuming a single vertex label in bulk
+        this.contextVertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
+
+        Set<String> labels = this.context.getConstraint().isPresent() ?
+                new TraversalValuesByKeyProvider().getValueByKey(this.context.getConstraint().get().getTraversal(), T.label.getAccessor()) :
+                Stream.ofAll(context.getSchemaProvider().getEdgeLabels()).toJavaSet();
+
+        //currently assuming a single edge label
+        this.contextEdgeLabel = Stream.ofAll(labels).get(0);
     }
     //endregion
 
     //region ElementConverter Implementation
     @Override
     public Iterable<E> convert(SearchHit searchHit) {
-        Iterable<GraphEdgeSchema> edgeSchemas = new EdgeSchemaSupplier(context).labels().applicable().get();
+        Iterable<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel);
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return null;
         }
@@ -52,9 +63,9 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
         List<E> edges = new ArrayList<>();
 
-        if (context.getDirection().equals(Direction.OUT)) {
-            GraphEdgeSchema.End outEndSchema = edgeSchema.getSource().get();
-            GraphEdgeSchema.End inEndSchema = edgeSchema.getDestination().get();
+        if (edgeSchema.getDirection().equals(Direction.OUT)) {
+            GraphEdgeSchema.End outEndSchema = edgeSchema.getEndA().get();
+            GraphEdgeSchema.End inEndSchema = edgeSchema.getEndB().get();
 
             Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.sourceAsMap());
             Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.sourceAsMap(), inVertexProperties);
@@ -86,8 +97,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             }
 
         } else {
-            GraphEdgeSchema.End outEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getDestination().get() : edgeSchema.getSource().get();
-            GraphEdgeSchema.End inEndSchema = edgeSchema.getDirection().isPresent() ? edgeSchema.getSource().get() : edgeSchema.getDestination().get();
+            GraphEdgeSchema.End outEndSchema = edgeSchema.getEndB().get();
+            GraphEdgeSchema.End inEndSchema = edgeSchema.getEndA().get();
 
             Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
             Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);
@@ -167,5 +178,8 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //region Fields
     private VertexControllerContext context;
     private EdgeIdProvider<String> edgeIdProvider;
+
+    private String contextVertexLabel;
+    private String contextEdgeLabel;
     //endregion
 }
