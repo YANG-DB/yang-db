@@ -1,5 +1,6 @@
 package com.kayhut.fuse.executor.logging;
 
+import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -16,6 +17,7 @@ public class LoggingGraphElementSchemaProviderFactory implements GraphElementSch
     public static final String verboseLoggerParameter = "LoggingGraphElementSchemaProviderFactory.@verboseLogger";
 
     //region Constructors
+    @Inject
     public LoggingGraphElementSchemaProviderFactory(
             @Named(schemaProviderFactoryParameter) GraphElementSchemaProviderFactory schemaProviderFactory,
             @Named(warnLoggerParameter) Logger warnLogger,
