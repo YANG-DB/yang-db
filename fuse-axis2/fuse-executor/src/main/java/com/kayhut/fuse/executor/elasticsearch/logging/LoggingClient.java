@@ -3,6 +3,7 @@ package com.kayhut.fuse.executor.elasticsearch.logging;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.ElapsedFrom;
 import com.kayhut.fuse.dispatcher.logging.LogMessage;
 import com.kayhut.fuse.dispatcher.logging.LogType;
@@ -45,11 +46,14 @@ import static com.kayhut.fuse.dispatcher.logging.LogType.*;
  * Created by roman.margolis on 28/12/2017.
  */
 public class LoggingClient implements Client {
+    public static final String clientParameter = "LoggingClient.@client";
+    public static final String loggerParameter = "LoggingClient.@logger";
+
     //region Constructors
     @Inject
     public LoggingClient(
-            Client client,
-            Logger logger,
+            @Named(clientParameter) Client client,
+            @Named(loggerParameter) Logger logger,
             MetricRegistry metricRegistry) {
         this.client = client;
         this.logger = logger;

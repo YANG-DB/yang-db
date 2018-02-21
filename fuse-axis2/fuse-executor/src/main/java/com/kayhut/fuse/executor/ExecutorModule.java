@@ -16,6 +16,7 @@ import com.kayhut.fuse.executor.driver.StandardCursorDriver;
 import com.kayhut.fuse.executor.driver.StandardPageDriver;
 import com.kayhut.fuse.executor.driver.StandardQueryDriver;
 import com.kayhut.fuse.executor.elasticsearch.ClientProvider;
+import com.kayhut.fuse.executor.elasticsearch.logging.LoggingClient;
 import com.kayhut.fuse.executor.logging.LoggingCursorFactory;
 import com.kayhut.fuse.executor.logging.LoggingGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.*;
@@ -42,19 +43,10 @@ public class ExecutorModule extends ModuleBase {
     //region Jooby.Module Implementation
     @Override
     public void configureInner(Env env, Config conf, Binder binder) throws Throwable {
-
         bindCursorFactory(env, conf, binder);
-
-        ElasticGraphConfiguration elasticGraphConfiguration = createElasticGraphConfiguration(conf);
-        UniGraphConfiguration uniGraphConfiguration = createUniGraphConfiguration(conf);
-
-        binder.bind(ElasticGraphConfiguration.class).toInstance(elasticGraphConfiguration);
-        binder.bind(UniGraphConfiguration.class).toInstance(uniGraphConfiguration);
-
-        binder.bind(Client.class).toProvider(ClientProvider.class).asEagerSingleton();
-
-        binder.bind(UniGraphProvider.class).to(getUniGraphProviderClass(conf)).asEagerSingleton();
-        binder.bind(GraphElementSchemaProviderFactory.class).toInstance(createSchemaProviderFactory(conf));
+        bindElasticClient(env, conf, binder);
+        bindSchemaProviderFactory(env, conf, binder);
+        bindUniGraphProvider(env, conf, binder);
 
         binder.bind(QueryDriver.class).to(StandardQueryDriver.class).in(RequestScoped.class);
         binder.bind(CursorDriver.class).to(StandardCursorDriver.class).in(RequestScoped.class);
@@ -90,6 +82,79 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
+    private void bindElasticClient(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                boolean createMock = conf.hasPath("fuse.elasticsearch.mock") && conf.getBoolean("fuse.elasticsearch.mock");
+                this.bind(ElasticGraphConfiguration.class).toInstance(createElasticGraphConfiguration(conf));
+
+                this.bindConstant().annotatedWith(named(ClientProvider.createMockParameter)).to(createMock);
+                this.bind(Client.class)
+                        .annotatedWith(named(LoggingClient.clientParameter))
+                        .toProvider(ClientProvider.class).asEagerSingleton();
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingClient.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(LoggingClient.class));
+                this.bind(Client.class)
+                        .to(LoggingClient.class)
+                        .asEagerSingleton();
+
+                this.expose(Client.class);
+                this.expose(ElasticGraphConfiguration.class);
+            }
+        });
+    }
+
+    private void bindSchemaProviderFactory(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                try {
+                    this.bind(GraphElementSchemaProviderFactory.class)
+                            .annotatedWith(named(OntologyGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
+                            .to(getSchemaProviderFactoryClass(conf))
+                            .asEagerSingleton();
+                    this.bind(GraphElementSchemaProviderFactory.class)
+                            .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.schemaProviderFactoryParameter))
+                            .to(OntologyGraphElementSchemaProviderFactory.class)
+                            .asEagerSingleton();
+                    this.bind(Logger.class)
+                            .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.warnLoggerParameter))
+                            .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class));
+                    this.bind(Logger.class)
+                            .annotatedWith(named(LoggingGraphElementSchemaProviderFactory.verboseLoggerParameter))
+                            .toInstance(LoggerFactory.getLogger(GraphElementSchemaProvider.class.getName() + ".Verbose"));
+                    this.bind(GraphElementSchemaProviderFactory.class)
+                            .to(LoggingGraphElementSchemaProviderFactory.class)
+                            .asEagerSingleton();
+
+                    this.expose(GraphElementSchemaProviderFactory.class);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void bindUniGraphProvider(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                try {
+                    this.bind(UniGraphConfiguration.class).toInstance(createUniGraphConfiguration(conf));
+                    this.bind(UniGraphProvider.class)
+                            .to(getUniGraphProviderClass(conf))
+                            .in(RequestScoped.class);
+
+                    this.expose(UniGraphProvider.class);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     private ElasticGraphConfiguration createElasticGraphConfiguration(Config conf) {
         ElasticGraphConfiguration configuration = new ElasticGraphConfiguration();
         configuration.setClusterHosts(Stream.ofAll(getStringList(conf, "elasticsearch.hosts")).toJavaArray(String.class));
@@ -110,15 +175,8 @@ public class ExecutorModule extends ModuleBase {
         return configuration;
     }
 
-    private GraphElementSchemaProviderFactory createSchemaProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        GraphElementSchemaProviderFactory physicalSchemaProviderFactory =
-                (GraphElementSchemaProviderFactory)(Class.forName(
-                        conf.getString("fuse.physical_schema_provider_factory_class")).newInstance());
-
-        return new LoggingGraphElementSchemaProviderFactory(
-                new OntologyGraphElementSchemaProviderFactory(physicalSchemaProviderFactory),
-                LoggerFactory.getLogger(GraphElementSchemaProvider.class),
-                LoggerFactory.getLogger(GraphElementSchemaProvider.class.getName() + ".Verbose"));
+    private Class<? extends GraphElementSchemaProviderFactory> getSchemaProviderFactoryClass(Config conf) throws ClassNotFoundException {
+        return (Class<? extends GraphElementSchemaProviderFactory>) Class.forName(conf.getString("fuse.physical_schema_provider_factory_class"));
     }
 
     private Class<? extends UniGraphProvider> getUniGraphProviderClass(Config conf) throws ClassNotFoundException {
@@ -130,12 +188,12 @@ public class ExecutorModule extends ModuleBase {
     }
 
     private List<String> getStringList(Config conf, String key) {
-         try {
-             return conf.getStringList(key);
-         } catch (Exception ex) {
-             String strList = conf.getString(key);
-             return Stream.of(strList.split(",")).toJavaList();
-         }
+        try {
+            return conf.getStringList(key);
+        } catch (Exception ex) {
+            String strList = conf.getString(key);
+            return Stream.of(strList.split(",")).toJavaList();
+        }
     }
     //endregion
 }
