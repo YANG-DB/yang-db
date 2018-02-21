@@ -1,11 +1,11 @@
 package com.kayhut.fuse.epb.plan.extenders;
 
+import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.dispatcher.epb.PlanExtensionStrategy;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.*;
+import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
@@ -27,23 +27,32 @@ import static com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils.getNextDesc
 /**
  * Created by Roman on 23/04/2017.
  */
-public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQuery> {
+public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan, AsgQuery> {
     //region PlanExtensionStrategy Implementation
     @Override
     public Iterable<Plan> extendPlan(Optional<Plan> plan, AsgQuery query) {
         if (!plan.isPresent()) {
             return Collections.emptyList();
         }
-
-        Optional<AsgEBase<Rel>> nextRelation = getNextDescendantUnmarkedOfType(plan.get(),Rel.class);
+        //get next relation which was not already visited
+        Optional<AsgEBase<Rel>> nextRelation = getNextDescendantUnmarkedOfType(plan.get(), Rel.class);
         if (!nextRelation.isPresent()) {
             return Collections.emptyList();
         }
 
+        RelationOp relationOp = new RelationOp(nextRelation.get());
         Optional<AsgEBase<RelPropGroup>> nextRelationPropGroup = AsgQueryUtil.bDescendant(nextRelation.get(), RelPropGroup.class);
 
+        //try ancestor first
         Optional<AsgEBase<EEntityBase>> fromEntity = AsgQueryUtil.ancestor(nextRelation.get(), EEntityBase.class);
         Optional<AsgEBase<EEntityBase>> toEntity = AsgQueryUtil.nextDescendant(nextRelation.get(), EEntityBase.class);
+        //if ancestor not part of the plan try descendant
+        if (!PlanUtil.contains(plan.get(), fromEntity.get().geteNum())) {
+            fromEntity = AsgQueryUtil.nextDescendant(nextRelation.get(), EEntityBase.class);
+            toEntity = AsgQueryUtil.ancestor(nextRelation.get(), EEntityBase.class);
+            relationOp = new RelationOp(AsgQueryUtil.reverse(nextRelation.get()));
+        }
+
 
         Optional<AsgEBase<Quant1>> toEntityQuant = AsgQueryUtil.nextAdjacentDescendant(toEntity.get(), Quant1.class);
         Optional<AsgEBase<EPropGroup>> toEntityPropGroup;
@@ -61,7 +70,7 @@ public class StepAdjacentDfsStrategy implements PlanExtensionStrategy<Plan,AsgQu
             newPlan = newPlan.withOp(new GoToEntityOp(fromEntity.get()));
         }
 
-        newPlan = newPlan.withOp(new RelationOp(nextRelation.get()));
+        newPlan = newPlan.withOp(relationOp);
         if (nextRelationPropGroup.isPresent()) {
             newPlan = newPlan.withOp(new RelationFilterOp(nextRelationPropGroup.get()));
         }

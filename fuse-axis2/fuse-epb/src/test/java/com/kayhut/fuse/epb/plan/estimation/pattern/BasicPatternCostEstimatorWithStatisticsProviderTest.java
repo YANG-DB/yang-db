@@ -33,6 +33,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
@@ -81,6 +82,7 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
 
 
     @Test
+    @Ignore("No more single op pattern - all patterns are now with ***OpFilter along the entity / Relation")
     public void calculateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
         PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =

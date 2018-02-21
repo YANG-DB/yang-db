@@ -1,6 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
@@ -21,18 +22,24 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Constraint;
 import com.kayhut.fuse.model.query.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.*;
 
 import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.TYPED;
 import static com.kayhut.fuse.epb.utils.StatisticsMockUtils.build;
+import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.concrete;
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
+import static com.kayhut.fuse.model.query.ConstraintOp.gt;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -66,6 +73,7 @@ public class BasicPatternCostEstimatorTest {
     }
 
     @Test
+    @Ignore("No more single op pattern - all patterns are now with ***OpFilter along the entity / Relation")
     public void calculateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
         PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
@@ -81,12 +89,14 @@ public class BasicPatternCostEstimatorTest {
                     }
                 });
 
-        AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
 
         HashMap<RegexPatternCostEstimator.PatternPart, PlanOp> map = new HashMap<>();
-        EntityOp entityOp = new EntityOp();
-        entityOp.setAsgEbase(new AsgEBase<>(new EConcrete()));
-        map.put(RegexPatternCostEstimator.PatternPart.ENTITY_ONLY, entityOp);
+        AsgQuery query = AsgQuery.Builder.start("name", "ont").
+                next(concrete(1, "id", "4", "name", "A").next(eProp(101, EProp.of("12", 9, Constraint.of(gt, MALE))))).build();
+        Plan plan = new Plan().withOp(new EntityOp(AsgQueryUtil.element$(query, 1))).withOp(new EntityFilterOp(AsgQueryUtil.element$(query, 101)));
+
+
+        map.put(RegexPatternCostEstimator.PatternPart.ENTITY_ONLY, plan.getOps().get(0));
         PatternCostEstimator.Result<Plan, CountEstimatesCost> result = estimator.estimate(Pattern.buildEntityPattern(map), new IncrementalEstimationContext<>(Optional.empty(), query));
         List<PlanWithCost<Plan, CountEstimatesCost>> costs = result.getPlanStepCosts();
 

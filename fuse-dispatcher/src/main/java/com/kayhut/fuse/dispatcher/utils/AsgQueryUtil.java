@@ -7,6 +7,7 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
@@ -239,6 +240,18 @@ public class AsgQueryUtil {
         }
 
         return path;
+    }
+
+    public static <T extends EBase, S extends EBase,Z extends EBase> Optional<AsgEBase<Z>> findFirstInPath(AsgEBase<T> sourceAsgEBase, AsgEBase<S> destinationAsgEBase, Predicate<AsgEBase> predicate) {
+        List<AsgEBase<? extends EBase>> path = pathToNextDescendant(sourceAsgEBase, destinationAsgEBase.geteNum());
+        if (path.isEmpty()) {
+            path = pathToAncestor(sourceAsgEBase, destinationAsgEBase.geteNum());
+        }
+        Optional<AsgEBase<? extends EBase>> first = path.stream().filter(p -> predicate.test(p)).findFirst();
+        if(first.isPresent())
+            return Optional.of((AsgEBase<Z>) first.get());
+
+        return Optional.empty();
     }
 
     public static List<AsgEBase<? extends EBase>> path(AsgQuery query, int sourceEnum, int destinationEnum) {

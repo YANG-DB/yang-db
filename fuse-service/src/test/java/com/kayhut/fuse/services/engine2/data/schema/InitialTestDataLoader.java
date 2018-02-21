@@ -11,7 +11,11 @@ import java.io.IOException;
  */
 public class InitialTestDataLoader implements InitialGraphDataLoader {
 
-    public InitialTestDataLoader(Config config, RawElasticSchema schema) {}
+    public InitialTestDataLoader() {
+    }
+
+    public InitialTestDataLoader(Config config, RawElasticSchema schema) {
+    }
 
     @Override
     public long init() throws IOException {

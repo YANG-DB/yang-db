@@ -1,5 +1,6 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
+import com.google.inject.Inject;
 import com.kayhut.fuse.model.ontology.*;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -12,6 +13,7 @@ import java.util.*;
 public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region Constructor
+    @Inject
     public OntologySchemaProvider(Ontology ontology, GraphElementSchemaProvider schemaProvider) {
         this.schemaProvider = schemaProvider;
         this.$ont = new Ontology.Accessor(ontology);

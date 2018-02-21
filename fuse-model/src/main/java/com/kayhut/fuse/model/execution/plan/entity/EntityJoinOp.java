@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.execution.plan.entity;
 
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import javaslang.collection.Stream;
@@ -11,6 +12,7 @@ import java.util.Optional;
  */
 public class EntityJoinOp extends EntityOp {
     public EntityJoinOp() {
+        super(new AsgEBase<>());
     }
 
     public EntityJoinOp(Plan leftBranch, Plan rightBranch) {

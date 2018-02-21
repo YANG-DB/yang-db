@@ -8,8 +8,6 @@ import com.kayhut.fuse.model.query.EBase;
  */
 public abstract class AsgEBasePlanOp<T extends EBase> extends PlanOp implements AsgEBaseContainer<T> {
     //region Constructors
-    public AsgEBasePlanOp() {}
-
     public AsgEBasePlanOp(AsgEBase<T> asgEBase) {
         this.asgEbase = asgEBase;
     }

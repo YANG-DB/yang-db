@@ -14,9 +14,14 @@ import java.util.Map;
  */
 public class TestSchemaProviderFactory implements GraphElementSchemaProviderFactory{
     //region Constructors
-    public TestSchemaProviderFactory(Config config, RawElasticSchema schema) {
+
+    public TestSchemaProviderFactory() {
         this.schemaProviders = new HashMap<>();
         this.schemaProviders.put("Dragons", new DragonsPhysicalSchemaProvider());
+    }
+
+    public TestSchemaProviderFactory(Config config, RawElasticSchema schema) {
+        this();
     }
     //endregion
 

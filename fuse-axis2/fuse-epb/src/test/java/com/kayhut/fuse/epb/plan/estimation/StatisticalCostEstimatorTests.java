@@ -227,7 +227,13 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
-        StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
+        AsgQuery query = AsgQuery.Builder.start("name", "ont").
+                next(concrete(1, "id", "4", "name", "A").next(eProp(101,EProp.of("12", 9, Constraint.of(gt, MALE))))).build();
+        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock(query).entity(TYPED, 100, "4")
+                .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
+                .rel(out, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
+
+        StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
         RegexPatternCostEstimator estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
@@ -243,13 +249,7 @@ public class StatisticalCostEstimatorTests {
                     }
                 }));
 
-        AsgQuery query = AsgQuery.Builder.start("name", "ont").
-                next(concrete(1, "id", "1", "name", "A")).
-                build();
-
-        EntityOp entityOp = new EntityOp(AsgQueryUtil.element$(query, 1));
-
-        Plan plan = new Plan().withOp(entityOp);
+        Plan plan = new Plan().withOp(new EntityOp(AsgQueryUtil.element$(query, 1))).withOp(new EntityFilterOp(AsgQueryUtil.element$(query, 101)));
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, new IncrementalEstimationContext<>(Optional.empty(), query));
 
         Assert.assertNotNull(estimate);

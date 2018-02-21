@@ -13,11 +13,14 @@ import java.util.Map;
  * Created by roman.margolis on 28/09/2017.
  */
 public class M2TestSchemaProviderFactory implements GraphElementSchemaProviderFactory{
+    public M2TestSchemaProviderFactory() {
+        this.schemaProviders = new HashMap<>();
+        this.schemaProviders.put("Dragons", new M2DragonsPhysicalSchemaProvider());
+    }
 
     //region Constructors
     public M2TestSchemaProviderFactory(Config config, RawElasticSchema schema) {
-        this.schemaProviders = new HashMap<>();
-        this.schemaProviders.put("Dragons", new M2DragonsPhysicalSchemaProvider());
+        this();
     }
     //endregion
 
