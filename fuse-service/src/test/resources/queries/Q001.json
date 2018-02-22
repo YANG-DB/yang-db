@@ -3,30 +3,47 @@
   "name": "Q1",
   "elements": [
     {
-      "eNum": 0,
       "type": "Start",
+      "eNum": 0,
       "next": 1
     },
     {
-      "eNum": 1,
       "type": "EConcrete",
+      "eNum": 1,
       "eTag": "A",
-      "eID": "12345678",
+      "next": 2,
+      "reportProps": [
+        "firstName",
+        "lastName",
+        "gender",
+        "birthDate",
+        "deathDate",
+        "height",
+        "name"
+      ],
       "eType": "Person",
-      "eName": "Brandon Stark",
-      "next": 2
+      "eID": "12345678",
+      "eName": "Brandon Stark"
     },
     {
-      "eNum": 2,
       "type": "Rel",
+      "eNum": 2,
       "rType": "own",
       "dir": "R",
+      "wrapper": null,
       "next": 3
     },
     {
-      "eNum": 3,
       "type": "ETyped",
+      "eNum": 3,
       "eTag": "B",
+      "reportProps": [
+        "name",
+        "birthDate",
+        "power",
+        "gender",
+        "color"
+      ],
       "eType": "Dragon"
     }
   ]

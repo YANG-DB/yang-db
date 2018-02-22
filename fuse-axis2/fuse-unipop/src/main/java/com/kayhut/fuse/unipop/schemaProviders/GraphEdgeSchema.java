@@ -276,6 +276,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             this.directionSchema = directionSchema;
             this.applications = applications;
         }
+
+
         //endregion
 
         //region GraphEdgeSchema Implementation

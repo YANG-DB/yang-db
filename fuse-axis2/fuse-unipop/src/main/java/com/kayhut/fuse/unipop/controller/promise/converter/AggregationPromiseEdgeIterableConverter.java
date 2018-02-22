@@ -57,7 +57,6 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
                                 propMap),
                         sourceVertex,
                         destVertex,
-                        destVertex,
                         propMap,
                         graph);
 

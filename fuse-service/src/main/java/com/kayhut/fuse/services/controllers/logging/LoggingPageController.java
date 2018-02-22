@@ -6,20 +6,18 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
 import com.kayhut.fuse.logging.RequestId;
-import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.services.controllers.PageController;
+import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import org.slf4j.Logger;
-import org.slf4j.MDC;
 
 import static com.codahale.metrics.MetricRegistry.name;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.info;
-import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
+import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.*;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
+import static com.kayhut.fuse.dispatcher.logging.RequestIdByScope.Builder.query;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -48,19 +46,26 @@ public class LoggingPageController implements PageController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), create.toString())).time();
         boolean thrownException = false;
 
+        ContentResponse<PageResourceInfo> response = null;
         try {
             new LogMessage.Impl(this.logger, trace, "start create",
                     LogType.of(start), create, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
-            return controller.create(queryId, cursorId, createPageRequest);
+            response = controller.create(queryId, cursorId, createPageRequest);
+            return response;
         } catch (Exception ex) {
             thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
-            return null;
+            throw new RuntimeException(ex);
         } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+            if (!thrownException && response!=null) {
+                new LogMessage.Impl(this.logger, info, "finish create",
+                        RequestIdByScope.of(query(queryId)
+                                .cursor(cursorId)
+                                .page(response.getData().getResourceId())
+                                .get()),
+                        LogType.of(success), create, ElapsedFrom.now()).log();
                 new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
                 this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
             }
@@ -75,7 +80,11 @@ public class LoggingPageController implements PageController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId",
-                    LogType.of(start), getInfoByQueryIdAndCursorId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+                    LogType.of(start), getInfoByQueryIdAndCursorId,
+                    RequestIdByScope.of(query(queryId)
+                            .cursor(cursorId)
+                            .get()),
+                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
@@ -100,7 +109,12 @@ public class LoggingPageController implements PageController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorIdAndPageId",
-                    LogType.of(start), getInfoByQueryIdAndCursorIdAndPageId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+                    LogType.of(start), getInfoByQueryIdAndCursorIdAndPageId,
+                    RequestIdByScope.of(query(queryId)
+                            .cursor(cursorId)
+                            .page(pageId)
+                            .get()),
+                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getInfo(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;
@@ -125,7 +139,12 @@ public class LoggingPageController implements PageController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getData",
-                    LogType.of(start), getData, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+                    LogType.of(start), getData,
+                    RequestIdByScope.of(query(queryId)
+                            .cursor(cursorId)
+                            .page(pageId)
+                            .get()),
+                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getData(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;

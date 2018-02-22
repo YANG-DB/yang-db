@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.mockEngine;
 
+import com.cedarsoftware.util.io.JsonReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -20,6 +21,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.mockito.Matchers.any;
@@ -50,6 +53,59 @@ public class CatalogTest {
                         String expected = new ObjectMapper().writeValueAsString(ontology);
                         ContentResponse contentResponse = new ObjectMapper().readValue(o.toString(), ContentResponse.class);
                         return new ObjectMapper().writeValueAsString(contentResponse.getData()).equals(expected);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+    }
+
+    @Test
+    /**
+     * execute query with expected plan result
+     */
+    public void catalogs() throws IOException {
+        Ontology ontology = OntologyFinalizer.finalize(TestUtils.loadOntology("Dragons.json"));
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .get("/fuse/catalog/ontology")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        String expected = new ObjectMapper().writeValueAsString(ontology);
+                        List<ContentResponse<Ontology>> contentResponse = new ObjectMapper().readValue(o.toString(), List.class);
+                        //todo compare to expected
+                        return ((Map)contentResponse.get(0)).containsKey("data");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+    }
+    @Test
+    /**
+     * execute query with expected plan result
+     */
+    public void catalogSchemas() throws IOException {
+        Ontology ontology = OntologyFinalizer.finalize(TestUtils.loadOntology("Dragons.json"));
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .get("/fuse/catalog/schema")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        String expected = new ObjectMapper().writeValueAsString(ontology);
+                        List<ContentResponse<Ontology>> contentResponse = new ObjectMapper().readValue(o.toString(), List.class);
+                        //todo compare to expected
+                        return ((Map)contentResponse.get(0)).containsKey("data");
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;

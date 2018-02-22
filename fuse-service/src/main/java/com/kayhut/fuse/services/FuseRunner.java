@@ -50,12 +50,10 @@ public class FuseRunner {
             System.out.println("ConfigFile  " + confFilename + " Not Found - fallback getTo application.conf");
         }
 
-        Jooby.run(() -> {
-                    return app != null ?
-                            app :
-                            new FuseApp(new DefaultAppUrlSupplier("/fuse"))
-                                    .conf(configFile, options.getActiveProfile());
-                },
+        Jooby.run(() -> app != null ?
+                app :
+                new FuseApp(new DefaultAppUrlSupplier("/fuse"))
+                        .conf(configFile, options.getActiveProfile()),
                 joobyArgs);
     }
 

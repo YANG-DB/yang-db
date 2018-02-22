@@ -18,7 +18,6 @@ public class PromiseFilterEdge extends UniEdge {
                         .put(T.id.getAccessor(), GlobalConstants.Labels.PROMISE_FILTER + v.id()).get(),
                 v,
                 v,
-                v,
                 graph);
     }
     //endregion

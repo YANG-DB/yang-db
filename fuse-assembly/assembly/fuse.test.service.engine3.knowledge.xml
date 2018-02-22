@@ -8,27 +8,20 @@
     <baseDirectory>fuse-test-service-engine2-knowledge</baseDirectory>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/resources/ontology</directory>
-            <outputDirectory>ontology</outputDirectory>
-            <includes>
-                <include>Knowledge.json</include>
-            </includes>
+            <directory>${project.basedir}/resources/assembly/Knowledge</directory>
+            <outputDirectory>./</outputDirectory>
         </fileSet>
     </fileSets>
 
     <files>
         <file>
-            <source>${project.basedir}/resources/config/application.test.engine3.m1.dfs.knowledge.public.conf</source>
+            <source>${project.basedir}/resources/assembly/Knowledge/config/application.test.engine3.m1.dfs.knowledge.public.conf</source>
             <outputDirectory>./config</outputDirectory>
             <destName>application.conf</destName>
         </file>
         <file>
             <source>${project.basedir}/resources/logConfig/logback.xml</source>
             <outputDirectory>./config</outputDirectory>
-        </file>
-        <file>
-            <source>${project.basedir}/resources/ontology/Knowledge.json</source>
-            <outputDirectory>./ontology</outputDirectory>
         </file>
         <file>
             <source>${project.basedir}/resources/readme/fuse.service.readme.txt</source>

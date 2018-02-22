@@ -48,14 +48,16 @@ public class LoggingSearchController implements SearchController{
 
         try {
             new LogMessage.Impl(this.logger, trace, "start search",
-                    LogType.of(start), search, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+                    LogType.of(start), search,
+                    RequestIdByScope.of(request.getId()),
+                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.search(request);
         } catch (Exception ex) {
             thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed search", LogType.of(failure), search, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")).mark();
-            return null;
+            throw new RuntimeException(ex);
         } finally {
             if (!thrownException) {
                 new LogMessage.Impl(this.logger, info, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();

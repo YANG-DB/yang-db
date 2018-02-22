@@ -83,6 +83,26 @@ public abstract class QueryDriverBase  implements QueryDriver {
     }
 
     @Override
+    public Optional<AsgQuery> getAsg(String queryId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(queryResource.get().getAsgQuery());
+    }
+
+    @Override
+    public Optional<Query> getV1(String queryId) {
+        Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
+        if (!queryResource.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(queryResource.get().getQuery());
+    }
+
+    @Override
     public Optional<PlanWithCost<Plan, PlanDetailedCost>> explain(String queryId) {
         Optional<QueryResource> queryResource = resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
