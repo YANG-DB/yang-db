@@ -57,7 +57,7 @@ public class LoggingCatalogController implements CatalogController {
             new LogMessage.Impl(this.logger, error, "failed getOntology", LogType.of(failure), getOntology, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "failure")).mark();
-            return null;
+            throw new RuntimeException(ex);
         } finally {
             if (!thrownException) {
                 new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();

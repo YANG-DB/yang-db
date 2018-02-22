@@ -53,7 +53,7 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
             new LogMessage.Impl(this.logger, error, "failed getInfo", LogType.of(failure), getInfo, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), "getInfo", "failure")).mark();
-            return null;
+            throw new RuntimeException(ex);
         } finally {
             if (!thrownException) {
                 new LogMessage.Impl(this.logger, info, "finish getInfo", LogType.of(success), getInfo, ElapsedFrom.now()).log();

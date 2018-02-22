@@ -57,7 +57,7 @@ public class LoggingPageController implements PageController {
             new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
-            return null;
+            throw new RuntimeException(ex);
         } finally {
             if (!thrownException && response!=null) {
                 new LogMessage.Impl(this.logger, info, "finish create",
