@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data.schema;
 
+import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.typesafe.config.Config;
@@ -14,6 +15,7 @@ public class InitialTestDataLoader implements InitialGraphDataLoader {
     public InitialTestDataLoader() {
     }
 
+    @Inject
     public InitialTestDataLoader(Config config, RawElasticSchema schema) {
     }
 

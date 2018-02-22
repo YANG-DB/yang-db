@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalHasStepFinder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
@@ -39,11 +40,10 @@ public class ElementIndexSearchAppender implements SearchAppender<ElementControl
 
         Set<String> indices =
                 Stream.ofAll(labels)
-                .map(label -> context.getElementType().equals(ElementType.vertex) ?
-                            context.getSchemaProvider().getVertexSchema(label) :
-                            context.getSchemaProvider().getEdgeSchema(label))
-                .filter(Optional::isPresent)
-                .map(elementSchema -> elementSchema.get().getIndexPartitions())
+                .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
+                            context.getSchemaProvider().getVertexSchemas(label) :
+                            context.getSchemaProvider().getEdgeSchemas(label))
+                .map(GraphElementSchema::getIndexPartitions)
                 .flatMap(indexPartitions -> getIndices(indexPartitions, context))
                 .toJavaSet();
 

@@ -92,6 +92,12 @@ public interface LogMessage {
                     break;
             }
 
+            if (this.logger.getClass().equals(ch.qos.logback.classic.Logger.class)) {
+                if (!((ch.qos.logback.classic.Logger)this.logger).isAdditive()) {
+                    return;
+                }
+            }
+
             this.mdcWriters.forEach(MDCWriter::write);
 
             switch (this.level) {

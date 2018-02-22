@@ -233,7 +233,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
             case L:
                 return "IN";
             default:
-                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+                throw new IllegalArgumentException("Not Supported Relation DirectionSchema: " + dir);
         }
     }
     //endregion

@@ -165,6 +165,7 @@ public interface SimpleExtenderUtils {
         Optional<AsgEBase<T>> nextRelation = getNextDescendantUnmarkedOfType(type, lastEntityOp.get().getAsgEbase(), markedElements);
         if (!nextRelation.isPresent()) {
             Optional<AsgEBase<EEntityBase>> parentEntity = AsgQueryUtil.ancestor(lastEntityOp.get().getAsgEbase(), EEntityBase.class);
+
             while (parentEntity.isPresent()) {
 //              get first Rel element in path from source (current plan entity) to next ancestor entity
                 nextRelation = AsgQueryUtil.findFirstInPath(lastEntityOp.get().getAsgEbase(), parentEntity.get()

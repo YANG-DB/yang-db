@@ -4,7 +4,6 @@ import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
@@ -21,10 +20,7 @@ public class DiscreteVertexConverter<E extends Element> implements ElementConver
     //region Constructors
     public DiscreteVertexConverter(ElementControllerContext context) {
         this.context = context;
-        this.typeToLabelVertexSchemas = Stream.ofAll(context.getSchemaProvider().getVertexLabels())
-                .map(label -> context.getSchemaProvider().getVertexSchema(label))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+        this.typeToLabelVertexSchemas = Stream.ofAll(context.getSchemaProvider().getVertexSchemas())
                 .toJavaMap(vertexSchema ->
                         new Tuple2<>(
                                 Stream.ofAll(new TraversalValuesByKeyProvider().getValueByKey(

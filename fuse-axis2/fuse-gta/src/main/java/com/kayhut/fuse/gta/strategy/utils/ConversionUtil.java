@@ -35,6 +35,7 @@ public class ConversionUtil {
             case notEmpty: return new ExistsP<>();
             //case match: return Text.like((V)constraint.getExpr());
             case like: return Text.like((V)constraint.getExpr());
+            case likeAny: return Text.like((V)constraint.getExpr());
             default: throw new RuntimeException("not supported");
         }
     }
@@ -46,7 +47,7 @@ public class ConversionUtil {
             case L:
                 return Direction.IN;
             default:
-                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+                throw new IllegalArgumentException("Not Supported Relation DirectionSchema: " + dir);
         }
     }
 

@@ -1,7 +1,5 @@
 package com.kayhut.fuse.executor;
 
-import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.typesafe.config.Config;
@@ -13,25 +11,12 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class PluginAssemblyPackageLoader extends ExecutorModule {
 
-    protected GraphElementSchemaProviderFactory createSchemaProviderFactory(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        RawElasticSchema rawElasticSchema =
-                (RawElasticSchema) (Class.forName(
-                        conf.getString(conf.getString("assembly")+".physical_raw_schema")).newInstance());
-
-        GraphElementSchemaProviderFactory physicalSchemaProviderFactory =
-                (GraphElementSchemaProviderFactory) (Class.forName(
-                        conf.getString(conf.getString("assembly")+".physical_schema_provider_factory_class"))
-                        .getConstructor(Config.class, RawElasticSchema.class)
-                        .newInstance(conf,rawElasticSchema));
-
-        return new OntologyGraphElementSchemaProviderFactory(physicalSchemaProviderFactory);
+    protected Class<? extends RawElasticSchema> getRawElasticSchema(Config conf) throws ClassNotFoundException {
+        return (Class<? extends RawElasticSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
     }
 
-    protected InitialGraphDataLoader createInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        RawElasticSchema rawElasticSchema =
-                (RawElasticSchema) (Class.forName(
-                        conf.getString(conf.getString("assembly")+".physical_raw_schema")).newInstance());
-
+    protected InitialGraphDataLoader getInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        RawElasticSchema rawElasticSchema = getRawElasticSchema(conf).newInstance();
         InitialGraphDataLoader initialGraphDataLoader =
                 (InitialGraphDataLoader) (Class.forName(
                         conf.getString(conf.getString("assembly")+".physical_schema_data_loader"))

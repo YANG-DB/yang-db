@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -1188,7 +1189,7 @@ public class RealClusterTest {
                 new ETyped(1, "A", $ont.eType$("Evalue"), $ont.$entity$("Evalue").getProperties(), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5, 6), 0),
                 new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
-                new EProp(4, "stringValue", Constraint.of(ConstraintOp.like, "*herle*indso*")),
+                new EProp(4, "stringValue", Constraint.of(ConstraintOp.likeAny, Arrays.asList("*sherle*", "*Windso*"))),
                 new EProp(5, "context", Constraint.of(ConstraintOp.eq, "global")),
                 new Rel(6, $ont.rType$("hasEvalue"), L, null, 7, 0),
                 new ETyped(7, "B", $ont.eType$("Entity"), $ont.$entity$("Entity").getProperties(), 8, 0),
@@ -1245,6 +1246,39 @@ public class RealClusterTest {
                 .build();
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+
+        long start = System.currentTimeMillis();
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        long elapsed = System.currentTimeMillis() - start;
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test_EConcrete_Insight() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new EConcrete(1, "A", "Insight", "i00000000", "name", $ont.$entity$("Insight").getProperties(), 2, 0),
+                new Quant1(2, QuantType.all, Collections.emptyList(), 0)))
+                .build();
+
+        String a = new ObjectMapper().writeValueAsString(query);
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query, PlanTraceOptions.of(PlanTraceOptions.Level.verbose));
         CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
 
         long start = System.currentTimeMillis();

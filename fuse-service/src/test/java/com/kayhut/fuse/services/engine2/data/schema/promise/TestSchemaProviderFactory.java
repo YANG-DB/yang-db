@@ -1,5 +1,6 @@
 package com.kayhut.fuse.services.engine2.data.schema.promise;
 
+import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -20,6 +21,7 @@ public class TestSchemaProviderFactory implements GraphElementSchemaProviderFact
         this.schemaProviders.put("Dragons", new DragonsPhysicalSchemaProvider());
     }
 
+    @Inject
     public TestSchemaProviderFactory(Config config, RawElasticSchema schema) {
         this();
     }

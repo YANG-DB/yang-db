@@ -1,5 +1,6 @@
 package com.kayhut.fuse.assembly.knowlegde;
 
+import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
 import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
@@ -44,6 +45,7 @@ public class InitialKnowledgeDataLoader implements InitialGraphDataLoader {
     private Config conf;
     private RawElasticSchema schema;
 
+    @Inject
     public InitialKnowledgeDataLoader(Config conf, RawElasticSchema schema) throws UnknownHostException {
         this.conf = conf;
         this.schema = schema;

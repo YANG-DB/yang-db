@@ -1,7 +1,6 @@
 package com.kayhut.fuse.unipop;
 
 import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
@@ -13,11 +12,13 @@ import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.elasticsearch.action.ListenableActionFuture;
-import org.elasticsearch.action.search.*;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchScrollRequestBuilder;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.internal.InternalSearchHit;
@@ -34,10 +35,7 @@ import org.unipop.structure.UniGraph;
 
 import java.util.*;
 
-import static com.kayhut.fuse.unipop.controller.discrete.DiscreteTraversalTest.registry;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,9 +45,11 @@ import static org.mockito.Mockito.when;
 public class ElementControllerCompositTest {
     Client client;
     ElasticGraphConfiguration configuration;
+    MetricRegistry registry;
 
     @Before
     public void setUp() throws Exception {
+        registry = new MetricRegistry();
         client = mock(Client.class);
         configuration = mock(ElasticGraphConfiguration.class);
         when(configuration.getElasticGraphScrollSize()).thenReturn(1000);

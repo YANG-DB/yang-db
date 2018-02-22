@@ -39,7 +39,7 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
 
         this.includedOps = Stream.of(ConstraintOp.eq, ConstraintOp.ne, ConstraintOp.gt,
                 ConstraintOp.ge, ConstraintOp.lt, ConstraintOp.le, ConstraintOp.empty, ConstraintOp.notEmpty,
-                ConstraintOp.inSet, ConstraintOp.notInSet, ConstraintOp.inRange, ConstraintOp.notInRange)
+                ConstraintOp.inSet, ConstraintOp.notInSet, ConstraintOp.inRange, ConstraintOp.notInRange, ConstraintOp.likeAny)
                 .toJavaSet();
     }
     //endregion
@@ -67,17 +67,20 @@ public class ExactConstraintTransformationAsgStrategy implements AsgStrategy {
                     continue;
                 }
 
-                Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(eTypedAsgEBase.get().geteBase().geteType());
-                if (!vertexSchema.isPresent()) {
+                Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
+                if (Stream.ofAll(vertexSchemas).isEmpty()) {
                     continue;
                 }
+
+                // currently supporting a single vertex schema
+                GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
 
                 Optional<Property> property = ont.$property(eProp.getpType());
                 if (!property.isPresent()) {
                     continue;
                 }
 
-                Optional<GraphElementPropertySchema> propertySchema = vertexSchema.get().getProperty(property.get().getName());
+                Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
                 if (!propertySchema.isPresent()) {
                     continue;
                 }

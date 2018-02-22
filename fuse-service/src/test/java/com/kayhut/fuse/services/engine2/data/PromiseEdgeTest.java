@@ -125,7 +125,7 @@ public class PromiseEdgeTest{
         GraphEdgeSchema edgeSchema = mock(GraphEdgeSchema.class);
         when(edgeSchema.getIndexPartitions()).thenReturn(Optional.of(indexPartitions));
         GraphElementSchemaProvider schemaProvider = mock(GraphElementSchemaProvider.class);
-        when(schemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(edgeSchema));
+        when(schemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(edgeSchema));
 
         LoggingSearchVertexController controller = new LoggingSearchVertexController(new PromiseVertexController(client, configuration, graph, schemaProvider), registry);
 

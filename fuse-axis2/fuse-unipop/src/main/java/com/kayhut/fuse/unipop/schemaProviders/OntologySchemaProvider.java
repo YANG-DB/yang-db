@@ -2,8 +2,8 @@ package com.kayhut.fuse.unipop.schemaProviders;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.model.ontology.*;
-import javaslang.Tuple2;
 import javaslang.collection.Stream;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 
 import java.util.*;
 
@@ -25,61 +25,32 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
 
     //region GraphElementSchemaProvider implementation
     @Override
-    public Optional<GraphVertexSchema> getVertexSchema(String label) {
-        Optional<GraphVertexSchema> vertexSchema = this.schemaProvider.getVertexSchema(label);
-        return vertexSchema.flatMap(graphVertexSchema -> getEntitySchema(label, graphVertexSchema));
-
-    }
-
-    @Override
-    public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-        Optional<GraphEdgeSchema> edgeSchema = this.schemaProvider.getEdgeSchema(label);
-        if (!edgeSchema.isPresent()) {
-            return Optional.empty();
-        }
-
-        Optional<RelationshipType> relationshipType = $ont.relation(label);
-        if (relationshipType.isPresent()) {
-            EPair ePair = relationshipType.get().getePairs().get(0);
-            String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
-            String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
-            return getRelationSchema(label, eTypeA, eTypeB, edgeSchema.get());
-        }
-
-        return Optional.empty();
+    public Iterable<GraphVertexSchema> getVertexSchemas(String label) {
+        return Stream.ofAll(this.schemaProvider.getVertexSchemas(label))
+                .map(vertexSchema -> getEntitySchema(label, vertexSchema))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toJavaList();
     }
 
     @Override
     public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-        Iterable<GraphEdgeSchema> edgeSchemas = this.schemaProvider.getEdgeSchemas(label);
-        if (Stream.ofAll(edgeSchemas).isEmpty()) {
-            Optional<GraphEdgeSchema> edgeSchema = this.schemaProvider.getEdgeSchema(label);
-            if (edgeSchema.isPresent()) {
-                edgeSchemas = Collections.singletonList(edgeSchema.get());
-            } else {
-                return Collections.emptyList();
-            }
-        }
+        return mergeEdgeSchemasWithRelationship(label, this.schemaProvider.getEdgeSchemas(label));
+    }
 
-        Optional<RelationshipType> relationshipType = $ont.relation(label);
-        if (relationshipType.isPresent()) {
-            List<GraphEdgeSchema> graphEdgeSchemas = new ArrayList<>();
-            List<EPair> verticesPair = relationshipType.get().getePairs();
-            for (EPair ePair : verticesPair) {
-                String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
-                String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, String label) {
+        return mergeEdgeSchemasWithRelationship(label, Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, label)));
+    }
 
-                Stream.ofAll(edgeSchemas)
-                        .filter(schema -> isEdgeSchemaProperlyDirected(eTypeA, eTypeB, schema))
-                        .map(schema -> getRelationSchema(label, eTypeA, eTypeB, schema))
-                        .filter(Optional::isPresent)
-                        .forEach(schema -> graphEdgeSchemas.add(schema.get()));
-            }
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label) {
+        return mergeEdgeSchemasWithRelationship(label, Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, label)));
+    }
 
-            return graphEdgeSchemas;
-        }
-
-        return Collections.emptyList();
+    @Override
+    public Iterable<GraphEdgeSchema> getEdgeSchemas(String vertexLabelA, Direction direction, String label, String vertexLabelB) {
+        return mergeEdgeSchemasWithRelationship(label, Stream.ofAll(this.schemaProvider.getEdgeSchemas(vertexLabelA, direction, label, vertexLabelB)));
     }
 
     @Override
@@ -151,23 +122,28 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
         return Optional.of(new GraphEdgeSchema.Impl(
                 label,
                 edgeSchema.getConstraint(),
-                edgeSchema.getSource().isPresent() ?
+                edgeSchema.getEndA().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                edgeSchema.getSource().get().getIdFields(),
-                                Optional.of(sourceVertexLabel),
-                                edgeSchema.getSource().get().getRedundantProperties(),
-                                edgeSchema.getSource().get().getRouting(),
-                                edgeSchema.getSource().get().getIndexPartitions())) :
+                                edgeSchema.getEndA().get().getIdFields(),
+                                edgeSchema.getEndA().get().getLabel().isPresent() ?
+                                        edgeSchema.getEndA().get().getLabel() :
+                                        Optional.of(sourceVertexLabel),
+                                edgeSchema.getEndA().get().getRedundantProperties(),
+                                edgeSchema.getEndA().get().getRouting(),
+                                edgeSchema.getEndA().get().getIndexPartitions())) :
                         Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(sourceVertexLabel))),
-                edgeSchema.getDestination().isPresent() ?
+                edgeSchema.getEndB().isPresent() ?
                         Optional.of(new GraphEdgeSchema.End.Impl(
-                                edgeSchema.getDestination().get().getIdFields(),
-                                Optional.of(destinationVertexLabel),
-                                edgeSchema.getDestination().get().getRedundantProperties(),
-                                edgeSchema.getDestination().get().getRouting(),
-                                edgeSchema.getDestination().get().getIndexPartitions())) :
+                                edgeSchema.getEndB().get().getIdFields(),
+                                edgeSchema.getEndB().get().getLabel().isPresent() ?
+                                        edgeSchema.getEndB().get().getLabel() :
+                                        Optional.of(destinationVertexLabel),
+                                edgeSchema.getEndB().get().getRedundantProperties(),
+                                edgeSchema.getEndB().get().getRouting(),
+                                edgeSchema.getEndB().get().getIndexPartitions())) :
                         Optional.of(new GraphEdgeSchema.End.Impl(null, Optional.of(destinationVertexLabel))),
                 edgeSchema.getDirection(),
+                edgeSchema.getDirectionSchema(),
                 edgeSchema.getRouting(),
                 edgeSchema.getIndexPartitions(),
                 Stream.ofAll(relationshipType.get().getProperties() == null ? Collections.emptyList() : relationshipType.get().getProperties())
@@ -185,15 +161,38 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     }
     //endregion
 
-    //region Private Methods
-    private boolean isEdgeSchemaProperlyDirected(String sourceLabel, String destinationLabel, GraphEdgeSchema schema) {
-        if (schema.getDirection().isPresent()) {
-            List<String> labels = Arrays.asList(schema.getSource().get().getLabel().get(), schema.getDestination().get().getLabel().get());
-            return labels.contains(sourceLabel) && labels.contains(destinationLabel);
-        } else {
-            return schema.getSource().get().getLabel().get().equals(sourceLabel) &&
-                    schema.getDestination().get().getLabel().get().equals(destinationLabel);
+    private Iterable<GraphEdgeSchema> mergeEdgeSchemasWithRelationship(String label, Iterable<GraphEdgeSchema> edgeSchemas) {
+        Optional<RelationshipType> relationshipType = $ont.relation(label);
+        if (relationshipType.isPresent()) {
+            List<GraphEdgeSchema> graphEdgeSchemas = new ArrayList<>();
+            List<EPair> verticesPair = relationshipType.get().getePairs();
+            for (EPair ePair : verticesPair) {
+                String eTypeA = $ont.$entity$(ePair.geteTypeA()).getName();
+                String eTypeB = $ont.$entity$(ePair.geteTypeB()).getName();
+
+                Stream.ofAll(edgeSchemas)
+                        .filter(schema -> isEdgeSchemaProperlyDirected(eTypeA, eTypeB, schema))
+                        .map(schema -> getRelationSchema(label, eTypeA, eTypeB, schema))
+                        .filter(Optional::isPresent)
+                        .forEach(schema -> graphEdgeSchemas.add(schema.get()));
+            }
+
+            return graphEdgeSchemas;
         }
+
+        return Collections.emptyList();
+    }
+
+    private boolean isEdgeSchemaProperlyDirected(String sourceLabel, String destinationLabel, GraphEdgeSchema schema) {
+        String schemaSourceLabel = schema.getDirection().equals(Direction.OUT) ?
+                schema.getEndA().get().getLabel().get() :
+                schema.getEndB().get().getLabel().get();
+
+        String schemaDestinationLabel = schema.getDirection().equals(Direction.OUT) ?
+                schema.getEndB().get().getLabel().get() :
+                schema.getEndA().get().getLabel().get();
+
+        return sourceLabel.equals(schemaSourceLabel) && destinationLabel.equals(schemaDestinationLabel);
     }
     //endregion
 
@@ -204,94 +203,4 @@ public class OntologySchemaProvider implements GraphElementSchemaProvider {
     protected Set<String> vertexLabels;
     protected Set<String> edgeLabels;
     //endregion
-
-    //region AdapterSchema
-    public static class Adapter implements GraphElementSchemaProvider {
-        //region Constructors
-        public Adapter(Iterable<GraphVertexSchema> vertexSchemas, Iterable<GraphEdgeSchema> edgeSchemas) {
-            this(vertexSchemas, Optional.empty(), edgeSchemas, Optional.empty());
-        }
-
-        public Adapter(Optional<GraphVertexSchema> defaultVertexSchema,
-                       Optional<GraphEdgeSchema> defaultEdgeSchema) {
-            this(Collections.emptyList(), defaultVertexSchema, Collections.emptyList(), defaultEdgeSchema);
-        }
-
-        public Adapter(Iterable<GraphVertexSchema> vertexSchemas,
-                       Optional<GraphVertexSchema> defaultVertexSchema,
-                       Iterable<GraphEdgeSchema> edgeSchemas) {
-            this(vertexSchemas, defaultVertexSchema, edgeSchemas, Optional.empty());
-        }
-
-        public Adapter(Iterable<GraphVertexSchema> vertexSchemas,
-                       Iterable<GraphEdgeSchema> edgeSchemas,
-                       Optional<GraphEdgeSchema> defaultEdgeSchema) {
-            this(vertexSchemas, Optional.empty(), edgeSchemas, defaultEdgeSchema);
-        }
-
-        public Adapter(Iterable<GraphVertexSchema> vertexSchemas,
-                       Optional<GraphVertexSchema> defaultVertexSchema,
-                       Iterable<GraphEdgeSchema> edgeSchemas,
-                       Optional<GraphEdgeSchema> defaultEdgeSchema) {
-            this.vertexSchemas = Stream.ofAll(vertexSchemas).toJavaMap(schema -> new Tuple2<>(schema.getLabel(), schema));
-            this.defaultVertexSchema = defaultVertexSchema;
-
-            this.edgeSchemas = Stream.ofAll(edgeSchemas).groupBy(schema -> schema.getLabel())
-                    .toJavaMap(grouping -> new Tuple2<>(grouping._1(), grouping._2().toJavaList()));
-            this.defaultEdgeSchema = defaultEdgeSchema;
-        }
-        //endregion
-
-        //region GraphElementSchemaProvider Implementation
-        @Override
-        public Optional<GraphVertexSchema> getVertexSchema(String label) {
-            Optional<GraphVertexSchema> schema = Optional.ofNullable(this.vertexSchemas.get(label));
-            return schema.isPresent() ? schema : defaultVertexSchema;
-        }
-
-        @Override
-        public Optional<GraphEdgeSchema> getEdgeSchema(String label) {
-            Iterable<GraphEdgeSchema> schemas = this.edgeSchemas.get(label);
-            if (schemas == null) {
-                return defaultEdgeSchema;
-            }
-
-            return Optional.of(Stream.ofAll(schemas).get(0));
-        }
-
-        @Override
-        public Iterable<GraphEdgeSchema> getEdgeSchemas(String label) {
-            Iterable<GraphEdgeSchema> schemas = this.edgeSchemas.get(label);
-            if (schemas == null) {
-                return defaultEdgeSchema.map(Collections::singletonList).orElseGet(Collections::emptyList);
-            }
-
-            return schemas;
-        }
-
-        @Override
-        public Optional<GraphElementPropertySchema> getPropertySchema(String name) {
-            return Optional.empty();
-        }
-
-        @Override
-        public Iterable<String> getVertexLabels() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public Iterable<String> getEdgeLabels() {
-            return Collections.emptyList();
-        }
-        //endregion
-
-        //region Fields
-        private Map<String, GraphVertexSchema> vertexSchemas;
-        private Optional<GraphVertexSchema> defaultVertexSchema;
-
-        private Map<String, Iterable<GraphEdgeSchema>> edgeSchemas;
-        private Optional<GraphEdgeSchema> defaultEdgeSchema;
-        //endregion
-    }
-    //endregions
 }

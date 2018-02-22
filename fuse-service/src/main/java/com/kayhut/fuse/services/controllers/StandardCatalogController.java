@@ -92,9 +92,10 @@ public class StandardCatalogController implements CatalogController {
                             edgeSchema.getLabel(),
                             new GraphElementConstraint.Impl(
                                     new TraversalToString(edgeSchema.getConstraint().getTraversalConstraint().toString())),
-                            edgeSchema.getSource(),
-                            edgeSchema.getDestination(),
+                            edgeSchema.getEndA(),
+                            edgeSchema.getEndB(),
                             edgeSchema.getDirection(),
+                            edgeSchema.getDirectionSchema(),
                             edgeSchema.getRouting(),
                             edgeSchema.getIndexPartitions(),
                             edgeSchema.getProperties(),
