@@ -262,8 +262,8 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(plan.getCost().getGlobalCost().cost, 133d / 13d, 0.1);
-        Assert.assertEquals(plan.getCost().getPlanStepCosts().iterator().next().getCost().getCost(), 133d / 13d, 0.1);
+        Assert.assertEquals(Math.ceil(133d / 13d),plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(Math.ceil(133d / 13d),plan.getCost().getPlanStepCosts().iterator().next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -303,12 +303,12 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(111.1, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(121.11, plan.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = plan.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(11,op.getCost().getCost(), 0.1);
         Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
-        Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(110, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -326,12 +326,12 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(112.6, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(121.11, plan.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = plan.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(133d/13d,op.getCost().getCost(), 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
-        Assert.assertEquals(102.3, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(Math.ceil(133d/13d),op.getCost().getCost(), 0.1);
+        Assert.assertEquals(0.11, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(110, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -396,12 +396,12 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(111.1, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(121.11, plan.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = plan.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
-        Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(11,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(0.11, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(110, iterator.next().getCost().getCost(), 0.1);
     }
 
 
@@ -423,7 +423,7 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(112.8, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(131.12, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
 
@@ -444,7 +444,7 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(23.91, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(32.12, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     @Test
@@ -467,9 +467,9 @@ public class SmartEpbShortPathTests {
         PlanWithCost<Plan, CountEstimatesCost> opWithCost = plan.getCost().getPlanStepCosts().iterator().next();
         Assert.assertEquals(3, opWithCost.getCost().getCountEstimates().size());
         Iterator<Double> iterator = opWithCost.getCost().getCountEstimates().iterator();
-        Assert.assertEquals(10.23, iterator.next(), 0.01);
-        Assert.assertEquals(0.34, iterator.next(), 0.01);
-        Assert.assertEquals(0.0008, iterator.next(), 0.01);
+        Assert.assertEquals(11, iterator.next(), 0.01);
+        Assert.assertEquals(1, iterator.next(), 0.01);
+        Assert.assertEquals(1, iterator.next(), 0.01);
     }
 
     @Test
