@@ -44,7 +44,7 @@ public class RelPropertiesGroupingAsgStrategy implements AsgStrategy {
             relPropsAsgBChildren.forEach(asgEBase::removeBChild);
         } else {
             rPropGroup = new RelPropGroup();
-            rPropGroup.seteNum(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get() + 1);
+            rPropGroup.seteNum(100*asgEBase.geteNum() + 1);
         }
         asgEBase.addBChild(new AsgEBase<>(rPropGroup));
     }

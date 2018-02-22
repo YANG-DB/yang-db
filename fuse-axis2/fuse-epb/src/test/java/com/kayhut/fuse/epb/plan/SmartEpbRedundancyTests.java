@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
@@ -17,9 +18,9 @@ import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Value;
@@ -50,7 +51,6 @@ import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -159,8 +159,17 @@ public class SmartEpbRedundancyTests {
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
-                (ont) -> eBaseStatisticsProvider,
-                (id) -> Optional.of(ont.get())));
+                (ont) -> eBaseStatisticsProvider, new OntologyProvider() {
+            @Override
+            public Optional<Ontology> get(String id) {
+                return Optional.of(ont.get());
+            }
+
+            @Override
+            public Collection<Ontology> getAll() {
+                return Collections.singleton(ont.get());
+            }
+        }));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -169,7 +178,17 @@ public class SmartEpbRedundancyTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
+                new M1PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,

@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -45,7 +46,17 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
                         Property.Builder.get().withPType("name").withName("name").withType("string").build()))
                 .build();
 
-        OntologyProvider ontologyProvider = id -> Optional.of(ontology);
+        OntologyProvider ontologyProvider = new OntologyProvider() {
+            @Override
+            public Optional<Ontology> get(String id) {
+                return Optional.of(ontology);
+            }
+
+            @Override
+            public Collection<Ontology> getAll() {
+                return Collections.singleton(ontology);
+            }
+        };
 
         GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProvider.Impl(
                 Collections.singletonList(

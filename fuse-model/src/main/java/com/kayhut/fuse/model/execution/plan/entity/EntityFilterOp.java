@@ -12,11 +12,16 @@ import com.kayhut.fuse.model.query.properties.EPropGroup;
 public class EntityFilterOp extends AsgEBasePlanOp<EPropGroup> implements Filter {
     //region Constructors
     public EntityFilterOp() {
-
+        super(new AsgEBase<>());
     }
 
     public EntityFilterOp(AsgEBase<EPropGroup> asgEBase) {
         super(asgEBase);
+    }
+
+    public EntityFilterOp(AsgEBase<EPropGroup> asgEBase, AsgEBase<EEntityBase> entity) {
+        super(asgEBase);
+        this.entity = entity;
     }
     //endregion
 

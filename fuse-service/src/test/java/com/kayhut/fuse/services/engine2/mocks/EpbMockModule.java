@@ -22,13 +22,7 @@ public class EpbMockModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                        .toInstance(new PlanSearcher<Plan, PlanDetailedCost, AsgQuery>() {
-                            @Override
-                            public PlanWithCost<Plan, PlanDetailedCost> search(AsgQuery query) {
-                                return plan;
-                            }
-                        });
+                this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).toInstance(query -> plan);
                 this.expose(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){});
             }
         });

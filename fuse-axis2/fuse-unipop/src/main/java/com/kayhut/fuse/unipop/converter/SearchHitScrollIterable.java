@@ -126,17 +126,17 @@ public class SearchHitScrollIterable implements Iterable<SearchHit> {
             }
 
             SearchResponse response = this.scrollId == null ?
-                this.iterable.getSearchRequestBuilder()
-                        .addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
-                        .setScroll(new TimeValue(iterable.getScrollTime()))
-                        .setSize(Math.min(iterable.getScrollSize(),
-                                (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
-                        .execute()
-                        .actionGet() :
-                this.iterable.getClient().prepareSearchScroll(this.scrollId)
-                                .setScroll(new TimeValue(this.iterable.getScrollTime()))
-                                .execute()
-                                .actionGet();
+                    this.iterable.getSearchRequestBuilder()
+                            .addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
+                            .setScroll(new TimeValue(iterable.getScrollTime()))
+                            .setSize(Math.min(iterable.getScrollSize(),
+                                    (int) Math.min((long) Integer.MAX_VALUE, iterable.getLimit())))
+                            .execute()
+                            .actionGet() :
+                    this.iterable.getClient().prepareSearchScroll(this.scrollId)
+                            .setScroll(new TimeValue(this.iterable.getScrollTime()))
+                            .execute()
+                            .actionGet();
 
             this.scrollId = response.getScrollId();
             for (SearchHit hit : response.getHits().getHits()) {

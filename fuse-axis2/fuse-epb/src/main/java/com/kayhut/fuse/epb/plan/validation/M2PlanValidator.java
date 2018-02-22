@@ -32,6 +32,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
     private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels, int joinDepth, boolean validateJoinOnly) {
         if (numNestingLevels == 0) {
                     return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
+//                            new SingleEntityValidator(),
                             new AdjacentPlanOpValidator(),
                             new NoRedundantRelationOpValidator(),
                             new RedundantGoToEntityOpValidator(),
@@ -47,6 +48,7 @@ public class M2PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
         ChainedPlanValidator.PlanOpValidator leftJoinBranchValidator = buildNestedPlanOpValidator(numNestingLevels - 1, joinDepth-1, true);
         ChainedPlanValidator.PlanOpValidator rightJoinBranchValidator = buildNestedPlanOpValidator(numNestingLevels - 1, joinDepth-1, validateJoinOnly);
         return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
+//                new SingleEntityValidator(),
                 new AdjacentPlanOpValidator(),
                 new NoRedundantRelationOpValidator(),
                 new RedundantGoToEntityOpValidator(),

@@ -1,5 +1,6 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
@@ -32,12 +33,10 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.CONCRETE;
 import static com.kayhut.fuse.epb.utils.PlanMockUtils.Type.TYPED;
@@ -83,10 +82,21 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
 
 
     @Test
+    @Ignore("No more single op pattern - all patterns are now with ***OpFilter along the entity / Relation")
     public void calculateEntityOnlyPattern() throws Exception {
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(PlanMockUtils.PlanMockBuilder.mock()));
         PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
-                new M1PatternCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, (id) -> Optional.of(ont.get()));
+                new M1PatternCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                });
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
 
@@ -119,7 +129,17 @@ public class BasicPatternCostEstimatorWithStatisticsProviderTest {
         StatisticsProvider provider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, getStatisticsProvider(builder));
 
         PatternCostEstimator<Plan, CountEstimatesCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator =
-                new M1PatternCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, (id) -> Optional.of(ont.get()));
+                new M1PatternCostEstimator(new CostEstimationConfig(1, 0.001), (ont) -> provider, new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                });
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withOnt(ont.get().getOnt()).build();
 

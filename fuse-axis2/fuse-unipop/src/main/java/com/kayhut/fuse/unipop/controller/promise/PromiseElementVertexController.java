@@ -1,15 +1,18 @@
 package com.kayhut.fuse.unipop.controller.promise;
 
-import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
-import com.kayhut.fuse.unipop.controller.common.appender.*;
+import com.kayhut.fuse.unipop.controller.common.appender.CompositeSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.FilterSourceSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.IndexSearchAppender;
+import com.kayhut.fuse.unipop.controller.common.appender.MustFetchSourceSearchAppender;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
-import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.promise.appender.*;
-import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
+import com.kayhut.fuse.unipop.controller.promise.appender.PromiseConstraintSearchAppender;
+import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
+import com.kayhut.fuse.unipop.controller.promise.context.PromiseElementControllerContext;
 import com.kayhut.fuse.unipop.controller.promise.converter.SearchHitPromiseVertexConverter;
+import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
+import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -33,7 +36,7 @@ import org.unipop.structure.UniGraph;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.*;
+import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
 /**
  * Created by liorp on 4/2/2017.
@@ -169,6 +172,7 @@ public class PromiseElementVertexController implements SearchQuery.SearchControl
 
         return convert(searchHits, new SearchHitPromiseVertexConverter(graph));
     }
+
 
     private Iterator<Element> convert(Iterable<SearchHit> searchHitIterable, ElementConverter<SearchHit, Element> searchHitPromiseVertexConverter) {
         return Stream.ofAll(searchHitIterable)

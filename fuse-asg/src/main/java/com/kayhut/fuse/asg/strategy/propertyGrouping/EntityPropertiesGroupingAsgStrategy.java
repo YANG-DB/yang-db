@@ -43,7 +43,7 @@ public class EntityPropertiesGroupingAsgStrategy implements AsgStrategy {
                         int maxEnum = Stream.ofAll(AsgQueryUtil.eNums(query)).max().get();
 
                         if (entityBase.getNext().isEmpty()) {
-                            ePropGroup.seteNum(maxEnum + 1);
+                            ePropGroup.seteNum(entityBase.geteNum()*100+1);
                             entityBase.addNextChild(new AsgEBase<>(ePropGroup));
                         } else {
                             Quant1 quant1 = new Quant1();
@@ -51,7 +51,7 @@ public class EntityPropertiesGroupingAsgStrategy implements AsgStrategy {
                             quant1.setqType(QuantType.all);
                             AsgEBase<Quant1> asgQuant1 = new AsgEBase<>(quant1);
 
-                            ePropGroup.seteNum(maxEnum + 2);
+                            ePropGroup.seteNum(entityBase.geteNum()*100 + 1);
 
                             asgQuant1.addNextChild(new AsgEBase<>(ePropGroup));
                             new ArrayList<>(entityBase.getNext()).forEach(nextAsgEbase -> {

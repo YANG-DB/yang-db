@@ -4,7 +4,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import javaslang.collection.Stream;
 import org.elasticsearch.client.Client;
