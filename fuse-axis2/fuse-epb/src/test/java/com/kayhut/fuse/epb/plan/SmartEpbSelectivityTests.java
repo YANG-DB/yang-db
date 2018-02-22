@@ -246,7 +246,7 @@ public class SmartEpbSelectivityTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(43.36, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(54.043, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     @Test
@@ -266,7 +266,7 @@ public class SmartEpbSelectivityTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(21.47, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(25.113, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     //region Private Methods
