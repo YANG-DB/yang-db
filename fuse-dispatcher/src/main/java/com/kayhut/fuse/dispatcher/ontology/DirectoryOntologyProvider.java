@@ -6,15 +6,11 @@ import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -33,7 +29,6 @@ public class DirectoryOntologyProvider implements OntologyProvider {
                     .filter(file -> FilenameUtils.getExtension(file.getName()).equals("json"))
                     .toJavaMap(file -> {
                         try {
-                            logger.info("Available Ontology: "+file.getName());
                             return new Tuple2<>(FilenameUtils.getBaseName(file.getName()),
                                     OntologyFinalizer.finalize(mapper.readValue(file, Ontology.class)));
                         } catch (IOException e) {
@@ -58,6 +53,5 @@ public class DirectoryOntologyProvider implements OntologyProvider {
 
     //region Fields
     private Map<String,Ontology> ontologies;
-    private Logger logger = LoggerFactory.getLogger(DirectoryOntologyProvider.class);
     //endregion
 }

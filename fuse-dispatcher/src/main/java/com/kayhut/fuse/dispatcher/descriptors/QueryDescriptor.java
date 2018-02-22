@@ -48,8 +48,4 @@ public class QueryDescriptor implements Descriptor<Query> {
         return joiner.toString();
     }
     //endregion
-
-    public static String toString(Query query) {
-        return new QueryDescriptor().describe(query);
-    }
 }
