@@ -44,6 +44,11 @@ public class EAgg extends EBase implements Next<Integer> {
         this.next = next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return next > -1;
+    }
+
 
     //region Fields
     private	String eTag;

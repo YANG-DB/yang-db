@@ -76,6 +76,11 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
         this.next = next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return next > -1;
+    }
+
     public Integer getB() {
         return b;
     }

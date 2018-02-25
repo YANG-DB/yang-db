@@ -1,5 +1,6 @@
 package com.kayhut.fuse.model.asgQuery;
 
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -13,17 +14,18 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.Quant2;
 import com.kayhut.fuse.model.query.quant.QuantType;
-import javaslang.collection.Array;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by benishue on 23-Feb-17.
  */
-public class AsgQuery implements IQuery{
+public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
 
     //region Getters & Setters
 
@@ -51,6 +53,10 @@ public class AsgQuery implements IQuery{
         this.start = start;
     }
 
+    @Override
+    public Collection<AsgEBase<? extends EBase>> getElements() {
+        return elements;
+    }
     //endregion
 
     @Override
@@ -65,6 +71,8 @@ public class AsgQuery implements IQuery{
     private String ont;
     private String name;
     private AsgEBase<Start> start;
+    private Collection<AsgEBase<? extends EBase>> elements = new ArrayList<>();
+
     //endregion
 
     //region Builders
@@ -72,8 +80,10 @@ public class AsgQuery implements IQuery{
         private String ont;
         private String name;
         private AsgEBase start;
+        private Collection<AsgEBase<? extends EBase>> elements;
 
         private AsgQueryBuilder() {
+            elements = new ArrayList<>();
         }
 
         public static AsgQueryBuilder anAsgQuery() {
@@ -92,6 +102,12 @@ public class AsgQuery implements IQuery{
 
         public AsgQueryBuilder withStart(AsgEBase<Start> start) {
             this.start = start;
+            this.elements.add(start);
+            return this;
+        }
+
+        public AsgQueryBuilder withElements(Collection<AsgEBase<? extends EBase>> values) {
+            this.elements = values;
             return this;
         }
 
@@ -100,8 +116,10 @@ public class AsgQuery implements IQuery{
             asgQuery.setOnt(ont);
             asgQuery.setName(name);
             asgQuery.setStart(start);
+            asgQuery.elements = elements;
             return asgQuery;
         }
+
     }
 
     public static class Builder {
@@ -119,6 +137,8 @@ public class AsgQuery implements IQuery{
             query.setStart(eBase);
             query.setName(queryName);
             query.setOnt(ontologyName);
+            query.elements.add(eBase);
+
         }
 
         public static Builder start(String queryName, String ontologyName) {
@@ -127,6 +147,7 @@ public class AsgQuery implements IQuery{
 
         private AsgEBase addNextChild(AsgEBase element, boolean within) {
             current.addNextChild(element);
+            query.elements.add(element);
             if(!within) {
                 current = element;
             }
@@ -135,6 +156,7 @@ public class AsgQuery implements IQuery{
 
         private AsgEBase addNextB(AsgEBase<RelProp> element) {
             current.addBChild(element);
+            query.elements.add(element);
             current = element;
             return current;
         }

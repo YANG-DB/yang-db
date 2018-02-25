@@ -1,5 +1,6 @@
 package com.kayhut.fuse.asg.util;
 
+import com.kayhut.fuse.dispatcher.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
@@ -58,6 +59,7 @@ public class AsgQueryUtilTest {
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(1, 2, 3));
         List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 1, 3);
         assertEquals(expectedPath, actualPath);
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -67,6 +69,7 @@ public class AsgQueryUtilTest {
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(3, 2, 1));
         List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 3, 1);
         assertEquals(expectedPath, actualPath);
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -76,6 +79,7 @@ public class AsgQueryUtilTest {
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(3, 4, 5, 6));
         List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 3, 6);
         assertEquals(expectedPath, actualPath);
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -85,6 +89,7 @@ public class AsgQueryUtilTest {
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(6, 5, 4, 3));
         List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 6, 3);
         assertEquals(expectedPath, actualPath);
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -94,6 +99,7 @@ public class AsgQueryUtilTest {
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(3, 4, 7, 8));
         List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 3, 8);
         assertEquals(expectedPath, actualPath);
+        System.out.println(AsgQueryDescriptor.print(query));
     }
 
     @Test
@@ -103,6 +109,7 @@ public class AsgQueryUtilTest {
         List<AsgEBase<? extends EBase>> expectedPath = getExpectedPath(query, Arrays.asList(8, 7, 4, 3));
         List<AsgEBase<? extends EBase>> actualPath = AsgQueryUtil.path(query, 8, 3);
         assertEquals(expectedPath, actualPath);
+        System.out.println(AsgQueryDescriptor.print(query));
     }
     //endregion
 
