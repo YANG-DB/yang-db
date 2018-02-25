@@ -43,7 +43,7 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
     @Override
     public PlanWithCost<P, C> search(Q query) {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
-        Exception exp = null;
+        boolean thrownException = false;
 
         try {
             new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search, ElapsedFrom.now()).log();
@@ -52,13 +52,13 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
                     .with(this.descriptor.describe(planWithCost)).log();
             return planWithCost;
         } catch (Exception ex) {
-            exp = ex;
+            thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed search", LogType.of(failure), search, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "failure")).mark();
-            throw new RuntimeException(exp);
+            throw new RuntimeException(ex);
         } finally {
-            if (exp==null) {
+            if (!thrownException) {
                 new LogMessage.Impl(this.logger, trace, "finish search", LogType.of(success), search, ElapsedFrom.now()).log();
                 this.metricRegistry.meter(name(this.logger.getName(), search.toString(), "success")).mark();
             }

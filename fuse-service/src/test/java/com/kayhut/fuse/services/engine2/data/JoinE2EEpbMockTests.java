@@ -466,7 +466,6 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    @Ignore
     public void testJoinRelEntityPlan() throws IOException, InterruptedException {
         Query query = getDragonFireDragonX3Query();
 
