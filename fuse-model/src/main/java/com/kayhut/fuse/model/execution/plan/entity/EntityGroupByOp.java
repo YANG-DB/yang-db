@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.query.aggregation.AggBase;
 public class EntityGroupByOp extends AsgEBasePlanOp<AggBase> {
     //region Constructor
     public EntityGroupByOp() {
-
+        super(new AsgEBase<>());
     }
 
     public EntityGroupByOp(String name, String vertexTag, AsgEBase<AggBase> agg) {

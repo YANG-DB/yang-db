@@ -10,7 +10,7 @@ import java.util.Collections;
 /**
  * Created by Roman on 04/05/2017.
  */
-public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
+public class M1PlanValidator extends CompositePlanValidator<Plan, AsgQuery> {
 
     //region Constructors
     public M1PlanValidator() {
@@ -31,6 +31,7 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
     private ChainedPlanValidator.PlanOpValidator buildNestedPlanOpValidator(int numNestingLevels) {
         if (numNestingLevels == 0) {
             return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
+//                    new SingleEntityValidator(),
                     new AdjacentPlanOpValidator(),
                     new NoRedundantRelationOpValidator(),
                     new RedundantGoToEntityOpValidator(),
@@ -39,6 +40,7 @@ public class M1PlanValidator extends CompositePlanValidator<Plan,AsgQuery> {
         }
 
         return new CompositePlanOpValidator(CompositePlanOpValidator.Mode.all,
+//                new SingleEntityValidator(),
                 new AdjacentPlanOpValidator(),
                 new NoRedundantRelationOpValidator(),
                 new RedundantGoToEntityOpValidator(),

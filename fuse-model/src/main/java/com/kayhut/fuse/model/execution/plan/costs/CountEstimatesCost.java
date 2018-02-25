@@ -29,7 +29,7 @@ public class CountEstimatesCost implements Cost, Cloneable {
     }
 
     public void applyCountsUpdateFactor(double countUpdateFactor){
-        push(countUpdateFactor * peek());
+        push(Math.ceil(countUpdateFactor * peek()));
     }
     //endregion
 

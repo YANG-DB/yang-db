@@ -114,10 +114,15 @@ public class FuseClient {
         return planWithCost.getPlan();
 
     }
+
+    public Query getQueryObject(String v1QueryUrl) throws IOException {
+        return unwrapDouble(getRequest(v1QueryUrl));
+
+    }
     //endregion
 
     //region Protected Methods
-    protected String postRequest(String url, Object body) throws IOException {
+    public static String postRequest(String url, Object body) throws IOException {
         return given().contentType("application/json")
                 .body(body)
                 .post(url)
@@ -125,20 +130,20 @@ public class FuseClient {
                 .print();
     }
 
-    protected String getRequest(String url) {
+    public static String getRequest(String url) {
         return given().contentType("application/json")
                 .get(url)
                 .thenReturn()
                 .print();
     }
 
-    protected String unwrap(String response) throws IOException {
+    public static String unwrap(String response) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> responseMap = mapper.readValue(response, new TypeReference<Map<String, Object>>(){});
         return mapper.writeValueAsString(responseMap.get("data"));
     }
 
-    protected <T> T unwrapDouble(String response) throws IOException {
+    public  static <T> T unwrapDouble(String response) throws IOException {
         return ((ContentResponse<T>)JsonReader.jsonToJava((String)JsonReader.jsonToJava(response))).getData();
     }
     //endregion

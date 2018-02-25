@@ -20,6 +20,7 @@ import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.info;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.trace;
 import static com.kayhut.fuse.dispatcher.logging.LogType.*;
+import static com.kayhut.fuse.dispatcher.logging.RequestIdByScope.Builder.query;
 
 /**
  * Created by roman.margolis on 14/12/2017.
@@ -48,19 +49,25 @@ public class LoggingCursorController implements CursorController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), create.toString())).time();
         boolean thrownException = false;
 
+        ContentResponse<CursorResourceInfo> response = null;
         try {
             new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start),
                     create, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
-            return controller.create(queryId, createCursorRequest);
+            response = controller.create(queryId, createCursorRequest);
+            return response;
         } catch (Exception ex) {
             thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
-            return null;
+            throw new RuntimeException(ex);
         } finally {
-            if (!thrownException) {
-                new LogMessage.Impl(this.logger, info, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
+            if (!thrownException && response!=null) {
+                new LogMessage.Impl(this.logger, info, "finish create",
+                        RequestIdByScope.of(query(queryId)
+                                .cursor(response.getData().getResourceId())
+                                .get()),
+                        LogType.of(success), create, ElapsedFrom.now()).log();
                 new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
                 this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
             }
@@ -75,7 +82,9 @@ public class LoggingCursorController implements CursorController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId",
-                    LogType.of(start), getInfoByQueryId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+                    LogType.of(start), getInfoByQueryId,
+                    RequestIdByScope.of(query(queryId).get()),
+                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
@@ -100,7 +109,11 @@ public class LoggingCursorController implements CursorController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId",
-                    LogType.of(start), getInfoByQueryIdAndCursorId, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+                    LogType.of(start), getInfoByQueryIdAndCursorId,
+                    RequestIdByScope.of(query(queryId)
+                            .cursor(cursorId)
+                            .get()),
+                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
@@ -125,7 +138,11 @@ public class LoggingCursorController implements CursorController {
 
         try {
             new LogMessage.Impl(this.logger, trace, "start delete",
-                    LogType.of(start), delete, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+                    LogType.of(start), delete,
+                    RequestIdByScope.of(query(queryId)
+                            .cursor(cursorId)
+                            .get()),
+                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.delete(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;

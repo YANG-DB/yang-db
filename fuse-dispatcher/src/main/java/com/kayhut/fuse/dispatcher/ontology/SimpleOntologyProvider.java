@@ -4,9 +4,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.kayhut.fuse.model.Utils.asObject;
 import static com.kayhut.fuse.model.Utils.readJsonFile;
@@ -31,5 +29,10 @@ public class SimpleOntologyProvider implements OntologyProvider {
     @Override
     public Optional<Ontology> get(String id) {
         return Optional.of(ontologyMap.get(id));
+    }
+
+    @Override
+    public Collection<Ontology> getAll() {
+        return ontologyMap.values();
     }
 }

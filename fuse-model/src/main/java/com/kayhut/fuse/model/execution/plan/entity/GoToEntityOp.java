@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 public class GoToEntityOp extends EntityOp {
     //region Constructors
     public GoToEntityOp() {
-
+        super(new AsgEBase<>());
     }
 
     public GoToEntityOp(AsgEBase<EEntityBase> entity) {

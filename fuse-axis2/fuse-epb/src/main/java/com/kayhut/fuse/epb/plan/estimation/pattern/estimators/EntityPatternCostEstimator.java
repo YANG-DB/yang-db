@@ -47,7 +47,7 @@ public class EntityPatternCostEstimator implements PatternCostEstimator<Plan, Co
             filterTotal = statisticsProvider.getNodeFilterStatistics(start.getAsgEbase().geteBase(), startFilter.getAsgEbase().geteBase()).getTotal();
         }
 
-        double min = Math.min(entityTotal, filterTotal);
+        double min = Math.ceil(Math.min(entityTotal, filterTotal));
         return PatternCostEstimator.Result.of(new double[]{1.0}, new PlanWithCost<>(new Plan(start, startFilter), new CountEstimatesCost(min, min)));
     }
     //endregion

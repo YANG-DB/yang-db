@@ -22,7 +22,7 @@ import java.util.List;
  * Created by moti on 3/2/2017.
  */
 public class BuilderTestUtil {
-    public static Pair<AsgQuery, AsgEBase> createSingleEntityQuery(){
+    public static Pair<AsgQuery, AsgEBase> createSingleEntityQuery() {
         EConcrete concrete = new EConcrete();
         concrete.seteNum(1);
         concrete.seteTag("Person");
@@ -38,7 +38,7 @@ public class BuilderTestUtil {
         return new ImmutablePair<>(query, ebaseAsgEBase);
     }
 
-    public static Pair<AsgQuery, AsgEBase<? extends EBase>> createTwoEntitiesPathQuery(){
+    public static Pair<AsgQuery, AsgEBase<? extends EBase>> createTwoEntitiesPathQuery() {
         EUntyped untyped = new EUntyped();
         untyped.seteNum(3);
         AsgEBase<EUntyped> unTypedAsg3 = AsgEBase.Builder.<EUntyped>get().withEBase(untyped).build();
@@ -60,26 +60,7 @@ public class BuilderTestUtil {
 
         AsgQuery query = AsgQuery.AsgQueryBuilder.anAsgQuery().withStart(startAsg).build();
 
-        return  new ImmutablePair<>(query, concreteAsg1);
+        return new ImmutablePair<>(query, concreteAsg1);
     }
 
-    public static Plan createPlanForTwoEntitiesPathQuery(AsgQuery asgQuery){
-        List<PlanOp> ops = new LinkedList<>();
-
-        AsgEBase<Start> startAsg = asgQuery.getStart();
-        AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
-
-        EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
-
-        AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>)entityAsg.getNext().get(0);
-        RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
-
-        AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>)relBaseAsg.getNext().get(0);
-        EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(unOp);
-
-        return new Plan(ops);
-    }
 }

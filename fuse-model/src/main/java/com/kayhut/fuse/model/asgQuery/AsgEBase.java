@@ -2,6 +2,7 @@ package com.kayhut.fuse.model.asgQuery;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.Rel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class AsgEBase<T extends EBase> {
+
+
 
     //region Builder
     public static final class Builder<T extends EBase> {
@@ -63,8 +66,7 @@ public class AsgEBase<T extends EBase> {
     //endregion
 
     //region Constructors
-    public AsgEBase() {
-    }
+    public AsgEBase() {}
 
     public AsgEBase(T eBase,
                     List<AsgEBase<? extends EBase>> next,
@@ -102,7 +104,9 @@ public class AsgEBase<T extends EBase> {
     }
 
     public int geteNum() {
-        return this.eBase.geteNum();
+        if(this.eBase!=null)
+            return this.eBase.geteNum();
+        return -1;
     }
     //endregion
 
@@ -172,7 +176,11 @@ public class AsgEBase<T extends EBase> {
     //region Override Methods
     @Override
     public String toString() {
-        return "Asg(" + this.eBase.toString() + ")";
+        //some 'non-educated-developers' recklessly create AsgEBasePlanOp (during tests) without giving them appropriate AsgEbase
+        // therefore NPE - why ????
+        if(eBase!=null)
+            return "Asg(" + this.eBase.toString() + ")";
+        return "";
     }
     //endregion
 

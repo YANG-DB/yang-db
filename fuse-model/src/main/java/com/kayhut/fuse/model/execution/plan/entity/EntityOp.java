@@ -9,7 +9,9 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
  */
 public class EntityOp extends AsgEBasePlanOp<EEntityBase> {
     //region Constructor
-    public EntityOp() {}
+    public EntityOp() {
+        super(new AsgEBase<>());
+    }
 
     public EntityOp(AsgEBase<EEntityBase> asgEBase) {
         super(asgEBase);

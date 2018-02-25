@@ -12,7 +12,8 @@ import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.controllers.CatalogController;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import org.slf4j.Logger;
-import org.slf4j.MDC;
+
+import java.util.List;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static com.kayhut.fuse.dispatcher.logging.LogMessage.Level.error;
@@ -56,6 +57,31 @@ public class LoggingCatalogController implements CatalogController {
             new LogMessage.Impl(this.logger, error, "failed getOntology", LogType.of(failure), getOntology, ElapsedFrom.now())
                     .with(ex).log();
             this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "failure")).mark();
+            throw new RuntimeException(ex);
+        } finally {
+            if (!thrownException) {
+                new LogMessage.Impl(this.logger, info, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getOntology", LogType.of(success), getOntology, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "success")).mark();
+            }
+            timerContext.stop();
+        }
+    }
+
+    @Override
+    public List<ContentResponse<Ontology>> getOntologies() {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getOntology.toString())).time();
+        boolean thrownException = false;
+
+        try {
+            new LogMessage.Impl(this.logger, trace, "start getOntology",
+                    LogType.of(start), getOntology, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            return controller.getOntologies();
+        } catch (Exception ex) {
+            thrownException = true;
+            new LogMessage.Impl(this.logger, error, "failed getOntology", LogType.of(failure), getOntology, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getOntology.toString(), "failure")).mark();
             return null;
         } finally {
             if (!thrownException) {
@@ -76,6 +102,31 @@ public class LoggingCatalogController implements CatalogController {
             new LogMessage.Impl(this.logger, trace, "start getSchema",
                     LogType.of(start), getSchema, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
             return controller.getSchema(id);
+        } catch (Exception ex) {
+            thrownException = true;
+            new LogMessage.Impl(this.logger, error, "failed getSchema", LogType.of(failure), getSchema, ElapsedFrom.now())
+                    .with(ex).log();
+            this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "failure")).mark();
+            return null;
+        } finally {
+            if (!thrownException) {
+                new LogMessage.Impl(this.logger, info, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+                new LogMessage.Impl(this.logger, trace, "finish getSchema", LogType.of(success), getSchema, ElapsedFrom.now()).log();
+                this.metricRegistry.meter(name(this.logger.getName(), getSchema.toString(), "success")).mark();
+            }
+            timerContext.stop();
+        }
+    }
+
+    @Override
+    public List<ContentResponse> getSchemas() {
+        Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getSchema.toString())).time();
+        boolean thrownException = false;
+
+        try {
+            new LogMessage.Impl(this.logger, trace, "start getSchema",
+                    LogType.of(start), getSchema, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            return controller.getSchemas();
         } catch (Exception ex) {
             thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed getSchema", LogType.of(failure), getSchema, ElapsedFrom.now())

@@ -3,15 +3,10 @@ package com.kayhut.fuse.epb.plan.selectors;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.epb.plan.extenders.SimpleExtenderUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import javaslang.collection.Stream;
-import javaslang.control.Option;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Optional;
 
 /**
  * Created by moti on 21/05/2017.

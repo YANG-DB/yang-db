@@ -37,6 +37,7 @@ public class ServiceModule extends ModuleBase {
         bindPageController(env, config, binder);
         bindSearchController(env, config, binder);
         bindCatalogController(env, config, binder);
+        bindDataLoaderController(env, config, binder);
 
         // bind requests
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
@@ -165,6 +166,26 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingCatalogController.class);
 
                 this.expose(CatalogController.class);
+            }
+        });
+    }
+
+    private void bindDataLoaderController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(DataLoaderController.class)
+                        .annotatedWith(named(LoggingDataLoaderController.controllerParameter))
+                        .to(StandardDataLoaderController.class);
+
+                this.bind(Logger.class)
+                        .annotatedWith(named(LoggingDataLoaderController.loggerParameter))
+                        .toInstance(LoggerFactory.getLogger(StandardDataLoaderController.class));
+
+                this.bind(DataLoaderController.class)
+                        .to(LoggingDataLoaderController.class);
+
+                this.expose(DataLoaderController.class);
             }
         });
     }

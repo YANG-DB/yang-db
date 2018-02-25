@@ -48,14 +48,12 @@ public class TestSuite {
 
         app = new FuseApp(new DefaultAppUrlSupplier("/fuse"))
                 .conf(new File(Paths.get("src", "test", "conf", "application.mockEngine.dev.conf").toString()))
-                .injector((stage, module) -> {
-                    return Guice.createInjector(stage, Modules.override(module).with(new AbstractModule() {
-                        @Override
-                        protected void configure() {
-                            bind(CursorFactory.class).toInstance(cursorFactory);
-                        }
-                    }));
-                });
+                .injector((stage, module) -> Guice.createInjector(stage, Modules.override(module).with(new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(CursorFactory.class).toInstance(cursorFactory);
+                    }
+                })));
 
         new FuseRunner().run(app, new FuseRunner.Options(Paths.get("src", "test", "conf", "logback.xml").toString(), false));
     }

@@ -37,9 +37,9 @@ import static com.kayhut.fuse.model.query.quant.QuantType.all;
 public class M1PlanValidatorTests {
     public static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, OntologyTestUtils.PERSON.type,"A"))
-                .next(rel(2,OWN.getrType(),R))
-                .next(typed(3, OntologyTestUtils.DRAGON.type,"B")).build();
+                .next(typed(1, OntologyTestUtils.PERSON.type, "A").next(eProp(101)))
+                .next(rel(2, OWN.getrType(), R))
+                .next(typed(3, OntologyTestUtils.DRAGON.type, "B")).build();
     }
 
     public static AsgQuery simpleQuery2(String queryName, String ontologyName) {
@@ -63,30 +63,11 @@ public class M1PlanValidatorTests {
 
     //region Valid Plan Tests
     @Test
-    public void testValidPlan_entity1() {
-        AsgQuery asgQuery = simpleQuery1("name", "ont");
-        Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get())
-        );
-
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
-    }
-
-    @Test
-    public void testValidPlan_entity3() {
-        AsgQuery asgQuery = simpleQuery1("name", "ont");
-        Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get())
-        );
-
-        Assert.assertTrue(validator.isPlanValid(plan, asgQuery).valid());
-    }
-
-    @Test
     public void testValidPlan_entity1_rel2() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
         Plan plan = new Plan(
                 new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 1).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 101).get()),
                 new RelationOp(AsgQueryUtil.<Rel>element(asgQuery, 2).get())
         );
 
@@ -356,10 +337,11 @@ public class M1PlanValidatorTests {
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
         Assert.assertTrue(planValid);
     }
+
     @Test
     public void testValidPlanEntityOp_3_EntityFilterOp_9_RelationOp_7_RelationFilterOp_11_EntityOp_8_GoToEntityOp_3_RelationOp_5_EntityOp_6_GoToEntityOp_3_RelationOp_2_RelationFilterOp_10_EntityOp_1() {
         AsgQuery asgQuery = simpleQuery2("name", "ont");
-        Plan plan = mock(asgQuery).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).goTo(3).rel(2,Rel.Direction.L).relFilter(10).entity(1).plan();
+        Plan plan = mock(asgQuery).entity(3).entityFilter(9).rel(7).relFilter(11).entity(8).goTo(3).rel(5).entity(6).goTo(3).rel(2, Rel.Direction.L).relFilter(10).entity(1).plan();
         boolean planValid = validator.isPlanValid(plan, asgQuery).valid();
         Assert.assertTrue(planValid);
     }
@@ -397,6 +379,16 @@ public class M1PlanValidatorTests {
     //endregion
 
     //region Invalid Plan Tests
+    @Test
+    public void testIValidPlan_entity3_NotAdjacen() {
+        AsgQuery asgQuery = simpleQuery1("name", "ont");
+        Plan plan = new Plan(
+                new EntityOp(AsgQueryUtil.<EEntityBase>element(asgQuery, 3).get()),
+                new EntityFilterOp(AsgQueryUtil.<EPropGroup>element(asgQuery, 101).get()));
+
+        Assert.assertFalse(validator.isPlanValid(plan, asgQuery).valid());
+    }
+
     @Test
     public void testInvalidPlan_entity1_entity3() {
         AsgQuery asgQuery = simpleQuery1("name", "ont");
