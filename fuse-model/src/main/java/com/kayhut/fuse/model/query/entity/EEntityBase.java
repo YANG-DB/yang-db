@@ -92,6 +92,11 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
         this.next = next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return next > -1;
+    }
+
     public Integer getB() {
         return b;
     }
@@ -112,7 +117,7 @@ public abstract class EEntityBase extends EBase implements Next<Integer>, Below<
     //region Fields
     private String eTag;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private int next;
+    private int next = -1;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;
 

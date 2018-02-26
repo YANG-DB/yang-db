@@ -1,8 +1,8 @@
 package com.kayhut.fuse.model.asgQuery;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.query.EBase;
-import com.kayhut.fuse.model.query.Rel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-public class AsgEBase<T extends EBase> {
+public class AsgEBase<T extends EBase> implements Next<List<AsgEBase<? extends EBase>>>{
 
 
 
@@ -91,6 +91,16 @@ public class AsgEBase<T extends EBase> {
         return Collections.unmodifiableList(this.next);
     }
 
+    @Override
+    public boolean hasNext() {
+        return !this.next.isEmpty();
+    }
+
+    @Override
+    public void setNext(List<AsgEBase<? extends EBase>> next) {
+        this.next = next;
+    }
+
     public List<AsgEBase<? extends EBase>> getB() {
         return Collections.unmodifiableList(this.b);
     }
@@ -120,7 +130,6 @@ public class AsgEBase<T extends EBase> {
         if (!this.next.contains(asgEBase)) {
             this.next.add(asgEBase);
         }
-
         asgEBase.addToParents(this);
     }
 

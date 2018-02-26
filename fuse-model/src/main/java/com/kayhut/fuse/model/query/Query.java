@@ -4,15 +4,19 @@ package com.kayhut.fuse.model.query;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.kayhut.fuse.model.asgQuery.IQuery;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by user on 19-Feb-17.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonDeserialize(builder=Query.Builder.class)
-public class Query {
+public class Query implements IQuery<EBase>{
 
     public String getOnt() {
         return ont;
@@ -97,5 +101,24 @@ public class Query {
         }
     }
 
+    public static class QueryUtils {
+        /**
+         * find query element by its enum
+         *
+         * @param query
+         * @param eNum
+         * @return
+         */
+        public static Optional<? extends EBase> findByEnum(IQuery<EBase> query, int eNum) {
+            return query.getElements().stream().filter(p -> p.geteNum() == eNum).findFirst();
+        }
 
+        /**
+         * @param query
+         * @return
+         */
+        public static <T extends EBase> List<EBase> findByClass(IQuery<EBase> query, Class<T> klass) {
+            return query.getElements().stream().filter(p -> klass.isAssignableFrom(p.getClass())).collect(Collectors.toList());
+        }
+    }
 }

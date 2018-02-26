@@ -33,19 +33,21 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
         Stream.ofAll(query.getElements()).forEach(eBase -> queryElements.put(eBase.geteNum(), eBase));
 
         //Working with the first element
-        Start start = (Start)queryElements.get(0);
+        Start start = (Start) queryElements.get(0);
 
         //Building the root of the AsgQuery (i.e., start Ebase)
         AsgEBase asgEBaseStart = AsgEBase.Builder.get()
                 .withEBase(start).build();
 
+        queryAsgElements.put(asgEBaseStart.geteNum(),asgEBaseStart);
         buildSubGraphRec(asgEBaseStart, queryElements);
 
         AsgQuery asgQuery = AsgQuery.AsgQueryBuilder.anAsgQuery()
                 .withName(query.getName())
                 .withOnt(query.getOnt())
-                .withStart(asgEBaseStart).build();
-
+                .withStart(asgEBaseStart)
+                .withElements(queryAsgElements.values())
+                .build();
         return asgQuery;
     }
     //endregion
@@ -54,25 +56,28 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
     private void buildSubGraphRec(AsgEBase asgEBaseCurrent, Map<Integer, EBase> queryElements) {
         EBase eBaseCurrent = asgEBaseCurrent.geteBase();
 
-        Stream.ofAll(nextFactory.supplyNext(eBaseCurrent)).forEach(eNum -> {
-            EBase eBaseNext =  queryElements.get(eNum);
-            AsgEBase asgEBaseNext = AsgEBase.Builder.get()
-                    .withEBase(eBaseNext)
-                    .build();
+        Stream.ofAll(nextFactory.supplyNext(eBaseCurrent))
+                .filter(b -> queryElements.get(b) != null)
+                .forEach(eNum -> {
+                    EBase eBaseNext = queryElements.get(eNum);
+                    AsgEBase asgEBaseNext = AsgEBase.Builder.get()
+                            .withEBase(eBaseNext)
+                            .build();
+                    queryAsgElements.put(eNum,asgEBaseNext);
+                    asgEBaseCurrent.addNextChild(asgEBaseNext);
 
-            asgEBaseCurrent.addNextChild(asgEBaseNext);
-
-            buildSubGraphRec(asgEBaseNext, queryElements);
-        });
+                    buildSubGraphRec(asgEBaseNext, queryElements);
+                });
 
 
         Stream.ofAll(bellowFactory.supplyBellow(eBaseCurrent)).forEach(
                 eNum -> {
-                    EBase eBaseB =  queryElements.get(eNum);
+                    EBase eBaseB = queryElements.get(eNum);
                     AsgEBase asgEBaseB = AsgEBase.Builder.get()
                             .withEBase(eBaseB)
                             .build();
 
+                    queryAsgElements.put(eNum,asgEBaseB);
                     asgEBaseCurrent.addBChild(asgEBaseB);
                     buildSubGraphRec(asgEBaseB, queryElements);
                 }
@@ -83,6 +88,8 @@ public class QueryToAsgTransformer implements QueryTransformer<Query, AsgQuery> 
     //region Fields
     private NextFactory nextFactory;
     private BellowFactory bellowFactory;
+    private Map<Integer, AsgEBase<? extends EBase>> queryAsgElements = new HashMap<>();
+
     //endregion
 
 }
