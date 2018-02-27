@@ -1,6 +1,8 @@
 package com.kayhut.fuse.test;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
+import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.stat.StatCalculator;
 import com.kayhut.fuse.stat.configuration.StatConfiguration;
 import com.kayhut.test.data.DragonsOntology;
@@ -8,26 +10,35 @@ import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
+import io.restassured.RestAssured;
+import io.restassured.config.LogConfig;
+import io.restassured.config.RestAssuredConfig;
 import javaslang.collection.Stream;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.codehaus.groovy.runtime.powerassert.SourceText;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.BIRTH_DATE;
 import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
+import static io.restassured.config.LogConfig.logConfig;
 
-public class DragonsSmartEpbTest3Setup extends TestSetupBase  {
+public class DragonsSmartEpbTestSetup extends TestSetupBase  {
     public static void main(String[] args) throws Exception {
-        DragonsSmartEpbTest3Setup test = new DragonsSmartEpbTest3Setup();
-        DragonKingdomQuery3Test dragonKingdomQueryTest = new DragonKingdomQuery3Test();
-        TestRunner.run(dragonKingdomQueryTest, test);
+        DragonsSmartEpbTestSetup test = new DragonsSmartEpbTestSetup();
+        DragonKingdomQueryTest dragonKingdomQueryTest = new DragonKingdomQueryTest();
+        TestRunner.run(dragonKingdomQueryTest, test,"m2.smartEpb","m1.dfs.redundant");
     }
 
     @Override
@@ -74,7 +85,7 @@ public class DragonsSmartEpbTest3Setup extends TestSetupBase  {
                 ORIGINATED_IN
         )).actionGet();
 
-        new MappingFileElasticConfigurer("stat", Paths.get("fuse-test","fuse-join-test","src","main","resources","stat","stat_mappings.json").toString()).configure(client);
+        new MappingFileElasticConfigurer("stat", Paths.get("fuse-test","fuse-benchmarks-test","src","main","resources","stat","stat_mappings.json").toString()).configure(client);
         Configuration statConfig = new StatConfiguration("stat/statistics.test.properties").getInstance();
         StatCalculator.run(client, client, statConfig);
         client.admin().indices().refresh(new RefreshRequest("stat")).actionGet();
@@ -110,9 +121,8 @@ public class DragonsSmartEpbTest3Setup extends TestSetupBase  {
             Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", "Dragon_" + i);
             dragon.put("type", OntologyTestUtils.DRAGON.name);
-            int nameChar1 = i%58 + 65;
-
-            dragon.put(NAME.name, String.valueOf((char)nameChar1));
+            int nameChar = i%58 + 65;
+            dragon.put(NAME.name, (char)nameChar);
             dragon.put(BIRTH_DATE.name, sdf.format(new Date(birthDateValueFunction.apply(i))));
             return dragon;
         });

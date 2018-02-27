@@ -156,22 +156,12 @@ public abstract class BaseEpbModule extends ModuleBase {
     }
 
 
-    protected void bindPlanPruneStrategy(Env env, Config conf, Binder binder) {
-        binder.install(new PrivateModule() {
-            @Override
-            protected void configure() {
-                this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
-                        .annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyParameter))
-                        .toInstance(localPrunerStrategy());
-                this.bindConstant().annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyNameParameter)).to("Local:" + NoPruningPruneStrategy.class.getSimpleName());
-                this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
-                        .annotatedWith(named(BottomUpPlanSearcher.localPruneStrategyParameter))
-                        .toProvider(new TypeLiteral<PlanTracer.PruneStrategy.Provider<Plan, PlanDetailedCost>>(){});
+    private void bindPlanPruneStrategy(Env env, Config conf, Binder binder) {
+        localPruner(binder);
+        globalPruner(binder);
+    }
 
-                this.expose(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
-                        .annotatedWith(named(BottomUpPlanSearcher.localPruneStrategyParameter));
-            }
-        });
+    protected void globalPruner(Binder binder) {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
@@ -185,6 +175,24 @@ public abstract class BaseEpbModule extends ModuleBase {
 
                 this.expose(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
                         .annotatedWith(named(BottomUpPlanSearcher.globalPruneStrategyParameter));
+            }
+        });
+    }
+
+    protected void localPruner(Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
+                        .annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyParameter))
+                        .toInstance(localPrunerStrategy());
+                this.bindConstant().annotatedWith(named(PlanTracer.PruneStrategy.Provider.planPruneStrategyNameParameter)).to("Local:" + NoPruningPruneStrategy.class.getSimpleName());
+                this.bind(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
+                        .annotatedWith(named(BottomUpPlanSearcher.localPruneStrategyParameter))
+                        .toProvider(new TypeLiteral<PlanTracer.PruneStrategy.Provider<Plan, PlanDetailedCost>>(){});
+
+                this.expose(new TypeLiteral<PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>>>(){})
+                        .annotatedWith(named(BottomUpPlanSearcher.localPruneStrategyParameter));
             }
         });
     }

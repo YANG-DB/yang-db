@@ -22,20 +22,21 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
+import static com.kayhut.fuse.model.OntologyTestUtils.TEMPERATURE;
 
-public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
+public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
     public static void main(String[] args) throws Exception {
-        DragonsSmartEpbTest5Setup test = new DragonsSmartEpbTest5Setup();
-        DragonKingdomQuery5Test dragonKingdomQueryTest = new DragonKingdomQuery5Test();
-        TestRunner.run(dragonKingdomQueryTest, test);
+        DragonsSmartEpbTest4Setup test = new DragonsSmartEpbTest4Setup();
+        DragonKingdomQuery4Test dragonKingdomQueryTest = new DragonKingdomQuery4Test();
+        TestRunner.run(dragonKingdomQueryTest, test,"m2.smartEpb","m1.dfs.redundant");
     }
 
     @Override
     protected void loadData(TransportClient client) throws Exception {
         String idField = "id";
-        new MappingElasticConfigurer(DRAGON.name.toLowerCase(), new Mappings().addMapping("pge", getDragonMapping()))
+        new MappingElasticConfigurer(OntologyTestUtils.DRAGON.name.toLowerCase(), new Mappings().addMapping("pge", getDragonMapping()))
                 .configure(client);
-        new MappingElasticConfigurer(KINGDOM.name.toLowerCase(), new Mappings().addMapping("pge", getKingdomMapping()))
+        new MappingElasticConfigurer(OntologyTestUtils.KINGDOM.name.toLowerCase(), new Mappings().addMapping("pge", getKingdomMapping()))
                 .configure(client);
         new MappingElasticConfigurer(Arrays.asList(ORIGINATED_IN), new Mappings().addMapping("pge", getOriginMapping()))
                 .configure(client);
@@ -48,19 +49,19 @@ public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
 
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        int numDragons = 10000;
+        int numDragons = 1000000;
         int numKingdoms = 10;
 
         new ElasticDataPopulator(
                 client,
-                DRAGON.name.toLowerCase(),
+                OntologyTestUtils.DRAGON.name.toLowerCase(),
                 "pge",
                 idField,
                 () -> createDragons(numDragons, birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L)))
                 .populate(); // date interval is ~ 1 month
 
         new ElasticDataPopulator(client,
-                KINGDOM.name.toLowerCase(),
+                OntologyTestUtils.KINGDOM.name.toLowerCase(),
                 "pge",
                 idField,
                 ()-> createKingdoms(numKingdoms))
@@ -87,13 +88,13 @@ public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
 
         client.admin().indices().refresh(new RefreshRequest(
                 DragonsOntology.DRAGON.name.toLowerCase(),
-                KINGDOM.name.toLowerCase(),
+                OntologyTestUtils.KINGDOM.name.toLowerCase(),
                 ORIGINATED_IN,
                 FIRE.getName().toLowerCase()
 
         )).actionGet();
 
-        new MappingFileElasticConfigurer("stat", Paths.get("fuse-test","fuse-join-test","src","main","resources","stat","stat_mappings.json").toString()).configure(client);
+        new MappingFileElasticConfigurer("stat", Paths.get("fuse-test","fuse-benchmarks-test","src","main","resources","stat","stat_mappings.json").toString()).configure(client);
         Configuration statConfig = new StatConfiguration("stat/statistics.test.properties").getInstance();
         StatCalculator.run(client, client, statConfig);
         client.admin().indices().refresh(new RefreshRequest("stat")).actionGet();
@@ -103,8 +104,8 @@ public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
     protected void cleanData(TransportClient client) {
         client.admin().indices()
                 .delete(new DeleteIndexRequest(
-                        DRAGON.name.toLowerCase(),
-                        KINGDOM.name.toLowerCase(),
+                        OntologyTestUtils.DRAGON.name.toLowerCase(),
+                        OntologyTestUtils.KINGDOM.name.toLowerCase(),
                         "originated_in",
                         FIRE.getName().toLowerCase()))
                 .actionGet();
@@ -194,7 +195,7 @@ public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
         return Stream.range(0, numDragons).map(i->{
             Map<String, Object> dragon = new HashMap<>();
             dragon.put("id", "Dragon_" + i);
-            dragon.put("type", DRAGON.name);
+            dragon.put("type", OntologyTestUtils.DRAGON.name);
             int nameChar1 = i%58 + 65;
 
             dragon.put(NAME.name, String.valueOf((char)nameChar1));
@@ -244,11 +245,11 @@ public class DragonsSmartEpbTest5Setup extends TestSetupBase  {
 
             Map<String, Object> dragonEntity = new HashMap<>();
             dragonEntity.put("id", "Dragon_" + i);
-            dragonEntity.put("type", DRAGON.name);
+            dragonEntity.put("type", OntologyTestUtils.DRAGON.name);
 
             Map<String, Object> kingdomEntity = new HashMap<>();
             kingdomEntity.put("id", "Kingdom_" + i % numKingdoms);
-            kingdomEntity.put("type", KINGDOM.name);
+            kingdomEntity.put("type", OntologyTestUtils.KINGDOM.name);
 
             originEdgeOut.put("entityA", dragonEntity);
             originEdgeOut.put("entityB", kingdomEntity);

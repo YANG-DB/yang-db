@@ -38,7 +38,9 @@ public abstract class TestCase {
         System.out.println("Total time: " + (end -start));
         totalTime = end-start;
         planTime = queryEnd - queryStart;
-        System.out.println("Assignments: " + actualQueryResult.getAssignments().size());
+        assignments = actualQueryResult.getAssignments().size();
+
+        System.out.println("Assignments: " + assignments);
         System.out.println(actualQueryResult);
     }
 
@@ -50,7 +52,12 @@ public abstract class TestCase {
         return planTime;
     }
 
+    public long getAssignments() {
+        return assignments;
+    }
+
     private long totalTime;
     private long planTime;
+    private long assignments;
 
 }

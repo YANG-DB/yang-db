@@ -14,7 +14,7 @@
     </properties>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>fuse-join-test</artifactId>
+    <artifactId>fuse-benchmarks-test</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.kayhut</groupId>
