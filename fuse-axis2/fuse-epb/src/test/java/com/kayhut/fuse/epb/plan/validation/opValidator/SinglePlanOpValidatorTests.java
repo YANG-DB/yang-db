@@ -5,29 +5,14 @@ import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.epb.plan.validation.ChainedPlanValidator;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
-import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
-import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
-import com.kayhut.fuse.model.query.properties.EProp;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Date;
-
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
-import static com.kayhut.fuse.model.query.properties.RelProp.of;
-import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
 public class SinglePlanOpValidatorTests {
     /**

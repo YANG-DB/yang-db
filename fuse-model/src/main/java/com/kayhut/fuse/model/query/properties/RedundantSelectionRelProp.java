@@ -1,7 +1,5 @@
 package com.kayhut.fuse.model.query.properties;
 
-import com.kayhut.fuse.model.query.Constraint;
-
 /**
  * Created by roman.margolis on 26/09/2017.
  */

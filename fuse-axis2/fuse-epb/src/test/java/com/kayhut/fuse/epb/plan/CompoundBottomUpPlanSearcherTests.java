@@ -20,8 +20,8 @@ import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Value;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,7 +34,7 @@ import java.util.List;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
@@ -48,23 +48,23 @@ public class CompoundBottomUpPlanSearcherTests {
         long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, PERSON.type)
-                        .next(eProp(2,EProp.of(HEIGHT.type, 3, Constraint.of(ConstraintOp.gt, 189)))))
+                        .next(eProp(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189)))))
                 .next(rel(4, OWN.getrType(), R)
-                        .below(relProp(5, of(START_DATE.type, 6, Constraint.of(eq, new Date())))))
+                        .below(relProp(5, of(6, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(7, DRAGON.type))
                 .next(quant1(8, all))
-                .in(eProp(9, EProp.of(NAME.type, 10, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 11, Constraint.of(gt, new Value(MALE.ordinal(),MALE.name()))))
+                .in(eProp(9, EProp.of(10, NAME.type, Constraint.of(eq, "smith")), EProp.of(11, GENDER.type, Constraint.of(gt, new Value(MALE.ordinal(),MALE.name()))))
                         , rel(12, FREEZE.getrType(), R)
                                 .below(relProp(122))
                                 .next(unTyped(13)
-                                        .next(eProp(14,EProp.of(NAME.type, 15, Constraint.of(ConstraintOp.notContains, "bob"))))
+                                        .next(eProp(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
                                 )
                         , rel(16, FIRE.getrType(), R)
-                                .below(relProp(18, of(START_DATE.type, 19,
+                                .below(relProp(18, of(19, START_DATE.type,
                                         Constraint.of(ge, new Date(time - 1000 * 60))),
-                                        of(END_DATE.type, 19, Constraint.of(le, new Date(time + 1000 * 60)))))
+                                        of(19, END_DATE.type, Constraint.of(le, new Date(time + 1000 * 60)))))
                                 .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
-                                        .next(eProp(21,EProp.of(NAME.type, 22, Constraint.of(ConstraintOp.eq, "smoge"))))
+                                        .next(eProp(21,EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
                                 )
                 )
                 .build();

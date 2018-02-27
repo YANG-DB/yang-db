@@ -23,7 +23,6 @@ import com.kayhut.fuse.model.query.properties.*;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -98,7 +97,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
                 .collect(Collectors.toList());
         collect.forEach(p -> {
             pushdownProps.add(p);
-            clone.getProps().add(EProp.of(p.getpType(), p.geteNum(), p.getCon()));
+            clone.getProps().add(EProp.of(p.geteNum(), p.getpType(), p.getCon()));
         });
 
         // Z (E2 node pushdown props only estimate) = statistical_estimate(E1 pushdown filter only)

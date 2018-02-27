@@ -3,7 +3,7 @@ package com.kayhut.fuse.services.engine2.data;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -33,7 +33,6 @@ import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.index.Mappings.Mapping;
 import com.kayhut.test.framework.index.Mappings.Mapping.Property;
-import com.kayhut.test.framework.index.Mappings.Mapping.Property.Index;
 import com.kayhut.test.framework.index.Mappings.Mapping.Property.Type;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -51,7 +50,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
