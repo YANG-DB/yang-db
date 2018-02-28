@@ -1,9 +1,10 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.dispatcher.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.dispatcher.descriptors.QueryDescriptor;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.asgQuery.AsgQueryAssert;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryAssert;
 import com.kayhut.fuse.model.query.Start;
@@ -344,10 +345,11 @@ public class QueryTest {
     @Test
     public void queryCreateAndFetchAsgQueryResource() throws IOException {
         //query request
+        Query query = TestUtils.loadQuery("Q001.json");
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setQuery(query);
         //submit query
         given()
                 .contentType("application/json")
@@ -374,6 +376,7 @@ public class QueryTest {
                 .contentType("application/json;charset=UTF-8");
 
         //get query resource by id
+        final AsgQuery[] asgQuery = {null};
         given()
                 .contentType("application/json")
                 .with().port(8888)
@@ -382,11 +385,11 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
-                        AsgQuery data = FuseClient.unwrapDouble(o.toString());
-                        assertTrue(data.getName() != null);
-                        assertTrue(data.getOnt() != null);
-                        assertTrue(AsgQueryUtil.elements(data).size() >= request.getQuery().getElements().size());
-                        return data != null;
+                        asgQuery[0] = FuseClient.unwrapDouble(o.toString());
+                        assertTrue(asgQuery[0].getName() != null);
+                        assertTrue(asgQuery[0].getOnt() != null);
+                        assertTrue(AsgQueryUtil.elements(asgQuery[0]).size() >= request.getQuery().getElements().size());
+                        return asgQuery[0] != null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;
@@ -405,10 +408,7 @@ public class QueryTest {
                 .body(new TestUtils.ContentMatcher((Object o) -> {
                     try {
                         String data = FuseClient.unwrapDouble(o.toString());
-                        assertEquals(data, "[└── Start, \n" +
-                                "    ── Conc[1]── Q[4]:{101|2}, \n" +
-                                "                         └── ?[101]:[], \n" +
-                                "                         └──> Rel(2)── Typ[3]── ?[301]:[]]");
+                        assertEquals(data, AsgQueryDescriptor.print(asgQuery[0]));
                         return data != null;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -445,10 +445,11 @@ public class QueryTest {
     @Test
     public void queryCreateAndDeleteResource() throws IOException {
         //query request
+        Query query = TestUtils.loadQuery("Q001.json");
         CreateQueryRequest request = new CreateQueryRequest();
         request.setId("1");
         request.setName("test");
-        request.setQuery(TestUtils.loadQuery("Q001.json"));
+        request.setQuery(query);
         //submit query
         given()
                 .contentType("application/json")
@@ -503,8 +504,7 @@ public class QueryTest {
                 .assertThat()
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
-                        assertEquals(FuseClient.unwrapDouble(o.toString()).toString(),
-                                "[└── Start, \n    ── Conc[1]──> Rel(2)── Typ[3]]");
+                        assertEquals(FuseClient.unwrapDouble(o.toString()).toString(), QueryDescriptor.print(query));
                         return FuseClient.unwrapDouble(o.toString()) != null;
                     } catch (Exception e) {
                         e.printStackTrace();

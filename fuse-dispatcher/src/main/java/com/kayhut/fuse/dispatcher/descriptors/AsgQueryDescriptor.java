@@ -109,11 +109,11 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         } else if (e.geteBase() instanceof EUntyped)
             joiner.add("UnTyp" + "[" + e.geteNum() + "]");
         else if (e.geteBase() instanceof EConcrete)
-            joiner.add("Conc" + "[" + e.geteNum() + "]");
+            joiner.add("Conc" + "["+ ((EConcrete) e.geteBase()).geteType() +":"+ e.geteNum() + "]");
         else if (e.geteBase() instanceof ETyped)
-            joiner.add("Typ" + "[" + e.geteNum() + "]");
+            joiner.add("Typ" + "["+ ((ETyped) e.geteBase()).geteType() +":"+ e.geteNum() + "]");
         else if (e.geteBase() instanceof Rel)
-            joiner.add("Rel" + "(" + e.geteNum() + ")");
+            joiner.add("Rel" + "("+((Rel) e.geteBase()).getrType() +":" + e.geteNum() + ")");
         else if (e.geteBase() instanceof EPropGroup)
             joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
         else if (e.geteBase() instanceof RelPropGroup)

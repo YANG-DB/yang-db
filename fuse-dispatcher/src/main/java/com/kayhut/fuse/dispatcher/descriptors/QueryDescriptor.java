@@ -62,11 +62,11 @@ public class QueryDescriptor implements Descriptor<Query> {
         } else if (e instanceof EUntyped)
             joiner.add("UnTyp" + "[" + e.geteNum() + "]");
         else if (e instanceof EConcrete)
-            joiner.add("Conc" + "[" + e.geteNum() + "]");
+            joiner.add("Conc" + "[" + ((EConcrete) e).geteType() + ":" + e.geteNum() + "]");
         else if (e instanceof ETyped)
-            joiner.add("Typ" + "[" + e.geteNum() + "]");
+            joiner.add("Typ" + "[" + ((ETyped) e).geteType() + ":" + e.geteNum() + "]");
         else if (e instanceof Rel)
-            joiner.add("Rel" + "(" + e.geteNum() + ")");
+            joiner.add("Rel" + "(" + ((Rel) e).getrType() + ":" + e.geteNum() + ")");
         else if (e instanceof EPropGroup)
             joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e));
         else if (e instanceof RelPropGroup)
@@ -78,7 +78,7 @@ public class QueryDescriptor implements Descriptor<Query> {
     }
 
     static String printProps(BasePropGroup propGroup) {
-        return ":"+Arrays.toString(((EPropGroup) propGroup).getProps().stream().map(p->p.getCon().getOp()).toArray());
+        return ":" + Arrays.toString(((EPropGroup) propGroup).getProps().stream().map(p -> p.getCon().getOp()).toArray());
     }
     //endregion
 
@@ -118,9 +118,12 @@ public class QueryDescriptor implements Descriptor<Query> {
     }
 
     public static String getPrefix(boolean isTail, EBase element) {
-        if (element instanceof Rel)
-            return (isTail ? "└──> " : "──> ");
-        return (isTail ? "└── " : "── ");
+        String prefix = (isTail ? "└" : "-");
+        if (element instanceof Rel) {
+            String postfix = (((Rel) element).getDir().equals(Rel.Direction.R) ? "-> " : "<--");
+            return prefix + postfix;
+        } else
+            return (isTail ? "└─" : "──");
     }
 
     public static String print(IQuery<EBase> query) {
