@@ -1,8 +1,8 @@
 package com.kayhut.fuse.services.mockEngine;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kayhut.fuse.dispatcher.descriptors.AsgQueryDescriptor;
-import com.kayhut.fuse.dispatcher.descriptors.QueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Query;
