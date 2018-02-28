@@ -7,12 +7,17 @@ import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.dispatcher.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.dispatcher.descriptors.QueryDescriptor;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.services.controllers.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -28,6 +33,11 @@ import org.jooby.scanner.Scanner;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.UUID.randomUUID;
+import static org.jooby.Status.NOT_FOUND;
+import static org.jooby.Status.OK;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -247,12 +257,33 @@ public class FuseApp extends Jooby {
                     ContentResponse response = queryCtrl().getV1(req.param("queryId").value());
                     return Results.with(JsonWriter.objectToJson(response), response.status());
                 });
+        /** get the query v1 print*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/v1/print")
+                .get(req -> {
+                    ContentResponse<Query> response = queryCtrl().getV1(req.param("queryId").value());
+                    String print = QueryDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                });
 
         /** get the asg query */
         use(localUrlSupplier.resourceUrl(":queryId") + "/asg")
                 .get(req -> {
-                    ContentResponse response = queryCtrl().getAsg(req.param("queryId").value());
+                    ContentResponse<AsgQuery> response = queryCtrl().getAsg(req.param("queryId").value());
                     return Results.with(JsonWriter.objectToJson(response), response.status());
+                });
+
+        /** get the asg query print*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/asg/print")
+                .get(req -> {
+                    ContentResponse<AsgQuery> response = queryCtrl().getAsg(req.param("queryId").value());
+                    String print = AsgQueryDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
                 });
 
         /** get the query plan execution */
