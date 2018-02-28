@@ -57,8 +57,12 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
                 joiner.add(prefix + EEntityBase.class.getSimpleName() + "[" + e.geteNum() + "]");
             } else if (e.geteBase() instanceof Rel)
                 joiner.add("==>" + Relation.class.getSimpleName() + "(" + e.geteNum() + ")");
+            else if (e.geteBase() instanceof EProp)
+                joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new EPropGroup((EProp) e.geteBase())));
             else if (e.geteBase() instanceof EPropGroup)
                 joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
+            else if (e.geteBase() instanceof RelProp)
+                joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new RelPropGroup((RelProp) e.geteBase())));
             else if (e.geteBase() instanceof RelPropGroup)
                 joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
             else
@@ -116,8 +120,12 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
             joiner.add("Rel" + "("+((Rel) e.geteBase()).getrType() +":" + e.geteNum() + ")");
         else if (e.geteBase() instanceof EPropGroup)
             joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
+        else if (e.geteBase() instanceof EProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new EPropGroup((EProp) e.geteBase())));
         else if (e.geteBase() instanceof RelPropGroup)
             joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
+        else if (e.geteBase() instanceof RelProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new RelPropGroup((RelProp) e.geteBase())));
         else
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
 

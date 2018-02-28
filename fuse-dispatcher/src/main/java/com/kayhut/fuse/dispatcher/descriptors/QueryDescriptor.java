@@ -40,15 +40,7 @@ public class QueryDescriptor implements Descriptor<Query> {
             List<Integer> next = ((Next<List>) e).getNext();
             String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]").add("{" + join + "}");
-        } else if (e instanceof EEntityBase)
-            joiner.add(EEntityBase.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else if (e instanceof Rel)
-            joiner.add(Relation.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else if (e instanceof EPropGroup)
-            joiner.add(EPropGroup.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else if (e instanceof RelPropGroup)
-            joiner.add(RelPropGroup.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else
+        } else
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
 
         return joiner.toString();
@@ -69,6 +61,10 @@ public class QueryDescriptor implements Descriptor<Query> {
             joiner.add("Rel" + "(" + ((Rel) e).getrType() + ":" + e.geteNum() + ")");
         else if (e instanceof EPropGroup)
             joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e));
+        else if (e instanceof EProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new EPropGroup((EProp) e)));
+        else if (e instanceof RelProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new RelPropGroup((RelProp) e)));
         else if (e instanceof RelPropGroup)
             joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e));
         else
@@ -78,7 +74,7 @@ public class QueryDescriptor implements Descriptor<Query> {
     }
 
     static String printProps(BasePropGroup propGroup) {
-        return ":" + Arrays.toString(((EPropGroup) propGroup).getProps().stream().map(p -> p.getCon().getOp()).toArray());
+        return ":" + Arrays.toString(((EPropGroup) propGroup).getProps().stream().map(p -> p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">").toArray());
     }
     //endregion
 

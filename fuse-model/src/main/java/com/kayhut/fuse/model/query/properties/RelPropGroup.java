@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.query.properties;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -8,6 +9,10 @@ import java.util.List;
  */
 public class RelPropGroup extends BasePropGroup<RelProp> {
     public RelPropGroup() {}
+
+    public RelPropGroup(RelProp ... props) {
+        super(Arrays.asList(props));
+    }
 
     public RelPropGroup(List<RelProp> props) {
         super(props);
