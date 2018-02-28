@@ -16,6 +16,10 @@
             <artifactId>stream</artifactId>
             <version>2.9.5</version>
         </dependency>
+        <dependency>
+            <groupId>io.javaslang</groupId>
+            <artifactId>javaslang</artifactId>
+        </dependency>
     </dependencies>
 
 
