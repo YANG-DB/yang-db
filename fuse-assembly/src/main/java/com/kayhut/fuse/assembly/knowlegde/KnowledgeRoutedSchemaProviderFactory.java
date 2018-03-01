@@ -2,11 +2,10 @@ package com.kayhut.fuse.assembly.knowlegde;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
+import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.typesafe.config.Config;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -22,11 +21,11 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
  * Created by roman.margolis on 02/10/2017.
  */
 public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaProviderFactory {
-    private RawElasticSchema schema;
+    private RawSchema schema;
     //region GraphElementSchemaProviderFactory Implementation
 
     @Inject
-    public KnowledgeRoutedSchemaProviderFactory(RawElasticSchema schema) {
+    public KnowledgeRoutedSchemaProviderFactory(RawSchema schema) {
         this.schema = schema;
     }
 

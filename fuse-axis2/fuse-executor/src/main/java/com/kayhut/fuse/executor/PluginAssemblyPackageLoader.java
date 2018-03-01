@@ -1,7 +1,7 @@
 package com.kayhut.fuse.executor;
 
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
-import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
+import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.typesafe.config.Config;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,17 +11,17 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class PluginAssemblyPackageLoader extends ExecutorModule {
 
-    protected Class<? extends RawElasticSchema> getRawElasticSchema(Config conf) throws ClassNotFoundException {
-        return (Class<? extends RawElasticSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
+    protected Class<? extends RawSchema> getRawElasticSchema(Config conf) throws ClassNotFoundException {
+        return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
     }
 
     protected InitialGraphDataLoader getInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        RawElasticSchema rawElasticSchema = getRawElasticSchema(conf).newInstance();
+        RawSchema rawSchema = getRawElasticSchema(conf).newInstance();
         InitialGraphDataLoader initialGraphDataLoader =
                 (InitialGraphDataLoader) (Class.forName(
                         conf.getString(conf.getString("assembly")+".physical_schema_data_loader"))
-                        .getConstructor(Config.class, RawElasticSchema.class)
-                        .newInstance(conf,rawElasticSchema));
+                        .getConstructor(Config.class, RawSchema.class)
+                        .newInstance(conf, rawSchema));
 
         return initialGraphDataLoader;
     }

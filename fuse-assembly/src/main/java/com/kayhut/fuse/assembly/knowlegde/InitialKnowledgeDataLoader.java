@@ -2,7 +2,7 @@ package com.kayhut.fuse.assembly.knowlegde;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
-import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
+import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.unipop.controller.utils.map.MapBuilder;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.typesafe.config.Config;
@@ -17,7 +17,6 @@ import org.elasticsearch.action.admin.indices.template.get.GetIndexTemplatesRequ
 import org.elasticsearch.action.admin.indices.template.put.PutIndexTemplateRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
@@ -43,10 +42,10 @@ public class InitialKnowledgeDataLoader implements InitialGraphDataLoader {
     private TransportClient client;
     private SimpleDateFormat sdf;
     private Config conf;
-    private RawElasticSchema schema;
+    private RawSchema schema;
 
     @Inject
-    public InitialKnowledgeDataLoader(Config conf, RawElasticSchema schema) throws UnknownHostException {
+    public InitialKnowledgeDataLoader(Config conf, RawSchema schema) throws UnknownHostException {
         this.conf = conf;
         this.schema = schema;
         Settings settings = Settings.builder().put("cluster.name", conf.getConfig("elasticsearch").getString("cluster_name")).build();

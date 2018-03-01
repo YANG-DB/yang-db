@@ -2,7 +2,7 @@ package com.kayhut.fuse.test;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
-import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
+import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.typesafe.config.Config;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ public class InitialTestDataLoader implements InitialGraphDataLoader {
     }
 
     @Inject
-    public InitialTestDataLoader(Config config, RawElasticSchema schema) {
+    public InitialTestDataLoader(Config config, RawSchema schema) {
     }
 
     @Override
