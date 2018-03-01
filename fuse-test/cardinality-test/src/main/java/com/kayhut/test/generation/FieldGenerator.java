@@ -1,4 +1,4 @@
-package com.kayhut.test;
+package com.kayhut.test.generation;
 
 import java.util.List;
 

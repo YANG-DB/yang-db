@@ -1,4 +1,4 @@
-package com.kayhut.test;
+package com.kayhut.test.histogram;
 
 import javaslang.collection.Stream;
 
@@ -26,7 +26,7 @@ public class HLLHistogram<T extends Comparable<T>, TObject> {
     }
 
     public Optional<HLLHistogramBucket<T, TObject>> findBucket(T value){
-        return Stream.ofAll(this.buckets).find(b -> b.getLowerBound().compareTo(value)<=0 && b.getUpperBound().compareTo(value) >=0).toJavaOptional();
+        return Stream.ofAll(this.buckets).find(b -> b.getLowerBound().compareTo(value)<=0 && b.getUpperBound().compareTo(value) >0).toJavaOptional();
     }
 
     private List<HLLHistogramBucket<T, TObject>> buckets;

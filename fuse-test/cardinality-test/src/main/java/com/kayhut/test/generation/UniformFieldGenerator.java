@@ -1,6 +1,5 @@
-package com.kayhut.test;
+package com.kayhut.test.generation;
 
-import javaslang.Function0;
 import javaslang.collection.Stream;
 
 import java.util.List;

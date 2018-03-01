@@ -1,4 +1,4 @@
-package com.kayhut.test;
+package com.kayhut.test.histogram;
 
 import com.clearspring.analytics.stream.cardinality.HyperLogLogPlus;
 
