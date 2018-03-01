@@ -30,6 +30,8 @@ import org.apache.tinkerpop.gremlin.structure.T;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
+
 /**
  * Created by Roman on 09/05/2017.
  */
@@ -70,6 +72,7 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
 
         String relationTypeName = ont.$relation$(rel.getrType()).getName();
         List<Traversal> traversals = Stream.ofAll(relPropGroup.getProps())
+                .filter(relProp -> relProp.getCon() != null)
                 .map(relProp -> convertRelPropToTraversal(relProp, ont))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -77,8 +80,9 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
 
         traversals.add(0, __.has(T.label, P.eq(relationTypeName)));
 
-        return traversal.has(GlobalConstants.HasKeys.CONSTRAINT,
-                Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class))));
+        return traversals.size() == 1 ?
+                traversal.has(CONSTRAINT, Constraint.by(traversals.get(0))) :
+                traversal.has(CONSTRAINT, Constraint.by(__.and(Stream.ofAll(traversals).toJavaArray(Traversal.class))));
     }
     //endregion
 

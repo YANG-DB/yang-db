@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
@@ -25,27 +26,23 @@ import java.util.function.Predicate;
  */
 public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
-    public EntitySelectionTranslationStrategy(Class<? extends PlanOp> klasses) {
-        super(klasses);
-    }
-
-    public EntitySelectionTranslationStrategy(Predicate<PlanOp> planOpPredicate) {
-        super(planOpPredicate);
+    public EntitySelectionTranslationStrategy() {
+        super(planOp -> planOp.getClass().equals(EntityFilterOp.class));
     }
     //endregion
 
     //region PlanOpTranslationStrategyBase Implementation
     @Override
     protected GraphTraversal translateImpl(GraphTraversal traversal, PlanWithCost<Plan, PlanDetailedCost> plan, PlanOp planOp, TranslationContext context) {
-        Optional<EntityOp> lastEntityOp = EntityOp.class.equals(planOp.getClass()) ?
-                Optional.of((EntityOp)planOp) :
-                PlanUtil.prev(plan.getPlan(), planOp, EntityOp.class);
+        EntityFilterOp lastEntityFilterOp = (EntityFilterOp)planOp;
+        Optional<EntityOp> lastEntityOp = PlanUtil.prev(plan.getPlan(), lastEntityFilterOp, EntityOp.class);
 
         if (!lastEntityOp.isPresent()) {
             return traversal;
         }
 
-        if (lastEntityOp.get().getAsgEbase().geteBase().getReportProps().isEmpty()) {
+        if (Stream.ofAll(lastEntityFilterOp.getAsgEbase().geteBase().getProps())
+                .filter(eProp -> eProp.getProj() != null).isEmpty()) {
             return traversal;
         }
 
@@ -69,9 +66,10 @@ public class EntitySelectionTranslationStrategy extends PlanOpTranslationStrateg
                 .filter(hasStep -> isSelectionHasStep((HasStep<?>)hasStep))
                 .forEach(step -> traversal.asAdmin().removeStep(step));
 
-        Stream.ofAll(lastEntityOp.get().getAsgEbase().geteBase().getReportProps())
-                .forEach(eProp -> traversal.has(context.getOnt().$property$(eProp).getName(),
-                        SelectP.raw(context.getOnt().$property$(eProp).getName())));
+        Stream.ofAll(lastEntityFilterOp.getAsgEbase().geteBase().getProps())
+                .filter(eProp -> eProp.getProj() != null)
+                .forEach(eProp -> traversal.has(context.getOnt().$property$(eProp.getpType()).getName(),
+                        SelectP.raw(context.getOnt().$property$(eProp.getpType()).getName())));
 
         if (PlanUtil.isFirst(plan.getPlan(), lastEntityOp.get())) {
             return traversal;

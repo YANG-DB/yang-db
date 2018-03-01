@@ -10,11 +10,19 @@ public class EPropGroup extends BasePropGroup<EProp> {
     //region Constructors
     public EPropGroup() {}
 
-    public EPropGroup(List<EProp> props) {
+    public EPropGroup(EProp...props) {
         super(props);
     }
 
-    public EPropGroup(int eNum, List<EProp> props) {
+    public EPropGroup(Iterable<EProp> props) {
+        super(props);
+    }
+
+    public EPropGroup(int eNum, EProp...props) {
+        super(eNum, props);
+    }
+
+    public EPropGroup(int eNum, Iterable<EProp> props) {
         super(eNum, props);
     }
     //endregion

@@ -24,11 +24,11 @@ public class DragonKingdomQueryTest extends TestCase {
         Ontology.Accessor ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Dragons"));
         Query query = Query.Builder.instance().withName(NAME.name).withOnt(ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", ont.eType$(OntologyTestUtils.DRAGON.name), "Dragon_1", "D0", singletonList(NAME.type), 2, 0),
+                new EConcrete(1, "A", ont.eType$(OntologyTestUtils.DRAGON.name), "Dragon_1", "D0", 2, 0),
                 new Rel(2, ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", ont.eType$(OntologyTestUtils.KINGDOM.name), singletonList(NAME.type), 4, 0),
+                new ETyped(3, "B", ont.eType$(OntologyTestUtils.KINGDOM.name), 4, 0),
                 new Rel(4, ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 5, 0),
-                new ETyped(5, "C", ont.eType$(OntologyTestUtils.DRAGON.name), singletonList(NAME.type), 6, 0),
+                new ETyped(5, "C", ont.eType$(OntologyTestUtils.DRAGON.name), 6, 0),
                 new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "D"))
 
         )).build();

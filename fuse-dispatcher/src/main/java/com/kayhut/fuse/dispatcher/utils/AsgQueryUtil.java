@@ -7,7 +7,6 @@ import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
@@ -62,7 +61,7 @@ public class AsgQueryUtil {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, predicate, adjacentDfsPredicate.apply(asgEBase));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> adjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, adjacentDfsPredicate.apply(asgEBase));
     }
 
@@ -71,8 +70,8 @@ public class AsgQueryUtil {
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
-        return nextAdjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> adjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
+        return adjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
     }
 

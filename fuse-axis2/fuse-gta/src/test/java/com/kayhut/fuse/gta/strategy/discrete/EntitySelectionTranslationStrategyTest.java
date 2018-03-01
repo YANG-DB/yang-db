@@ -14,6 +14,7 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.predicates.SelectP;
@@ -42,25 +43,6 @@ public class EntitySelectionTranslationStrategyTest {
 
     //region Test Methods
     @Test
-    public void test_selection_entity1() {
-        AsgQuery query = simpleQuery1("name", "ont");
-
-        Plan plan = new Plan(new EntityOp(AsgQueryUtil.element$(query, 1)));
-
-        TranslationContext context = Mockito.mock(TranslationContext.class);
-        when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
-
-        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityOp.class);
-        GraphTraversal actualTraversal = strategy.translate(__.start(), new PlanWithCost<>(plan, null), plan.getOps().get(0), context);
-
-        GraphTraversal expectedTraversal = __.start()
-                .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
-                .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name));
-
-        Assert.assertEquals(expectedTraversal, actualTraversal);
-    }
-
-    @Test
     public void test_selection_entity1_filter5() {
         AsgQuery query = simpleQuery1("name", "ont");
 
@@ -72,7 +54,7 @@ public class EntitySelectionTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
 
-        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityFilterOp.class);
+        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
                 __.start(),
                 new PlanWithCost(plan, null),
@@ -98,7 +80,7 @@ public class EntitySelectionTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
 
-        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityFilterOp.class);
+        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
                 __.start().has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name)),
                 new PlanWithCost<>(plan, null),
@@ -108,31 +90,6 @@ public class EntitySelectionTranslationStrategyTest {
         GraphTraversal expectedTraversal = __.start()
                 .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
                 .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name));
-
-        Assert.assertEquals(expectedTraversal, actualTraversal);
-    }
-
-    @Test
-    public void test_selection_entity3() {
-        AsgQuery query = simpleQuery1("name", "ont");
-
-        Plan plan = new Plan(
-                new EntityOp(AsgQueryUtil.element$(query, 1)),
-                new RelationOp(AsgQueryUtil.element$(query, 2)),
-                new EntityOp(AsgQueryUtil.element$(query, 3)));
-
-        TranslationContext context = Mockito.mock(TranslationContext.class);
-        when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
-
-        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityOp.class);
-        GraphTraversal actualTraversal = strategy.translate(__.start().outE(GlobalConstants.Labels.PROMISE_FILTER).otherV(),
-                new PlanWithCost<>(plan, null), plan.getOps().get(2), context);
-
-        GraphTraversal expectedTraversal = __.start()
-                .outE(GlobalConstants.Labels.PROMISE_FILTER)
-                .has(FIRST_NAME.name, SelectP.raw(FIRST_NAME.name))
-                .has(LAST_NAME.name, SelectP.raw(LAST_NAME.name))
-                .otherV().as("B");
 
         Assert.assertEquals(expectedTraversal, actualTraversal);
     }
@@ -150,7 +107,7 @@ public class EntitySelectionTranslationStrategyTest {
         TranslationContext context = Mockito.mock(TranslationContext.class);
         when(context.getOnt()).thenAnswer(invocationOnMock -> ont);
 
-        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy(EntityFilterOp.class);
+        PlanOpTranslationStrategy strategy = new EntitySelectionTranslationStrategy();
         GraphTraversal actualTraversal = strategy.translate(
                 __.start().outE(GlobalConstants.Labels.PROMISE_FILTER),
                 new PlanWithCost<>(plan, null), plan.getOps().get(3), context);
@@ -168,13 +125,17 @@ public class EntitySelectionTranslationStrategyTest {
     //region Private Methods
     private static AsgQuery simpleQuery1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
-                .next(typed(1, PERSON.type,"A", FIRST_NAME.type, LAST_NAME.type))
+                .next(typed(1, PERSON.type,"A"))
                 .next(quant1(4, QuantType.all))
-                .in(eProp(5, new EProp(5, LAST_NAME.type, Constraint.of(ConstraintOp.eq, "last"))))
+                .in(eProp(5, new EProp(5, LAST_NAME.type, Constraint.of(ConstraintOp.eq, "last")),
+                            new EProp(5, FIRST_NAME.type, new IdentityProjection()),
+                            new EProp(5, LAST_NAME.type, new IdentityProjection())))
                 .next(rel(2,FIRE.getrType(),R))
-                .next(typed(3, DRAGON.type,"B", FIRST_NAME.type, LAST_NAME.type))
+                .next(typed(3, DRAGON.type,"B"))
                 .next(quant1(6, QuantType.all))
-                .next(eProp(7, new EProp(7, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "name"))))
+                .next(eProp(7, new EProp(7, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "name")),
+                        new EProp(7, FIRST_NAME.type, new IdentityProjection()),
+                        new EProp(7, LAST_NAME.type, new IdentityProjection())))
                 .build();
     }
     //endregion

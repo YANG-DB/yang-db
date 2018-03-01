@@ -1,14 +1,18 @@
 package com.kayhut.fuse.gta.translation.discrete;
 
+import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.gta.strategy.discrete.M1PlanOpTranslationStrategy;
 import com.kayhut.fuse.gta.translation.ChainedPlanOpTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
 import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -19,6 +23,7 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.promise.PromiseGraph;
@@ -36,6 +41,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -147,240 +153,117 @@ public class M1ChainedPlanOpTraversalTranslatorTest {
 
     //region Building Plans
     private Plan create_Typ_Rel_Con_PathQuery() {
+        AsgQuery query = AsgQuery.Builder.start("name", "ont")
+                .next(typed(1, "2", "B"))
+                .next(quant1(2, QuantType.all))
+                .in(eProp(3))
+                .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
+                .next(concrete(6, "12345678", "1", "Dardas Aba", "A"))
+                .next(quant1(7, QuantType.all))
+                .next(eProp(8))
+                .build();
 
-        EConcrete concrete = new EConcrete();
-        concrete.seteNum(3);
-        concrete.seteTag("A");
-        concrete.seteID("12345678");
-        concrete.seteType("1"); //Person
-        concrete.seteName("Dardas Aba");
-        AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).build();
-
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setDir(Rel.Direction.R);
-        rel.setrType("1");
-        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(concreteAsg).build();
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteNum(1);
-        eTyped.seteTag("B");
-        eTyped.seteType("2");
-        AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).withNext(relAsg).build();
-
-        Start start = new Start();
-        start.seteNum(0);
-        start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(eTypedAsg).build();
-
-        List<PlanOp> ops = new LinkedList<>();
-
-        AsgEBase<EEntityBase> eTypBaseAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
-        EntityOp typOp = new EntityOp(eTypBaseAsg);
-        ops.add(typOp);
-
-        AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) eTypBaseAsg.getNext().get(0);
-        RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
-
-        AsgEBase<EEntityBase> conAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
-        EntityOp concOp = new EntityOp(conAsg);
-        ops.add(concOp);
-
-        return new Plan(ops);
+        return new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 8))
+        );
     }
 
     private Plan create_Typ_Rel_Typ_PathQuery() {
-        ETyped eTyped2 = new ETyped();
-        eTyped2.seteNum(3);
-        eTyped2.seteTag("B");
-        eTyped2.seteType("2"); //Dragon
-        AsgEBase<ETyped> eTypedAsg2 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped2).build();
+        AsgQuery query = AsgQuery.Builder.start("name", "ont")
+                .next(typed(1, "1", "A"))
+                .next(quant1(2, QuantType.all))
+                .in(eProp(3))
+                .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
+                .next(typed(6, "2", "B"))
+                .next(quant1(7, QuantType.all))
+                .next(eProp(8))
+                .build();
 
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setDir(Rel.Direction.R);
-        rel.setrType("1");
-        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(eTypedAsg2).build();
-
-        ETyped eTyped1 = new ETyped();
-        eTyped1.seteNum(1);
-        eTyped1.seteTag("A");
-        eTyped1.seteType("1"); //Person
-        AsgEBase<ETyped> eTypedAsg1 = AsgEBase.Builder.<ETyped>get().withEBase(eTyped1).withNext(relAsg).build();
-
-        Start start = new Start();
-        start.seteNum(0);
-        start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(eTypedAsg1).build();
-
-        List<PlanOp> ops = new LinkedList<>();
-
-        AsgEBase<EEntityBase> typBaseAsg1 = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
-        EntityOp typOp1 = new EntityOp(typBaseAsg1);
-        ops.add(typOp1);
-
-        AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) typBaseAsg1.getNext().get(0);
-        RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
-
-        AsgEBase<EEntityBase> typBaseAsg2 = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
-        EntityOp typOp2 = new EntityOp(typBaseAsg2);
-        ops.add(typOp2);
-
-        return new Plan(ops);
+        return new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 8))
+        );
     }
 
     private Plan create_Con_Rel_Typ_PathQuery() {
-        ETyped eTyped = new ETyped();
-        eTyped.seteNum(3);
-        eTyped.seteTag("B");
-        eTyped.seteType("2");
-        AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).build();
+        AsgQuery query = AsgQuery.Builder.start("name", "ont")
+                .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
+                .next(quant1(2, QuantType.all))
+                .in(eProp(3))
+                .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
+                .next(typed(6, "1", "B"))
+                .next(quant1(7, QuantType.all))
+                .next(eProp(8))
+                .build();
 
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setDir(Rel.Direction.R);
-        rel.setrType("1");
-        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(eTypedAsg).build();
-
-        EConcrete concrete = new EConcrete();
-        concrete.seteNum(1);
-        concrete.seteTag("A");
-        concrete.seteID("12345678");
-        concrete.seteType("1"); //Person
-        concrete.seteName("Moshe Ufnik");
-        AsgEBase<EConcrete> concreteAsg1 = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
-
-        Start start = new Start();
-        start.seteNum(0);
-        start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg1).build();
-
-
-        List<PlanOp> ops = new LinkedList<>();
-
-        AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
-        EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
-
-        AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
-        RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
-
-        AsgEBase<EEntityBase> typBaseAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
-        EntityOp typOp = new EntityOp(typBaseAsg);
-        ops.add(typOp);
-
-        return new Plan(ops);
+        return new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 8))
+        );
     }
 
     private Plan create_Con_Rel_Unt_PathQuery() {
-        EUntyped untyped = new EUntyped();
-        untyped.seteNum(3);
-        untyped.seteTag("B");
-        AsgEBase<EUntyped> unTypedAsg = AsgEBase.Builder.<EUntyped>get().withEBase(untyped).build();
+        AsgQuery query = AsgQuery.Builder.start("name", "ont")
+                .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
+                .next(quant1(2, QuantType.all))
+                .in(eProp(3))
+                .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
+                .next(unTyped(6, "B"))
+                .next(quant1(7, QuantType.all))
+                .next(eProp(8))
+                .build();
 
-        Rel rel = new Rel();
-        rel.seteNum(2);
-        rel.setDir(Rel.Direction.R);
-        rel.setrType("1");
-        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel).withNext(unTypedAsg).build();
-
-        EConcrete concrete = new EConcrete();
-        concrete.seteNum(1);
-        concrete.seteTag("A");
-        concrete.seteID("12345678");
-        concrete.seteType("1"); //Person
-        concrete.seteName("Moshe Ufnik");
-        AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
-
-        Start start = new Start();
-        start.seteNum(0);
-        start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg).build();
-
-        List<PlanOp> ops = new LinkedList<>();
-
-        AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
-        EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
-
-        AsgEBase<Rel> relBaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
-        RelationOp relOp = new RelationOp(relBaseAsg);
-        ops.add(relOp);
-
-        AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>) relBaseAsg.getNext().get(0);
-        EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(unOp);
-
-        return new Plan(ops);
+        return new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 8))
+        );
     }
 
     private Plan create_Con_Rel_Typ_Rel_Unt_PathQuery()
     {
-        EUntyped untyped = new EUntyped();
-        untyped.seteNum(5);
-        untyped.seteTag("C");
-        AsgEBase<EUntyped> unTypedAsg = AsgEBase.Builder.<EUntyped>get().withEBase(untyped).build();
+        AsgQuery query = AsgQuery.Builder.start("name", "ont")
+                .next(concrete(1, "12345678", "1", "Dardas Aba", "A"))
+                .next(quant1(2, QuantType.all))
+                .in(eProp(3))
+                .next(rel(4, "1", Rel.Direction.R).below(relProp(5)))
+                .next(typed(6, "2", "B"))
+                .next(quant1(7, QuantType.all))
+                .in(eProp(8))
+                .next(rel(9, "1", Rel.Direction.R).below(relProp(10)))
+                .next(unTyped(11, "C"))
+                .next(quant1(12, QuantType.all))
+                .next(eProp(13))
+                .build();
 
-
-        Rel rel2 = new Rel();
-        rel2.seteNum(4);
-        rel2.setDir(Rel.Direction.R);
-        rel2.setrType("1");
-        AsgEBase<Rel> rel2Asg = AsgEBase.Builder.<Rel>get().withEBase(rel2).withNext(unTypedAsg).build();
-
-        ETyped eTyped = new ETyped();
-        eTyped.seteNum(3);
-        eTyped.seteTag("B");
-        eTyped.seteType("2");
-        AsgEBase<ETyped> eTypedAsg = AsgEBase.Builder.<ETyped>get().withEBase(eTyped).withNext(rel2Asg).build();
-
-        Rel rel1 = new Rel();
-        rel1.seteNum(2);
-        rel1.setDir(Rel.Direction.R);
-        rel1.setrType("1");
-        AsgEBase<Rel> relAsg = AsgEBase.Builder.<Rel>get().withEBase(rel1).withNext(eTypedAsg).build();
-
-        EConcrete concrete = new EConcrete();
-        concrete.seteNum(1);
-        concrete.seteTag("A");
-        concrete.seteID("12345678");
-        concrete.seteType("1"); //Person
-        concrete.seteName("Moshe Ufnik");
-        AsgEBase<EConcrete> concreteAsg = AsgEBase.Builder.<EConcrete>get().withEBase(concrete).withNext(relAsg).build();
-
-        Start start = new Start();
-        start.seteNum(0);
-        start.setNext(1);
-        AsgEBase<Start> startAsg = AsgEBase.Builder.<Start>get().withEBase(start).withNext(concreteAsg).build();
-
-        List<PlanOp> ops = new LinkedList<>();
-
-        AsgEBase<EEntityBase> entityAsg = (AsgEBase<EEntityBase>) startAsg.getNext().get(0);
-        EntityOp concOp = new EntityOp(entityAsg);
-        ops.add(concOp);
-
-        AsgEBase<Rel> rel1BaseAsg = (AsgEBase<Rel>) entityAsg.getNext().get(0);
-        RelationOp rel1Op = new RelationOp(rel1BaseAsg);
-        ops.add(rel1Op);
-
-
-        AsgEBase<EEntityBase> typBaseAsg = (AsgEBase<EEntityBase>) rel1BaseAsg.getNext().get(0);
-        EntityOp typOp = new EntityOp(typBaseAsg);
-        ops.add(typOp);
-
-        AsgEBase<Rel> rel2BaseAsg = (AsgEBase<Rel>) typBaseAsg.getNext().get(0);
-        RelationOp rel2Op = new RelationOp(rel1BaseAsg);
-        ops.add(rel2Op);
-
-
-        AsgEBase<EEntityBase> unBaseAsg = (AsgEBase<EEntityBase>) rel2BaseAsg.getNext().get(0);
-        EntityOp unOp = new EntityOp(unBaseAsg);
-        ops.add(unOp);
-
-        return new Plan(ops);
+        return new Plan(
+                new EntityOp(AsgQueryUtil.element$(query, 1)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 3)),
+                new RelationOp(AsgQueryUtil.element$(query, 4)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 5)),
+                new EntityOp(AsgQueryUtil.element$(query, 6)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 8)),
+                new RelationOp(AsgQueryUtil.element$(query, 9)),
+                new RelationFilterOp(AsgQueryUtil.element$(query, 10)),
+                new EntityOp(AsgQueryUtil.element$(query, 11)),
+                new EntityFilterOp(AsgQueryUtil.element$(query, 13))
+        );
     }
     //endregion
 

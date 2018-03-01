@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 public class JoinEntityOpTranslationStrategy extends PlanOpTranslationStrategyBase {
     PlanTraversalTranslator planTraversalTranslator;
 
+    @SafeVarargs
     public JoinEntityOpTranslationStrategy(PlanTraversalTranslator planTraversalTranslator, Class<? extends PlanOp>... klasses) {
         super(klasses);
         this.planTraversalTranslator = planTraversalTranslator;

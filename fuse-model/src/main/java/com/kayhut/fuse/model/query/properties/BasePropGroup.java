@@ -15,11 +15,19 @@ public class BasePropGroup<T extends BaseProp> extends EBase {
         this.props = new ArrayList<>();
     }
 
-    public BasePropGroup(List<T> props) {
+    public BasePropGroup(T...props) {
+        this(Stream.of(props));
+    }
+
+    public BasePropGroup(Iterable<T> props) {
         this(0, props);
     }
 
-    public BasePropGroup(int eNum, List<T> props) {
+    public BasePropGroup(int eNum, T...props) {
+        this(eNum, Stream.of(props));
+    }
+
+    public BasePropGroup(int eNum, Iterable<T> props) {
         super(eNum);
         this.props = Stream.ofAll(props).toJavaList();
     }

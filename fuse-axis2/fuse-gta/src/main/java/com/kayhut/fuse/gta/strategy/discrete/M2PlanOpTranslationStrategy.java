@@ -27,24 +27,15 @@ public class M2PlanOpTranslationStrategy extends CompositePlanOpTranslationStrat
         super();
 
         this.strategies = Stream.of(
-                new CompositePlanOpTranslationStrategy(
-                        new EntityOpTranslationStrategy(EntityTranslationOptions.none),
-                        new EntitySelectionTranslationStrategy(planOp -> planOp.getClass().equals(EntityOp.class))),
-
+                new EntityOpTranslationStrategy(EntityTranslationOptions.none),
                 new CompositePlanOpTranslationStrategy(
                         new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none),
-                        new EntitySelectionTranslationStrategy(planOp -> planOp.getClass().equals(EntityFilterOp.class))),
-
+                        new EntitySelectionTranslationStrategy()),
                 new GoToEntityOpTranslationStrategy(),
-
-                new CompositePlanOpTranslationStrategy(
-                        new RelationOpTranslationStrategy(),
-                        new RelationSelectionTranslationStrategy(planOp -> planOp.getClass().equals(RelationOp.class))),
-
+                new RelationOpTranslationStrategy(),
                 new CompositePlanOpTranslationStrategy(
                         new RelationFilterOpTranslationStrategy(),
-                        new RelationSelectionTranslationStrategy(planOp -> planOp.getClass().equals(RelationFilterOp.class))),
-
+                        new RelationSelectionTranslationStrategy()),
                 new OptionalOpTranslationStrategy(this),
                 new JoinEntityOpTranslationStrategy(new ChainedPlanOpTraversalTranslator(this), EntityJoinOp.class)
         ).toJavaList();

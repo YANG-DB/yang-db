@@ -401,14 +401,14 @@ public class JoinE2ETests {
     //endregion
 
     @Test
-    public void testDragonOriginKingdomX2Path() throws IOException, InterruptedException {
+    public void testDragonOriginKingdomX2Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX2Query();
 
         runQueryAndValidate(query, dragonOriginKingdomX2Results(), dragonOriginKingdomX2Plan(query));
     }
 
     @Test
-    public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException {
+    public void testDragonOriginKingdomX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonOriginKingdomX3Query();
 
         runQueryAndValidate(query, dragonOriginKingdomX3Results(), dragonOriginKingdomX3Plan(query));
@@ -447,14 +447,18 @@ public class JoinE2ETests {
         return new Plan(new EntityJoinOp(innerJoin, rightBranch2));
     }
 
-    private QueryResult dragonOriginKingdomX3Results() {
+    private QueryResult dragonOriginKingdomX3Results() throws ParseException {
+        Function<Integer, Long> birthDateValueFunction =
+                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
+
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_1" )
                 .withETag(singleton("A"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(1))))))
                 .build();
         Entity entityB = Entity.Builder.instance()
                 .withEID("Kingdom_1" )
@@ -469,16 +473,18 @@ public class JoinE2ETests {
                 .withEID("Dragon_3" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
                 .build());
 
         entitiesC.add(Entity.Builder.instance()
                 .withEID("Dragon_61" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(61))))))
                 .build());
 
         List<Entity> entitiesD = new ArrayList<>();
@@ -486,15 +492,17 @@ public class JoinE2ETests {
                 .withEID("Dragon_5" )
                 .withETag(singleton("D"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(5))))))
                 .build());
         entitiesD.add(Entity.Builder.instance()
                 .withEID("Dragon_63" )
                 .withETag(singleton("D"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "F"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(63))))))
                 .build());
 
         for(Entity entityC : entitiesC) {
@@ -561,14 +569,18 @@ public class JoinE2ETests {
         return new Plan(new EntityJoinOp(leftBranch, rightBranch));
     }
 
-    private QueryResult dragonOriginKingdomX2Results() {
+    private QueryResult dragonOriginKingdomX2Results() throws ParseException {
+        Function<Integer, Long> birthDateValueFunction =
+                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
+
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_1" )
                 .withETag(singleton("A"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "B"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(1))))))
                 .build();
         Entity entityB = Entity.Builder.instance()
                 .withEID("Kingdom_1" )
@@ -583,16 +595,18 @@ public class JoinE2ETests {
                 .withEID("Dragon_3" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(3))))))
                 .build());
 
         entitiesC.add(Entity.Builder.instance()
                 .withEID("Dragon_61" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D")))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", "D"),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(61))))))
                 .build());
 
         for(Entity entityC : entitiesC) {
@@ -651,11 +665,11 @@ public class JoinE2ETests {
     private Query getDragonOriginKingdomX2Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", singletonList(NAME.type), 2, 0),
+                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", 2, 0),
                 new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(KINGDOM.name), singletonList(NAME.type), 4, 0),
+                new ETyped(3, "B", $ont.eType$(KINGDOM.name), 4, 0),
                 new Rel(4, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 5, 0),
-                new ETyped(5, "C", $ont.eType$(DRAGON.name), singletonList(NAME.type), 6, 0),
+                new ETyped(5, "C", $ont.eType$(DRAGON.name), 6, 0),
                 new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "D"))
         )).build();
     }
@@ -663,15 +677,15 @@ public class JoinE2ETests {
     private Query getDragonOriginKingdomX3Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", singletonList(NAME.type), 2, 0),
+                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_1", "D0", 2, 0),
                 new Rel(2, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(KINGDOM.name), singletonList(NAME.type), 4, 0),
+                new ETyped(3, "B", $ont.eType$(KINGDOM.name), 4, 0),
                 new Quant1(4, QuantType.all, Arrays.asList(5,8),0),
                 new Rel(5, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 6, 0),
-                new ETyped(6, "C", $ont.eType$(DRAGON.name), singletonList(NAME.type), 7, 0),
+                new ETyped(6, "C", $ont.eType$(DRAGON.name), 7, 0),
                 new EProp(7, NAME.type, Constraint.of(ConstraintOp.eq, "D")),
                 new Rel(8, $ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 9, 0),
-                new ETyped(9, "D", $ont.eType$(DRAGON.name), singletonList(NAME.type), 10, 0),
+                new ETyped(9, "D", $ont.eType$(DRAGON.name), 10, 0),
                 new EProp(10, NAME.type, Constraint.of(ConstraintOp.eq, "F"))
         )).build();
     }

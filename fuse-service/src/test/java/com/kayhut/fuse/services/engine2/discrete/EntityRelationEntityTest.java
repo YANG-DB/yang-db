@@ -114,9 +114,9 @@ public class EntityRelationEntityTest {
     public void test_Person_own_Dragon_paths() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", PERSON.type, singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", PERSON.type, 2, 0),
                 new Rel(2, OWN.getrType(), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", DRAGON.type, singletonList(NAME.type), 0, 0)
+                new ETyped(3, "B", DRAGON.type, 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -139,9 +139,9 @@ public class EntityRelationEntityTest {
     public void test_Person_own_Dragon_graph() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", PERSON.type, singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", PERSON.type, 2, 0),
                 new Rel(2, OWN.getrType(), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", DRAGON.type, singletonList(NAME.type), 0, 0)
+                new ETyped(3, "B", DRAGON.type, 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -166,11 +166,11 @@ public class EntityRelationEntityTest {
     public void test_person1_own_Dragon_paths() throws IOException, InterruptedException {
         Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", PERSON.type, singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", PERSON.type, 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                 new EProp(3, NAME.type, Constraint.of(ConstraintOp.eq, "person1")),
                 new Rel(4, OWN.getrType(), Rel.Direction.R, null, 5, 0),
-                new ETyped(5, "B", DRAGON.type, singletonList(NAME.type), 0, 0)
+                new ETyped(5, "B", DRAGON.type, 0, 0)
         )).build();
 
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

@@ -116,7 +116,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.SummaryStatistics minEdgeSummaryStatistics = getEdgeStatistics(graphEdgeSchema, relevantIndices);
-        for(RelProp relProp : relFilter.getProps()){
+        for(RelProp relProp : Stream.ofAll(relFilter.getProps()).filter(relProp -> relProp.getCon() != null)){
             Property property = ont.$property$( relProp.getpType() );
 
             GraphElementPropertySchema graphElementPropertySchema;
@@ -205,7 +205,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need getTo take a different approach
         Statistics.SummaryStatistics minVertexSummaryStatistics = getVertexStatistics(graphVertexSchema, relevantIndices);
-        for(EProp eProp : entityFilter.getProps()){
+        for(EProp eProp : Stream.ofAll(entityFilter.getProps()).filter(eProp -> eProp.getCon() != null)){
             Property property = ont.$property$( eProp.getpType() );
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
