@@ -117,8 +117,11 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
                 if (redundantVertexProperty.isPresent()) {
-                    RelProp relProp = RedundantSelectionRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
-                            p.getpType());
+                    RelProp relProp = RedundantSelectionRelProp.of(
+                            maxEnum.addAndGet(1),
+                            p.getpType(),
+                            redundantVertexProperty.get().getPropertyRedundantName(),
+                            p.getProj());
                     relPropGroup.getProps().add(relProp);
                     lastEntityFilterOp.get().getAsgEbase().geteBase().getProps().remove(p);
                 }
