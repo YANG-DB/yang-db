@@ -1,6 +1,6 @@
 package com.kayhut.fuse.test;
 
-import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
+import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by lior.perry on 2/12/2018.
  */
-public class TestRawSchema implements RawElasticSchema {
+public class TestRawSchema implements RawSchema {
     @Override
     public IndexPartitions getPartition(String type) {
         return new IndexPartitions.Impl(type);

@@ -12,7 +12,7 @@ import java.util.Set;
  * Describing the elastic (raw) indices & indices partitions
  * each index has id formatting
  */
-public interface RawElasticSchema {
+public interface RawSchema {
     IndexPartitions getPartition(String type);
 
     String getIdFormat(String type);

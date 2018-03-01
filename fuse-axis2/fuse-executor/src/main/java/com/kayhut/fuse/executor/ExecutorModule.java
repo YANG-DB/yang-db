@@ -19,7 +19,8 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
 import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
-import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
+import com.kayhut.fuse.executor.ontology.schema.PrefixedRawSchema;
+import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
@@ -48,6 +49,7 @@ public class ExecutorModule extends ModuleBase {
         bindInitialDataLoader(env, conf, binder);
         bindCursorFactory(env, conf, binder);
         bindElasticClient(env, conf, binder);
+        bindRawSchema(env, conf, binder);
         bindSchemaProviderFactory(env, conf, binder);
         bindUniGraphProvider(env, conf, binder);
 
@@ -65,23 +67,36 @@ public class ExecutorModule extends ModuleBase {
             @Override
             protected void configure() {
                 try {
-                    this.bind(RawElasticSchema.class)
-                            .to(getRawElasticSchema(conf))
-                            .asEagerSingleton();
                     this.bind(InitialGraphDataLoader.class)
                             .to(getInitialDataLoader(conf))
                             .asEagerSingleton();
                     this.expose(InitialGraphDataLoader.class);
-                    this.expose(RawElasticSchema.class);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void bindRawSchema(Env env, Config conf, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                try {
+                    this.bind(RawSchema.class)
+                            .annotatedWith(named(PrefixedRawSchema.rawSchemaParameter))
+                            .to(getRawElasticSchemaClass(conf))
+                            .asEagerSingleton();
+
+                    String prefix = conf.hasPath(conf.getString("assembly") + ".physical_raw_schema_prefix") ?
+                            conf.getString(conf.getString("assembly") + ".physical_raw_schema_prefix") :
+                            "";
+                    this.bindConstant().annotatedWith(named(PrefixedRawSchema.prefixParameter)).to(prefix);
+                    this.bind(RawSchema.class).to(PrefixedRawSchema.class).asEagerSingleton();
+
+                    this.expose(RawSchema.class);
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }
@@ -188,8 +203,8 @@ public class ExecutorModule extends ModuleBase {
         });
     }
 
-    private Class<? extends RawElasticSchema> getRawElasticSchema(Config conf) throws ClassNotFoundException {
-        return (Class<? extends RawElasticSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
+    private Class<? extends RawSchema> getRawElasticSchemaClass(Config conf) throws ClassNotFoundException {
+        return (Class<? extends RawSchema>) Class.forName(conf.getString(conf.getString("assembly")+".physical_raw_schema"));
     }
 
     private Class<? extends InitialGraphDataLoader> getInitialDataLoader(Config conf) throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
