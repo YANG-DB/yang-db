@@ -162,17 +162,12 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         }
 
         public static AsgEBase<EConcrete> concrete(int eNum, String eID, String eType, String eName, String eTag) {
-            return concrete(eNum, eID, eType, eName, eTag, new String[0]);
-        }
-
-        public static AsgEBase<EConcrete> concrete(int eNum, String eID, String eType, String eName, String eTag, String...reportProps) {
             EConcrete concrete = new EConcrete();
             concrete.seteNum(eNum);
             concrete.seteType(eType);
             concrete.seteID(eID);
             concrete.seteName(eName);
             concrete.seteTag(eTag);
-            concrete.setReportProps(Stream.of(reportProps).toJavaList());
 
             return new AsgEBase<>(concrete);
         }
@@ -210,15 +205,10 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
         }
 
         public static AsgEBase<ETyped> typed(int eNum, String eType, String eTag) {
-            return typed(eNum, eType, eTag, new String[0]);
-        }
-
-        public static AsgEBase<ETyped> typed(int eNum, String eType, String eTag, String...reportProps) {
             ETyped eTyped = new ETyped();
             eTyped.seteNum(eNum);
             eTyped.seteType(eType);
             eTyped.seteTag(eTag);
-            eTyped.setReportProps(Stream.of(reportProps).toJavaList());
 
             return new AsgEBase<>(eTyped);
         }
@@ -267,17 +257,6 @@ public class AsgQuery implements IQuery<AsgEBase<? extends EBase>>{
             untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaList());
             untyped.seteNum(eNum);
             untyped.seteTag(eTag);
-
-            return new AsgEBase<>(untyped);
-        }
-
-        public static AsgEBase<EUntyped> unTyped(int eNum, String eTag, Iterable<String> vTypes, Iterable<String> nvTypes, Iterable<String> reportProps) {
-            EUntyped untyped = new EUntyped();
-            untyped.setvTypes(Stream.ofAll(vTypes).toJavaList());
-            untyped.setNvTypes(Stream.ofAll(nvTypes).toJavaList());
-            untyped.seteNum(eNum);
-            untyped.seteTag(eTag);
-            untyped.setReportProps(Stream.ofAll(reportProps).toJavaList());
 
             return new AsgEBase<>(untyped);
         }

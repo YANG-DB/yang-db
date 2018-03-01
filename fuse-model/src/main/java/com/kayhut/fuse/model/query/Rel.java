@@ -25,19 +25,13 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
 
     //region Constructors
     public Rel() {
-        this.reportProps = Collections.emptyList();
     }
 
     public Rel(int eNum, String rType, Direction dir, String wrapper, int next, int b) {
-        this(eNum, rType, dir, wrapper, Collections.emptyList(), next, b);
-    }
-
-    public Rel(int eNum, String rType, Direction dir, String wrapper, List<String> reportProps, int next, int b) {
         super(eNum);
         this.rType = rType;
         this.dir = dir;
         this.wrapper = wrapper;
-        this.reportProps = reportProps;
         this.next = next;
         this.b = b;
     }
@@ -88,14 +82,6 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     public void setB(Integer b) {
         this.b = b;
     }
-
-    public List<String> getReportProps() {
-        return reportProps;
-    }
-
-    public void setReportProps(List<String> reportProps) {
-        this.reportProps = reportProps;
-    }
     //endregion
 
     //region Override Methods
@@ -114,8 +100,6 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     private int next;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;
-
-    private List<String> reportProps;
     //endregion
 
 

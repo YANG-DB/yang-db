@@ -19,7 +19,7 @@ import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.properties.EProp;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +33,7 @@ import static com.kayhut.fuse.epb.utils.DfsTestUtils.ruleBaseEstimator;
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
@@ -65,15 +65,15 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(concrete(1, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person"))
                 .next(eProp(101))
-                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(START_DATE.type, 201, Constraint.of(eq, new Date())))))
+                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(NAME.type, 301, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 301, Constraint.of(gt, MALE)))
+                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
                                 .next(unTyped(6).next(eProp(601)))
                         , rel(7, FIRE.getrType(), R)
-                                .below(relProp(701, of(START_DATE.type, 701, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
-                                        of(END_DATE.type, 701, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
+                                .below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
+                                        of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
                                 .next(typed(8, OntologyTestUtils.DRAGON.type).next(eProp(801)))
                 ).build();
 
@@ -91,15 +91,15 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.DRAGON.type))
                 .next(eProp(101))
-                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(START_DATE.type, 201, Constraint.of(eq, new Date())))))
+                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(NAME.type, 301, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 301, Constraint.of(gt, MALE)))
+                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
                                 .next(unTyped(6).next(eProp(601)))
                         , rel(7, FIRE.getrType(), R)
-                                .below(relProp(701, of(START_DATE.type, 701, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
-                                        of(END_DATE.type, 701, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
+                                .below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
+                                        of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
                                 .next(concrete(8, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person").next(eProp(801)))
                 ).build();
 
@@ -117,15 +117,15 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.DRAGON.type))
                 .next(eProp(101))
-                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(START_DATE.type, 201, Constraint.of(eq, new Date())))))
+                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(NAME.type, 301, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 301, Constraint.of(gt, MALE)))
+                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
                                 .next(concrete(6, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person").next(eProp(601)))
                         , rel(7, FIRE.getrType(), R)
-                                .below(relProp(701, of(START_DATE.type, 701, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
-                                        of(END_DATE.type, 701, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
+                                .below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
+                                        of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
                                 .next(typed(8, OntologyTestUtils.DRAGON.type).next(eProp(801)))
                 ).build();
 
@@ -144,14 +144,14 @@ public class DfsRuleBasedBottomUpPlanSearcherWithQuantTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, OntologyTestUtils.DRAGON.type))
                 .next(eProp(101))
-                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(START_DATE.type, 201, Constraint.of(eq, new Date())))))
+                .next(rel(2, OWN.getrType(), R).below(relProp(201, of(201, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(concrete(3, "eId0000123", OntologyTestUtils.PERSON.type, "Jomala", "person"))
                 .next(quant1(4, all))
-                .in(eProp(301, EProp.of(NAME.type, 301, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 301, Constraint.of(gt, MALE)))
+                .in(eProp(301, EProp.of(301, NAME.type, Constraint.of(eq, "smith")), EProp.of(301, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R).below(relProp(501))
                                 .next(typed(6, OntologyTestUtils.DRAGON.type).next(eProp(601)))
-                        , rel(7, FIRE.getrType(), R).below(relProp(701, of(START_DATE.type, 701, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
-                                of(END_DATE.type, 701, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
+                        , rel(7, FIRE.getrType(), R).below(relProp(701, of(701, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
+                                of(701, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
                                 .next(typed(8, OntologyTestUtils.DRAGON.type).next(eProp(801)))
                 ).build();
 

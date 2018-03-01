@@ -5,6 +5,8 @@ import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.test.util.FuseClient;
 
@@ -25,9 +27,9 @@ public class DragonKingdomQuery6Test extends TestCase{
                 new Start(0, 1),
                 new ETyped(1, "A", ont.eType$(OntologyTestUtils.DRAGON.name), 2, 0),
                 new Rel(2, ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", ont.eType$(OntologyTestUtils.KINGDOM.name), singletonList(NAME.type), 4, 0),
+                new ETyped(3, "B", ont.eType$(OntologyTestUtils.KINGDOM.name), 4, 0),
                 new Rel(4, ont.rType$(ORIGINATED_IN.getName()), Rel.Direction.L, null, 5, 0),
-                new ETyped(5, "C", ont.eType$(OntologyTestUtils.DRAGON.name), singletonList(NAME.type), 6, 0),
+                new ETyped(5, "C", ont.eType$(OntologyTestUtils.DRAGON.name), 6, 0),
                 new EProp(6, NAME.type, Constraint.of(ConstraintOp.eq, "D"))
 
         )).build();

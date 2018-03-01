@@ -22,8 +22,8 @@ import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import org.junit.Assert;
 import org.junit.Before;
@@ -87,7 +87,7 @@ public class SmartEpbTests {
     public void testSingleElement(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2,EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(eProp(2,EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

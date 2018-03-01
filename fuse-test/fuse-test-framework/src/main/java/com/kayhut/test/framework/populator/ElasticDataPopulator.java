@@ -87,8 +87,6 @@ public class ElasticDataPopulator implements DataPopulator {
 
     @Override
     public void populate() throws Exception {
-        long start = System.currentTimeMillis();
-
         int currentBulkSize = 0;
 
         BulkRequestBuilder bulkRequestBuilder = client.prepareBulk().setRefreshPolicy(WriteRequest.RefreshPolicy.NONE);
@@ -113,8 +111,5 @@ public class ElasticDataPopulator implements DataPopulator {
                 throw new IllegalArgumentException(bulkItemResponses.buildFailureMessage());
             }
         }
-
-        long elapsed = System.currentTimeMillis() - start;
-        System.out.println("populate elasped: " + elapsed);
     }
 }

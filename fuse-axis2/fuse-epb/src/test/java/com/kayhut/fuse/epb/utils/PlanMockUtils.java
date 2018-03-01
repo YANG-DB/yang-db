@@ -15,7 +15,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
-import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -182,7 +182,7 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder entityFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
-            EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(pType, eNum, constraint)));
+            EPropGroup ePropGroup = new EPropGroup(Collections.singletonList(EProp.of(eNum, pType, constraint)));
             EntityFilterOp filterOp = new EntityFilterOp(new AsgEBase<>(ePropGroup));
             EntityOp last = PlanUtil.<EntityOp>last$(plan, planOp -> true);
             plan = plan.withOp(filterOp);
@@ -198,7 +198,7 @@ public interface PlanMockUtils {
         }
 
         public PlanMockBuilder relFilter(double factor, int eNum, String pType, Constraint constraint) throws Exception {
-            RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(pType, eNum, constraint)));
+            RelPropGroup relPropGroup = new RelPropGroup(Collections.singletonList(RelProp.of(eNum, pType, constraint)));
             RelationFilterOp relationFilterOp = new RelationFilterOp(new AsgEBase<>(relPropGroup));
 
             RelationOp last = PlanUtil.<RelationOp>last$(plan, planOp -> true);

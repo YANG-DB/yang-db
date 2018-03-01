@@ -55,8 +55,8 @@ public class StandardCursorDriver extends CursorDriverBase {
                     new TranslationContext(
                             new Ontology.Accessor(ontology),
                             uniGraphProvider.getGraph(ontology).traversal()));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
 
         Cursor cursor = this.cursorFactory.createCursor(

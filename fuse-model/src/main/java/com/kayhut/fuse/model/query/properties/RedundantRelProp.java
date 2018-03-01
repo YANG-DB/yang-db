@@ -1,6 +1,6 @@
 package com.kayhut.fuse.model.query.properties;
 
-import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 
 /**
  * Created by moti on 5/9/2017.

@@ -1,10 +1,9 @@
 package com.kayhut.fuse.neo4j.cypher.compile;
 
-import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -164,7 +163,7 @@ public class CompileNodeRelNodeTest {
         AsgQuery query = AsgQuery.Builder.start("q1", "Dragons")
                 .next(AsgQuery.Builder.typed(1, "Dragon", "A"))
                 .next(AsgQuery.Builder.quant1(2, QuantType.all).next(AsgQuery.Builder.eProp(5, new EProp(3, "firstName", Constraint.of(ConstraintOp.eq, "John")))))
-                .next(AsgQuery.Builder.rel(4, "fire", Rel.Direction.R).below(AsgQuery.Builder.relProp(5, RelProp.of("temperature", 5, Constraint.of(ConstraintOp.ge, 100)))))
+                .next(AsgQuery.Builder.rel(4, "fire", Rel.Direction.R).below(AsgQuery.Builder.relProp(5, RelProp.of(5, "temperature", Constraint.of(ConstraintOp.ge, 100)))))
                 .next(AsgQuery.Builder.typed(6, "Dragon", "B"))
                 .next(AsgQuery.Builder.eProp(7, new EProp(2, "firstName", Constraint.of(ConstraintOp.eq, "John"))))
                 .build();

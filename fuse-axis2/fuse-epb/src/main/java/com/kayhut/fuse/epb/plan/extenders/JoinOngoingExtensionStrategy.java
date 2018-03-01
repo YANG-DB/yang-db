@@ -44,7 +44,7 @@ public class JoinOngoingExtensionStrategy implements PlanExtensionStrategy<Plan,
                             return Arrays.asList(extendPlan,
                                     new Plan(new EntityJoinOp(((EntityJoinOp) extendPlan.getOps().get(0)).getLeftBranch(), ((EntityJoinOp) extendPlan.getOps().get(0)).getRightBranch(),true)));
                         }else{
-                            return Arrays.asList(extendPlan);
+                            return Collections.singletonList(extendPlan);
                         }
                     })
                     .toJavaList();

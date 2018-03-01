@@ -7,6 +7,7 @@ import com.kayhut.fuse.dispatcher.gta.TranslationContext;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.query.properties.RedundantSelectionRelProp;
@@ -23,12 +24,8 @@ import java.util.function.Predicate;
  */
 public class RelationSelectionTranslationStrategy extends PlanOpTranslationStrategyBase {
     //region Constructors
-    public RelationSelectionTranslationStrategy(Class<? extends PlanOp> klasses) {
-        super(klasses);
-    }
-
-    public RelationSelectionTranslationStrategy(Predicate<PlanOp> planOpPredicate) {
-        super(planOpPredicate);
+    public RelationSelectionTranslationStrategy() {
+        super(planOp -> planOp.getClass().equals(RelationFilterOp.class));
     }
     //endregion
 
@@ -38,34 +35,28 @@ public class RelationSelectionTranslationStrategy extends PlanOpTranslationStrat
                                            PlanWithCost<Plan, PlanDetailedCost> planWithCost,
                                            PlanOp planOp,
                                            TranslationContext context) {
-        Optional<RelationOp> lastRelationOp = RelationOp.class.equals(planOp.getClass()) ?
-                Optional.of((RelationOp) planOp) :
-                PlanUtil.prev(planWithCost.getPlan(), planOp, RelationOp.class);
+
+        RelationFilterOp relationFilterOp = (RelationFilterOp) planOp;
+        Optional<RelationOp> lastRelationOp = PlanUtil.prev(planWithCost.getPlan(), relationFilterOp, RelationOp.class);
 
         if (!lastRelationOp.isPresent()) {
             return traversal;
         }
 
-        Optional<RelationFilterOp> relationFilterOp = PlanUtil.next(planWithCost.getPlan(), lastRelationOp.get(), RelationFilterOp.class);
-        Optional<PlanOp> adjacentToRelationOp = PlanUtil.adjacentNext(planWithCost.getPlan(), lastRelationOp.get());
-
         Stream.ofAll(TraversalUtil.lastConsecutiveSteps(traversal, HasStep.class))
                 .filter(hasStep -> isSelectionHasStep((HasStep<?>) hasStep))
                 .forEach(step -> traversal.asAdmin().removeStep(step));
 
-        Stream.ofAll(lastRelationOp.get().getAsgEbase().geteBase().getReportProps())
-                .forEach(relProp -> traversal.has(context.getOnt().$property$(relProp).getName(),
-                        SelectP.raw(context.getOnt().$property$(relProp).getName())));
+        Stream.ofAll(relationFilterOp.getAsgEbase().geteBase().getProps())
+                .filter(relProp -> relProp.getProj() != null)
+                .forEach(relProp -> traversal.has(context.getOnt().$property$(relProp.getpType()).getName(),
+                        SelectP.raw(context.getOnt().$property$(relProp.getpType()).getName())));
 
-        if (adjacentToRelationOp.isPresent() &&
-                relationFilterOp.isPresent() &&
-                adjacentToRelationOp.get().equals(relationFilterOp.get())) {
-            Stream.ofAll(relationFilterOp.get().getAsgEbase().geteBase().getProps())
-                    .filter(relProp -> RedundantSelectionRelProp.class.isAssignableFrom(relProp.getClass()))
-                    .map(relProp -> (RedundantSelectionRelProp)relProp)
-                    .forEach(relProp -> traversal.has(relProp.getRedundantPropName(),
-                            SelectP.raw(relProp.getRedundantPropName())));
-        }
+        Stream.ofAll(relationFilterOp.getAsgEbase().geteBase().getProps())
+                .filter(relProp -> RedundantSelectionRelProp.class.isAssignableFrom(relProp.getClass()))
+                .map(relProp -> (RedundantSelectionRelProp) relProp)
+                .forEach(relProp -> traversal.has(relProp.getRedundantPropName(),
+                        SelectP.raw(relProp.getRedundantPropName())));
 
         return traversal;
     }

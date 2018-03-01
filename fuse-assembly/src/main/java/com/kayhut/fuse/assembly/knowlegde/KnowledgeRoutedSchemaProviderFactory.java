@@ -22,13 +22,11 @@ import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application
  * Created by roman.margolis on 02/10/2017.
  */
 public class KnowledgeRoutedSchemaProviderFactory implements GraphElementSchemaProviderFactory {
-    private Config config;
     private RawElasticSchema schema;
     //region GraphElementSchemaProviderFactory Implementation
 
     @Inject
-    public KnowledgeRoutedSchemaProviderFactory(Config config ,RawElasticSchema schema) {
-        this.config = config;
+    public KnowledgeRoutedSchemaProviderFactory(RawElasticSchema schema) {
         this.schema = schema;
     }
 
