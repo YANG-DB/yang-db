@@ -20,8 +20,4 @@ public interface RawSchema {
     List<IndexPartitions.Partition> getPartitions(String type);
 
     Iterable<String> indices();
-
-    Collection<String> types();
-
-
 }

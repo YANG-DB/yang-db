@@ -18,9 +18,7 @@ import com.kayhut.fuse.executor.logging.LoggingGraphElementSchemaProviderFactory
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.OntologyGraphElementSchemaProviderFactory;
 import com.kayhut.fuse.executor.ontology.UniGraphProvider;
-import com.kayhut.fuse.executor.ontology.schema.InitialGraphDataLoader;
-import com.kayhut.fuse.executor.ontology.schema.PrefixedRawSchema;
-import com.kayhut.fuse.executor.ontology.schema.RawSchema;
+import com.kayhut.fuse.executor.ontology.schema.*;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
@@ -93,7 +91,17 @@ public class ExecutorModule extends ModuleBase {
                             conf.getString(conf.getString("assembly") + ".physical_raw_schema_prefix") :
                             "";
                     this.bindConstant().annotatedWith(named(PrefixedRawSchema.prefixParameter)).to(prefix);
-                    this.bind(RawSchema.class).to(PrefixedRawSchema.class).asEagerSingleton();
+                    this.bind(RawSchema.class)
+                            .annotatedWith(named(PartitionFilteredRawSchema.rawSchemaParameter))
+                            .to(PrefixedRawSchema.class)
+                            .asEagerSingleton();
+
+                    this.bind(RawSchema.class)
+                            .annotatedWith(named(CachedRawSchema.rawSchemaParameter))
+                            .to(PartitionFilteredRawSchema.class)
+                            .asEagerSingleton();
+
+                    this.bind(RawSchema.class).to(CachedRawSchema.class).asEagerSingleton();
 
                     this.expose(RawSchema.class);
                 } catch (ClassNotFoundException e) {

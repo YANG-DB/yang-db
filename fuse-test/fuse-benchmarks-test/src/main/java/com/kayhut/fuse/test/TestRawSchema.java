@@ -30,9 +30,4 @@ public class TestRawSchema implements RawSchema {
     public Iterable<String> indices() {
         return Collections.emptyList();
     }
-
-    @Override
-    public Collection<String> types() {
-        return Collections.EMPTY_SET;
-    }
 }

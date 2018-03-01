@@ -3,8 +3,10 @@ package com.kayhut.fuse.executor.ontology.schema;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions.Partition.Range;
 import javaslang.collection.Stream;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
+import org.elasticsearch.client.Client;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,19 +14,16 @@ import java.util.List;
 /**
  * Created by roman.margolis on 01/03/2018.
  */
-public class PrefixedRawSchema implements RawSchema {
-    //region Static
-    public static final String rawSchemaParameter = "PrefixedRawSchema.@rawSchema";
-    public static final String prefixParameter = "PrefixedRawSchema.@prefix";
-    //endregion
+public class PartitionFilteredRawSchema implements RawSchema {
+    public static final String rawSchemaParameter = "PartitionFilteredRawSchema.@rawSchema";
 
     //region Constructors
     @Inject
-    public PrefixedRawSchema(
+    public PartitionFilteredRawSchema(
             @Named(rawSchemaParameter) RawSchema rawSchema,
-            @Named(prefixParameter) String prefix) {
+            Client client) {
         this.rawSchema = rawSchema;
-        this.prefix = prefix;
+        this.client = client;
     }
     //endregion
 
@@ -37,11 +36,11 @@ public class PrefixedRawSchema implements RawSchema {
             return new IndexPartitions.Impl(
                     indexPartitions.getPartitionField().get(),
                     Stream.ofAll(indexPartitions.getPartitions())
-                            .map(this::prefixPartition));
+                            .map(this::filterPartitionIndices));
         } else {
             return new IndexPartitions.Impl(
                     Stream.ofAll(indexPartitions.getPartitions())
-                    .map(this::prefixPartition));
+                            .map(this::filterPartitionIndices));
         }
     }
 
@@ -53,7 +52,7 @@ public class PrefixedRawSchema implements RawSchema {
     @Override
     public List<IndexPartitions.Partition> getPartitions(String type) {
         return Stream.ofAll(this.rawSchema.getPartitions(type))
-                .map(partition -> prefixPartition(partition)).toJavaList();
+                .map(partition -> filterPartitionIndices(partition)).toJavaList();
     }
 
     @Override
@@ -63,21 +62,27 @@ public class PrefixedRawSchema implements RawSchema {
     //endregion
 
     //region Private Methods
-    private IndexPartitions.Partition prefixPartition(IndexPartitions.Partition partition) {
-        if (Range.class.isAssignableFrom(partition.getClass())) {
-            Range rangePartition = (Range)partition;
-            return new Range.Impl(
+    private IndexPartitions.Partition filterPartitionIndices(IndexPartitions.Partition partition) {
+        if (IndexPartitions.Partition.Range.class.isAssignableFrom(partition.getClass())) {
+            IndexPartitions.Partition.Range rangePartition = (IndexPartitions.Partition.Range)partition;
+            return new IndexPartitions.Partition.Range.Impl(
                     rangePartition.getFrom(),
                     rangePartition.getTo(),
-                    Stream.ofAll(rangePartition.getIndices()).map(index -> this.prefix + index));
+                    filterIndices(rangePartition.getIndices()));
         }
 
-        return () -> Stream.ofAll(partition.getIndices()).map(index -> this.prefix + index);
+        return () -> filterIndices(partition.getIndices());
+    }
+
+    private Iterable<String> filterIndices(Iterable<String> indices) {
+        return Stream.ofAll(indices)
+                .filter(index -> client.admin().indices().exists(new IndicesExistsRequest(index)).actionGet().isExists())
+                .toJavaList();
     }
     //endregion
 
     //region Fields
     private RawSchema rawSchema;
-    private String prefix;
+    private Client client;
     //endregion
 }

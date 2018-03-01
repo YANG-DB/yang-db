@@ -33,11 +33,6 @@ public class KnowledgeRawSchema implements RawSchema {
     }
 
     @Override
-    public Collection<String> types() {
-        return Arrays.asList(ENTITY,ENTITY_VALUE,RELATION,RELATION_VALUE,INSIGHT,REFERENCE);
-    }
-
-    @Override
     public String getIdFormat(String type) {
         switch (type) {
             case ENTITY:
