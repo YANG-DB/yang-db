@@ -1,7 +1,5 @@
-package com.kayhut.fuse.dispatcher.descriptors;
+package com.kayhut.fuse.model.execution.plan.descriptors;
 
-import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.descriptors.Descriptor;
@@ -18,8 +16,6 @@ import javax.management.relation.Relation;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kayhut.fuse.dispatcher.descriptors.QueryDescriptor.getPrefix;
-import static com.kayhut.fuse.dispatcher.descriptors.QueryDescriptor.printProps;
 
 /**
  * Created by roman.margolis on 28/11/2017.
@@ -34,17 +30,11 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
 
     //region Private Methods
     private String patternValue(AsgQuery query) {
-        List<AsgEBase<EBase>> elements = AsgQueryUtil.elements(
-                query.getStart(),
-                AsgEBase::getB,
-                AsgEBase::getNext,
-                asgEBase -> true,
-                asgEBase -> true,
-                Collections.emptyList());
+        List<AsgEBase<? extends EBase>> elements = new ArrayList<>(query.getElements());
 
         StringJoiner joiner = new StringJoiner(":", "", "");
         for (int i = 0; i < elements.size(); i++) {
-            AsgEBase<EBase> e = elements.get(i);
+            AsgEBase<? extends EBase> e = elements.get(i);
             if (e.geteBase() instanceof QuantBase) {
                 List<AsgEBase<? extends EBase>> next = e.getNext();
                 String join = next.stream().map(n -> Integer.toString(n.geteNum())).collect(Collectors.joining("|"));
@@ -57,10 +47,14 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
                 joiner.add(prefix + EEntityBase.class.getSimpleName() + "[" + e.geteNum() + "]");
             } else if (e.geteBase() instanceof Rel)
                 joiner.add("==>" + Relation.class.getSimpleName() + "(" + e.geteNum() + ")");
+            else if (e.geteBase() instanceof EProp)
+                joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps(new EPropGroup((EProp) e.geteBase())));
             else if (e.geteBase() instanceof EPropGroup)
-                joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
+                joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps((EPropGroup) e.geteBase()));
+            else if (e.geteBase() instanceof RelProp)
+                joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps(new RelPropGroup((RelProp) e.geteBase())));
             else if (e.geteBase() instanceof RelPropGroup)
-                joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
+                joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps((RelPropGroup) e.geteBase()));
             else
                 joiner.add(e.geteBase().getClass().getSimpleName() + "[" + e.geteNum() + "]");
         }
@@ -71,9 +65,11 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         return new AsgQueryDescriptor().describe(query);
     }
 
-    static <T extends EBase> void print(List<String> builder, Optional<AsgEBase<T>> element, boolean isTail, boolean child, int level, int currentLine) {
-        if (!element.isPresent()) return;
-        String text = getPrefix(isTail, element.get().geteBase()) + shortLabel(element.get(), new StringJoiner(":"));
+    static <T extends EBase> void print(List<String> builder, Optional<AsgEBase<T>> item, boolean isTail, boolean child, int level, int currentLine) {
+        if (!item.isPresent()) return;
+        AsgEBase<T> element = item.get();
+
+        String text = QueryDescriptor.getPrefix(isTail, element.geteBase()) + shortLabel(element, new StringJoiner(":"));
         if (child) {
             char[] zeros = new char[builder.get(level - 1).length() - 5];
             Arrays.fill(zeros, ' ');
@@ -82,21 +78,21 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
             builder.set(level + currentLine, builder.get(level + currentLine) + text);
         }
 
-        if (Next.class.isAssignableFrom(element.get().geteBase().getClass())) {
-            if (element.get().geteBase() instanceof QuantBase) {
-                List<AsgEBase<? extends EBase>> nexts = element.get().getNext();
+        if (element.hasNext()) {
+            if (element.geteBase() instanceof QuantBase) {
+                List<AsgEBase<? extends EBase>> nexts = element.getNext();
                 level = builder.size();
                 for (int i = 0; i < nexts.size(); i++) {
                     print(builder, Optional.of(nexts.get(i)), true, true, level, i);
                 }
-            } else if (element.get().geteBase() instanceof EEntityBase) {
-                print(builder, element.get().getNext().isEmpty() ? Optional.empty() : Optional.of(element.get().getNext().get(0)), element.get().getNext().isEmpty(), false, level, currentLine);
-            } else if (element.get().geteBase() instanceof Rel) {
-                print(builder, element.get().getNext().isEmpty() ? Optional.empty() : Optional.of(element.get().getNext().get(0)), element.get().getNext().isEmpty(), false, level, currentLine);
-            } else if (element.get().geteBase() instanceof EProp || element.get().geteBase() instanceof EPropGroup) {
-                print(builder, element, true, true, level + 1, currentLine);
-            } else if (element.get().geteBase() instanceof RelProp || element.get().geteBase() instanceof RelPropGroup) {
-                print(builder, element, true, true, level + 1, currentLine);
+            } else if (element.geteBase() instanceof EEntityBase) {
+                print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), element.getNext().isEmpty(), false, level, currentLine);
+            } else if (element.geteBase() instanceof Rel) {
+                print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), element.getNext().isEmpty(), false, level, currentLine);
+            } else if (element.geteBase() instanceof EProp || element.geteBase() instanceof EPropGroup) {
+                print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), true, true, level + 1, currentLine);
+            } else if (element.geteBase() instanceof RelProp || element.geteBase() instanceof RelPropGroup) {
+                print(builder, element.getNext().isEmpty() ? Optional.empty() : Optional.of(element.getNext().get(0)), true, true, level + 1, currentLine);
             }
         }
     }
@@ -109,15 +105,19 @@ public class AsgQueryDescriptor implements Descriptor<AsgQuery> {
         } else if (e.geteBase() instanceof EUntyped)
             joiner.add("UnTyp" + "[" + e.geteNum() + "]");
         else if (e.geteBase() instanceof EConcrete)
-            joiner.add("Conc" + "[" + e.geteNum() + "]");
+            joiner.add("Conc" + "["+ ((EConcrete) e.geteBase()).geteType() +":"+ e.geteNum() + "]");
         else if (e.geteBase() instanceof ETyped)
-            joiner.add("Typ" + "[" + e.geteNum() + "]");
+            joiner.add("Typ" + "["+ ((ETyped) e.geteBase()).geteType() +":"+ e.geteNum() + "]");
         else if (e.geteBase() instanceof Rel)
-            joiner.add("Rel" + "(" + e.geteNum() + ")");
+            joiner.add("Rel" + "("+((Rel) e.geteBase()).getrType() +":" + e.geteNum() + ")");
         else if (e.geteBase() instanceof EPropGroup)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
+            joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps((EPropGroup) e.geteBase()));
+        else if (e.geteBase() instanceof EProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps(new EPropGroup((EProp) e.geteBase())));
         else if (e.geteBase() instanceof RelPropGroup)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e.geteBase()));
+            joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps((RelPropGroup) e.geteBase()));
+        else if (e.geteBase() instanceof RelProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + QueryDescriptor.printProps(new RelPropGroup((RelProp) e.geteBase())));
         else
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
 

@@ -1,4 +1,4 @@
-package com.kayhut.fuse.dispatcher.descriptors;
+package com.kayhut.fuse.model.execution.plan.descriptors;
 
 import com.kayhut.fuse.model.Next;
 import com.kayhut.fuse.model.asgQuery.IQuery;
@@ -12,8 +12,8 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.quant.QuantBase;
+import javaslang.collection.Stream;
 
-import javax.management.relation.Relation;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,15 +40,7 @@ public class QueryDescriptor implements Descriptor<Query> {
             List<Integer> next = ((Next<List>) e).getNext();
             String join = next.stream().map(Object::toString).collect(Collectors.joining("|"));
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]").add("{" + join + "}");
-        } else if (e instanceof EEntityBase)
-            joiner.add(EEntityBase.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else if (e instanceof Rel)
-            joiner.add(Relation.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else if (e instanceof EPropGroup)
-            joiner.add(EPropGroup.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else if (e instanceof RelPropGroup)
-            joiner.add(RelPropGroup.class.getSimpleName() + "[" + e.geteNum() + "]");
-        else
+        } else
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
 
         return joiner.toString();
@@ -62,23 +54,53 @@ public class QueryDescriptor implements Descriptor<Query> {
         } else if (e instanceof EUntyped)
             joiner.add("UnTyp" + "[" + e.geteNum() + "]");
         else if (e instanceof EConcrete)
-            joiner.add("Conc" + "[" + e.geteNum() + "]");
+            joiner.add("Conc" + "[" + ((EConcrete) e).geteType() + ":" + e.geteNum() + "]");
         else if (e instanceof ETyped)
-            joiner.add("Typ" + "[" + e.geteNum() + "]");
+            joiner.add("Typ" + "[" + ((ETyped) e).geteType() + ":" + e.geteNum() + "]");
         else if (e instanceof Rel)
-            joiner.add("Rel" + "(" + e.geteNum() + ")");
+            joiner.add("Rel" + "(" + ((Rel) e).getrType() + ":" + e.geteNum() + ")");
         else if (e instanceof EPropGroup)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e));
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((EPropGroup) e));
+        else if (e instanceof EProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new EPropGroup((EProp) e)));
+        else if (e instanceof RelProp)
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps(new RelPropGroup((RelProp) e)));
         else if (e instanceof RelPropGroup)
-            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((BasePropGroup) e));
+            joiner.add("?" + "[" + e.geteNum() + "]" + printProps((RelPropGroup) e));
         else
             joiner.add(e.getClass().getSimpleName() + "[" + e.geteNum() + "]");
 
         return joiner.toString();
     }
 
-    static String printProps(BasePropGroup propGroup) {
-        return ":"+Arrays.toString(((EPropGroup) propGroup).getProps().stream().map(p->p.getCon().getOp()).toArray());
+    static String printProps(RelPropGroup propGroup) {
+        String[] pStrings = Stream.ofAll(propGroup.getProps())
+                .map(p -> {
+                    if (p.getCon() != null) {
+                        return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+                    } else if (p.getProj() != null) {
+                        return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
+                    } else {
+                        return p.getpType();
+                    }
+                }).toJavaArray(String.class);
+
+        return ":" + Arrays.toString(pStrings);
+    }
+
+    static String printProps(EPropGroup propGroup) {
+        String[] pStrings = Stream.ofAll(propGroup.getProps())
+                .map(p -> {
+                    if (p.getCon() != null) {
+                        return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+                    } else if (p.getProj() != null) {
+                        return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
+                    } else {
+                        return p.getpType();
+                    }
+                }).toJavaArray(String.class);
+
+        return ":" + Arrays.toString(pStrings);
     }
     //endregion
 
@@ -118,9 +140,12 @@ public class QueryDescriptor implements Descriptor<Query> {
     }
 
     public static String getPrefix(boolean isTail, EBase element) {
-        if (element instanceof Rel)
-            return (isTail ? "└──> " : "──> ");
-        return (isTail ? "└── " : "── ");
+        String prefix = (isTail ? "└" : "-");
+        if (element instanceof Rel) {
+            String postfix = (((Rel) element).getDir().equals(Rel.Direction.R) ? "-> " : "<--");
+            return prefix + postfix;
+        } else
+            return (isTail ? "└─" : "──");
     }
 
     public static String print(IQuery<EBase> query) {

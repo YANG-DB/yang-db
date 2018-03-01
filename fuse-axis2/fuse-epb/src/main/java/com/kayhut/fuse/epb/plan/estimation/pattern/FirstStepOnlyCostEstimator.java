@@ -1,5 +1,7 @@
 package com.kayhut.fuse.epb.plan.estimation.pattern;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.epb.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
@@ -14,7 +16,10 @@ public class FirstStepOnlyCostEstimator implements CostEstimator<Plan, PlanDetai
 
     private CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator;
 
-    public FirstStepOnlyCostEstimator(CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator) {
+    @Inject
+    public FirstStepOnlyCostEstimator(
+            @Named(RegexPatternCostEstimator.costEstimatorName)
+            CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator) {
         this.estimator = estimator;
     }
 

@@ -7,11 +7,13 @@ import com.google.inject.util.Modules;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.urlSupplier.DefaultAppUrlSupplier;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
+import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import org.jooby.test.JoobyRule;
 import org.junit.Assume;
 import org.junit.Before;
@@ -22,6 +24,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -68,7 +72,7 @@ public class PlanTest {
                 .contentType("application/json;charset=UTF-8");
 
 
-        //get query resource by id
+        //get plan resource by id
         given()
                 .contentType("application/json")
                 .with().port(8888)
@@ -78,6 +82,24 @@ public class PlanTest {
                 .body(new TestUtils.ContentMatcher(o -> {
                     try {
                         return o.toString().contains("ops");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
+
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .get("/fuse/query/1/plan/print")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        String data = FuseClient.unwrapDouble(o.toString());
+                        return data!=null;
                     } catch (Exception e) {
                         e.printStackTrace();
                         return false;

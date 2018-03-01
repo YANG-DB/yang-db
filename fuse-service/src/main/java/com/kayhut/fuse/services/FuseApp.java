@@ -7,12 +7,21 @@ import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.QueryDescriptor;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.ContentResponse.Builder;
 import com.kayhut.fuse.services.controllers.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -20,7 +29,6 @@ import com.typesafe.config.ConfigValueFactory;
 import javaslang.Tuple2;
 import org.jooby.*;
 import org.jooby.caffeine.CaffeineCache;
-import org.jooby.handlers.Cors;
 import org.jooby.handlers.CorsHandler;
 import org.jooby.json.Jackson;
 import org.jooby.metrics.Metrics;
@@ -28,6 +36,11 @@ import org.jooby.scanner.Scanner;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.UUID.randomUUID;
+import static org.jooby.Status.NOT_FOUND;
+import static org.jooby.Status.OK;
 
 
 @SuppressWarnings({"unchecked", "rawtypes"})
@@ -240,6 +253,16 @@ public class FuseApp extends Jooby {
                     return Results.with(new ObjectMapper().writeValueAsString(response.getData()), response.status())
                             .type("application/json");
                 });
+        /** get the print of the execution plan */
+        use(localUrlSupplier.resourceUrl(":queryId") + "/plan/print")
+                .get(req -> {
+                    ContentResponse<PlanWithCost<Plan, PlanDetailedCost>> response = queryCtrl().explain(req.param("queryId").value());
+                    String print = PlanWithCostDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                });
 
         /** get the query v1*/
         use(localUrlSupplier.resourceUrl(":queryId") + "/v1")
@@ -247,12 +270,33 @@ public class FuseApp extends Jooby {
                     ContentResponse response = queryCtrl().getV1(req.param("queryId").value());
                     return Results.with(JsonWriter.objectToJson(response), response.status());
                 });
+        /** get the query v1 print*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/v1/print")
+                .get(req -> {
+                    ContentResponse<Query> response = queryCtrl().getV1(req.param("queryId").value());
+                    String print = QueryDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
+                });
 
         /** get the asg query */
         use(localUrlSupplier.resourceUrl(":queryId") + "/asg")
                 .get(req -> {
-                    ContentResponse response = queryCtrl().getAsg(req.param("queryId").value());
+                    ContentResponse<AsgQuery> response = queryCtrl().getAsg(req.param("queryId").value());
                     return Results.with(JsonWriter.objectToJson(response), response.status());
+                });
+
+        /** get the asg query print*/
+        use(localUrlSupplier.resourceUrl(":queryId") + "/asg/print")
+                .get(req -> {
+                    ContentResponse<AsgQuery> response = queryCtrl().getAsg(req.param("queryId").value());
+                    String print = AsgQueryDescriptor.print(response.getData());
+                    ContentResponse<String> compose = Builder.<String>builder(randomUUID().toString(), OK, NOT_FOUND)
+                            .data(Optional.of(print))
+                            .compose();
+                    return Results.with(JsonWriter.objectToJson(compose), response.status());
                 });
 
         /** get the query plan execution */

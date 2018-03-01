@@ -15,6 +15,8 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
+import com.kayhut.fuse.model.execution.plan.descriptors.PlanWithCostDescriptor;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.properties.constraint.Constraint;

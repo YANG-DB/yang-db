@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.FREEZE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.typed;

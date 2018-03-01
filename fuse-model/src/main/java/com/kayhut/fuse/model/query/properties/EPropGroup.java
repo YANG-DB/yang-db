@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.query.properties;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**

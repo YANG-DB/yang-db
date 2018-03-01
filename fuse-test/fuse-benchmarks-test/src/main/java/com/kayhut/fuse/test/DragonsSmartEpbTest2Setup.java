@@ -16,19 +16,18 @@ import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.OntologyTestUtils.TEMPERATURE;
+import static com.kayhut.fuse.model.OntologyTestUtils.BIRTH_DATE;
+import static com.kayhut.fuse.model.OntologyTestUtils.NAME;
 
-public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
+public class DragonsSmartEpbTest2Setup extends TestSetupBase  {
     public static void main(String[] args) throws Exception {
-        DragonsSmartEpbTest4Setup test = new DragonsSmartEpbTest4Setup();
-        DragonKingdomQuery4Test dragonKingdomQueryTest = new DragonKingdomQuery4Test();
-        TestRunner.run(dragonKingdomQueryTest, test);
+        DragonsSmartEpbTest2Setup test = new DragonsSmartEpbTest2Setup();
+        DragonKingdomQuery2Test dragonKingdomQueryTest = new DragonKingdomQuery2Test();
+        TestRunner.run(dragonKingdomQueryTest, test,"m2.smartEpb","m1.dfs.redundant");
     }
 
     @Override
@@ -40,17 +39,13 @@ public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
                 .configure(client);
         new MappingElasticConfigurer(Arrays.asList(ORIGINATED_IN), new Mappings().addMapping("pge", getOriginMapping()))
                 .configure(client);
-        new MappingElasticConfigurer(Arrays.asList(FIRE.getName().toLowerCase()), new Mappings().addMapping("pge", getFireMapping()))
-                .configure(client);
 
         birthDateValueFunctionFactory = startingDate -> interval -> i -> startingDate + (interval * i);
-        timestampValueFunctionFactory = startingDate -> interval -> i -> startingDate + (interval * i);
-        temperatureValueFunction = i -> 1000 + (100 * i);
 
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        int numDragons = 1000000;
-        int numKingdoms = 10;
+        int numDragons = 200000;
+        int numKingdoms = 2;
 
         new ElasticDataPopulator(
                 client,
@@ -73,28 +68,13 @@ public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
                 idField,
                 () -> createOriginEdges(numDragons, numKingdoms)
         ).populate();
-
-        new ElasticDataPopulator(
-                client,
-                FIRE.getName().toLowerCase(),
-                "pge",
-                idField,
-                () -> createDragonFireDragonEdges(
-                        numDragons,
-                        timestampValueFunctionFactory.apply(sdf.parse("2017-05-11 00:00:00").getTime()).apply(1200000L),
-                        temperatureValueFunction))
-                .populate(); // date interval is 20 min
-
-
         client.admin().indices().refresh(new RefreshRequest(
                 DragonsOntology.DRAGON.name.toLowerCase(),
                 OntologyTestUtils.KINGDOM.name.toLowerCase(),
-                ORIGINATED_IN,
-                FIRE.getName().toLowerCase()
-
+                ORIGINATED_IN
         )).actionGet();
 
-        new MappingFileElasticConfigurer("stat", Paths.get("fuse-test","fuse-join-test","src","main","resources","stat","stat_mappings.json").toString()).configure(client);
+        new MappingFileElasticConfigurer("stat", Paths.get("fuse-test","fuse-benchmarks-test","src","main","resources","stat","stat_mappings.json").toString()).configure(client);
         Configuration statConfig = new StatConfiguration("stat/statistics.test.properties").getInstance();
         StatCalculator.run(client, client, statConfig);
         client.admin().indices().refresh(new RefreshRequest("stat")).actionGet();
@@ -106,8 +86,7 @@ public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
                 .delete(new DeleteIndexRequest(
                         OntologyTestUtils.DRAGON.name.toLowerCase(),
                         OntologyTestUtils.KINGDOM.name.toLowerCase(),
-                        "originated_in",
-                        FIRE.getName().toLowerCase()))
+                        "originated_in"))
                 .actionGet();
         client.admin().indices().delete(new DeleteIndexRequest("stat")).actionGet();
     }
@@ -125,71 +104,6 @@ public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
                 .addProperty(NAME.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword));
     }
 
-    private static Mappings.Mapping getFireMapping() {
-        return new Mappings.Mapping()
-                .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-                .addProperty(TIMESTAMP.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.date, "yyyy-MM-dd HH:mm:ss||date_optional_time||epoch_millis"))
-                .addProperty("direction", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-                .addProperty(TEMPERATURE.name, new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.integer))
-                .addProperty("entityA", new Mappings.Mapping.Property()
-                        .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-                        .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)))
-                .addProperty("entityB", new Mappings.Mapping.Property()
-                        .addProperty("id", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword))
-                        .addProperty("type", new Mappings.Mapping.Property(Mappings.Mapping.Property.Type.keyword)));
-    }
-
-    private static Iterable<Map<String, Object>> createDragonFireDragonEdges(
-            int numDragons,
-            Function<Integer, Long> timestampValueFunction,
-            Function<Integer, Integer> temperatureValueFunction
-    ) throws ParseException {
-
-
-        return Stream.range(0,numDragons).flatMap(i -> {
-            List<Map<String, Object>> fireEdges = new ArrayList<>();
-            int numNeigh = 10;
-            for (int j = Math.max(0,i- numNeigh);j<i;j++){
-                int counter = i*numNeigh*2+j*2;
-                Map<String, Object> fireEdge = new HashMap<>();
-                fireEdge.put("id", FIRE.getName() + counter);
-                fireEdge.put("type", FIRE.getName());
-                fireEdge.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdge.put("direction", Direction.OUT.name());
-                fireEdge.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
-
-                Map<String, Object> fireEdgeDual = new HashMap<>();
-                fireEdgeDual.put("id", FIRE.getName() + counter + 1);
-                fireEdgeDual.put("type", FIRE.getName());
-                fireEdgeDual.put(TIMESTAMP.name, timestampValueFunction.apply(counter));
-                fireEdgeDual.put("direction", Direction.IN.name());
-                fireEdgeDual.put(TEMPERATURE.name, temperatureValueFunction.apply(j));
-
-                Map<String, Object> entityAI = new HashMap<>();
-                entityAI.put("id", "Dragon_" + i);
-                entityAI.put("type", DRAGON.name);
-                Map<String, Object> entityAJ = new HashMap<>();
-                entityAJ.put("id", "Dragon_" + j);
-                entityAJ.put("type", DRAGON.name);
-                Map<String, Object> entityBI = new HashMap<>();
-                entityBI.put("id", "Dragon_" + i);
-                entityBI.put("type", DRAGON.name);
-                Map<String, Object> entityBJ = new HashMap<>();
-                entityBJ.put("id", "Dragon_" + j);
-                entityBJ.put("type", DRAGON.name);
-
-                fireEdge.put("entityA", entityAI);
-                fireEdge.put("entityB", entityBJ);
-                fireEdgeDual.put("entityA", entityAJ);
-                fireEdgeDual.put("entityB", entityBI);
-
-                fireEdges.addAll(Arrays.asList(fireEdge, fireEdgeDual));
-
-            }
-            return fireEdges;
-        });
-    }
-
     private Iterable<Map<String, Object>> createDragons(int numDragons,
                                                         Function<Integer, Long> birthDateValueFunction) {
         return Stream.range(0, numDragons).map(i->{
@@ -197,8 +111,8 @@ public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
             dragon.put("id", "Dragon_" + i);
             dragon.put("type", OntologyTestUtils.DRAGON.name);
             int nameChar1 = i%58 + 65;
-
-            dragon.put(NAME.name, String.valueOf((char)nameChar1));
+            int nameChar2 = Math.floorDiv(i,58)%58 + 65;
+            dragon.put(NAME.name, String.valueOf((char)nameChar2) + String.valueOf((char)nameChar1));
             dragon.put(BIRTH_DATE.name, sdf.format(new Date(birthDateValueFunction.apply(i))));
             return dragon;
         });
@@ -266,7 +180,6 @@ public class DragonsSmartEpbTest4Setup extends TestSetupBase  {
 
     private SimpleDateFormat sdf;
     private Function<Long, Function<Long, Function<Integer, Long>>> birthDateValueFunctionFactory;
-    private static Function<Long, Function<Long, Function<Integer, Long>>> timestampValueFunctionFactory;
-    private static Function<Integer, Integer> temperatureValueFunction;
+
     public static final String ORIGINATED_IN = "originated_in";
 }
