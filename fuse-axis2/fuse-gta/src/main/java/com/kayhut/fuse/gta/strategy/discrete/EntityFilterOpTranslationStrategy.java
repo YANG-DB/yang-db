@@ -117,6 +117,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
             List<Traversal> epropTraversals =
                     Stream.ofAll(ePropGroup.getProps())
+                            .filter(eProp -> eProp.getCon() != null)
                             .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
 
             if (!epropTraversals.isEmpty()) {
@@ -143,6 +144,7 @@ public class EntityFilterOpTranslationStrategy extends PlanOpTranslationStrategy
 
         List<Traversal> epropTraversals =
                 Stream.ofAll(ePropGroup.getProps())
+                        .filter(eProp -> eProp.getCon() != null)
                         .map(eProp -> convertEPropToTraversal(eProp, ont)).toJavaList();
 
         List<Traversal> traversals = Stream.ofAll(entityTraversals).appendAll(epropTraversals).toJavaList();

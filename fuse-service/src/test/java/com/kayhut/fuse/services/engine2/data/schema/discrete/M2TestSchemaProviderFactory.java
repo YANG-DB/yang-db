@@ -2,7 +2,7 @@ package com.kayhut.fuse.services.engine2.data.schema.discrete;
 
 import com.google.inject.Inject;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
-import com.kayhut.fuse.executor.ontology.schema.RawElasticSchema;
+import com.kayhut.fuse.executor.ontology.schema.RawSchema;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.typesafe.config.Config;
@@ -21,7 +21,7 @@ public class M2TestSchemaProviderFactory implements GraphElementSchemaProviderFa
 
     //region Constructors
     @Inject
-    public M2TestSchemaProviderFactory(Config config, RawElasticSchema schema) {
+    public M2TestSchemaProviderFactory(Config config, RawSchema schema) {
         this();
     }
     //endregion

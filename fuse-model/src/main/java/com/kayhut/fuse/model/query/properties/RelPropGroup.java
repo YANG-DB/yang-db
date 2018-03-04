@@ -10,11 +10,11 @@ import java.util.List;
 public class RelPropGroup extends BasePropGroup<RelProp> {
     public RelPropGroup() {}
 
-    public RelPropGroup(RelProp ... props) {
-        super(Arrays.asList(props));
+    public RelPropGroup(RelProp...props) {
+        super(props);
     }
 
-    public RelPropGroup(List<RelProp> props) {
+    public RelPropGroup(Iterable<RelProp> props) {
         super(props);
     }
 

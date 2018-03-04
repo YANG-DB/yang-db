@@ -23,8 +23,8 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -254,7 +254,7 @@ public class SmartEpbShortPathTests {
     public void testSingleElementWithCondition() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(eProp(2, EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -296,7 +296,7 @@ public class SmartEpbShortPathTests {
                 next(eProp(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(6, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, L).relFilter(4).entity(1).entityFilter(2).plan();
@@ -315,7 +315,7 @@ public class SmartEpbShortPathTests {
     public void testPathSelectionFilterFromSide(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2,EProp.of(FIRST_NAME.type,2, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(2,EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.eq,"abc")))).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
@@ -339,7 +339,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -362,10 +362,10 @@ public class SmartEpbShortPathTests {
     public void testFilterOnAllItems(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.ge, "g")))).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(eProp(2, EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.ge, "g")))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.ge,"g")))).
+                next(eProp(6, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.ge,"g")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -385,10 +385,10 @@ public class SmartEpbShortPathTests {
     public void testFilterOnAllItemsReverse(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.ge, "g")))).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(eProp(2, EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.ge, "g")))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(6, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -410,7 +410,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                     rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                     next(typed(6, DRAGON.type)
                             .next(eProp(7))),
@@ -432,10 +432,10 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(eProp(7, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
@@ -452,10 +452,10 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(eProp(7, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
@@ -477,7 +477,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(unTyped(1, PERSON.type, DRAGON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();

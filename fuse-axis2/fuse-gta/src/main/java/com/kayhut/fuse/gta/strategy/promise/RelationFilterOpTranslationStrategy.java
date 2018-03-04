@@ -71,6 +71,7 @@ public class RelationFilterOpTranslationStrategy extends PlanOpTranslationStrate
 
         String relationTypeName = ont.$relation$(rel.getrType()).getName();
         List<Traversal> traversals = Stream.ofAll(relPropGroup.getProps())
+                .filter(relProp -> relProp.getCon() != null)
                 .map(relProp -> convertRelPropToTraversal(relProp, ont))
                 .toJavaList();
 

@@ -1,8 +1,8 @@
 package com.kayhut.fuse.model.query.properties;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.EBase;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.projection.Projection;
 
 /**
  * Created by benishue on 17/02/2017.
@@ -16,6 +16,11 @@ public class RelProp extends BaseProp {
 
     public RelProp(int eNum, String pType, Constraint con, int b) {
         super(eNum, pType, con);
+        this.b = b;
+    }
+
+    public RelProp(int eNum, String pType, Projection proj, int b) {
+        super(eNum, pType, proj);
         this.b = b;
     }
     //endregion
@@ -34,20 +39,13 @@ public class RelProp extends BaseProp {
     private int b;
     //endregion
 
-    public static RelProp of(int pType, int eNum, Constraint con) {
-        RelProp eProp = new RelProp();
-        eProp.setpType(Integer.valueOf(pType).toString());
-        eProp.setCon(con);
-        eProp.seteNum(eNum);
-        return eProp;
+    //region Static
+    public static RelProp of(int eNum, String pType, Constraint con) {
+        return new RelProp(eNum, pType, con, 0);
     }
 
-    public static RelProp of(String pType, int eNum, Constraint con) {
-        RelProp eProp = new RelProp();
-        eProp.setpType(pType);
-        eProp.setCon(con);
-        eProp.seteNum(eNum);
-        return eProp;
+    public static RelProp of(int eNum, String pType, Projection proj) {
+        return new RelProp(eNum, pType, proj, 0);
     }
-
+    //endregion
 }

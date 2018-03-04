@@ -46,8 +46,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
@@ -325,7 +325,7 @@ public class EpbJoinSelectionTests {
     public void testJoinPlanSelection(){
             AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                     next(typed(1, PERSON.type)).
-                    next(eProp(2, EProp.of(NAME.name, 2, of(eq, "abc")))).
+                    next(eProp(2, EProp.of(2, NAME.name, of(eq, "abc")))).
                     next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                     next(typed(5, DRAGON.type)).
                     next(eProp(6)).
@@ -337,7 +337,7 @@ public class EpbJoinSelectionTests {
                     next(eProp(14)).
                     next(rel(15, OWN.getrType(), Rel.Direction.L).below(relProp(16))).
                     next(typed(17, PERSON.type)).
-                    next(eProp(18,EProp.of(NAME.name, 18, of(eq, "abc")))).
+                    next(eProp(18,EProp.of(18, NAME.name, of(eq, "abc")))).
                     build();
 
             PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

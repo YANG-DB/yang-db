@@ -20,32 +20,19 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
  * Created by Roman on 11/05/2017.
  */
 public class M2PlanOpTranslationStrategy extends CompositePlanOpTranslationStrategy {
-    private static class EntityOpStrategies extends CompositePlanOpTranslationStrategy {
-        public EntityOpStrategies() {
-            super(
-                    new EntityOpTranslationStrategy(EntityTranslationOptions.none),
-                    new SelectionTranslationStrategy(EntityOp.class)
-            );
-        }
-    }
-
-    private static class EntityFilterOpStrategies extends CompositePlanOpTranslationStrategy {
-        public EntityFilterOpStrategies() {
-            super(
-                    new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none),
-                    new SelectionTranslationStrategy(EntityFilterOp.class)
-            );
-        }
-    }
-
     //region Constructors
     public M2PlanOpTranslationStrategy() {
-        super(new EntityOpStrategies(),
+        super(
+                new EntityOpTranslationStrategy(EntityTranslationOptions.none),
                 new GoToEntityOpTranslationStrategy(),
                 new RelationOpTranslationStrategy(),
-                new EntityFilterOpStrategies(),
+                new CompositePlanOpTranslationStrategy(
+                        new EntityFilterOpTranslationStrategy(EntityTranslationOptions.none),
+                        new EntitySelectionTranslationStrategy()),
                 new RelationFilterOpTranslationStrategy());
-        this.strategies = Stream.ofAll(this.strategies).append(new JoinEntityOpTranslationStrategy(new ChainedPlanOpTraversalTranslator(this), EntityJoinOp.class));
+
+        this.strategies = Stream.ofAll(this.strategies)
+                .append(new JoinEntityOpTranslationStrategy(new ChainedPlanOpTraversalTranslator(this), EntityJoinOp.class));
     }
     //endregion
 

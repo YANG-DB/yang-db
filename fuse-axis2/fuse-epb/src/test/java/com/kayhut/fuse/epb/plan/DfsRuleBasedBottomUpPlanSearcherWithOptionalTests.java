@@ -29,9 +29,9 @@ import static com.kayhut.fuse.epb.utils.DfsTestUtils.buildSchemaProvider;
 import static com.kayhut.fuse.epb.utils.DfsTestUtils.ruleBaseEstimator;
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
-import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.gt;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.mockito.Matchers.any;
@@ -62,11 +62,11 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
                 .next(concrete(1, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A"))
                 .next(eProp(101))
                 .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(201, RelProp.of("2", 2, of(eq, "value2")))))
+                        .below(relProp(201, RelProp.of(2, "2", of(eq, "value2")))))
                 .next(typed(3, OntologyTestUtils.PERSON.type, "B"))
                 .next(quant1(4, all))
                 .in(
-                        ePropGroup(301, EProp.of("type", 3, of(eq, "value1")),EProp.of("type", 3, of(gt, "value3"))),
+                        ePropGroup(301, EProp.of(3, "type", of(eq, "value1")),EProp.of(3, "type", of(gt, "value3"))),
                         rel(5, OWN.getrType(), R).below(relProp(501))
                                 .next(typed(6, OntologyTestUtils.PERSON.type, "C")
                                         .next(eProp(601))),
@@ -89,11 +89,11 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
                 .next(typed(1, OntologyTestUtils.PERSON.type, "E"))
                 .next(eProp(101))
                 .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(201, RelProp.of("2", 2, of(eq, "value2")))))
+                        .below(relProp(201, RelProp.of(2, "2", of(eq, "value2")))))
                 .next(typed(3, OntologyTestUtils.PERSON.type, "B"))
                 .next(quant1(4, all))
                 .in(
-                        ePropGroup(301, EProp.of("type", 3, of(eq, "value1")),EProp.of("type", 3, of(gt, "value3"))),
+                        ePropGroup(301, EProp.of(3, "type", of(eq, "value1")),EProp.of(3, "type", of(gt, "value3"))),
                         rel(5, OWN.getrType(), R).below(relProp(501))
                                 .next(typed(6, OntologyTestUtils.PERSON.type, "C")
                                         .next(eProp(601))),
@@ -116,11 +116,11 @@ public class DfsRuleBasedBottomUpPlanSearcherWithOptionalTests {
                 .next(typed(1, OntologyTestUtils.PERSON.type, "E"))
                 .next(eProp(101))
                 .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(201, RelProp.of("2", 2, of(eq, "value2")))))
+                        .below(relProp(201, RelProp.of(2, "2", of(eq, "value2")))))
                 .next(typed(3, OntologyTestUtils.PERSON.type, "B"))
                 .next(quant1(4, all))
                 .in(
-                        ePropGroup(301, EProp.of("type", 3, of(eq, "value1")),EProp.of("type", 3, of(gt, "value3"))),
+                        ePropGroup(301, EProp.of(3, "type", of(eq, "value1")),EProp.of(3, "type", of(gt, "value3"))),
                         rel(5, OWN.getrType(), R).below(relProp(501))
                                 .next(concrete(6, "eId00001", OntologyTestUtils.PERSON.type, "entity1", "A")
                                         .next(eProp(601))),

@@ -15,8 +15,8 @@ import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
@@ -147,7 +147,10 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         if(lastEntityFilterOp.isPresent()) {
             AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEbase().geteBase().clone()).build();
-            Stream.ofAll(ePropGroup.geteBase().getProps()).toJavaList().forEach(p -> {
+            Stream.ofAll(ePropGroup.geteBase().getProps())
+                    .filter(eProp -> eProp.getCon() != null)
+                    .toJavaList()
+                    .forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
                 if(redundantVertexProperty.isPresent()){

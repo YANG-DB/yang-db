@@ -19,9 +19,10 @@ import com.kayhut.fuse.model.query.*;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
-import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.RedundantRelProp;
-import com.kayhut.fuse.model.query.properties.RelPropGroup;
+import com.kayhut.fuse.model.query.properties.*;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.projection.IdentityProjection;
 import com.kayhut.fuse.model.query.quant.Quant1;
 import com.kayhut.fuse.model.query.quant.QuantType;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
@@ -312,7 +313,7 @@ public class JoinE2EEpbMockTests {
     //endregion
 
     @Test
-    public void testDragonFireDragonX2PathMiddleJoin() throws IOException, InterruptedException {
+    public void testDragonFireDragonX2PathMiddleJoin() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -320,20 +321,36 @@ public class JoinE2EEpbMockTests {
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
 
-        Plan left = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan left = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2))),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
-                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))));
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
 
         Rel relation = (Rel) query.getElements().get(4).clone();
         relation.setDir(Rel.Direction.R);
-        Plan right = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan right = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(relation)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
-                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))));
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Plan injectedPlan = new Plan(new EntityJoinOp(left, right));
 
@@ -345,7 +362,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    public void testDragonFireDragonX2PathMiddleJoinSwitchBranches() throws IOException, InterruptedException {
+    public void testDragonFireDragonX2PathMiddleJoinSwitchBranches() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -353,20 +370,36 @@ public class JoinE2EEpbMockTests {
         redundantRelProp.setCon(Constraint.of(ConstraintOp.inSet, Stream.of("Dragon").toArray(), "[]"));
 
 
-        Plan left = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan left = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>((Rel)query.getElements().get(2))),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
-                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))));
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
 
         Rel relation = (Rel) query.getElements().get(4).clone();
         relation.setDir(Rel.Direction.R);
-        Plan right = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan right = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(relation)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
-                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))));
+                new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Plan injectedPlan = new Plan(new EntityJoinOp(left, right));
 
@@ -378,7 +411,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    public void testDragonFireDragonX2PathStartJoin() throws IOException, InterruptedException {
+    public void testDragonFireDragonX2PathStartJoin() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX2Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -389,8 +422,12 @@ public class JoinE2EEpbMockTests {
         redundantRelProp2.setpType("id");
         redundantRelProp2.setCon(Constraint.of(ConstraintOp.eq, "Dragon_4", "[]"));
 
-        Plan left = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+        Plan left = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(1))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
 
         Rel relation4 = (Rel) query.getElements().get(4).clone();
@@ -398,15 +435,24 @@ public class JoinE2EEpbMockTests {
         Rel relation2 = (Rel) query.getElements().get(2).clone();
         relation2.setDir(Rel.Direction.L);
         Plan right = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(5))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(50, NAME.type, new IdentityProjection()),
+                        EProp.of(50, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(relation4)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(3))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(30, NAME.type, new IdentityProjection()),
+                        EProp.of(30, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(relation2)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Arrays.asList(redundantRelProp,redundantRelProp2)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Plan injectedPlan = new Plan(new EntityJoinOp(left, right));
 
@@ -418,7 +464,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    public void testDragonFireDragonX3Path() throws IOException, InterruptedException {
+    public void testDragonFireDragonX3Path() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX3Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -427,30 +473,51 @@ public class JoinE2EEpbMockTests {
 
         Rel rel3 = (Rel) query.getElements().get(3);
         rel3.setDir(Rel.Direction.R);
-        Plan e4 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan e4 = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(400, NAME.type, new IdentityProjection()),
+                        EProp.of(400, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(rel3)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(100, NAME.type, new IdentityProjection()),
+                        EProp.of(100, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Rel rel5 = (Rel) query.getElements().get(5);
         rel5.setDir(Rel.Direction.R);
-        Plan e6 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan e6 = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(60, NAME.type, new IdentityProjection()),
+                        EProp.of(60, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(rel5)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Rel rel7 = (Rel) query.getElements().get(7);
         rel7.setDir(Rel.Direction.R);
-        Plan e8 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(8))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan e8 = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(8))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(80, NAME.type, new IdentityProjection()),
+                        EProp.of(80, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(rel7)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Plan innerJoin = new Plan(new EntityJoinOp(e4,e6));
         Plan topJoin = new Plan(new EntityJoinOp(innerJoin,e8));
@@ -466,7 +533,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    public void testJoinRelEntityPlan() throws IOException, InterruptedException {
+    public void testJoinRelEntityPlan() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonX3Query();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -479,28 +546,45 @@ public class JoinE2EEpbMockTests {
 
         Rel rel3 = (Rel) query.getElements().get(3);
         rel3.setDir(Rel.Direction.R);
-        Plan e4 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan e4 = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(rel3)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Rel rel5 = (Rel) query.getElements().get(5);
         rel5.setDir(Rel.Direction.R);
-        Plan e6 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan e6 = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(rel5)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Plan innerJoin = new Plan(new EntityJoinOp(e4,e6));
         Plan plan = new Plan(innerJoin.getOps().get(0),
                             new RelationOp(new AsgEBase<>((Rel)query.getElements().get(7))),
                             new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Arrays.asList(redundantRelProp, redundantRelProp2)))),
                             new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(8))),
-                            new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                            new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                                    EProp.of(10, NAME.type, new IdentityProjection()),
+                                    EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                            )))
                     );
 
         JoinCost joinCost = new JoinCost(1, 1,
@@ -513,7 +597,7 @@ public class JoinE2EEpbMockTests {
     }
 
     @Test
-    public void testJoinGotoPlan() throws IOException, InterruptedException {
+    public void testJoinGotoPlan() throws IOException, InterruptedException, ParseException {
         Query query = getDragonFireDragonGotoQuery();
 
         RedundantRelProp redundantRelProp = new RedundantRelProp("entityB.type");
@@ -526,21 +610,35 @@ public class JoinE2EEpbMockTests {
 
         Rel rel3 = (Rel) query.getElements().get(3);
         rel3.setDir(Rel.Direction.R);
-        Plan e4 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan e4 = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(4))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(rel3)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Rel rel5 = (Rel) query.getElements().get(5);
         rel5.setDir(Rel.Direction.R);
-        Plan e6 = new Plan(new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())),
+        Plan e6 = new Plan(
+                new EntityOp(new AsgEBase<>((EEntityBase) query.getElements().get(6))),
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))),
                 new RelationOp(new AsgEBase<>(rel5)),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Collections.singletonList(redundantRelProp)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(1))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup())));
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                ))));
 
         Plan innerJoin = new Plan(new EntityJoinOp(e4,e6));
         Plan plan = new Plan(innerJoin.getOps().get(0),
@@ -548,7 +646,10 @@ public class JoinE2EEpbMockTests {
                 new RelationOp(new AsgEBase<>((Rel)query.getElements().get(7))),
                 new RelationFilterOp(new AsgEBase<>(new RelPropGroup(Arrays.asList(redundantRelProp, redundantRelProp2)))),
                 new EntityOp(new AsgEBase<>((EEntityBase)query.getElements().get(8))),
-                new EntityFilterOp(new AsgEBase<>(new EPropGroup()))
+                new EntityFilterOp(new AsgEBase<>(new EPropGroup(
+                        EProp.of(10, NAME.type, new IdentityProjection()),
+                        EProp.of(10, BIRTH_DATE.type, new IdentityProjection())
+                )))
         );
 
         JoinCost joinCost = new JoinCost(1, 1,
@@ -581,66 +682,72 @@ public class JoinE2EEpbMockTests {
     private Query getDragonFireDragonX2Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_4", "D0", singletonList(NAME.type), 2, 0),
+                new EConcrete(1, "A", $ont.eType$(DRAGON.name), "Dragon_4", "D0", 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 4, 0),
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), 4, 0),
                 new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 5, 0),
-                new EConcrete(5, "C", $ont.eType$(DRAGON.name), "Dragon_9", "D1", singletonList(NAME.type), 0, 0)
+                new EConcrete(5, "C", $ont.eType$(DRAGON.name), "Dragon_9", "D1", 0, 0)
         )).build();
     }
 
     private Query getDragonFireDragonX3Query() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Quant1(2, QuantType.all,Arrays.asList(3,5,7),0),
                 new Rel(3, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 4, 0),
-                new EConcrete(4, "B", $ont.eType$(DRAGON.name),"Dragon_7", "D0",singletonList(NAME.type), 0, 0),
+                new EConcrete(4, "B", $ont.eType$(DRAGON.name),"Dragon_7", "D0", 0, 0),
                 new Rel(5, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 6, 0),
-                new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1",singletonList(NAME.type), 0, 0),
+                new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1", 0, 0),
                 new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 8, 0),
-                new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D2",singletonList(NAME.type), 0, 0)
+                new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D2", 0, 0)
         )).build();
     }
 
     private Query getDragonFireDragonGotoQuery() {
         return Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Quant1(2, QuantType.all,Arrays.asList(3,5),0),
                 new Rel(3, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 4, 0),
-                new EConcrete(4, "B", $ont.eType$(DRAGON.name),"Dragon_7", "D0",singletonList(NAME.type), 0, 0),
+                new EConcrete(4, "B", $ont.eType$(DRAGON.name),"Dragon_7", "D0", 0, 0),
                 new Rel(5, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 6, 0),
-                new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1",singletonList(NAME.type), 7, 0),
+                new EConcrete(6, "C", $ont.eType$(DRAGON.name), "Dragon_8", "D1", 7, 0),
                 new Rel(7, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 8, 0),
-                new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D1",singletonList(NAME.type), 0, 0)
+                new EConcrete(8, "D", $ont.eType$(DRAGON.name), "Dragon_6", "D1", 0, 0)
         )).build();
     }
 
-    private QueryResult dragonFireDragonX3Results() {
+    private QueryResult dragonFireDragonX3Results() throws ParseException {
+        Function<Integer, Long> birthDateValueFunction =
+                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
+
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityB = Entity.Builder.instance()
                 .withEID("Dragon_7" )
                 .withETag(singleton("B"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 7)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 7),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(7))))))
                 .build();
 
         Entity entityC = Entity.Builder.instance()
                 .withEID("Dragon_8" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 8)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 8),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(8))))))
                 .build();
 
         Entity entityD = Entity.Builder.instance()
                 .withEID("Dragon_6" )
                 .withETag(singleton("D"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 6)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 6),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(6))))))
                 .build();
 
         for(int i = 0;i<6;i++){
@@ -648,8 +755,9 @@ public class JoinE2EEpbMockTests {
                     .withEID("Dragon_"+i )
                     .withETag(singleton("A"))
                     .withEType($ont.eType$(DRAGON.name))
-                    .withProperties(singletonList(
-                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
+                    .withProperties(Arrays.asList(
+                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i),
+                            new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(i))))))
                     .build();
 
             Relationship relationship1 = Relationship.Builder.instance()
@@ -689,30 +797,36 @@ public class JoinE2EEpbMockTests {
         return builder.build();
     }
 
-    private QueryResult dragonFireDragonGotoResults() {
+    private QueryResult dragonFireDragonGotoResults() throws ParseException {
+        Function<Integer, Long> birthDateValueFunction =
+                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
+
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityB = Entity.Builder.instance()
                 .withEID("Dragon_7" )
                 .withETag(singleton("B"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 7)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 7),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(7))))))
                 .build();
 
         Entity entityC = Entity.Builder.instance()
                 .withEID("Dragon_8" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 8)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 8),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(8))))))
                 .build();
 
         Entity entityD = Entity.Builder.instance()
                 .withEID("Dragon_6" )
                 .withETag(singleton("D"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 6)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 6),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(6))))))
                 .build();
 
         for(int i = 0;i<7;i++){
@@ -720,8 +834,9 @@ public class JoinE2EEpbMockTests {
                     .withEID("Dragon_"+i )
                     .withETag(singleton("A"))
                     .withEType($ont.eType$(DRAGON.name))
-                    .withProperties(singletonList(
-                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
+                    .withProperties(Arrays.asList(
+                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i),
+                            new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(i))))))
                     .build();
 
             Relationship relationship1 = Relationship.Builder.instance()
@@ -761,22 +876,27 @@ public class JoinE2EEpbMockTests {
         return builder.build();
     }
 
-    private QueryResult dragonFireDragonX2Results() {
+    private QueryResult dragonFireDragonX2Results() throws ParseException {
+        Function<Integer, Long> birthDateValueFunction =
+                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
+
         QueryResult.Builder builder = QueryResult.Builder.instance();
         Entity entityA = Entity.Builder.instance()
                 .withEID("Dragon_4" )
                 .withETag(singleton("A"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 4)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 4),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(4))))))
                 .build();
 
         Entity entityC = Entity.Builder.instance()
                 .withEID("Dragon_9" )
                 .withETag(singleton("C"))
                 .withEType($ont.eType$(DRAGON.name))
-                .withProperties(singletonList(
-                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 9)))
+                .withProperties(Arrays.asList(
+                        new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + 9),
+                        new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(9))))))
                 .build();
 
         for(int i = 0;i<4;i++){
@@ -784,8 +904,9 @@ public class JoinE2EEpbMockTests {
                     .withEID("Dragon_"+i )
                     .withETag(singleton("B"))
                     .withEType($ont.eType$(DRAGON.name))
-                    .withProperties(singletonList(
-                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
+                    .withProperties(Arrays.asList(
+                            new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i),
+                            new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(i))))))
                     .build();
             Relationship relationship1 = Relationship.Builder.instance()
                     .withRID("123")

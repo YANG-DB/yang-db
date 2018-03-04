@@ -17,8 +17,8 @@ import java.util.Iterator;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 /**
@@ -34,7 +34,7 @@ public class UntypedInferTypeLeftSideRelationAsgStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                        RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                        RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .build();
 
@@ -57,7 +57,7 @@ public class UntypedInferTypeLeftSideRelationAsgStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                        RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                        RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(concrete(3, "123",OntologyTestUtils.DRAGON.type,"",""))
                 .build();
 
@@ -80,7 +80,7 @@ public class UntypedInferTypeLeftSideRelationAsgStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragon")
                 .next(unTyped(1))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                        RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                        RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(unTyped(3))
                 .build();
 

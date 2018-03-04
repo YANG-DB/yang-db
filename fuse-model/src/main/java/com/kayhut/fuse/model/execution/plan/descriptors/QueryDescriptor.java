@@ -12,6 +12,7 @@ import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
 import com.kayhut.fuse.model.query.quant.QuantBase;
+import javaslang.collection.Stream;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -73,11 +74,33 @@ public class QueryDescriptor implements Descriptor<Query> {
     }
 
     static String printProps(RelPropGroup propGroup) {
-        return ":" + Arrays.toString(propGroup.getProps().stream().map(p -> p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">").toArray());
+        String[] pStrings = Stream.ofAll(propGroup.getProps())
+                .map(p -> {
+                    if (p.getCon() != null) {
+                        return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+                    } else if (p.getProj() != null) {
+                        return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
+                    } else {
+                        return p.getpType();
+                    }
+                }).toJavaArray(String.class);
+
+        return ":" + Arrays.toString(pStrings);
     }
 
     static String printProps(EPropGroup propGroup) {
-        return ":" + Arrays.toString(propGroup.getProps().stream().map(p -> p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">").toArray());
+        String[] pStrings = Stream.ofAll(propGroup.getProps())
+                .map(p -> {
+                    if (p.getCon() != null) {
+                        return p.getpType() + "<" + p.getCon().getOp() + "," + p.getCon().getExpr() + ">";
+                    } else if (p.getProj() != null) {
+                        return p.getpType() + "<" + p.getProj().getClass().getSimpleName() + ">";
+                    } else {
+                        return p.getpType();
+                    }
+                }).toJavaArray(String.class);
+
+        return ":" + Arrays.toString(pStrings);
     }
     //endregion
 

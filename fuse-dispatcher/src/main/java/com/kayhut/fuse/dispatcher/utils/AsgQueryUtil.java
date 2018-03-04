@@ -4,11 +4,10 @@ import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
-import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
-import com.kayhut.fuse.model.query.quant.Quant2;
+import javaslang.collection.Stream;
 
 import javax.management.relation.Relation;
 import java.util.*;
@@ -63,7 +62,7 @@ public class AsgQueryUtil {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getNext, predicate, adjacentDfsPredicate.apply(asgEBase));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> adjacentAncestor(AsgEBase<T> asgEBase, Predicate<AsgEBase> predicate) {
         return element(asgEBase, emptyIterableFunction, AsgEBase::getParents, predicate, adjacentDfsPredicate.apply(asgEBase));
     }
 
@@ -72,28 +71,9 @@ public class AsgQueryUtil {
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
     }
 
-    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
-        return nextAdjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
+    public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> adjacentAncestor(AsgEBase<T> asgEBase, Class<?> klass) {
+        return adjacentAncestor(asgEBase, (asgEBase1) -> classPredicateFunction.apply(klass).test(asgEBase1) &&
                 notThisPredicateFunction.apply(asgEBase).test(asgEBase1));
-    }
-
-    /**
-     * A leaf is:
-     * a node that has no next element OR has no parents and next descendant is not a quant
-     * @param asgEBase
-     * @param <T>
-     * @return
-     */
-    public static <T extends EBase>  Optional<Boolean> isLeaf(AsgEBase<T> asgEBase) {
-        if(!EEntityBase.class.isAssignableFrom(asgEBase.geteBase().getClass()))
-            return Optional.empty();
-        return Optional.of(!asgEBase.hasNext() || (isFirst(asgEBase) && !nextDescendant(asgEBase, Quant2.class).isPresent()));
-    }
-
-    private static <T extends EBase> boolean isFirst(AsgEBase<T> asgEBase) {
-        return ((asgEBase.geteBase().getClass().equals(Start.class)) ||
-            asgEBase.getParents().isEmpty() ||
-            asgEBase.getParents().get(0).geteBase().getClass().equals(Start.class));
     }
 
     public static <T extends EBase, S extends EBase> Optional<AsgEBase<S>> nextAdjacentDescendant(AsgEBase<T> asgEBase, Class<?> klass, int hopes) {

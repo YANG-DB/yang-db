@@ -3,8 +3,8 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -116,7 +116,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.SummaryStatistics minEdgeSummaryStatistics = getEdgeStatistics(graphEdgeSchema, relevantIndices);
-        for(RelProp relProp : relFilter.getProps()){
+        for(RelProp relProp : Stream.ofAll(relFilter.getProps()).filter(relProp -> relProp.getCon() != null)){
             Property property = ont.$property$( relProp.getpType() );
 
             GraphElementPropertySchema graphElementPropertySchema;
@@ -139,7 +139,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<RedundantRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof RedundantRelProp).
                 map(RedundantRelProp.class::cast).collect(Collectors.toList());
 
-        EPropGroup ePropGroup = new EPropGroup(pushdownProps.stream().map(prop -> EProp.of(prop.getpType(), prop.geteNum(), prop.getCon())).collect(Collectors.toList()));
+        EPropGroup ePropGroup = new EPropGroup(pushdownProps.stream().map(prop -> EProp.of(prop.geteNum(), prop.getpType(), prop.getCon())).collect(Collectors.toList()));
         return getNodeFilterStatistics(entity, ePropGroup);
     }
 
@@ -205,7 +205,7 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need getTo take a different approach
         Statistics.SummaryStatistics minVertexSummaryStatistics = getVertexStatistics(graphVertexSchema, relevantIndices);
-        for(EProp eProp : entityFilter.getProps()){
+        for(EProp eProp : Stream.ofAll(entityFilter.getProps()).filter(eProp -> eProp.getCon() != null)){
             Property property = ont.$property$( eProp.getpType() );
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
@@ -468,19 +468,19 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 switch(eProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)eProp.getCon().getExpr();
-                        timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
-                        timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
+                        timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
+                        timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
                         break;
                     case inSet:
                         values = (List<Date>)eProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(ConstraintOp.eq, value)));
+                            timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(ConstraintOp.eq, value)));
                         }
                         break;
                     case notInSet:
                         values = (List<Date>)eProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(ConstraintOp.ne, value)));
+                            timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(ConstraintOp.ne, value)));
                         }
                         break;
                     default:
@@ -511,20 +511,20 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();
                         if(!values.isEmpty()) {
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("[") ? ConstraintOp.ge : ConstraintOp.gt, values.get(0))));
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("]") ? ConstraintOp.le : ConstraintOp.lt, values.get(1))));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(relProp.getCon().getiType().startsWith("[") ? ConstraintOp.ge : ConstraintOp.gt, values.get(0))));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(relProp.getCon().getiType().startsWith("]") ? ConstraintOp.le : ConstraintOp.lt, values.get(1))));
                         }
                         break;
                     case inSet:
                         values = (List<Date>)relProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(ConstraintOp.eq, value)));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(ConstraintOp.eq, value)));
                         }
                         break;
                     case notInSet:
                         values = (List<Date>)relProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(ConstraintOp.ne, value)));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(ConstraintOp.ne, value)));
                         }
                         break;
                     default:
