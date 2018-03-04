@@ -1,7 +1,6 @@
-package com.kayhut.fuse.assembly.knowlegde;
+package com.kayhut.fuse.test.estimator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.RuleBasedStatisticalProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
@@ -25,9 +24,9 @@ import java.util.Map;
 import java.util.OptionalDouble;
 
 /**
- * Created by lior.perry on 2/18/2018.
+ * Created by lior on 27/02/2018.
  */
-public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProviderFactory {
+public class OntologyConfigurationRuleBasedStatisticalProvider implements StatisticsProviderFactory {
     public static final String OPERATORS = "operators";
     public static final String NODES = "nodes";
     public static final String EDGES = "edges";
@@ -35,8 +34,8 @@ public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProvider
     public static final String TOTAL = "total";
     private Map<String, Object> map;
 
-    public KnowledgeRuleBasedStatisticalProvider() throws IOException {
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("./assembly/Knowledge/rules/setup.json");
+    public OntologyConfigurationRuleBasedStatisticalProvider() throws IOException {
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("./assembly/Dragons/rules/setup.json");
         map = new ObjectMapper().readValue(stream, Map.class);
     }
 
