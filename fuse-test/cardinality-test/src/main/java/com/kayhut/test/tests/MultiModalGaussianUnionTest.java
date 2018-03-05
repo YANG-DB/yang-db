@@ -2,6 +2,7 @@ package com.kayhut.test.tests;
 
 import com.clearspring.analytics.stream.cardinality.CardinalityMergeException;
 import com.clearspring.analytics.stream.cardinality.HyperLogLogPlus;
+import com.google.common.math.Stats;
 import com.kayhut.test.*;
 import com.kayhut.test.generation.FieldGenerator;
 import com.kayhut.test.generation.GaussianFieldGenerator;
@@ -50,7 +51,8 @@ public class MultiModalGaussianUnionTest implements Test {
             bucket.get().addBucketObject(instance.getInstanceId());
         }
 
-        System.out.println(Stream.ofAll(fieldValueHistogram.getBuckets()).filter(b -> b.getObjects().size() > 0).map(b -> b.getObjects().size()).average().get());
+
+        Double averageBucketSize = Stream.ofAll(fieldValueHistogram.getBuckets()).filter(b -> b.getObjects().size() > 0).map(b -> b.getObjects().size()).average().get();
         List<Long> estimatedSize = new ArrayList<>();
         List<Long> actualSize = new ArrayList<>();
         List<Double> diffRatio = new ArrayList<>();
@@ -76,7 +78,8 @@ public class MultiModalGaussianUnionTest implements Test {
         }
 
         TestResults results = new TestResults();
-        results.setErrorRatios(diffRatio);
+        results.setErrorStats(Stats.of(diffRatio));
+        results.setAverageBucketSize(averageBucketSize);
         return results;
 
 

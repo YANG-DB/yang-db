@@ -4,7 +4,6 @@ import com.clearspring.analytics.stream.cardinality.CardinalityMergeException;
 import com.google.common.math.Stats;
 import com.kayhut.test.*;
 import com.kayhut.test.generation.FieldGenerator;
-import com.kayhut.test.generation.GaussianFieldGenerator;
 import com.kayhut.test.generation.IdGenerator;
 import com.kayhut.test.generation.InstanceGenerator;
 import com.kayhut.test.histogram.HLLHistogram;
@@ -13,11 +12,13 @@ import javaslang.collection.Stream;
 
 import java.util.*;
 
-public class MultiModalGaussianIntersectionExactTest implements Test{
+public class MultiModalGaussianIntersectionExactTest extends MultiModalGaussianIntersectionBase{
 
-    public MultiModalGaussianIntersectionExactTest(Random random, int p, int sp, int numInstances) {
+    private int numFields = 3;
 
-        this.random = random;
+    public MultiModalGaussianIntersectionExactTest(Random random, int p, int sp, int numInstances, double overlapRatio) {
+
+        super(random, overlapRatio);
         this.p = p;
         this.sp = sp;
         this.numInstances = numInstances;
@@ -35,7 +36,8 @@ public class MultiModalGaussianIntersectionExactTest implements Test{
 
 
         for (int i = 0; i < numInstances; i++) {
-            Instance instance = instanceGenerators.get(i%3).generateInstance();
+            int fieldId = random.nextInt(numFields);
+            Instance instance = instanceGenerators.get(fieldId).generateInstance();
             instance.getValues().forEach((k,v) -> {
                 v.forEach(vi -> {
                     Optional<HLLHistogramBucket<Integer, Integer>> bucket = fieldValueHistogram.findBucket(vi);
@@ -43,11 +45,11 @@ public class MultiModalGaussianIntersectionExactTest implements Test{
                 });
 
             });
-            Optional<HLLHistogramBucket<Integer, Integer>> bucket = fieldHistogram.findBucket((i % 3) + 1);
+            Optional<HLLHistogramBucket<Integer, Integer>> bucket = fieldHistogram.findBucket(fieldId+ 1);
             bucket.get().addBucketObject(instance.getInstanceId());
         }
 
-        System.out.println(Stream.ofAll(fieldValueHistogram.getBuckets()).filter(b -> b.getObjects().size() > 0).map(b -> b.getObjects().size()).average().get());
+        Double averageBucketSize = Stream.ofAll(fieldValueHistogram.getBuckets()).filter(b -> b.getObjects().size() > 0).map(b -> b.getObjects().size()).average().get();
         List<Long> estimatedSize = new ArrayList<>();
         List<Long> actualSize = new ArrayList<>();
         List<Long> bucketSize = new ArrayList<>();
@@ -77,25 +79,18 @@ public class MultiModalGaussianIntersectionExactTest implements Test{
             }
         }
 
-        System.out.println("Stats for absolute diff: " + Stats.of(sizeDiff));
-        System.out.println("Stats for diff ratio: " + Stats.of(diffRatio));
-        System.out.println("Stats for zero absolute diff: " + Stats.of(zeroDiff));
         TestResults results = new TestResults();
-        results.setErrorRatios(diffRatio);
+        results.setErrorStats(Stats.of(diffRatio));
+        results.setAverageBucketSize(averageBucketSize);
+        results.setAbsoluteErrorStats(Stats.of(sizeDiff));
+        results.setZeroAbsoluteErrorStats(Stats.of(zeroDiff));
+        results.setIntersectionSizesStats(Stats.of(actualSize));
         return results;
 
 
     }
 
-    private List<FieldGenerator> getFieldGenerators( ){
-        List<FieldGenerator> fieldGeneratorList = new ArrayList<>();
-        fieldGeneratorList.add(new GaussianFieldGenerator("field1",1,random,1,100,50,30));
-        fieldGeneratorList.add(new GaussianFieldGenerator("field2",1,random,80,180,150,30));
-        fieldGeneratorList.add(new GaussianFieldGenerator("field3",1,random,1000,1100,1050,30));
-        return fieldGeneratorList;
-    }
-
-    private HLLHistogram<Integer, Integer> createFieldValueHistogram(int p, int sp){
+     private HLLHistogram<Integer, Integer> createFieldValueHistogram(int p, int sp){
         HLLHistogram<Integer, Integer> fieldHistogram = new HLLHistogram<>();
 
         for(int i = histogramLower;i<=histogramUpper;i+=bucketWidth){
@@ -107,16 +102,15 @@ public class MultiModalGaussianIntersectionExactTest implements Test{
     private HLLHistogram<Integer, Integer> createFieldHistogram(int p, int sp){
         HLLHistogram<Integer, Integer> fieldHistogram = new HLLHistogram<>();
 
-        for(int i = 1;i<=3;i++){
+        for(int i = 1;i<=numFields;i++){
             fieldHistogram.addBucket(new HLLHistogramBucket<>(i, i+1,p,sp));
         }
         return fieldHistogram;
     }
 
-    private int histogramLower = 1;
-    private int histogramUpper=1101;
+
     private int bucketWidth = 10;
-    private Random random;
+
     private int p;
     private int sp;
     private int numInstances;
