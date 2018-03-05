@@ -35,7 +35,7 @@ public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProvider
     private Map<String, Object> map;
 
     public KnowledgeRuleBasedStatisticalProvider() throws IOException {
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("./assembly/Knowledge/rules/setup.json");
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("./rules/setup.json");
         map = new ObjectMapper().readValue(stream, Map.class);
     }
 
@@ -48,11 +48,12 @@ public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProvider
                 if (item instanceof EConcrete) {
                     int selectivity = 1;
                     if (!node.isEmpty()) {
-                        selectivity = (Integer) node.get(SELECTIVITY);
+                        selectivity = (Integer) node.getOrDefault(SELECTIVITY, selectivity);
                     }
                     return new Statistics.SummaryStatistics(selectivity, selectivity);
                 } else if (item instanceof ETyped)
-                    return new Statistics.SummaryStatistics((Integer) node.get(TOTAL) * (Integer) node.get(SELECTIVITY), (Integer) node.get(TOTAL) * (Integer) node.get(SELECTIVITY));
+                    return new Statistics.SummaryStatistics((Integer) node.getOrDefault(TOTAL, 1000) * (Integer) node.getOrDefault(SELECTIVITY, 1),
+                            (Integer) node.getOrDefault(TOTAL, 1000) * (Integer) node.getOrDefault(SELECTIVITY, 1));
                 else if (item instanceof EUntyped)
                     return new Statistics.SummaryStatistics(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
@@ -64,7 +65,7 @@ public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProvider
                 Statistics.SummaryStatistics nodeStatistics = getNodeStatistics(item);
                 OptionalDouble max = entityFilter.getProps().stream().mapToDouble(f -> {
                     String property = f.getpType();
-                    int propCardinality = (int) getNode(map, item).get(property);
+                    int propCardinality = (int) getNode(map, item).getOrDefault(property,1);
                     ConstraintOp op = f.getCon().getOp();
                     return getOperatorAlpha(map, op) * propCardinality;
                 }).max();
