@@ -519,11 +519,14 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Rel(2, $ont.rType$("hasEvalue"), R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$("Evalue"), 4, 0),
-                new Quant1(4, QuantType.all, Arrays.asList(5, 6), 0),
-                new EProp(5, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new EProp(6, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "color"))
+                new Quant1(2, QuantType.all, Arrays.asList(101, 3), 0),
+                new EProp(101, "deleteTime", Constraint.of(ConstraintOp.empty)),
+                new Rel(3, $ont.rType$("hasEvalue"), R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), 5, 0),
+                new Quant1(5, QuantType.all, Arrays.asList(6, 7, 8), 0),
+                new EProp(6, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.likeAny, Arrays.asList("Babe", "Bitsy", "Dumdum", "Shy", "Scruffy", "Spider", "Sugar", "Boogie"))),
+                new EProp(7, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
+                new EProp(8, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty))
         )).build();
 
 

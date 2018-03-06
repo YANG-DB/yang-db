@@ -38,6 +38,9 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
     public static final String KNOWLEDGE = "Knowledge";
     public static final String DEFAULT = "default";
     public static final String DEFAULT_FILTER = "defaultFilter";
+    public static final String FIELD_ID = "fieldId";
+
+
     public static final String RULES_SETUP_JSON = "./rules/setup.json";
 
     private Map<String, Object> map;
@@ -100,9 +103,15 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
                 @Override
                 public Statistics.SummaryStatistics getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter) {
                     Statistics.SummaryStatistics nodeStatistics = getNodeStatistics(item);
-                    OptionalDouble max = entityFilter.getProps().stream().mapToDouble(f -> {
+                    OptionalDouble max = entityFilter.getProps().stream().filter(p->p.getCon()!=null).mapToDouble(f -> {
                         String property = f.getpType();
-                        int propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
+                        int propCardinality = 1;
+
+                        if(property.equals(FIELD_ID) && getNode(map, item).containsKey(property)) {
+                            propCardinality = (int) ((Map) getNode(map, item).get(property)).getOrDefault(f.getCon().getExpr(),getNode(map, item).get(DEFAULT_FILTER));
+                        } else {
+                            propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
+                        }
                         ConstraintOp op = f.getCon().getOp();
                         return getOperatorAlpha(map, op) * propCardinality;
                     }).max();
