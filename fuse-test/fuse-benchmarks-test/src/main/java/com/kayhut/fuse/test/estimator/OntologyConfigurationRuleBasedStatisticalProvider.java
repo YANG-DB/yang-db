@@ -1,4 +1,4 @@
-package com.kayhut.fuse.assembly.knowlegde;
+package com.kayhut.fuse.test.estimator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.epb.plan.statistics.RuleBasedStatisticalProvider;
@@ -24,9 +24,9 @@ import java.util.Map;
 import java.util.OptionalDouble;
 
 /**
- * Created by lior.perry on 2/18/2018.
+ * Created by lior on 27/02/2018.
  */
-public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProviderFactory {
+public class OntologyConfigurationRuleBasedStatisticalProvider implements StatisticsProviderFactory {
     public static final String OPERATORS = "operators";
     public static final String NODES = "nodes";
     public static final String EDGES = "edges";
@@ -34,8 +34,8 @@ public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProvider
     public static final String TOTAL = "total";
     private Map<String, Object> map;
 
-    public KnowledgeRuleBasedStatisticalProvider() throws IOException {
-        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("./rules/setup.json");
+    public OntologyConfigurationRuleBasedStatisticalProvider() throws IOException {
+        InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("./assembly/Dragons/rules/setup.json");
         map = new ObjectMapper().readValue(stream, Map.class);
     }
 
@@ -48,12 +48,11 @@ public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProvider
                 if (item instanceof EConcrete) {
                     int selectivity = 1;
                     if (!node.isEmpty()) {
-                        selectivity = (Integer) node.getOrDefault(SELECTIVITY, selectivity);
+                        selectivity = (Integer) node.get(SELECTIVITY);
                     }
                     return new Statistics.SummaryStatistics(selectivity, selectivity);
                 } else if (item instanceof ETyped)
-                    return new Statistics.SummaryStatistics((Integer) node.getOrDefault(TOTAL, 1000) * (Integer) node.getOrDefault(SELECTIVITY, 1),
-                            (Integer) node.getOrDefault(TOTAL, 1000) * (Integer) node.getOrDefault(SELECTIVITY, 1));
+                    return new Statistics.SummaryStatistics((Integer) node.get(TOTAL) * (Integer) node.get(SELECTIVITY), (Integer) node.get(TOTAL) * (Integer) node.get(SELECTIVITY));
                 else if (item instanceof EUntyped)
                     return new Statistics.SummaryStatistics(Integer.MAX_VALUE, Integer.MAX_VALUE);
 
@@ -65,7 +64,7 @@ public class KnowledgeRuleBasedStatisticalProvider implements StatisticsProvider
                 Statistics.SummaryStatistics nodeStatistics = getNodeStatistics(item);
                 OptionalDouble max = entityFilter.getProps().stream().mapToDouble(f -> {
                     String property = f.getpType();
-                    int propCardinality = (int) getNode(map, item).getOrDefault(property,1);
+                    int propCardinality = (int) getNode(map, item).get(property);
                     ConstraintOp op = f.getCon().getOp();
                     return getOperatorAlpha(map, op) * propCardinality;
                 }).max();
