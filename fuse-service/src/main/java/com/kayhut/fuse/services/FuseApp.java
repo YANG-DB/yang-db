@@ -105,6 +105,7 @@ public class FuseApp extends Jooby {
         registerCursorApi(localUrlSupplier);
         registerPageApi(localUrlSupplier);
         registerSearchApi(localUrlSupplier);
+        registerInternals(localUrlSupplier);
     }
     //endregion
 
@@ -137,6 +138,10 @@ public class FuseApp extends Jooby {
 
     private DataLoaderController dataLoaderCtrl() {
         return require(DataLoaderController.class);
+    }
+
+    private InternalsController internalsController() {
+        return require(InternalsController.class);
     }
 
     private SearchController searchCtrl() {
@@ -172,6 +177,16 @@ public class FuseApp extends Jooby {
         use("/fuse/health")
                 /** check health */
                 .get(() -> "Alive And Well...");
+    }
+
+    private void registerInternals(AppUrlSupplier localUrlSupplier) {
+        /** get the health status of the service */
+        use("/fuse/internal/statisticsProvider/name")
+                .get(req -> Results.with(internalsController().getStatisticsProviderName()));
+        use("/fuse/internal/statisticsProvider/setup")
+                .get(req -> Results.with(internalsController().getStatisticsProviderSetup()));
+        use("/fuse/internal/statisticsProvider/refresh")
+                .put(req -> Results.with(internalsController().refreshStatisticsProviderSetup()));
     }
 
     private void registerDataLoaderApi(AppUrlSupplier localUrlSupplier) {

@@ -63,6 +63,7 @@ public class EpbModule extends BaseEpbModule {
                 this.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){})
                         .toProvider(new TypeLiteral<PlanTracer.Estimator.Provider<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){});
 
+                this.expose(StatisticsProviderFactory.class);
                 this.expose(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>(){});
             }
         });
@@ -73,8 +74,5 @@ public class EpbModule extends BaseEpbModule {
         return M1PlanExtensionStrategy.class;
     }
 
-
-
-
-    //endregion
+//endregion
 }

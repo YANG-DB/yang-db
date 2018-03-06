@@ -56,6 +56,7 @@ public class EpbDfsRuleBasedRedundantModule extends BaseEpbModule {
                     this.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>() {})
                             .toProvider(new TypeLiteral<PlanTracer.Estimator.Provider<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>() {});
 
+                    this.expose(StatisticsProviderFactory.class);
                     this.expose(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>() {});
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
