@@ -62,9 +62,9 @@ public class KnowledgeRawSchemaShort implements RawSchema {
             case RELATION_VALUE:
                 return new IndexPartitions.Impl("relationId", getPartitions(RELATION));
             case INSIGHT:
-                return new IndexPartitions.Impl("_id", getPartitions(REFERENCE));
+                return new IndexPartitions.Impl("_id", getPartitions(INSIGHT));
             case REFERENCE:
-                return  new IndexPartitions.Impl("_id", getPartitions(INSIGHT));
+                return  new IndexPartitions.Impl("_id", getPartitions(REFERENCE));
 
         }
         return null;
