@@ -9,16 +9,22 @@ import java.util.Random;
 
 public abstract class MultiModalGaussianIntersectionBase implements Test {
 
-    protected int numFields = 3;
+    protected int numFields;
     protected Random random;
     protected int histogramLower = 1;
     protected int histogramUpper=1101;
     private double overlapRatio;
 
     protected MultiModalGaussianIntersectionBase(Random random, double overlapRatio) {
+        this(random,overlapRatio,3);
+    }
+
+    protected MultiModalGaussianIntersectionBase(Random random, double overlapRatio, int numFields) {
         this.random = random;
         this.overlapRatio = overlapRatio;
+        this.numFields = numFields;
     }
+
 
     protected  List<FieldGenerator> getFieldGenerators( ){
         List<FieldGenerator> fieldGeneratorList = new ArrayList<>();

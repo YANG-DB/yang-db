@@ -24,6 +24,15 @@ public class MultiModalGaussianIntersectionMinHashTest extends MultiModalGaussia
         this.k = k;
     }
 
+    public MultiModalGaussianIntersectionMinHashTest(Random random, int p, int sp, int numInstances, int bucketWidth, int k, double overlapRatio, int numFields) {
+        super(random, overlapRatio,numFields);
+        this.p = p;
+        this.sp = sp;
+        this.numInstances = numInstances;
+        this.bucketWidth = bucketWidth;
+        this.k = k;
+    }
+
     public TestResults run() throws CardinalityMergeException {
         List<FieldGenerator> fieldGenerators = getFieldGenerators();
         IdGenerator idGenerator = new IdGenerator();

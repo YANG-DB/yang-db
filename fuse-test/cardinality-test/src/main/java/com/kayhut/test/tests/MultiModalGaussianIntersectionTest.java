@@ -23,6 +23,16 @@ public class MultiModalGaussianIntersectionTest extends MultiModalGaussianInters
         this.bucketWidth = bucketWidth;
     }
 
+    public MultiModalGaussianIntersectionTest(Random random, int p, int sp, int numInstances, int bucketWidth, double overlapRatio, int numFields) {
+        super(random, overlapRatio, numFields);
+        this.p = p;
+        this.sp = sp;
+        this.numInstances = numInstances;
+        this.bucketWidth = bucketWidth;
+    }
+
+
+
     public TestResults run() throws CardinalityMergeException {
         List<FieldGenerator> fieldGenerators = getFieldGenerators();
         IdGenerator idGenerator = new IdGenerator();
