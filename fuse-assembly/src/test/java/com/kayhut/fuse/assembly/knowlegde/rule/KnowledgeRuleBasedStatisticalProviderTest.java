@@ -59,7 +59,7 @@ public class KnowledgeRuleBasedStatisticalProviderTest {
 
         eTyped = new ETyped(1, "a", "Evalue", 0, 0);
         group = new EPropGroup(101, new EProp(102, "fieldId", Constraint.of(ConstraintOp.eq,"title")));
-        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 400,0.5);
+        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 1000,0.5);
 
         eTyped = new ETyped(1, "a", "Evalue", 0, 0);
         group = new EPropGroup(101, new EProp(102, "context", Constraint.of(ConstraintOp.likeAny)));
