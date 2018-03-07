@@ -519,11 +519,14 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
-                new Rel(2, $ont.rType$("hasEvalue"), R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$("Evalue"), 4, 0),
-                new Quant1(4, QuantType.all, Arrays.asList(5, 6), 0),
-                new EProp(5, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
-                new EProp(6, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "color"))
+                new Quant1(2, QuantType.all, Arrays.asList(101, 3), 0),
+                new EProp(101, "deleteTime", Constraint.of(ConstraintOp.empty)),
+                new Rel(3, $ont.rType$("hasEvalue"), R, null, 4, 0),
+                new ETyped(4, "B", $ont.eType$("Evalue"), 5, 0),
+                new Quant1(5, QuantType.all, Arrays.asList(6, 7, 8), 0),
+                new EProp(6, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.likeAny, Arrays.asList("Babe", "Bitsy", "Dumdum", "Shy", "Scruffy", "Spider", "Sugar", "Boogie"))),
+                new EProp(7, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.eq, "nicknames")),
+                new EProp(8, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty))
         )).build();
 
 
@@ -588,6 +591,67 @@ public class RealClusterTest {
                 new EProp(97, "context", Constraint.of(ConstraintOp.eq, "global")),
                 new Rel(98, "hasEvalue", R, null, 99, 0),
                 new ETyped(99, "GEInV", "Evalue", 0, 0),
+
+                new OptionalComp(10, 100),
+                new Rel(100, "hasRvalue", R, null, 101, 0),
+                new ETyped(101, "RV", "Rvalue", 0, 0),
+                /*new Quant1(102, QuantType.all, Arrays.asList(103), 0),
+                new Rel(103, "hasRvalueReference", R, null, 104, 0),
+                new ETyped(104, "RVRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0),*/
+
+                new OptionalComp(11, 110),
+                new Rel(110, "hasRelationReference", R, null, 111, 0),
+                new ETyped(111, "RRef", "Reference", 0, 0)
+        )).build();
+
+
+        QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
+
+        while (!pageResourceInfo.isAvailable()) {
+            pageResourceInfo = fuseClient.getPage(pageResourceInfo.getResourceUrl());
+            if (!pageResourceInfo.isAvailable()) {
+                Thread.sleep(10);
+            }
+        }
+
+        QueryResult pageData = fuseClient.getPageData(pageResourceInfo.getDataUrl());
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
+    public void test9b() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
+        Ontology.Accessor $ont = new Ontology.Accessor(fuseClient.getOntology(fuseResourceInfo.getCatalogStoreUrl() + "/Knowledge"));
+
+        String logicalId = "e00000000";
+
+        Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
+                new Start(0, 1),
+                new ETyped(1, "SE", $ont.eType$("Entity"), 2, 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
+                new EProp(3, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
+                new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, logicalId)),
+                new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
+                new ETyped(6, "R", $ont.eType$("Relation"), 7, 0),
+                new Quant1(7, QuantType.all, Arrays.asList(8, 10, 11), 0),
+
+                new OptionalComp(8, 80),
+                new Rel(80, "hasRelation", L, null, 81, 0),
+                new ETyped(81, "EOther", "Entity", 822, 0),
+                new Quant1(822, QuantType.all, Arrays.asList(82, 823), 0),
+                new EProp(823, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.ne, logicalId)),
+                new Rel(82, "hasEntity", L, null, 83, 0),
+                new ETyped(83, "LEOther", "LogicalEntity", 84, 0),
+                new Rel(84, "hasEntity", R, null, 85, 0),
+                new ETyped(85, "GEOther", "Entity", 86, 0),
+                new Quant1(86, QuantType.all, Arrays.asList(87, 88), 0),
+                new EProp(87, "context", Constraint.of(ConstraintOp.eq, "global")),
+                new Rel(88, "hasEvalue", R, null, 89, 0),
+                new ETyped(89, "GEOtherV", "Evalue", 0, 0),
 
                 new OptionalComp(10, 100),
                 new Rel(100, "hasRvalue", R, null, 101, 0),

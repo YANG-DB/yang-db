@@ -2,6 +2,7 @@ package com.kayhut.fuse.services.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
+import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.CreateCursorRequest;
@@ -20,7 +21,7 @@ import static com.google.inject.name.Names.named;
 
 /**
  * Created by lior on 15/02/2017.
- *
+ * <p>
  * This module is called by the fuse-service scanner class loader
  */
 public class ServiceModule extends ModuleBase {
@@ -32,6 +33,7 @@ public class ServiceModule extends ModuleBase {
 
         // bind service controller
         bindApiDescriptionController(env, config, binder);
+        bindInternalsController(env, config, binder);
         bindQueryController(env, config, binder);
         bindCursorController(env, config, binder);
         bindPageController(env, config, binder);
@@ -40,6 +42,7 @@ public class ServiceModule extends ModuleBase {
         bindDataLoaderController(env, config, binder);
 
         // bind requests
+        binder.bind(InternalsDriver.class).to(StandardInternalsDriver.class);
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
         binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreatePageRequest.class).in(RequestScoped.class);
@@ -66,6 +69,17 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingApiDescriptionController.class);
 
                 this.expose(ApiDescriptionController.class);
+            }
+        });
+    }
+
+    private void bindInternalsController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(InternalsController.class)
+                        .to(StandardInternalsController.class);
+                this.expose(InternalsController.class);
             }
         });
     }
