@@ -10,32 +10,25 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.properties.constraint.Constraint;
-import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
-import com.kayhut.fuse.model.query.properties.SchematicEProp;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
-import static com.kayhut.fuse.unipop.schemaProviders.GraphElementPropertySchema.IndexingSchema.Type.*;
-
-
 /**
- * Created by roman.margolis on 05/02/2018.
+ * Created by roman.margolis on 07/03/2018.
  */
-public class LikeConstraintTransformationAsgStrategy implements AsgStrategy {
+public class LikeAnyConstraintTransofmrationAsgStrategy implements AsgStrategy {
     //region Constructors
-    public LikeConstraintTransformationAsgStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProviderFactory) {
+    public LikeAnyConstraintTransofmrationAsgStrategy(OntologyProvider ontologyProvider, GraphElementSchemaProviderFactory schemaProviderFactory) {
         this.ontologyProvider = ontologyProvider;
         this.schemaProviderFactory = schemaProviderFactory;
     }
@@ -60,7 +53,7 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy {
             }
 
             for (EProp eProp : new ArrayList<>(ePropGroupAsgEBase.geteBase().getProps())) {
-                if (!eProp.getCon().getOp().equals(ConstraintOp.like)) {
+                if (!eProp.getCon().getOp().equals(ConstraintOp.likeAny)) {
                     continue;
                 }
 

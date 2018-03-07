@@ -557,9 +557,10 @@ public class RealClusterTest {
         Query query = Query.Builder.instance().withName("q2").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
                 new ETyped(1, "SE", $ont.eType$("Entity"), 2, 0),
-                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 5), 0),
+                new Quant1(2, QuantType.all, Arrays.asList(3, 4, 555), 0),
                 new EProp(3, $ont.pType$("context"), Constraint.of(ConstraintOp.eq, "context1")),
                 new EProp(4, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, logicalId)),
+                new OptionalComp(555, 5),
                 new Rel(5, $ont.rType$("hasRelation"), R, null, 6, 0),
                 new ETyped(6, "R", $ont.eType$("Relation"), 7, 0),
                 new Quant1(7, QuantType.all, Arrays.asList(8, 9, 10, 11), 0),
