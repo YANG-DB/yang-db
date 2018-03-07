@@ -9,10 +9,12 @@ import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
+import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.ontology.Property;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
@@ -67,12 +69,21 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
             return Collections.singleton(plan.get());
         }
 
+        Optional<EntityFilterOp> lastEntityFilterOp = PlanUtil.next(flatPlan, lastEntityOp.get(), EntityFilterOp.class);
+
         AtomicInteger maxEnum = new AtomicInteger(Stream.ofAll(AsgQueryUtil.eNums(query)).max().get());
 
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get($ont.get());
 
         String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEbase().geteBase().getrType()).getName();
-        Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
+
+        Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(relationTypeName);
+        if (Stream.ofAll(edgeSchemas).isEmpty()) {
+            return Collections.singleton(plan.get());
+        }
+
+        //currently supports a single edge schema
+        GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
         // label
         List<String> vTypes = new ArrayList<>();
@@ -91,22 +102,28 @@ public class RedundantSelectionFilterPlanExtensionStrategy implements PlanExtens
 
         //currently supports only ETyped
         GraphEdgeSchema.End endSchema = lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped ?
-                edgeSchema.get().getSource().get().getLabel().get().equals(vTypes.get(0)) ?
-                        edgeSchema.get().getSource().get() :
-                        edgeSchema.get().getDestination().get() :
-                edgeSchema.get().getDestination().get();
+                edgeSchema.getEndA().get().getLabel().get().equals(vTypes.get(0)) ?
+                        edgeSchema.getEndA().get() :
+                        edgeSchema.getEndB().get() :
+                edgeSchema.getEndB().get();
 
         RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEbase().geteBase().clone();
 
-        if(lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped) {
-            Stream.ofAll(lastEntityOp.get().getAsgEbase().geteBase().getReportProps())
-                    .map($ont::$property$).forEach(p -> {
+        if(lastEntityFilterOp.isPresent()) {
+            Stream.ofAll(lastEntityFilterOp.get().getAsgEbase().geteBase().getProps())
+                    .filter(eProp -> eProp.getProj() != null)
+                    .toJavaList()
+                    .forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
                 if (redundantVertexProperty.isPresent()) {
-                    RelProp relProp = RedundantSelectionRelProp.of(maxEnum.addAndGet(1), redundantVertexProperty.get().getPropertyRedundantName(),
-                            p.getpType());
+                    RelProp relProp = RedundantSelectionRelProp.of(
+                            maxEnum.addAndGet(1),
+                            p.getpType(),
+                            redundantVertexProperty.get().getPropertyRedundantName(),
+                            p.getProj());
                     relPropGroup.getProps().add(relProp);
+                    lastEntityFilterOp.get().getAsgEbase().geteBase().getProps().remove(p);
                 }
             });
         }

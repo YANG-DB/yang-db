@@ -1,6 +1,7 @@
 package com.kayhut.fuse.gta.strategy.utils;
 
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.unipop.controller.utils.CollectionUtil;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -13,7 +14,7 @@ import java.util.List;
  * Created by Roman on 10/05/2017.
  */
 public class ConversionUtil {
-    public static <V> P<V> convertConstraint(com.kayhut.fuse.model.query.Constraint constraint){
+    public static <V> P<V> convertConstraint(Constraint constraint){
         List<Object> range = null;
 
         switch (constraint.getOp()) {
@@ -35,6 +36,7 @@ public class ConversionUtil {
             case notEmpty: return new ExistsP<>();
             //case match: return Text.like((V)constraint.getExpr());
             case like: return Text.like((V)constraint.getExpr());
+            case likeAny: return Text.like((V)constraint.getExpr());
             default: throw new RuntimeException("not supported");
         }
     }
@@ -46,7 +48,7 @@ public class ConversionUtil {
             case L:
                 return Direction.IN;
             default:
-                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+                throw new IllegalArgumentException("Not Supported Relation DirectionSchema: " + dir);
         }
     }
 

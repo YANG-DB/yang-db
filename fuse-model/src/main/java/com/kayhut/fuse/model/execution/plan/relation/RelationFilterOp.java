@@ -12,7 +12,7 @@ import com.kayhut.fuse.model.query.properties.RelPropGroup;
 public class RelationFilterOp extends AsgEBasePlanOp<RelPropGroup> implements Filter {
     //region Constructors
     public RelationFilterOp() {
-
+        super(new AsgEBase<>());
     }
 
     public RelationFilterOp(AsgEBase<RelPropGroup> relPropGroup) {

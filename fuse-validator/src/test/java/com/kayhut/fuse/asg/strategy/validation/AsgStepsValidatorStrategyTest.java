@@ -6,8 +6,8 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -21,8 +21,8 @@ import java.util.Date;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
@@ -35,7 +35,7 @@ public class AsgStepsValidatorStrategyTest {
     AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
             .next(unTyped(1))
             .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                    RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                    RelProp.of(10, START_DATE.type, of(eq, new Date())))))
             .next(unTyped(3))
             .build();
 
@@ -68,9 +68,9 @@ public class AsgStepsValidatorStrategyTest {
     public void testStepWithPropsNoRelQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(unTyped(1))
-                .next(eProp(10, EProp.of(COLOR.type, 11, of(eq, "Moshe"))))
+                .next(eProp(10, EProp.of(11, COLOR.type, of(eq, "Moshe"))))
                 .next(unTyped(3))
-                .next(eProp(12, EProp.of(NAME.type, 13, of(eq, "bubu"))))
+                .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
                 .build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
@@ -83,10 +83,10 @@ public class AsgStepsValidatorStrategyTest {
     public void testStepWithPropsNoEntityQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(rel(1, FREEZE.getrType(), R))
-                .below(relProp(2, RelProp.of(START_DATE.type, 3, Constraint.of(ge, new Date(System.currentTimeMillis())))))
+                .below(relProp(2, RelProp.of(3, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis())))))
                 .next(rel(4, FREEZE.getrType(), R))
-                .below(relProp(5, RelProp.of(START_DATE.type, 6, Constraint.of(ge, new Date(System.currentTimeMillis())))))
-                .next(eProp(7, EProp.of(NAME.type, 8, of(eq, "bubu"))))
+                .below(relProp(5, RelProp.of(6, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis())))))
+                .next(eProp(7, EProp.of(8, NAME.type, of(eq, "bubu"))))
                 .build();
 
         AsgStepsValidatorStrategy strategy = new AsgStepsValidatorStrategy();
@@ -100,7 +100,7 @@ public class AsgStepsValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(rel(1, FREEZE.getrType(), R))
                 .next(quant1(2, QuantType.all))
-                .in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                .in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5))
                         .next(rel(1, FREEZE.getrType(), R))
                         .next(typed(10, GUILD.type).next(eProp(11))))
@@ -117,7 +117,7 @@ public class AsgStepsValidatorStrategyTest {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, OntologyTestUtils.PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
                                         .next(eProp(7))).
@@ -134,22 +134,22 @@ public class AsgStepsValidatorStrategyTest {
     public void testStepWithPropsNoRelLongerQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type)
-                        .next(eProp(2, EProp.of(HEIGHT.type, 3, Constraint.of(ConstraintOp.gt, 189L)))))
+                        .next(eProp(2, EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189L)))))
                 .next(rel(4, OWN.getrType(), R)
-                        .below(relProp(5, RelProp.of(START_DATE.type, 6, Constraint.of(ge, new Date(System.currentTimeMillis()))))))
+                        .below(relProp(5, RelProp.of(6, START_DATE.type, Constraint.of(ge, new Date(System.currentTimeMillis()))))))
                 .next(typed(7, DRAGON.type))
                 .next(quant1(8, all))
-                .in(eProp(9, EProp.of(NAME.type, 10, Constraint.of(ge, "smith")))
+                .in(eProp(9, EProp.of(10, NAME.type, Constraint.of(ge, "smith")))
                         , rel(12, FREEZE.getrType(), R)
                                 .below(relProp(122))
                                 .next(unTyped(13)
-                                        .next(eProp(14, EProp.of(NAME.type, 15, Constraint.of(ConstraintOp.notContains, "bob"))))
+                                        .next(eProp(14, EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
                                 )
-                                .below(relProp(18, RelProp.of(START_DATE.type, 19,
+                                .below(relProp(18, RelProp.of(19, START_DATE.type,
                                         Constraint.of(ge, new Date(System.currentTimeMillis() - 1000 * 60))),
-                                        RelProp.of(END_DATE.type, 19, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
+                                        RelProp.of(19, END_DATE.type, Constraint.of(le, new Date(System.currentTimeMillis() + 1000 * 60)))))
                                 .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
-                                        .next(eProp(21, EProp.of(NAME.type, 22, Constraint.of(ConstraintOp.eq, "smoge"))))
+                                        .next(eProp(21, EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
                                 )
                 ).build();
 

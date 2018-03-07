@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.EntityJoinPattern;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
@@ -34,9 +35,9 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartiti
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.ParseException;
@@ -45,8 +46,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
@@ -163,7 +164,17 @@ public class EpbJoinSelectionTests {
         M2PatternCostEstimator m2PatternCostEstimator = new M2PatternCostEstimator(
                 new CostEstimationConfig(0.8, 1),
                 (ont) -> eBaseStatisticsProvider,
-                (id) -> Optional.of(ont.get()),
+                new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                },
                 null);
         EntityJoinPatternCostEstimator entityJoinPatternCostEstimator = (EntityJoinPatternCostEstimator)m2PatternCostEstimator.getEstimators().get(EntityJoinPattern.class);
 
@@ -180,7 +191,17 @@ public class EpbJoinSelectionTests {
         globalPlanSelector = new KeepAllPlansSelectorDecorator<>(new CheapestPlanSelector());
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
-                new M2PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
+                new M2PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }, ont -> graphElementSchemaProvider),
                 globalPruner,
                 localPruner,
                 globalPlanSelector,
@@ -247,12 +268,13 @@ public class EpbJoinSelectionTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {
@@ -296,14 +318,14 @@ public class EpbJoinSelectionTests {
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
 
     @Test
     public void testJoinPlanSelection(){
             AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                     next(typed(1, PERSON.type)).
-                    next(eProp(2, EProp.of(NAME.name, 2, of(eq, "abc")))).
+                    next(eProp(2, EProp.of(2, NAME.name, of(eq, "abc")))).
                     next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                     next(typed(5, DRAGON.type)).
                     next(eProp(6)).
@@ -315,7 +337,7 @@ public class EpbJoinSelectionTests {
                     next(eProp(14)).
                     next(rel(15, OWN.getrType(), Rel.Direction.L).below(relProp(16))).
                     next(typed(17, PERSON.type)).
-                    next(eProp(18,EProp.of(NAME.name, 18, of(eq, "abc")))).
+                    next(eProp(18,EProp.of(18, NAME.name, of(eq, "abc")))).
                     build();
 
             PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);

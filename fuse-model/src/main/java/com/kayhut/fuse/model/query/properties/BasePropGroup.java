@@ -21,8 +21,16 @@ public abstract class BasePropGroup<T extends BaseProp, S extends BasePropGroup<
         this(eNum, Collections.emptyList());
     }
 
-    public BasePropGroup(List<T> props) {
+    public BasePropGroup(T...props) {
+        this(Stream.of(props));
+    }
+
+    public BasePropGroup(Iterable<T> props) {
         this(0, props);
+    }
+
+    public BasePropGroup(int eNum, T...props) {
+        this(eNum, Stream.of(props));
     }
 
     public BasePropGroup(int eNum, Iterable<T> props) {

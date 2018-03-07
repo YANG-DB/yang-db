@@ -7,7 +7,7 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.*;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;

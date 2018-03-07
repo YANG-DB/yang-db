@@ -2,6 +2,7 @@ package com.kayhut.fuse.asg.strategy.constraint;
 
 import com.kayhut.fuse.asg.strategy.AsgStrategy;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
@@ -20,10 +21,10 @@ public abstract class ConstraintTransformationAsgStrategyBase implements AsgStra
     //region Protected Methods
     protected List<EProp> getEprops(AsgQuery query) {
         List<EProp> eProps = Stream.ofAll(AsgQueryUtil.elements(query, EProp.class))
-                .map(eBaseAsgEBase -> (EProp)eBaseAsgEBase.geteBase()).toJavaList();
+                .map(AsgEBase::geteBase).toJavaList();
 
         List<EPropGroup> ePropsGroup = Stream.ofAll(AsgQueryUtil.elements(query, EPropGroup.class))
-                .map(ePropGroup -> ((EPropGroup)ePropGroup.geteBase())).toJavaList();
+                .map(AsgEBase::geteBase).toJavaList();
         List<EProp> eProps2 = Stream.ofAll(ePropsGroup).flatMap(EPropGroup::getProps).toJavaList();
 
         return java.util.stream.Stream.concat(eProps.stream(), eProps2.stream()).collect(Collectors.toList());
@@ -31,9 +32,9 @@ public abstract class ConstraintTransformationAsgStrategyBase implements AsgStra
 
     protected List<RelProp> getRelProps(AsgQuery query) {
         List<RelProp> relProps = Stream.ofAll(AsgQueryUtil.elements(query, RelProp.class))
-                .map(eBaseAsgEBase -> (RelProp)eBaseAsgEBase.geteBase()).toJavaList();
+                .map(AsgEBase::geteBase).toJavaList();
         List<RelPropGroup> relPropsGroup = Stream.ofAll(AsgQueryUtil.elements(query, RelPropGroup.class))
-                .map(relPropGroup -> ((RelPropGroup)relPropGroup.geteBase())).toJavaList();
+                .map(AsgEBase::geteBase).toJavaList();
         List<RelProp> relProps2 = Stream.ofAll(relPropsGroup).flatMap(RelPropGroup::getProps).toJavaList();
 
         return java.util.stream.Stream.concat(relProps.stream(), relProps2.stream()).collect(Collectors.toList());

@@ -8,4 +8,6 @@ public interface Next<T> {
 
     void setNext(T next);
 
+    boolean hasNext();
+
 }

@@ -14,6 +14,7 @@ import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.services.FuseApp;
 import com.kayhut.fuse.services.TestsConfiguration;
+import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import org.jooby.test.JoobyRule;
 import org.junit.Assume;
 import org.junit.Before;
@@ -120,6 +121,23 @@ public class DataTest {
                 .statusCode(200)
                 .contentType("application/json;charset=UTF-8");
 
+        given()
+                .contentType("application/json")
+                .with().port(8888)
+                .get("/fuse/query/1/plan/print")
+                .then()
+                .assertThat()
+                .body(new TestUtils.ContentMatcher(o -> {
+                    try {
+                        String data = FuseClient.unwrapDouble(o.toString());
+                        return data!=null;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }))
+                .statusCode(200)
+                .contentType("application/json;charset=UTF-8");
 
         //create cursor page resource
         CreatePageRequest pageRequest = new CreatePageRequest();

@@ -1,16 +1,11 @@
 package com.kayhut.fuse.unipop.controller.common.appender;
 
-import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
-import com.kayhut.fuse.unipop.controller.promise.context.PromiseVertexFilterControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.ElementUtil;
-import com.kayhut.fuse.unipop.promise.IdPromise;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
-import com.kayhut.fuse.unipop.structure.promise.PromiseVertex;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.unipop.schema.element.VertexSchema;
 
@@ -26,16 +21,18 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
         // currently assuming homogeneous vertex bulk
         String vertexLabel = Stream.ofAll(context.getBulkVertices()).get(0).label();
 
-        Optional<GraphVertexSchema> vertexSchema = context.getSchemaProvider().getVertexSchema(vertexLabel);
-        if (!vertexSchema.isPresent()) {
+        Iterable<GraphVertexSchema> vertexSchemas = context.getSchemaProvider().getVertexSchemas(vertexLabel);
+        if (Stream.ofAll(vertexSchemas).isEmpty()) {
             return false;
         }
 
+        // currently supports a single vertex schema
+        GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
 
-        Optional<String> partitionField = vertexSchema.get().getIndexPartitions().get().getPartitionField().isPresent() ?
-                    vertexSchema.get().getIndexPartitions().get().getPartitionField().get().equals("_id") ?
+        Optional<String> partitionField = vertexSchema.getIndexPartitions().get().getPartitionField().isPresent() ?
+                    vertexSchema.getIndexPartitions().get().getPartitionField().get().equals("_id") ?
                         Optional.of(T.id.getAccessor()) :
-                        Optional.of(vertexSchema.get().getIndexPartitions().get().getPartitionField().get()) :
+                        Optional.of(vertexSchema.getIndexPartitions().get().getPartitionField().get()) :
                 Optional.empty();
 
         boolean isPartitionFieldFullyAvailable = partitionField.isPresent() ?
@@ -46,7 +43,7 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
                 false;
 
         List<IndexPartitions.Partition.Range> rangePartitions =
-                Stream.ofAll(vertexSchema.get().getIndexPartitions().get().getPartitions())
+                Stream.ofAll(vertexSchema.getIndexPartitions().get().getPartitions())
                         .filter(partition -> partition instanceof IndexPartitions.Partition.Range)
                         .map(partition -> (IndexPartitions.Partition.Range) partition)
                         .<Comparable>sortBy(partition -> (Comparable) partition.getTo())
@@ -64,7 +61,7 @@ public class FilterIndexSearchAppender implements SearchAppender<VertexControlle
         }
 
         Set<String> indices =
-                Stream.ofAll(vertexSchema.get().getIndexPartitions().get().getPartitions())
+                Stream.ofAll(vertexSchema.getIndexPartitions().get().getPartitions())
                         .filter(partition -> !(partition instanceof IndexPartitions.Partition.Range))
                         .appendAll(relevantRangePartitions)
                         .flatMap(IndexPartitions.Partition::getIndices)

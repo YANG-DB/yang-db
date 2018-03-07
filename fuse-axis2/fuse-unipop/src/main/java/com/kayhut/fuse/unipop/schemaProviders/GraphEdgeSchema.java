@@ -1,10 +1,10 @@
 package com.kayhut.fuse.unipop.schemaProviders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.T;
 
@@ -16,8 +16,8 @@ import java.util.*;
 public interface GraphEdgeSchema extends GraphElementSchema {
     enum Application {
         start,
-        source,
-        destination
+        endA,
+        endB
     };
 
     default Class getSchemaElementType() {
@@ -25,19 +25,20 @@ public interface GraphEdgeSchema extends GraphElementSchema {
     }
 
     default Set<Application> getApplications() {
-        return new HashSet<>(Arrays.asList(Application.start, Application.source, Application.destination));
+        return new HashSet<>(Arrays.asList(Application.start, Application.endA, Application.endB));
     }
 
-    Optional<End> getSource();
-    Optional<End> getDestination();
-    Optional<Direction> getDirection();
+    Optional<End> getEndA();
+    Optional<End> getEndB();
+    Optional<DirectionSchema> getDirectionSchema();
+    Direction getDirection();
 
-    interface Direction {
+    interface DirectionSchema {
         String getField();
         Object getInValue();
         Object getOutValue();
 
-        class Impl implements Direction {
+        class Impl implements DirectionSchema {
             //region Constructors
             public Impl(String field, Object outValue, Object inValue) {
                 this.field = field;
@@ -46,7 +47,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             }
             //endregion
 
-            //region Direction Implementation
+            //region DirectionSchema Implementation
             @Override
             public String getField() {
                 return this.field;
@@ -73,7 +74,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
 
 
     interface End {
-        String getIdField();
+        Iterable<String> getIdFields();
         Optional<String> getLabel();
         Optional<GraphRedundantPropertySchema> getRedundantProperty(GraphElementPropertySchema property);
         Iterable<GraphRedundantPropertySchema> getRedundantProperties();
@@ -82,30 +83,30 @@ public interface GraphEdgeSchema extends GraphElementSchema {
 
         class Impl implements End {
             //region Constructors
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label) {
-                this(idField, label, Collections.emptyList(), Optional.empty());
+                this(idFields, label, Collections.emptyList(), Optional.empty());
             }
 
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label,
                         Iterable<GraphRedundantPropertySchema> redundantPropertySchemas) {
-                this(idField, label, redundantPropertySchemas, Optional.empty());
+                this(idFields, label, redundantPropertySchemas, Optional.empty());
             }
 
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label,
                         Iterable<GraphRedundantPropertySchema> redundantPropertySchemas,
                         Optional<GraphElementRouting> routing) {
-                this(idField, label, redundantPropertySchemas, routing, Optional.empty());
+                this(idFields, label, redundantPropertySchemas, routing, Optional.empty());
             }
 
-            public Impl(String idField,
+            public Impl(Iterable<String> idFields,
                         Optional<String> label,
                         Iterable<GraphRedundantPropertySchema> redundantPropertySchemas,
                         Optional<GraphElementRouting> routing,
                         Optional<IndexPartitions> indexPartitions) {
-                this.idField = idField;
+                this.idFields = idFields;
                 this.label = label;
                 this.redundantPropertySchemas = Stream.ofAll(redundantPropertySchemas)
                         .toJavaMap(property -> new Tuple2<>(property.getName(), property));
@@ -116,8 +117,8 @@ public interface GraphEdgeSchema extends GraphElementSchema {
 
             //region End Implementation
             @Override
-            public String getIdField() {
-                return this.idField;
+            public Iterable<String> getIdFields() {
+                return this.idFields;
             }
 
             @Override
@@ -148,7 +149,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
             //endregion
 
             //region Fields
-            private String idField;
+            private Iterable<String> idFields;
             private Optional<String> label;
             private Map<String, GraphRedundantPropertySchema> redundantPropertySchemas;
             private Optional<GraphElementRouting> routing;
@@ -165,6 +166,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     new GraphElementConstraint.Impl(__.has(T.label, label)),
                     Optional.empty(),
                     Optional.empty(),
+                    Direction.OUT,
                     Optional.empty(),
                     Optional.of(routing),
                     Optional.empty(),
@@ -177,6 +179,7 @@ public interface GraphEdgeSchema extends GraphElementSchema {
                     new GraphElementConstraint.Impl(__.has(T.label, label)),
                     Optional.empty(),
                     Optional.empty(),
+                    Direction.OUT,
                     Optional.empty(),
                     Optional.empty(),
                     Optional.of(indexPartitions),
@@ -184,46 +187,52 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         }
 
         public Impl(String label,
-                    Optional<End> source,
-                    Optional<End> destination,
-                    Optional<Direction> direction,
+                    Optional<End> endA,
+                    Optional<End> endB,
+                    Direction direction,
+                    Optional<DirectionSchema> directionSchema,
                     GraphElementRouting routing) {
             this(label,
                     new GraphElementConstraint.Impl(__.has(T.label, label)),
-                    source,
-                    destination,
+                    endA,
+                    endB,
                     direction,
+                    directionSchema,
                     Optional.of(routing),
                     Optional.empty(),
                     Collections.emptyList());
         }
 
         public Impl(String label,
-                    Optional<End> source,
-                    Optional<End> destination,
-                    Optional<Direction> direction,
+                    Optional<End> endA,
+                    Optional<End> endB,
+                    Direction direction,
+                    Optional<DirectionSchema> directionSchema,
                     IndexPartitions indexPartitions) {
             this(label,
                     new GraphElementConstraint.Impl(__.has(T.label, label)),
-                    source,
-                    destination,
+                    endA,
+                    endB,
                     direction,
+                    directionSchema,
                     Optional.empty(),
                     Optional.of(indexPartitions),
                     Collections.emptyList());
         }
 
         public Impl(String label,
-                    Optional<End> source,
-                    Optional<End> destination,
-                    Optional<Direction> direction,
+                    Optional<End> endA,
+                    Optional<End> endB,
+                    Direction direction,
+                    Optional<DirectionSchema> directionSchema,
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions) {
             this(label,
                     new GraphElementConstraint.Impl(__.has(T.label, label)),
-                    source,
-                    destination,
+                    endA,
+                    endB,
                     direction,
+                    directionSchema,
                     routing,
                     indexPartitions,
                     Collections.emptyList());
@@ -231,53 +240,64 @@ public interface GraphEdgeSchema extends GraphElementSchema {
 
         public Impl(String label,
                     GraphElementConstraint constraint,
-                    Optional<End> source,
-                    Optional<End> destination,
-                    Optional<Direction> direction,
+                    Optional<End> endA,
+                    Optional<End> endB,
+                    Direction direction,
+                    Optional<DirectionSchema> directionSchema,
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions,
                     Iterable<GraphElementPropertySchema> properties) {
             this(label,
                     constraint,
-                    source,
-                    destination,
+                    endA,
+                    endB,
                     direction,
+                    directionSchema,
                     routing,
                     indexPartitions,
                     properties,
-                    Stream.of(Application.source, Application.destination, Application.start).toJavaSet());
+                    Stream.of(Application.endA, Application.endB, Application.start).toJavaSet());
         }
 
         public Impl(String label,
                     GraphElementConstraint constraint,
-                    Optional<End> source,
-                    Optional<End> destination,
-                    Optional<Direction> direction,
+                    Optional<End> endA,
+                    Optional<End> endB,
+                    Direction direction,
+                    Optional<DirectionSchema> directionSchema,
                     Optional<GraphElementRouting> routing,
                     Optional<IndexPartitions> indexPartitions,
                     Iterable<GraphElementPropertySchema> properties,
                     Set<Application> applications) {
             super(label, constraint, routing, indexPartitions, properties);
-            this.source = source;
-            this.destination = destination;
+            this.endA = endA;
+            this.endB = endB;
             this.direction = direction;
+            this.directionSchema = directionSchema;
             this.applications = applications;
         }
+
+
         //endregion
 
         //region GraphEdgeSchema Implementation
         @Override
-        public Optional<End> getSource() {
-            return this.source;
+        public Optional<End> getEndA() {
+            return this.endA;
         }
 
         @Override
-        public Optional<End> getDestination() {
-            return this.destination;
+        public Optional<End> getEndB() {
+            return this.endB;
         }
 
         @Override
-        public Optional<Direction> getDirection() {
+        public Optional<DirectionSchema> getDirectionSchema() {
+            return this.directionSchema;
+        }
+
+        @Override
+        public Direction getDirection() {
             return this.direction;
         }
 
@@ -288,9 +308,10 @@ public interface GraphEdgeSchema extends GraphElementSchema {
         //endregion
 
         //region Fields
-        private Optional<End> source;
-        private Optional<End> destination;
-        private Optional<Direction> direction;
+        private Optional<End> endA;
+        private Optional<End> endB;
+        private Optional<DirectionSchema> directionSchema;
+        private Direction direction;
         private Set<Application> applications;
         //endregion
     }

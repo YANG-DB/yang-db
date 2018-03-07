@@ -3,15 +3,18 @@ package com.kayhut.fuse.epb.plan;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.epb.*;
-import com.kayhut.fuse.dispatcher.epb.CostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.IQuery;
 import com.kayhut.fuse.model.execution.plan.IPlan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.Cost;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import javaslang.collection.Stream;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -58,12 +61,13 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
 
         // Generate seed plans (plan is null)
         final IncrementalEstimationContext<P, C, Q> estimationContext = new IncrementalEstimationContext<>(Optional.empty(), query);
-        List<PlanWithCost<P, C>> currentPlans =
-                Stream.ofAll(this.extensionStrategy.extendPlan(Optional.empty(), query))
-                .filter(seedPlan -> this.planValidator.isPlanValid(seedPlan, query).valid())
-                .map(validSeedPlan -> this.costEstimator.estimate(validSeedPlan, estimationContext))
-                .toJavaList();
-
+        //filter initial plans
+        Stream<P> filteredPlans = Stream.ofAll(this.extensionStrategy.extendPlan(Optional.empty(), query)).filter(seedPlan -> this.planValidator.isPlanValid(seedPlan, query).valid());
+        if(filteredPlans.size()==0)
+            throw new IllegalStateException("Initial plan generation, Filter stage - no valid plan was found for query "+(AsgQueryDescriptor.toString((AsgQuery) query)));
+        //local prune initial valid plans + cost estimation
+        List<PlanWithCost<P, C>> currentPlans = Stream.ofAll(this.localPruneStrategy.prunePlans(filteredPlans.map(validSeedPlan -> this.costEstimator.estimate(validSeedPlan, estimationContext)))).toJavaList();
+        //select plans
         selectedPlans = localPlanSelector.select(query, currentPlans);
 
         // As long as we have search options, branch the search tree
@@ -71,18 +75,21 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
             List<PlanWithCost<P, C>> newPlans = new ArrayList<>();
             for (PlanWithCost<P, C> partialPlan : currentPlans) {
                 final IncrementalEstimationContext<P, C, Q> partialEstimationContext = new IncrementalEstimationContext<>(Optional.of(partialPlan), query);
-                Stream.ofAll(this.localPruneStrategy.prunePlans(
-                Stream.ofAll(this.extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query))
-                        .filter(extendedPlan -> this.planValidator.isPlanValid(extendedPlan, query).valid())
-                        .map(validExtendedPlan -> this.costEstimator.estimate(validExtendedPlan, partialEstimationContext))))
-                        .forEach(newPlans::add);
+                Stream<P> filter = Stream.ofAll(this.extensionStrategy.extendPlan(Optional.of(partialPlan.getPlan()), query))
+                        .filter(extendedPlan -> this.planValidator.isPlanValid(extendedPlan, query).valid());
+                //local prune initial valid plans + cost estimation
+                Stream.ofAll(this.localPruneStrategy.prunePlans(filter.map(validExtendedPlan ->
+                        this.costEstimator.estimate(validExtendedPlan, partialEstimationContext)))).forEach(newPlans::add);
             }
 
             currentPlans = Stream.ofAll(this.globalPruneStrategy.prunePlans(newPlans)).toJavaList();
             selectedPlans = Stream.ofAll(selectedPlans).appendAll(this.localPlanSelector.select(query, currentPlans)).toJavaList();
         }
 
-        return Stream.ofAll(this.globalPlanSelector.select(query, selectedPlans)).get(0);
+        if(!Stream.ofAll(this.globalPlanSelector.select(query, selectedPlans)).isEmpty())
+            return Stream.ofAll(this.globalPlanSelector.select(query, selectedPlans)).get(0);
+
+        throw new IllegalStateException("No valid plan was found for query "+(AsgQueryDescriptor.toString((AsgQuery) query)));
     }
     //endregion
 }

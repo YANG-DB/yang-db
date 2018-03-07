@@ -9,8 +9,8 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.EntityType;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.SchematicEProp;
@@ -24,6 +24,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -45,7 +46,17 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
                         Property.Builder.get().withPType("name").withName("name").withType("string").build()))
                 .build();
 
-        OntologyProvider ontologyProvider = id -> Optional.of(ontology);
+        OntologyProvider ontologyProvider = new OntologyProvider() {
+            @Override
+            public Optional<Ontology> get(String id) {
+                return Optional.of(ontology);
+            }
+
+            @Override
+            public Collection<Ontology> getAll() {
+                return Collections.singleton(ontology);
+            }
+        };
 
         GraphElementSchemaProvider schemaProvider = new GraphElementSchemaProvider.Impl(
                 Collections.singletonList(
@@ -77,7 +88,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "Sherley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Sherley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -95,7 +106,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "*Sherley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "*Sherley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -113,7 +124,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "She*rley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "She*rley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -132,7 +143,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "Sherley*"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Sherley*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -150,7 +161,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "*She*rley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "*She*rley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -169,7 +180,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "*Sherley*"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "*Sherley*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -187,7 +198,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "She*rley*"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "She*rley*"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -206,7 +217,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "**Sherley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "**Sherley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -224,7 +235,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "She**rley"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "She**rley"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);
@@ -243,7 +254,7 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))
                 .next(quant1(2, all))
-                .in(ePropGroup(3, EProp.of("name", 3, Constraint.of(ConstraintOp.like, "Sherley**"))))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "Sherley**"))))
                 .build();
 
         asgStrategy.apply(asgQuery, context);

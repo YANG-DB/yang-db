@@ -3,7 +3,6 @@ package com.kayhut.fuse.epb.plan.extenders;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
 import com.kayhut.fuse.dispatcher.utils.PlanUtil;
-import com.kayhut.fuse.epb.plan.extenders.RedundantFilterPlanExtensionStrategy;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.OntologyTestUtils.DRAGON;
@@ -22,6 +21,7 @@ import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,9 +32,9 @@ import java.util.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
-import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.gt;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 import static org.junit.Assert.assertEquals;
@@ -116,7 +116,7 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
         return AsgQuery.Builder.start("name", "ont" )
                 .next(typed(1, PERSON.type))
                 .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(concrete(3, "123", DRAGON.type, "B", "tag"))
                 .build();
     }
@@ -125,14 +125,14 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
         return AsgQuery.Builder.start("name", "ont")
                 .next(typed(1,  PERSON.type))
                 .next(rel(2, OWN.getrType(), R)
-                        .below(relProp(10, RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                        .below(relProp(10, RelProp.of(10, START_DATE.type, of(eq, new Date())))))
                 .next(typed(3,  DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of("firstName", 9, of(eq, "value1")), EProp.of("gender", 9, of(gt, "value3")))
+                .in(eProp(9, EProp.of(9, "firstName", of(eq, "value1")), EProp.of(9, "gender", of(gt, "value3")))
                         , rel(5, "4", R)
                                 .next(unTyped( 6))
                         , rel(7, "5", R)
-                                .below(relProp(11, RelProp.of("deathDate", 11, of(eq, "value5")), RelProp.of("birthDate", 11, of(eq, "value4"))))
+                                .below(relProp(11, RelProp.of(11, "deathDate", of(eq, "value5")), RelProp.of(11, "birthDate", of(eq, "value4"))))
                                 .next(concrete(8, "concrete1", "3", "Concrete1", "D"))
                 )
                 .build();
@@ -152,10 +152,10 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityA.id",
+                                        Collections.singletonList("entityA.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityB.id",
+                                        Collections.singletonList("entityB.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         Arrays.asList(
                                                 new GraphRedundantPropertySchema.Impl("firstName", "entityB.firstName", ont.property$("firstName").getType()),
@@ -163,13 +163,14 @@ public class RedundantStrategyPlanGeneratorExtenderStrategyTest {
                                                 new GraphRedundantPropertySchema.Impl("id", "entityB.id", ont.property$("firstName").getType()),
                                                 new GraphRedundantPropertySchema.Impl("type", "entityB.type", ont.property$("type").getType())
                                         ))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(new StaticIndexPartitions(Collections.singletonList("index"))),
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 

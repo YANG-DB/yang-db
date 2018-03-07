@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 /**
  * Created by Roman on 15/05/2017.
  */
-public abstract class VertexControllerBase implements SearchVertexQuery.SearchVertexController {
+public abstract class VertexControllerBase implements SearchVertexQuery.SearchVertexController{
     //region Constructors
     public VertexControllerBase(Predicate<Iterable<String>> applicablePredicate) {
         this(applicablePredicate, Collections.emptySet());
@@ -63,6 +63,7 @@ public abstract class VertexControllerBase implements SearchVertexQuery.SearchVe
     }
 
     protected abstract Iterator<Edge> search(SearchVertexQuery searchVertexQuery, Iterable<String> edgeLabels);
+
     //endregion
 
     //region Fields

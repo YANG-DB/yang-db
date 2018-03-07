@@ -12,7 +12,7 @@ import java.util.List;
  * Created by benishue on 17/02/2017.
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class Quant1 extends QuantBase implements Next<List<Integer>> {
+public class Quant1 extends QuantBase {
     //region Constructors
     public Quant1() {
         super();
@@ -41,6 +41,11 @@ public class Quant1 extends QuantBase implements Next<List<Integer>> {
 
     public void setNext(List<Integer> next) {
         this.next = next;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return !next.isEmpty();
     }
     //endregion
 

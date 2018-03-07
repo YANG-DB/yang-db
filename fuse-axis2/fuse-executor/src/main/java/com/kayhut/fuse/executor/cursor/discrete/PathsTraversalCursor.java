@@ -20,6 +20,7 @@ import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
+import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
 import java.util.Collections;
@@ -116,15 +117,7 @@ public class PathsTraversalCursor implements Cursor {
     }
 
     private DiscreteVertex getDiscreteVertex(Path path, EEntityBase element) {
-        Object pathObject = path.get(element.geteTag());
-        DiscreteVertex vertex ;
-        if(List.class.isAssignableFrom(pathObject.getClass()) ) {
-            List vertexList = (List)pathObject;
-            vertex = (DiscreteVertex) Stream.ofAll(vertexList).last();
-        }else{
-            vertex = (DiscreteVertex) pathObject;
-        }
-        return vertex;
+        return path.get(Pop.last, element.geteTag());
     }
 
     private Entity toEntity(Path path, EConcrete element) {
@@ -160,7 +153,7 @@ public class PathsTraversalCursor implements Cursor {
 
     private Relationship toRelationship(Path path, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
         Relationship.Builder builder = Relationship.Builder.instance();
-        DiscreteEdge edge = path.get(prevEntity.geteTag() + ConversionUtil.convertDirectionGraphic(rel.getDir()) + nextEntity.geteTag());
+        DiscreteEdge edge = path.get(Pop.last, prevEntity.geteTag() + ConversionUtil.convertDirectionGraphic(rel.getDir()) + nextEntity.geteTag());
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
         builder.withEID1(edge.outVertex().id().toString());

@@ -2,15 +2,14 @@ package com.kayhut.fuse.epb.plan.statistics;
 
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.RedundantRelProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
-import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.T;
@@ -43,7 +42,7 @@ public class EBaseStatisticsProviderRedundantTests {
         when(graphElementSchemaProvider.getVertexLabels()).thenReturn(Arrays.asList("Guild"));
         GraphEdgeSchema ownSchema = mock(GraphEdgeSchema.class);
         when(ownSchema.getIndexPartitions()).thenReturn(Optional.of(new StaticIndexPartitions(Collections.emptyList())));
-        when(ownSchema.getDestination()).thenReturn(Optional.of(
+        when(ownSchema.getEndB()).thenReturn(Optional.of(
                 new GraphEdgeSchema.End.Impl(
                         null,
                         null,
@@ -60,8 +59,8 @@ public class EBaseStatisticsProviderRedundantTests {
                         new GraphElementPropertySchema.Impl("firstName", "string"),
                         new GraphElementPropertySchema.Impl("lastName", "string")));
 
-        when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(ownSchema));
-        when(graphElementSchemaProvider.getVertexSchema(any())).thenReturn(Optional.of(graphVertexSchema));
+        when(graphElementSchemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(ownSchema));
+        when(graphElementSchemaProvider.getVertexSchemas(any())).thenReturn(Collections.singletonList(graphVertexSchema));
 
         graphStatisticsProvider = mock(GraphStatisticsProvider.class);
         when(graphStatisticsProvider.getEdgeCardinality(any(),any())).thenReturn(new Statistics.SummaryStatistics(1000,1000));

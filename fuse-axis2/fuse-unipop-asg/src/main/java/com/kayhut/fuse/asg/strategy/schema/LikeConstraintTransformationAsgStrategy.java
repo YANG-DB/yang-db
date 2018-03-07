@@ -9,8 +9,8 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -22,7 +22,6 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,17 +62,20 @@ public class LikeConstraintTransformationAsgStrategy implements AsgStrategy {
                     continue;
                 }
 
-                Optional<GraphVertexSchema> vertexSchema = schemaProvider.getVertexSchema(eTypedAsgEBase.get().geteBase().geteType());
-                if (!vertexSchema.isPresent()) {
+                Iterable<GraphVertexSchema> vertexSchemas = schemaProvider.getVertexSchemas(eTypedAsgEBase.get().geteBase().geteType());
+                if (Stream.ofAll(vertexSchemas).isEmpty()) {
                     continue;
                 }
+
+                // currently supports a single vertex schema
+                GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
 
                 Optional<Property> property = ont.$property(eProp.getpType());
                 if (!property.isPresent()) {
                     continue;
                 }
 
-                Optional<GraphElementPropertySchema> propertySchema = vertexSchema.get().getProperty(property.get().getName());
+                Optional<GraphElementPropertySchema> propertySchema = vertexSchema.getProperty(property.get().getName());
                 if (!propertySchema.isPresent()) {
                     continue;
                 }

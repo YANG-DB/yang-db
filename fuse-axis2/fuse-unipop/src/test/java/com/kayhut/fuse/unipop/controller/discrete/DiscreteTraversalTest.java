@@ -1,6 +1,5 @@
 package com.kayhut.fuse.unipop.controller.discrete;
 
-import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
@@ -9,6 +8,7 @@ import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
+import com.kayhut.fuse.unipop.structure.FuseUniGraph;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.Mappings;
@@ -32,6 +32,8 @@ import org.unipop.structure.UniGraph;
 import java.util.*;
 
 import static com.kayhut.fuse.unipop.controller.promise.GlobalConstants.HasKeys.CONSTRAINT;
+import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endA;
+import static com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema.Application.endB;
 import static com.kayhut.test.framework.index.Mappings.Mapping.Property.Type.keyword;
 
 /**
@@ -63,7 +65,7 @@ public class DiscreteTraversalTest {
         uniGraphConfiguration = new UniGraphConfiguration();
         uniGraphConfiguration.setBulkMax(1000);
         uniGraphConfiguration.setBulkStart(1000);
-        graph = new UniGraph(
+        graph = new FuseUniGraph(
                 uniGraphConfiguration,
                 uniGraph -> new ControllerManager() {
                     @Override
@@ -723,7 +725,7 @@ public class DiscreteTraversalTest {
                                 "hasCoin",
                                 new GraphElementConstraint.Impl(__.has(T.label, "Coin")),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "dragonId",
+                                        Collections.singletonList("dragonId"),
                                         Optional.of("Dragon"),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
@@ -731,13 +733,14 @@ public class DiscreteTraversalTest {
                                         )),
                                         Optional.of(new IndexPartitions.Impl("_id", coinPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "_id",
+                                        Collections.singletonList("_id"),
                                         Optional.of("Coin"),
                                         Arrays.asList(
                                                 new GraphRedundantPropertySchema.Impl("material", "material", "string"),
                                                 new GraphRedundantPropertySchema.Impl("weight", "weight", "int")),
                                         Optional.empty(),
                                         Optional.of(new IndexPartitions.Impl("dragonId", coinPartitions)))),
+                                Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
@@ -746,105 +749,128 @@ public class DiscreteTraversalTest {
                                 "hasOutFire",
                                 new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has("direction", Direction.OUT.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityAId",
+                                        Collections.singletonList("entityAId"),
                                         Optional.of("Dragon"),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl("_id", "string"))),
                                         Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "fireId",
+                                        Collections.singletonList("fireId"),
                                         Optional.of("Fire"),
                                         Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
+                                Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                                Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasOutFire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
-                                Optional.of(new GraphEdgeSchema.End.Impl("entityAId", Optional.of("Dragon"))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(Collections.singletonList("entityAId"), Optional.of("Dragon"))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "_id",
+                                        Collections.singletonList("_id"),
                                         Optional.of("Fire"),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(new IndexPartitions.Impl("_id", firePartitions)))),
+                                Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.destination).toJavaSet()),
+                                Stream.of(GraphEdgeSchema.Application.endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasInFire",
                                 new GraphElementConstraint.Impl(__.and(__.has(T.label, "FireDual"), __.has("direction", Direction.IN.toString().toLowerCase()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityAId",
+                                        Collections.singletonList("entityAId"),
                                         Optional.of("Dragon"),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl("_id", "string"))),
                                         Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "fireId",
+                                        Collections.singletonList("fireId"),
                                         Optional.of("Fire"),
                                         Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
+                                Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                                Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasInFire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireSingular")),
-                                Optional.of(new GraphEdgeSchema.End.Impl("entityBId", Optional.of("Dragon"))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(Collections.singletonList("entityBId"), Optional.of("Dragon"))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "_id",
+                                        Collections.singletonList("_id"),
                                         Optional.of("Fire"),
                                         Collections.emptyList(),
                                         Optional.empty(),
                                         Optional.of(new IndexPartitions.Impl("_id", firePartitions)))),
+                                Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.destination).toJavaSet()),
+                                Stream.of(GraphEdgeSchema.Application.endB).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "hasFire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityAId",
+                                        Collections.singletonList("entityAId"),
                                         Optional.of("Dragon"),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl("_id", "string"))),
                                         Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "fireId",
+                                        Collections.singletonList("fireId"),
                                         Optional.of("Fire"),
                                         Collections.singletonList(new GraphRedundantPropertySchema.Impl("duration", "duration", "int")))),
+                                Direction.OUT,
                                 Optional.empty(),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet()),
+                                Stream.of(endA).toJavaSet()),
                         new GraphEdgeSchema.Impl(
                                 "fire",
                                 new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityAId",
+                                        Collections.singletonList("entityAId"),
                                         Optional.of("Dragon"),
                                         Collections.emptyList(),
                                         Optional.of(new GraphElementRouting.Impl(
                                                 new GraphElementPropertySchema.Impl("_id", "string"))),
                                         Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
-                                Optional.of(new GraphEdgeSchema.End.Impl("entityBId", Optional.of("Dragon"), Collections.emptyList())),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(Collections.singletonList("entityBId"), Optional.of("Dragon"), Collections.emptyList())),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.empty(),
                                 Collections.emptyList(),
-                                Stream.of(GraphEdgeSchema.Application.source).toJavaSet())
+                                Stream.of(endA).toJavaSet()),
+                        new GraphEdgeSchema.Impl(
+                                "fire",
+                                new GraphElementConstraint.Impl(__.has(T.label, "FireDual")),
+                                Optional.of(new GraphEdgeSchema.End.Impl(
+                                        Collections.singletonList("entityAId"),
+                                        Optional.of("Dragon"),
+                                        Collections.emptyList(),
+                                        Optional.of(new GraphElementRouting.Impl(
+                                                new GraphElementPropertySchema.Impl("_id", "string"))),
+                                        Optional.of(new IndexPartitions.Impl("_id", dragonPartitions)))),
+                                Optional.of(new GraphEdgeSchema.End.Impl(Collections.singletonList("entityBId"), Optional.of("Dragon"), Collections.emptyList())),
+                                Direction.IN,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
+                                Optional.empty(),
+                                Optional.empty(),
+                                Collections.emptyList(),
+                                Stream.of(endA).toJavaSet())
                         ));
     }
     //endregion

@@ -1,7 +1,5 @@
 package com.kayhut.fuse.unipop.controller.common;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -10,8 +8,6 @@ import org.unipop.query.search.SearchQuery;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * Created by User on 19/03/2017.

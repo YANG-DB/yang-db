@@ -1,6 +1,6 @@
 package com.kayhut.fuse.neo4j.cypher;
 
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 
 /**
  * Created by Elad on 26/03/2017.

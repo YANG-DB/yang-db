@@ -1,5 +1,7 @@
 package com.kayhut.fuse.model.query;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
@@ -10,6 +12,15 @@ import org.junit.Assert;
  * Created by Roman on 25/04/2017.
  */
 public class QueryAssert {
+    private static ObjectMapper mapper = new ObjectMapper();
+
+    public static void assertEquals(Query expected, Query actual) throws JsonProcessingException {
+        if (expected == null) {
+            Assert.assertTrue(actual == null);
+        }
+        Assert.assertEquals(mapper.writeValueAsString(expected),mapper.writeValueAsString(actual));
+    }
+
     public static void assertEquals(EConcrete expectedConcrete, EConcrete actualConcrete) {
         if (expectedConcrete == null) {
             Assert.assertTrue(actualConcrete == null);

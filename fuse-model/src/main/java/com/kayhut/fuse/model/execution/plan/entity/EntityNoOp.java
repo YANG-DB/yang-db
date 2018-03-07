@@ -9,7 +9,7 @@ import com.kayhut.fuse.model.query.entity.EEntityBase;
 public class EntityNoOp extends EntityOp {
     //region Constructors
     public EntityNoOp() {
-
+        super(new AsgEBase<>());
     }
 
     public EntityNoOp(AsgEBase<EEntityBase> entity) {

@@ -4,7 +4,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.ImmutableList;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.epb.plan.statistics.provider.ElasticClientProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatDocumentProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatProvider;
 import com.kayhut.fuse.epb.plan.statistics.provider.ElasticStatisticsGraphProvider;
@@ -25,19 +24,16 @@ import com.kayhut.fuse.stat.util.EsUtil;
 import com.kayhut.fuse.stat.util.StatUtil;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import com.kayhut.test.framework.index.ElasticEmbeddedNode;
 import com.kayhut.test.framework.index.GlobalElasticEmbeddedNode;
 import com.kayhut.test.framework.index.MappingFileElasticConfigurer;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
-import org.elasticsearch.action.admin.indices.refresh.RefreshRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -59,7 +55,7 @@ public class ElasticStatisticsGraphProviderTest {
     public void getVertexCardinality() throws Exception {
         Ontology.Accessor ont = new Ontology.Accessor(getOntology());
         GraphElementSchemaProvider schemaProvider = buildSchemaProvider(ont);
-        GraphVertexSchema vertexDragonSchema = schemaProvider.getVertexSchema(DATA_TYPE_DRAGON).get();
+        GraphVertexSchema vertexDragonSchema = Stream.ofAll(schemaProvider.getVertexSchemas(DATA_TYPE_DRAGON)).get(0);
 
         ElasticStatisticsGraphProvider statisticsGraphProvider = new ElasticStatisticsGraphProvider(statConfig,
                 new ElasticStatProvider(statConfig, new ElasticStatDocumentProvider(new MetricRegistry(), statClient, statConfig)),
@@ -241,18 +237,19 @@ public class ElasticStatisticsGraphProviderTest {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(new StaticIndexPartitions(EDGE_INDICES)),
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
 
     private Ontology getOntology() {

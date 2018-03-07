@@ -3,10 +3,12 @@ package com.kayhut.fuse.services.controllers;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.QueryDriver;
+import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.execution.plan.planTree.PlanNode;
+import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 import com.kayhut.fuse.model.resourceInfo.*;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -130,6 +132,20 @@ public class StandardQueryController implements QueryController {
     public ContentResponse<QueryResourceInfo> getInfo(String queryId) {
         return Builder.<QueryResourceInfo>builder(randomUUID().toString(),OK, NOT_FOUND)
                 .data(this.driver.getInfo(queryId))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<Query> getV1(String queryId) {
+        return Builder.<Query>builder(randomUUID().toString(),OK, NOT_FOUND)
+                .data(this.driver.getV1(queryId))
+                .compose();
+    }
+
+    @Override
+    public ContentResponse<AsgQuery> getAsg(String queryId) {
+        return Builder.<AsgQuery>builder(randomUUID().toString(),OK, NOT_FOUND)
+                .data(this.driver.getAsg(queryId))
                 .compose();
     }
 

@@ -3,7 +3,7 @@ package com.kayhut.fuse.services.engine2.data;
 import com.kayhut.fuse.gta.strategy.utils.ConversionUtil;
 import com.kayhut.fuse.model.OntologyTestUtils.*;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.Start;
@@ -33,7 +33,6 @@ import com.kayhut.test.framework.index.MappingElasticConfigurer;
 import com.kayhut.test.framework.index.Mappings;
 import com.kayhut.test.framework.index.Mappings.Mapping;
 import com.kayhut.test.framework.index.Mappings.Mapping.Property;
-import com.kayhut.test.framework.index.Mappings.Mapping.Property.Index;
 import com.kayhut.test.framework.index.Mappings.Mapping.Property.Type;
 import com.kayhut.test.framework.populator.ElasticDataPopulator;
 import javaslang.collection.Stream;
@@ -51,7 +50,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 
@@ -180,9 +179,9 @@ public abstract class EntityRelationEntityTest {
     public void test_Dragon_Fire_Dragon() throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
@@ -291,9 +290,9 @@ public abstract class EntityRelationEntityTest {
     public void test_Dragon_FiredBy_Dragon() throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.L, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
@@ -642,9 +641,9 @@ public abstract class EntityRelationEntityTest {
     private void test_Dragon_Fire_ConcreteDragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), direction, null, 3, 0),
-                new EConcrete(3, "B", $ont.eType$(DRAGON.name), eId, eId, singletonList(NAME.type), 0, 0)
+                new EConcrete(3, "B", $ont.eType$(DRAGON.name), eId, eId, 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
@@ -666,9 +665,9 @@ public abstract class EntityRelationEntityTest {
     private void test_ConcreteDragon_Fire_Dragon(String eId, Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EConcrete(1, "A", $ont.eType$(DRAGON.name), eId, eId, singletonList(NAME.type), 2, 0),
+                new EConcrete(1, "A", $ont.eType$(DRAGON.name), eId, eId, 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), direction, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
@@ -690,10 +689,10 @@ public abstract class EntityRelationEntityTest {
     private void test_Dragon_Fire_temperature_op_value_Dragon(ConstraintOp op, Object value) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 4, 3),
                 new RelProp(3, $ont.pType$(TEMPERATURE.name).toString(), of(op, value), 0),
-                new ETyped(4, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
+                new ETyped(4, "B", $ont.eType$(DRAGON.name), 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
@@ -717,11 +716,11 @@ public abstract class EntityRelationEntityTest {
     private void test_Dragon_birthDate_op_value_Fire_Dragon(ConstraintOp op, Object value) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
                 new EProp(3, $ont.pType$(BIRTH_DATE.name).toString(), of(op, value)),
                 new Rel(4, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 5, 0),
-                new ETyped(5, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
+                new ETyped(5, "B", $ont.eType$(DRAGON.name), 0, 0)
         )).build();
 
         long startingDate = sdf.parse("1980-01-01 00:00:00").getTime();
@@ -742,9 +741,9 @@ public abstract class EntityRelationEntityTest {
     private void test_Dragon_Fire_Dragon_birthDate_op_value(ConstraintOp op, Object value) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), Rel.Direction.R, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 4, 0),
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), 4, 0),
                 new EProp(4, $ont.pType$(BIRTH_DATE.name), of(op, value))
         )).build();
 
@@ -766,9 +765,9 @@ public abstract class EntityRelationEntityTest {
     private void test_Dragon_Fire_Untyped(Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$(DRAGON.name), singletonList(NAME.type), 2, 0),
+                new ETyped(1, "A", $ont.eType$(DRAGON.name), 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), direction, null, 3, 0),
-                new EUntyped(3, "B", singletonList(NAME.type), 0, 0)
+                new EUntyped(3, "B", 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
@@ -790,9 +789,9 @@ public abstract class EntityRelationEntityTest {
     private void test_Untyped_Fire_Dragon(Rel.Direction direction) throws Exception {
         Query query = Query.Builder.instance().withName(NAME.name).withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new EUntyped(1, "A", singletonList(NAME.type), 2, 0),
+                new EUntyped(1, "A", 2, 0),
                 new Rel(2, $ont.rType$(FIRE.getName()), direction, null, 3, 0),
-                new ETyped(3, "B", $ont.eType$(DRAGON.name), singletonList(NAME.type), 0, 0)
+                new ETyped(3, "B", $ont.eType$(DRAGON.name), 0, 0)
         )).build();
 
         testAndAssertQuery(query, queryResult_Dragons_Fire_Dragon(
@@ -959,22 +958,27 @@ public abstract class EntityRelationEntityTest {
         QueryResult.Builder builder = QueryResult.Builder.instance();
         HashEdgeIdProvider edgeIdProvider = new HashEdgeIdProvider(Optional.of(constraint));
 
+        Function<Integer, Long> birthDateValueFunction =
+                birthDateValueFunctionFactory.apply(sdf.parse("1980-01-01 00:00:00").getTime()).apply(2592000000L);
+
         for(int i = 0 ; i < numDragons ; i++) {
             for (int j = 0; j < i; j++) {
                 Entity entityA = Entity.Builder.instance()
                         .withEID("Dragon_" + i)
                         .withETag(new HashSet<>(singletonList(eTag1)))
                         .withEType($ont.eType$(DRAGON.name))
-                        .withProperties(singletonList(
-                                new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i)))
+                        .withProperties(Arrays.asList(
+                                new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + i),
+                                new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(i))))))
                         .build();
 
                 Entity entityB = Entity.Builder.instance()
                         .withEID("Dragon_" + j)
                         .withETag(new HashSet<>(singletonList(eTag2)))
                         .withEType($ont.eType$(DRAGON.name))
-                        .withProperties(singletonList(
-                                new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + j)))
+                        .withProperties(Arrays.asList(
+                                new com.kayhut.fuse.model.results.Property(NAME.type, "raw", DRAGON.name + j),
+                                new com.kayhut.fuse.model.results.Property(BIRTH_DATE.type, "raw", sdf.format(new Date(birthDateValueFunction.apply(j))))))
                         .build();
 
                 Relationship relationship = Relationship.Builder.instance()

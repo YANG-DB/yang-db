@@ -37,11 +37,13 @@ public class PromiseEdgeIndexAppender implements SearchAppender<VertexController
         for (String label :
                 labels) {
 
-            Optional<GraphEdgeSchema> edgeSchema = context.getSchemaProvider().getEdgeSchema(label);
+            Iterable<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(label);
 
-            if (edgeSchema.isPresent()) {
+            if (!Stream.ofAll(edgeSchemas).isEmpty()) {
+                // currently supports a single edge schema
+                GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
-                IndexPartitions indexPartitions = edgeSchema.get().getIndexPartitions().get();
+                IndexPartitions indexPartitions = edgeSchema.getIndexPartitions().get();
 
                 if (indexPartitions instanceof TimeSeriesIndexPartitions) {
 

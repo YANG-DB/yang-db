@@ -18,8 +18,8 @@ import java.util.Date;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
 /**
@@ -30,11 +30,11 @@ public class AsgCycleValidationStrategyTest {
 
     AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
             .next(typed(1, PERSON.type))
-            .next(eProp(10, EProp.of(FIRST_NAME.type,11,of(eq, "Moshe"))))
+            .next(eProp(10, EProp.of(11, FIRST_NAME.type, of(eq, "Moshe"))))
             .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                    RelProp.of(START_DATE.type, 10, of(eq, new Date())))))
+                    RelProp.of(10, START_DATE.type, of(eq, new Date())))))
             .next(concrete(3, "HorseWithNoName", HORSE.type,"display","eTag"))
-            .next(eProp(12, EProp.of(NAME.type,13,of(eq, "bubu"))))
+            .next(eProp(12, EProp.of(13, NAME.type, of(eq, "bubu"))))
             .build();
 
     @Before
@@ -53,9 +53,9 @@ public class AsgCycleValidationStrategyTest {
     public void testNotValidPropEntityMismatchQuery() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons")
                 .next(typed(1, PERSON.type))
-                .next(eProp(10, EProp.of(COLOR.type,11,of(eq, "Moshe"))))
+                .next(eProp(10, EProp.of(11, COLOR.type, of(eq, "Moshe"))))
                 .next(rel(2, OntologyTestUtils.OWN.getrType(), R).below(relProp(10,
-                        RelProp.of(FIRST_NAME.type, 10, of(eq, new Date())))))
+                        RelProp.of(10, FIRST_NAME.type, of(eq, new Date())))))
                 .next(concrete(3, "HorseWithNoName", HORSE.type,"display","eTag"))
                 .next(typed(1, PERSON.type))
                 .build();

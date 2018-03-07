@@ -7,6 +7,8 @@ import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
+import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
+import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import javaslang.collection.Stream;
 
 import java.util.HashMap;
@@ -97,6 +99,11 @@ public class IterablePlanOpDescriptor implements Descriptor<Iterable<PlanOp>> {
         return sj.toString();
     }
 
+    /**
+     * used by RegexPatternCostEstimator - Do Not change
+     * @param planOps
+     * @return
+     */
     private String lightPattern(Iterable<PlanOp> planOps) {
         StringJoiner sj = new StringJoiner(":", "", "");
         planOps.forEach(op -> sj.add(op.getClass().getSimpleName()));

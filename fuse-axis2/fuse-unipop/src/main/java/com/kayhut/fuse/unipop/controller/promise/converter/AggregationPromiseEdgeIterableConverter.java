@@ -37,7 +37,8 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
         Terms layer1 = (Terms)aggMap.get(GlobalConstants.EdgeSchema.SOURCE);
         layer1.getBuckets().forEach(b -> {
             String sourceId = b.getKeyAsString();
-            PromiseVertex sourceVertex = new PromiseVertex(Promise.as(sourceId),Optional.empty(),graph);
+            String sourceLabel = this.vertexLabelProvider.get(sourceId);
+            PromiseVertex sourceVertex = new PromiseVertex(Promise.as(sourceId, sourceLabel),Optional.empty(),graph);
 
             Terms layer2 = (Terms) b.getAggregations().asMap().get(GlobalConstants.EdgeSchema.DEST);
             layer2.getBuckets().forEach(innerBucket -> {
@@ -56,6 +57,7 @@ public class AggregationPromiseEdgeIterableConverter implements ElementConverter
                                 destVertex,
                                 propMap),
                         sourceVertex,
+                        destVertex,
                         destVertex,
                         propMap,
                         graph);

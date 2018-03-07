@@ -3,17 +3,17 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.RelationshipType;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.RelProp;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
-import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,8 +22,6 @@ import org.mockito.Mockito;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.OWN;
 import static com.kayhut.fuse.model.OntologyTestUtils.START_DATE;
@@ -275,12 +273,13 @@ public class EBaseStatisticsProviderIndicesTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(new TimeSeriesIndexPartitions() {
                                     @Override
@@ -321,7 +320,7 @@ public class EBaseStatisticsProviderIndicesTests {
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 

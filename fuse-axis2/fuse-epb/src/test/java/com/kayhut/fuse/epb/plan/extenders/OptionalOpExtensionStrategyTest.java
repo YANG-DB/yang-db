@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.Constraint.of;
-import static com.kayhut.fuse.model.query.ConstraintOp.eq;
-import static com.kayhut.fuse.model.query.ConstraintOp.gt;
+import static com.kayhut.fuse.model.query.properties.constraint.Constraint.of;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.eq;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.gt;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
 
@@ -128,10 +128,10 @@ public class OptionalOpExtensionStrategyTest {
     private static AsgQuery query1(String queryName, String ontologyName) {
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, "entity1", "A"))
-                .next(rel(2, "rel1", R).below(relProp(2, RelProp.of("2", 2, of(eq, "value2")))))
+                .next(rel(2, "rel1", R).below(relProp(2, RelProp.of(2, "2", of(eq, "value2")))))
                 .next(typed(3, "entity2", "B"))
                 .next(quant1(4, all))
-                .in(ePropGroup(5, EProp.of("prop1", 5, of(eq, "value1")), EProp.of("prop2", 5, of(gt, "value3"))),
+                .in(ePropGroup(5, EProp.of(5, "prop1", of(eq, "value1")), EProp.of(5, "prop2", of(gt, "value3"))),
                         rel(6, "rel2", R).next(typed(7, "entity3", "C")),
                         optional(8).next(rel(9, "rel3", R).next(typed(10, "entity4", "D"))),
                         optional(11).next(rel(12, "rel4", R).next(typed(13, "entity4", "E")

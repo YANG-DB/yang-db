@@ -5,7 +5,7 @@ import com.google.inject.Inject;
 import com.kayhut.fuse.epb.plan.statistics.GraphStatisticsProvider;
 import com.kayhut.fuse.epb.plan.statistics.Statistics;
 import com.kayhut.fuse.epb.plan.statistics.configuration.StatConfig;
-import com.kayhut.fuse.model.query.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
@@ -233,7 +233,7 @@ public class ElasticStatisticsGraphProvider implements GraphStatisticsProvider {
             case L:
                 return "IN";
             default:
-                throw new IllegalArgumentException("Not Supported Relation Direction: " + dir);
+                throw new IllegalArgumentException("Not Supported Relation DirectionSchema: " + dir);
         }
     }
     //endregion

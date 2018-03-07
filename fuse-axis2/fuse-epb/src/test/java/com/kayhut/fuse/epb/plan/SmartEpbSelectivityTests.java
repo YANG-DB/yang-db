@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
@@ -22,8 +23,8 @@ import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -34,6 +35,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartiti
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.elasticsearch.common.collect.Tuple;
 import org.junit.Assert;
@@ -168,7 +170,17 @@ public class SmartEpbSelectivityTests {
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
-                (id) -> Optional.of(ont.get())));
+                new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -178,7 +190,17 @@ public class SmartEpbSelectivityTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
 
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ontology), ont -> graphElementSchemaProvider),
+                new M1PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ontology);
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ontology);
+                    }
+                }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -233,7 +255,7 @@ public class SmartEpbSelectivityTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
                                         .next(eProp(7))),
@@ -245,7 +267,7 @@ public class SmartEpbSelectivityTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(43.36, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(54.043, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     @Test
@@ -253,10 +275,10 @@ public class SmartEpbSelectivityTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(eProp(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
@@ -265,7 +287,7 @@ public class SmartEpbSelectivityTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(21.47, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(25.113, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     //region Private Methods
@@ -285,12 +307,13 @@ public class SmartEpbSelectivityTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {
@@ -334,7 +357,7 @@ public class SmartEpbSelectivityTests {
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 

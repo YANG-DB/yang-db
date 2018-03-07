@@ -17,12 +17,7 @@ public class ETyped extends EEntityBase implements Typed.eTyped {
     public ETyped() {}
 
     public ETyped(int eNum, String eTag, String eType, int next, int b) {
-        this(eNum, eTag, eType, Collections.emptyList(), next, b);
-        this.eType = eType;
-    }
-
-    public ETyped(int eNum, String eTag, String eType, List<String> reportProps, int next, int b) {
-        super(eNum, eTag, reportProps, next, b);
+        super(eNum, eTag, next, b);
         this.eType = eType;
     }
     //endregion

@@ -6,6 +6,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.IndexPartitions;
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class OntologySchemaProviderTest {
     public void getVertexSchema() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphVertexSchema vertexPersonSchema = ontologySchemaProvider.getVertexSchema("Person").get();
+        GraphVertexSchema vertexPersonSchema = Stream.ofAll(ontologySchemaProvider.getVertexSchemas("Person")).get(0);
 
         assertEquals(vertexPersonSchema.getConstraint().getTraversalConstraint(), __.has(T.label, "Person"));
         List<String> indices = Stream.ofAll(vertexPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
@@ -40,8 +41,8 @@ public class OntologySchemaProviderTest {
     public void getEdgeSchema() throws Exception {
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphEdgeSchema edgeDragonFiresPersonSchema = ontologySchemaProvider.getEdgeSchema("Fire").get();
-        assertEquals(edgeDragonFiresPersonSchema.getDestination().get().getLabel().get(), "Dragon");
+        GraphEdgeSchema edgeDragonFiresPersonSchema = Stream.ofAll(ontologySchemaProvider.getEdgeSchemas("Fire")).get(0);
+        assertEquals(edgeDragonFiresPersonSchema.getEndB().get().getLabel().get(), "Dragon");
 
         List<String> indices = Stream.ofAll(edgeDragonFiresPersonSchema.getIndexPartitions().get().getPartitions()).flatMap(IndexPartitions.Partition::getIndices).toJavaList();
         assertEquals(2, indices.size());
@@ -62,7 +63,7 @@ public class OntologySchemaProviderTest {
     public void vertexPropertiesTest(){
         Ontology ontology = getOntology();
         OntologySchemaProvider ontologySchemaProvider = getOntologySchemaProvider(ontology);
-        GraphVertexSchema person = ontologySchemaProvider.getVertexSchema("Person").get();
+        GraphVertexSchema person = Stream.ofAll(ontologySchemaProvider.getVertexSchemas("Person")).get(0);
         GraphElementPropertySchema name = person.getProperty("name").get();
         Assert.assertEquals(name.getName(), "name");
     }
@@ -71,18 +72,22 @@ public class OntologySchemaProviderTest {
 
     //region Private Methods
     private OntologySchemaProvider getOntologySchemaProvider(Ontology ontology) {
-        return new OntologySchemaProvider(ontology, new OntologySchemaProvider.Adapter(
+        return new OntologySchemaProvider(ontology, new GraphElementSchemaProvider.Impl(
                 Arrays.asList(
                         new GraphVertexSchema.Impl("Person", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2"))),
                         new GraphVertexSchema.Impl("Dragon", new StaticIndexPartitions(Arrays.asList("vertexIndex1", "vertexIndex2")))
                         ),
-                Optional.empty(),
-                Collections.emptyList(),
-                Optional.of(new GraphEdgeSchema.Impl(
-                        "",
-                        Optional.of(new GraphEdgeSchema.End.Impl("entityA.id", Optional.of("Dragon"))),
-                        Optional.of(new GraphEdgeSchema.End.Impl("entityB.id", Optional.of("Dragon"))),
-                        Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                Arrays.asList(
+                    new GraphEdgeSchema.Impl(
+                        "Fire",
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList("entityA.id"),
+                                Optional.of("Dragon"))),
+                        Optional.of(new GraphEdgeSchema.End.Impl(
+                                Collections.singletonList("entityB.id"),
+                                Optional.of("Dragon"))),
+                        Direction.OUT,
+                        Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                         new StaticIndexPartitions(Arrays.asList("edgeIndex1", "edgeIndex2"))))
         ));
     }

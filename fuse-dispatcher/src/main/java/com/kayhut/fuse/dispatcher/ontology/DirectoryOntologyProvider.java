@@ -10,10 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by roman.margolis on 02/10/2017.
@@ -46,6 +43,11 @@ public class DirectoryOntologyProvider implements OntologyProvider {
     @Override
     public Optional<Ontology> get(String id) {
         return Optional.ofNullable(this.ontologies.get(id));
+    }
+
+    @Override
+    public Collection<Ontology> getAll() {
+        return ontologies.values();
     }
     //endregion
 

@@ -3,8 +3,8 @@ package com.kayhut.fuse.epb.plan.statistics;
 import com.google.common.collect.Iterables;
 import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.*;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
@@ -93,21 +93,35 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
 
     @Override
     public Statistics.SummaryStatistics getEdgeStatistics(Rel rel) {
-        GraphEdgeSchema edgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
+        Iterable<GraphEdgeSchema> edgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
+        if (Stream.ofAll(edgeSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single edge schema
+        GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
+
         return getEdgeStatistics(edgeSchema);
     }
 
     @Override
     public Statistics.SummaryStatistics getEdgeFilterStatistics(Rel rel, RelPropGroup relFilter) {
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
+        Iterable<GraphEdgeSchema> graphEdgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
+        if (Stream.ofAll(graphEdgeSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single edge schema
+        GraphEdgeSchema graphEdgeSchema = Stream.ofAll(graphEdgeSchemas).get(0);
+
         List<String> relevantIndices = getRelevantIndicesForEdge(relFilter, graphEdgeSchema);
         Statistics.SummaryStatistics minEdgeSummaryStatistics = getEdgeStatistics(graphEdgeSchema, relevantIndices);
-        for(RelProp relProp : relFilter.getProps()){
+        for(RelProp relProp : Stream.ofAll(relFilter.getProps()).filter(relProp -> relProp.getCon() != null)){
             Property property = ont.$property$( relProp.getpType() );
 
             GraphElementPropertySchema graphElementPropertySchema;
             if (relProp instanceof RedundantRelProp){
-                graphElementPropertySchema = graphEdgeSchema.getDestination().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
+                graphElementPropertySchema = graphEdgeSchema.getEndB().get().getRedundantProperty(graphElementSchemaProvider.getPropertySchema(property.getName()).get()).get();
             }else {
                 graphElementPropertySchema = graphEdgeSchema.getProperty(property.getName()).get();
             }
@@ -125,14 +139,20 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
         List<RedundantRelProp> pushdownProps = relPropGroup.getProps().stream().filter(prop -> prop instanceof RedundantRelProp).
                 map(RedundantRelProp.class::cast).collect(Collectors.toList());
 
-        EPropGroup ePropGroup = new EPropGroup(pushdownProps.stream().map(prop -> EProp.of(prop.getpType(), prop.geteNum(), prop.getCon())).collect(Collectors.toList()));
+        EPropGroup ePropGroup = new EPropGroup(pushdownProps.stream().map(prop -> EProp.of(prop.geteNum(), prop.getpType(), prop.getCon())).collect(Collectors.toList()));
         return getNodeFilterStatistics(entity, ePropGroup);
     }
 
     @Override
     public long getGlobalSelectivity(Rel rel, RelPropGroup filter, EBase entity, Direction direction) {
+        Iterable<GraphEdgeSchema> graphEdgeSchemas = graphElementSchemaProvider.getEdgeSchemas(ont.$relation$(rel.getrType()).getName());
+        if (Stream.ofAll(graphEdgeSchemas).isEmpty()) {
+            // what to do what to do
+        }
 
-        GraphEdgeSchema graphEdgeSchema = graphElementSchemaProvider.getEdgeSchema(ont.$relation$(rel.getrType()).getName()).get();
+        //currently supports a single edge schema
+        GraphEdgeSchema graphEdgeSchema = Stream.ofAll(graphEdgeSchemas).get(0);
+
         List<String> relevantIndices = getRelevantIndicesForEdge(filter, graphEdgeSchema);
         return graphStatisticsProvider.getGlobalSelectivity(graphEdgeSchema, rel.getDir(), relevantIndices);
     }
@@ -155,7 +175,15 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private Statistics.SummaryStatistics getVertexStatistics(String vertexType) {
-        return graphStatisticsProvider.getVertexCardinality(graphElementSchemaProvider.getVertexSchema(vertexType).get());
+        Iterable<GraphVertexSchema> vertexSchemas = graphElementSchemaProvider.getVertexSchemas(vertexType);
+        if (Stream.of(vertexSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single vertex schema
+        GraphVertexSchema vertexSchema = Stream.ofAll(vertexSchemas).get(0);
+
+        return graphStatisticsProvider.getVertexCardinality(vertexSchema);
     }
 
     private Statistics.SummaryStatistics getVertexStatistics(GraphVertexSchema graphVertexSchema, List<String> relevantIndices) {
@@ -163,13 +191,21 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
     }
 
     private Statistics.SummaryStatistics estimateVertexPropertyGroup(String vertexType, EPropGroup entityFilter) {
-        GraphVertexSchema graphVertexSchema = graphElementSchemaProvider.getVertexSchema(vertexType).get();
+        Iterable<GraphVertexSchema> graphVertexSchemas = graphElementSchemaProvider.getVertexSchemas(vertexType);
+        if (Stream.of(graphVertexSchemas).isEmpty()) {
+            // what to do what to do
+        }
+
+        //currently supports a single vertex schema
+        GraphVertexSchema graphVertexSchema = Stream.ofAll(graphVertexSchemas).get(0);
+
+
         List<String> relevantIndices = getVertexRelevantIndices(entityFilter, graphVertexSchema);
 
         // This part assumes that all filter conditions are under an AND condition, so the estimation is the minimum.
         // When we add an OR condition (and a complex condition tree), we need getTo take a different approach
         Statistics.SummaryStatistics minVertexSummaryStatistics = getVertexStatistics(graphVertexSchema, relevantIndices);
-        for(EProp eProp : entityFilter.getProps()){
+        for(EProp eProp : Stream.ofAll(entityFilter.getProps()).filter(eProp -> eProp.getCon() != null)){
             Property property = ont.$property$( eProp.getpType() );
             Optional<GraphElementPropertySchema> graphElementPropertySchema = graphVertexSchema.getProperty(property.getName());
             if(graphElementPropertySchema.isPresent()) {
@@ -432,19 +468,19 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                 switch(eProp.getCon().getOp()){
                     case inRange:
                         List<Date> values = (List<Date>)eProp.getCon().getExpr();
-                        timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
-                        timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
+                        timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(eProp.getCon().getiType().startsWith("[")? ConstraintOp.ge: ConstraintOp.gt, values.get(0))));
+                        timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(eProp.getCon().getiType().startsWith("]")? ConstraintOp.le: ConstraintOp.lt, values.get(1))));
                         break;
                     case inSet:
                         values = (List<Date>)eProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(ConstraintOp.eq, value)));
+                            timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(ConstraintOp.eq, value)));
                         }
                         break;
                     case notInSet:
                         values = (List<Date>)eProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(EProp.of(eProp.getpType(), 0, Constraint.of(ConstraintOp.ne, value)));
+                            timeConditions.add(EProp.of(0, eProp.getpType(), Constraint.of(ConstraintOp.ne, value)));
                         }
                         break;
                     default:
@@ -475,20 +511,20 @@ public class EBaseStatisticsProvider implements StatisticsProvider {
                     case inRange:
                         List<Date> values = (List<Date>)relProp.getCon().getExpr();
                         if(!values.isEmpty()) {
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("[") ? ConstraintOp.ge : ConstraintOp.gt, values.get(0))));
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(relProp.getCon().getiType().startsWith("]") ? ConstraintOp.le : ConstraintOp.lt, values.get(1))));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(relProp.getCon().getiType().startsWith("[") ? ConstraintOp.ge : ConstraintOp.gt, values.get(0))));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(relProp.getCon().getiType().startsWith("]") ? ConstraintOp.le : ConstraintOp.lt, values.get(1))));
                         }
                         break;
                     case inSet:
                         values = (List<Date>)relProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(ConstraintOp.eq, value)));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(ConstraintOp.eq, value)));
                         }
                         break;
                     case notInSet:
                         values = (List<Date>)relProp.getCon().getExpr();
                         for(Date value : values){
-                            timeConditions.add(RelProp.of(relProp.getpType(), 0, Constraint.of(ConstraintOp.ne, value)));
+                            timeConditions.add(RelProp.of(0, relProp.getpType(), Constraint.of(ConstraintOp.ne, value)));
                         }
                         break;
                     default:

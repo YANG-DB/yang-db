@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
@@ -22,8 +23,8 @@ import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
 import com.kayhut.fuse.unipop.schemaProviders.*;
@@ -32,6 +33,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartiti
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,8 +48,8 @@ import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.query.ConstraintOp.ge;
-import static com.kayhut.fuse.model.query.ConstraintOp.le;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.ge;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.le;
 import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
@@ -158,7 +160,17 @@ public class SmartEpbComplexQueries {
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                         new CostEstimationConfig(1.0, 0.001),
                         (ont) -> eBaseStatisticsProvider,
-                        (id) -> Optional.of(ont.get())));
+                new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -167,7 +179,17 @@ public class SmartEpbComplexQueries {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
+                new M1PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -223,23 +245,23 @@ public class SmartEpbComplexQueries {
         //long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, PERSON.type)
-                        .next(eProp(2,EProp.of(HEIGHT.type, 3, Constraint.of(ConstraintOp.gt, 189L)))))
+                        .next(eProp(2,EProp.of(3, HEIGHT.type, Constraint.of(ConstraintOp.gt, 189L)))))
                 .next(rel(4, OWN.getrType(), R)
-                        .below(relProp(5, of(START_DATE.type, 6, Constraint.of(ge, new Date(startTime))))))
+                        .below(relProp(5, of(6, START_DATE.type, Constraint.of(ge, new Date(startTime))))))
                 .next(typed(7, DRAGON.type))
                 .next(quant1(8, all))
-                .in(eProp(9, EProp.of(NAME.type, 10, Constraint.of(ge, "smith")))
+                .in(eProp(9, EProp.of(10, NAME.type, Constraint.of(ge, "smith")))
                         , rel(12, FREEZE.getrType(), R)
                                 .below(relProp(122))
                                 .next(unTyped(13)
-                                    .next(eProp(14,EProp.of(NAME.type, 15, Constraint.of(ConstraintOp.notContains, "bob"))))
+                                    .next(eProp(14,EProp.of(15, NAME.type, Constraint.of(ConstraintOp.notContains, "bob"))))
                                 )
                         , rel(16, FIRE.getrType(), R)
-                                .below(relProp(18, of(START_DATE.type, 19,
+                                .below(relProp(18, of(19, START_DATE.type,
                                         Constraint.of(ge, new Date(startTime - 1000 * 60))),
-                                        of(END_DATE.type, 19, Constraint.of(le, new Date(startTime + 1000 * 60)))))
+                                        of(19, END_DATE.type, Constraint.of(le, new Date(startTime + 1000 * 60)))))
                                 .next(concrete(20, "smoge", DRAGON.type, "Display:smoge", "D")
-                                    .next(eProp(21,EProp.of(NAME.type, 22, Constraint.of(ConstraintOp.eq, "smoge"))))
+                                    .next(eProp(21,EProp.of(22, NAME.type, Constraint.of(ConstraintOp.eq, "smoge"))))
                                 )
                 )
                 .build();
@@ -274,12 +296,13 @@ public class SmartEpbComplexQueries {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {
@@ -323,7 +346,7 @@ public class SmartEpbComplexQueries {
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 

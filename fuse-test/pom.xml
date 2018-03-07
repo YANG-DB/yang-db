@@ -12,6 +12,7 @@
     <modules>
         <module>fuse-test-framework</module>
         <module>dragons-test-framework</module>
+        <module>fuse-benchmarks-test</module>
     </modules>
     <properties>
         <checkstyle.skip>true</checkstyle.skip>

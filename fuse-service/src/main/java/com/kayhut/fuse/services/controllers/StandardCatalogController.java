@@ -1,7 +1,6 @@
 package com.kayhut.fuse.services.controllers;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.executor.ontology.GraphElementSchemaProviderFactory;
 import com.kayhut.fuse.model.ontology.Ontology;
@@ -13,7 +12,9 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import com.kayhut.fuse.unipop.schemaProviders.GraphVertexSchema;
 import javaslang.collection.Stream;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.UUID.randomUUID;
 import static org.jooby.Status.NOT_FOUND;
@@ -33,6 +34,14 @@ public class StandardCatalogController implements CatalogController {
     //endregion
 
     //region CatalogController Implementation
+
+    @Override
+    public List<ContentResponse<Ontology>> getOntologies() {
+        return ontologyProvider.getAll().stream().map(ont ->
+                Builder.<Ontology>builder(randomUUID().toString(),OK, NOT_FOUND).data(Optional.of(ont)).compose()).
+                collect(Collectors.toList());
+    }
+
     @Override
     public ContentResponse<Ontology> getOntology(String id) {
         return Builder.<Ontology>builder(randomUUID().toString(),OK, NOT_FOUND)
@@ -54,6 +63,16 @@ public class StandardCatalogController implements CatalogController {
                 .data(Optional.of(createSerializableSchemaProvider(schemaProvider)))
                 .compose();
     }
+
+    @Override
+    public List<ContentResponse> getSchemas() {
+        List<ContentResponse<Ontology>> ontologies = this.getOntologies();
+
+        return ontologies.stream().map(ont ->
+                Builder.<GraphElementSchemaProvider>builder(randomUUID().toString(), OK, NOT_FOUND)
+                        .data(Optional.of(createSerializableSchemaProvider(this.schemaProviderFactory.get(ont.getData()))))
+                        .compose()).collect(Collectors.toList());
+    }
     //endregion
 
     //region Private Methods
@@ -73,9 +92,10 @@ public class StandardCatalogController implements CatalogController {
                             edgeSchema.getLabel(),
                             new GraphElementConstraint.Impl(
                                     new TraversalToString(edgeSchema.getConstraint().getTraversalConstraint().toString())),
-                            edgeSchema.getSource(),
-                            edgeSchema.getDestination(),
+                            edgeSchema.getEndA(),
+                            edgeSchema.getEndB(),
                             edgeSchema.getDirection(),
+                            edgeSchema.getDirectionSchema(),
                             edgeSchema.getRouting(),
                             edgeSchema.getIndexPartitions(),
                             edgeSchema.getProperties(),

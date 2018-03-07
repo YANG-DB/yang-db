@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.query.aggregation.AggBase;
 public class RelationGroupingOp extends AsgEBasePlanOp<AggBase> {
     //region Constructors
     public RelationGroupingOp() {
-        super();
+        super(new AsgEBase<>());
     }
 
     public RelationGroupingOp(AsgEBase<AggBase> agg) {

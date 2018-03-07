@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
@@ -17,14 +18,14 @@ import com.kayhut.fuse.epb.plan.validation.M1PlanValidator;
 import com.kayhut.fuse.epb.utils.PlanMockUtils;
 import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
-import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanAssert;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.Value;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.quant.QuantType;
@@ -35,6 +36,7 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartiti
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,7 +51,6 @@ import java.util.stream.IntStream;
 
 import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
-import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.eProp;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -158,8 +159,17 @@ public class SmartEpbRedundancyTests {
         eBaseStatisticsProvider = new EBaseStatisticsProvider(graphElementSchemaProvider, ont, graphStatisticsProvider);
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
-                (ont) -> eBaseStatisticsProvider,
-                (id) -> Optional.of(ont.get())));
+                (ont) -> eBaseStatisticsProvider, new OntologyProvider() {
+            @Override
+            public Optional<Ontology> get(String id) {
+                return Optional.of(ont.get());
+            }
+
+            @Override
+            public Collection<Ontology> getAll() {
+                return Collections.singleton(ont.get());
+            }
+        }));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -168,7 +178,17 @@ public class SmartEpbRedundancyTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
+                new M1PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -224,12 +244,12 @@ public class SmartEpbRedundancyTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(NAME.type,3, Constraint.of(ConstraintOp.eq,"abc"))),
+                in(eProp(3, EProp.of(3, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(GENDER.type,11, Constraint.of(ConstraintOp.ge,new Value(1,"abc")))))),
+                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(11, GENDER.type, Constraint.of(ConstraintOp.ge,new Value(1,"abc")))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.ge,"abc")))))).
+                                        .next(eProp(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.ge,"abc")))))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -243,12 +263,12 @@ public class SmartEpbRedundancyTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, DRAGON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(NAME.type,3, Constraint.of(ConstraintOp.le,"abc"))),
+                in(eProp(3, EProp.of(3, NAME.type, Constraint.of(ConstraintOp.le,"abc"))),
                         rel(8, FIRE.getrType(), Rel.Direction.R).below(relProp(9)).
-                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(NAME.type,11, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                next(typed(10, DRAGON.type).next(eProp(11, EProp.of(11, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(4, FREEZE.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,7, Constraint.of(ConstraintOp.eq,"abc")))))).
+                                        .next(eProp(7, EProp.of(7, NAME.type, Constraint.of(ConstraintOp.eq,"abc")))))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -274,20 +294,21 @@ public class SmartEpbRedundancyTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityA.id",
+                                        Collections.singletonList("entityA.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()),
                                         relation.getrType().equals(FREEZE.getName()) ?
                                                 Collections.singletonList(
                                                         new GraphRedundantPropertySchema.Impl(NAME.name, "entityA.name", NAME.type)
                                                 ) : Collections.emptyList())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        "entityB.id",
+                                        Collections.singletonList("entityB.id"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()),
                                         relation.getrType().equals(FREEZE.getName()) ?
                                                 Collections.singletonList(
                                                         new GraphRedundantPropertySchema.Impl(NAME.name, "entityB.name", NAME.type)
                                                 ) : Collections.emptyList())),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {
@@ -331,7 +352,7 @@ public class SmartEpbRedundancyTests {
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 

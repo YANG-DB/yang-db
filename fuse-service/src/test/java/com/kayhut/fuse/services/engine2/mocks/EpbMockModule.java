@@ -7,6 +7,8 @@ import com.kayhut.fuse.dispatcher.epb.LoggingPlanSearcher;
 import com.kayhut.fuse.dispatcher.epb.PlanSearcher;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.epb.plan.BottomUpPlanSearcher;
+import com.kayhut.fuse.epb.plan.statistics.NoStatsProvider;
+import com.kayhut.fuse.epb.plan.statistics.StatisticsProviderFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
@@ -22,13 +24,9 @@ public class EpbMockModule extends ModuleBase {
         binder.install(new PrivateModule() {
             @Override
             protected void configure() {
-                this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){})
-                        .toInstance(new PlanSearcher<Plan, PlanDetailedCost, AsgQuery>() {
-                            @Override
-                            public PlanWithCost<Plan, PlanDetailedCost> search(AsgQuery query) {
-                                return plan;
-                            }
-                        });
+                this.bind(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){}).toInstance(query -> plan);
+                this.bind(StatisticsProviderFactory.class).to(NoStatsProvider.class);
+                this.expose(StatisticsProviderFactory.class);
                 this.expose(new TypeLiteral<PlanSearcher<Plan, PlanDetailedCost, AsgQuery>>(){});
             }
         });

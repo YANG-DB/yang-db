@@ -97,7 +97,7 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
                 .collect(Collectors.toList());
         collect.forEach(p -> {
             pushdownProps.add(p);
-            clone.getProps().add(EProp.of(p.getpType(), p.geteNum(), p.getCon()));
+            clone.getProps().add(EProp.of(p.geteNum(), p.getpType(), p.getCon()));
         });
 
         // Z (E2 node pushdown props only estimate) = statistical_estimate(E1 pushdown filter only)
@@ -120,8 +120,8 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
         //estimation if zero since the real estimation is residing on the adjacent filter (rel filter)
         DoubleCost relCost = new DetailedCost(R * config.getDelta(), lambdaNode, lambdaEdge, R, N2);
 
-        CountEstimatesCost newEntityOneCost = new CountEstimatesCost(entityOneCost.getCost(), N1);
-        newEntityOneCost.push(N1*lambda);
+        CountEstimatesCost newEntityOneCost = new CountEstimatesCost(entityOneCost.getCost(), Math.ceil(N1));
+        newEntityOneCost.push(Math.ceil(N1*lambda));
         PlanWithCost<Plan, CountEstimatesCost> entityOnePlanCost ;
         if(startFilter == null){
             entityOnePlanCost = new PlanWithCost<>(new Plan(start), newEntityOneCost);
@@ -129,10 +129,10 @@ public class EntityRelationEntityPatternCostEstimator implements PatternCostEsti
             entityOnePlanCost = new PlanWithCost<>(new Plan(start, startFilter), newEntityOneCost);
         }
 
-        CountEstimatesCost newRelCost = new CountEstimatesCost(relCost.getCost(), R);
+        CountEstimatesCost newRelCost = new CountEstimatesCost(relCost.getCost(), Math.ceil(R));
         PlanWithCost<Plan, CountEstimatesCost> relPlanCost = new PlanWithCost<>(new Plan(rel, relationFilter), newRelCost);
 
-        CountEstimatesCost entityTwoCost = new CountEstimatesCost(N2, N2);
+        CountEstimatesCost entityTwoCost = new CountEstimatesCost(Math.ceil(N2), Math.ceil(N2));
         PlanWithCost<Plan, CountEstimatesCost> entityTwoOpCost = new PlanWithCost<>(new Plan(end, endFilter), entityTwoCost);
 
         return PatternCostEstimator.Result.of(new double[]{lambda}, entityOnePlanCost, relPlanCost, entityTwoOpCost);

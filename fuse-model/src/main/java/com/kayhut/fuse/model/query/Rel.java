@@ -4,6 +4,8 @@ package com.kayhut.fuse.model.query;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kayhut.fuse.model.Below;
 import com.kayhut.fuse.model.Next;
+import com.kayhut.fuse.model.asgQuery.AsgEBase;
+import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.query.entity.Typed;
 
 import java.util.Collections;
@@ -14,6 +16,7 @@ import java.util.List;
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.rTyped{
+
     public enum Direction {
         R,
         L,
@@ -22,19 +25,13 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
 
     //region Constructors
     public Rel() {
-        this.reportProps = Collections.emptyList();
     }
 
     public Rel(int eNum, String rType, Direction dir, String wrapper, int next, int b) {
-        this(eNum, rType, dir, wrapper, Collections.emptyList(), next, b);
-    }
-
-    public Rel(int eNum, String rType, Direction dir, String wrapper, List<String> reportProps, int next, int b) {
         super(eNum);
         this.rType = rType;
         this.dir = dir;
         this.wrapper = wrapper;
-        this.reportProps = reportProps;
         this.next = next;
         this.b = b;
     }
@@ -73,20 +70,17 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
         this.next = next;
     }
 
+    @Override
+    public boolean hasNext() {
+        return next > -1;
+    }
+
     public Integer getB() {
         return b;
     }
 
     public void setB(Integer b) {
         this.b = b;
-    }
-
-    public List<String> getReportProps() {
-        return reportProps;
-    }
-
-    public void setReportProps(List<String> reportProps) {
-        this.reportProps = reportProps;
     }
     //endregion
 
@@ -106,8 +100,6 @@ public class Rel extends EBase implements Next<Integer>, Below<Integer> ,Typed.r
     private int next;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int b;
-
-    private List<String> reportProps;
     //endregion
 
 

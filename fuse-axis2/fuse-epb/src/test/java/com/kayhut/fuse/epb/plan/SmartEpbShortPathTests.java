@@ -3,6 +3,7 @@ package com.kayhut.fuse.epb.plan;
 import com.kayhut.fuse.dispatcher.epb.PlanPruneStrategy;
 import com.kayhut.fuse.dispatcher.epb.PlanSelector;
 import com.kayhut.fuse.dispatcher.epb.PlanValidator;
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
@@ -22,8 +23,8 @@ import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -35,7 +36,8 @@ import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.StaticIndexPartiti
 import com.kayhut.fuse.unipop.schemaProviders.indexPartitions.TimeSeriesIndexPartitions;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
-import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.*;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -154,7 +156,17 @@ public class SmartEpbShortPathTests {
         estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1.0, 0.001),
                 (ont) -> eBaseStatisticsProvider,
-                (id) -> Optional.of(ont.get())));
+                new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }));
 
         PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> pruneStrategy = new NoPruningPruneStrategy<>();
         PlanValidator<Plan, AsgQuery> validator = new M1PlanValidator();
@@ -163,7 +175,17 @@ public class SmartEpbShortPathTests {
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector = new CheapestPlanSelector();
         PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> localPlanSelector = new AllCompletePlanSelector<>();
         planSearcher = new BottomUpPlanSearcher<>(
-                new M1PlanExtensionStrategy(id -> Optional.of(ont.get()), ont -> graphElementSchemaProvider),
+                new M1PlanExtensionStrategy(new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }, ont -> graphElementSchemaProvider),
                 pruneStrategy,
                 pruneStrategy,
                 globalPlanSelector,
@@ -232,7 +254,7 @@ public class SmartEpbShortPathTests {
     public void testSingleElementWithCondition() {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.eq, "abc")))).
+                next(eProp(2, EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -240,8 +262,8 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(plan.getCost().getGlobalCost().cost, 133d / 13d, 0.1);
-        Assert.assertEquals(plan.getCost().getPlanStepCosts().iterator().next().getCost().getCost(), 133d / 13d, 0.1);
+        Assert.assertEquals(Math.ceil(133d / 13d),plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(Math.ceil(133d / 13d),plan.getCost().getPlanStepCosts().iterator().next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -274,26 +296,26 @@ public class SmartEpbShortPathTests {
                 next(eProp(2)).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(6, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
         Plan expected = PlanMockUtils.PlanMockBuilder.mock(query).entity(5).entityFilter(6).rel(3, L).relFilter(4).entity(1).entityFilter(2).plan();
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(111.1, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(121.11, plan.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = plan.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(11,op.getCost().getCost(), 0.1);
         Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
-        Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(110, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
     public void testPathSelectionFilterFromSide(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2,EProp.of(FIRST_NAME.type,2, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(2,EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.eq,"abc")))).
                 next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
@@ -304,12 +326,12 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(112.6, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(121.11, plan.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = plan.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(133d/13d,op.getCost().getCost(), 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
-        Assert.assertEquals(102.3, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(Math.ceil(133d/13d),op.getCost().getCost(), 0.1);
+        Assert.assertEquals(0.11, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(110, iterator.next().getCost().getCost(), 0.1);
     }
 
     @Test
@@ -317,7 +339,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -340,10 +362,10 @@ public class SmartEpbShortPathTests {
     public void testFilterOnAllItems(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.ge, "g")))).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(eProp(2, EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.ge, "g")))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.ge,"g")))).
+                next(eProp(6, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.ge,"g")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -363,10 +385,10 @@ public class SmartEpbShortPathTests {
     public void testFilterOnAllItemsReverse(){
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
-                next(eProp(2, EProp.of(FIRST_NAME.type, 2, Constraint.of(ConstraintOp.ge, "g")))).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(eProp(2, EProp.of(2, FIRST_NAME.type, Constraint.of(ConstraintOp.ge, "g")))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
-                next(eProp(6, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc")))).
+                next(eProp(6, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc")))).
                 build();
 
         PlanWithCost<Plan, PlanDetailedCost> plan = planSearcher.search(query);
@@ -374,12 +396,12 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(111.1, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(121.11, plan.getCost().getGlobalCost().cost, 0.1);
         Iterator<PlanWithCost<Plan, CountEstimatesCost>> iterator = plan.getCost().getPlanStepCosts().iterator();
         PlanWithCost<Plan, CountEstimatesCost> op = iterator.next();
-        Assert.assertEquals(10.09,op.getCost().getCost(), 0.1);
-        Assert.assertEquals(0.1, iterator.next().getCost().getCost(), 0.1);
-        Assert.assertEquals(100.9, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(11,op.getCost().getCost(), 0.1);
+        Assert.assertEquals(0.11, iterator.next().getCost().getCost(), 0.1);
+        Assert.assertEquals(110, iterator.next().getCost().getCost(), 0.1);
     }
 
 
@@ -388,7 +410,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                     rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                     next(typed(6, DRAGON.type)
                             .next(eProp(7))),
@@ -401,7 +423,7 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(112.8, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(131.12, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
 
@@ -410,10 +432,10 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(eProp(7, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
@@ -422,7 +444,7 @@ public class SmartEpbShortPathTests {
 
         Assert.assertNotNull(plan);
         PlanAssert.assertEquals(expected, plan.getPlan());
-        Assert.assertEquals(23.91, plan.getCost().getGlobalCost().cost, 0.1);
+        Assert.assertEquals(32.12, plan.getCost().getGlobalCost().cost, 0.1);
     }
 
     @Test
@@ -430,10 +452,10 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(typed(1, PERSON.type)).
                 next(quant1(2, QuantType.all)).
-                in(eProp(3, EProp.of(FIRST_NAME.type, 3, Constraint.of(ConstraintOp.eq, "abc"))),
+                in(eProp(3, EProp.of(3, FIRST_NAME.type, Constraint.of(ConstraintOp.eq, "abc"))),
                         rel(4, OWN.getrType(), Rel.Direction.R).below(relProp(5)).
                                 next(typed(6, DRAGON.type)
-                                        .next(eProp(7, EProp.of(NAME.type,6, Constraint.of(ConstraintOp.eq,"abc"))))),
+                                        .next(eProp(7, EProp.of(6, NAME.type, Constraint.of(ConstraintOp.eq,"abc"))))),
                         rel(8, MEMBER_OF.getrType(), Rel.Direction.R).below(relProp(9)).
                                 next(typed(10, GUILD.type).next(eProp(11)))).
                 build();
@@ -445,9 +467,9 @@ public class SmartEpbShortPathTests {
         PlanWithCost<Plan, CountEstimatesCost> opWithCost = plan.getCost().getPlanStepCosts().iterator().next();
         Assert.assertEquals(3, opWithCost.getCost().getCountEstimates().size());
         Iterator<Double> iterator = opWithCost.getCost().getCountEstimates().iterator();
-        Assert.assertEquals(10.23, iterator.next(), 0.01);
-        Assert.assertEquals(0.34, iterator.next(), 0.01);
-        Assert.assertEquals(0.0008, iterator.next(), 0.01);
+        Assert.assertEquals(11, iterator.next(), 0.01);
+        Assert.assertEquals(1, iterator.next(), 0.01);
+        Assert.assertEquals(1, iterator.next(), 0.01);
     }
 
     @Test
@@ -455,7 +477,7 @@ public class SmartEpbShortPathTests {
         AsgQuery query = AsgQuery.Builder.start("Q1", "Dragons").
                 next(unTyped(1, PERSON.type, DRAGON.type)).
                 next(eProp(2)).
-                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(START_DATE.type, 2, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
+                next(rel(3, OWN.getrType(), Rel.Direction.R).below(relProp(4, RelProp.of(2, START_DATE.type, Constraint.of(ConstraintOp.ge, new Date(startTime)))))).
                 next(typed(5, DRAGON.type)).
                 next(eProp(6)).
                 build();
@@ -485,12 +507,13 @@ public class SmartEpbShortPathTests {
                                 relation.getrType(),
                                 new GraphElementConstraint.Impl(__.has(T.label, relation.getrType())),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeA() + "IdA",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeA() + "IdA"),
                                         Optional.of(relation.getePairs().get(0).geteTypeA()))),
                                 Optional.of(new GraphEdgeSchema.End.Impl(
-                                        relation.getePairs().get(0).geteTypeB() + "IdB",
+                                        Collections.singletonList(relation.getePairs().get(0).geteTypeB() + "IdB"),
                                         Optional.of(relation.getePairs().get(0).geteTypeB()))),
-                                Optional.of(new GraphEdgeSchema.Direction.Impl("direction", "out", "in")),
+                                Direction.OUT,
+                                Optional.of(new GraphEdgeSchema.DirectionSchema.Impl("direction", "out", "in")),
                                 Optional.empty(),
                                 Optional.of(relation.getrType().equals(OWN.getName()) ?
                                         new TimeSeriesIndexPartitions() {
@@ -534,7 +557,7 @@ public class SmartEpbShortPathTests {
                                 Collections.emptyList()))
                         .toJavaList();
 
-        return new OntologySchemaProvider(ont.get(), new OntologySchemaProvider.Adapter(vertexSchemas, edgeSchemas));
+        return new OntologySchemaProvider(ont.get(), new GraphElementSchemaProvider.Impl(vertexSchemas, edgeSchemas));
     }
     //endregion
 

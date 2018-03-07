@@ -4,8 +4,8 @@ import com.kayhut.fuse.model.asgQuery.AsgStrategyContext;
 import com.kayhut.fuse.asg.util.OntologyPropertyTypeFactory;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.ontology.Property;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.RelProp;
@@ -15,6 +15,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 
 /**
  * Created by benishue on 11-May-17.
@@ -23,6 +26,7 @@ public class ConstraintIterableTransformationAsgStrategy extends ConstraintTrans
     //region Constructors
     public ConstraintIterableTransformationAsgStrategy() {
         this.propertyTypeFactory = new OntologyPropertyTypeFactory();
+        this.multiValueOps = Stream.of(inRange, notInRange, inSet, notInSet, empty, notEmpty, likeAny).toJavaSet();
     }
     //endregion
 
@@ -105,20 +109,12 @@ public class ConstraintIterableTransformationAsgStrategy extends ConstraintTrans
     }
 
     private boolean isMultivaluedOp(ConstraintOp op){
-        if (op == ConstraintOp.inRange ||
-                op == ConstraintOp.notInRange ||
-                op == ConstraintOp.inSet ||
-                op == ConstraintOp.notInSet ||
-                op == ConstraintOp.empty ||
-                op == ConstraintOp.notEmpty
-                ) {
-            return true;
-        }
-        return false;
+        return this.multiValueOps.contains(op);
     }
     //endregion
 
     //region Fields
     private OntologyPropertyTypeFactory propertyTypeFactory;
+    private Set<ConstraintOp> multiValueOps;
     //endregion
 }

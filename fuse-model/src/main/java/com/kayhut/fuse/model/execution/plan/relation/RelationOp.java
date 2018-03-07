@@ -10,7 +10,7 @@ import com.kayhut.fuse.model.query.Rel;
 public class RelationOp extends AsgEBasePlanOp<Rel> {
     //region Constructors
     public RelationOp() {
-
+        super(new AsgEBase<>());
     }
 
     public RelationOp(AsgEBase<Rel> relation) {

@@ -1,18 +1,17 @@
 package com.kayhut.fuse.unipop.controller.discrete;
 
-import com.codahale.metrics.MetricRegistry;
 import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.VertexControllerBase;
 import com.kayhut.fuse.unipop.controller.common.appender.*;
 import com.kayhut.fuse.unipop.controller.common.context.CompositeControllerContext;
 import com.kayhut.fuse.unipop.controller.common.converter.CompositeElementConverter;
+import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.discrete.appender.DualEdgeDirectionSearchAppender;
 import com.kayhut.fuse.unipop.controller.discrete.context.DiscreteVertexControllerContext;
 import com.kayhut.fuse.unipop.controller.discrete.converter.DiscreteEdgeConverter;
 import com.kayhut.fuse.unipop.controller.promise.GlobalConstants;
 import com.kayhut.fuse.unipop.controller.promise.appender.SizeSearchAppender;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
-import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.converter.SearchHitScrollIterable;
 import com.kayhut.fuse.unipop.predicates.SelectP;
 import com.kayhut.fuse.unipop.promise.Constraint;
@@ -20,7 +19,6 @@ import com.kayhut.fuse.unipop.promise.TraversalConstraint;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
-import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -31,7 +29,10 @@ import org.elasticsearch.search.SearchHit;
 import org.unipop.query.search.SearchVertexQuery;
 import org.unipop.structure.UniGraph;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.kayhut.fuse.unipop.controller.utils.SearchAppenderUtil.wrap;
 
@@ -128,6 +129,8 @@ public class DiscreteVertexController extends VertexControllerBase {
                 .flatMap(elementConverter::convert)
                 .filter(Objects::nonNull).iterator();
     }
+
+
     //endregion
 
     //region Fields

@@ -1,9 +1,8 @@
 package com.kayhut.fuse.epb.plan.estimation;
 
+import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.utils.AsgQueryUtil;
-import com.kayhut.fuse.epb.plan.estimation.CostEstimationConfig;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
-import com.kayhut.fuse.epb.plan.estimation.IncrementalEstimationContext;
 import com.kayhut.fuse.epb.plan.estimation.pattern.estimators.M1PatternCostEstimator;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.epb.utils.PlanMockUtils;
@@ -11,7 +10,6 @@ import com.kayhut.fuse.model.OntologyTestUtils;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.*;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.composite.descriptors.CompositePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.composite.descriptors.IterablePlanOpDescriptor;
 import com.kayhut.fuse.model.execution.plan.costs.DoubleCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -20,8 +18,8 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchemaProvider;
@@ -30,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
@@ -44,7 +43,7 @@ import static com.kayhut.fuse.model.OntologyTestUtils.*;
 import static com.kayhut.fuse.model.OntologyTestUtils.Gender.MALE;
 import static com.kayhut.fuse.model.asgQuery.AsgQuery.Builder.*;
 import static com.kayhut.fuse.model.execution.plan.Direction.out;
-import static com.kayhut.fuse.model.query.ConstraintOp.*;
+import static com.kayhut.fuse.model.query.properties.constraint.ConstraintOp.*;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 import static com.kayhut.fuse.model.query.properties.RelProp.of;
 import static com.kayhut.fuse.model.query.quant.QuantType.all;
@@ -63,16 +62,16 @@ public class StatisticalCostEstimatorTests {
         long time = System.currentTimeMillis();
         return AsgQuery.Builder.start(queryName, ontologyName)
                 .next(typed(1, OntologyTestUtils.PERSON.type))
-                .next(rel(2, OWN.getrType(), R).below(relProp(10, of(START_DATE.type, 10, Constraint.of(eq, new Date())))))
+                .next(rel(2, OWN.getrType(), R).below(relProp(10, of(10, START_DATE.type, Constraint.of(eq, new Date())))))
                 .next(typed(3, OntologyTestUtils.DRAGON.type))
                 .next(quant1(4, all))
-                .in(eProp(9, EProp.of(NAME.type, 9, Constraint.of(eq, "smith")), EProp.of(GENDER.type, 9, Constraint.of(gt, MALE)))
+                .in(eProp(9, EProp.of(9, NAME.type, Constraint.of(eq, "smith")), EProp.of(9, GENDER.type, Constraint.of(gt, MALE)))
                         , rel(5, FREEZE.getrType(), R)
                                 .next(unTyped(6))
                         , rel(7, FIRE.getrType(), R)
-                                .below(relProp(11, of(START_DATE.type, 11,
+                                .below(relProp(11, of(11, START_DATE.type,
                                         Constraint.of(ge, new Date(time - 1000 * 60))),
-                                        of(END_DATE.type, 11, Constraint.of(le, new Date(time + 1000 * 60)))))
+                                        of(11, END_DATE.type, Constraint.of(le, new Date(time + 1000 * 60)))))
                                 .next(concrete(8, "smoge", DRAGON.type, "Display:smoge", "D"))
                 )
                 .build();
@@ -94,8 +93,8 @@ public class StatisticalCostEstimatorTests {
 
 
         });
-        when(graphEdgeSchema.getDestination()).thenReturn(Optional.of(edgeEnd));
-        when(graphElementSchemaProvider.getEdgeSchema(any())).thenReturn(Optional.of(graphEdgeSchema));
+        when(graphEdgeSchema.getEndB()).thenReturn(Optional.of(edgeEnd));
+        when(graphElementSchemaProvider.getEdgeSchemas(any())).thenReturn(Collections.singletonList(graphEdgeSchema));
         ont = new Ontology.Accessor(OntologyTestUtils.createDragonsOntologyShort());
     }
 
@@ -188,7 +187,17 @@ public class StatisticalCostEstimatorTests {
         RegexPatternCostEstimator estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
-                (id) -> Optional.of(ont.get())));
+                new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
+
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }));
 
         Optional<PlanWithCost<Plan, PlanDetailedCost>> previousCost = Optional.of(builder.oldPlanWithCost(50, 250));
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(builder.plan(), new IncrementalEstimationContext<>(previousCost, asgQuery));
@@ -215,19 +224,29 @@ public class StatisticalCostEstimatorTests {
 
     @Test
     public void estimateEntityOnlyPattern() throws Exception {
-        StatisticsProvider provider = build(Collections.emptyMap(), Integer.MAX_VALUE);
+        AsgQuery query = AsgQuery.Builder.start("name", "ont").
+                next(concrete(1, "id", "4", "name", "A").next(eProp(101,EProp.of(9, "12", Constraint.of(gt, MALE))))).build();
+        PlanMockUtils.PlanMockBuilder builder = PlanMockUtils.PlanMockBuilder.mock(query).entity(TYPED, 100, "4")
+                .entityFilter(0.2,7,"6", Constraint.of(ConstraintOp.eq, "equals")).startNewPlan()
+                .rel(out, "1", 100).relFilter(0.6,11,"11",Constraint.of(ConstraintOp.ge, "gt")).entity(CONCRETE, 1, "5").entityFilter(1,12,"9", Constraint.of(ConstraintOp.inSet, "inSet"));
+
+        StatisticsProvider provider = build(builder.statistics(), Integer.MAX_VALUE);
         RegexPatternCostEstimator estimator = new RegexPatternCostEstimator(new M1PatternCostEstimator(
                 new CostEstimationConfig(1, 0.001),
                 (ont) -> provider,
-                (id) -> Optional.of(ont.get())));
+                new OntologyProvider() {
+                    @Override
+                    public Optional<Ontology> get(String id) {
+                        return Optional.of(ont.get());
+                    }
 
-        AsgQuery query = AsgQuery.Builder.start("name", "ont").
-                next(concrete(1, "id", "1", "name", "A")).
-                build();
+                    @Override
+                    public Collection<Ontology> getAll() {
+                        return Collections.singleton(ont.get());
+                    }
+                }));
 
-        EntityOp entityOp = new EntityOp(AsgQueryUtil.element$(query, 1));
-
-        Plan plan = new Plan().withOp(entityOp);
+        Plan plan = new Plan().withOp(new EntityOp(AsgQueryUtil.element$(query, 1))).withOp(new EntityFilterOp(AsgQueryUtil.element$(query, 101)));
         PlanWithCost<Plan, PlanDetailedCost> estimate = estimator.estimate(plan, new IncrementalEstimationContext<>(Optional.empty(), query));
 
         Assert.assertNotNull(estimate);

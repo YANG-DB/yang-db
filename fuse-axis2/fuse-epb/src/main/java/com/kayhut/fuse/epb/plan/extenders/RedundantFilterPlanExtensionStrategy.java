@@ -15,13 +15,12 @@ import com.kayhut.fuse.model.execution.plan.relation.RelationFilterOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.ontology.OntologyFinalizer;
-import com.kayhut.fuse.model.query.Constraint;
-import com.kayhut.fuse.model.query.ConstraintOp;
+import com.kayhut.fuse.model.query.properties.constraint.Constraint;
+import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
 import com.kayhut.fuse.model.query.properties.*;
-import com.kayhut.fuse.unipop.controller.utils.EdgeSchemaSupplier;
 import com.kayhut.fuse.unipop.schemaProviders.*;
 import javaslang.collection.Stream;
 
@@ -75,7 +74,13 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
         GraphElementSchemaProvider schemaProvider = this.schemaProviderFactory.get($ont.get());
 
         String relationTypeName = $ont.$relation$(lastRelationOp.get().getAsgEbase().geteBase().getrType()).getName();
-        Optional<GraphEdgeSchema> edgeSchema = schemaProvider.getEdgeSchema(relationTypeName);
+        Iterable<GraphEdgeSchema> edgeSchemas = schemaProvider.getEdgeSchemas(relationTypeName);
+        if (Stream.ofAll(edgeSchemas).isEmpty()) {
+            return Collections.singleton(plan.get());
+        }
+
+        //currently supports a single edge schema
+        GraphEdgeSchema edgeSchema = Stream.ofAll(edgeSchemas).get(0);
 
         // label
         List<String> vTypes = new ArrayList<>();
@@ -92,14 +97,23 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
             }
         }
 
+        // THIS IS A TEMPORARY PATCH!!!
+        /*Set<String> vTypeNames = Stream.ofAll(vTypes).map(vType -> $ont.$entity$(vType).getName()).toJavaSet();
+        Optional<GraphEdgeSchema> edgeSchema = Stream.ofAll(edgeSchemas)
+                .filter(edgeSchema1 -> edgeSchema1.getDirection().isPresent() ?
+                        vTypeNames.contains(edgeSchema1.getSource().get().getLabel().get()) :
+                        true)
+                .toJavaOptional();*/
+        // THIS IS A TEMPORARY PATCH!!!
+
         RelPropGroup relPropGroup = lastRelationFilterOp.get().getAsgEbase().geteBase().clone();
 
         //currently supports only ETyped
         GraphEdgeSchema.End endSchema = lastEntityOp.get().getAsgEbase().geteBase() instanceof ETyped ?
-                                            edgeSchema.get().getSource().get().getLabel().get().equals(vTypes.get(0)) ?
-                                                edgeSchema.get().getSource().get() :
-                                                edgeSchema.get().getDestination().get() :
-                                            edgeSchema.get().getDestination().get();
+                                            edgeSchema.getEndA().get().getLabel().get().equals(vTypes.get(0)) ?
+                                                edgeSchema.getEndA().get() :
+                                                edgeSchema.getEndB().get() :
+                                            edgeSchema.getEndB().get();
 
         if(vTypes.size() > 0){
             Constraint constraint = Constraint.of(ConstraintOp.inSet,
@@ -133,7 +147,10 @@ public class RedundantFilterPlanExtensionStrategy implements PlanExtensionStrate
 
         if(lastEntityFilterOp.isPresent()) {
             AsgEBase<EPropGroup> ePropGroup = AsgEBase.Builder.<EPropGroup>get().withEBase(lastEntityFilterOp.get().getAsgEbase().geteBase().clone()).build();
-            Stream.ofAll(ePropGroup.geteBase().getProps()).toJavaList().forEach(p -> {
+            Stream.ofAll(ePropGroup.geteBase().getProps())
+                    .filter(eProp -> eProp.getCon() != null)
+                    .toJavaList()
+                    .forEach(p -> {
                 Optional<GraphRedundantPropertySchema> redundantVertexProperty = endSchema
                         .getRedundantProperty(schemaProvider.getPropertySchema($ont.$property$(p.getpType()).getName()).get());
                 if(redundantVertexProperty.isPresent()){
