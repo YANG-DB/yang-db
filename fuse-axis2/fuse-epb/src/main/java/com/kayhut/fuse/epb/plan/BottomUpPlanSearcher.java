@@ -63,8 +63,7 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
         final IncrementalEstimationContext<P, C, Q> estimationContext = new IncrementalEstimationContext<>(Optional.empty(), query);
         //filter initial plans
         Stream<P> filteredPlans = Stream.ofAll(this.extensionStrategy.extendPlan(Optional.empty(), query)).filter(seedPlan -> this.planValidator.isPlanValid(seedPlan, query).valid());
-        if(filteredPlans.size()==0)
-            throw new IllegalStateException("Initial plan generation, Filter stage - no valid plan was found for query "+(AsgQueryDescriptor.toString((AsgQuery) query)));
+
         //local prune initial valid plans + cost estimation
         List<PlanWithCost<P, C>> currentPlans = Stream.ofAll(this.localPruneStrategy.prunePlans(filteredPlans.map(validSeedPlan -> this.costEstimator.estimate(validSeedPlan, estimationContext)))).toJavaList();
         //select plans
@@ -86,10 +85,12 @@ public class BottomUpPlanSearcher<P extends IPlan, C extends Cost, Q extends IQu
             selectedPlans = Stream.ofAll(selectedPlans).appendAll(this.localPlanSelector.select(query, currentPlans)).toJavaList();
         }
 
-        if(!Stream.ofAll(this.globalPlanSelector.select(query, selectedPlans)).isEmpty())
-            return Stream.ofAll(this.globalPlanSelector.select(query, selectedPlans)).get(0);
-
-        throw new IllegalStateException("No valid plan was found for query "+(AsgQueryDescriptor.toString((AsgQuery) query)));
+        selectedPlans = this.globalPlanSelector.select(query, selectedPlans);
+        if(!Stream.ofAll(selectedPlans).isEmpty()) {
+            return Stream.ofAll(selectedPlans).get(0);
+        } else {
+            return null;
+        }
     }
     //endregion
 }

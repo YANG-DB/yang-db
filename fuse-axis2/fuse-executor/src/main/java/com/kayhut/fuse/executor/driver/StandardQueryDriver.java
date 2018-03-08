@@ -12,6 +12,7 @@ import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
+import com.kayhut.fuse.model.execution.plan.descriptors.AsgQueryDescriptor;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
 
@@ -19,6 +20,8 @@ import com.kayhut.fuse.model.query.QueryMetadata;
  * Created by lior on 20/02/2017.
  */
 public class StandardQueryDriver extends QueryDriverBase {
+    private static Object sync = new Object();
+
     //region Constructors
     @Inject
     public StandardQueryDriver(
@@ -38,7 +41,16 @@ public class StandardQueryDriver extends QueryDriverBase {
     @Override
     protected QueryResource createResource(Query query, AsgQuery asgQuery, QueryMetadata metadata) {
         AsgQuery newAsgQuery = this.queryRewriter.transform(asgQuery);
-        PlanWithCost<Plan, PlanDetailedCost> planWithCost = this.planSearcher.search(newAsgQuery);
+
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = null;
+        synchronized (sync) {
+            planWithCost = this.planSearcher.search(newAsgQuery);
+        }
+
+        if (planWithCost == null) {
+            throw new IllegalStateException("No valid plan was found for query " + (AsgQueryDescriptor.toString(asgQuery)));
+        }
+
         return new QueryResource(query, newAsgQuery, metadata, planWithCost, null);
     }
     //endregion
