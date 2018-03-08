@@ -151,9 +151,6 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
     }
 
     private boolean isFilterIgnore(EProp prop) {
-        //defence against empty expressions
-        if(prop.getCon().getExpr()==null) return false;
-
         //test regexp against condition expression
         Optional<String> ignoreOperator = getIgnoreOperator(map, prop.getCon().getOp());
         if(!ignoreOperator.isPresent()) return false;

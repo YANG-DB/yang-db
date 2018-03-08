@@ -55,8 +55,26 @@ public class KnowledgeRuleBasedStatisticalProviderTest {
         group = new EPropGroup(101,
                 new EProp(102, "context", Constraint.of(ConstraintOp.eq,"global")),
                 new EProp(102, "context", Constraint.of(ConstraintOp.eq,"context1")),
+                new EProp(102, "context", (Constraint) null),
                 new EProp(102, "deleteTime", Constraint.of(ConstraintOp.empty)));
         assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 2000,0.5);
+
+        eTyped = new ETyped(1, "a", "Entity", 0, 0);
+        group = new EPropGroup(101,
+                new EProp(102, "context", Constraint.of(ConstraintOp.eq,"global")),
+                new EProp(102, "context", (Constraint) null),
+                new EProp(102, "context", Constraint.of(ConstraintOp.eq,"context1")),
+                new EProp(102, "deleteTime", Constraint.of(ConstraintOp.empty)));
+        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 2000,0.5);
+
+        eTyped = new ETyped(1, "a", "Entity", 0, 0);
+        group = new EPropGroup(101,
+                new EProp(102, "context", Constraint.of(ConstraintOp.eq,"global")),
+                new EProp(102, "context", (Constraint) null),
+                new EProp(102, "stringValue", Constraint.of(ConstraintOp.like,"*")),
+                new EProp(102, "context", Constraint.of(ConstraintOp.eq,"context1")),
+                new EProp(102, "deleteTime", Constraint.of(ConstraintOp.empty)));
+        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 500000,0.5);
     }
 
     @Test

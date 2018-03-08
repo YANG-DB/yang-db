@@ -250,6 +250,20 @@ public class LikeConstraintTransofrmationAsgStrategyTest {
     }
 
     @Test
+    public void testLikeWith2ConsecutiveWildcardsOnly() {
+        AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
+                .next(typed(1, "Person", "A"))
+                .next(quant1(2, all))
+                .in(ePropGroup(3, EProp.of(3, "name", Constraint.of(ConstraintOp.like, "**"))))
+                .build();
+
+        asgStrategy.apply(asgQuery, context);
+
+        EPropGroup actual = AsgQueryUtil.<EPropGroup>element(asgQuery, 3).get().geteBase();
+        Assert.assertTrue(actual.getProps().isEmpty());
+    }
+
+    @Test
     public void testLikeWith2ConsecutiveWildcards_Ending() {
         AsgQuery asgQuery = AsgQuery.Builder.start("query1", "ont")
                 .next(typed(1, "Person", "A"))

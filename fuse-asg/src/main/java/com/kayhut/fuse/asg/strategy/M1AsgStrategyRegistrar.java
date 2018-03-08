@@ -3,6 +3,7 @@ package com.kayhut.fuse.asg.strategy;
 import com.google.inject.Inject;
 import com.kayhut.fuse.asg.strategy.constraint.ConstraintIterableTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.constraint.ConstraintTypeTransformationAsgStrategy;
+import com.kayhut.fuse.asg.strategy.constraint.LikeConstraintTypeTransformationAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.EntityPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.HQuantifierPropertiesGroupingAsgStrategy;
 import com.kayhut.fuse.asg.strategy.propertyGrouping.Quant1PropertiesGroupingAsgStrategy;
@@ -35,6 +36,7 @@ public class M1AsgStrategyRegistrar implements AsgStrategyRegistrar {
                 new RelPropertiesGroupingAsgStrategy(),
                 new ConstraintTypeTransformationAsgStrategy(),
                 new ConstraintIterableTransformationAsgStrategy(),
+                new LikeConstraintTypeTransformationAsgStrategy(),
                 new DefaultSelectionAsgStrategy(this.ontologyProvider)
         );
     }
