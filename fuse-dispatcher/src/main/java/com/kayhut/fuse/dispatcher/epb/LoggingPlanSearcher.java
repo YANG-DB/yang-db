@@ -48,8 +48,10 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
         try {
             new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search, ElapsedFrom.now()).log();
             PlanWithCost<P, C> planWithCost = this.planSearcher.search(query);
-            new LogMessage.Impl(this.logger, debug, "execution plan: {}", LogType.of(log), search, ElapsedFrom.now())
-                    .with(this.descriptor.describe(planWithCost)).log();
+            if (planWithCost != null) {
+                new LogMessage.Impl(this.logger, debug, "execution plan: {}", LogType.of(log), search, ElapsedFrom.now())
+                        .with(this.descriptor.describe(planWithCost)).log();
+            }
             return planWithCost;
         } catch (Exception ex) {
             thrownException = true;

@@ -17,6 +17,7 @@ import io.restassured.response.ResponseBody;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 
@@ -41,8 +42,9 @@ public class FuseClient {
 
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query, PlanTraceOptions planTraceOptions) throws IOException {
         CreateQueryRequest request = new CreateQueryRequest();
-        request.setId("1");
-        request.setName("test");
+        String id = UUID.randomUUID().toString();
+        request.setId(id);
+        request.setName(id);
         request.setQuery(query);
         request.setPlanTraceOptions(planTraceOptions);
         return new ObjectMapper().readValue(unwrap(postRequest(queryStoreUrl, request)), QueryResourceInfo.class);
