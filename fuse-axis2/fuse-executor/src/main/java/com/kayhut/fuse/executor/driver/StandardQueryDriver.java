@@ -42,10 +42,7 @@ public class StandardQueryDriver extends QueryDriverBase {
     protected QueryResource createResource(Query query, AsgQuery asgQuery, QueryMetadata metadata) {
         AsgQuery newAsgQuery = this.queryRewriter.transform(asgQuery);
 
-        PlanWithCost<Plan, PlanDetailedCost> planWithCost = null;
-        synchronized (sync) {
-            planWithCost = this.planSearcher.search(newAsgQuery);
-        }
+        PlanWithCost<Plan, PlanDetailedCost> planWithCost = this.planSearcher.search(newAsgQuery);
 
         if (planWithCost == null) {
             throw new IllegalStateException("No valid plan was found for query " + (AsgQueryDescriptor.toString(asgQuery)));
