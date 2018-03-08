@@ -103,21 +103,26 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
                 @Override
                 public Statistics.SummaryStatistics getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter) {
                     Statistics.SummaryStatistics nodeStatistics = getNodeStatistics(item);
-                    OptionalDouble max = entityFilter.getProps().stream()
-                            .filter(p -> !isFilterIgnore(p))
+                    OptionalDouble max = OptionalDouble.of(1);
+                    boolean ignoreGroup = entityFilter.getProps().stream()
                             .filter(p -> p.getCon() != null)
-                            .mapToDouble(f -> {
-                                String property = f.getpType();
-                                int propCardinality = 1;
-
-                                if (property.equals(FIELD_ID) && getNode(map, item).containsKey(property)) {
-                                    propCardinality = (int) ((Map) getNode(map, item).get(property)).getOrDefault(f.getCon().getExpr(), getNode(map, item).get(DEFAULT_FILTER));
-                                } else {
-                                    propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
-                                }
-                                ConstraintOp op = f.getCon().getOp();
-                                return getOperatorAlpha(map, op) * propCardinality;
-                            }).max();
+                            .anyMatch(p -> isFilterIgnore(p));
+                    if(!ignoreGroup) {
+                        max = entityFilter.getProps().stream()
+                                .filter(p -> p.getCon() != null)
+                                .filter(p -> !isFilterIgnore(p))
+                                .mapToDouble(f -> {
+                                    String property = f.getpType();
+                                    int propCardinality;
+                                    if (property.equals(FIELD_ID) && getNode(map, item).containsKey(property)) {
+                                        propCardinality = (int) ((Map) getNode(map, item).get(property)).getOrDefault(f.getCon().getExpr(), getNode(map, item).get(DEFAULT_FILTER));
+                                    } else {
+                                        propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
+                                    }
+                                    ConstraintOp op = f.getCon().getOp();
+                                    return getOperatorAlpha(map, op) * propCardinality;
+                                }).max();
+                    }
                     double maxValue = Math.max(max.orElse(1), 1);
                     return new Statistics.SummaryStatistics(nodeStatistics.getTotal() / maxValue, nodeStatistics.getCardinality() / maxValue);
                 }

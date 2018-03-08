@@ -55,6 +55,10 @@ public class KnowledgeRuleBasedStatisticalProviderTest {
         assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 1000,0.5);
 
         eTyped = new ETyped(1, "a", "Entity", 0, 0);
+        group = new EPropGroup(101, new EProp(102, "stam", (Constraint) null));
+        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 500000,0.5);
+
+        eTyped = new ETyped(1, "a", "Entity", 0, 0);
         group = new EPropGroup(101, new EProp(102, "logicalId", Constraint.of(ConstraintOp.likeAny,Arrays.asList("*","stam"))));
         assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 500000,0.5);
 
@@ -110,7 +114,7 @@ public class KnowledgeRuleBasedStatisticalProviderTest {
         group = new EPropGroup(101,
                 new EProp(102, "logicalId", Constraint.of(ConstraintOp.eq,"2")),
                 new EProp(103, "stringValue", Constraint.of(ConstraintOp.like,Arrays.asList("*","stam"))));
-        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 2,0.5);
+        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 1000000,0.5);
 
         eTyped = new ETyped(1, "a", "Evalue", 0, 0);
         group = new EPropGroup(101,
@@ -202,7 +206,7 @@ public class KnowledgeRuleBasedStatisticalProviderTest {
         group = new EPropGroup(101,
                 new EProp(102, "a", Constraint.of(ConstraintOp.likeAny,"*")),
                 new EProp(103, "b", Constraint.of(ConstraintOp.eq,"8")));
-        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 500,0.5);
+        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 500000,0.5);
 
         eTyped = new ETyped(1, "a", "insighta", 0, 0);
         group = new EPropGroup(101,
