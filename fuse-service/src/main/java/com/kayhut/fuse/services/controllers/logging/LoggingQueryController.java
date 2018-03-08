@@ -5,6 +5,7 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.query.Query;
@@ -54,11 +55,11 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), create.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(request.getId())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start create",
-                    LogType.of(start),
-                    RequestIdByScope.of(request.getId()), create,
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
             return controller.create(request);
         } catch (Exception ex) {
             thrownException = true;
@@ -99,10 +100,10 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfo.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfo",
-                    LogType.of(start), getInfo,
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
             this.logger.trace("start getInfo");
             return controller.getInfo();
         } catch (Exception ex) {
@@ -126,11 +127,11 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryId.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId",
-                    LogType.of(start), getInfoByQueryId,
-                    RequestIdByScope.of(queryId),
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryId", LogType.of(start), getInfoByQueryId).log();
             return controller.getInfo(queryId);
         } catch (Exception ex) {
             thrownException = true;
@@ -153,11 +154,11 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getV1ByQueryId.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getV1ByQueryId",
-                    LogType.of(start), getV1ByQueryId,
-                    RequestIdByScope.of(queryId),
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getV1ByQueryId", LogType.of(start), getV1ByQueryId).log();
             return controller.getV1(queryId);
         } catch (Exception ex) {
             thrownException = true;
@@ -179,11 +180,11 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getAsgByQueryId.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getAsgByQueryId",
-                    LogType.of(start), getAsgByQueryId,
-                    RequestIdByScope.of(queryId),
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getAsgByQueryId", LogType.of(start), getAsgByQueryId).log();
             return controller.getAsg(queryId);
         } catch (Exception ex) {
             thrownException = true;
@@ -242,9 +243,11 @@ public class LoggingQueryController implements QueryController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), delete.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(queryId)).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start delete",
-                    LogType.of(start), delete, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start delete", LogType.of(start), delete).log();
             return controller.delete(queryId);
         } catch (Exception ex) {
             thrownException = true;

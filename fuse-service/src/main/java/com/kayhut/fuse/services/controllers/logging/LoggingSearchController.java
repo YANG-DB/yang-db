@@ -5,6 +5,7 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
 import com.kayhut.fuse.model.transport.ContentResponse;
@@ -46,11 +47,11 @@ public class LoggingSearchController implements SearchController{
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), search.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()), RequestIdByScope.of(request.getId())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start search",
-                    LogType.of(start), search,
-                    RequestIdByScope.of(request.getId()),
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start search", LogType.of(start), search).log();
             return controller.search(request);
         } catch (Exception ex) {
             thrownException = true;

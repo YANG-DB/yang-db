@@ -5,6 +5,7 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
@@ -46,12 +47,13 @@ public class LoggingPageController implements PageController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), create.toString())).time();
         boolean thrownException = false;
 
-        ContentResponse<PageResourceInfo> response = null;
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start create",
-                    LogType.of(start), create, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
-            response = controller.create(queryId, cursorId, createPageRequest);
-            return response;
+            new LogMessage.Impl(this.logger, trace, "start create", LogType.of(start), create).log();
+            return controller.create(queryId, cursorId, createPageRequest);
         } catch (Exception ex) {
             thrownException = true;
             new LogMessage.Impl(this.logger, error, "failed create", LogType.of(failure), create, ElapsedFrom.now())
@@ -59,12 +61,8 @@ public class LoggingPageController implements PageController {
             this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "failure")).mark();
             throw new RuntimeException(ex);
         } finally {
-            if (!thrownException && response!=null) {
+            if (!thrownException) {
                 new LogMessage.Impl(this.logger, info, "finish create",
-                        RequestIdByScope.of(query(queryId)
-                                .cursor(cursorId)
-                                .page(response.getData().getResourceId())
-                                .get()),
                         LogType.of(success), create, ElapsedFrom.now()).log();
                 new LogMessage.Impl(this.logger, trace, "finish create", LogType.of(success), create, ElapsedFrom.now()).log();
                 this.metricRegistry.meter(name(this.logger.getName(), create.toString(), "success")).mark();
@@ -78,13 +76,12 @@ public class LoggingPageController implements PageController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryIdAndCursorId.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                RequestIdByScope.of(query(queryId).cursor(cursorId).get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId",
-                    LogType.of(start), getInfoByQueryIdAndCursorId,
-                    RequestIdByScope.of(query(queryId)
-                            .cursor(cursorId)
-                            .get()),
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorId", LogType.of(start), getInfoByQueryIdAndCursorId).log();
             return controller.getInfo(queryId, cursorId);
         } catch (Exception ex) {
             thrownException = true;
@@ -107,14 +104,12 @@ public class LoggingPageController implements PageController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getInfoByQueryIdAndCursorIdAndPageId.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorIdAndPageId",
-                    LogType.of(start), getInfoByQueryIdAndCursorIdAndPageId,
-                    RequestIdByScope.of(query(queryId)
-                            .cursor(cursorId)
-                            .page(pageId)
-                            .get()),
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfoByQueryIdAndCursorIdAndPageId", LogType.of(start), getInfoByQueryIdAndCursorIdAndPageId).log();
             return controller.getInfo(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;
@@ -137,14 +132,12 @@ public class LoggingPageController implements PageController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getData.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(),
+                RequestId.of(this.requestIdSupplier.get()),
+                RequestIdByScope.of(query(queryId).cursor(cursorId).page(pageId).get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getData",
-                    LogType.of(start), getData,
-                    RequestIdByScope.of(query(queryId)
-                            .cursor(cursorId)
-                            .page(pageId)
-                            .get()),
-                    RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getData", LogType.of(start), getData).log();
             return controller.getData(queryId, cursorId, pageId);
         } catch (Exception ex) {
             thrownException = true;
