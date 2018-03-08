@@ -40,7 +40,7 @@ public class AsgLikeConstraintTypeTransformationStrategyTest {
     public void asgConstraintTransformationStrategyEPropsLongToDateTest() throws Exception {
         AsgStrategyContext asgStrategyContext = new AsgStrategyContext(ont);
         AsgQuery asgQueryWithEProps = Q1();
-        LikeConstraintTypeTransformationAsgStrategy asgConstraintTypeTransformationStrategy = new LikeConstraintTypeTransformationAsgStrategy();
+        RedundantLikeConstraintAsgStrategy asgConstraintTypeTransformationStrategy = new RedundantLikeConstraintAsgStrategy();
 
         //Applying the Strategy on the Eprop with the Epoch time
         asgConstraintTypeTransformationStrategy.apply(asgQueryWithEProps, asgStrategyContext);

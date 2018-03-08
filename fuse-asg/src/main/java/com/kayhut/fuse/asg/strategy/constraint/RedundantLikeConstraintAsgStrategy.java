@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * search for "like" / "likeAny" constraint within a EpropGroup that has "*" expression in it (in the list of expressions within likeAny)
  * if one found => remove the entire EpropGroup
  */
-public class LikeConstraintTypeTransformationAsgStrategy extends ConstraintTransformationAsgStrategyBase {
+public class RedundantLikeConstraintAsgStrategy extends ConstraintTransformationAsgStrategyBase {
 
     @Override
     public void apply(AsgQuery query, AsgStrategyContext context) {
