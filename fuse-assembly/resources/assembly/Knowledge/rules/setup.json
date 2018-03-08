@@ -70,6 +70,7 @@
       "content": 5000,
       "system": 1000
     },
+
     "edges": {
       "hasEvalue": 10000000,
       "hasEvalueReference": 100000,
@@ -79,9 +80,13 @@
   },
   "operators": {
     "eq": 1.0,
-    "like": 0.8,
+    "like": 0.6,
     "likeAny": 0.4,
     "inSet": 0.5,
     "contains": 0.8
+  },
+  "ignore":{
+    "like":"[*]+",
+    "likeAny":"[*]+"
   }
 }

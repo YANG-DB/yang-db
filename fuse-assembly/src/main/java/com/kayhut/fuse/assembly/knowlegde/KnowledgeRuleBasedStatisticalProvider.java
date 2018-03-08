@@ -15,6 +15,7 @@ import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.entity.EUntyped;
+import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.RelPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
@@ -22,14 +23,13 @@ import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
-import java.util.OptionalDouble;
+import java.util.*;
 
 /**
  * Created by lior.perry on 2/18/2018.
  */
 public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatisticsProviderFactory {
+    public static final String IGNORE = "ignore";
     public static final String OPERATORS = "operators";
     public static final String NODES = "nodes";
     public static final String EDGES = "edges";
@@ -51,7 +51,7 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
     }
 
     @Override
-    public void refresh()  {
+    public void refresh() {
         try {
             init();
         } catch (IOException e) {
@@ -103,18 +103,21 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
                 @Override
                 public Statistics.SummaryStatistics getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter) {
                     Statistics.SummaryStatistics nodeStatistics = getNodeStatistics(item);
-                    OptionalDouble max = entityFilter.getProps().stream().filter(p->p.getCon()!=null).mapToDouble(f -> {
-                        String property = f.getpType();
-                        int propCardinality = 1;
+                    OptionalDouble max = entityFilter.getProps().stream()
+                            .filter(p -> !isFilterIgnore(p))
+                            .filter(p -> p.getCon() != null)
+                            .mapToDouble(f -> {
+                                String property = f.getpType();
+                                int propCardinality = 1;
 
-                        if(property.equals(FIELD_ID) && getNode(map, item).containsKey(property)) {
-                            propCardinality = (int) ((Map) getNode(map, item).get(property)).getOrDefault(f.getCon().getExpr(),getNode(map, item).get(DEFAULT_FILTER));
-                        } else {
-                            propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
-                        }
-                        ConstraintOp op = f.getCon().getOp();
-                        return getOperatorAlpha(map, op) * propCardinality;
-                    }).max();
+                                if (property.equals(FIELD_ID) && getNode(map, item).containsKey(property)) {
+                                    propCardinality = (int) ((Map) getNode(map, item).get(property)).getOrDefault(f.getCon().getExpr(), getNode(map, item).get(DEFAULT_FILTER));
+                                } else {
+                                    propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
+                                }
+                                ConstraintOp op = f.getCon().getOp();
+                                return getOperatorAlpha(map, op) * propCardinality;
+                            }).max();
                     double maxValue = Math.max(max.orElse(1), 1);
                     return new Statistics.SummaryStatistics(nodeStatistics.getTotal() / maxValue, nodeStatistics.getCardinality() / maxValue);
                 }
@@ -142,6 +145,20 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
         throw new IllegalArgumentException("Ontology Not Supported " + ontology.getOnt());
     }
 
+    private boolean isFilterIgnore(EProp prop) {
+        //defence against empty expressions
+        if(prop.getCon().getExpr()==null) return true;
+
+        //test regexp against condition expression
+        Optional<String> ignoreOperator = getIgnoreOperator(map, prop.getCon().getOp());
+        if(!ignoreOperator.isPresent()) return false;
+        String ignoreRegExp = ignoreOperator.get();
+        if(prop.getCon().getExpr() instanceof List) {
+            return ((List<String>) prop.getCon().getExpr()).stream().anyMatch(p->p.matches(ignoreRegExp));
+        }
+        return prop.getCon().getExpr().toString().matches(ignoreRegExp);
+    }
+
 
     public static Map getNode(Map map, EEntityBase item) {
         return (Map) ((Map) map.get(NODES)).getOrDefault(((ETyped) item).geteType(), ((Map) map.get(NODES)).get(DEFAULT));
@@ -149,6 +166,13 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
 
     public static double getOperatorAlpha(Map map, ConstraintOp op) {
         return (double) ((Map) map.get(OPERATORS)).getOrDefault(op.toString(), 1.0d);
+    }
+
+    public static Optional<String> getIgnoreOperator(Map map, ConstraintOp op) {
+        return ((Map) map.get(IGNORE)).containsKey(op.toString()) ?
+                Optional.of((String) ((Map) map.get(IGNORE)).get(op.toString())) :
+                Optional.empty();
+
     }
 
     public static Map getEdge(Map map, Rel item) {
