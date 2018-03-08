@@ -28,7 +28,7 @@ public abstract class MultiModalGaussianIntersectionBase implements Test {
 
     protected  List<FieldGenerator> getFieldGenerators( ){
         List<FieldGenerator> fieldGeneratorList = new ArrayList<>();
-        int width = 500 / (numFields-1);
+        int width = 400 / (numFields-1);
         for (int i = 0; i < numFields - 1; i++) {
             fieldGeneratorList.add(new GaussianFieldGenerator("field"+(i+1),1,
                     random,
