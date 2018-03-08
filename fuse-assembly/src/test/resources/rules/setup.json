@@ -3,7 +3,7 @@
     "default": {
       "total": 10000,
       "selectivity": 100,
-      "defaultFilter": 200
+      "defaultFilter": 80
     },
     "Relation": {
       "total": 10000000,
@@ -19,15 +19,15 @@
     "Entity": {
       "total": 10000,
       "selectivity": 50,
-      "defaultFilter": 500,
+      "defaultFilter": 80,
 
       "fieldId": {
         "title": 1000,
-        "nicknames": 500
+        "nicknames": 750
       },
       "id": 20000,
-      "category": 100,
-      "context": 200,
+      "category": 500,
+      "context": 250,
       "logicalId": 10000
     },
     "Evalue": {
@@ -35,8 +35,8 @@
       "selectivity": 1,
       "defaultFilter": 2500,
       "fieldId": {
-        "title": 1000,
-        "nicknames": 500
+        "title": 10000,
+        "nicknames": 5000
       },
 
       "id": 800000,
@@ -51,19 +51,19 @@
     "Insight": {
       "total": 1000,
       "selectivity": 25,
-      "defaultFilter": 200,
+      "defaultFilter": 80,
 
       "id": 2000,
       "entityIds": 1000,
       "refs": 250,
-      "context": 100,
+      "context": 250,
       "content": 500,
       "logicalId": 1000
     },
     "Reference": {
       "total": 5000,
       "selectivity": 100,
-      "defaultFilter": 1000,
+      "defaultFilter":500,
 
       "id": 6000,
       "url": 5000,
