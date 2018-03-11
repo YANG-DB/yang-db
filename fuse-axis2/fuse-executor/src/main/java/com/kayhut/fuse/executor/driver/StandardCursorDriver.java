@@ -1,7 +1,6 @@
 package com.kayhut.fuse.executor.driver;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.cursor.Cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.driver.CursorDriverBase;
@@ -18,7 +17,7 @@ import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 /**
@@ -44,7 +43,7 @@ public class StandardCursorDriver extends CursorDriverBase {
 
     //region CursorDriverBase Implementation
     @Override
-    protected CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest.CursorType cursorType) {
+    protected CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest cursorRequest) {
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = queryResource.getExecutionPlan();
         Ontology ontology = this.ontologyProviders.get(queryResource.getQuery().getOnt()).get();
 
@@ -63,10 +62,10 @@ public class StandardCursorDriver extends CursorDriverBase {
                 new TraversalCursorContext(
                         ontology,
                         queryResource,
-                        cursorType,
+                        cursorRequest,
                         traversal.path()));
 
-        return new CursorResource(cursorId, cursor, cursorType);
+        return new CursorResource(cursorId, cursor, cursorRequest);
     }
     //endregion
 

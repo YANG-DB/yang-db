@@ -10,6 +10,8 @@ import com.kayhut.fuse.model.query.QueryAssert;
 import com.kayhut.fuse.model.query.Start;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import com.kayhut.fuse.services.TestsConfiguration;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import com.kayhut.test.data.DragonsOntology;
@@ -104,8 +106,7 @@ public class QueryTest {
     @Test
     @Ignore
     public void createQueryAndFetch() throws IOException {
-        CreateCursorRequest createCursorRequest = new CreateCursorRequest();
-        createCursorRequest.setCursorType(CreateCursorRequest.CursorType.paths);
+        CreateCursorRequest createCursorRequest = new CreatePathsCursorRequest();
 
         CreatePageRequest createPageRequest = new CreatePageRequest();
         createPageRequest.setPageSize(10);

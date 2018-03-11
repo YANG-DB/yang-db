@@ -1,14 +1,12 @@
 package com.kayhut.fuse.services.controllers;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.kayhut.fuse.dispatcher.driver.CursorDriver;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
-import com.typesafe.config.Config;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import static java.util.UUID.randomUUID;
 import static org.jooby.Status.*;
@@ -28,7 +26,7 @@ public class StandardCursorController implements CursorController {
     @Override
     public ContentResponse<CursorResourceInfo> create(String queryId, CreateCursorRequest createCursorRequest) {
         return Builder.<CursorResourceInfo>builder(randomUUID().toString(),CREATED, SERVER_ERROR)
-                .data(this.driver.create(queryId, createCursorRequest.getCursorType()))
+                .data(this.driver.create(queryId, createCursorRequest))
                 .compose();
     }
 
