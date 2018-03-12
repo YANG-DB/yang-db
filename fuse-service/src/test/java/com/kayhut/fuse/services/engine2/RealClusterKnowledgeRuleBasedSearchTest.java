@@ -17,11 +17,9 @@ import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.FuseResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
-import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -77,7 +75,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -89,7 +87,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
         Assert.assertNotNull(actualPlan);
-        Assert.assertTrue(((EntityOp)actualPlan.getOps().get(0)).getAsgEbase().geteNum()==17);
+        Assert.assertTrue(((EntityOp) actualPlan.getOps().get(0)).getAsgEbase().geteNum() == 17);
 
     }
 
@@ -138,7 +136,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -150,7 +148,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
         Assert.assertNotNull(actualPlan);
-        Assert.assertTrue(((EntityOp)actualPlan.getOps().get(0)).getAsgEbase().geteNum()==5);
+        Assert.assertTrue(((EntityOp) actualPlan.getOps().get(0)).getAsgEbase().geteNum() == 5);
     }
 
     @Test
@@ -198,7 +196,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -210,7 +208,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
         Assert.assertNotNull(actualPlan);
-        Assert.assertTrue(((EntityOp)actualPlan.getOps().get(0)).getAsgEbase().geteNum()==17);
+        Assert.assertTrue(((EntityOp) actualPlan.getOps().get(0)).getAsgEbase().geteNum() == 17);
     }
 
     @Test
@@ -223,27 +221,27 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Evalue"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 5, 40, 42), 0),
-                new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title","nicknames"))),
+                new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
                 new EProp(40, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
                 new Rel(5, $ont.rType$("hasEvalue"), L, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Entity"), 7, 0),
-                new Quant1(7, QuantType.all, Arrays.asList(8, 9,12, 41), 0),
+                new Quant1(7, QuantType.all, Arrays.asList(8, 9, 12, 41), 0),
                 new EProp(8, "context", Constraint.of(ConstraintOp.eq, "globAL")),
                 new Rel(9, $ont.rType$("hasEvalue"), R, null, 10, 0),
                 new ETyped(10, "B", $ont.eType$("Evalue"), 11, 0),
-                new EProp(11, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.inSet, Arrays.asList("description","nicknames"))),
+                new EProp(11, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.inSet, Arrays.asList("description", "nicknames"))),
                 new Rel(12, $ont.rType$("hasEntity"), L, null, 13, 0),
                 new ETyped(13, "B", $ont.eType$("LogicalEntity"), 14, 0),
                 new Rel(14, $ont.rType$("hasEntity"), R, null, 15, 0),
                 new ETyped(15, "B", $ont.eType$("Entity"), 16, 0),
-                new EProp(16, $ont.pType$("context"), Constraint.of(ConstraintOp.ne,"global")),
-                new EProp(41, $ont.pType$("category"), Constraint.of(ConstraintOp.eq,"person")),
-                new EProp(42, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like,"Shirle*"))
+                new EProp(16, $ont.pType$("context"), Constraint.of(ConstraintOp.ne, "global")),
+                new EProp(41, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
+                new EProp(42, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Shirle*"))
         )).build();
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -255,7 +253,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
         Assert.assertNotNull(actualPlan);
-        Assert.assertTrue(((EntityOp)actualPlan.getOps().get(0)).getAsgEbase().geteNum()==1);
+        Assert.assertTrue(((EntityOp) actualPlan.getOps().get(0)).getAsgEbase().geteNum() == 1);
     }
 
     @Test
@@ -268,7 +266,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Evalue"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 5, 40, 42), 0),
-                new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title","nicknames"))),
+                new EProp(3, "fieldId", Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "nicknames"))),
                 new EProp(40, $ont.pType$("deleteTime"), Constraint.of(ConstraintOp.empty)),
                 new Rel(5, $ont.rType$("hasEvalue"), L, null, 6, 0),
                 new ETyped(6, "B", $ont.eType$("Entity"), 7, 0),
@@ -284,19 +282,19 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
                 new Rel(19, $ont.rType$("hasEntity"), R, null, 20, 0),
                 new ETyped(20, "B", $ont.eType$("Entity"), 21, 0),
                 new Quant1(21, QuantType.all, Arrays.asList(22, 23), 0),
-                new EProp(22, "context", Constraint.of(ConstraintOp.inSet, Arrays.asList("global","cont1"))),
-                new OptionalComp(23,24),
+                new EProp(22, "context", Constraint.of(ConstraintOp.inSet, Arrays.asList("global", "cont1"))),
+                new OptionalComp(23, 24),
                 new Rel(24, $ont.rType$("hasEvalue"), R, null, 25, 0),
                 new ETyped(25, "B", $ont.eType$("Evalue"), 26, 0),
                 new Quant1(26, QuantType.all, Arrays.asList(27), 0),
-                new EProp(27, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.inSet,Arrays.asList("title","desc","nicknames"))),
-                new EProp(41, $ont.pType$("category"), Constraint.of(ConstraintOp.eq,"person")),
-                new EProp(42, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like,"Shirle*"))
+                new EProp(27, $ont.pType$("fieldId"), Constraint.of(ConstraintOp.inSet, Arrays.asList("title", "desc", "nicknames"))),
+                new EProp(41, $ont.pType$("category"), Constraint.of(ConstraintOp.eq, "person")),
+                new EProp(42, $ont.pType$("stringValue"), Constraint.of(ConstraintOp.like, "Shirle*"))
         )).build();
 
 
         QueryResourceInfo queryResourceInfo = fuseClient.postQuery(fuseResourceInfo.getQueryStoreUrl(), query);
-        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), CreateCursorRequest.CursorType.graph);
+        CursorResourceInfo cursorResourceInfo = fuseClient.postCursor(queryResourceInfo.getCursorStoreUrl(), new CreateGraphCursorRequest());
         PageResourceInfo pageResourceInfo = fuseClient.postPage(cursorResourceInfo.getPageStoreUrl(), 1000);
 
         while (!pageResourceInfo.isAvailable()) {
@@ -308,6 +306,6 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
 
         Plan actualPlan = fuseClient.getPlanObject(queryResourceInfo.getExplainPlanUrl());
         Assert.assertNotNull(actualPlan);
-        Assert.assertTrue(((EntityOp)actualPlan.getOps().get(0)).getAsgEbase().geteNum()==1);
+        Assert.assertTrue(((EntityOp) actualPlan.getOps().get(0)).getAsgEbase().geteNum() == 1);
     }
 }
