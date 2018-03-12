@@ -4,6 +4,7 @@ import com.kayhut.fuse.assembly.knowlegde.KnowledgeStaticRuleBasedStatisticalPro
 import com.kayhut.fuse.assembly.knowlegde.KnowlegdeOntology;
 import com.kayhut.fuse.epb.plan.statistics.StatisticsProvider;
 import com.kayhut.fuse.model.ontology.Ontology;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
@@ -43,6 +44,8 @@ public class KnowledgeStaticRuleBasedStatisticalProviderTest {
         assertEquals(statisticsProvider.getNodeStatistics(eTyped).getTotal(), maxScore-200,0.5);
         eTyped = new ETyped(1, "a", "Insight", 0, 0);
         assertEquals(statisticsProvider.getNodeStatistics(eTyped).getTotal(), maxScore-500,0.5);
+        eTyped = new EConcrete(1, "a", "Insight","i00001","i00001", 0, 0);
+        assertEquals(statisticsProvider.getNodeStatistics(eTyped).getTotal(), 0,0.5);
     }
 
     @Test
@@ -115,6 +118,10 @@ public class KnowledgeStaticRuleBasedStatisticalProviderTest {
         eTyped = new ETyped(1, "a", "Entity", 0, 0);
         group = new EPropGroup(101, new EProp(102, "stam", Constraint.of(ConstraintOp.eq,"123")));
         assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), maxScore-400,1);
+
+        eTyped = new EConcrete(1, "a", "Insight","i00001","i00001", 0, 0);
+        group = new EPropGroup(101, new EProp(102, "stam", Constraint.of(ConstraintOp.eq,"123")));
+        assertEquals(statisticsProvider.getNodeFilterStatistics(eTyped, group).getTotal(), 0,1);
 
         eTyped = new ETyped(1, "a", "Entity", 0, 0);
         group = new EPropGroup(101, new EProp(102, "stam", (Constraint) null));

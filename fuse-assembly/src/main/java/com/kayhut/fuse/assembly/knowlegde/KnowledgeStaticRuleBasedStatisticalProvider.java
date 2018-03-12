@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.execution.plan.Direction;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
+import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
 import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.properties.EProp;
@@ -39,6 +40,7 @@ public class KnowledgeStaticRuleBasedStatisticalProvider implements RefreshableS
     public static final String FILTER = "filter";
     public static final String COMBINER = "combined";
     public static final String MAX_SCORE = "maxScore";
+    public static final int SCORE_FACTOR = 10;
 
     private Map<String, Object> map;
     private double maxScore;
@@ -87,13 +89,13 @@ public class KnowledgeStaticRuleBasedStatisticalProvider implements RefreshableS
             return new StatisticsProvider() {
                 @Override
                 public Statistics.SummaryStatistics getNodeStatistics(EEntityBase item) {
-                    double ruleScore = 10*getRuleScore((ETyped) item);
+                    double ruleScore = SCORE_FACTOR *getRuleScore((ETyped) item);
                     return new Statistics.SummaryStatistics(maxScore-ruleScore, maxScore-ruleScore);
                 }
 
                 @Override
                 public Statistics.SummaryStatistics getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter) {
-                    double ruleScore = 10*getRuleScore((ETyped) item, entityFilter);
+                    double ruleScore = SCORE_FACTOR *getRuleScore((ETyped) item, entityFilter);
                     return new Statistics.SummaryStatistics(maxScore-ruleScore, maxScore-ruleScore);
                 }
 
@@ -122,6 +124,10 @@ public class KnowledgeStaticRuleBasedStatisticalProvider implements RefreshableS
     }
 
     public int getRuleScore(ETyped item) {
+        //EConcrete overrides all other rules
+        if(item instanceof EConcrete)
+            return (int) maxScore/ SCORE_FACTOR;
+
         OptionalInt max = ((List) map.get(RULES)).stream()
                 .filter(rule -> ((Map) rule).get(NODE).equals(item.geteType()))
                 .filter(rule -> !((Map) rule).containsKey(FILTER))
