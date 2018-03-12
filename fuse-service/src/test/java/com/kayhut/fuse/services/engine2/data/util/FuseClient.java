@@ -1,19 +1,18 @@
 package com.kayhut.fuse.services.engine2.data.util;
 
 import com.cedarsoftware.util.io.JsonReader;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.CountEstimatesCost;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
 import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.*;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.*;
-import io.restassured.response.ResponseBody;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 
 import java.io.IOException;
 import java.util.Map;
@@ -63,14 +62,14 @@ public class FuseClient {
             Query query,
             String id,
             String name,
-            CreateCursorRequest.CursorType cursorType,
+            CreateCursorRequest cursorRequest,
             int pageSize) throws IOException {
 
         CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest(
                 id,
                 name,
                 query,
-                new CreateCursorRequest(cursorType),
+                cursorRequest,
                 new CreatePageRequest(pageSize)
         );
 
@@ -78,14 +77,11 @@ public class FuseClient {
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
-        return this.postCursor(cursorStoreUrl, CreateCursorRequest.CursorType.paths);
+        return this.postCursor(cursorStoreUrl, new CreatePathsCursorRequest());
     }
 
-    public CursorResourceInfo postCursor(String cursorStoreUrl, CreateCursorRequest.CursorType cursorType) throws IOException {
-        CreateCursorRequest request = new CreateCursorRequest();
-        request.setCursorType(cursorType);
-
-        return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, request)), CursorResourceInfo.class);
+    public CursorResourceInfo postCursor(String cursorStoreUrl, CreateCursorRequest cursorRequest) throws IOException {
+        return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, cursorRequest)), CursorResourceInfo.class);
     }
 
     public PageResourceInfo postPage(String pageStoreUrl, int pageSize) throws IOException {

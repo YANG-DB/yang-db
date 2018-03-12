@@ -1,24 +1,14 @@
 package com.kayhut.fuse.dispatcher.driver;
 
 import com.google.inject.Inject;
-import com.kayhut.fuse.dispatcher.cursor.Cursor;
-import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
-import com.kayhut.fuse.dispatcher.gta.PlanTraversalTranslator;
-import com.kayhut.fuse.dispatcher.gta.TranslationContext;
-import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
 import com.kayhut.fuse.dispatcher.resource.CursorResource;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.dispatcher.resource.store.ResourceStore;
 import com.kayhut.fuse.dispatcher.urlSupplier.AppUrlSupplier;
-import com.kayhut.fuse.model.execution.plan.PlanWithCost;
-import com.kayhut.fuse.model.execution.plan.composite.Plan;
-import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.kayhut.fuse.model.ontology.Ontology;
 import com.kayhut.fuse.model.resourceInfo.CursorResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.StoreResourceInfo;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import javaslang.collection.Stream;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 
 import java.util.Optional;
 
@@ -36,19 +26,19 @@ public abstract class CursorDriverBase implements CursorDriver {
 
     //region CursorDriver Implementation
     @Override
-    public Optional<CursorResourceInfo> create(String queryId, CreateCursorRequest.CursorType cursorType) {
+    public Optional<CursorResourceInfo> create(String queryId, CreateCursorRequest cursorRequest) {
         Optional<QueryResource> queryResource = this.resourceStore.getQueryResource(queryId);
         if (!queryResource.isPresent()) {
             return Optional.empty();
         }
 
         String cursorId = queryResource.get().getNextCursorId();
-        this.resourceStore.addCursorResource(queryId, this.createResource(queryResource.get(), cursorId, cursorType));
+        this.resourceStore.addCursorResource(queryId, this.createResource(queryResource.get(), cursorId, cursorRequest));
 
         return Optional.of(new CursorResourceInfo(
                 urlSupplier.resourceUrl(queryId, cursorId),
                 cursorId,
-                cursorType,
+                cursorRequest,
                 urlSupplier.pageStoreUrl(queryId, cursorId)));
     }
 
@@ -83,7 +73,7 @@ public abstract class CursorDriverBase implements CursorDriver {
         return Optional.of(new CursorResourceInfo(
                 urlSupplier.resourceUrl(queryId, cursorId),
                 cursorId,
-                cursorResource.get().getCursorType(),
+                cursorResource.get().getCursorRequest(),
                 urlSupplier.pageStoreUrl(queryId, cursorId)));
     }
 
@@ -100,7 +90,7 @@ public abstract class CursorDriverBase implements CursorDriver {
     //endregion
 
     //region Protected Abstract Methods
-    protected abstract CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest.CursorType cursorType);
+    protected abstract CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest cursorRequest);
     //endregion
 
     //region Fields

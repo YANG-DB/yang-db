@@ -1,6 +1,7 @@
 package com.kayhut.fuse.model.transport;
 
 import com.kayhut.fuse.model.query.Query;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 /**
  * Created by Roman on 6/26/2017.
