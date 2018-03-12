@@ -54,10 +54,7 @@ import java.util.concurrent.Executors;
 import static com.kayhut.fuse.model.query.Rel.Direction.L;
 import static com.kayhut.fuse.model.query.Rel.Direction.R;
 
-/**
- * Created by roman.margolis on 02/10/2017.
- */
-public class RealKickRuleBaseClusterTest {
+public class RealKnowledgeRuleBaseClusterTest {
     @Test
     @Ignore
     public void test_fetchEntityById() throws IOException, InterruptedException {
