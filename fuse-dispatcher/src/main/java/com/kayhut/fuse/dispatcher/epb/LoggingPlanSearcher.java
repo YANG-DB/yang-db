@@ -22,14 +22,15 @@ import static com.kayhut.fuse.dispatcher.logging.LogType.*;
  * Created by roman.margolis on 28/11/2017.
  */
 public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
-    public static final String planSearcherParameter = "LoggingPlanSearcher.@planSearcher";
+    public static final String planSearcherParameter = "LoggingPlanSearcher.@descriptor";
+    public static final String descriptorParameter = "LoggingPlanSearcher.@planSearcher";
     public static final String loggerParameter = "LoggingPlanSearcher.@logger";
 
     //region Constructors
     @Inject
     public LoggingPlanSearcher(
             @Named(planSearcherParameter) PlanSearcher<P, C, Q> planSearcher,
-            Descriptor<PlanWithCost<P, C>> descriptor,
+            @Named(descriptorParameter) Descriptor<PlanWithCost<P, C>> descriptor,
             @Named(loggerParameter) Logger logger,
             MetricRegistry metricRegistry) {
         this.logger = logger;

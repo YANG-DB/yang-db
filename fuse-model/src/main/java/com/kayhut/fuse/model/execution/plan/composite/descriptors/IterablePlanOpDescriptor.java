@@ -6,6 +6,7 @@ import com.kayhut.fuse.model.descriptors.ToStringDescriptor;
 import com.kayhut.fuse.model.execution.plan.AsgEBaseContainer;
 import com.kayhut.fuse.model.execution.plan.PlanOp;
 import com.kayhut.fuse.model.execution.plan.composite.CompositePlanOp;
+import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.entity.EntityJoinOp;
 import com.kayhut.fuse.model.execution.plan.entity.GoToEntityOp;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
@@ -14,6 +15,7 @@ import javaslang.collection.Stream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.function.Function;
 
 /**
  * Created by roman.margolis on 30/11/2017.
@@ -89,6 +91,16 @@ public class IterablePlanOpDescriptor implements Descriptor<Iterable<PlanOp>> {
         }
 
         return "";
+    }
+    //endregion
+
+    //region Properties
+    public CompositeDescriptor<PlanOp> getCompositeDescriptor() {
+        return compositeDescriptor;
+    }
+
+    public void setCompositeDescriptor(CompositeDescriptor<PlanOp> compositeDescriptor) {
+        this.compositeDescriptor = compositeDescriptor;
     }
     //endregion
 
