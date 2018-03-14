@@ -30,7 +30,7 @@ public class LoggingPlanSearcher<P, C, Q> implements PlanSearcher<P, C, Q> {
     @Inject
     public LoggingPlanSearcher(
             @Named(planSearcherParameter) PlanSearcher<P, C, Q> planSearcher,
-            @Named(descriptorParameter) Descriptor<PlanWithCost<P, C>> descriptor,
+            Descriptor<PlanWithCost<P, C>> descriptor,
             @Named(loggerParameter) Logger logger,
             MetricRegistry metricRegistry) {
         this.logger = logger;

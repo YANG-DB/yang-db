@@ -546,6 +546,7 @@ public class RealKnowledgeRuleBaseClusterTest {
     }
 
     @Test
+    @Ignore
     public void test18() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();

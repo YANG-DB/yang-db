@@ -20,6 +20,7 @@ import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.cursor.CreateGraphCursorRequest;
 import com.kayhut.fuse.services.engine2.data.util.FuseClient;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ import static com.kayhut.fuse.model.query.Rel.Direction.R;
 public class RealClusterKnowledgeRuleBasedSearchTest {
 
     @Test
+    @Ignore
     public void testAdvancedSearch() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -92,6 +94,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     }
 
     @Test
+    @Ignore
     public void testAdvancedSearchFieldId() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -152,6 +155,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     }
 
     @Test
+    @Ignore
     public void testAdvancedSearchFieldIdWithAsteriskOnly() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -212,6 +216,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     }
 
     @Test
+    @Ignore
     public void testBasicSearchNoContext() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
@@ -257,6 +262,7 @@ public class RealClusterKnowledgeRuleBasedSearchTest {
     }
 
     @Test
+    @Ignore
     public void testBasicSearchWithContext() throws IOException, InterruptedException {
         FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
         FuseResourceInfo fuseResourceInfo = fuseClient.getFuseInfo();
