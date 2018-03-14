@@ -34,7 +34,7 @@ public class StandardCursorDriver extends CursorDriverBase {
             UniGraphProvider uniGraphProvider,
             AppUrlSupplier urlSupplier) {
         super(resourceStore, urlSupplier);
-        this.ontologyProviders = ontologyProvider;
+        this.ontologyProvider = ontologyProvider;
         this.planTraversalTranslator = planTraversalTranslator;
         this.cursorFactory = cursorFactory;
         this.uniGraphProvider = uniGraphProvider;
@@ -45,7 +45,7 @@ public class StandardCursorDriver extends CursorDriverBase {
     @Override
     protected CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest cursorRequest) {
         PlanWithCost<Plan, PlanDetailedCost> executionPlan = queryResource.getExecutionPlan();
-        Ontology ontology = this.ontologyProviders.get(queryResource.getQuery().getOnt()).get();
+        Ontology ontology = this.ontologyProvider.get(queryResource.getQuery().getOnt()).get();
 
         GraphTraversal<?, ?> traversal = null;
         try {
@@ -70,7 +70,7 @@ public class StandardCursorDriver extends CursorDriverBase {
     //endregion
 
     //region Fields
-    private OntologyProvider ontologyProviders;
+    private OntologyProvider ontologyProvider;
     private PlanTraversalTranslator planTraversalTranslator;
     private CursorFactory cursorFactory;
     private UniGraphProvider uniGraphProvider;
