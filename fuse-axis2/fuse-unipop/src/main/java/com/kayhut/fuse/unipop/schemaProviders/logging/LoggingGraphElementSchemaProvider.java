@@ -221,7 +221,7 @@ public class LoggingGraphElementSchemaProvider implements GraphElementSchemaProv
 
         try {
             new LogMessage.Impl(this.verboseLogger, trace, "start getEdgeLabels", LogType.of(start), getEdgeLabels, ElapsedFrom.now()).log();
-            Iterable<String> vertexLabels = this.schemaProvider.getVertexLabels();
+            Iterable<String> vertexLabels = this.schemaProvider.getEdgeLabels();
             if (Stream.ofAll(vertexLabels).isEmpty()) {
                 new LogMessage.Impl(this.warnLogger, warn, "no edge labels found",
                         LogType.of(log), getVertexLabels, ElapsedFrom.now()).log();

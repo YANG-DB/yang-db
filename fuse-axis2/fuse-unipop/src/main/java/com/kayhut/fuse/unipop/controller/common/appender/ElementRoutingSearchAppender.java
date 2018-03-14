@@ -5,6 +5,7 @@ import com.kayhut.fuse.unipop.controller.common.context.ElementControllerContext
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
 import com.kayhut.fuse.unipop.controller.search.SearchBuilder;
 import com.kayhut.fuse.unipop.controller.utils.traversal.TraversalValuesByKeyProvider;
+import com.kayhut.fuse.unipop.schemaProviders.GraphElementSchema;
 import com.kayhut.fuse.unipop.structure.ElementType;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Element;
@@ -27,12 +28,13 @@ public class ElementRoutingSearchAppender implements SearchAppender<CompositeCon
 
         Set<String> labels = getContextRelevantLabels(context);
 
+        // currently supporting routing in this appender in element context only for vertices
         Set<String> routingPropertyNames =
                 Stream.ofAll(labels)
                 .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
                               context.getSchemaProvider().getVertexSchemas(label) :
-                              context.getSchemaProvider().getEdgeSchemas(label))
-                .map(elementSchema -> elementSchema.getRouting())
+                              Collections.emptyList())
+                .map(GraphElementSchema::getRouting)
                 .filter(Optional::isPresent)
                 .map(routing -> routing.get().getRoutingProperty().getName())
                 .toJavaSet();

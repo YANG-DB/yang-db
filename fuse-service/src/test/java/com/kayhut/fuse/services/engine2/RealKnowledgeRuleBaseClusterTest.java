@@ -683,6 +683,21 @@ public class RealKnowledgeRuleBaseClusterTest {
 
     @Test
     @Ignore
+    public void testAvgQueryLatency() throws IOException, InterruptedException {
+        List<Long> elapsedTimes = new ArrayList<>();
+        for(int i = 0 ; i < 100 ; i++) {
+            long start = System.currentTimeMillis();
+            test9();
+            long elapsed = System.currentTimeMillis() - start;
+            elapsedTimes.add(elapsed);
+        }
+
+        double avg = Stream.ofAll(elapsedTimes).average().get();
+        System.out.println("avg: " + avg);
+    }
+
+    @Test
+    @Ignore
     public void testParallelQueries() throws IOException, InterruptedException {
         Random random = new Random();
 
