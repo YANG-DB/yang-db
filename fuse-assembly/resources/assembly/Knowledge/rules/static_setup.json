@@ -49,8 +49,7 @@
         },
         {
          "score":90,
-         "node":"Insight",
-         "filter":["system"]
+         "node":"Insight"
         },
         {
          "score":80,
