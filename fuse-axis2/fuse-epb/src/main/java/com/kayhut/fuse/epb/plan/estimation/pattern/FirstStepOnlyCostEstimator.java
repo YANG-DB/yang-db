@@ -13,20 +13,27 @@ import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
  * Created by lior.perry on 2/19/2018.
  */
 public class FirstStepOnlyCostEstimator implements CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> {
+    public final static String costEstimatorParameter = "FirstStepOnlyCostEstimator.@estimator";
 
-    private CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator;
-
+    //region Constructors
     @Inject
     public FirstStepOnlyCostEstimator(
-            @Named(RegexPatternCostEstimator.costEstimatorName)
-            CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> estimator) {
-        this.estimator = estimator;
+            @Named(costEstimatorParameter)
+            CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> costEstimator) {
+        this.costEstimator = costEstimator;
     }
+    //endregion
 
+    //region CostEstimator Implementation
     @Override
     public PlanWithCost<Plan, PlanDetailedCost> estimate(Plan plan, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery> context) {
-        if(plan.getOps().size()>2)
-            return new PlanWithCost<>(plan, context.getPreviousCost().get().getCost());
-        return estimator.estimate(plan, context);
+        return plan.getOps().size() > 2 ?
+                new PlanWithCost<>(plan, context.getPreviousCost().get().getCost()) :
+                this.costEstimator.estimate(plan, context);
     }
+    //endregion
+
+    //region Fields
+    private CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>> costEstimator;
+    //endregion
 }
