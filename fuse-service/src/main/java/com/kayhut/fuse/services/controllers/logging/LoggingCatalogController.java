@@ -48,9 +48,10 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getOntology.toString())).time();
         boolean thrownException = false;
 
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getOntology",
-                    LogType.of(start), getOntology, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
             return controller.getOntology(id);
         } catch (Exception ex) {
             thrownException = true;
@@ -73,9 +74,10 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getOntology.toString())).time();
         boolean thrownException = false;
 
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getOntology",
-                    LogType.of(start), getOntology, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getOntology", LogType.of(start), getOntology).log();
             return controller.getOntologies();
         } catch (Exception ex) {
             thrownException = true;
@@ -98,9 +100,10 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getSchema.toString())).time();
         boolean thrownException = false;
 
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getSchema",
-                    LogType.of(start), getSchema, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
             return controller.getSchema(id);
         } catch (Exception ex) {
             thrownException = true;
@@ -123,9 +126,10 @@ public class LoggingCatalogController implements CatalogController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), getSchema.toString())).time();
         boolean thrownException = false;
 
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getSchema",
-                    LogType.of(start), getSchema, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getSchema", LogType.of(start), getSchema).log();
             return controller.getSchemas();
         } catch (Exception ex) {
             thrownException = true;

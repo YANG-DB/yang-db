@@ -44,9 +44,10 @@ public class LoggingApiDescriptionController implements ApiDescriptionController
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), "getInfo")).time();
         boolean thrownException = false;
 
+        LogMessage.MDCWriter.Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start getInfo",
-                    LogType.of(start), getInfo, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start getInfo", LogType.of(start), getInfo).log();
             return controller.getInfo();
         } catch (Exception ex) {
             thrownException = true;

@@ -51,7 +51,7 @@ public interface LogMessage {
             }
             //endregion
 
-            //region MDCProp Implementation
+            //region MDCWriter Implementation
             @Override
             public void write() {
                 MDC.put(this.key, this.value);
@@ -61,6 +61,35 @@ public interface LogMessage {
             //region Fields
             private String key;
             private String value;
+            //endregion
+        }
+
+        class Composite implements MDCWriter {
+            //region Static
+            public static Composite of(MDCWriter...writers) {
+                return new Composite(writers);
+            }
+            //endregion
+
+            //region Constructors
+            public Composite(MDCWriter...writers) {
+                this(Stream.of(writers));
+            }
+
+            public Composite(Iterable<MDCWriter> writers) {
+                this.writers = writers;
+            }
+            //endregion
+
+            //region MDCWriter Implementation
+            @Override
+            public void write() {
+                Stream.ofAll(this.writers).forEach(MDCWriter::write);
+            }
+            //endregion
+
+            //region Fields
+            private Iterable<MDCWriter> writers;
             //endregion
         }
     }

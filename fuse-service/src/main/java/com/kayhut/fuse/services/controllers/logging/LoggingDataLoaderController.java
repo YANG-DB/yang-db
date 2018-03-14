@@ -5,6 +5,7 @@ import com.codahale.metrics.Timer;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.kayhut.fuse.dispatcher.logging.*;
+import com.kayhut.fuse.dispatcher.logging.LogMessage.MDCWriter.Composite;
 import com.kayhut.fuse.logging.RequestId;
 import com.kayhut.fuse.model.transport.ContentResponse;
 import com.kayhut.fuse.services.controllers.DataLoaderController;
@@ -42,9 +43,10 @@ public class LoggingDataLoaderController implements DataLoaderController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), load.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start load",
-                    LogType.of(start), load, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start load", LogType.of(start), load).log();
             return controller.load(ontology);
         } catch (Exception ex) {
             thrownException = true;
@@ -67,9 +69,10 @@ public class LoggingDataLoaderController implements DataLoaderController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), init.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start init",
-                    LogType.of(start), init, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start init", LogType.of(start), init).log();
             return controller.init(ontology);
         } catch (Exception ex) {
             thrownException = true;
@@ -92,9 +95,10 @@ public class LoggingDataLoaderController implements DataLoaderController {
         Timer.Context timerContext = this.metricRegistry.timer(name(this.logger.getName(), drop.toString())).time();
         boolean thrownException = false;
 
+        Composite.of(Elapsed.now(), ElapsedFrom.now(), RequestId.of(this.requestIdSupplier.get())).write();
+
         try {
-            new LogMessage.Impl(this.logger, trace, "start drop",
-                    LogType.of(start), drop, RequestId.of(this.requestIdSupplier.get()), Elapsed.now(), ElapsedFrom.now()).log();
+            new LogMessage.Impl(this.logger, trace, "start drop", LogType.of(start), drop).log();
             return controller.drop(ontology);
         } catch (Exception ex) {
             thrownException = true;

@@ -22,10 +22,11 @@ public class FilterSourceRoutingSearchAppender implements SearchAppender<Composi
     public boolean append(SearchBuilder searchBuilder, CompositeControllerContext context) {
         Set<String> labels = getContextRelevantLabels(context);
 
+        // not supporintg currently routing fields for edges
         Set<String> routingFields = Stream.ofAll(labels)
                 .flatMap(label -> context.getElementType().equals(ElementType.vertex) ?
                         context.getSchemaProvider().getVertexSchemas(label) :
-                        context.getSchemaProvider().getEdgeSchemas(label))
+                        Collections.emptyList())
                 .map(GraphElementSchema::getRouting)
                 .filter(Optional::isPresent)
                 .map(routing -> routing.get().getRoutingProperty().getName())
