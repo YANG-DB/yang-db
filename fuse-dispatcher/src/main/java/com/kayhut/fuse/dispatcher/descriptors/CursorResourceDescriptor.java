@@ -10,7 +10,7 @@ public class CursorResourceDescriptor implements Descriptor<CursorResource> {
     //region Descriptor Implementation
     @Override
     public String describe(CursorResource item) {
-        return String.format("Cursor{id: %s, type: %s}", item.getCursorId(), item.getCursorType());
+        return String.format("Cursor{id: %s, type: %s}", item.getCursorId(), item.getCursorRequest());
     }
     //endregion
 }

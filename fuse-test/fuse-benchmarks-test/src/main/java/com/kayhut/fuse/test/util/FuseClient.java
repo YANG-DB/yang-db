@@ -11,9 +11,10 @@ import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.resourceInfo.*;
 import com.kayhut.fuse.model.results.QueryResult;
 import com.kayhut.fuse.model.transport.*;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreatePathsCursorRequest;
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
-import io.restassured.filter.log.LogDetail;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -69,14 +70,14 @@ public class FuseClient {
             Query query,
             String id,
             String name,
-            CreateCursorRequest.CursorType cursorType,
+            CreateCursorRequest cursorRequest,
             int pageSize) throws IOException {
 
         CreateQueryAndFetchRequest request = new CreateQueryAndFetchRequest(
                 id,
                 name,
                 query,
-                new CreateCursorRequest(cursorType),
+                cursorRequest,
                 new CreatePageRequest(pageSize)
         );
 
@@ -84,14 +85,11 @@ public class FuseClient {
     }
 
     public CursorResourceInfo postCursor(String cursorStoreUrl) throws IOException {
-        return this.postCursor(cursorStoreUrl, CreateCursorRequest.CursorType.paths);
+        return this.postCursor(cursorStoreUrl, new CreatePathsCursorRequest());
     }
 
-    public CursorResourceInfo postCursor(String cursorStoreUrl, CreateCursorRequest.CursorType cursorType) throws IOException {
-        CreateCursorRequest request = new CreateCursorRequest();
-        request.setCursorType(cursorType);
-
-        return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, request)), CursorResourceInfo.class);
+    public CursorResourceInfo postCursor(String cursorStoreUrl, CreateCursorRequest cursorRequest) throws IOException {
+        return new ObjectMapper().readValue(unwrap(postRequest(cursorStoreUrl, cursorRequest)), CursorResourceInfo.class);
     }
 
     public PageResourceInfo postPage(String pageStoreUrl, int pageSize) throws IOException {

@@ -5,7 +5,7 @@ import com.google.inject.PrivateModule;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.model.transport.CreatePageRequest;
 import com.kayhut.fuse.model.transport.CreateQueryRequest;
 import com.kayhut.fuse.model.transport.PlanTraceOptions;
@@ -44,7 +44,7 @@ public class ServiceModule extends ModuleBase {
         // bind requests
         binder.bind(InternalsDriver.class).to(StandardInternalsDriver.class);
         binder.bind(CreateQueryRequest.class).in(RequestScoped.class);
-        binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
+        //binder.bind(CreateCursorRequest.class).in(RequestScoped.class);
         binder.bind(CreatePageRequest.class).in(RequestScoped.class);
 
         //bind request parameters

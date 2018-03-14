@@ -22,6 +22,7 @@ import com.kayhut.fuse.model.resourceInfo.PageResourceInfo;
 import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.transport.*;
 import com.kayhut.fuse.model.transport.ContentResponse.Builder;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import com.kayhut.fuse.services.controllers.*;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;

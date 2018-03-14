@@ -38,7 +38,8 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
     public static final String KNOWLEDGE = "Knowledge";
     public static final String DEFAULT = "default";
     public static final String DEFAULT_FILTER = "defaultFilter";
-    public static final String FIELD_ID = "fieldId";
+    public static final String COMBINERS = "combiners";
+    public static final String COMBINER_FIELDS = "fields";
 
 
     public static final String RULES_SETUP_JSON = "./rules/setup.json";
@@ -104,26 +105,53 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
                 public Statistics.SummaryStatistics getNodeFilterStatistics(EEntityBase item, EPropGroup entityFilter) {
                     Statistics.SummaryStatistics nodeStatistics = getNodeStatistics(item);
                     OptionalDouble max = OptionalDouble.of(1);
+                    OptionalDouble fieldIdMax = OptionalDouble.of(1);
                     boolean ignoreGroup = entityFilter.getProps().stream()
                             .filter(p -> p.getCon() != null)
                             .anyMatch(p -> isFilterIgnore(p));
-                    if(!ignoreGroup) {
+                    if (!ignoreGroup) {
+                        int defaultFilter = getEntityDefaultFilter(map, DEFAULT);
+
+                        //default none staged entity statistics
+                        if (!((Map) map.get(NODES)).containsKey(((ETyped) item).geteType())) {
+                            return new Statistics.SummaryStatistics(nodeStatistics.getTotal() / defaultFilter, nodeStatistics.getCardinality() / defaultFilter);
+                        }
+
+                        //first try getting fieldId prop estimation
+                        fieldIdMax = entityFilter.getProps().stream()
+                                .filter(p -> p.getCon() != null)
+                                .filter(p -> !isFilterIgnore(p))
+                                .filter(p -> p.getpType() != null)
+                                .filter(p -> combiners(map, item).contains(p.getpType()))
+                                .mapToDouble(f -> {
+
+                                    //take the root field estimation
+                                    double fieldsSum = entityFilter.getProps().stream()
+                                            .filter(p -> p.getCon() != null)
+                                            .filter(p -> !isFilterIgnore(p))
+                                            .filter(p -> p.getpType() != null)
+                                            .mapToInt(field -> (int) combinerRootOf(map, item, f.getpType()).getOrDefault(field.getCon().getExpr(),1))
+                                            .sum();
+
+                                    //take the additional combiner field estimation
+                                    double combinersSum = entityFilter.getProps().stream()
+                                            .filter(p -> p.getCon() != null)
+                                            .filter(p -> !isFilterIgnore(p))
+                                            .filter(p -> p.getpType() != null)
+                                            .mapToInt(field -> (int) combinerValuesOf(map, item, f.getpType()).getOrDefault(field.getpType(),1))
+                                            .sum();
+
+                                    return combinersSum + fieldsSum;
+                                }).max();
+                        //get non- fieldId prop estimation
                         max = entityFilter.getProps().stream()
                                 .filter(p -> p.getCon() != null)
                                 .filter(p -> !isFilterIgnore(p))
-                                .mapToDouble(f -> {
-                                    String property = f.getpType();
-                                    int propCardinality;
-                                    if (property.equals(FIELD_ID) && getNode(map, item).containsKey(property)) {
-                                        propCardinality = (int) ((Map) getNode(map, item).get(property)).getOrDefault(f.getCon().getExpr(), getNode(map, item).get(DEFAULT_FILTER));
-                                    } else {
-                                        propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
-                                    }
-                                    ConstraintOp op = f.getCon().getOp();
-                                    return getOperatorAlpha(map, op) * propCardinality;
-                                }).max();
+                                .filter(p -> p.getpType() != null)
+                                .filter(p -> !combiners(map, item).contains(p.getpType()))
+                                .mapToDouble(f -> score(map, item, f)).max();
                     }
-                    double maxValue = Math.max(max.orElse(1), 1);
+                    double maxValue = Math.max(max.orElse(1), fieldIdMax.orElse(1));
                     return new Statistics.SummaryStatistics(nodeStatistics.getTotal() / maxValue, nodeStatistics.getCardinality() / maxValue);
                 }
 
@@ -150,23 +178,42 @@ public class KnowledgeRuleBasedStatisticalProvider implements RefreshableStatist
         throw new IllegalArgumentException("Ontology Not Supported " + ontology.getOnt());
     }
 
-    private boolean isFilterIgnore(EProp prop) {
-        //defence against empty expressions
-        if(prop.getCon().getExpr()==null) return false;
+    private Map combinerRootOf(Map map, EEntityBase item, String pType) {
+        return (Map) ((Map) getNode(map, item).get(pType)).get(COMBINER_FIELDS);
+    }
 
+    private Map combinerValuesOf(Map map, EEntityBase item, String pType) {
+        return (Map) ((Map) getNode(map, item).get(pType)).get(COMBINERS);
+    }
+
+    private List<String> combiners(Map map, EEntityBase item) {
+        return (List<String>) getNode(map, item).getOrDefault(COMBINERS, new ArrayList<String>());
+    }
+
+    private boolean isFilterIgnore(EProp prop) {
         //test regexp against condition expression
         Optional<String> ignoreOperator = getIgnoreOperator(map, prop.getCon().getOp());
-        if(!ignoreOperator.isPresent()) return false;
+        if (!ignoreOperator.isPresent()) return false;
         String ignoreRegExp = ignoreOperator.get();
-        if(prop.getCon().getExpr() instanceof List) {
-            return ((List<String>) prop.getCon().getExpr()).stream().anyMatch(p->p.matches(ignoreRegExp));
+        if (prop.getCon().getExpr() instanceof List) {
+            return ((List<String>) prop.getCon().getExpr()).stream().anyMatch(p -> p.matches(ignoreRegExp));
         }
         return prop.getCon().getExpr().toString().matches(ignoreRegExp);
     }
 
+    public static double score(Map map, EEntityBase item, EProp field) {
+        String property = field.getpType();
+        int propCardinality = (int) getNode(map, item).getOrDefault(property, getNode(map, item).get(DEFAULT_FILTER));
+        ConstraintOp op = field.getCon().getOp();
+        return getOperatorAlpha(map, op) * propCardinality;
+    }
 
     public static Map getNode(Map map, EEntityBase item) {
         return (Map) ((Map) map.get(NODES)).getOrDefault(((ETyped) item).geteType(), ((Map) map.get(NODES)).get(DEFAULT));
+    }
+
+    public static int getEntityDefaultFilter(Map map, String type) {
+        return (int) ((Map) ((Map) map.get(NODES)).get(type)).get(DEFAULT_FILTER);
     }
 
     public static double getOperatorAlpha(Map map, ConstraintOp op) {

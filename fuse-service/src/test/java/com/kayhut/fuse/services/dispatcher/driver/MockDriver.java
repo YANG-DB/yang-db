@@ -16,11 +16,9 @@ import com.kayhut.fuse.model.asgQuery.AsgQuery;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
-import com.kayhut.fuse.model.query.Query;
 import com.kayhut.fuse.model.query.QueryMetadata;
-import com.kayhut.fuse.model.resourceInfo.QueryResourceInfo;
 import com.kayhut.fuse.model.results.QueryResult;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 
 import java.util.Optional;
 
@@ -55,14 +53,14 @@ public class MockDriver {
 
         //region CursorDriverBase Implementation
         @Override
-        protected CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest.CursorType cursorType) {
+        protected CursorResource createResource(QueryResource queryResource, String cursorId, CreateCursorRequest cursorRequest) {
             return new CursorResource(
                     cursorId,
                     cursorFactory.createCursor(
                             new CursorFactory.Context.Impl(
                                     queryResource,
-                                    CreateCursorRequest.CursorType.paths)),
-                    cursorType);
+                                    cursorRequest)),
+                    cursorRequest);
         }
         //endregion
 

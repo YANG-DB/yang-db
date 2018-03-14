@@ -65,6 +65,7 @@
       "eType": "Rvalue",
       "name": "Rvalue",
       "properties": [
+        "relationId",
         "context",
         "authorization",
         "lastUpdateUser",
@@ -85,7 +86,7 @@
       "name": "Reference",
       "properties": [
         "title",
-        "value",
+        "content",
         "url",
         "system",
         "authorization",
@@ -252,6 +253,11 @@
     {
       "pType": "logicalId",
       "name": "logicalId",
+      "type": "string"
+    },
+    {
+      "pType": "relationId",
+      "name": "relationId",
       "type": "string"
     },
     {

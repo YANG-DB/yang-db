@@ -35,7 +35,7 @@ public class LoggingCursorFactory implements CursorFactory {
         TraversalCursorContext loggingTraversalCursorContext = new TraversalCursorContext(
                 traversalCursorContext.getOntology(),
                 traversalCursorContext.getQueryResource(),
-                traversalCursorContext.getCursorType(),
+                traversalCursorContext.getCursorRequest(),
                 new LoggingTraversal<>(traversalCursorContext.getTraversal(), this.traversalLogger));
         return new LoggingCursor(this.cursorFactory.createCursor(loggingTraversalCursorContext), this.cursorLogger);
     }

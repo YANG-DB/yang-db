@@ -1,31 +1,25 @@
 {
   "nodes": {
     "default": {
-      "total": 10000,
-      "selectivity": 100,
-      "defaultFilter": 80
+      "total": 100000,
+      "selectivity": 1,
+      "defaultFilter": 100
     },
     "Relation": {
       "total": 10000000,
-      "selectivity": 50,
-      "defaultFilter": 5000,
-
+      "selectivity": 1,
+      "defaultFilter": 1000,
       "id": 10000000,
-      "entityAId": 10000,
-      "entityBId": 10000,
-      "category": 100,
-      "context": 200
+      "entityAId": 50000,
+      "entityBId": 50000,
+      "category": 1000,
+      "context": 2000
     },
     "Entity": {
       "total": 10000,
-      "selectivity": 50,
-      "defaultFilter": 80,
-
-      "fieldId": {
-        "title": 1000,
-        "nicknames": 750
-      },
-      "id": 20000,
+      "selectivity": 1,
+      "defaultFilter": 100,
+      "id": 10000,
       "category": 500,
       "context": 250,
       "logicalId": 10000
@@ -34,26 +28,42 @@
       "total": 1000000,
       "selectivity": 1,
       "defaultFilter": 2500,
-      "fieldId": {
-        "title": 10000,
-        "nicknames": 5000
-      },
+      "combiners":["fieldId","bdt"],
 
-      "id": 800000,
-      "logicalId": 500000,
-      "context": 10000,
-      "intValue": 50000,
-      "stringValue": 50000,
-      "dateValue": 50000,
-      "floatValue": 50000,
-      "refs": 100000
+      "fieldId": {
+        "fields": {
+          "title": 3000,
+          "nicknames": 5000
+        },
+        "combiners":{
+          "intValue": 50000,
+          "stringValue": 50000,
+          "dateValue": 50000,
+          "floatValue": 50000
+        }
+      },
+      "bdt": {
+        "fields": {
+          "title": 3000,
+          "nicknames": 5000
+        },
+        "combiners":{
+          "intValue": 50000,
+          "stringValue": 50000,
+          "dateValue": 50000,
+          "floatValue": 50000
+        }
+      },
+      "id": 1000000,
+      "logicalId": 1000000,
+      "context": 50000,
+      "refs": 500000
     },
     "Insight": {
       "total": 1000,
-      "selectivity": 25,
-      "defaultFilter": 80,
-
-      "id": 2000,
+      "selectivity": 1,
+      "defaultFilter": 100,
+      "id": 1000,
       "entityIds": 1000,
       "refs": 250,
       "context": 250,
@@ -62,15 +72,13 @@
     },
     "Reference": {
       "total": 5000,
-      "selectivity": 100,
-      "defaultFilter":500,
-
-      "id": 6000,
+      "selectivity": 1,
+      "defaultFilter": 100,
+      "id": 5000,
       "url": 5000,
-      "content": 5000,
+      "content": 3000,
       "system": 1000
     },
-
     "edges": {
       "hasEvalue": 10000000,
       "hasEvalueReference": 100000,
@@ -85,8 +93,8 @@
     "inSet": 0.5,
     "contains": 0.8
   },
-  "ignore":{
-    "like":"[*]+",
-    "likeAny":"[*]+"
+  "ignore": {
+    "like": "[*]+",
+    "likeAny": "[*]+"
   }
 }

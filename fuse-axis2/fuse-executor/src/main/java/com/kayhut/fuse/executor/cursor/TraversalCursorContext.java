@@ -3,11 +3,9 @@ package com.kayhut.fuse.executor.cursor;
 import com.kayhut.fuse.dispatcher.cursor.CursorFactory;
 import com.kayhut.fuse.dispatcher.resource.QueryResource;
 import com.kayhut.fuse.model.ontology.Ontology;
-import com.kayhut.fuse.model.transport.CreateCursorRequest;
+import com.kayhut.fuse.model.transport.cursor.CreateCursorRequest;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Traversal;
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
-import org.apache.tinkerpop.gremlin.structure.Element;
 
 /**
  * Created by Roman on 05/04/2017.
@@ -17,11 +15,11 @@ public class TraversalCursorContext implements CursorFactory.Context {
     public TraversalCursorContext(
             Ontology ontology,
             QueryResource queryResource,
-            CreateCursorRequest.CursorType cursorType,
+            CreateCursorRequest cursorRequest,
             Traversal<?, Path> traversal) {
         this.ontology = ontology;
         this.queryResource = queryResource;
-        this.cursorType = cursorType;
+        this.cursorRequest = cursorRequest;
         this.traversal = traversal;
     }
     //endregion
@@ -33,8 +31,8 @@ public class TraversalCursorContext implements CursorFactory.Context {
     }
 
     @Override
-    public CreateCursorRequest.CursorType getCursorType() {
-        return this.cursorType;
+    public CreateCursorRequest getCursorRequest() {
+        return this.cursorRequest;
     }
     //endregion
 
@@ -51,7 +49,7 @@ public class TraversalCursorContext implements CursorFactory.Context {
     //region Fields
     private Ontology ontology;
     private QueryResource queryResource;
-    private CreateCursorRequest.CursorType cursorType;
+    private CreateCursorRequest cursorRequest;
     private Traversal<?, Path> traversal;
     //endregion
 }
