@@ -26,6 +26,7 @@
       "eType": "Evalue",
       "name": "Evalue",
       "properties": [
+        "entityId",
         "logicalId",
         "context",
         "authorization",
@@ -273,6 +274,11 @@
     {
       "pType": "title",
       "name": "title",
+      "type": "string"
+    },
+    {
+      "pType": "entityId",
+      "name": "entityId",
       "type": "string"
     },
     {

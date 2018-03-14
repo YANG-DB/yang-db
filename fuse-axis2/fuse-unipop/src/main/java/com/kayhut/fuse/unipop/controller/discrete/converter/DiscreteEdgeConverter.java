@@ -1,6 +1,7 @@
 package com.kayhut.fuse.unipop.controller.discrete.converter;
 
 import com.kayhut.fuse.unipop.controller.common.context.VertexControllerContext;
+import com.kayhut.fuse.unipop.controller.common.converter.DataItem;
 import com.kayhut.fuse.unipop.controller.common.converter.ElementConverter;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.EdgeIdProvider;
 import com.kayhut.fuse.unipop.controller.utils.idProvider.HashEdgeIdProvider;
@@ -11,6 +12,7 @@ import com.kayhut.fuse.unipop.schemaProviders.GraphEdgeSchema;
 import com.kayhut.fuse.unipop.schemaProviders.GraphRedundantPropertySchema;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
+import com.sun.corba.se.spi.ior.ObjectId;
 import javaslang.Tuple2;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -24,7 +26,7 @@ import java.util.*;
 /**
  * Created by roman.margolis on 14/09/2017.
  */
-public class DiscreteEdgeConverter<E extends Element> implements ElementConverter<SearchHit, E> {
+public class DiscreteEdgeConverter<E extends Element> implements ElementConverter<DataItem, E> {
     //region Constructors
     public DiscreteEdgeConverter(VertexControllerContext context) {
         this.context = context;
@@ -49,7 +51,7 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
 
     //region ElementConverter Implementation
     @Override
-    public Iterable<E> convert(SearchHit searchHit) {
+    public Iterable<E> convert(DataItem dataItem) {
         Iterable<GraphEdgeSchema> edgeSchemas = context.getSchemaProvider().getEdgeSchemas(this.contextVertexLabel, context.getDirection(), this.contextEdgeLabel);
         if (Stream.ofAll(edgeSchemas).isEmpty()) {
             return null;
@@ -67,11 +69,11 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getEndA().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getEndB().get();
 
-            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, searchHit.sourceAsMap());
-            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, searchHit.sourceAsMap(), inVertexProperties);
+            Map<String, Object> inVertexProperties = createVertexProperties(inEndSchema, dataItem.properties());
+            Map<String, Object> edgeProperties = createEdgeProperties(inEndSchema, dataItem.properties(), inVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdFields());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdFields());
+            Iterable<Object> outIds = getIdFieldValues(dataItem, outEndSchema.getIdFields());
+            Iterable<Object> inIds = getIdFieldValues(dataItem, inEndSchema.getIdFields());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {
@@ -100,11 +102,11 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
             GraphEdgeSchema.End outEndSchema = edgeSchema.getEndB().get();
             GraphEdgeSchema.End inEndSchema = edgeSchema.getEndA().get();
 
-            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, searchHit.sourceAsMap());
-            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, searchHit.sourceAsMap(), outVertexProperties);
+            Map<String, Object> outVertexProperties = createVertexProperties(outEndSchema, dataItem.properties());
+            Map<String, Object> edgeProperties = createEdgeProperties(outEndSchema, dataItem.properties(), outVertexProperties);
 
-            Iterable<Object> outIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), outEndSchema.getIdFields());
-            Iterable<Object> inIds = getIdFieldValues(searchHit, searchHit.sourceAsMap(), inEndSchema.getIdFields());
+            Iterable<Object> outIds = getIdFieldValues(dataItem, outEndSchema.getIdFields());
+            Iterable<Object> inIds = getIdFieldValues(dataItem, inEndSchema.getIdFields());
 
             for(Object outId : outIds) {
                 for(Object inId : inIds) {
@@ -135,13 +137,13 @@ public class DiscreteEdgeConverter<E extends Element> implements ElementConverte
     //endregion
 
     //region Private Methods
-    private Iterable<Object> getIdFieldValues(SearchHit searchHit, Map<String, Object> properties, Iterable<String> idFields) {
+    private Iterable<Object> getIdFieldValues(DataItem dataItem, Iterable<String> idFields) {
         return Stream.ofAll(idFields)
                 .<Object>flatMap(idField -> {
                     if (idField.equals("_id")) {
-                        return Collections.singletonList(searchHit.getId());
+                        return Collections.singletonList(dataItem.id());
                     } else {
-                        return MapHelper.values(properties, idField);
+                        return MapHelper.values(dataItem.properties(), idField);
                     }
                 }).toJavaList();
     }

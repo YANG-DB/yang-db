@@ -2,11 +2,14 @@ package com.kayhut.fuse.unipop.controller.common.converter;
 
 import javaslang.collection.Stream;
 
+import java.util.Collections;
+
 /**
  * Created by roman.margolis on 14/09/2017.
  */
 public class CompositeElementConverter<TElementSource, TElementDest> implements ElementConverter<TElementSource, TElementDest> {
     //region Constructors
+    @SafeVarargs
     public CompositeElementConverter(ElementConverter<TElementSource, TElementDest>...elementConverters) {
         this(Stream.of(elementConverters));
     }
@@ -26,7 +29,7 @@ public class CompositeElementConverter<TElementSource, TElementDest> implements 
             }
         }
 
-        return null;
+        return Collections.emptyList();
     }
     //endregion
 
