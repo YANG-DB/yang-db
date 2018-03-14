@@ -83,6 +83,11 @@ public class DiscreteTraversalTest {
                                         elasticEmbeddedNode.getClient(),
                                         elasticGraphConfiguration,
                                         uniGraph,
+                                        schemaProvider),
+                                new DiscreteElementReduceController(
+                                        elasticEmbeddedNode.getClient(),
+                                        elasticGraphConfiguration,
+                                        uniGraph,
                                         schemaProvider)
                         );
                     }
@@ -154,6 +159,12 @@ public class DiscreteTraversalTest {
     }
 
     @Test
+    public void g_V_count() throws InterruptedException {
+        long count = g.V().count().next();
+        Assert.assertEquals(70, count);
+    }
+
+    @Test
     public void g_V_hasXconstraint_byXhasXid_d001XXX() throws InterruptedException {
         List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d001"))).toList();
         Assert.assertEquals(1, vertices.size());
@@ -163,12 +174,24 @@ public class DiscreteTraversalTest {
     }
 
     @Test
+    public void g_V_hasXconstraint_byXhasXid_d001XXX_count() throws InterruptedException {
+        long count = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d001"))).count().next();
+        Assert.assertEquals(1, count);
+    }
+
+    @Test
     public void g_V_hasXconstraint_byXhasXid_d001X_hasXlabel_DragonXXX() throws InterruptedException {
         List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d001").has(T.label, "Dragon"))).toList();
         Assert.assertEquals(1, vertices.size());
         Assert.assertEquals("d001", vertices.get(0).id());
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.label().equals("Dragon")));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXid_d001X_hasXlabel_DragonXXX_count() throws InterruptedException {
+        long count = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, "d001").has(T.label, "Dragon"))).count().next();
+        Assert.assertEquals(1, count);
     }
 
     @Test
@@ -200,6 +223,12 @@ public class DiscreteTraversalTest {
     }
 
     @Test
+    public void g_V_hasXconstraint_byXhasXid_within_d001_d002XXX_count() throws InterruptedException {
+        long count = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, P.within("d001", "d002")))).count().next();
+        Assert.assertEquals(2, count);
+    }
+
+    @Test
     public void g_V_hasXconstraint_byXhasXid_within_d001_d007XXX() throws InterruptedException {
         List<Vertex> vertices = g.V().has(CONSTRAINT, Constraint.by(__.has(T.id, P.within("d001", "d007")))).toList();
         Assert.assertEquals(2, vertices.size());
@@ -218,6 +247,12 @@ public class DiscreteTraversalTest {
     }
 
     @Test
+    public void g_V_hasXconstraint_byXhasXlabel_DragonXXX_count() throws InterruptedException {
+        long count = g.V().has(CONSTRAINT, Constraint.by(__.has(T.label, "Dragon"))).count().next();
+        Assert.assertEquals(10, count);
+    }
+
+    @Test
     public void g_V_hasXconstraint_byXhasXage_103XXX_hasXage_select_raw_ageX() throws InterruptedException {
         List<Vertex> vertices = g.V()
                 .has(CONSTRAINT, Constraint.by(__.has("age", P.eq(103))))
@@ -227,6 +262,16 @@ public class DiscreteTraversalTest {
         Assert.assertEquals("Dragon", vertices.get(0).label());
         Assert.assertEquals((Integer)103, vertices.get(0).value("age"));
         Assert.assertTrue(Stream.ofAll(vertices).forAll(vertex -> vertex.value("faction") != null));
+    }
+
+    @Test
+    public void g_V_hasXconstraint_byXhasXage_103XXX_hasXage_select_raw_ageX_count() throws InterruptedException {
+        long count = g.V()
+                .has(CONSTRAINT, Constraint.by(__.has("age", P.eq(103))))
+                .has("age", SelectP.raw("age"))
+                .count().next();
+
+        Assert.assertEquals(1, count);
     }
 
     @Test

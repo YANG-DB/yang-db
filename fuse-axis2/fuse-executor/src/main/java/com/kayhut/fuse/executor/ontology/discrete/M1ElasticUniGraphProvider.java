@@ -10,6 +10,7 @@ import com.kayhut.fuse.unipop.controller.ElasticGraphConfiguration;
 import com.kayhut.fuse.unipop.controller.common.ElementController;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchController;
 import com.kayhut.fuse.unipop.controller.common.logging.LoggingSearchVertexController;
+import com.kayhut.fuse.unipop.controller.discrete.DiscreteElementReduceController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteElementVertexController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteVertexController;
 import com.kayhut.fuse.unipop.controller.discrete.DiscreteVertexFilterController;
@@ -65,28 +66,17 @@ public class M1ElasticUniGraphProvider implements UniGraphProvider {
                 return ImmutableSet.of(
                         new ElementController(
                                 new LoggingSearchController(
-                                    new DiscreteElementVertexController(
-                                        client,
-                                        elasticGraphConfiguration,
-                                        uniGraph,
-                                        schemaProvider),
+                                    new DiscreteElementVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
                                         metricRegistry),
                                 null
                         ),
                         new LoggingSearchVertexController(
-                            new DiscreteVertexController(
-                                client,
-                                elasticGraphConfiguration,
-                                uniGraph,
-                                schemaProvider),
+                            new DiscreteVertexController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
                                 metricRegistry),
                         new LoggingSearchVertexController(
-                            new DiscreteVertexFilterController(
-                                client,
-                                elasticGraphConfiguration,
-                                uniGraph,
-                                schemaProvider),
-                                metricRegistry)
+                            new DiscreteVertexFilterController(client, elasticGraphConfiguration, uniGraph, schemaProvider),
+                                metricRegistry),
+                        new DiscreteElementReduceController(client, elasticGraphConfiguration, uniGraph, schemaProvider)
                 );
             }
 
