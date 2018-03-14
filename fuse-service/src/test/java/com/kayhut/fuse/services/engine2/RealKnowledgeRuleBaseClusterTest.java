@@ -298,7 +298,9 @@ public class RealKnowledgeRuleBaseClusterTest {
 
         Query query = Query.Builder.instance().withName("q1").withOnt($ont.name()).withElements(Arrays.asList(
                 new Start(0, 1),
-                new ETyped(1, "A", $ont.eType$("Entity"), 0, 0)
+                new EConcrete(1, "A", "Entity", "e00000084.context1", "name", 2, 0),
+                new Rel(2, "hasEntity", Rel.Direction.L, null, 3, 0),
+                new ETyped(3, "B", "LogicalEntity", 0, 0)
         )).build();
 
 
