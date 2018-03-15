@@ -56,6 +56,13 @@ public class EpbDfsCountBasedRedundantModule  extends BaseEpbModule {
                 this.bind(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>() {})
                         .toProvider(new TypeLiteral<PlanTracer.Estimator.Provider<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>() {});
 
+                try {
+                    this.bind(StatisticsProviderFactory.class).to(getStatisticsProviderFactory(conf)).asEagerSingleton();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                this.expose(StatisticsProviderFactory.class);
                 this.expose(new TypeLiteral<CostEstimator<Plan, PlanDetailedCost, IncrementalEstimationContext<Plan, PlanDetailedCost, AsgQuery>>>() {});
             }
         });
