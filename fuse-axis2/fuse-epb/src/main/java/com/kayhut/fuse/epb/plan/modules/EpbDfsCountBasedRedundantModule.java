@@ -45,8 +45,8 @@ import static com.google.inject.name.Names.named;
 public class EpbDfsCountBasedRedundantModule  extends BaseEpbModule {
     //region Private Methods
     @Override
-    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy() {
-        return M1DfsRedundantPlanExtensionStrategy.class;
+    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy(Config conf) throws ClassNotFoundException {
+        return (Class<? extends PlanExtensionStrategy<Plan, AsgQuery>>) Class.forName(conf.getString(conf.getString("assembly") + ".plan_extension_strategy_class"));
     }
 
     @Override
@@ -103,7 +103,8 @@ public class EpbDfsCountBasedRedundantModule  extends BaseEpbModule {
         });
     }
 
-    protected PlanPruneStrategy<PlanWithCost<Plan,PlanDetailedCost>> globalPrunerStrategy() {
+    @Override
+    protected PlanPruneStrategy<PlanWithCost<Plan,PlanDetailedCost>> globalPrunerStrategy(Config config) {
         return new CheapestPlanPruneStrategy();
     }
 

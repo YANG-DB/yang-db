@@ -31,7 +31,7 @@ import static com.google.inject.name.Names.named;
 public class EpbDfsRuleBasedRedundantModule extends BaseEpbModule {
     //region Private Methods
     @Override
-    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy() {
+    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy(Config config) {
         return M1DfsRedundantPlanExtensionStrategy.class;
     }
 
@@ -73,7 +73,8 @@ public class EpbDfsRuleBasedRedundantModule extends BaseEpbModule {
         });
     }
 
-    protected PlanPruneStrategy<PlanWithCost<Plan,PlanDetailedCost>> globalPrunerStrategy() {
+    @Override
+    protected PlanPruneStrategy<PlanWithCost<Plan,PlanDetailedCost>> globalPrunerStrategy(Config config) {
         return new CheapestPlanPruneStrategy();
     }
 

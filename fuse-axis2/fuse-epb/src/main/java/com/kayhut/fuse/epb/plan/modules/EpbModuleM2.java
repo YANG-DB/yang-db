@@ -38,7 +38,7 @@ public class EpbModuleM2 extends BaseEpbModule {
 
 
     @Override
-    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy() {
+    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy(Config config) {
         return M2PlanExtensionStrategy.class;
     }
 
@@ -75,12 +75,13 @@ public class EpbModuleM2 extends BaseEpbModule {
         });
     }
 
-    protected PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPrunerStrategy() {
+    @Override
+    protected PlanPruneStrategy<PlanWithCost<Plan, PlanDetailedCost>> globalPrunerStrategy(Config config) {
         return new M2GlobalPruner();
     }
 
-
-    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector() {
+    @Override
+    protected PlanSelector<PlanWithCost<Plan, PlanDetailedCost>, AsgQuery> globalPlanSelector(Config config) {
         return new CheapestPlanSelector();
     }
     //endregion

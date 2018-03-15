@@ -33,7 +33,7 @@ public class EpbDfsNonRedundantModule extends BaseEpbModule {
 
     //region Private Methods
     @Override
-    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy() {
+    protected Class<? extends PlanExtensionStrategy<Plan, AsgQuery>> planExtensionStrategy(Config config) {
         return M1DfsNonRedundantPlanExtensionStrategy.class;
     }
     //endregion
