@@ -1,7 +1,7 @@
 package com.kayhut.fuse.epb.plan;
 
 import com.kayhut.fuse.dispatcher.ontology.OntologyProvider;
-import com.kayhut.fuse.epb.plan.estimation.pattern.FirstStepOnlyCostEstimator;
+import com.kayhut.fuse.epb.plan.estimation.pattern.PredicateCostEstimator;
 import com.kayhut.fuse.epb.plan.estimation.pattern.RegexPatternCostEstimator;
 import com.kayhut.fuse.epb.plan.extenders.M1.M1DfsRedundantPlanExtensionStrategy;
 import com.kayhut.fuse.epb.plan.pruners.CheapestPlanPruneStrategy;
@@ -150,6 +150,8 @@ public class DfsRuleBasedBottomUpPlanSearcherNoQuantTests {
                 new AllCompletePlanSelector<>(),
                 new AllCompletePlanSelector<>(),
                 new M1PlanValidator(),
-                new FirstStepOnlyCostEstimator(new RegexPatternCostEstimator(ruleBaseEstimator(ont))));
+                new PredicateCostEstimator<>(plan -> plan.getOps().size() <= 2,
+                        new RegexPatternCostEstimator(ruleBaseEstimator(ont)),
+                        (plan, context) -> new PlanWithCost<>(plan, context.getPreviousCost().get().getCost())));
     }
 }
