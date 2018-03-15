@@ -733,7 +733,7 @@ public class RealKnowledgeRuleBaseClusterTest {
         Random random = new Random();
 
         ExecutorService executorService = Executors.newFixedThreadPool(50);
-        for(int i = 0 ; i < 1000; i++) {
+        for(int i = 0 ; i < 100; i++) {
             String eId = "e" + String.format("%08d", random.nextInt(100));
             final int ii = i;
             executorService.execute(() -> {

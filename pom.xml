@@ -64,7 +64,7 @@
         <google.guice.version>4.1.0</google.guice.version>
 
         <!-- caffeine -->
-        <caffeine.version>2.3.3</caffeine.version>
+        <caffeine.version>2.6.2</caffeine.version>
 
         <!-- elasticsearch -->
         <elasticsearch.version>5.3.2</elasticsearch.version>
