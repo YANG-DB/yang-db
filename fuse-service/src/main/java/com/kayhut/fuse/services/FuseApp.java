@@ -7,6 +7,7 @@ import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.TypeLiteral;
 import com.kayhut.fuse.model.execution.plan.PlanWithCost;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.costs.PlanDetailedCost;
@@ -107,6 +108,7 @@ public class FuseApp extends Jooby {
         registerPageApi(localUrlSupplier);
         registerSearchApi(localUrlSupplier);
         registerInternals(localUrlSupplier);
+        registerIdGenerator(localUrlSupplier);
     }
     //endregion
 
@@ -152,6 +154,10 @@ public class FuseApp extends Jooby {
     private PageController pageCtrl() {
         return require(PageController.class);
     }
+
+    private IdGeneratorController idGeneratorCtrl() {
+        return require(new TypeLiteral<IdGeneratorController<Object>>(){});
+    }
     //endregion
 
     //region Private Methods
@@ -188,6 +194,10 @@ public class FuseApp extends Jooby {
                 .get(req -> Results.with(internalsController().getStatisticsProviderSetup()));
         use("/fuse/internal/statisticsProvider/refresh")
                 .put(req -> Results.with(internalsController().refreshStatisticsProviderSetup()));
+    }
+
+    private void registerIdGenerator(AppUrlSupplier localUrlSupplier) {
+        use("/fuse/idgen/:id").get(req -> idGeneratorCtrl().getNext(req.param("id").value(), req.param("numIds").intValue()));
     }
 
     private void registerDataLoaderApi(AppUrlSupplier localUrlSupplier) {

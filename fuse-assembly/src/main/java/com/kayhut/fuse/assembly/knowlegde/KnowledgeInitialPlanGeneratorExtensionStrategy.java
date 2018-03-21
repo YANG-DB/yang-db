@@ -10,6 +10,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityFilterOp;
 import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
+import com.kayhut.fuse.model.query.entity.ETyped;
 import com.kayhut.fuse.model.query.optional.OptionalComp;
 import com.kayhut.fuse.model.query.properties.EPropGroup;
 import com.kayhut.fuse.model.query.properties.constraint.ConstraintOp;
@@ -44,6 +45,8 @@ public class KnowledgeInitialPlanGeneratorExtensionStrategy implements PlanExten
 
         List<Plan> seeds =
                 Stream.ofAll(entitySeeds)
+                .filter(seed -> ETyped.class.isAssignableFrom(seed.geteBase().getClass()))
+                .filter(seed -> !((ETyped)seed.geteBase()).geteType().equals("LogicalEntity"))
                 .map(entitySeed -> {
                     Optional<AsgEBase<Quant1>> entitySeedQuant = AsgQueryUtil.nextAdjacentDescendant(entitySeed, Quant1.class);
                     Optional<AsgEBase<EPropGroup>> epropGroup;

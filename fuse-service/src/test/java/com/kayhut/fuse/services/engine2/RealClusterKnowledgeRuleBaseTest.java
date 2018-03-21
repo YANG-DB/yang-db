@@ -1571,6 +1571,47 @@ public class RealClusterKnowledgeRuleBaseTest {
 
     @Test
     @Ignore
+    public void testIdGen() throws IOException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        Map<String, Object> map = (Map<String, Object>)fuseClient.getId("entity", 10);
+        long lower = ((Number)map.get("lower")).longValue();
+        long upper = ((Number)map.get("upper")).longValue();
+
+
+    }
+
+    @Test
+    @Ignore
+    public void testParallelIdgen() throws IOException, InterruptedException {
+        FuseClient fuseClient = new FuseClient("http://localhost:8888/fuse");
+        Random random = new Random();
+
+        List<Long> lowers = Collections.synchronizedList(new ArrayList<>());
+        List<Long> uppers = Collections.synchronizedList(new ArrayList<>());
+
+        ExecutorService executorService = Executors.newFixedThreadPool(50);
+        for(int i = 0 ; i < 1000; i++) {
+            String eId = "e" + String.format("%08d", random.nextInt(100));
+            final int ii = i;
+            executorService.execute(() -> {
+                try {
+                    Map<String, Object> map = (Map<String, Object>)fuseClient.getId("entity", 10);
+                    long lower = ((Number)map.get("lower")).longValue();
+                    long upper = ((Number)map.get("upper")).longValue();
+                    lowers.add(lower);
+                    uppers.add(upper);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        Thread.sleep(10000);
+        int x = 5;
+    }
+
+    @Test
+    @Ignore
     public void loadData() throws IOException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));

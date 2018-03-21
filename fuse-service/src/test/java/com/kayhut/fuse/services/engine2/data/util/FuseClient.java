@@ -35,6 +35,10 @@ public class FuseClient {
         return new ObjectMapper().readValue(unwrap(getRequest(this.fuseUrl)), FuseResourceInfo.class);
     }
 
+    public Object getId(String name, int numIds) throws IOException {
+        return new ObjectMapper().readValue(unwrap(getRequest(this.fuseUrl + "/idgen/" + name + "?numIds=" + numIds)), Map.class);
+    }
+
     public QueryResourceInfo postQuery(String queryStoreUrl, Query query) throws IOException {
         return postQuery(queryStoreUrl,query, PlanTraceOptions.of(PlanTraceOptions.Level.none));
     }

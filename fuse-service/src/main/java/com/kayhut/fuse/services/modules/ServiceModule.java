@@ -2,6 +2,8 @@ package com.kayhut.fuse.services.modules;
 
 import com.google.inject.Binder;
 import com.google.inject.PrivateModule;
+import com.google.inject.TypeLiteral;
+import com.kayhut.fuse.dispatcher.driver.IdGeneratorDriver;
 import com.kayhut.fuse.dispatcher.driver.InternalsDriver;
 import com.kayhut.fuse.dispatcher.modules.ModuleBase;
 import com.kayhut.fuse.services.suppliers.RequestIdSupplier;
@@ -40,6 +42,7 @@ public class ServiceModule extends ModuleBase {
         bindSearchController(env, config, binder);
         bindCatalogController(env, config, binder);
         bindDataLoaderController(env, config, binder);
+        bindIdGeneratorController(env, config, binder);
 
         // bind requests
         binder.bind(InternalsDriver.class).to(StandardInternalsDriver.class);
@@ -200,6 +203,18 @@ public class ServiceModule extends ModuleBase {
                         .to(LoggingDataLoaderController.class);
 
                 this.expose(DataLoaderController.class);
+            }
+        });
+    }
+
+    private void bindIdGeneratorController(Env env, Config config, Binder binder) {
+        binder.install(new PrivateModule() {
+            @Override
+            protected void configure() {
+                this.bind(new TypeLiteral<IdGeneratorController<Object>>(){})
+                        .to(new TypeLiteral<StandardIdGeneratorController<Object>>(){}).asEagerSingleton();
+
+                this.expose(new TypeLiteral<IdGeneratorController<Object>>(){});
             }
         });
     }
