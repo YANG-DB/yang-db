@@ -8,6 +8,7 @@ import com.kayhut.fuse.model.execution.plan.entity.EntityOp;
 import com.kayhut.fuse.model.execution.plan.composite.Plan;
 import com.kayhut.fuse.model.execution.plan.relation.RelationOp;
 import com.kayhut.fuse.model.ontology.*;
+import com.kayhut.fuse.model.query.EBase;
 import com.kayhut.fuse.model.query.Rel;
 import com.kayhut.fuse.model.query.entity.EConcrete;
 import com.kayhut.fuse.model.query.entity.EEntityBase;
@@ -17,16 +18,17 @@ import com.kayhut.fuse.model.results.*;
 import com.kayhut.fuse.model.results.Property;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteEdge;
 import com.kayhut.fuse.unipop.structure.discrete.DiscreteVertex;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
 import javaslang.collection.Stream;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Pop;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.kayhut.fuse.model.results.QueryResult.Builder.instance;
 
@@ -38,7 +40,31 @@ public class PathsTraversalCursor implements Cursor {
     public PathsTraversalCursor(TraversalCursorContext context) {
         this.context = context;
         this.ont = new Ontology.Accessor(context.getOntology());
-        this.flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
+
+        Plan flatPlan = PlanUtil.flat(context.getQueryResource().getExecutionPlan().getPlan());
+        this.eEntityBases = Stream.ofAll(flatPlan.getOps())
+                .filter(planOp -> planOp instanceof EntityOp)
+                .map(planOp -> (EntityOp)planOp)
+                .toJavaMap(planOp -> new Tuple2<>(planOp.getAsgEbase().geteBase().geteTag(), planOp.getAsgEbase().geteBase()));
+
+        this.eRels = Stream.ofAll(flatPlan.getOps())
+                .filter(planOp -> planOp instanceof RelationOp)
+                .toJavaMap(planOp -> {
+                    RelationOp relationOp = (RelationOp)planOp;
+                    Optional<EntityOp> prevEntityOp =
+                            PlanUtil.prev(flatPlan, planOp, EntityOp.class);
+                    Optional<EntityOp> nextEntityOp =
+                            PlanUtil.next(flatPlan, planOp, EntityOp.class);
+
+                    String relationLabel = prevEntityOp.get().getAsgEbase().geteBase().geteTag() +
+                            ConversionUtil.convertDirectionGraphic(relationOp.getAsgEbase().geteBase().getDir()) +
+                            nextEntityOp.get().getAsgEbase().geteBase().geteTag();
+
+                    return new Tuple2<>(relationLabel,
+                            new Tuple3<>(prevEntityOp.get().getAsgEbase().geteBase(),
+                                    relationOp.getAsgEbase().geteBase(),
+                                    nextEntityOp.get().getAsgEbase().geteBase()));
+                });
 
         this.typeProperty = this.ont.property$("type");
     }
@@ -70,42 +96,31 @@ public class PathsTraversalCursor implements Cursor {
 
     private Assignment toAssignment(Path path) {
         Assignment.Builder builder = Assignment.Builder.instance();
-        this.flatPlan.getOps().forEach(planOp -> {
-            if (planOp instanceof EntityOp) {
-                EEntityBase entity = ((EntityOp)planOp).getAsgEbase().geteBase();
-                if (path.hasLabel(entity.geteTag())) {
-                    if (entity instanceof EConcrete) {
-                        builder.withEntity(toEntity(path, (EConcrete) entity));
-                    } else if (entity instanceof ETyped) {
-                        builder.withEntity(toEntity(path, (ETyped) entity));
-                    } else if (entity instanceof EUntyped) {
-                        builder.withEntity(toEntity(path, (EUntyped) entity));
-                    }
-                }
-            } else if (planOp instanceof RelationOp) {
-                RelationOp relationOp = (RelationOp)planOp;
-                Optional<EntityOp> prevEntityOp =
-                        PlanUtil.prev(this.flatPlan, planOp, EntityOp.class);
-                Optional<EntityOp> nextEntityOp =
-                        PlanUtil.next(this.flatPlan, planOp, EntityOp.class);
 
-                if (path.hasLabel(prevEntityOp.get().getAsgEbase().geteBase().geteTag() +
-                        ConversionUtil.convertDirectionGraphic(relationOp.getAsgEbase().geteBase().getDir()) +
-                        nextEntityOp.get().getAsgEbase().geteBase().geteTag())) {
-                    builder.withRelationship(toRelationship(path,
-                            prevEntityOp.get().getAsgEbase().geteBase(),
-                            relationOp.getAsgEbase().geteBase(),
-                            nextEntityOp.get().getAsgEbase().geteBase()));
-                }
+        List<Object> pathObjects = path.objects();
+        List<Set<String>> pathlabels = path.labels();
+        for(int objectIndex = 0 ; objectIndex < pathObjects.size() ; objectIndex++) {
+            Object pathObject = pathObjects.get(objectIndex);
+            String pathLabel = pathlabels.get(objectIndex).iterator().next();
+
+            if (Vertex.class.isAssignableFrom(pathObject.getClass())) {
+                builder.withEntity(toEntity((Vertex)pathObject, this.eEntityBases.get(pathLabel)));
+            } else if (Edge.class.isAssignableFrom(pathObject.getClass())) {
+                Tuple3<EEntityBase, Rel, EEntityBase> relTuple = this.eRels.get(pathLabel);
+                builder.withRelationship(toRelationship(
+                        (Edge)pathObject,
+                        relTuple._1(),
+                        relTuple._2(),
+                        relTuple._3()));
+            } else {
+                throw new UnsupportedOperationException("unexpected object in path");
             }
-        });
+        }
 
         return builder.build();
     }
 
-    private Entity toEntity(Path path, EUntyped element) {
-        DiscreteVertex vertex = getDiscreteVertex(path, element);
-
+    private Entity toEntity(Vertex vertex, EEntityBase element) {
         String eType = vertex.label();
         List<Property> properties = Stream.ofAll(vertex::properties)
                 .map(this::toProperty)
@@ -113,47 +128,16 @@ public class PathsTraversalCursor implements Cursor {
                 .map(Optional::get)
                 .toJavaList();
 
-        return toEntity(vertex.id().toString(),eType,element.geteTag(), properties);
-    }
-
-    private DiscreteVertex getDiscreteVertex(Path path, EEntityBase element) {
-        return path.get(Pop.last, element.geteTag());
-    }
-
-    private Entity toEntity(Path path, EConcrete element) {
-        DiscreteVertex vertex = getDiscreteVertex(path, element);
-        List<Property> properties = Stream.ofAll(vertex::properties)
-                .map(this::toProperty)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toJavaList();
-
-        return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
-    }
-
-    private Entity toEntity(Path path, ETyped element) {
-        DiscreteVertex vertex = getDiscreteVertex(path, element);
-        List<Property> properties = Stream.ofAll(vertex::properties)
-                .map(this::toProperty)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toJavaList();
-
-        return toEntity(vertex.id().toString(),element.geteType(),element.geteTag(), properties);
-    }
-
-    private Entity toEntity(String eId, String eType, String eTag, List<Property> properties) {
         Entity.Builder builder = Entity.Builder.instance();
-        builder.withEID(eId);
+        builder.withEID(vertex.id().toString());
         builder.withEType(eType);
-        builder.withETag(new HashSet<>(Collections.singletonList(eTag)));
+        builder.withETag(new HashSet<>(Collections.singletonList(element.geteTag())));
         builder.withProperties(properties);
         return builder.build();
     }
 
-    private Relationship toRelationship(Path path, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
+    private Relationship toRelationship(Edge edge, EEntityBase prevEntity, Rel rel, EEntityBase nextEntity) {
         Relationship.Builder builder = Relationship.Builder.instance();
-        DiscreteEdge edge = path.get(Pop.last, prevEntity.geteTag() + ConversionUtil.convertDirectionGraphic(rel.getDir()) + nextEntity.geteTag());
         builder.withRID(edge.id().toString());
         builder.withRType(rel.getrType());
         builder.withEID1(edge.outVertex().id().toString());
@@ -186,7 +170,8 @@ public class PathsTraversalCursor implements Cursor {
     //region Fields
     private TraversalCursorContext context;
     private Ontology.Accessor ont;
-    private Plan flatPlan;
+    private Map<String, EEntityBase> eEntityBases;
+    private Map<String, Tuple3<EEntityBase, Rel, EEntityBase>> eRels;
 
     private com.kayhut.fuse.model.ontology.Property typeProperty;
     //endregion
