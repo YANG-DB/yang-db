@@ -4,6 +4,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.Path;
 import org.apache.tinkerpop.gremlin.process.traversal.Pop;
 import org.apache.tinkerpop.gremlin.process.traversal.Step;
 import org.apache.tinkerpop.gremlin.process.traversal.traverser.B_LP_O_P_S_SE_SL_Traverser;
+import org.apache.tinkerpop.gremlin.process.traversal.traverser.B_O_S_SE_SL_Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.traverser.B_O_Traverser;
 import org.apache.tinkerpop.gremlin.process.traversal.traverser.util.AbstractTraverser;
 
@@ -14,14 +15,14 @@ import java.util.Set;
 /**
  * Created by Roman on 1/25/2018.
  */
-public class ThinPathTraverser<T> extends B_O_Traverser<T> {
+public class ThinPathTraverser<T> extends B_O_S_SE_SL_Traverser<T> {
     //region Constructors
     protected ThinPathTraverser() {
 
     }
 
     public ThinPathTraverser(T t, Step<T, ?> step, StringOrdinalDictionary stringOrdinalDictionary) {
-        super(t, 1L);
+        super(t, step, 1L);
         this.path = new ThinPath(stringOrdinalDictionary).extend(t, step.getLabels());
     }
     //endregion
@@ -43,21 +44,7 @@ public class ThinPathTraverser<T> extends B_O_Traverser<T> {
     }
 
     @Override
-    public <A> A sideEffects(String sideEffectKey) throws IllegalArgumentException {
-        return null;
-    }
-
-    @Override
-    public void sideEffects(String sideEffectKey, Object sideEffectValue) throws IllegalArgumentException {
-
-    }
-
-    @Override
     public <R> Admin<R> split(R r, Step<T, R> step) {
-        if (List.class.isAssignableFrom(r.getClass())) {
-            int x = 5;
-        }
-
         ThinPathTraverser<R> clone = (ThinPathTraverser)super.split(r, step);
 
         clone.path = step.getLabels().isEmpty() ? this.path : this.path.clone().extend(r, step.getLabels());
@@ -84,11 +71,12 @@ public class ThinPathTraverser<T> extends B_O_Traverser<T> {
 
     @Override
     public boolean equals(Object object) {
-        return object != null &&
-                object instanceof ThinPathTraverser &&
-                ((ThinPathTraverser) object).t.equals(this.t) &&
-                ((ThinPathTraverser) object).future.equals(this.future) &&
-                ((ThinPathTraverser) object).path.equals(this.path);
+        return object instanceof B_O_S_SE_SL_Traverser
+                && ((ThinPathTraverser) object).t.equals(this.t)
+                && ((ThinPathTraverser) object).future.equals(this.future)
+                && ((ThinPathTraverser) object).loops == this.loops
+                && ((ThinPathTraverser) object).path.equals(this.path)
+                && (null == this.sack || (null != this.sideEffects && null != this.sideEffects.getSackMerger()));
     }
     //endregion
 
