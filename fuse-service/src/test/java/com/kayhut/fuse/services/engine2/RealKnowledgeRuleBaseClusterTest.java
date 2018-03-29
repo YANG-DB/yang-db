@@ -687,9 +687,6 @@ public class RealKnowledgeRuleBaseClusterTest {
                 new OptionalComp(10, 100),
                 new Rel(100, "hasRvalue", R, null, 101, 0),
                 new ETyped(101, "RV", "Rvalue", 0, 0),
-                /*new Quant1(102, QuantType.all, Arrays.asList(103), 0),
-                new Rel(103, "hasRvalueReference", R, null, 104, 0),
-                new ETyped(104, "RVRef", "Reference", $ont.$entity$("Reference").getProperties(), 0, 0),*/
 
                 new OptionalComp(11, 110),
                 new Rel(110, "hasRelationReference", R, null, 111, 0),
@@ -1134,10 +1131,17 @@ public class RealKnowledgeRuleBaseClusterTest {
                 new Start(0, 1),
                 new ETyped(1, "A", $ont.eType$("Entity"), 2, 0),
                 new Quant1(2, QuantType.all, Arrays.asList(3, 4), 0),
-                new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e000")),
-                new OptionalComp(4, 5),
-                new Rel(5, $ont.rType$("hasEvalue"), R, null, 6, 0),
-                new ETyped(6, "B", $ont.eType$("Evalue"), 0, 0)
+
+                    new EProp(3, $ont.pType$("logicalId"), Constraint.of(ConstraintOp.eq, "e00000000")),
+
+                    new OptionalComp(4, 5),
+                    new Rel(5, $ont.rType$("hasEvalue"), R, null, 6, 0),
+                    new ETyped(6, "B", $ont.eType$("Evalue"), 7, 0),
+                    new Quant1(7, QuantType.all, Arrays.asList(10), 0),
+
+                        new OptionalComp(10, 11),
+                        new Rel(11, $ont.rType$("hasEvalueReference"), R, null, 12, 0),
+                        new ETyped(12, "C", $ont.eType$("Reference"), 0, 0)
         )).build();
 
 
